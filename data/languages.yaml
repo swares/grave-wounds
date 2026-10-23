@@ -192,6 +192,10 @@ armies:
              others: [[latin, 5, [20, 50]], [english, 5, [10, 40]]]}
     portugal: {own: [[portuguese, 92], [english, 6], [french, 2]], enemy: spanish,
                others: [[spanish, 50, [30, 60]], [latin, 5, [20, 50]], [french, 5, [10, 40]]]}   # the English and Gascons about 5-10% (600-700 men); Portuguese stands for Galician too (approx)
+    swiss: {own: [[german, 95], [french, 5]], enemy: german,
+            others: [[french, 10, [10, 40]], [italian, 3, [10, 40]], [latin, 5, [20, 50]]]}   # Alemannic Swiss German; Fribourg men French-speaking (approx)
+    landsknecht: {own: [[german, 80], [low_german, 12], [french, 8]], enemy: german,
+                  others: [[french, 10, [10, 40]], [latin, 5, [20, 50]]]}   # Swabian and Alsatian; the Geldern men Low German (Dutch); the Welsche Garde French (approx)
     castile: {own: [[spanish, 72], [portuguese, 15], [french, 7], [basque, 4], [italian, 2]], enemy: portuguese,
               others: [[portuguese, 40, [20, 50]], [latin, 5, [20, 50]], [arabic, 2, [10, 40]]]}   # Galicians and Portuguese loyal to Beatriz, the French lances, Biscayans; Mudéjares spoke Castilian (approx)
   thirty_years:
@@ -316,6 +320,7 @@ maps:                          # the tongue (or tongues, main first) of the peop
   chipyong-1951: korean
   chosin-1950: korean
   cowpens-1781: english
+  dornach-1499: german
   dakto-1967: montagnard
   easting73-1991: arabic
   fallujah-2004: arabic

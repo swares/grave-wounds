@@ -1,4 +1,4 @@
-# Character generation for the medieval era (c.1250-1460): the team builder (dist/team.html,
+# Character generation for the medieval era (c.1250-1500): the team builder (dist/team.html,
 # python3 -m gravewounds team). A character is made in five steps:
 #   1. Characteristics: six, each 3d6 x 5 (15-90), or the fixed array placed by his first career.
 #   2. Origin: d100 on `origins`: a starting skill, a trait and a matching drawback.
@@ -14,7 +14,7 @@
 # All of it is written for this game: the tables, events and names are ours (names are common
 # period names, plain fact).
 id: medieval
-name: "Medieval (c.1250-1460)"
+name: "Medieval (c.1250-1500)"
 
 characteristics:
   - {id: str, name: Strength}
@@ -143,6 +143,33 @@ regions:
       closed: "No Castilian women are recorded fighting or serving in 1383-85; these tables have no record of them in the army's other careers."
       source: "No source found for Castilian women in the war of 1383-85; women and boys earned 1 maravedí a day at the harvests (Murcia, 1351). Names: Castilian documents (CODEA; Simón Parra 2010)."
 
+  - id: swiss
+    name: "Swiss Confederates (c.1499)"
+    table: dornach-1499-all-hits
+    colours: ["#c8102e", "#e6e0d2", "#2b4a8a", "#5c6b3a"]
+    names: [Hans, Hans, Heini, Ueli, Ruedi, Peter, Jakob, Kuoni, Niklaus, Kaspar, Werner, Bernhard, Wilhelm, Jörg, Benedikt, Andreas]
+    bynames: [Schmid, Müller, Weber, Zimmermann, Hugi, Wild, Steiner, Göldli, Wick, Feer, "von Bern", "von Zug", Imhof, Kuster]
+    women:
+      share: null
+      careers: [townswoman]
+      shares: {townswoman: 100}
+      names: [Anna, Verena, Margreth, Elsbeth, Barbara, Katharina, Adelheid, Agnes, Magdalena, Ursula]
+      closed: "Women and children were protected by the Sempach letter; girls carried ransom money and messages between the armies. These tables have no record of them in the army's other careers."
+      source: "Winkler, the Swiss military of 1499 (2020), pp. 32, 37, after Frey and Elgger. Names: common names of about 1500 (our reading: no counts found)."
+  - id: landsknecht
+    name: "Swabian League and Landsknechte (c.1499)"
+    table: dornach-1499-all-hits
+    colours: ["#3a3a3a", "#d9b44a", "#8a2b2b", "#e6e0d2"]
+    names: [Hans, Jörg, Michel, Konrad, Ulrich, Martin, Heinrich, Wolf, Kaspar, Lienhart, Peter, Jakob, Bastian, Veit, Christoph, Matthis]
+    bynames: [Schmid, Müller, Bauer, Wagner, Fischer, Koch, Schuster, Hofmann, Keller, Vogt, "von Ulm", "von Strassburg", "aus Geldern", Landsknecht]
+    women:
+      share: null
+      careers: [townswoman]
+      shares: {townswoman: 100}
+      names: [Anna, Margaretha, Barbara, Elisabeth, Katharina, Ursula, Dorothea, Agnes, Magdalena, Apollonia]
+      closed: "The Landsknechte's baggage train carried women and children under the Hurenweibel: they made camp, cooked and nursed. These tables have no record of them in the army's other careers."
+      source: "Burschel, Landsknechte (DHM, Eisenkleider): the Tross of women, children, sutlers and diggers; mostly a 16th-century picture. No count for Fürstenberg's army. Names: our reading."
+
 # Origins: d100, 5 each. gain: a skill (+gain); trait and drawback: a characteristic (+/-10)
 # or a skill (+/-gain).
 origins:
@@ -180,8 +207,8 @@ careers:
     prefers: [str, agi, nerve, end, pres, wits]
     wound: 25
     wound_weapon: sword
-    kit: {default: hauberk, latin_east: hauberk, baltic: danish_maa, england: brigandine_sallet, france: full_plate, portugal: transitional, castile: transitional}
-    weapon: {default: sword}
+    kit: {default: hauberk, latin_east: hauberk, baltic: danish_maa, england: brigandine_sallet, france: full_plate, portugal: transitional, castile: transitional, swiss: brigandine_sallet, landsknecht: full_plate}
+    weapon: {default: sword, swiss: poleaxe}
     terms:
       - {to: 20, skill: ride, text: "Rode in a lord's household for a season."}
       - {to: 40, skill: command, text: "Led a handful of men on a raid."}
@@ -197,7 +224,7 @@ careers:
     wound: 15
     wound_weapon: sword
     kit: {default: gambeson, baltic: gotland_levy, england: jack_sallet, france: jack_sallet}
-    weapon: {default: bow, england: longbow, france: longbow, portugal: longbow}
+    weapon: {default: bow, england: longbow, france: longbow, portugal: longbow, swiss: matchlock_musket, landsknecht: matchlock_musket}
     terms:
       - {to: 20, skill: watch, text: "Stood sentry on a border tower."}
       - {to: 40, skill: stealth, text: "Scouted ahead of the army."}
@@ -228,8 +255,8 @@ careers:
     prefers: [str, end, nerve, agi, wits, pres]
     wound: 20
     wound_weapon: sword
-    kit: {default: gambeson, baltic: gotland_levy, england: jack_sallet, france: jack_sallet}
-    weapon: {default: spear, england: bill}
+    kit: {default: gambeson, baltic: gotland_levy, england: jack_sallet, france: jack_sallet, swiss: brigandine_sallet, landsknecht: jack_sallet}
+    weapon: {default: spear, england: bill, swiss: pike, landsknecht: pike}
     terms:
       - {to: 20, skill: fieldcraft, text: "Marched through a long campaign."}
       - {to: 40, skill: parry, text: "Held his place in the line.", wound: true}

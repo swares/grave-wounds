@@ -87,7 +87,7 @@ enlist:
   shares: {default: {under: 2, older: 2}, civil_war: {under: 10, older: 1}, wwi: {under: 4, older: 2}, wwii: {under: 2, older: 1}}
   shares_approx: true
   eras:
-    medieval: {min: 15, max: 60, source: "Statute of Winchester, 1285: men of 15 to 60 liable (Militia (England), Wikipedia)", regions: {castile: {min: 20, max: 60, source: "Cortes of Valladolid, 1 December 1385: every man of 20 to 60 to keep arms (Pascual Sarria)"}, portugal: {min: 18, max: 60, source: "No law of 1385 found: the besteiros do monte of 1468 were enrolled at 18 to 45 and retired at 60 (Costa)"}}}
+    medieval: {min: 15, max: 60, source: "Statute of Winchester, 1285: men of 15 to 60 liable (Militia (England), Wikipedia)", regions: {castile: {min: 20, max: 60, source: "Cortes of Valladolid, 1 December 1385: every man of 20 to 60 to keep arms (Pascual Sarria)"}, portugal: {min: 18, max: 60, source: "No law of 1385 found: the besteiros do monte of 1468 were enrolled at 18 to 45 and retired at 60 (Costa)"}, swiss: {min: 16, max: 60, source: "Swiss service from 16, 14 in an emergency; older men served too (Winkler 2020, after Delbrück and Elgger)"}}}
     thirty_years: {min: 16, max: 50, approx: true, source: "No muster age rules found: the British limits of the early 1700s, less a year"}
     horse_musket: {min: 17, max: 50, source: "British recruits of 17 to 50 in the early 1700s (Recruitment in the British Army)", regions: {french: {min: 18, max: 30, source: "Jourdan law, 1798: volunteers 18 to 30, conscripts 20 to 25"}}}
     crimea: {min: 17, max: 25, source: "Victorian recruits 17 to 25 (reubique.com, Physical requirements)"}

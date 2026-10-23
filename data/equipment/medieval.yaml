@@ -1,4 +1,4 @@
-# Prices for the medieval era (c.1250-1460), anchored on England c.1415-1461 (Agincourt,
+# Prices for the medieval era (c.1250-1500), anchored on England c.1415-1461 (Agincourt,
 # Towton). Read by gravewounds/money.py; the team builder prices each character's issued kit
 # and gives him a purse from these.
 #
@@ -66,7 +66,23 @@ currencies:
     day_note: "a crossbowman's 13 dineros a day (Cortes of Burgos, 1338; a lancer 1 maravedí), the nearest found to 1385"
     day_approx: true
 
-currency: {default: gbp, france: livre_t, latin_east: bezant, baltic: gotland, portugal: libra_pt, castile: maravedi}
+  gulden_ch:
+    name: "Swiss gulden (Bern, 1492: 15 Batzen, 60 Kreuzer, 2 Pfund, 480 Pfennig)"
+    coin: gulden_ch
+    base: pfennig
+    units: [{sym: " gl.", of: 480}, {sym: " bz.", of: 32}, {sym: " kr.", of: 8}, {sym: " pf.", of: 1}]
+    day: 80
+    day_note: "a Swiss foot soldier's 5 Rhenish gulden a month in papal service (1485), the gulden taken as the Swiss one: no Swiss pay for 1499 was found"
+    day_approx: true
+  rh_gulden:
+    name: "Rhenish gulden (60 Kreuzer)"
+    coin: rh_gulden
+    base: kreuzer
+    units: [{sym: " fl.", of: 60}, {sym: " kr.", of: 1}]
+    day: 8
+    day_note: "a Landsknecht's 4 gulden a month (the German standard from the late 15th century), often late or partial"
+
+currency: {default: gbp, france: livre_t, latin_east: bezant, baltic: gotland, portugal: libra_pt, castile: maravedi, swiss: gulden_ch, landsknecht: rh_gulden}
 
 sources:
   rogers: &rogers "https://archive.org/details/historyofagricul04rogeuoft"
@@ -192,5 +208,13 @@ items:
   - {id: ca_shoes, name: "Men's shoes, goatskin to cordovan (Castile)", cat: clothing, in: maravedi, price: [25, 50], when: "1351", regions: [castile], source: {url: "https://www.filosofia.org/his/laf/p203zb.htm", note: "Ordenamiento de menestrales, 1351"}}
   - {id: ca_carting, name: "A mule and its man for a day's carting (Castile)", cat: service, in: maravedi, price: 36, when: "1351", regions: [castile], source: {url: "https://dialnet.unirioja.es/descarga/articulo/2049096.pdf", note: "Murcia price ordinance, 1351, art. 12"}}
   - {id: ransom_ayala, name: "Ransom of López de Ayala after Aljubarrota (30,000 dobras and 30 horses)", cat: service, in: maravedi, price: 10500000, when: "1385", regions: [portugal, castile], source: {url: "https://dialnet.unirioja.es/descarga/articulo/6087237.pdf", note: "Monteiro 2017, p. 265: a great lord's ransom; the dobra at 35 maravedís (1373)"}}
+  # The Swiss Confederates c.1500 (project doc "dornach-research"): St. Gallen prices of the late 15th century, in pfennig of 480 to the gulden (approx)
+  - {id: ch_spelt, name: "Spelt (Kernen), a Mütt (about 80 litres; the Swiss)", cat: food, in: gulden_ch, price: 120, when: "late 15th c.", regions: [swiss], source: {url: "https://www.daniel-stieger.ch", note: "St. Gallen prices after St. Galler Geschichte (2003)"}}
+  - {id: ch_pork, name: "Pork (the Swiss)", per: lb, cat: food, in: gulden_ch, price: [10, 12], when: "late 15th c.", regions: [swiss], source: {url: "https://www.daniel-stieger.ch", note: "St. Gallen prices after St. Galler Geschichte (2003)"}}
+  - {id: ch_wine, name: "Wine, a Saum (about 160 litres; the Swiss)", cat: food, in: gulden_ch, price: 480, when: "late 15th c.", regions: [swiss], source: {url: "https://www.daniel-stieger.ch", note: "2 Pfund (St. Gallen)"}}
+  - {id: ch_horse, name: "Ox or horse (the Swiss)", cat: horse, in: gulden_ch, price: [2400, 3360], when: "late 15th c.", regions: [swiss], source: {url: "https://www.daniel-stieger.ch", note: "5-7 gulden (St. Gallen)"}}
+  - {id: ch_bed, name: "A bed (the Swiss)", cat: shelter, in: gulden_ch, price: 360, when: "late 15th c.", regions: [swiss], source: {url: "https://www.daniel-stieger.ch", note: "1½ Pfund (St. Gallen)"}}
+  - {id: ch_rations, name: "Fourteen days' oatmeal, salt, bread, cheese and butter, and spare shoes (what a Swiss soldier carried)", cat: food, in: gulden_ch, price: 360, when: "1499", regions: [swiss], approx: true}
+  - {id: lk_handgeld, name: "A month's pay for a Landsknecht", cat: service, in: rh_gulden, price: 240, when: "c.1500", regions: [landsknecht], source: {url: "https://www.dhm.de/archiv/ausstellungen/eisenkleider/burschel.htm", note: "Burschel: 4 gulden a month"}}
   # Ransom
   - {id: ransom_man_at_arms, name: "Ransom of a man-at-arms taken at Agincourt (650 ducats and up)", cat: service, price: 129600, when: "1415", source: {url: "https://www.macs.hw.ac.uk/~hwloidl/hundredyearswar.com/Books/History/Some_Agi.htm", note: "fan site; weak"}}

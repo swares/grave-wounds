@@ -369,6 +369,49 @@
      "day": 13,
      "day_note": "a crossbowman's 13 dineros a day (Cortes of Burgos, 1338; a lancer 1 maraved\u00ed), the nearest found to 1385",
      "day_approx": true
+    },
+    "gulden_ch": {
+     "name": "Swiss gulden (Bern, 1492: 15 Batzen, 60 Kreuzer, 2 Pfund, 480 Pfennig)",
+     "coin": "gulden_ch",
+     "base": "pfennig",
+     "units": [
+      {
+       "sym": " gl.",
+       "of": 480
+      },
+      {
+       "sym": " bz.",
+       "of": 32
+      },
+      {
+       "sym": " kr.",
+       "of": 8
+      },
+      {
+       "sym": " pf.",
+       "of": 1
+      }
+     ],
+     "day": 80,
+     "day_note": "a Swiss foot soldier's 5 Rhenish gulden a month in papal service (1485), the gulden taken as the Swiss one: no Swiss pay for 1499 was found",
+     "day_approx": true
+    },
+    "rh_gulden": {
+     "name": "Rhenish gulden (60 Kreuzer)",
+     "coin": "rh_gulden",
+     "base": "kreuzer",
+     "units": [
+      {
+       "sym": " fl.",
+       "of": 60
+      },
+      {
+       "sym": " kr.",
+       "of": 1
+      }
+     ],
+     "day": 8,
+     "day_note": "a Landsknecht's 4 gulden a month (the German standard from the late 15th century), often late or partial"
     }
    },
    "currency": {
@@ -377,7 +420,9 @@
     "latin_east": "bezant",
     "baltic": "gotland",
     "portugal": "libra_pt",
-    "castile": "maravedi"
+    "castile": "maravedi",
+    "swiss": "gulden_ch",
+    "landsknecht": "rh_gulden"
    }
   },
   "modern": {
@@ -4192,6 +4237,80 @@
       ]
      ]
     },
+    "swiss": {
+     "own": [
+      [
+       "german",
+       95
+      ],
+      [
+       "french",
+       5
+      ]
+     ],
+     "enemy": "german",
+     "others": [
+      [
+       "french",
+       10,
+       [
+        10,
+        40
+       ]
+      ],
+      [
+       "italian",
+       3,
+       [
+        10,
+        40
+       ]
+      ],
+      [
+       "latin",
+       5,
+       [
+        20,
+        50
+       ]
+      ]
+     ]
+    },
+    "landsknecht": {
+     "own": [
+      [
+       "german",
+       80
+      ],
+      [
+       "low_german",
+       12
+      ],
+      [
+       "french",
+       8
+      ]
+     ],
+     "enemy": "german",
+     "others": [
+      [
+       "french",
+       10,
+       [
+        10,
+        40
+       ]
+      ],
+      [
+       "latin",
+       5,
+       [
+        20,
+        50
+       ]
+      ]
+     ]
+    },
     "castile": {
      "own": [
       [
@@ -6150,6 +6269,7 @@
    "chipyong-1951": "korean",
    "chosin-1950": "korean",
    "cowpens-1781": "english",
+   "dornach-1499": "german",
    "dakto-1967": "montagnard",
    "easting73-1991": "arabic",
    "fallujah-2004": "arabic",
@@ -10930,6 +11050,857 @@
    "weights": {
     "skull_l": 12.0,
     "skull_r": 9.0,
+    "face": 6.0,
+    "neck": 4.0,
+    "chest_l": 7.0,
+    "chest_r": 6.0,
+    "abdomen": 7.0,
+    "groin": 3.0,
+    "back_upper": 4.0,
+    "back_lower": 3.0,
+    "shoulder_l": 2.0,
+    "shoulder_r": 1.0,
+    "upper_arm_l": 2.0,
+    "upper_arm_r": 2.0,
+    "forearm_l": 3.0,
+    "forearm_r": 3.0,
+    "hand_l": 4.0,
+    "hand_r": 4.0,
+    "thigh_l": 4.0,
+    "thigh_r": 4.0,
+    "knee_l": 1.0,
+    "knee_r": 1.0,
+    "lower_leg_l": 3.0,
+    "lower_leg_r": 2.0,
+    "foot_l": 2.0,
+    "foot_r": 1.0
+   }
+  },
+  "dornach-1499-crania": {
+   "id": "dornach-1499-crania",
+   "name": "Dornach 1499 - the ossuary crania (bone evidence)",
+   "label": "Bone evidence: the ossuary crania",
+   "variant": "evidence",
+   "context": "Skulls and thigh bones of men killed when the Swiss Confederates fell on the imperial camp below Dorneck on 22 July 1499, most of them the imperial dead, left out for a time and gathered into the ossuary. Killed only; skulls (no jaws) and femora.",
+   "confidence": "historical",
+   "armor_note": "Armour is already in these numbers, and so is what was kept: the ossuary held only skulls and thigh bones, so this table can show nothing of the neck, the body or the arms. Few skulls show helmets, and at least 25 show men struck again after they were down. It is not a picture of where men were hit in the fight. For play, use the gameplay table.",
+   "status": "Historical, from about 106 men, mostly of the imperial army, killed in the battle and the rout and partly struck again where they lay; skulls without jaws, so the face is under-counted.",
+   "sources": [
+    "Cooper C., Forensisch-anthropologische und traumatologische Untersuchungen an den menschlichen Skeletten aus der sp\u00e4tmittelalterlichen Schlacht von Dornach (1499 n. Chr.), Dr. phil. dissertation, Universit\u00e4t Mainz (2010), https://openscience.ub.uni-mainz.de/handle/20.500.12030/981 : Tables 23-32 and the lesion catalogue.",
+    "Cooper C., 'Kriegsverletzungen an historischen Skeletten aus der Schweiz', in Piek and Terberger (eds) (2008): a pilot of 12 skulls, 57 lesions.",
+    "Tally: data/sources/dornach-1499-crania.csv (the region of each lesion is our tally from the catalogue)."
+   ],
+   "weapons": [
+    "sword",
+    "poleaxe",
+    "pike",
+    "spear",
+    "spiked_club",
+    "crossbow",
+    "matchlock_musket",
+    "dagger",
+    "bayonet",
+    "axe",
+    "punch",
+    "kick",
+    "elbow_knee"
+   ],
+   "own_weapons": [
+    "sword",
+    "poleaxe",
+    "pike",
+    "spear",
+    "spiked_club",
+    "crossbow",
+    "matchlock_musket"
+   ],
+   "resolve": {
+    "sword": "dornach-1499-crania",
+    "poleaxe": "dornach-1499-crania",
+    "pike": "dornach-1499-crania",
+    "spear": "dornach-1499-crania",
+    "spiked_club": "dornach-1499-crania",
+    "crossbow": "dornach-1499-crania",
+    "matchlock_musket": "dornach-1499-crania",
+    "dagger": "dornach-1499-crania",
+    "bayonet": "peninsular-1808-14-officers",
+    "axe": "visby-1361-adjusted",
+    "punch": "unarmed-mma",
+    "kick": "unarmed-mma",
+    "elbow_knee": "unarmed-mma"
+   },
+   "wmult": {
+    "crossbow": [
+     0.966121050628093,
+     1.0277514141452488,
+     0.8511066398390341,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     2.97887323943662,
+     1.48943661971831,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "dagger": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "matchlock_musket": [
+     0.4157248157248158,
+     1.3681940700808624,
+     3.021428571428571,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "pike": [
+     0.966121050628093,
+     1.0277514141452488,
+     0.8511066398390341,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     2.97887323943662,
+     1.48943661971831,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "poleaxe": [
+     1.0327959763696442,
+     0.9614529907308046,
+     1.0418719211822658,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.6630094043887147,
+     0.9945141065830722,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "spear": [
+     0.966121050628093,
+     1.0277514141452488,
+     0.8511066398390341,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     2.97887323943662,
+     1.48943661971831,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "spiked_club": [
+     0.8166023166023166,
+     1.3030419715055832,
+     0.5395408163265305,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ],
+    "sword": [
+     1.0327959763696442,
+     0.9614529907308046,
+     1.0418719211822658,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.6630094043887147,
+     0.9945141065830722,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0,
+     0.0
+    ]
+   },
+   "armor": "baked_in",
+   "native": "armed",
+   "weapon_bias": "sourced",
+   "assumes_shield": false,
+   "battle": "Swabian War",
+   "confidence_note": "From 417 perimortem injuries on 102 of 106 crania (315 cut, 69 point, 28 blunt, 5 gunshot) and 6 on 4 of 33 femora (Cooper 2010). Skull wounds are shared between the left and right of the skull by the author's sides for each kind (Table 28), midline ones evenly; the face's share is our tally from her catalogue. Swords and halberds (the poleaxe) roll on the cuts, pikes and spears on the point wounds (thrust, stab and crossbow bolt counted together), the war hammer (spiked club) on the blunt ones, the handgun on the gunshot ones; others on all together.\n",
+   "regions": [
+    {
+     "label": "Skull, left (178)",
+     "locs": [
+      "skull_l"
+     ],
+     "count": 178
+    },
+    {
+     "label": "Skull, right (160)",
+     "locs": [
+      "skull_r"
+     ],
+     "count": 160
+    },
+    {
+     "label": "Skull, midline (51)",
+     "locs": [
+      "skull_l",
+      "skull_r"
+     ],
+     "count": 51
+    },
+    {
+     "label": "Face (28)",
+     "locs": [
+      "face"
+     ],
+     "count": 28
+    },
+    {
+     "label": "Right thigh (4)",
+     "locs": [
+      "thigh_r"
+     ],
+     "count": 4
+    },
+    {
+     "label": "Left thigh (2)",
+     "locs": [
+      "thigh_l"
+     ],
+     "count": 2
+    }
+   ],
+   "regions_text": "Skull, left (178) = 42.1%; Skull, right (160) = 37.8%; Skull, midline (51) = 12.1%; Face (28) = 6.6%; Right thigh (4) = 0.9%; Left thigh (2) = 0.5% (n = 423)",
+   "modifiers": [
+    "weapon_side",
+    "attacker_higher",
+    "attacker_lower",
+    "target_down",
+    "target_fleeing",
+    "flanked",
+    "target_warding"
+   ],
+   "weapon_mix": [],
+   "weapon_mix_source": "",
+   "weights": {
+    "skull_l": 203.5,
+    "skull_r": 185.5,
+    "face": 28.000000000000004,
+    "neck": 0.0,
+    "chest_l": 0.0,
+    "chest_r": 0.0,
+    "abdomen": 0.0,
+    "groin": 0.0,
+    "back_upper": 0.0,
+    "back_lower": 0.0,
+    "shoulder_l": 0.0,
+    "shoulder_r": 0.0,
+    "upper_arm_l": 0.0,
+    "upper_arm_r": 0.0,
+    "forearm_l": 0.0,
+    "forearm_r": 0.0,
+    "hand_l": 0.0,
+    "hand_r": 0.0,
+    "thigh_l": 2.0,
+    "thigh_r": 4.0,
+    "knee_l": 0.0,
+    "knee_r": 0.0,
+    "lower_leg_l": 0.0,
+    "lower_leg_r": 0.0,
+    "foot_l": 0.0,
+    "foot_r": 0.0
+   }
+  },
+  "dornach-1499-all-hits": {
+   "id": "dornach-1499-all-hits",
+   "name": "Dornach 1499 - gameplay-adjusted (before armour)",
+   "label": "Gameplay-adjusted (before armour)",
+   "variant": "adjusted",
+   "context": "Where blows land on a man in a pike-and-halberd fight of about 1500, before armour: Towton's body with the head shared out as the Dornach skulls show. Use for the Swabian War and the Swiss and Landsknechte.",
+   "confidence": "extrapolated",
+   "armor_note": "These weights are where blows LAND. Resolve armour separately with the target's kit: a pikeman in breastplate and sallet, a halberdier in a padded jack, a knight in full harness.",
+   "status": "The Dornach evidence is 99% skull, from an ossuary that kept only skulls and femora, so it says nothing of the body. Corrections: (1) The body below the head is Towton's gameplay table, the nearest battle of the kind with whole skeletons. (2) The head keeps Towton's share (27%, lowered from the bone evidence for blows struck on men already down: at least 25 Dornach skulls show them too). (3) Within the skull, left and right as the Dornach crania (about 204 to 186 wounds, midline ones shared). (4) The face keeps Towton's 6, as the Dornach skulls have no jaws. The result is close to Towton's: both are head-heavy evidence corrected the same way.",
+   "sources": [
+    "Derived from dornach-1499-crania (Cooper 2010, Tables 23-32 and the catalogue) for the head, and from towton-1461-all-hits for the rest of the body."
+   ],
+   "weapons": [
+    "sword",
+    "poleaxe",
+    "pike",
+    "spear",
+    "bill",
+    "axe",
+    "dagger",
+    "spiked_club",
+    "bow",
+    "longbow",
+    "crossbow",
+    "matchlock_musket",
+    "artillery_smoothbore",
+    "bayonet",
+    "punch",
+    "kick",
+    "elbow_knee"
+   ],
+   "own_weapons": [
+    "sword",
+    "poleaxe",
+    "pike",
+    "spear",
+    "bill",
+    "axe",
+    "dagger",
+    "spiked_club",
+    "bow",
+    "longbow",
+    "crossbow",
+    "matchlock_musket",
+    "artillery_smoothbore"
+   ],
+   "resolve": {
+    "sword": "dornach-1499-all-hits",
+    "poleaxe": "dornach-1499-all-hits",
+    "pike": "dornach-1499-all-hits",
+    "spear": "dornach-1499-all-hits",
+    "bill": "dornach-1499-all-hits",
+    "axe": "dornach-1499-all-hits",
+    "dagger": "dornach-1499-all-hits",
+    "spiked_club": "dornach-1499-all-hits",
+    "bow": "dornach-1499-all-hits",
+    "longbow": "dornach-1499-all-hits",
+    "crossbow": "dornach-1499-all-hits",
+    "matchlock_musket": "dornach-1499-all-hits",
+    "artillery_smoothbore": "dornach-1499-all-hits",
+    "bayonet": "peninsular-1808-14-officers",
+    "punch": "unarmed-mma",
+    "kick": "unarmed-mma",
+    "elbow_knee": "unarmed-mma"
+   },
+   "wmult": {
+    "artillery_smoothbore": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "axe": [
+     1.1,
+     1.1,
+     1.1,
+     1.1,
+     0.8,
+     0.8,
+     0.8,
+     0.8,
+     0.8,
+     0.8,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.3,
+     1.3,
+     1.3,
+     1.3,
+     1.3,
+     1.3,
+     1.3,
+     1.3
+    ],
+    "bill": [
+     1.2,
+     1.2,
+     1.2,
+     1.2,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.1,
+     1.1,
+     1.1,
+     1.1,
+     1.1,
+     1.1,
+     1.1,
+     1.1
+    ],
+    "bow": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "crossbow": [
+     1.15,
+     1.15,
+     1.15,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "dagger": [
+     1.0,
+     1.0,
+     1.5,
+     2.0,
+     1.4,
+     1.4,
+     1.4,
+     1.4,
+     1.4,
+     1.4,
+     1.1,
+     1.1,
+     1.1,
+     1.1,
+     1.1,
+     1.1,
+     1.1,
+     1.1,
+     0.5,
+     0.5,
+     0.5,
+     0.5,
+     0.5,
+     0.5,
+     0.5,
+     0.5
+    ],
+    "longbow": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "matchlock_musket": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "pike": [
+     1.1,
+     1.1,
+     1.6500000000000001,
+     1.1,
+     1.5,
+     1.5,
+     1.5,
+     1.5,
+     1.5,
+     1.5,
+     0.8,
+     0.8,
+     0.8,
+     0.8,
+     0.8,
+     0.8,
+     0.8,
+     0.8,
+     0.6,
+     0.6,
+     0.6,
+     0.6,
+     0.6,
+     0.6,
+     0.6,
+     0.6
+    ],
+    "poleaxe": [
+     1.3,
+     1.3,
+     1.3,
+     1.3,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "spear": [
+     0.8,
+     0.8,
+     1.2000000000000002,
+     0.8,
+     1.4,
+     1.4,
+     1.4,
+     1.4,
+     1.4,
+     1.4,
+     0.9,
+     0.9,
+     0.9,
+     0.9,
+     0.9,
+     0.9,
+     0.9,
+     0.9,
+     0.9,
+     0.9,
+     0.9,
+     0.9,
+     0.9,
+     0.9,
+     0.9,
+     0.9
+    ],
+    "spiked_club": [
+     1.4,
+     1.4,
+     1.4,
+     1.4,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     0.8,
+     0.8,
+     0.8,
+     0.8,
+     0.8,
+     0.8,
+     0.8,
+     0.8
+    ],
+    "sword": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ]
+   },
+   "armor": "allowed",
+   "native": "armed",
+   "weapon_bias": "raw",
+   "assumes_shield": false,
+   "battle": "Swabian War",
+   "confidence_note": "Towton's gameplay weights for the body (the Dornach ossuary kept only skulls and thigh bones), with the skull's left and right from the Dornach crania; the corrections are design estimates.",
+   "regions": [],
+   "regions_text": "",
+   "modifiers": [
+    "weapon_side",
+    "attacker_higher",
+    "attacker_lower",
+    "target_down",
+    "target_fleeing",
+    "flanked",
+    "target_warding",
+    "behind_cover"
+   ],
+   "weapon_mix": [],
+   "weapon_mix_source": "",
+   "weights": {
+    "skull_l": 11.0,
+    "skull_r": 10.0,
     "face": 6.0,
     "neck": 4.0,
     "chest_l": 7.0,
@@ -30827,6 +31798,79 @@
     "Holst M. and Sutherland T., 'Towton Revisited', in Eickhoff and Schopper (eds), Schlachtfeld und Massengrab (2014), pp. 97-129."
    ]
   },
+  "Swabian War": {
+   "period": "Dornach, 22 July 1499",
+   "map": {
+    "bbox": [
+     5,
+     45.5,
+     11,
+     49
+    ],
+    "sites": [
+     {
+      "name": "Dornach",
+      "lat": 47.48,
+      "lon": 7.62
+     }
+    ]
+   },
+   "summary": "In 1499 the Swiss Confederates fought the Swabian League and the Emperor Maximilian I along the Rhine from the Grisons to Basel. At Dornach on 22 July some 5,000-6,000 Confederates came down out of the woods below the Gempen onto the imperial army besieging Solothurn's castle of Dorneck, killed its commander in the fight for the guns, held through hours of counter-attacks by the Welsche Garde and the Landsknechte, and broke it when Lucerne and Zug came up at evening. The Swiss had sworn to take no prisoners. The skulls of the dead, kept in the ossuary at Dornach, are among the best-studied battle remains of the period.\n",
+   "sides": [
+    {
+     "name": "Swiss Confederates",
+     "who": "Solothurn, Bern, Z\u00fcrich, then Lucerne and Zug, under Rudolf von Erlach: pikes, halberds, a few handguns and crossbows.",
+     "armour": "Pikemen in breastplates and sallets where they could; halberdiers lightly armoured; many men in their own clothes.",
+     "look": {
+      "colour": "#c8102e",
+      "trousers": "#e6e0d2"
+     }
+    },
+    {
+     "name": "Swabian League and the Empire",
+     "who": "Count Heinrich von F\u00fcrstenberg's army: Landsknechte, Swabian and Alsatian levies, Geldern mercenaries, knights, and the Welsche Garde of Burgundian horse under Louis de Vaudrey.",
+     "armour": "Landsknechte in corslets or none; knights in full harness; the Welsche Garde as heavy horse.",
+     "look": {
+      "colour": "#3a3a3a",
+      "trousers": "#d9b44a"
+     }
+    }
+   ],
+   "examples": [
+    {
+     "name": "Swiss pikeman",
+     "side": "Swiss Confederates",
+     "kit": "brigandine_sallet",
+     "weapon": "pike",
+     "notes": "An 18-foot pike; the pikemen were the better armoured and better paid."
+    },
+    {
+     "name": "Swiss halberdier",
+     "side": "Swiss Confederates",
+     "kit": "jack_sallet",
+     "weapon": "poleaxe",
+     "notes": "The halberd (as the poleaxe); the cuts on the Dornach skulls fit sword or halberd."
+    },
+    {
+     "name": "Landsknecht",
+     "side": "Swabian League and the Empire",
+     "kit": "jack_sallet",
+     "weapon": "pike",
+     "notes": "Four gulden a month, when it was paid."
+    },
+    {
+     "name": "Imperial knight",
+     "side": "Swabian League and the Empire",
+     "kit": "full_plate",
+     "weapon": "sword",
+     "notes": "F\u00fcrstenberg and other lords fell in the fight for the guns."
+    }
+   ],
+   "sources": [
+    "Cooper C., Forensisch-anthropologische und traumatologische Untersuchungen an den menschlichen Skeletten aus der sp\u00e4tmittelalterlichen Schlacht von Dornach (1499 n. Chr.), Mainz (2010).",
+    "Leutenegger and Schubiger in the Solothurn jubilee yearbook (1999); Winkler on Dornach (2022) and the Swiss military of 1499 (2020); project docs dornach-research and dornach-wounds-research."
+   ]
+  },
   "Thirty Years' War": {
    "period": "1618-1648",
    "map": {
@@ -33346,6 +34390,44 @@
        "y": 49.2,
        "names": [
         "Towton"
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  "Swabian War": {
+   "spec": {
+    "bbox": [
+     5,
+     45.5,
+     11,
+     49
+    ],
+    "sites": [
+     {
+      "name": "Dornach",
+      "lat": 47.48,
+      "lon": 7.62
+     }
+    ]
+   },
+   "w": 160,
+   "h": 120,
+   "gap": 8,
+   "panels": [
+    {
+     "label": "",
+     "land": "M0,0L160,0L160,120L0,120Z",
+     "lakes": "M56.1,86.9L56.1,87.4L52.3,86.9L47.8,87.4L44.8,88L41.8,92.9L41,92.9L41.8,89.6L45.6,85.3L50.1,83.1L55.4,84.7L56.1,85.8ZM112.6,52.7L110.4,52.7L105.9,49.9L105.1,47.6L103.6,44.8L103.6,44.3L105.9,46L108.9,47.6L111.9,49.3L114.1,51L116.4,52.1L115.7,52.7L115.7,53.2Z",
+     "highlight": "",
+     "borders": "",
+     "dots": [
+      {
+       "x": 72,
+       "y": 53.8,
+       "names": [
+        "Dornach"
        ]
       }
      ]
