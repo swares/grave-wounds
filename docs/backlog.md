@@ -9,17 +9,19 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
-- **Virtual GM, first cut.** The roller's strike is decided with no page (`templates/strike.js`:
-  the situation, the player's declarations and typed dice in, the hit, its dice and its side
-  effects out), and each strike and applied wound goes into an event log tagged with who may
-  see it in full (`templates/gamelog.js`), with a view per side. Still left out: the roller's
-  other rolls (initiative, bleeding and morale each round, first aid, hazards, tongues, loot)
-  are made and shown as before, not logged; the log is a record, not yet the save (the fight
-  is still restored from its state, and the log is kept to its last 500 events); a strike's
-  public part is fixed (the outcome, where it landed, the attack and defence rolls), not a GM
-  setting; the field and travel pages have no log. Next: a scripted GM and a GM-assist mode
-  driving the same strike and log, then play over WebRTC with the GM's page as host, sending
-  each player only his side's view.
+- **Virtual GM, first cut.** The roller's strike is decided with no page (`templates/strike.js`),
+  each strike, wound and scripted move goes into an event log tagged with who may see it
+  (`templates/gamelog.js`), and Run the fight plays each side as a player, the GM by hand, or the
+  GM's script (`templates/fighter.js`), with Step, Play to my turn and Undo. Still left out: the
+  script does not aim at a zone, take or give first aid, use works, drop packs, swim, climb or
+  surrender, and its priorities are guesses with nothing to calibrate them against; men with no
+  sheet take their side's quality, with no per-man setting; the player's screen still shows the
+  enemy's cards in full (the GM's toggle to hide them is next); the roller's other rolls
+  (initiative, bleeding and morale each round, first aid, hazards, tongues, loot) are made as
+  before and not logged; the log is a record, not yet the save (the last 500 events); a strike's
+  public part is fixed, not a GM setting; the field and travel pages have no log. Next: hiding
+  the enemy's cards on a player's screen, then play over WebRTC with the GM's page as host,
+  sending each player only his side's view.
 - **Lethality, first cut.** Gritty | Standard | Heroic for player characters (wounds.yaml
   lethality): fate a season, Blood and the stop check, on every page. Still left out: fate does
   not save a man from drowning, a fall or the other hazards; the roller offers fate only on the hit

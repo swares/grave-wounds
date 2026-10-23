@@ -271,6 +271,31 @@ count goes on from there.
   **Save this view** downloads that side's view as a file. The log is kept with the fight in
   the browser (the last 500 events); the examples on a fresh page and the roll the page opens
   with are not logged.
+- **Run the fight** (above the round log) lets the page run the turns. Tick it and choose, for
+  each side, who plays it: **Player**, **GM by hand**, or **GM's script**. A side with team-builder
+  men starts as Player, the rest as the script. Solo play is your side as Player and the enemy
+  as the script; GM assist is the players' sides as Player and the enemy as GM by hand.
+  - On a scripted fighter's turn the script moves him (or puts him to ground), picks whom to
+    strike and strikes, rolling his dice for him. It strikes the most hurt enemy in reach, then
+    the easiest, then the nearest; closes when no one is in reach; and a shooter keeps his
+    distance. A named man declares a thrust at an armoured enemy and a cut at an unarmoured one;
+    unnamed men strike their weapon's mix. He aims for a gap only in part-covered armour and with
+    attack to spare.
+  - **How boldly** the script plays each side: *cautious* men fall back when they have lost
+    four tenths of their Blood, or when their side is near breaking, and never run to close;
+    *steady* men fall back at about a third of their Blood left; *reckless* men never fall back.
+  - **Quality** gives men with no team-builder sheet their attack, defence and Nerve (green,
+    regular or veteran, as units.yaml); men with sheets use their sheets.
+  - While the fight is run, a hit goes on the defender at once (no Apply to click), and there is
+    no parry or dodge against a shot.
+  - **Step** plays one step of the script (a move, a strike, or handing on to the next fighter);
+    **Play to my turn** plays on until a person must choose; with **Play the script by itself**
+    ticked, the script plays on after each Next fighter. **Undo the script** puts the page back as
+    it was before the script's last step.
+  - In the event log the script's moves are public; why it chose them is for the GM.
+  - The script's choices are design guesses, not calibrated against any record.
+    `python3 tools/gm/selfplay.py` plays it against itself on a spread of tables and checks every
+    fight runs to an end; `node tools/gm/test.js` checks its choices one by one.
 
 **How the roller decides a strike.** The attack, defence, location, blow, severity and armour
 are worked out in `templates/strike.js`, which never touches the page: the page measures the
