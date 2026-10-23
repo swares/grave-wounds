@@ -394,6 +394,14 @@ They are the same rules as `gravewounds/weather.py`, `travel.py` and `disease.py
 JavaScript on the same inputs and dice and checks that every result is the same
 (`tools/travel/test.js`).
 
+The day itself is in `templates/travelday.js`, also with no page: the forces and their state,
+the march, the night (rest, food, water, supplies, events, disease, the named men's feet, keep
+and kit), the one clock, and saving and restoring it all. The travel map draws it and gives it
+orders; the campaign console can run the same clock. `tools/travel/day.js` plays it with no page
+on real maps, with named men and seeded dice: the same dice play the same game, a game saved part
+way and restored plays on as if it had not stopped, and the state holds together after every
+move of the clock.
+
 ## Maps
 
 The test map, `data/maps/generic-valley.yaml`, is a made-up river valley about 25 by 16 miles

@@ -2117,7 +2117,8 @@ def main() -> int:
     ttpl = (ROOT / "templates" / "travel.html").read_text(encoding="utf-8")
     events_js = (ROOT / "templates" / "events.js").read_text(encoding="utf-8")
     travelrules_js = (ROOT / "templates" / "travelrules.js").read_text(encoding="utf-8")   # the travel map's rules, with no page
-    thtml = ttpl.replace("/*__PURSE_JS__*/", purse_js).replace("/*__LETHAL_JS__*/", lethal_js).replace("/*__EVENTS_JS__*/", events_js).replace("/*__TRAVELRULES_JS__*/", travelrules_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":")))
+    travelday_js = (ROOT / "templates" / "travelday.js").read_text(encoding="utf-8")       # the travel map's day: state, march, night, clock
+    thtml = ttpl.replace("/*__PURSE_JS__*/", purse_js).replace("/*__LETHAL_JS__*/", lethal_js).replace("/*__EVENTS_JS__*/", events_js).replace("/*__TRAVELRULES_JS__*/", travelrules_js).replace("/*__TRAVELDAY_JS__*/", travelday_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":")))
     (DIST / "travel.html").write_text(thtml, encoding="utf-8")
     units_js = (ROOT / "templates" / "units.js").read_text(encoding="utf-8")
     ftpl = (ROOT / "templates" / "field.html").read_text(encoding="utf-8")
