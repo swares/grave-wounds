@@ -2581,7 +2581,9 @@ It is drawn by `tools/maps/make_babuna_field.mjs`.
 hollow of Snipe, west of the Kidney feature at El Alamein.
 - The hollow, an oval about 900 by 450 m with its long axis north-east to south-west, lies in the
   middle of flat desert, with a low ridge to the west and another to the east (high ground with
-  slopes). The camelthorn is not drawn: the rules' scrub would keep tanks out of it.
+  slopes). The hollow plays as open ground, as the desert does: its depth is not known, and its
+  camelthorn is not drawn (the rules' scrub would keep tanks out of it); the objective's ring marks
+  it, and the British stand in it, dug in.
 - Fair and calm; first light at 06:15 (dusk light), daylight from civil dawn at 06:50 (the guns
   were firing at 800 yards by then), sunrise 07:15, sunset 18:21, dark at 19:14,
   the moon not up until about 20:55. The clock is Egyptian summer time (GMT+3).
