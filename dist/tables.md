@@ -6,9 +6,9 @@ Generated 2026-10-22 from the data folder. Roll d100 (00 = 100).
 
 **Procedure:** 1) d100 location on the table for the fight and weapon (situation column if one applies; called shots roll twice). 2) d100 mechanism for the weapon. 3) Severity from your system's damage, or d100. 4) Armour (adjusted tables): lower severity by the material's steps. 5) Look up the wound by location class and severity, then apply the mechanism modifiers.
 
-# Crusades (Sidon, 1253 or 1260)
+# Crusades (Jacob's Ford, 1179; Sidon, 1253 or 1260)
 
-From 1099 to 1291 Frankish crusader states held the coast of the Levant. Sidon, a walled port in today's Lebanon, was sacked twice in the 13th century: in 1253 by an army from Damascus while Louis IX of France was rebuilding its walls (Joinville describes the king helping to bury the rotting dead), and in 1260 by the Mongols under Kitbuqa. Two mass graves in the town ditch near St Louis' castle, dated to the mid-13th century, hold at least 25 men, Europeans and locals, killed in one of these attacks; their bones show sword, axe and mace wounds, many from behind.
+From 1099 to 1291 Frankish crusader states held the coast of the Levant. Sidon, a walled port in today's Lebanon, was sacked twice in the 13th century: in 1253 by an army from Damascus while Louis IX of France was rebuilding its walls (Joinville describes the king helping to bury the rotting dead), and in 1260 by the Mongols under Kitbuqa. Two mass graves in the town ditch near St Louis' castle, dated to the mid-13th century, hold at least 25 men, Europeans and locals, killed in one of these attacks; their bones show sword, axe and mace wounds, many from behind. In August 1179 Saladin stormed the unfinished Templar castle at Jacob's Ford on the upper Jordan, mining its north-east corner; five of its garrison's dead have been studied, too few for a table of their own, and the siege rolls on Sidon's.
 
 | Side | Who | Armour |
 |---|---|---|
@@ -19,6 +19,8 @@ From 1099 to 1291 Frankish crusader states held the coast of the Levant. Sidon, 
 
 | Name | Side | Wears | Fights with | Notes | Picture |
 |---|---|---|---|---|---|
+| Templar knight, 1179 | Defenders of Sidon | Mail hauberk and helm (c.1100-1300) | Sword (arming sword) | One of the 80 knights at Jacob's Ford; the five skeletons' blade wounds are all on the left side. |  |
+| Ayyubid archer, 1179 | Attackers | Gambeson and cap | Bow (war arrows) | Hundreds of arrowheads lie on the castle's east and west fronts. |  |
 | Frankish knight | Defenders of Sidon | Mail hauberk and helm (c.1100-1300) | Sword (arming sword) | Mail hauberk, great helm and shield. | [Knights in battle, from the Crusader (Morgan) Bible, France, 1240s](https://commons.wikimedia.org/wiki/File:Crusaders-middle-ages.jpg) |
 | Frankish sergeant | Defenders of Sidon | Mail hauberk and helm (c.1100-1300) | Axe (hand or long-hafted) | Heavy blade wounds at Sidon point to swords and axes. | [Armoured foot and horse soldiers, from the Crusader (Morgan) Bible, France, 1240s](https://commons.wikimedia.org/wiki/File:Morgan-bible-fl-29.jpg) |
 | Crossbowman | Defenders of Sidon | Gambeson and cap | Crossbow (bolts) | Padded coat; the town's walls were still being rebuilt in 1253. |  |
@@ -26,7 +28,7 @@ From 1099 to 1291 Frankish crusader states held the coast of the Levant. Sidon, 
 | Syrian horseman | Attackers | Mail hauberk and helm (c.1100-1300) | Spiked club / morning star (knout) | Mace blows from the saddle: the Sidon wounds fall on the head, neck and shoulders. | [Mamluk horseman training with a lance, Egypt or Syria, c. 1500 (a later near match)](https://commons.wikimedia.org/wiki/File:A_Mamluk_Training_with_a_Lance.jpeg) |
 | Mongol horse archer | Attackers | Hardened leather | Bow (war arrows) | Kitbuqa's raid of 1260. | [Mongol horsemen, from Rashid al-Din's Jami' al-tawarikh, early 14th century](https://commons.wikimedia.org/wiki/File:MongolCavalrymen.jpg) |
 
-Sources: Mikulski R.N.R. et al., 'Weapon injuries in the crusader mass graves from a 13th century attack on the port city of Sidon (Lebanon)', PLoS ONE 16(8): e0256517 (2021). Joinville, Life of Saint Louis, on Louis IX burying the dead of Sidon (1253).
+Sources: Mikulski R.N.R. et al., 'Weapon injuries in the crusader mass graves from a 13th century attack on the port city of Sidon (Lebanon)', PLoS ONE 16(8): e0256517 (2021). Joinville, Life of Saint Louis, on Louis IX burying the dead of Sidon (1253). Barber M., 'Frontier warfare in the Latin Kingdom of Jerusalem: the campaign of Jacob's Ford, 1178-79' (1998); Mitchell P.D., Nagar Y. and Ellenblum R., International Journal of Osteoarchaeology 16 (2006); project doc jacobsford-research.
 
 **Quick-play: men down per 100 tries**
 
@@ -35,11 +37,11 @@ Men down per 100 tries, at attack 30 / 45 / 60 / 75 against regular men with no 
 | Weapon | Mail hauberk and helm (c.1100-1300) | Gambeson and cap | Unarmoured | Hardened leather |
 |---|---|---|---|---|
 | Sword (arming sword) | 1 / 2 / 4 / 7 | 5 / 11 / 18 / 31 | 6 / 13 / 23 / 34 | 6 / 12 / 19 / 29 |
+| Bow (war arrows) | 2 / 4 / 8 / 15 | 6 / 13 / 22 / 33 | 6 / 13 / 23 / 33 | 6 / 13 / 22 / 33 |
 | Axe (hand or long-hafted) | 2 / 5 / 8 / 16 | 5 / 14 / 20 / 33 | 5 / 14 / 23 / 35 | 6 / 13 / 23 / 34 |
 | Crossbow (bolts) | 6 / 12 / 21 / 31 | 5 / 15 / 24 / 33 | 6 / 13 / 23 / 35 | 5 / 13 / 22 / 33 |
 | Spear / lance | 2 / 6 / 11 / 15 | 5 / 13 / 20 / 29 | 5 / 14 / 20 / 30 | 5 / 13 / 20 / 28 |
 | Spiked club / morning star (knout) | 4 / 9 / 16 / 24 | 4 / 9 / 16 / 26 | 5 / 14 / 21 / 31 | 5 / 12 / 22 / 31 |
-| Bow (war arrows) | 2 / 4 / 8 / 15 | 6 / 13 / 22 / 33 | 6 / 13 / 23 / 33 | 6 / 13 / 22 / 33 |
 
 ## Sidon, mid-13th century - crusader mass graves (bone evidence)
 
@@ -5468,6 +5470,9 @@ Penalties add up; each total is capped at -60%.
 | Western Portugal, Atlantic Mediterranean | high/low °F | 57/41 | 59/43 | 64/46 | 66/48 | 72/54 | 77/57 | 82/61 | 82/61 | 79/59 | 72/54 | 63/46 | 59/43 |
 |  | (°C) | 14/5 | 15/6 | 18/8 | 19/9 | 22/12 | 25/14 | 28/16 | 28/16 | 26/15 | 22/12 | 17/8 | 15/6 |
 |  | wet days | 12 | 11 | 9 | 10 | 8 | 4 | 2 | 2 | 5 | 10 | 12 | 13 |
+| Upper Jordan valley, hot and dry | high/low °F | 64/48 | 66/48 | 72/52 | 79/57 | 88/64 | 93/70 | 99/75 | 100/77 | 95/73 | 88/66 | 77/57 | 68/50 |
+|  | (°C) | 18/9 | 19/9 | 22/11 | 26/14 | 31/18 | 34/21 | 37/24 | 38/25 | 35/23 | 31/19 | 25/14 | 20/10 |
+|  | wet days | 11 | 9 | 7 | 3 | 1 | 0 | 0 | 0 | 0 | 2 | 5 | 9 |
 
 ## Unit combat
 
@@ -5728,21 +5733,21 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 | Townswoman or castle household at a siege | 71-85 | Sling | Dropped stones on the besiegers' engines from the walls. |
 | Townswoman or castle household at a siege | 86-00 | Dodge | Rebuilt the barricades under the besiegers' shot. * |
 
-| Career | Latin East | Gotland and the Baltic | England | France | Portugal | Castile | Swiss Confederates | Swabian League and Landsknechte |
-|---|---|---|---|---|---|---|---|---|
-| Man-at-arms | Mail hauberk and helm; sword | Danish man-at-arms; sword | Brigandine; sword | Full plate harness; sword | Coat of plates and mail; sword | Coat of plates and mail; sword | Brigandine; halberd | Full plate harness; sword |
-| Archer | Gambeson and cap; bow | Gotland levy: mail coif; bow | Jack and sallet; longbow | Jack and sallet; longbow | Gambeson and cap; longbow | Gambeson and cap; bow | Gambeson and cap; handgun | Gambeson and cap; handgun |
-| Crossbowman | Hardened leather; crossbow | Gotland; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow |
-| Spearman or billman | Gambeson and cap; spear | Gotland levy: mail coif; spear | Jack and sallet; bill | Jack and sallet; spear | Gambeson and cap; spear | Gambeson and cap; spear | Brigandine; pike | Jack and sallet; pike |
-| Mounted sergeant | Mail hauberk and helm; spear | Gotland; spear | Brigandine; spear | Coat of plates and mail; spear | Mail hauberk and helm; spear | Mail hauberk and helm; spear | Mail hauberk and helm; spear | Mail hauberk and helm; spear |
-| Mercenary | Mail hauberk and helm; axe | Coat of plates and mail; axe | Brigandine; axe | Brigandine; axe | Coat of plates and mail; axe | Coat of plates and mail; axe | Coat of plates and mail; axe | Coat of plates and mail; axe |
-| Sailor | No armour; dagger | Hardened leather; axe | No armour; axe | No armour; axe | No armour; axe | No armour; axe | No armour; axe | No armour; axe |
-| Clerk or priest | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger |
-| Barber-surgeon | No armour; dagger | No armour; dagger | Jack and sallet; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger |
-| Forester or huntsman | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow |
-| Servant or groom | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger |
-| Merchant | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword |
-| Townswoman or castle household at a siege | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger |
+| Career | Latin East | Gotland and the Baltic | England | France | Portugal | Castile | Swiss Confederates | Swabian League and Landsknechte | Ayyubids |
+|---|---|---|---|---|---|---|---|---|---|
+| Man-at-arms | Mail hauberk and helm; sword | Danish man-at-arms; sword | Brigandine; sword | Full plate harness; sword | Coat of plates and mail; sword | Coat of plates and mail; sword | Brigandine; halberd | Full plate harness; sword | Mail hauberk and helm; sword |
+| Archer | Gambeson and cap; bow | Gotland levy: mail coif; bow | Jack and sallet; longbow | Jack and sallet; longbow | Gambeson and cap; longbow | Gambeson and cap; bow | Gambeson and cap; handgun | Gambeson and cap; handgun | Gambeson and cap; bow |
+| Crossbowman | Hardened leather; crossbow | Gotland; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow | Gambeson and cap; crossbow |
+| Spearman or billman | Gambeson and cap; spear | Gotland levy: mail coif; spear | Jack and sallet; bill | Jack and sallet; spear | Gambeson and cap; spear | Gambeson and cap; spear | Brigandine; pike | Jack and sallet; pike | Gambeson and cap; spear |
+| Mounted sergeant | Mail hauberk and helm; spear | Gotland; spear | Brigandine; spear | Coat of plates and mail; spear | Mail hauberk and helm; spear | Mail hauberk and helm; spear | Mail hauberk and helm; spear | Mail hauberk and helm; spear | Mail hauberk and helm; bow |
+| Mercenary | Mail hauberk and helm; axe | Coat of plates and mail; axe | Brigandine; axe | Brigandine; axe | Coat of plates and mail; axe | Coat of plates and mail; axe | Coat of plates and mail; axe | Coat of plates and mail; axe | Coat of plates and mail; axe |
+| Sailor | No armour; dagger | Hardened leather; axe | No armour; axe | No armour; axe | No armour; axe | No armour; axe | No armour; axe | No armour; axe | No armour; axe |
+| Clerk or priest | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger |
+| Barber-surgeon | No armour; dagger | No armour; dagger | Jack and sallet; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger |
+| Forester or huntsman | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow | Hardened leather; bow |
+| Servant or groom | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger |
+| Merchant | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword | Gambeson and cap; sword |
+| Townswoman or castle household at a siege | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger | No armour; dagger |
 
 | Team | Members (terms) | Followers (quality table) |
 |---|---|---|

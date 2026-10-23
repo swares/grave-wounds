@@ -66,6 +66,14 @@ currencies:
     day_note: "a crossbowman's 13 dineros a day (Cortes of Burgos, 1338; a lancer 1 maravedí), the nearest found to 1385"
     day_approx: true
 
+  dinar:
+    name: "Ayyubid gold dinars (24 qirat)"
+    coin: dinar
+    base: qirat
+    units: [{sym: " dinars", of: 24}, {sym: " q.", of: 1}]
+    day: 8
+    day_note: "no Ayyubid soldier's pay was found (troopers held land grants, iqta', and drew a monthly jamakiyya): the Acre crossbowman's third of a bezant a day (1266) stands in, the bezant being struck after the dinar"
+    day_approx: true
   gulden_ch:
     name: "Swiss gulden (Bern, 1492: 15 Batzen, 60 Kreuzer, 2 Pfund, 480 Pfennig)"
     coin: gulden_ch
@@ -82,7 +90,7 @@ currencies:
     day: 8
     day_note: "a Landsknecht's 4 gulden a month (the German standard from the late 15th century), often late or partial"
 
-currency: {default: gbp, france: livre_t, latin_east: bezant, baltic: gotland, portugal: libra_pt, castile: maravedi, swiss: gulden_ch, landsknecht: rh_gulden}
+currency: {default: gbp, ayyubid: dinar, france: livre_t, latin_east: bezant, baltic: gotland, portugal: libra_pt, castile: maravedi, swiss: gulden_ch, landsknecht: rh_gulden}
 
 sources:
   rogers: &rogers "https://archive.org/details/historyofagricul04rogeuoft"
@@ -210,6 +218,10 @@ items:
   - {id: ca_shoes, name: "Men's shoes, goatskin to cordovan (Castile)", cat: clothing, in: maravedi, price: [25, 50], when: "1351", regions: [castile], source: {url: "https://www.filosofia.org/his/laf/p203zb.htm", note: "Ordenamiento de menestrales, 1351"}}
   - {id: ca_carting, name: "A mule and its man for a day's carting (Castile)", cat: service, in: maravedi, price: 36, when: "1351", regions: [castile], source: {url: "https://dialnet.unirioja.es/descarga/articulo/2049096.pdf", note: "Murcia price ordinance, 1351, art. 12"}}
   - {id: ransom_ayala, name: "Ransom of López de Ayala after Aljubarrota (30,000 dobras and 30 horses)", cat: service, in: maravedi, price: 10500000, when: "1385", regions: [portugal, castile], source: {url: "https://dialnet.unirioja.es/descarga/articulo/6087237.pdf", note: "Monteiro 2017, p. 265: a great lord's ransom; the dobra at 35 maravedís (1373)"}}
+  # The Ayyubids c.1180 (project doc "jacobsford-research")
+  - {id: ay_ransom_man, name: "Ransom of a man, Jerusalem 1187 (a woman half, a child a fifth)", cat: service, in: dinar, price: 240, when: "1187", regions: [ayyubid, latin_east], source: {url: "https://en.wikipedia.org/wiki/Siege_of_Jerusalem_(1187)", note: "10 dinars a man, 5 a woman, 2 a child (Imad ad-Din, via Lyons and Jackson)"}}
+  - {id: ay_water, name: "A goatskin of water carried to put out a mine's fire (Saladin's bounty)", cat: service, in: dinar, price: 24, when: "1179", regions: [ayyubid], source: {url: "https://deremilitari.org/?p=1345", note: "Imad ad-Din via Barber: a dinar a skin at Jacob's Ford"}}
+  - {id: ay_stone, name: "A dressed stone for the castle at Jacob's Ford", cat: service, in: dinar, price: 96, when: "1179", regions: [ayyubid, latin_east], source: {url: "https://deremilitari.org/?p=1345", note: "al-Qadi al-Fadil via Barber: at least 4 dinars each"}}
   # The Swiss Confederates c.1500 (project doc "dornach-research"): St. Gallen prices of the late 15th century, in pfennig of 480 to the gulden (approx)
   - {id: ch_spelt, name: "Spelt (Kernen), a Mütt (about 80 litres; the Swiss)", cat: food, in: gulden_ch, price: 120, when: "late 15th c.", regions: [swiss], source: {url: "https://www.daniel-stieger.ch", note: "St. Gallen prices after St. Galler Geschichte (2003)"}}
   - {id: ch_pork, name: "Pork (the Swiss)", per: lb, cat: food, in: gulden_ch, price: [10, 12], when: "late 15th c.", regions: [swiss], source: {url: "https://www.daniel-stieger.ch", note: "St. Gallen prices after St. Galler Geschichte (2003)"}}

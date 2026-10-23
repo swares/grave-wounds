@@ -370,6 +370,24 @@
      "day_note": "a crossbowman's 13 dineros a day (Cortes of Burgos, 1338; a lancer 1 maraved\u00ed), the nearest found to 1385",
      "day_approx": true
     },
+    "dinar": {
+     "name": "Ayyubid gold dinars (24 qirat)",
+     "coin": "dinar",
+     "base": "qirat",
+     "units": [
+      {
+       "sym": " dinars",
+       "of": 24
+      },
+      {
+       "sym": " q.",
+       "of": 1
+      }
+     ],
+     "day": 8,
+     "day_note": "no Ayyubid soldier's pay was found (troopers held land grants, iqta', and drew a monthly jamakiyya): the Acre crossbowman's third of a bezant a day (1266) stands in, the bezant being struck after the dinar",
+     "day_approx": true
+    },
     "gulden_ch": {
      "name": "Swiss gulden (Bern, 1492: 15 Batzen, 60 Kreuzer, 2 Pfund, 480 Pfennig)",
      "coin": "gulden_ch",
@@ -416,6 +434,7 @@
    },
    "currency": {
     "default": "gbp",
+    "ayyubid": "dinar",
     "france": "livre_t",
     "latin_east": "bezant",
     "baltic": "gotland",
@@ -3749,6 +3768,12 @@
    "basque": {
     "name": "Basque"
    },
+   "kurdish": {
+    "name": "Kurdish"
+   },
+   "persian": {
+    "name": "Persian"
+   },
    "flemish": {
     "name": "Flemish"
    },
@@ -4225,6 +4250,57 @@
       ],
       [
        "latin",
+       5,
+       [
+        20,
+        50
+       ]
+      ],
+      [
+       "french",
+       5,
+       [
+        10,
+        40
+       ]
+      ]
+     ]
+    },
+    "ayyubid": {
+     "own": [
+      [
+       "arabic",
+       45
+      ],
+      [
+       "turkish",
+       30
+      ],
+      [
+       "kurdish",
+       25
+      ]
+     ],
+     "enemy": "french",
+     "others": [
+      [
+       "arabic",
+       40,
+       [
+        20,
+        60
+       ]
+      ],
+      [
+       "turkish",
+       10,
+       [
+        10,
+        40
+       ]
+      ],
+      [
+       "persian",
        5,
        [
         20,
@@ -6285,6 +6361,7 @@
    "hamburger-1969": "montagnard",
    "heartbreak-1951": "korean",
    "hue-1968": "vietnamese",
+   "jacobsford-1179": "arabic",
    "iadrang-1965": "montagnard",
    "kapyong-1951": "korean",
    "keating-2009": "nuristani",
@@ -27258,6 +27335,76 @@
      15,
      28
     ]
+   },
+   "jordan_valley": {
+    "name": "Upper Jordan valley, hot and dry",
+    "note": "Like Tiberias, below sea level by the Sea of Galilee: very hot, rainless summers with westerly afternoon winds, mild wet winters; the Hula end and the Galilee hills are cooler. Rounded design estimates.",
+    "high": [
+     18,
+     19,
+     22,
+     26,
+     31,
+     34,
+     37,
+     38,
+     35,
+     31,
+     25,
+     20
+    ],
+    "low": [
+     9,
+     9,
+     11,
+     14,
+     18,
+     21,
+     24,
+     25,
+     23,
+     19,
+     14,
+     10
+    ],
+    "rain": [
+     11,
+     9,
+     7,
+     3,
+     1,
+     0,
+     0,
+     0,
+     0,
+     2,
+     5,
+     9
+    ],
+    "fog": [
+     1,
+     1,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     0,
+     1,
+     1
+    ],
+    "wind_from": [
+     8,
+     5,
+     6,
+     6,
+     8,
+     15,
+     35,
+     17
+    ]
    }
   }
  },
@@ -31592,7 +31739,7 @@
  ],
  "conflicts": {
   "Crusades": {
-   "period": "Sidon, 1253 or 1260",
+   "period": "Jacob's Ford, 1179; Sidon, 1253 or 1260",
    "map": {
     "bbox": [
      30.5,
@@ -31605,10 +31752,15 @@
       "name": "Sidon",
       "lat": 33.56,
       "lon": 35.37
+     },
+     {
+      "name": "Jacob's Ford",
+      "lat": 33.0,
+      "lon": 35.63
      }
     ]
    },
-   "summary": "From 1099 to 1291 Frankish crusader states held the coast of the Levant. Sidon, a walled port in today's Lebanon, was sacked twice in the 13th century: in 1253 by an army from Damascus while Louis IX of France was rebuilding its walls (Joinville describes the king helping to bury the rotting dead), and in 1260 by the Mongols under Kitbuqa. Two mass graves in the town ditch near St Louis' castle, dated to the mid-13th century, hold at least 25 men, Europeans and locals, killed in one of these attacks; their bones show sword, axe and mace wounds, many from behind.\n",
+   "summary": "From 1099 to 1291 Frankish crusader states held the coast of the Levant. Sidon, a walled port in today's Lebanon, was sacked twice in the 13th century: in 1253 by an army from Damascus while Louis IX of France was rebuilding its walls (Joinville describes the king helping to bury the rotting dead), and in 1260 by the Mongols under Kitbuqa. Two mass graves in the town ditch near St Louis' castle, dated to the mid-13th century, hold at least 25 men, Europeans and locals, killed in one of these attacks; their bones show sword, axe and mace wounds, many from behind. In August 1179 Saladin stormed the unfinished Templar castle at Jacob's Ford on the upper Jordan, mining its north-east corner; five of its garrison's dead have been studied, too few for a table of their own, and the siege rolls on Sidon's.\n",
    "sides": [
     {
      "name": "Defenders of Sidon",
@@ -31634,6 +31786,20 @@
     }
    ],
    "examples": [
+    {
+     "name": "Templar knight, 1179",
+     "side": "Defenders of Sidon",
+     "kit": "hauberk",
+     "weapon": "sword",
+     "notes": "One of the 80 knights at Jacob's Ford; the five skeletons' blade wounds are all on the left side."
+    },
+    {
+     "name": "Ayyubid archer, 1179",
+     "side": "Attackers",
+     "kit": "gambeson",
+     "weapon": "bow",
+     "notes": "Hundreds of arrowheads lie on the castle's east and west fronts."
+    },
     {
      "name": "Frankish knight",
      "side": "Defenders of Sidon",
@@ -31705,7 +31871,8 @@
    ],
    "sources": [
     "Mikulski R.N.R. et al., 'Weapon injuries in the crusader mass graves from a 13th century attack on the port city of Sidon (Lebanon)', PLoS ONE 16(8): e0256517 (2021).",
-    "Joinville, Life of Saint Louis, on Louis IX burying the dead of Sidon (1253)."
+    "Joinville, Life of Saint Louis, on Louis IX burying the dead of Sidon (1253).",
+    "Barber M., 'Frontier warfare in the Latin Kingdom of Jerusalem: the campaign of Jacob's Ford, 1178-79' (1998); Mitchell P.D., Nagar Y. and Ellenblum R., International Journal of Osteoarchaeology 16 (2006); project doc jacobsford-research."
    ]
   },
   "Visby 1361": {
@@ -34453,6 +34620,11 @@
       "name": "Sidon",
       "lat": 33.56,
       "lon": 35.37
+     },
+     {
+      "name": "Jacob's Ford",
+      "lat": 33,
+      "lon": 35.63
      }
     ]
    },
@@ -34468,10 +34640,11 @@
      "borders": "",
      "dots": [
       {
-       "x": 84.2,
-       "y": 60.4,
+       "x": 85.6,
+       "y": 64.2,
        "names": [
-        "Sidon"
+        "Sidon",
+        "Jacob's Ford"
        ]
       }
      ]

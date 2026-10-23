@@ -367,3 +367,11 @@ climates:
     rain: [12, 11, 9, 10, 8, 4, 2, 2, 5, 10, 12, 13]
     fog:  [4, 3, 3, 2, 2, 2, 3, 3, 3, 3, 3, 4]
     wind_from: [25, 8, 4, 4, 6, 10, 15, 28]   # % of days the wind blows from N, NE, E, SE, S, SW, W, NW
+  jordan_valley:
+    name: "Upper Jordan valley, hot and dry"
+    note: "Like Tiberias, below sea level by the Sea of Galilee: very hot, rainless summers with westerly afternoon winds, mild wet winters; the Hula end and the Galilee hills are cooler. Rounded design estimates."
+    high: [18, 19, 22, 26, 31, 34, 37, 38, 35, 31, 25, 20]
+    low:  [9, 9, 11, 14, 18, 21, 24, 25, 23, 19, 14, 10]
+    rain: [11, 9, 7, 3, 1, 0, 0, 0, 0, 2, 5, 9]
+    fog:  [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1]
+    wind_from: [8, 5, 6, 6, 8, 15, 35, 17]   # % of days the wind blows from N, NE, E, SE, S, SW, W, NW

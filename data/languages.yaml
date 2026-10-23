@@ -113,6 +113,8 @@ tongues:
   albanian: {name: Albanian}
   aromanian: {name: Aromanian}
   basque: {name: Basque}
+  kurdish: {name: Kurdish}
+  persian: {name: Persian}
   flemish: {name: Flemish}
   picard: {name: Picard}
   walloon: {name: Walloon}
@@ -192,6 +194,8 @@ armies:
              others: [[latin, 5, [20, 50]], [english, 5, [10, 40]]]}
     portugal: {own: [[portuguese, 92], [english, 6], [french, 2]], enemy: spanish,
                others: [[spanish, 50, [30, 60]], [latin, 5, [20, 50]], [french, 5, [10, 40]]]}   # the English and Gascons about 5-10% (600-700 men); Portuguese stands for Galician too (approx)
+    ayyubid: {own: [[arabic, 45], [turkish, 30], [kurdish, 25]], enemy: french,
+              others: [[arabic, 40, [20, 60]], [turkish, 10, [10, 40]], [persian, 5, [20, 50]], [french, 5, [10, 40]]]}   # Kurds about a third of Saladin's army, the mamluks Turks, Syrian and Egyptian levies Arabic (approx)
     swiss: {own: [[german, 95], [french, 5]], enemy: german,
             others: [[french, 10, [10, 40]], [italian, 3, [10, 40]], [latin, 5, [20, 50]]]}   # Alemannic Swiss German; Fribourg men French-speaking (approx)
     landsknecht: {own: [[german, 80], [low_german, 12], [french, 8]], enemy: german,
@@ -329,6 +333,7 @@ maps:                          # the tongue (or tongues, main first) of the peop
   hamburger-1969: montagnard
   heartbreak-1951: korean
   hue-1968: vietnamese
+  jacobsford-1179: arabic
   iadrang-1965: montagnard
   kapyong-1951: korean
   keating-2009: nuristani

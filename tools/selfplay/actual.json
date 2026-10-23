@@ -22,6 +22,7 @@
  "hamburger-1969": {"won": 0, "objective": "taken", "losses": "defenders heavier", "short": "After ten days the summit is taken about noon"},
  "heartbreak-1951": {"won": 0, "objective": "taken", "losses": "both heavy", "short": "Night attack along the crest; Hill 931 taken before noon"},
  "hue-1968": {"won": 0, "objective": "taken", "losses": "both heavy", "short": "Marines take the provincial headquarters building by building after two days"},
+ "jacobsford-1179": {"won": 1, "objective": "taken", "losses": "Templars near all killed or taken", "short": "The mined corner falls at dawn and the castle is stormed; the garrison is killed or taken"},
  "kapyong-1951": {"won": 0, "objective": "held", "losses": "Chinese far heavier", "short": "Australians hold the hill all night (32 killed, 59 wounded), then fall back in order"},
  "keating-2009": {"won": 0, "objective": "taken, then retaken", "losses": "US 8 killed, 20+ wounded", "short": "Insurgents break in from the east; the Americans retake the outpost by the afternoon"},
  "khesanh-1968": {"won": 0, "objective": "held", "losses": "NVA far heavier", "short": "NVA break into E Company's trenches; Shanley's counter-attack throws them out (7 Marines killed, 100+ NVA dead)"},
