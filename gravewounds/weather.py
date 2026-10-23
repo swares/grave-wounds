@@ -1,6 +1,6 @@
 """Calendar, daylight, daily weather, the ground, rest and fatigue (Grave Wounds).
-Mirrored exactly by the travel page (templates/travel.html), between its 'shared with
-gravewounds/weather.py' markers. Dates are whole numbers of days (Julian Day Numbers), so
+Mirrored exactly by templates/travelrules.js (the travel page's rules), checked by
+tools/travel/parity.py. Dates are whole numbers of days (Julian Day Numbers), so
 the calendar sums are the same in both languages."""
 from __future__ import annotations
 

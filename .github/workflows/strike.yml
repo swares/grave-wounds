@@ -1,15 +1,16 @@
 # The roller's strike, event log and scripted fighter (templates/strike.js, gamelog.js, fighter.js): thousands of strikes
 # checked against gravewounds.engine.roll_hit on the same dice, then the unit tests
-# (tools/strike/parity.py runs tools/strike/test.js), and the scripted fighter's choices (tools/gm/test.js). A few seconds; runs on pull requests and on
+# (tools/strike/parity.py runs tools/strike/test.js), and the scripted fighter's choices (tools/gm/test.js). Also the travel
+# map's rules (templates/travelrules.js) against gravewounds/weather.py, travel.py and disease.py (tools/travel/parity.py). A few seconds; runs on pull requests and on
 # main when the rules it checks change.
 name: strike
 
 on:
   pull_request:
-    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "templates/campaign.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**", "tools/campaign/**"]
+    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "templates/campaign.js", "templates/travelrules.js", "templates/ranks.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**", "tools/campaign/**", "tools/travel/**"]
   push:
     branches: [main]
-    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "templates/campaign.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**", "tools/campaign/**"]
+    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "templates/campaign.js", "templates/travelrules.js", "templates/ranks.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**", "tools/campaign/**", "tools/travel/**"]
   workflow_dispatch:
 
 permissions:
@@ -31,3 +32,4 @@ jobs:
       - run: node tools/gm/test.js
       - run: node tools/net/test.mjs
       - run: node tools/campaign/test.js
+      - run: python3 tools/travel/parity.py 300 1

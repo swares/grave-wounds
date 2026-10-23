@@ -1201,6 +1201,8 @@ function ktRenews(name){                          // boots or clothing, if this 
   return null;
 }
 
+if (typeof module !== "undefined") module.exports = { hzFordWater, hzCurrentBand, spMedicalShort };   // Node (tools/travel/test.js: fords and medical stores); the pages share these as globals
+
 /* Lethality: the GM's setting for how much the player characters (the team builder's sheeted
    men, the field map's heroes) are spared. One setting for all pages, remembered in the
    browser like US | Metric; wounds.yaml lethality holds the presets. build.py puts this file

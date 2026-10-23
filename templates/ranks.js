@@ -603,3 +603,5 @@ function ktRenews(name){                          // boots or clothing, if this 
   for (const [k, pat] of Object.entries(KTD().renew || {})) if (new RegExp(pat, "i").test(name)) return k;
   return null;
 }
+
+if (typeof module !== "undefined") module.exports = { hzFordWater, hzCurrentBand, spMedicalShort };   // Node (tools/travel/test.js: fords and medical stores); the pages share these as globals
