@@ -13,27 +13,32 @@ the Python engine and the printed tables read them from there, so change them th
    poleaxe. He can only defend until he takes up a one-handed weapon.
 2. **Move or stay.** See *The battle map* below. A fighter who runs does not attack.
    **Attack** only an enemy within the weapon's reach or range.
-3. **Attack.** d100 against attack % minus the attacker's wound penalties and any range
+3. **Attack.** He may first declare an aim: at a zone (head, body, arms, legs), at a gap
+   in the armour, or both. d100 against attack % minus the attacker's wound penalties and any range
    penalty. Equal or under hits. The margin is the effective chance minus the roll. A roll at or under a tenth of
    the effective chance is a critical, and a critical cannot be defended.
 4. **Defence.** Optional: d100 against parry or dodge % minus wound penalties. Equal or
    under avoids the blow.
-5. **Location and blow.** Roll on the era's hit-location table. A cut-and-thrust weapon
+5. **Aim.** On a hit, each aim paid costs 20 of the margin (nothing on a critical); one he
+   cannot pay fails. A zone paid for rolls the location within that zone only; a gap is paid
+   for only where the armour covers part of the place hit, and the blow finds it. Severity
+   and graze come from the margin left.
+6. **Location and blow.** Roll on the era's hit-location table. A cut-and-thrust weapon
    (sword, spear, bill, halberd, poleaxe, dagger, sabre, bayonet) strikes the blow the
    attacker declares: cut, thrust, or a crushing blow with a bill, halberd or poleaxe. Any
    other weapon strikes with its main mechanism. Unnamed fighters strike with the main
    mechanism on paper; the roller and the field map roll their mix.
-6. **Severity from the margin.** Default: light below 20, serious from 20, critical from
+7. **Severity from the margin.** Default: light below 20, serious from 20, critical from
    50 or on a critical roll. Firearms use their own bands by body zone.
-7. **Graze.** A hit by a margin of 2 or less, if not a critical, only grazes. The wound's
+8. **Graze.** A hit by a margin of 2 or less, if not a critical, only grazes. The wound's
    bleed and pain drop one step each, and it calls for no stop check.
-8. **Armour.** The armour on the location lowers severity by its steps against the
+9. **Armour.** The armour on the location lowers severity by its steps against the
    mechanism. Where it covers only part of the location (a sleeve to the elbow, a plate on the
    chest), the attack roll's units digit (0 is 10) says whether the blow met it: at or under
    its cover in tens (a 70% sleeve on 1-7) it did; above, it found a gap and there is no armour.
    No extra roll.
-9. **Wound.** Record it. Its bleed, pain, impairments and lethality clock take effect.
-10. **Stop check.** A serious or critical wound calls for d100 against the fighter's
+10. **Wound.** Record it. Its bleed, pain, impairments and lethality clock take effect.
+11. **Stop check.** A serious or critical wound calls for d100 against the fighter's
     Nerve, if the wound is marked for one (most are; some limb wounds are not). The target
     is Nerve minus his pain and blood-loss penalties, and −10 more for a critical wound.
     - Equal or under: he fights on.

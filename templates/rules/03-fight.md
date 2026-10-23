@@ -16,18 +16,21 @@ hexes about {{hex_yd}} yards ({{hex_m}} m) across.
 2. **Move or stay.** He may stay, **advance** up to {{advance}} hexes and still attack, or
    **run** up to {{run}} hexes and not attack. He may pass through friends but not stop on
    them. Leaving an enemy's side by more than one step gives that enemy a free attack.
-3. **Attack.** Roll d100 against his attack, less his wound penalties and any range
-   penalty. Equal or under hits, and the **margin** is how far under. A roll at or under a
-   tenth of the chance is a **critical**: it cannot be defended.
+3. **Attack.** He may first declare an **aim**: at a zone, at a gap in the armour, or both
+   ([Aiming](#aim)). Then roll d100 against his attack, less his wound penalties and any
+   range penalty. Equal or under hits, and the **margin** is how far under. A roll at or
+   under a tenth of the chance is a **critical**: it cannot be defended. On a hit he pays for
+   his aim out of the margin.
 4. **Defence.** The defender may roll d100 against his defence (Parry or Dodge), less his
    own penalties. Equal or under, the blow misses.
-5. **Where it lands.** Roll d100 on the era's hit-location table for the place. How it
-   wounds (a cut, a thrust, a crushing blow, a bullet) is the attacker's choice with a
-   cut-and-thrust weapon ({{choose_weapons}}): he declares his blow before he rolls, **cut**
-   or **thrust**, or a **crushing** blow with a weapon that has one (a poleaxe's hammer). Any other weapon strikes with its main way of wounding (a bow pierces, a mace
-   crushes); a burst of shell or grenade wounds by its fragments, and on a critical by its
-   blast, a crushing blow.
-6. **How bad.** The margin sets the severity: under {{band_serious}} **light**, from
+5. **Where it lands.** Roll d100 on the era's hit-location table for the place (on its
+   **Aimed** columns, within the zone, if he paid for a zone). How it wounds (a cut, a
+   thrust, a crushing blow, a bullet) is the attacker's choice with a cut-and-thrust weapon
+   ({{choose_weapons}}): he declares his blow before he rolls, **cut** or **thrust**, or a
+   **crushing** blow with a weapon that has one (a poleaxe's hammer). Any other weapon
+   strikes with its main way of wounding (a bow pierces, a mace crushes); a burst of shell
+   or grenade wounds by its fragments, and on a critical by its blast, a crushing blow.
+6. **How bad.** The margin (what is left of it after the aim) sets the severity: under {{band_serious}} **light**, from
    {{band_serious}} **serious**, from {{band_critical}} (or on a critical) **critical**.
    Firearms have their own bands for the body and the limbs. A hit by a margin of
    {{graze}} or less, if it is not a critical, only **grazes**: its bleeding and pain are
@@ -36,7 +39,8 @@ hexes about {{hex_yd}} yards ({{hex_m}} m) across.
    kind of blow. Some armour covers only part of a place (a jack's sleeves stop at the
    elbow, a plate covers the middle of the chest), shown on the sheet as the share it covers,
    in tens. Read the **units digit of the attack roll** (0 counts as 10): at or under the
-   cover's tens the blow met the armour; above, it found a gap. No die is rolled for it. Some
+   cover's tens the blow met the armour; above, it found a gap. No die is rolled for it.
+   A blow aimed for a gap that pays for it finds the gap. Some
    weapons are made to beat armour: a war bow's heavy arrows go through mail and a jack as if
    they were not there. Mail turns a cut better than a thrust, so against a mailed man the
    thrust is the better choice.
@@ -73,6 +77,27 @@ die.
     {{ex.c_pain}}, and the leg is hurt. It {{ex.c_shock}} carry shock, so there is no stop
     check, and he fights on. But at {{ex.c_per}} Blood a round, his {{ex.a_blood}} Blood will be
     gone in {{ex.c_rounds_dead}} rounds. The next chapter is about what that means.
+
+## Aiming {#aim}
+
+A man who aims gives up some of the force of a blow to put it where he wants. Before he rolls
+his attack he may declare either or both:
+
+- **A zone:** the head, the body, the arms or the legs.
+- **A gap:** the place in a man's armour it does not cover, the armpit under the plate, the
+  slit of a visor, the thigh under a short jack.
+
+On a hit, each one he pays for costs **{{aim_cost}}** of his margin, and the wound's severity
+(and whether it only grazes) comes from what is left. A zone is paid first: the place is
+then rolled on the table's **Aimed** columns, within that zone. A gap is paid only if the
+armour on the place hit covers part of it; then the blow finds the gap and the armour does
+nothing. If he cannot pay, that aim fails and the blow lands where it is rolled, at its full
+margin. A **critical** pays nothing: it lands where he meant it.
+
+!!! gm "For the GM"
+    Aiming trades a worse wound for a better place: at a margin of 30, an aimed blow is a
+    light wound where he wanted it, an unaimed one a serious wound wherever it falls. Let the
+    player decide before the dice are rolled, not after.
 
 ## The end of the round {#round-end}
 

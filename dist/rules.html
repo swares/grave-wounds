@@ -108,6 +108,7 @@ tbody tr:nth-child(even){background:var(--panel)}
 </li>
 <li><a href="#fight">The fight</a><ul>
 <li><a href="#turn">A fighter's turn</a></li>
+<li><a href="#aim">Aiming</a></li>
 <li><a href="#round-end">The end of the round</a></li>
 <li><a href="#wounds-moving">Wounds and movement</a></li>
 </ul>
@@ -1411,18 +1412,21 @@ hexes about 2 yards (2 m) across.</p>
 <li><strong>Move or stay.</strong> He may stay, <strong>advance</strong> up to 4 hexes and still attack, or
    <strong>run</strong> up to 12 hexes and not attack. He may pass through friends but not stop on
    them. Leaving an enemy's side by more than one step gives that enemy a free attack.</li>
-<li><strong>Attack.</strong> Roll d100 against his attack, less his wound penalties and any range
-   penalty. Equal or under hits, and the <strong>margin</strong> is how far under. A roll at or under a
-   tenth of the chance is a <strong>critical</strong>: it cannot be defended.</li>
+<li><strong>Attack.</strong> He may first declare an <strong>aim</strong>: at a zone, at a gap in the armour, or both
+   (<a href="#aim">Aiming</a>). Then roll d100 against his attack, less his wound penalties and any
+   range penalty. Equal or under hits, and the <strong>margin</strong> is how far under. A roll at or
+   under a tenth of the chance is a <strong>critical</strong>: it cannot be defended. On a hit he pays for
+   his aim out of the margin.</li>
 <li><strong>Defence.</strong> The defender may roll d100 against his defence (Parry or Dodge), less his
    own penalties. Equal or under, the blow misses.</li>
-<li><strong>Where it lands.</strong> Roll d100 on the era's hit-location table for the place. How it
-   wounds (a cut, a thrust, a crushing blow, a bullet) is the attacker's choice with a
-   cut-and-thrust weapon (bayonet, bill, dagger, halberd, poleaxe, sabre, spear or sword): he declares his blow before he rolls, <strong>cut</strong>
-   or <strong>thrust</strong>, or a <strong>crushing</strong> blow with a weapon that has one (a poleaxe's hammer). Any other weapon strikes with its main way of wounding (a bow pierces, a mace
-   crushes); a burst of shell or grenade wounds by its fragments, and on a critical by its
-   blast, a crushing blow.</li>
-<li><strong>How bad.</strong> The margin sets the severity: under 20 <strong>light</strong>, from
+<li><strong>Where it lands.</strong> Roll d100 on the era's hit-location table for the place (on its
+   <strong>Aimed</strong> columns, within the zone, if he paid for a zone). How it wounds (a cut, a
+   thrust, a crushing blow, a bullet) is the attacker's choice with a cut-and-thrust weapon
+   (bayonet, bill, dagger, halberd, poleaxe, sabre, spear or sword): he declares his blow before he rolls, <strong>cut</strong> or <strong>thrust</strong>, or a
+   <strong>crushing</strong> blow with a weapon that has one (a poleaxe's hammer). Any other weapon
+   strikes with its main way of wounding (a bow pierces, a mace crushes); a burst of shell
+   or grenade wounds by its fragments, and on a critical by its blast, a crushing blow.</li>
+<li><strong>How bad.</strong> The margin (what is left of it after the aim) sets the severity: under 20 <strong>light</strong>, from
    20 <strong>serious</strong>, from 50 (or on a critical) <strong>critical</strong>.
    Firearms have their own bands for the body and the limbs. A hit by a margin of
    2 or less, if it is not a critical, only <strong>grazes</strong>: its bleeding and pain are
@@ -1431,7 +1435,8 @@ hexes about 2 yards (2 m) across.</p>
    kind of blow. Some armour covers only part of a place (a jack's sleeves stop at the
    elbow, a plate covers the middle of the chest), shown on the sheet as the share it covers,
    in tens. Read the <strong>units digit of the attack roll</strong> (0 counts as 10): at or under the
-   cover's tens the blow met the armour; above, it found a gap. No die is rolled for it. Some
+   cover's tens the blow met the armour; above, it found a gap. No die is rolled for it.
+   A blow aimed for a gap that pays for it finds the gap. Some
    weapons are made to beat armour: a war bow's heavy arrows go through mail and a jack as if
    they were not there. Mail turns a cut better than a thrust, so against a mailed man the
    thrust is the better choice.</li>
@@ -1498,6 +1503,26 @@ where his jack does not reach. The wound bleeds <strong>3</strong> (arterial), p
 2, and the leg is hurt. It does not carry shock, so there is no stop
 check, and he fights on. But at 3 Blood a round, his 20 Blood will be
 gone in 6 rounds. The next chapter is about what that means.</p>
+</div>
+<h2 id="aim">Aiming</h2>
+<p>A man who aims gives up some of the force of a blow to put it where he wants. Before he rolls
+his attack he may declare either or both:</p>
+<ul>
+<li><strong>A zone:</strong> the head, the body, the arms or the legs.</li>
+<li><strong>A gap:</strong> the place in a man's armour it does not cover, the armpit under the plate, the
+  slit of a visor, the thigh under a short jack.</li>
+</ul>
+<p>On a hit, each one he pays for costs <strong>20</strong> of his margin, and the wound's severity
+(and whether it only grazes) comes from what is left. A zone is paid first: the place is
+then rolled on the table's <strong>Aimed</strong> columns, within that zone. A gap is paid only if the
+armour on the place hit covers part of it; then the blow finds the gap and the armour does
+nothing. If he cannot pay, that aim fails and the blow lands where it is rolled, at its full
+margin. A <strong>critical</strong> pays nothing: it lands where he meant it.</p>
+<div class="admonition gm">
+<p class="admonition-title">For the GM</p>
+<p>Aiming trades a worse wound for a better place: at a margin of 30, an aimed blow is a
+light wound where he wanted it, an unaimed one a serious wound wherever it falls. Let the
+player decide before the dice are rolled, not after.</p>
 </div>
 <h2 id="round-end">The end of the round</h2>
 <ul>
@@ -10552,6 +10577,8 @@ stoppages take, as the rank rules say):</p>
 <h3 class="ix-letter">A</h3>
 <p class="ix"><b>Advance</b>: <a href="#turn">A fighter's turn</a></p>
 <p class="ix"><b>Agility</b>: <a href="#characteristics">Characteristics and skills</a></p>
+<p class="ix"><b>Aim</b>: <a href="#turn">A fighter's turn</a></p>
+<p class="ix"><b>Aimed</b>: <a href="#turn">A fighter's turn</a>, <a href="#aim">Aiming</a></p>
 <p class="ix"><b>Air controllers</b>: <a href="#aircraft">Aircraft</a></p>
 <p class="ix"><b>Air drop</b>: <a href="#ammunition">Ammunition</a></p>
 <p class="ix"><b>Ammunition</b>: <a href="#supplies">Supplies</a></p>
@@ -10601,7 +10628,7 @@ stoppages take, as the rank rules say):</p>
 <p class="ix"><b>Counter-battery</b>: <a href="#support">Fire support</a></p>
 <p class="ix"><b>Courses</b>: <a href="#experience">Experience</a></p>
 <p class="ix"><b>Crews</b>: <a href="#at-guns">Anti-tank guns</a></p>
-<p class="ix"><b>Critical</b>: <a href="#roll">The one roll</a>, <a href="#turn">A fighter's turn</a></p>
+<p class="ix"><b>Critical</b>: <a href="#roll">The one roll</a>, <a href="#turn">A fighter's turn</a>, <a href="#aim">Aiming</a></p>
 <p class="ix"><b>Crushing</b>: <a href="#turn">A fighter's turn</a></p>
 <p class="ix"><b>Cut</b>: <a href="#turn">A fighter's turn</a></p>
 <h3 class="ix-letter">D</h3>
@@ -10664,6 +10691,7 @@ stoppages take, as the rank rules say):</p>
 <p class="ix"><b>Frostbite</b>: <a href="#sickness">Sickness</a></p>
 <p class="ix"><b>Fumble</b>: <a href="#roll">The one roll</a></p>
 <h3 class="ix-letter">G</h3>
+<p class="ix"><b>Gap</b>: <a href="#aim">Aiming</a></p>
 <p class="ix"><b>GM and players</b>: <a href="#need">What you need</a></p>
 <p class="ix"><b>Go back</b>: <a href="#heroes">Heroes</a></p>
 <p class="ix"><b>Go to ground</b>: <a href="#modern-infantry">Modern infantry</a></p>
@@ -10929,6 +10957,8 @@ stoppages take, as the rank rules say):</p>
 <p class="ix"><b>Wound fever</b>: <a href="#fever">Wound fever</a></p>
 <p class="ix"><b>Wound tables</b>: <a href="#era-changes">What changes</a></p>
 <p class="ix"><b>Wounds</b>: <a href="#guns">Guns of the black-powder wars</a></p>
+<h3 class="ix-letter">Z</h3>
+<p class="ix"><b>Zone</b>: <a href="#aim">Aiming</a></p>
 </div>
 
 <p class="note">Every number in this book is filled in from the game's data when it is built, so it says what the pages do. The repository's docs go into more detail on each part, and the printed tables hold every table. Print this book from the browser for a paper copy.</p>

@@ -287,11 +287,12 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
         <div class="mods" id="mods" role="group" aria-labelledby="lbl-mods"></div>
       </div>
       <div class="row">
-        <div><label for="sel-called">Called shot</label>
-          <select id="sel-called">
-            <option value="">None</option><option value="head">Head</option><option value="torso">Torso</option>
-            <option value="arms">Arms</option><option value="legs">Legs</option>
-          </select></div>
+        <div><label for="sel-aim">Aim</label>
+          <select id="sel-aim" title="Declared before the attack: on a hit it costs margin (nothing on a critical), and the location is rolled within the zone">
+            <option value="">Not aimed</option><option value="head">At the head</option><option value="torso">At the body</option>
+            <option value="arms">At the arms</option><option value="legs">At the legs</option>
+          </select>
+          <label class="check" title="Declared before the attack: where the armour covers only part of the place hit, pay margin to find the gap"><input type="checkbox" id="chk-gap"> For a gap</label></div>
         <div><label for="sel-armor">Target armour</label><select id="sel-armor"></select></div>
       </div>
       <p class="muted" id="armor-note" style="margin:0"></p>
@@ -310,7 +311,6 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
         <label>Your dice (optional - blank rolls for you)</label>
         <div class="dice">
           <input id="in-loc" type="number" min="1" max="100" placeholder="Loc" aria-label="Location d100">
-          <input id="in-loc2" type="number" min="1" max="100" placeholder="Loc 2" aria-label="Second location d100 for a called shot" disabled>
           <select id="sel-blow" aria-label="Blow: rolled, or the one the attacker declares" title="A cut-and-thrust weapon strikes the blow its wielder declares; Rolled is for unnamed fighters" hidden></select>
           <input id="in-mech" type="number" min="1" max="100" placeholder="Mech" aria-label="Mechanism d100">
           <input id="in-sev" type="number" min="1" max="100" placeholder="Sev" aria-label="Severity d100">
@@ -326,7 +326,7 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
       <div id="fig"></div>
       <div class="tip" id="tip">Hover or tap a region for its odds</div>
       <div class="legend"><span>rare</span><span class="ramp"></span><span>common</span></div>
-      <p class="muted" style="margin:0">Shading shows the chance for the selected table, weapon, situation and called shot. The figure faces you: its left is on your right.</p>
+      <p class="muted" style="margin:0">Shading shows the chance for the selected table, weapon, situation and aim (if the aim is paid). The figure faces you: its left is on your right.</p>
     </section>
 
     <!-- Tracker -->
@@ -388,7 +388,7 @@ const d100 = () => 1 + Math.floor(Math.random() * 100);
 const look = (ranges, n) => ranges.find(r => n >= r.lo && n <= r.hi).id;
 const shortName = w => DATA.weapons[w].short || DATA.weapons[w].name.split(" (")[0];
 
-const S = { table: null, weapon: null, hit: null, chars: [], active: 0, attacker: -1, seq: 1, mods: new Set(), called: "", armor: "none", round: 1, log: [], turn: null, broken: {}, pending: [], works: { edges: {}, hexes: {} }, ground: { kinds: {}, levels: {} }, weather: { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } } };
+const S = { table: null, weapon: null, hit: null, chars: [], active: 0, attacker: -1, seq: 1, mods: new Set(), aim: "", gap: false, armor: "none", round: 1, log: [], turn: null, broken: {}, pending: [], works: { edges: {}, hexes: {} }, ground: { kinds: {}, levels: {} }, weather: { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } } };
 const CMB = DATA.combat;
 const MODS = DATA.modifiers, KITS = Object.fromEntries(DATA.armor.kits.map(k => [k.id, k]));
 const MATS = DATA.armor.materials, LADDER = ["stopped", "light", "serious", "critical"];
@@ -1225,12 +1225,24 @@ function effWeights(tid, wid, mods, shield = null){
 }
 function defenderShield(){ const c = defenderChar(); return c ? !!(KITS[c.kit || "none"] || {}).shield : null }
 function rangesFor(wid){ return toD100(effWeights(S.table, wid, orderedMods(), defenderShield())) }
-function calledOdds(ranges, zone){
-  const p = Object.fromEntries(ranges.map(r => [r.id, r.pct / 100]));
-  if (!zone) return Object.fromEntries(Object.entries(p).map(([k, v]) => [k, v * 100]));
-  const pz = Object.entries(p).reduce((a, [k, v]) => a + (LOC[k].zone === zone ? v : 0), 0);
-  return Object.fromEntries(Object.entries(p).map(([k, v]) => [k, (LOC[k].zone === zone ? v * (2 - pz) : v * (1 - pz)) * 100]));
+function aimedRanges(wid, zone){                 // d100 ranges for a blow aimed at a zone, or null if the situation hides it (as gravewounds.engine.aimed_ranges)
+  const shield = defenderShield();
+  let w = effWeights(S.table, wid, orderedMods(), shield).filter(([k]) => LOC[k].zone === zone);
+  const sum = xs => xs.reduce((a, [, v]) => a + v, 0);
+  if (!(sum(w) > 0)){                            // the table gives the zone nothing: the body's exposure, times the situations
+    let mods = orderedMods();
+    const extra = shieldMods(S.table, wid, shield);
+    if (extra.length){ const ids = new Set(mods.map(m => m.id)); extra.forEach(id => ids.add(id)); mods = MODS.filter(m => ids.has(m.id)) }
+    w = DATA.locations.filter(l => l.zone === zone).map(loc => {
+      let v = loc.exposure ?? 1.0;
+      for (const m of mods){ v *= (m.zone || {})[loc.zone] ?? 1.0; v *= (m.side || {})[loc.side] ?? 1.0; v *= (m.loc || {})[loc.id] ?? 1.0 }
+      return [loc.id, v];
+    });
+    if (!(sum(w) > 0)) return null;
+  }
+  return toD100(w);
 }
+function figRanges(){ return (S.aim && aimedRanges(S.weapon, S.aim)) || curRanges() }   // what the figure shows: the aimed zone's odds when aiming
 function armorAt(kitId, locId){ return ((KITS[kitId] || {}).layers || {})[LOC[locId].armor] || [] }
 function armorSteps(mat, mech, wid){
   const w = DATA.weapons[wid], m = MATS[mat], th = m.threats || {};
@@ -1286,17 +1298,16 @@ function drawFigure(){
     <text x="189" y="72" font-size="9" text-anchor="middle" style="fill:var(--muted);font-family:var(--body)" letter-spacing="1">BACK</text>
     ${parts}</svg>`;
   document.querySelectorAll(".region").forEach(el => {
-    const show = () => { const id = el.dataset.id, rs = curRanges(), r = rs.find(x => x.id === id);
-      const odds = calledOdds(rs, S.called)[id];
-      $("#tip").textContent = !r ? `${LOC[id].name}: not on this table`
-        : S.called ? `${LOC[id].name}: ${odds.toFixed(1)}% with called shot (table ${rg(r)})`
-        : `${LOC[id].name}: ${r.pct}% (${rg(r)})` };
+    const show = () => { const id = el.dataset.id, rs = figRanges(), r = rs.find(x => x.id === id);
+      const aimed = S.aim && rs !== curRanges();
+      $("#tip").textContent = !r ? `${LOC[id].name}: ${aimed ? "not in the zone aimed at" : "not on this table"}`
+        : `${LOC[id].name}: ${r.pct}% (${rg(r)})${aimed ? ` aimed at the ${S.aim}` : ""}` };
     el.addEventListener("mouseenter", show); el.addEventListener("focus", show); el.addEventListener("click", show);
   });
 }
 function curRanges(){ return rangesFor(S.weapon) }
 function shadeFigure(){
-  const odds = calledOdds(curRanges(), S.called), max = Math.max(...Object.values(odds));
+  const odds = Object.fromEntries(figRanges().map(r => [r.id, r.pct])), max = Math.max(...Object.values(odds));
   document.querySelectorAll(".region").forEach(el => {
     const p = odds[el.dataset.id] || 0;
     el.style.fill = `rgba(var(--heat),${(0.06 + 0.84 * p / max).toFixed(3)})`;
@@ -1309,7 +1320,7 @@ function readDie(id){ const v = parseInt($(id).value, 10); return v >= 1 && v <=
 function readPct(id){ const v = parseInt($(id).value, 10); return v >= 0 && v <= 200 ? v : null }
 function rollHit(stray = false){                  // stray: a missed shot gone into a man in the way; no attack roll, severity rolled
   const atkPct = stray ? null : readPct("#in-atk");
-  const base = { weapon: S.weapon, table: S.table, ltable: rtid(), mods: orderedMods().map(m => m.short || m.name), called: S.called, stray };
+  const base = { weapon: S.weapon, table: S.table, ltable: rtid(), mods: orderedMods().map(m => m.short || m.name), aim: stray ? "" : S.aim, gap: !stray && S.gap, stray };
   const rc = rangeCheck(), freeHit = isFreePair();
   if (rc.blocked) return hitDone(base, { blocked: rc.blocked });
   base.range = rc.range;
@@ -1388,15 +1399,19 @@ function attackPhase(atkPct, rc, freeHit){        // the attack and defence roll
   }
   return { margin: ar.margin, crit: ar.critical, combat, roll: ar.roll };
 }
-function rollLocation(){                          // {loc, rl, rl2}: a called shot takes the second roll if only it lands in the zone
-  const ranges = curRanges(), rl = readDie("#in-loc") ?? d100();
-  let loc = look(ranges, rl), rl2 = null;
-  if (S.called){
-    rl2 = readDie("#in-loc2") ?? d100();
-    const second = look(ranges, rl2);
-    if (LOC[loc].zone !== S.called && LOC[second].zone === S.called) loc = second;
+function rollLocation(zoned){                    // {loc, rl}: on the aimed zone's ranges if the aim was paid
+  const ranges = zoned || curRanges(), rl = readDie("#in-loc") ?? d100();
+  return { loc: look(ranges, rl), rl };
+}
+function payAim(att, stray){                      // {zoned, aimZone, gapAim, left}: what the declared aim costs (wounds.yaml combat.aim; as gravewounds.engine.roll_hit)
+  const cost = CMB.aim.cost, out = { zoned: null, aimZone: stray ? "" : S.aim, gapAim: !stray && !!S.gap, left: att.margin, zonePaid: false };
+  const pays = () => att.margin === null || att.crit || out.left >= cost;
+  if (out.aimZone && pays()){
+    out.zoned = aimedRanges(S.weapon, out.aimZone);
+    if (out.zoned){ out.zonePaid = true; if (att.margin !== null && !att.crit) out.left -= cost }
   }
-  return { loc, rl, rl2 };
+  out.pays = pays;
+  return out;
 }
 function rollSeverity(mech, loc, att, stray){     // {sev, rs}: from the margin, the severity table, or the GM's pick
   let sevMode = att.margin !== null ? "margin" : $("#sel-sev").value;
@@ -1406,30 +1421,39 @@ function rollSeverity(mech, loc, att, stray){     // {sev, rs}: from the margin,
   const rs = readDie("#in-sev") ?? d100();
   return { sev: sevTiers(mech, LOC[loc].zone, S.weapon).find(x => rs >= x.d100[0] && rs <= x.d100[1]).id, rs };
 }
-function armourOn(loc, mech, sev, att){           // {armor, final}: the defender's armour on that location lowers the severity
+function armourLayers(loc){                       // {layers, whole}: the defender's armour on that location
   const layers = isEvidence() ? [] : armorAt(S.armor, loc);
+  return { layers, whole: layers.length === 1 && layers[0][1] === 1 && layers[0][2] === 100 };
+}
+function armourOn(loc, mech, sev, att, gapped){   // {armor, final}: the defender's armour on that location lowers the severity; gapped: an aimed blow found the gap
+  const { layers, whole } = armourLayers(loc);
   if (!layers.length) return { armor: null, final: sev };
-  const whole = layers.length === 1 && layers[0][1] === 1 && layers[0][2] === 100;
   const fromAtk = att && att.roll !== null && att.roll !== undefined;   // the attack roll's units digit (0 is 10), else a d10 (as gravewounds.engine.cover_digit)
-  const rc = whole ? null : (fromAtk ? (att.roll % 10 || 10) : 1 + Math.floor(Math.random() * 10));
-  const hit = whole ? layers[0] : layers.find(([, lo, hi]) => rc * 10 >= lo && rc * 10 <= hi);
+  const rc = whole || gapped ? null : (fromAtk ? (att.roll % 10 || 10) : 1 + Math.floor(Math.random() * 10));
+  const hit = whole ? layers[0] : gapped ? null : layers.find(([, lo, hi]) => rc * 10 >= lo && rc * 10 <= hi);
   const mat = hit ? hit[0] : null, steps = hit ? armorSteps(mat, mech, S.weapon) : 0;
   const final = LADDER[Math.max(0, LADDER.indexOf(sev) - steps)];
-  return { armor: { mat, layers, rc, rcAtk: !whole && fromAtk, covered: !!hit, steps, from: sev, to: final }, final };
+  return { armor: { mat, layers, rc, rcAtk: !whole && fromAtk, covered: !!hit, gapped: !!gapped, steps, from: sev, to: final }, final };
 }
 function woundPhase(rc, freeHit, stray, att){     // location, mechanism, severity and armour: the wound
   const w = DATA.weapons[S.weapon];
-  const { loc, rl, rl2 } = rollLocation();
+  const aim = payAim(att, stray);
+  const { loc, rl } = rollLocation(aim.zoned);
+  const { layers, whole } = armourLayers(loc);
+  const gapped = aim.gapAim && layers.length > 0 && !whole && aim.pays();   // a gap is paid for only where there is one
+  if (gapped && att.margin !== null && !att.crit) aim.left -= CMB.aim.cost;
+  const paid = { ...att, margin: aim.left };      // severity and graze from the margin the aim left
   const blow = w.choose && S.blow && w.mechanisms[S.blow] ? S.blow : null;   // a blow the attacker declared, or rolled
   const rm = blow ? null : readDie("#in-mech") ?? d100(), mech = blow || look(w.mech_ranges, rm);
-  const { sev, rs } = rollSeverity(mech, loc, att, stray);
-  const { armor, final } = armourOn(loc, mech, sev, att);
-  const grazed = final !== "stopped" && isGraze(att.margin, att.crit);
+  const { sev, rs } = rollSeverity(mech, loc, paid, stray);
+  const { armor, final } = armourOn(loc, mech, sev, att, gapped);
+  const grazed = final !== "stopped" && isGraze(paid.margin, att.crit);
   const fx0 = final === "stopped" ? null : DATA.wounds[`${LOC[loc].class}|${mech}|${final}`];
   const fx = fx0 && grazed ? grazeFx(fx0) : fx0;
-  S.hit = { loc, mech, sev: final, rolled: sev, fx, armor, combat: att.combat, graze: grazed, range: rc.range, free: freeHit, strayHit: stray, rolls:{loc:rl, loc2:rl2, mech:rm, sev:rs},
-            weapon:S.weapon, table:S.table, ltable:rtid(), mods:orderedMods().map(m => m.short || m.name), called:S.called };
-  ["#in-loc","#in-loc2","#in-mech","#in-sev","#in-atk-roll","#in-def-roll"].forEach(id => $(id).value = "");
+  S.hit = { loc, mech, sev: final, rolled: sev, fx, armor, combat: att.combat, graze: grazed, range: rc.range, free: freeHit, strayHit: stray, rolls:{loc:rl, mech:rm, sev:rs},
+            aim:{ zone: aim.aimZone, zonePaid: aim.zonePaid, gap: aim.gapAim, gapPaid: gapped, margin: att.margin, left: aim.left },
+            weapon:S.weapon, table:S.table, ltable:rtid(), mods:orderedMods().map(m => m.short || m.name) };
+  ["#in-loc","#in-mech","#in-sev","#in-atk-roll","#in-def-roll"].forEach(id => $(id).value = "");
   renderResult(); shadeFigure(); renderTable();
   if (S.chars.length) renderMap();             // the map's bar shows the last roll
 }
@@ -1472,6 +1496,15 @@ function outcomeWord(h){                         // a roll that made no wound, i
   if (h.blocked) return "No attack";
   return h.miss ? "Miss" : "Parried or dodged";
 }
+function aimLine(h){                              // what the declared aim cost and did
+  const a = h.aim;
+  if (!a || (!a.zone && !a.gap)) return "";
+  const bits = [];
+  if (a.zone) bits.push(a.zonePaid ? `at the ${a.zone}` : `at the ${a.zone}, not paid: landed as rolled`);
+  if (a.gap) bits.push(a.gapPaid ? "for a gap: found it" : "for a gap: none there, or not paid");
+  const cost = a.margin !== null && a.margin !== a.left ? ` (margin ${a.margin} → ${a.left})` : "";
+  return `<div class="sitline">Aimed ${bits.join("; ")}${cost}</div>`;
+}
 function sitLine(h){                             // the range, cover and height behind the attack, in a line
   const g = h.range;
   if (g.band === "free attack") return "Free attack as he leaves contact";
@@ -1494,19 +1527,20 @@ function renderResult(){
   const r = h.rolls, ar = h.armor;
   let armorLine = "";
   if (ar){
-    const cov = ar.rc !== null ? ` (${ar.rcAtk ? "attack's units digit" : "cover d10"} ${ar.rc % 10})` : "";
+    const cov = ar.gapped ? " (aimed for the gap)" : ar.rc !== null ? ` (${ar.rcAtk ? "attack's units digit" : "cover d10"} ${ar.rc % 10})` : "";
     armorLine = `<div class="armor-line">${ar.covered
       ? `<b>${MATS[ar.mat].name}</b>${cov}: ${ar.steps} step${ar.steps === 1 ? "" : "s"}, ${sevLabel(ar.from)} → <b>${sevLabel(ar.to)}</b>`
       : `Gap in the armour${cov}: no protection`}</div>`;
   } else if (!isEvidence()) {
     armorLine = `<div class="armor-line">No armour on ${LOC[h.loc].armor} slot</div>`;
   }
-  const sit = [...h.mods, h.called ? `called ${h.called}` : ""].filter(Boolean).join(" · ");
+  const sit = h.mods.filter(Boolean).join(" · ");
   $("#result").innerHTML = `
     ${combatLines(h.combat)}
-    <div class="rolls"><span>loc ${d2(r.loc)}${r.loc2 ? "/" + d2(r.loc2) : ""}</span><span>${r.mech === null ? "blow: declared" : "mech " + d2(r.mech)}</span>${r.sev ? `<span>sev ${d2(r.sev)}</span>` : h.combat ? `<span>sev: margin</span>` : `<span>sev: your system</span>`}</div>
+    <div class="rolls"><span>loc ${d2(r.loc)}</span><span>${r.mech === null ? "blow: declared" : "mech " + d2(r.mech)}</span>${r.sev ? `<span>sev ${d2(r.sev)}</span>` : h.combat ? `<span>sev: margin</span>` : `<span>sev: your system</span>`}</div>
     <p class="hitname">${LOC[h.loc].name}</p>
     ${sit ? `<div class="sitline">${sit}</div>` : ""}
+    ${aimLine(h)}
     ${h.strayHit ? `<div class="sitline">A stray shot: no attack roll, severity rolled</div>` : ""}
     ${h.range ? `<div class="sitline">${sitLine(h)}</div>` : ""}
     ${h.ltable !== h.table ? `<div class="sitline">Close combat: location from ${DATA.tables[h.ltable].label}</div>` : ""}
@@ -3055,7 +3089,8 @@ function init(){
   $("#trk-rule").textContent = `Bleed drains Blood: B1 ${V.bleed[1].split(";")[1].trim()}, B2 1 per round, B3 3 per round. Tourniquet works on limbs only.`;
   drawFigure(); renderMods(); fillArmor(); syncArmor();
   $("#sel-table").onchange = e => switchTable(e.target.value);
-  $("#sel-called").onchange = e => { S.called = e.target.value; $("#in-loc2").disabled = !S.called; shadeFigure() };
+  $("#sel-aim").onchange = e => { S.aim = e.target.value; shadeFigure() };
+  $("#chk-gap").onchange = e => { S.gap = e.target.checked };
   $("#sel-armor").onchange = e => {   // the chosen defender puts this kit on (shield included)
     S.armor = e.target.value;
     const c = defenderChar(); if (c) c.kit = S.armor;

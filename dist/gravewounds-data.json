@@ -25020,6 +25020,15 @@
    ]
   },
   "graze_margin": 2,
+  "aim": {
+   "cost": 20,
+   "zones": [
+    "head",
+    "torso",
+    "arms",
+    "legs"
+   ]
+  },
   "stop_check": {
    "severities": [
     "serious",
@@ -29949,15 +29958,6 @@
    "notes": "For entrenched or firing-line fighting. Gunfire tables only by default. The Crimean siege returns (1855-56) back the head factor: British rank and file in the siege were hit in the head 1.49 times as often (as a share) as in the field battles and first winter before it, in the face 1.54 times and in the limbs 0.91 times. Those are whole-army totals mixing men under cover and in the open, so they cannot set the torso and leg factors for a man actually behind a parapet."
   }
  ],
- "called_shot": {
-  "zones": [
-   "head",
-   "torso",
-   "arms",
-   "legs"
-  ],
-  "rule": "Roll location twice; keep the roll in the called zone. If both or neither land there, keep the first."
- },
  "armor": {
   "materials": {
    "padded": {

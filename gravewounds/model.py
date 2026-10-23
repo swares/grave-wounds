@@ -87,7 +87,6 @@ class Data:
     tables: dict               # id -> table (ordered by file name)
     wounds: dict
     modifiers: dict = field(default_factory=dict)   # id -> modifier (ordered)
-    called_shot: dict = field(default_factory=dict)
     armor: dict = field(default_factory=dict)       # materials, slots, kits (id -> kit)
     melee_everywhere: list = field(default_factory=list)
     melee_fallback: dict = field(default_factory=dict)
@@ -201,7 +200,6 @@ def load(root: str | Path = "data") -> Data:
         tables={t["id"]: t for t in tables},
         wounds=wounds,
         modifiers={m["id"]: m for m in mods.get("modifiers", [])},
-        called_shot=mods.get("called_shot", {}),
         armor={**armor, "kits": {k["id"]: k for k in armor.get("kits", [])}},
         melee_everywhere=wfile.get("melee_everywhere", []),
         melee_fallback=wfile.get("melee_fallback", {}),

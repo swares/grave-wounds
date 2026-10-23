@@ -34,7 +34,8 @@ def _main(argv=None) -> int:
     r.add_argument("--seed", type=int)
     r.add_argument("-n", type=int, default=1, help="number of hits")
     r.add_argument("--mod", action="append", default=[], help="situation modifier id (repeatable; they stack)")
-    r.add_argument("--called", choices=["head", "torso", "arms", "legs"], help="called shot zone")
+    r.add_argument("--aim", choices=["head", "torso", "arms", "legs"], help="zone the attacker aims at (costs margin on a hit)")
+    r.add_argument("--gap", action="store_true", help="the attacker aims for a gap in the armour (costs margin where there is one)")
     r.add_argument("--blow", choices=["cut", "pierce", "crush"], help="the blow a cut-and-thrust weapon's wielder declares (else rolled)")
     r.add_argument("--armor", help="target armour kit id")
     r.add_argument("--shield", choices=["kit", "yes", "no"],
@@ -273,10 +274,19 @@ def _main(argv=None) -> int:
                 shield = bool((d.armor["kits"].get(a.armor or "none") or {}).get("shield", False))
             if a.blow and not d.weapons[a.weapon].get("choose"):
                 raise SystemExit(f"{a.weapon} is not a cut-and-thrust weapon: its blow is not chosen")
-            h = roll_hit(d, a.table, a.weapon, a.severity, rng, a.mod, a.called, a.armor, margin, bool(crit), shield,
-                         mechanism=a.blow, attack_roll=aroll)
+            h = roll_hit(d, a.table, a.weapon, a.severity, rng, a.mod, a.aim, a.armor, margin, bool(crit), shield,
+                         mechanism=a.blow, attack_roll=aroll, gap=a.gap)
             rl = h["rolls"]
-            loc_roll = fmt(rl["location"]) + (f"/{fmt(rl['location2'])}" if rl["location2"] else "")
+            loc_roll = fmt(rl["location"])
+            am = h["aim"]
+            if am["zone"] or am["gap"]:
+                bits = []
+                if am["zone"]:
+                    bits.append(f"at the {am['zone']}" + ("" if am["zone_paid"] else " (not paid: lands as rolled)"))
+                if am["gap"]:
+                    bits.append("for a gap" + ("" if am["gap_paid"] else " (no gap there, or not paid)"))
+                spent = "" if am["margin"] is None else f", margin {am['margin']} -> {am['left']}"
+                print(f"    Aimed {' and '.join(bits)}{spent}")
             sev_roll = f" (d100 {fmt(rl['severity'])})" if rl["severity"] else ""
             ar = h["armor"]
             sev_txt = ar["from"] if ar else h["severity"]
