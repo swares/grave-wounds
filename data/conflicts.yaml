@@ -166,7 +166,8 @@ conflicts:
         look: {colour: "#3a3a3a", trousers: "#d9b44a"}
     examples:
       - {name: "Swiss pikeman", side: "Swiss Confederates", kit: brigandine_sallet, weapon: pike, notes: "An 18-foot pike; the pikemen were the better armoured and better paid."}
-      - {name: "Swiss halberdier", side: "Swiss Confederates", kit: jack_sallet, weapon: poleaxe, notes: "The halberd (as the poleaxe); the cuts on the Dornach skulls fit sword or halberd."}
+      - {name: "Swiss halberdier", side: "Swiss Confederates", kit: jack_sallet, weapon: halberd, notes: "The halberd; the cuts on the Dornach skulls fit sword or halberd."}
+      - {name: "Swiss handgunner", side: "Swiss Confederates", kit: none, weapon: handgun, notes: "About one man in nine at a Willisau muster of 1490 carried a gun."}
       - {name: "Landsknecht", side: "Swabian League and the Empire", kit: jack_sallet, weapon: pike, notes: "Four gulden a month, when it was paid."}
       - {name: "Imperial knight", side: "Swabian League and the Empire", kit: full_plate, weapon: sword, notes: "Fürstenberg and other lords fell in the fight for the guns."}
     sources:

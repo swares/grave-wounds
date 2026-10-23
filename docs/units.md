@@ -1027,7 +1027,7 @@ meets the first of the other; a hero left over strikes the rankers as usual.
 
 **Arms and legs.** With an arm hurt (an arm wound, a lost grip, a useless hand or arm,
 on either side) a hero cannot use a two-handed weapon: bows, crossbows, muskets and
-rifles, machine guns and rocket launchers, bills, pikes and poleaxes (`two_handed` in
+rifles, machine guns and rocket launchers, bills, halberds, pikes and poleaxes (`two_handed` in
 weapons.yaml). He only defends: no strikes, no shots, no attempts in a duel, though blows
 still fall on him and he still parries. A one-handed weapon he goes on using, off-hand if
 it is his weapon arm. A hero lamed (a leg wound, cannot stand, collapsed, slowed), from this

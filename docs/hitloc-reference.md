@@ -277,6 +277,7 @@ knife-assault table, unarmed strikes on the MMA table). A weapon can name its ow
   table (chops and blows), with `fallback_mods: [no_shield]` applied automatically because
   their users carry no shield. No wound-location data exists for either;
 - the bill and poleaxe roll on the Towton gameplay-adjusted table;
+- the halberd rolls on the Dornach gameplay-adjusted table (and on the cuts of its skull table);
 - the pike rolls on the Visby gameplay-adjusted table as a long spear, with no shield and
   more thrusts to the face and chest. No count of pike wounds was found. It is offered only
   on the tables of its era: a table's `era_melee` lists close-combat weapons it offers beyond

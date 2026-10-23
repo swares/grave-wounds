@@ -23,7 +23,8 @@ patterns:
   - {match: "pistol|revolver|Glock|M1911", kg: 1.2}
   - {match: "crossbow", kg: 6.6}
   - {match: "longbow|bow stave", kg: 0.9}
-  - {match: "poleaxe|\\bbill\\b|war axe|\\bpike\\b", kg: 2.5}
+  - {match: "poleaxe|halberd|\\bbill\\b|war axe|\\bpike\\b", kg: 2.5}
+  - {match: "handgun", kg: 5}
   - {match: "spear", kg: 2}
   - {match: "saber|sword", kg: 1.4}
   - {match: "bayonet|dagger|knife|machete", kg: 0.5}

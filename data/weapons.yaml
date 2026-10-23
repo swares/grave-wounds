@@ -154,6 +154,26 @@ weapons:
       (ignores 1 step vs crush and pierce: design estimate). On the Towton evidence table it
       rolls on the blunt-force wounds, which were mostly to the head and face.
 
+  - id: halberd
+    name: "Halberd (axe blade, spike and hook)"
+    short: "Halberd"
+    two_handed: true
+    icon: bill
+    reach: 2
+    era: 1400s-1600s
+    melee: armed
+    melee_table: dornach-1499-all-hits
+    mechanisms: {cut: 55, pierce: 35, crush: 10}
+    zone_bias: {head: 1.2}
+    armor_defeat: {pierce: 1}
+    confidence: extrapolated
+    notes: >
+      The Swiss weapon of the 15th century, 5-8 feet long (Winkler after Elgger): an axe blade
+      to cut, a spike to thrust and a hook to drag a horseman down; the halberdiers were the least
+      armoured men in the Swiss line. The spike ignores a step of armour against pierce (a design
+      estimate). On the Dornach evidence it rolls on the cuts, which Cooper finds fit sword or
+      halberd and cannot tell apart.
+
   # --- Bows, crossbows, slings ---------------------------------------------
   - id: bow
     name: "Bow (war arrows)"
@@ -360,6 +380,26 @@ weapons:
     zone_bias: {}
     confidence: historical
     notes: "Heavy infantry musket fired from a rest or the shoulder; a lead ball of about .70-.80 calibre. On the Lützen table it uses the 32 recorded gunshot injuries (mostly carbines and pistols; no source separates musket hits)."
+
+  - id: handgun
+    name: "Handgun (early arquebus, c.1450-1520)"
+    short: "Handgun"
+    two_handed: true
+    icon: long_gun
+    range: [12, 25, 50]
+    ignition: match
+    era: "1450s-1520s"
+    threat: rifle
+    mechanisms: {ballistic: 100}
+    zone_bias: {}
+    confidence: extrapolated
+    notes: >
+      The Swiss and Landsknecht handgun of about 1500 (Büchse, Hakenbüchse), fired with a match;
+      the Swiss reckoned its reach at 150-200 paces (Winkler after Elgger), and it was less
+      accurate than the later musket, so its range bands are shorter (a design estimate). A
+      Willisau muster of 1490 had 50 guns to 400 pikes and halberds. It is offered on the Dornach
+      tables: on the skull table it rolls on the five gunshot wounds, on the gameplay table as the
+      rest of its weights.
 
   - id: wheellock_pistol
     name: "Wheellock pistol or carbine (cavalry)"

@@ -208,7 +208,7 @@ careers:
     wound: 25
     wound_weapon: sword
     kit: {default: hauberk, latin_east: hauberk, baltic: danish_maa, england: brigandine_sallet, france: full_plate, portugal: transitional, castile: transitional, swiss: brigandine_sallet, landsknecht: full_plate}
-    weapon: {default: sword, swiss: poleaxe}
+    weapon: {default: sword, swiss: halberd}
     terms:
       - {to: 20, skill: ride, text: "Rode in a lord's household for a season."}
       - {to: 40, skill: command, text: "Led a handful of men on a raid."}
@@ -224,7 +224,7 @@ careers:
     wound: 15
     wound_weapon: sword
     kit: {default: gambeson, baltic: gotland_levy, england: jack_sallet, france: jack_sallet}
-    weapon: {default: bow, england: longbow, france: longbow, portugal: longbow, swiss: matchlock_musket, landsknecht: matchlock_musket}
+    weapon: {default: bow, england: longbow, france: longbow, portugal: longbow, swiss: handgun, landsknecht: handgun}
     terms:
       - {to: 20, skill: watch, text: "Stood sentry on a border tower."}
       - {to: 40, skill: stealth, text: "Scouted ahead of the army."}

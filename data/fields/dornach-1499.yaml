@@ -186,15 +186,15 @@ works:
     - {type: wagon, at: [[22, 108], [25, 112], [28, 108], [31, 112], [34, 108], [37, 112], [40, 108], [43, 112], [46, 108], [49, 112], [52, 108], [55, 112], [58, 108], [61, 112], [64, 108], [67, 112], [70, 108], [73, 112], [76, 108], [79, 112], [82, 108], [85, 112]]}
 units:
   - {name: "Solothurn's vanguard (Niklaus Conrad)", side: 0, men: 1000, quality: veteran, weapon: pike, kit: brigandine_sallet, formation: close, width: 20, pos: [72, 30], facing: 4, size: battalion}
-  - {name: "Solothurn's halberdiers", side: 0, men: 500, quality: veteran, weapon: poleaxe, kit: jack_sallet, formation: close, width: 12, pos: [90, 32], facing: 4, size: battalion}
-  - {name: "Bernese under Kaspar von Stein", side: 0, men: 500, quality: veteran, weapon: poleaxe, kit: jack_sallet, formation: close, width: 12, pos: [52, 30], facing: 4, size: battalion}
+  - {name: "Solothurn's halberdiers", side: 0, men: 500, quality: veteran, weapon: halberd, kit: jack_sallet, formation: close, width: 12, pos: [90, 32], facing: 4, size: battalion}
+  - {name: "Bernese under Kaspar von Stein", side: 0, men: 500, quality: veteran, weapon: halberd, kit: jack_sallet, formation: close, width: 12, pos: [52, 30], facing: 4, size: battalion}
   - {name: "Zürich (Kaspar Göldli)", side: 0, men: 400, quality: veteran, weapon: pike, kit: brigandine_sallet, formation: close, width: 12, pos: [36, 30], facing: 4, size: battalion}
   - {name: "Bern's main banner (Rudolf von Erlach)", side: 0, men: 3000, quality: veteran, weapon: pike, kit: brigandine_sallet, formation: close, width: 36, pos: [58, 18], facing: 4, size: regiment}
   - {name: "Lucerne and Zug", side: 0, men: 1000, quality: veteran, weapon: pike, kit: brigandine_sallet, formation: close, width: 16, pos: [10, 36], facing: 4, size: battalion}
-  - {name: "Dorneck garrison (Benedikt Hugi)", side: 0, men: 20, quality: veteran, weapon: matchlock_musket, kit: none, formation: open, width: 2, pos: [95, 16], facing: 4, size: platoon}
+  - {name: "Dorneck garrison (Benedikt Hugi)", side: 0, men: 20, quality: veteran, weapon: handgun, kit: none, formation: open, width: 2, pos: [95, 16], facing: 4, size: platoon}
   - {name: "Imperial guns before Dorneck and in the Ramstel", side: 1, men: 100, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 5, pos: [68, 60], facing: 1, guns: smoothbore, size: battery}
   - {name: "Fürstenberg and the knights", side: 1, men: 300, quality: veteran, weapon: spear, kit: full_plate, formation: close, width: 10, pos: [56, 64], facing: 1, mounted: true, size: battalion}
-  - {name: "Imperial handgunners", side: 1, men: 300, quality: regular, weapon: matchlock_musket, kit: none, formation: open, width: 10, pos: [78, 62], facing: 1, size: battalion}
+  - {name: "Imperial handgunners", side: 1, men: 300, quality: regular, weapon: handgun, kit: none, formation: open, width: 10, pos: [78, 62], facing: 1, size: battalion}
   - {name: "Landsknechte in the camp", side: 1, men: 3000, quality: regular, weapon: pike, kit: jack_sallet, formation: close, width: 36, pos: [53, 80], facing: 1, size: regiment}
   - {name: "Geldern Landsknechte", side: 1, men: 2000, quality: veteran, weapon: pike, kit: jack_sallet, formation: close, width: 26, pos: [90, 84], facing: 1, size: regiment}
   - {name: "Swabian and Alsatian levies", side: 1, men: 3000, quality: green, weapon: spear, kit: gambeson, formation: close, width: 40, pos: [41, 100], facing: 1, size: regiment}
