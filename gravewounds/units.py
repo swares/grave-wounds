@@ -1017,6 +1017,8 @@ def morale(d: Data, unit: dict, roll: int) -> dict:
     M = d.units["morale"]
     if unit["state"] == "broken":
         return {"check": False, "target": None, "state": "broken"}
+    if M.get("posture_flank") and unit.get("holds"):
+        unit = {**unit, "flanked": False}   # holding a position, its men face every way (morale.posture_flank)
     struck = _attrition(M, unit) or unit["lost"] >= M["shock"] * max(1, unit["men"]) or unit.get("flanked") or _losing(M, unit)
     rally = unit["state"] == "shaken" and not unit.get("contact")
     if not struck and not rally:
@@ -1049,12 +1051,11 @@ def _attrition(mo: dict, unit: dict) -> bool:
 
 
 def _failed(mo: dict, unit: dict, by: int) -> str:
-    """A failed check: a steady unit is shaken, unless it fails badly while flanked (not while
-    holding a position, with morale.posture_flank) or with half its men down; a shaken unit breaks."""
+    """A failed check: a steady unit is shaken, unless it fails badly while flanked or with
+    half its men down; a shaken unit breaks."""
     if unit["state"] == "shaken":
         return "broken"
-    flank = unit.get("flanked") and not (mo.get("posture_flank") and unit.get("holds"))
-    hard = flank or unit["down"] >= unit["start"] / 2
+    hard = unit.get("flanked") or unit["down"] >= unit["start"] / 2
     return "broken" if hard and by > mo["shaken_by"] else "shaken"
 
 

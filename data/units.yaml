@@ -753,11 +753,14 @@ morale:
   #   while at the English line). Measured on 24 runs of every battlefield: 671 of 912 from 658,
   #   the June Redan 2 to 14.
   posture_hand: true
-  # posture_flank: a unit holding a position (as posture) struck in flank or rear still checks, but a
-  #   failure shakes it rather than breaking it at once: men in buildings or works face every way.
-  #   At Keating the barracks (B Troop, 10 to 21 men, steady) broke outright in 4 of 24 runs the first
-  #   time one to three insurgents reached its flank hand to hand, losing no one or one man, where the
-  #   accounts have the men in its buildings holding all morning. false: the old rule.
+  # posture_flank: a unit holding a position (as posture) is not flanked: men in buildings or works
+  #   face every way. Being struck in flank or rear neither calls a check nor costs it -20, nor
+  #   breaks it at once on a bad failure. At Keating the barracks (B Troop, 10 to 21 men, steady)
+  #   broke in 4 of 24 runs the first time one to three insurgents reached its flank hand to hand,
+  #   losing no one or one man, where the accounts have the men in its buildings holding all
+  #   morning; letting a failure only shake it changed nothing there (shaken and still flanked, it
+  #   broke the next exchange). Measured on 24 runs of every battlefield: 3 runs more (Keating 17 to
+  #   20, Chipyong-ni 21 to 23, Mogadishu 17 to 19; Goose Green 5 to 3). false: the old rule.
   posture_flank: true
   shaken_by: 20
   mods:

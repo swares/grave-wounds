@@ -152,8 +152,8 @@ The check is d100 against its Nerve (green 35, regular 50, veteran 65), with mod
 | Lost the exchange | −5 a man more lost than it put down (at most −30) |
 
 - **Steady, fails:** shaken. A shaken unit fights at −10 and cannot charge. It breaks at
-  once instead if it fails by more than 20 while flanked (not while holding a position; see
-  below) or with half its men down.
+  once instead if it fails by more than 20 while flanked or with half its men down (a unit
+  holding a position is not flanked; see below).
 - **Shaken, fails:** broken.
 - **Shaken, passes out of contact:** it rallies to steady.
 
@@ -173,11 +173,12 @@ applied it to attackers in cover too, and at Wanat the Taliban in the draw stopp
 16); a check when a unit of its own side within 2 hexes broke was measured and changed nothing.
 
 **Flanked, holding a position** (`morale.posture_flank`). A unit holding a position (as above)
-that is struck in flank or rear still checks, but a failure shakes it rather than breaking it
-at once: men in buildings or works face every way. Before 23 October, at Keating, the barracks
-(B Troop, 10 to 21 men, steady) broke outright in 4 of 24 runs the first time one to three
-insurgents reached its flank hand to hand, having lost no one or one man; the accounts have the
-men in its buildings holding all morning.
+is not flanked: men in buildings or works face every way. Being struck in flank or rear neither
+calls a check, nor costs it 20, nor breaks it at once. Before 23 October, at Keating, the barracks
+(B Troop, 10 to 21 men, steady) broke in 4 of 24 runs the first time one to three insurgents
+reached its flank hand to hand, having lost no one or one man; the accounts have the men in its
+buildings holding all morning. A failure only shaking it was measured first and changed nothing
+there: shaken and still flanked, it broke the next exchange.
 
 **Losing the fight, holding a position** (`morale.posture_hand`). A unit holding a position (as
 above) and not flanked has lost the exchange in contact only if it lost more men hand to hand than
