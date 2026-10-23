@@ -9,6 +9,17 @@ When an item is done, delete it here and note it in the pull request that closes
 
 ## Deferred work
 
+- **Virtual GM, first cut.** The roller's strike is decided with no page (`templates/strike.js`:
+  the situation, the player's declarations and typed dice in, the hit, its dice and its side
+  effects out), and each strike and applied wound goes into an event log tagged with who may
+  see it in full (`templates/gamelog.js`), with a view per side. Still left out: the roller's
+  other rolls (initiative, bleeding and morale each round, first aid, hazards, tongues, loot)
+  are made and shown as before, not logged; the log is a record, not yet the save (the fight
+  is still restored from its state, and the log is kept to its last 500 events); a strike's
+  public part is fixed (the outcome, where it landed, the attack and defence rolls), not a GM
+  setting; the field and travel pages have no log. Next: a scripted GM and a GM-assist mode
+  driving the same strike and log, then play over WebRTC with the GM's page as host, sending
+  each player only his side's view.
 - **Lethality, first cut.** Gritty | Standard | Heroic for player characters (wounds.yaml
   lethality): fate a season, Blood and the stop check, on every page. Still left out: fate does
   not save a man from drowning, a fall or the other hazards; the roller offers fate only on the hit

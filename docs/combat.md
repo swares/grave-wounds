@@ -263,6 +263,23 @@ count goes on from there.
   - A free attack is set up for you: roll the hit and apply it, or **Skip** it. The token
     has moved already, so if the free attack stops him, use Free placement to put him
     back where he was hit.
+- **Event log** (under the cards) records each strike and each wound applied, in order,
+  with every die it used: the ones the player typed in are marked \*, the rest were rolled.
+  **As seen by** shows the log as the GM sees it (everything) or as one side does. A side
+  sees its own men's wounds in full; of the other side's it sees only what the table would:
+  the outcome, where a blow landed, the attack and defence rolls, and whether the man fell.
+  **Save this view** downloads that side's view as a file. The log is kept with the fight in
+  the browser (the last 500 events); the examples on a fresh page and the roll the page opens
+  with are not logged.
+
+**How the roller decides a strike.** The attack, defence, location, blow, severity and armour
+are worked out in `templates/strike.js`, which never touches the page: the page measures the
+situation (range, cover, wounds, armour), passes what the player declared and any dice he
+typed, and shows the result. The log is `templates/gamelog.js`. This is the start of the
+virtual GM: the same rules can then be driven by a scripted GM, or by a host sending each
+player only his side's view. `python3 tools/strike/parity.py` plays thousands of strikes through
+it and through `gravewounds.engine.roll_hit` on the same dice and checks they agree, then runs
+its tests (`tools/strike/test.js`).
 
 These are first-draft numbers for playtesting. The design notes in
 [design.md](design.md) say what they should be calibrated against: how often wounded men
