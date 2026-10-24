@@ -1852,17 +1852,17 @@ async function netAccept(p, reply){
   renderNet();
 }
 const netLink = code => `${location.href.split("#")[0]}#join=${code}`;
-const NET_LOST = ["closed", "failed", "disconnected"];
+const NET_LOST = new Set(["closed", "failed", "disconnected"]);
 function netPeerRow(p){
   const side = esc(p.seat.slice(5)), st = { open: "connected", closed: "gone", failed: "could not connect", disconnected: "lost" }[p.state] || p.state;
-  const invite = p.code && p.state !== "open" && !NET_LOST.includes(p.state) ? `<label class="muted" style="display:block">1. Send this link to the player for ${side}:
+  const invite = p.code && p.state !== "open" && !NET_LOST.has(p.state) ? `<label class="muted" style="display:block">1. Send this link to the player for ${side}:
       <textarea readonly rows="2" data-net-link="${p.n}" style="width:100%">${esc(netLink(p.code))}</textarea></label>
       <button type="button" class="small" data-net="copy" data-n="${p.n}">Copy the link</button>
       <label class="muted" style="display:block">2. Paste the reply code his page gives him:
       <textarea rows="2" data-net-reply="${p.n}" style="width:100%"></textarea></label>
       <button type="button" class="small" data-net="accept" data-n="${p.n}">Connect</button>` : "";
   const err = p.err ? `<p class="ev-bad" style="margin:0">${esc(p.err)}</p>` : "";
-  const lost = NET_LOST.includes(p.state);
+  const lost = NET_LOST.has(p.state);
   const again = lost ? ` <button type="button" class="small primary" data-net="again" data-n="${p.n}" title="A new link for the same side: his page keeps his last screen until he is back">Invite again</button>` : "";
   const note = lost ? `<p class="muted" style="margin:0">His side waits for him on its turns: invite him again, or play it yourself (Run the fight: GM by hand).</p>` : "";
   return `<li><b>${side}</b>: ${esc(st)}${again} <button type="button" class="small" data-net="drop" data-n="${p.n}">Drop</button>${invite}${note}${err}</li>`;
@@ -2024,7 +2024,9 @@ async function guestJoin(){                           // join (or rejoin) the GM
   try {
     const g = await NET.guestPeer({ invite, stun: invite.stun !== false,
       onMessage: m => { if (m.t === "screen"){ $("#g-join").style.display = "none"; guestShow(m); guestKeep(invite.seat, m) } },
-      onState: st => { if (st === "open") return; if (GUEST.peer === g) guestLost() } });
+      onState: st => {
+        if (st !== "open" && GUEST.peer === g) guestLost();
+      } });
     GUEST.peer = g; GUEST.send = g.send;
     $("#g-join").style.display = "";
     $("#g-join").innerHTML = `<h2>Send this reply to the GM</h2><p class="muted">The GM pastes it into Play online, under ${side}. This page then shows your side's view of the fight.</p>
