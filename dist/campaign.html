@@ -3731,6 +3731,11 @@ function note(text, gm = false, kind = null){         // a line in the campaign'
   logEvent(REC.log, { round: st.travel?.day ?? null, type: "note", vis: gm ? [] : "public", data: { phase: REC.phase, text, ...(kind ? { kind } : {}) } });
   saveRecord();
 }
+function noteFor(text, seats){                        // a line for these seats (and the GM) only
+  const st = CAMPAIGN.status(CAMPAIGN.read(localStorage), CD);
+  logEvent(REC.log, { round: st.travel?.day ?? null, type: "note", vis: seats, data: { phase: REC.phase, text } });
+  saveRecord();
+}
 function setPhase(id, why = ""){
   if (REC.phase === id) return;
   REC.phase = id;
@@ -3849,12 +3854,16 @@ function forceRow(f){
 function giveOrder(what){                             // an order for the open force, given from the saved day and saved; what it came to goes into the log
   const picked = k => $(`#c-march select[data-pick="${k}"]`)?.value ?? ORDER_PICK[k];   // what the row shows now, chosen or not
   const arg = { to: picked("to"), via: picked("to"), camp: picked("camp") }[what] ?? null;
-  const said = newDay().giveOrder(ORDERS_FOR, what, arg);
+  applyOrder(ORDERS_FOR, what, arg);
+}
+function applyOrder(id, what, arg){                    // an order given from the saved day and saved; what it came to goes into the log
+  const said = newDay().giveOrder(id, what, arg);
   MARCH_SAID = said || "";
   if (said) note(said, false, "march");
   const f = $("#c-frame");
   try { f.contentWindow.location.reload() } catch { f.setAttribute("src", f.getAttribute("src")) }
   render();
+  return said;
 }
 function renderMarch(){
   const box = $("#c-march");
@@ -4257,14 +4266,41 @@ function menHtml(v){                                  // his men, as he sees the
   const row = m => `<tr><td><b>${esc(m.name)}</b></td><td>${esc(m.health)}</td><td>${esc(m.force || (m.dead ? "" : "with no force"))}</td><td>${esc(m.purse || "")}</td></tr>`;
   return `<div class="tablewrap"><table><thead><tr><th>Man</th><th>How he is</th><th>With</th><th>Purse</th></tr></thead><tbody>${v.men.map(row).join("")}</tbody></table></div>`;
 }
-function forceHtml(v){                                // the forces his men are with, and nothing of anyone else's
+const ORDER_WORDS = { to: "march to", via: "go by way of", clear: "clear its route and halt", march: "march on its route", halt: "halt", rest: "rest until next morning", camp: "make a" };
+const proposals = () => (REC.proposals ||= []);
+function proposalText(o, what, arg){                  // a proposal in words, from the force's choices; null if it is not one of them
+  if (!Object.hasOwn(ORDER_WORDS, what)) return null;
+  if (what === "to" || what === "via"){ const place = o.places.find(x => x[0] === arg); return place ? `${ORDER_WORDS[what]} ${place[1]}` : null }
+  if (what === "camp"){ const c = o.camps.find(x => x[0] === arg && x[3]); return c ? `make a ${c[1].toLowerCase()}` : null }
+  return ORDER_WORDS[what];
+}
+const PROPOSAL_STATE = { open: "waiting for the GM", accepted: "accepted", declined: "declined", replaced: "replaced" };
+function proposeHtml(pl, f){                          // his orders for one of his forces, as proposals to the GM
+  const last = [...proposals()].reverse().find(x => x.player === pl.id && x.force === f.id);
+  const said = last ? `<p class="muted" style="margin:0">Your proposal: ${esc(last.text)} · ${esc(PROPOSAL_STATE[last.state] || last.state)}${last.said ? " (" + esc(last.said) + ")" : ""}</p>` : "";
+  if (REC.proposeOff) return said + '<p class="muted" style="margin:0">The GM is giving the orders himself just now.</p>';
+  let o = null;
+  try { o = newDay().orderChoices(f.id) } catch { o = null }
+  if (!o || o.led) return said;
+  const opt = rows => rows.map(([v, name]) => `<option value="${esc(v)}">${esc(name)}</option>`).join("");
+  const camps = o.camps.filter(c => c[3]).map(c => [c[0], c[1]]);
+  return `<div class="propose" data-force="${f.id}" style="display:flex;flex-direction:column;gap:6px;border-top:1px dashed var(--line);padding-top:6px">
+    <b style="font-size:.9rem">Propose its orders</b>
+    <span class="toolbar"><label class="muted">March to <select data-pick="to">${opt(o.places)}</select></label>
+      <button type="button" class="small" data-propose="to">Propose this route</button><button type="button" class="small" data-propose="via">As a waypoint</button></span>
+    <span class="toolbar"><button type="button" class="small" data-propose="${o.order === "march" ? "halt" : "march"}">${o.order === "march" ? "Halt" : "March on its route"}</button>
+      <button type="button" class="small" data-propose="rest">Rest until next morning</button><button type="button" class="small" data-propose="clear">Clear the route</button></span>
+    ${camps.length ? `<span class="toolbar"><label class="muted">Make camp <select data-pick="camp">${opt(camps)}</select></label><button type="button" class="small" data-propose="camp">Propose a camp</button></span>` : ""}
+    ${said}</div>`;
+}
+function forceHtml(v, pl = null){                      // the forces his men are with, and nothing of anyone else's
   if (!v.map) return '<p class="muted" style="margin:0">No map yet.</p>';
   const head = `<p style="margin:0"><span class="when">Day ${v.day}, ${esc(v.time)}</span> · ${esc(v.date)} · ${esc(v.map)}</p>`;
   if (!v.forces.length) return head + '<p class="muted" style="margin:0">None of your men is with a force on the map.</p>';
   const one = f => `<h3>${esc(f.name)} <span class="muted">(${esc(f.side)})</span></h3>
     <p style="margin:0">${esc(f.order)} · at ${esc(f.where)} · ${f.fit}/${f.men} fit · ${esc(f.fatigue)}</p>
     <p class="muted" style="margin:0">${f.route ? "Route: " + esc(f.route) : "No route."}</p>
-    ${f.log.length ? '<ol class="log" style="max-height:9rem">' + f.log.map(l => "<li>" + esc(l) + "</li>").join("") + "</ol>" : ""}`;
+    ${f.log.length ? '<ol class="log" style="max-height:9rem">' + f.log.map(l => "<li>" + esc(l) + "</li>").join("") + "</ol>" : ""}${pl ? proposeHtml(pl, f) : ""}`;
   return head + v.forces.map(one).join("");
 }
 function newsHtml(seat){                              // the campaign's log as this seat hears it, newest first
@@ -4276,7 +4312,7 @@ function playerScreen(pl){                            // what this player's page
   try { v = newDay().seatView(pl.men) } catch { v = { map: null, men: [], forces: [] } }
   const phase = phaseOf(REC.phase).name;
   return { t: "camp", seat: seatOf(pl), name: pl.name, campaign: REC.name || "The campaign", phase,
-    men: menHtml(v), force: forceHtml(v), news: newsHtml(seatOf(pl)) };
+    men: menHtml(v), force: forceHtml(v, pl), news: newsHtml(seatOf(pl)) };
 }
 function playerSend(pl){
   const c = PL.conn[pl.id];
@@ -4295,9 +4331,35 @@ function playersFollow(){                             // after the console draws
   relayIn();
   playersSync();
 }
-function playerCommand(pl, m){                         // his choices in his fight go on to the roller, which checks they are his to make
+function playerCommand(pl, m){                         // his proposed orders; his choices in his fight go on to the roller, which checks they are his to make
   if (!m || typeof m.t !== "string") return;
+  if (m.t === "propose") return propose(pl, m);
   if (PL.fighting.has(pl.id)) tellRoller("player", { id: pl.id, m });
+}
+function propose(pl, m){                              // a proposal: only for a force one of his men is with, only one of its own choices
+  if (REC.proposeOff) return;
+  let v, o;
+  try { v = newDay().seatView(pl.men); o = v.forces.some(f => f.id === m.force) ? newDay().orderChoices(m.force) : null } catch { return }
+  if (!o || o.led) return;
+  const arg = typeof m.arg === "string" ? m.arg : null, text = proposalText(o, m.what, arg);
+  if (!text) return;
+  for (const x of proposals()) if (x.player === pl.id && x.force === o.id && x.state === "open") x.state = "replaced";
+  const last = proposals().at(-1);
+  const x = { n: (last?.n || 0) + 1, player: pl.id, who: pl.name, force: o.id, forceName: o.name, what: m.what, arg, text, state: "open", at: new Date().toISOString() };
+  proposals().push(x);
+  noteFor(`${pl.name} proposes: ${o.name} to ${text}`, [seatOf(pl)]);
+  $("#c-notice").textContent = `${pl.name} proposes: ${o.name} to ${text}. Accept or decline it under Players online.`;
+  $("#c-notice").hidden = false;
+  renderPlayers(); playersSync();
+}
+function answerProposal(n, yes){
+  const x = proposals().find(p => p.n === n && p.state === "open");
+  if (!x) return;
+  const pl = players().find(p => p.id === x.player);
+  x.state = yes ? "accepted" : "declined";
+  if (yes) x.said = applyOrder(x.force, x.what, x.arg) || "";
+  if (pl) noteFor(`The GM ${yes ? "accepts" : "declines"} ${pl.name}'s proposal: ${x.forceName} to ${x.text}`, [seatOf(pl)]);
+  saveRecord(); renderPlayers(); playersSync();
 }
 /* His fight through his link: the roller in the frame draws his side's screen as for a Play online
    player and hands it here; this page passes it on to him, and his choices back. */
@@ -4374,11 +4436,20 @@ function renderPlayers(){
   const open = players().filter(pl => PL.conn[pl.id]?.state === "open").length;
   box.innerHTML = `<div class="toolbar" style="justify-content:space-between"><h2 id="h-players">Players online</h2><span class="muted">${open} connected</span></div>
     <p class="muted" style="margin:0;font-size:.9rem">Each player gets his own link for the session and sees his men, the forces they are with and the campaign's news (not the GM's notes, nor the march's word on other forces), from his own computer. No server: the link and his reply are passed by hand.</p>
+    ${proposalsHtml()}
     ${players().length ? `<ul class="players">${players().map(playerRow).join("")}</ul>` : ""}
     <div class="toolbar"><label class="muted">Player <input type="text" id="pl-name" placeholder="His name" style="width:12em"></label>
       <button type="button" class="small" id="pl-add">Add a player</button>
       <label class="muted" style="display:inline-flex;gap:4px;align-items:center" title="Lets pages find each other across the internet; on one network it is not needed"><input type="checkbox" id="pl-stun"${PL.stun ? " checked" : ""}> Public STUN server</label></div>
     <span class="muted" style="font-size:.88rem">His men: ${menPicker([], 'data-pl-new')}</span>`;
+}
+function proposalsHtml(){                             // the players' proposed orders waiting for the GM
+  const open = proposals().filter(x => x.state === "open");
+  const off = `<label class="muted" style="display:inline-flex;gap:4px;align-items:center;font-size:.88rem"><input type="checkbox" id="pl-propose"${REC.proposeOff ? "" : " checked"}> Players may propose orders for their forces</label>`;
+  if (!open.length) return off;
+  const row = x => `<li><span><b>${esc(x.who)}</b> proposes: ${esc(x.forceName)} to ${esc(x.text)}</span>
+    <span class="toolbar"><button type="button" class="small primary" data-prop="yes" data-n="${x.n}">Accept</button><button type="button" class="small" data-prop="no" data-n="${x.n}">Decline</button></span></li>`;
+  return `${off}<h3 style="margin:0">Proposed orders</h3><ul class="fights">${open.map(row).join("")}</ul>`;
 }
 function addPlayer(){
   const name = $("#pl-name").value.trim(), men = [...document.querySelectorAll("[data-pl-new]:checked")].map(x => x.value);
@@ -4392,6 +4463,8 @@ function addPlayer(){
 }
 $("#c-players").addEventListener("click", e => {
   if (e.target.id === "pl-add") return addPlayer();
+  const prop = e.target.closest("button[data-prop]");
+  if (prop) return answerProposal(+prop.dataset.n, prop.dataset.prop === "yes");
   const b = e.target.closest("button[data-pl]"); if (!b) return;
   const pl = players().find(x => x.id === b.dataset.id); if (!pl) return;
   const what = b.dataset.pl;
@@ -4405,6 +4478,7 @@ $("#c-players").addEventListener("click", e => {
 });
 $("#c-players").addEventListener("change", e => {
   if (e.target.id === "pl-stun") PL.stun = e.target.checked;
+  if (e.target.id === "pl-propose"){ REC.proposeOff = !e.target.checked; saveRecord(); playersSync() }
   const man = e.target.closest("[data-pl-man]");
   if (man){
     const pl = players().find(x => x.id === man.dataset.plMan); if (!pl) return;
@@ -4449,9 +4523,22 @@ function pgLayout(){
     <section class="panel" aria-labelledby="h-pnews"><h2 id="h-pnews">News</h2><ol class="log" id="p-news" aria-label="The campaign's news, newest first"></ol></section>`;
 }
 function pgShow(m, changed = null){
+  const picks = [...document.querySelectorAll("#p-force .propose select[data-pick]")].map(el => [el.closest(".propose").dataset.force, el.dataset.pick, el.value]);
   for (const k of ["men", "force", "news"]) if (!changed || changed.includes(k)) $("#p-" + k).replaceChildren(...NET.clean(m[k]));
+  for (const [force, pick, v] of picks){             // what he had chosen stays chosen when the panel is drawn again
+    const el = document.querySelector(`#p-force .propose[data-force="${CSS.escape(force)}"] select[data-pick="${CSS.escape(pick)}"]`);
+    if (el && [...el.options].some(o => o.value === v)) el.value = v;
+  }
   $("#p-title").textContent = m.campaign || "Campaign";
   $("#p-who").textContent = `${m.name}, playing · ${m.phase}`;
+}
+function pgPropose(e){                                // his proposal: the order and its place or camp, as he chose them
+  const b = e.target.closest("button[data-propose]"), box = b?.closest(".propose");
+  if (!box) return;
+  const what = b.dataset.propose, pick = { to: "to", via: "to", camp: "camp" }[what];
+  const arg = pick ? box.querySelector(`select[data-pick="${pick}"]`)?.value ?? null : null;
+  PG.send({ t: "propose", force: +box.dataset.force, what, arg });
+  $("#p-status").textContent = "Your proposal has gone to the GM.";
 }
 function pgKeep(seat, m){ try { sessionStorage.setItem(PG_KEY, JSON.stringify({ seat, m })) } catch { /* storage off: a rejoin starts blank */ } }
 function pgKept(seat){ try { const k = JSON.parse(sessionStorage.getItem(PG_KEY) || "null"); return k?.seat === seat ? k.m : null } catch { return null } }
@@ -4503,6 +4590,7 @@ async function pgJoin(){
 
 if (PLAYER_PAGE){
   pgLayout();
+  $("#p-force").addEventListener("click", pgPropose);
   window.addEventListener("hashchange", () => { if (location.hash.startsWith("#join=")) pgJoin() });
   pgJoin();
 } else {

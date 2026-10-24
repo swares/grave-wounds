@@ -142,8 +142,18 @@ his to make. When the roller leaves the frame the fight goes from his page. The 
 online** still works for a fight run without the console. (A fight set up from the travel map
 fills the roller with the forces' men; his named men join it when the GM adds the team.)
 
-Not yet: his proposed orders for his force (the GM accepts or declines them), room codes in place
-of copy and paste, and the travel and field maps on his page.
+**He proposes his force's orders.** Under each force his men are with, his page offers its orders
+as the console's **Orders** row does (a route to one of the map's places or a waypoint, march or
+halt, rest until next morning, clear the route, make a camp it can make), but not the enemy's
+positions. Choosing one sends a proposal; it changes nothing until the GM answers it. The console
+tells the GM, and lists each waiting proposal under **Players online** with **Accept** (the order is
+given exactly as the GM's own) and **Decline**. A new proposal for the same force replaces his last
+waiting one. His page shows the answer, and the proposal and the answer go into the log for him and
+the GM only. The console takes only a proposal for a force one of his men is with, and only one of
+that force's own choices. Untick **Players may propose orders** and the choices go from his page
+while the GM gives the orders himself.
+
+Not yet: room codes in place of copy and paste, and the travel and field maps on his page.
 
 ## The log
 
@@ -204,5 +214,5 @@ refused route changes nothing, the fights on offer are sent as Fight here sends 
 is taken in once. `python3 tools/net/console.py` (in CI, with the other browser tests) connects the
 console and a player's page in browser profiles of their own: his men, his force and the public
 news shown and nothing of the enemy's or the GM's notes, the march followed by changes only, the
-men he plays changed, his page and the console each reloaded and joined again, and his fight on the
+men he plays changed, his proposals accepted, declined, ignored when not his and turned off, his page and the console each reloaded and joined again, and his fight on the
 console's roller played from his page on the same link.
