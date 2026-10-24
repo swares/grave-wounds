@@ -87,11 +87,11 @@ const CAMPAIGN = (() => {
     const roller = chars.length ? { fighters: chars.length, sides: [...new Set(chars.map(c => (c.side || "Side A").trim() || "Side A"))], round: r.round || 1,
       wonBy: r.wonBy || null, strikes: (r.events || []).filter(e => e.type === "strike").length } : null;
     const result = obj(snap["gravewounds-field-result"]);
-    let sent = null;                                 // a fight sent from the travel map and not yet set up
-    if (rh) sent = { page: "roller.html", key: "gravewounds-handoff", place: rh.place || "", force: rh.force?.name || "", foes: (rh.foes || []).map(f => f.name) };
-    else if (fh) sent = { page: "field.html", key: "gravewounds-field-handoff", place: fh.place || "", battle: fh.battle || "", day: fh.day || "", forces: (fh.forces || []).map(f => f.name) };
+    const waiting = [];                              // fights sent from the travel map and not yet set up: a skirmish for the roller, a battle for the field map
+    if (rh) waiting.push({ page: "roller.html", key: "gravewounds-handoff", place: rh.place || "", force: rh.force?.name || "", foes: (rh.foes || []).map(f => f.name) });
+    if (fh) waiting.push({ page: "field.html", key: "gravewounds-field-handoff", place: fh.place || "", battle: fh.battle || "", day: fh.day || "", forces: (fh.forces || []).map(f => f.name) });
     return {
-      sent,
+      sent: waiting[0] || null, waiting,
       roller,
       fieldResult: result ? { battle: result.battle || "", place: result.place || "", minutes: result.minutes || 0,
         lost: Object.values(result.forces || {}).reduce((a, x) => a + (x.lost || 0), 0) } : null,
@@ -114,9 +114,9 @@ const CAMPAIGN = (() => {
   }
   function suggest(phase, st, seen = {}){
     const f = st.fight;
-    if (f.sent){
-      const mark = `sent:${f.sent.key}:${f.sent.battle || f.sent.place}:${f.sent.force || ""}`;
-      if (!seen[mark]) return sentFight(f.sent, mark);
+    for (const w of f.waiting){                      // each fight sent, noticed once (a skirmish still waiting does not hide a battle sent after it)
+      const mark = `sent:${w.key}:${w.battle || w.place}:${w.force || ""}`;
+      if (!seen[mark]) return sentFight(w, mark);
     }
     if (f.fieldResult){
       const mark = `field:${f.fieldResult.battle}`;

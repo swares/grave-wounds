@@ -96,9 +96,17 @@ work the roller's **Run the fight**: turn it on (the sides with no player go to 
 (he moves and strikes on the roller below). When one side still stands, **Mark … the winner** marks
 it as **After the fight** does, and the console moves on to the aftermath.
 
-The console asks; the roller does it, as its own buttons would, and tells the console how the fight
+With the field map in the frame, the panel is the battle's: a battle sent from the travel map
+waiting to be set up (**Set it up**), the exchange and which side moves, each side's units still
+standing and men, who moves each side (the GM, or the commander attacking or holding), and the
+battle's last lines. **Start the battle**, **Next**, **Run** (when the commander has both sides),
+**End the battle**, and **Send the result to the travel map**, which leaves the result as **Back to
+the travel map** does without leaving the page; the console then moves to the aftermath, where
+**Take the battle's result** applies it. Placing and ordering units by hand is on the field map.
+
+The console asks; the roller or the field map does it, as its own buttons would, and tells the console how the fight
 stands after every change (by the browser's messages between a page and the page in its frame;
-the roller answers only the page that holds it, and a player's page joined online never). The
+each answers only the page that holds it, and a player's page joined online never). The
 moves, strikes, first aid and the rest are still made on the roller.
 
 ## The log
@@ -118,9 +126,10 @@ they may hold a service key, and they belong to the browser, not the game.
 ## What it does not do yet
 
 - It gives routes, orders and camps, runs the march's clock, sets up fights, runs the roller's
-  script and marks the winner, and takes a battle's result back; columns, the forces' own settings,
-  adding forces and painting the map are on the travel map, a person's moves and strikes on the
-  roller, and battles of units on the field map.
+  script and marks the winner, runs a battle's moves on the field map and sends its result, and
+  takes it back; columns, the forces' own settings, adding forces and painting the map are on the
+  travel map, a person's moves and strikes on the roller, and placing and ordering units by hand on
+  the field map.
 - The pages' own state is still per page; a campaign's whole state exists only as a save file.
 
 ## Tests

@@ -3275,11 +3275,11 @@ const CAMPAIGN = (() => {
     const roller = chars.length ? { fighters: chars.length, sides: [...new Set(chars.map(c => (c.side || "Side A").trim() || "Side A"))], round: r.round || 1,
       wonBy: r.wonBy || null, strikes: (r.events || []).filter(e => e.type === "strike").length } : null;
     const result = obj(snap["gravewounds-field-result"]);
-    let sent = null;                                 // a fight sent from the travel map and not yet set up
-    if (rh) sent = { page: "roller.html", key: "gravewounds-handoff", place: rh.place || "", force: rh.force?.name || "", foes: (rh.foes || []).map(f => f.name) };
-    else if (fh) sent = { page: "field.html", key: "gravewounds-field-handoff", place: fh.place || "", battle: fh.battle || "", day: fh.day || "", forces: (fh.forces || []).map(f => f.name) };
+    const waiting = [];                              // fights sent from the travel map and not yet set up: a skirmish for the roller, a battle for the field map
+    if (rh) waiting.push({ page: "roller.html", key: "gravewounds-handoff", place: rh.place || "", force: rh.force?.name || "", foes: (rh.foes || []).map(f => f.name) });
+    if (fh) waiting.push({ page: "field.html", key: "gravewounds-field-handoff", place: fh.place || "", battle: fh.battle || "", day: fh.day || "", forces: (fh.forces || []).map(f => f.name) });
     return {
-      sent,
+      sent: waiting[0] || null, waiting,
       roller,
       fieldResult: result ? { battle: result.battle || "", place: result.place || "", minutes: result.minutes || 0,
         lost: Object.values(result.forces || {}).reduce((a, x) => a + (x.lost || 0), 0) } : null,
@@ -3302,9 +3302,9 @@ const CAMPAIGN = (() => {
   }
   function suggest(phase, st, seen = {}){
     const f = st.fight;
-    if (f.sent){
-      const mark = `sent:${f.sent.key}:${f.sent.battle || f.sent.place}:${f.sent.force || ""}`;
-      if (!seen[mark]) return sentFight(f.sent, mark);
+    for (const w of f.waiting){                      // each fight sent, noticed once (a skirmish still waiting does not hide a battle sent after it)
+      const mark = `sent:${w.key}:${w.battle || w.place}:${w.force || ""}`;
+      if (!seen[mark]) return sentFight(w, mark);
     }
     if (f.fieldResult){
       const mark = `field:${f.fieldResult.battle}`;
@@ -3456,7 +3456,8 @@ function fightLines(st){
   const first = sent ? "A fight waits on the " + esc(PAGE_NAMES[sent.page]) + bit(sent.place, " at " + esc(sent.place)) + ": set it up there." : "Fight it on the roller (a few men) or the field map (units).";
   return [first,
     "<b>Run the fight</b> (here, or on the roller) lets the GM's script play the enemy: Step, or Play to the player's turn. <b>Play online</b> on the roller lets players join from their own computers.",
-    "When one side stands, mark it the winner (here, or in <b>After the fight</b> on the roller), or send the field map's result back to the travel map."];
+    "A battle on the field map runs from here too: set it up, start it, Next or Run, End the battle, and send its result to the travel map.",
+    "When one side stands, mark it the winner (here, or in <b>After the fight</b> on the roller)."];
 }
 const GUIDE = {
   muster: musterLines,
@@ -3627,21 +3628,26 @@ function takeNews(st){                               // what happened by itself 
   if (news.length || forget.length) saveRecord();
   if (said.length){ $("#c-notice").textContent = said.slice(-3).join(" "); $("#c-notice").hidden = false }
 }
-/* ---------- the fight: the roller in the frame, run from here ----------
-   The roller answers {gw: "roller", status} whenever it changes; commands go to it as {gw: "console", cmd}. */
-let FIGHT = null;                                     // the roller's last word on its fight, or null
+/* ---------- the fight: the roller or the field map in the frame, run from here ----------
+   The page answers {gw: "roller" | "field", status} whenever it changes; commands go to it as
+   {gw: "console", cmd}. */
+let FIGHT = null, FIELD = null;                       // the roller's, and the field map's, last word on its fight, or null
 const SITE = location.origin === "null" ? "*" : location.origin;   // opened from files, the browser gives no origin to name
-function rollerFrame(){                               // the roller's window in the frame, or null
+function frameOf(page){                               // that page's window in the frame, or null
   const f = $("#c-frame");
-  try { return f.contentWindow.location.pathname.endsWith("roller.html") ? f.contentWindow : null } catch { return null }
+  try { return f.contentWindow.location.pathname.endsWith(page) ? f.contentWindow : null } catch { return null }
 }
-function tellRoller(cmd, extra = {}){
-  const w = rollerFrame();
+const rollerFrame = () => frameOf("roller.html"), fieldFrame = () => frameOf("field.html");
+function tellFrame(w, cmd, extra = {}){
   if (w) w.postMessage({ gw: "console", cmd, ...extra }, SITE);
 }
+const tellRoller = (cmd, extra = {}) => tellFrame(rollerFrame(), cmd, extra);
+const tellField = (cmd, extra = {}) => tellFrame(fieldFrame(), cmd, extra);
 window.addEventListener("message", e => {
-  if (e.data?.gw !== "roller" || e.source !== rollerFrame() || (SITE !== "*" && e.origin !== SITE)) return;
-  FIGHT = e.data.status;
+  if (SITE !== "*" && e.origin !== SITE) return;
+  if (e.data?.gw === "roller" && e.source === rollerFrame()) FIGHT = e.data.status;
+  else if (e.data?.gw === "field" && e.source === fieldFrame()) FIELD = e.data.status;
+  else return;
   renderFight();
 });
 function manLine(m){
@@ -3667,7 +3673,8 @@ function renderFight(){
   box.hidden = REC.phase !== "fight";
   if (box.hidden) return;
   const head = '<h3 id="h-fight">The fight</h3>';
-  if (!rollerFrame()){ box.innerHTML = head + '<p class="muted" style="margin:0">Open the wound roller below to run the fight from here.</p>'; return }
+  if (fieldFrame()){ box.innerHTML = '<h3 id="h-fight">The battle</h3>' + battleHtml(FIELD); return }
+  if (!rollerFrame()){ box.innerHTML = head + '<p class="muted" style="margin:0">Open the wound roller or the field map below to run the fight from here.</p>'; return }
   const f = FIGHT;
   if (!f){ box.innerHTML = head + '<p class="muted" style="margin:0">Waiting for the roller…</p>'; return }
   if (!f.two){ box.innerHTML = head + '<p class="muted" style="margin:0">The roller needs fighters on two sides: add them there, or set up a fight from the march.</p>'; return }
@@ -3679,9 +3686,41 @@ function renderFight(){
     ${over}<div class="toolbar">${fightButtons(f)}<span class="muted" style="font-size:.88rem">${esc(f.msg)}</span></div>
     ${f.lines.length ? '<ol class="log" style="max-height:10rem" aria-label="The fight\'s last events, newest first">' + f.lines.map(l => "<li>" + esc(l) + "</li>").join("") + "</ol>" : ""}`;
 }
+/* the field map's battle */
+const AI_CHOICES = [["", "The GM moves it"], ["attack", "The commander: attack"], ["hold", "The commander: hold"]];
+function battleSideRow(sd, k, f){
+  const ai = AI_CHOICES.map(([v, t]) => `<option value="${v}"${(sd.ai || "") === v ? " selected" : ""}>${t}</option>`).join("");
+  const sel = f.phase === "over" ? "" : ` <select data-battleai="${k}" aria-label="Who moves ${esc(sd.name)}" style="width:auto">${ai}</select>`;
+  return `<tr><td><b>${esc(sd.name)}</b>${sel}</td><td>${sd.standing}/${sd.units} units standing, ${sd.men.toLocaleString("en-US")} of ${sd.start.toLocaleString("en-US")} men</td></tr>`;
+}
+function battleButtons(f){
+  if (f.phase === "setup") return '<button type="button" class="primary" data-battlecmd="next">Start the battle</button>';
+  const run = f.running ? "Stop" : "Run";
+  if (f.phase === "moving") return `<button type="button" class="small primary" data-battlecmd="next" title="The side moving ends its move; a commander orders its side">Next</button>`
+    + (f.both ? `<button type="button" class="small" data-battlecmd="run">${run}</button>` : "")
+    + '<button type="button" class="small" data-battlecmd="end" title="The dead counted, the wounded carried or left">End the battle</button>';
+  return f.fromTravel && !f.sent ? '<button type="button" class="primary" data-battlecmd="send">Send the result to the travel map</button>' : "";
+}
+function battleHtml(f){                               // the field map's battle, as it tells it
+  if (!f) return '<p class="muted" style="margin:0">Waiting for the field map…</p>';
+  const handoff = f.handoff ? `<p class="notice" style="margin:0">The travel map's battle at ${esc(f.handoff)} waits. <button type="button" class="small" data-battlecmd="setup">Set it up</button></p>` : "";
+  let when = "Over";
+  if (f.phase === "setup") when = "Setting up";
+  else if (f.phase === "moving") when = `Exchange ${f.exchange}${f.moving ? " · " + esc(f.moving) + " to move" : ""}`;
+  return `${handoff}<p style="margin:0"><span class="when">${when}</span></p>
+    <div class="tablewrap"><table><tbody>${f.sides.map((sd, k) => battleSideRow(sd, k, f)).join("")}</tbody></table></div>
+    <div class="toolbar">${battleButtons(f)}<span class="muted" style="font-size:.88rem">${esc(f.msg)}</span></div>
+    ${f.lines.length ? '<ol class="log" style="max-height:10rem" aria-label="The battle\'s last lines, newest first">' + f.lines.map(l => "<li>" + esc(l) + "</li>").join("") + "</ol>" : ""}`;
+}
 $("#c-fight").addEventListener("click", e => {
   const b = e.target.closest("button[data-fightcmd]");
-  if (b) tellRoller(b.dataset.fightcmd, b.dataset.side ? { side: b.dataset.side } : {});
+  if (b) return tellRoller(b.dataset.fightcmd, b.dataset.side ? { side: b.dataset.side } : {});
+  const c = e.target.closest("button[data-battlecmd]");
+  if (c) tellField(c.dataset.battlecmd);
+});
+$("#c-fight").addEventListener("change", e => {
+  const sel = e.target.closest("select[data-battleai]");
+  if (sel) tellField("ai", { k: +sel.dataset.battleai, v: sel.value });
 });
 
 function render(){
@@ -3712,7 +3751,7 @@ function render(){
     <span style="flex:1"></span><button type="button" id="c-next">Done: on to ${phaseOf(NEXT[ph.id]).name.toLowerCase()}</button>`;
   renderMarch();
   renderFight();
-  if (ph.id === "fight") tellRoller("status");      // and the roller answers with its fight as it stands
+  if (ph.id === "fight"){ tellRoller("status"); tellField("status") }   // and the page answers with its fight as it stands
   $("#c-status").innerHTML = statusRows(st);
   $("#c-log").innerHTML = [...REC.log].reverse().map(e => `<li class="${e.vis === "public" ? "" : "gm"}"><b>${e.round ? "Day " + e.round : "–"}</b>${esc(phaseOf(e.data.phase).name)} · ${esc(e.data.text)}${e.vis === "public" ? "" : ' <span class="muted">(GM)</span>'}</li>`).join("")
     || '<li class="muted">Nothing yet. The log fills as the campaign moves from phase to phase; add notes of your own.</li>';
@@ -3759,7 +3798,7 @@ $("#c-add-note").addEventListener("click", () => {
   render();
 });
 $("#c-note").addEventListener("keydown", e => { if (e.key === "Enter") $("#c-add-note").click() });
-$("#c-frame").addEventListener("load", () => { showing(); FIGHT = null; renderFight(); tellRoller("status") });
+$("#c-frame").addEventListener("load", () => { showing(); FIGHT = null; FIELD = null; renderFight(); tellRoller("status"); tellField("status") });
 window.addEventListener("storage", e => { if (!e.key || e.key.startsWith(CAMPAIGN.PREFIX)) render() });   // a page in the frame wrote: look again
 setInterval(render, 3000);                             // and now and then, in case a write was missed
 
