@@ -14,8 +14,12 @@
    (with TD set), events.js, measure.js, lethality.js and camp.js (with WK, CAMP_HEX_M, NEIGHBOURS,
    hexDistance, hkey and edgeKey). build.py puts this file into the travel page at its
    TRAVELDAY_JS marker; in Node it is a module (tools/travel/test.js). */
+function hhmm(t){                              // hours as 24-hour clock time
+  const h = Math.floor(t + 1e-9), mi = Math.round((t - h) * 60);
+  return `${String(h + Math.floor(mi / 60)).padStart(2, "0")}:${String(mi % 60).padStart(2, "0")}`;
+}
 function makeTravelDay(DATA, RULES, env = {}){
-  const { fdiv, jdn, fromJdn, parseDate, mapJdn, mapDate, solarDayOfYear, daysInMonth, daylight, marchWindow, coldLevel, MOON_DAYS, NEW_MOON_JDN, moonAge, lightAt, pickRow, rollWeather, windDir, WIND_NAMES, nextGround, terrainPct, flooded, nightRest, fatigueAfter, NEIGHBOURS, neighbours, terrainAt, forceTypes, fordFrac, fordHere, tooDeep, passable, columnKmh, hexWeight, stepWeight, stepHours, heapPush, heapPop, less, tracePath, route, plan, hpdAt, groundAt, schedule, advance, hexDistance, hkey, edgeKey, campDone, campWorked, campLabourDone, camped, nearForces, arrived, clockAfter, before, laterOf, fightPlan, dzProfile, newHealth, copyHealth, dzStep, dzPick, healthCounts, sickMarchPct, campHygiene, CARE_STEPS, campCare, weekFactors, weatherFactors, outbreakChance, patientsOf, nursingOf, contagionOf, nurseChance, nursesCatch, newCase, catchChance, d10000, freshToday, fieldcraftNeeded, leechBonus, scurvyChance, scurvyCase, scurvyWeek, reopenOld, healthWeek, relapses, checksToday, recoverCase, scurvyCheck, septic, caseDay, healthDay, frostbiteChance, frostbiteNight } = RULES;
+  const { mapJdn, mapDate, marchWindow, rollWeather, WIND_NAMES, nextGround, nightRest, fatigueAfter, NEIGHBOURS, terrainAt, forceTypes, fordHere, passable, stepHours, plan, advance, hexDistance, campDone, before, laterOf, dzProfile, newHealth, dzStep, healthCounts, sickMarchPct, campHygiene, campCare, weekFactors, nursingOf, contagionOf, freshToday, fieldcraftNeeded, leechBonus, reopenOld, healthWeek, healthDay, neighbours } = RULES;
   const TER = DATA.terrain, TT = TER.terrain, FT = TER.forces;
   const WXD = DATA.weather, DZ = DATA.disease, WK = DATA.works;
   const roll100 = env.roll100 || (() => 1 + (crypto.getRandomValues(new Uint32Array(1))[0] % 100));   // a d100 for the weather
@@ -64,7 +68,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   const KEY = "gravewounds-travel";
   const S = { mapId: Object.keys(DATA.maps)[0], edits: {}, forces: {}, sel: {}, mode: "plan", paint: "forest", seq: 1, msg: "", wx: {}, plague: {}, fought: [], clock: {} };
   function save(){ try{ localStorage.setItem(KEY, JSON.stringify({ mapId: S.mapId, edits: S.edits, forces: S.forces, sel: S.sel, seq: S.seq, paint: S.paint, wx: S.wx, plague: S.plague, fought: S.fought, clock: S.clock })) }catch(e){} }
-  function restore(){ try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j && j.mapId && DATA.maps[j.mapId]) Object.assign(S, j, { plague: j.plague || {}, fought: j.fought || [], clock: j.clock || {} }) }catch(e){ /* nothing saved, or unreadable: start fresh */ } }
+  function restore(){ try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j?.mapId && DATA.maps[j.mapId]) Object.assign(S, j, { plague: j.plague || {}, fought: j.fought || [], clock: j.clock || {} }) }catch(e){ /* nothing saved, or unreadable: start fresh */ } }
   const baseMap = () => DATA.maps[S.mapId];
   function curMap(){                           // the map with any painting applied
     const b = baseMap();
@@ -90,10 +94,6 @@ function makeTravelDay(DATA, RULES, env = {}){
   // ----- the calendar and the weather on this map -----
   const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   const WEEKDAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];   // Julian Day 0 was a Monday
-  function hhmm(t){
-    const h = Math.floor(t + 1e-9), mi = Math.round((t - h) * 60);
-    return `${String(h + Math.floor(mi / 60)).padStart(2, "0")}:${String(mi % 60).padStart(2, "0")}`;
-  }
   const win = day => marchWindow(curMap(), day);
   const hpdOf = day => win(day).hours;
   const hpdList = (day, n = 60) => Array.from({ length: n }, (_, i) => hpdOf(day + i));
@@ -467,7 +467,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   // ----- events on the march and in camp (events.js, gravewounds/events.py) -----
   function forceEra(f){                          // its own era (a map force may name one), or its map's period's
     const base = (baseMap().forces || []).find(b => b.name === f.name);
-    return evEraOf(DATA.events || {}, curMap().period || baseMap().period, { era: f.era || (base && base.era) || null });
+    return evEraOf(DATA.events || {}, curMap().period || baseMap().period, { era: f.era || base?.era || null });
   }
   const eventsOn = f => f.events !== false;
   const hungryNow = f => (f.shortFood || f.supHungry) && !f.huntFed;   // the GM's word, or its rations run out
@@ -488,7 +488,8 @@ function makeTravelDay(DATA, RULES, env = {}){
     const bits = evDayText(r);
     if (horsed && horsePct(f) < before){
       const band = (EV.horses_march[f.type] || []).filter(b => horsesOf(f) < b.below * f.men).sort((a, b) => a.pct - b.pct)[0];
-      bits.push(f.type === "mounted" ? `too few horses: it now marches as foot (${horsePct(f)}% speed)` : `teams short: the wagons slow to ${horsePct(f)}% (${band ? band.note.split(":")[0] : ""})`);
+      const why = band ? band.note.split(":")[0] : "";
+      bits.push(f.type === "mounted" ? `too few horses: it now marches as foot (${horsePct(f)}% speed)` : `teams short: the wagons slow to ${horsePct(f)}% (${why})`);
     }
     if (f.namedAccidents) bits.push(...namedAccidents(f, era, act));
     if (bits.length) f.log.unshift(`${dateText(f.day, true)}: ${bits.join("; ")}.${r.incident && r.incident.hook ? " (" + r.incident.hook + ")" : ""}`);
@@ -692,7 +693,8 @@ function makeTravelDay(DATA, RULES, env = {}){
     n.rest = (n.rest || 0) + 1;                   // a night with the force: the roller gives him back some blood
     const one = (o, verb) => Object.entries(o).map(([did, k]) => `${verb} (${k > 1 ? k + " " : ""}${dzShort(did)})`);   // a man, not a force
     const bits = [...one(r.events.shown, "fell ill"), ...one(r.events.healed, "recovered")];
-    if (spared) bits.push(r.health.dead ? `spent his fate (${spared}) in vain` : `would have died, but fate spent${spared > 1 ? ` (${spared})` : ""}: he lives`);
+    const howMany = spared > 1 ? ` (${spared})` : "";
+    if (spared) bits.push(r.health.dead ? `spent his fate (${spared}) in vain` : `would have died, but fate spent${howMany}: he lives`);
     if (r.health.dead){
       n.dead = true;
       n.died = Object.keys(r.events.dead)[0];
@@ -748,7 +750,7 @@ function makeTravelDay(DATA, RULES, env = {}){
     const bits = r.events.map(e => said[e.kind](e));
     f.log.unshift(`Week to ${dateText(f.day, true)}: ${bits.length ? bits.join("; ") : "no new cases"}.`);
   }
-  const fmtH = h => { if (h < 1 / 120) return "no time"; let hh = Math.floor(h + 1e-9), mm = Math.round((h - hh) * 60); if (mm === 60){ hh++; mm = 0 } return hh && mm ? `${hh} h ${mm} min` : hh ? `${hh} h` : `${mm} min` };
+  const fmtH = h => { if (h < 1 / 120) return "no time"; let hh = Math.floor(h + 1e-9), mm = Math.round((h - hh) * 60); if (mm === 60){ hh++; mm = 0 } if (!hh) return `${mm} min`; return mm ? `${hh} h ${mm} min` : `${hh} h` };
   const placeAt = h => (baseMap().places || []).find(p => sameHex(p.hex, h));
   const where = h => { const p = placeAt(h); return p ? p.name : `${terrainAt(curMap(), h).name.toLowerCase()} at ${h[0] + 1},${h[1] + 1}` };
 
@@ -763,7 +765,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   }
   // Re-plan a force's route from where it stands now, through its remaining waypoints.
   // ----- columns: forces marching together behind a leader -----
-  function leaderOf(f){ const L = f && f.with ? forcesHere().find(o => o.id === f.with) : null; return L || f }
+  function leaderOf(f){ const L = f?.with ? forcesHere().find(o => o.id === f.with) : null; return L || f }
   function columnOf(f){ const L = leaderOf(f); return [L, ...forcesHere().filter(o => o !== L && o.with === L.id)] }
   const colType = L => { const c = columnOf(L); return c.length > 1 ? c.map(o => [o.type, o.men]) : L.type };
   const colSpeed = L => Math.min(...columnOf(L).map(o => speedOf(o)));
@@ -811,7 +813,10 @@ function makeTravelDay(DATA, RULES, env = {}){
     if (!f.path || !sameHex(f.path[f.index + 1], path[1])) f.carried = 0;   // a new way out: the part-marched hex is lost
     f.path = path; f.index = 0;
     f.legs = []; let at = 0;                   // where each waypoint falls on the path
-    for (const w of f.waypoints){ while (!sameHex(path[at], w)) at++; f.legs.push(at) }
+    for (const w of f.waypoints){
+      while (!sameHex(path[at], w)) at++;
+      f.legs.push(at);
+    }
     return true;
   }
   function addWaypoint(sel, h){                  // a column's route is its leader's
@@ -1081,11 +1086,11 @@ function makeTravelDay(DATA, RULES, env = {}){
     return `${c.desc} ${men}: ${fmtH(r.hours)}${until}`
       + (r.labour ? `, ${Math.round(r.labour)} man-hours for a ${Math.round(r.perimeter)} m perimeter${(c.works || []).some(w => (WK.edge_works[w] || WK.hex_works[w]).haul) ? (r.woods ? ", timber to hand" : ", timber hauled from afar") : ""}` : "") + ".";
   }
-  const esc = s => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+  const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
   function byId(id){ return forcesHere().find(o => o.id === id) }
   function namesList(xs){ return xs.length < 3 ? xs.join(" and ") : xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] }
 
-  return { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, hhmm, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, worstKit, MEND_WORD, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, namesList, restColumn, roll100 };
+  return { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, worstKit, MEND_WORD, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, namesList, restColumn, roll100 };
 }
 
 if (typeof module !== "undefined") module.exports = makeTravelDay;   // Node (the tests); the page has no `module`

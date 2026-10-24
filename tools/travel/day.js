@@ -132,5 +132,6 @@ for (const id of MAPS){
 }
 check("the day runs with no page: no document or window", () => assert.equal(typeof document + typeof window, "undefinedundefined"));
 
-console.log(`travel day on ${MAPS.length} maps: ${failed ? `${failed} failed, ${passed} passed` : `all ${passed} passed`}`);
+const tally = failed ? `${failed} failed, ${passed} passed` : `all ${passed} passed`;
+console.log(`travel day on ${MAPS.length} maps: ${tally}`);
 process.exit(failed ? 1 : 0);

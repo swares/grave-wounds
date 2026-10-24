@@ -269,6 +269,19 @@ def write_shared(d) -> None:
     (CACHE / "shared.js").write_text(out, encoding="utf-8")
 
 
+def check_page() -> int:
+    """The built travel page's scripts parse (node --check): a name declared twice in the page, say
+    one the day also gives it, is caught here as it would stop the page loading."""
+    page = (ROOT / "dist" / "travel.html").read_text(encoding="utf-8")
+    bad = 0
+    for i, js in enumerate(re.findall(r"<script>(.*?)</script>", page, re.S)):
+        f = CACHE / f"page-{i}.js"
+        f.write_text(js, encoding="utf-8")
+        bad += subprocess.call(["node", "--check", str(f)]) != 0
+    print("dist/travel.html: its scripts parse" if not bad else f"dist/travel.html: {bad} script(s) do not parse")
+    return 1 if bad else 0
+
+
 def main(argv) -> int:
     n = int(argv[1]) if len(argv) > 1 else 200
     seed = int(argv[2]) if len(argv) > 2 else 1
@@ -280,7 +293,7 @@ def main(argv) -> int:
     env = {**os.environ, "TRAVEL_PARITY": "1"}
     rules = subprocess.call(["node", str(Path(__file__).parent / "test.js")], env=env)
     day = subprocess.call(["node", str(Path(__file__).parent / "day.js")], env=env)
-    return rules or day
+    return rules or day or check_page()
 
 
 if __name__ == "__main__":
