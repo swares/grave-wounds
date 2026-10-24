@@ -106,7 +106,9 @@ village or town. The time depends on the force's size and tools and on whether w
 near. A column makes one camp for all its forces (see *Marching together*). Camp work can use 4 evening hours after the march, so a camp made at the end of the
 day costs no marching time. Once an enemy force has marched to within 0.6 mile (1 km), **Set up the fight** opens a battle page.
 **Fight it on** picks which:
-- **the wound roller**, man by man (up to 8 men a force), with the camp's works laid out
+- **the wound roller**, man by man (up to 8 men a force, the force's named men first, as
+  themselves: the fighters they are on the roller, with their sheets, kit and wounds; a named man
+  with the force who is not on the roller is named in the setup's notes), with the camp's works laid out
   on its battle map and the ground laid out to match the defenders' hex: woods in forest,
   rises and rocks in hills, marsh in marsh, rubble in a village or town. Where the map
   reaches past a side of that hex, the neighbouring hex's ground (or a lake or river) shows

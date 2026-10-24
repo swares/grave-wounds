@@ -139,8 +139,9 @@ gives that man's side to him, as **Play online** would, and draws his side's scr
 console passes it on, and his page shows it under **Your fight**, where he moves, strikes, gives
 first aid and ends his turn as on the roller's own player page. The roller checks every choice is
 his to make. When the roller leaves the frame the fight goes from his page. The roller's own **Play
-online** still works for a fight run without the console. (A fight set up from the travel map
-fills the roller with the forces' men; his named men join it when the GM adds the team.)
+online** still works for a fight run without the console. A fight set up from the travel map
+brings the named men with its forces in as themselves (the fighters they are on the roller), so his
+fight comes to his page as soon as it is set up.
 
 **He proposes his force's orders.** Under each force his men are with, his page offers its orders
 as the console's **Orders** row does (a route to one of the map's places or a waypoint, march or
