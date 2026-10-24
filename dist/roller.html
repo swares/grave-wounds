@@ -3360,6 +3360,8 @@ function closeIn(){                               // a strike begins: rising fro
 }
 function initiativeAll(){                         // d10 + Agility / 10 for every fighter, then the order
   for (const c of S.chars) c.init = rollInitiative(statOf(c, "agi"), DICE.randint(1, CHR.initiative.die));
+  sortChars();
+  logEvent(S.events, { round: evRound(), type: "initiative", vis: "public", data: { order: S.chars.map(c => ({ who: evWho(c), init: c.init })) } });
   renderChars();
 }
 function riseToStrike(){                          // a man in cover rises to strike in close combat, which comes off his move
@@ -3488,6 +3490,14 @@ function turnText(v){                             // the script's move, and for 
   }
   return `${evName(d.who)} ${d.did}${where}${why}`;
 }
+function bleedText(d){                             // his side's men's Blood lost at the round's end
+  return d.men.map(m => `${evName(m.who)} −${m.lost} Blood (${m.blood}/${m.pool})${m.now ? ", now " + esc(m.now) : ""}`).join("; ");
+}
+function moraleText(v){                            // a side's morale check: the roll for its side and the GM, the outcome for all
+  const d = v.data, how = d.broken ? "breaks: runs or surrenders" : "holds";
+  if (!v.full) return `Morale: ${esc(d.side)} ${how}`;
+  return `Morale, ${esc(d.side)} (${d.down} of ${d.of} down): d100 ${d2(d.roll)} vs ${d.target}: ${how}`;
+}
 function aidText(d){                               // first aid given in the fight
   const how = { bind: "bound", tourniquet: "given a tourniquet", cauterise: "cauterised" }[d.how] || esc(d.how);
   const said = d.said ? ` (${esc(d.said)})` : "";
@@ -3499,6 +3509,9 @@ function eventText(v){                            // one event as a seat sees it
   if (v.type === "turn") return turnText(v);
   if (v.type === "undo") return `The GM took back the script's last step (${v.data.events} event${v.data.events === 1 ? "" : "s"} undone).`;
   if (v.type === "aid") return aidText(v.data);
+  if (v.type === "initiative") return "Initiative: " + v.data.order.map(o => `${evName(o.who)} ${o.init}`).join(", ");
+  if (v.type === "bleed") return bleedText(v.data);
+  if (v.type === "morale") return moraleText(v);
   return esc(v.type);
 }
 function eventItem(v){
@@ -4440,12 +4453,15 @@ function treat(c, w, how){
 // Short name for a blood-loss threshold: "down", "unconscious", or the effect's first clause.
 const thLabel = th => !th ? "steady" : th.incapacitated ? "unconscious" : th.down ? "down" : th.effect.split(/[:;]/)[0].toLowerCase();
 function advance(rounds){
-  const from = S.round, lines = [];
+  const from = S.round, lines = [], bled = {};      // bled: side -> his men's losses, for the event log (each side sees its own)
   S.chars.forEach(c => {
     const before = charStats(c), b0 = c.blood;
     c.blood = Math.max(0, +(c.blood - before.bleed * rounds).toFixed(1)); c.rounds += rounds;
     const after = charStats(c), lost = +(b0 - c.blood).toFixed(1);
     if (!lost) return;
+    const side = sideOf(c);
+    bled[side] ||= [];
+    bled[side].push({ who: evWho(c), lost, blood: c.blood, pool: poolOf(c), now: after.th !== before.th ? thLabel(after.th) : null });
     const changed = after.th !== before.th;
     const cls = after.th && (after.th.down || after.th.incapacitated) ? "ev-bad" : changed ? "ev-warn" : "";
     const ap = penalties(c);
@@ -4463,6 +4479,8 @@ function advance(rounds){
     if (c.state.rounds <= 0){ lines.push(`${c.name}: no longer ${CMB.states[c.state.id].name.toLowerCase()}`); c.state = null }
   });
   for (let k = 0; k < rounds; k++) lines.push(...painChecks());   // pain past the cap: every round
+  for (const [side, men] of Object.entries(bled))
+    logEvent(S.events, { round: from, type: "bleed", vis: [sideSeat(side)], data: { rounds, men }, pub: null });
   lines.push(...moraleChecks());
   S.round += rounds;
   const label = rounds === 1 ? `Round ${from}` : `Rounds ${from}\u2013${S.round - 1}`;
@@ -4485,6 +4503,8 @@ function moraleChecks(){
     if (!m) continue;
     own = null; $("#in-morale").value = "";
     if (m.broken) S.broken[side] = true;
+    logEvent(S.events, { round: evRound(), type: "morale", vis: [sideSeat(side)],   // his side and the GM see the roll; everyone sees whether it held
+      data: { side, down: m.down, of: m.of, roll: m.roll, target: m.target, broken: !!m.broken }, pub: { side, broken: !!m.broken } });
     out.push(`Morale, ${side} (${m.down} of ${m.of} down): d100 ${d2(m.roll)} vs ${m.target} \u2014 `
       + (m.broken ? `<span class="ev-bad">breaks: runs or surrenders</span>` : "holds"));
   }
