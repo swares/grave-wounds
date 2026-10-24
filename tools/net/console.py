@@ -103,7 +103,8 @@ with sync_playwright() as p:
     check("12 Days" in men or "12" in men, f"his man's purse ({men.splitlines()[1] if len(men.splitlines()) > 1 else men})")
     check(mine in force and "Day 1" in force, f"his page shows the force his men are with ({mine}) and the map's day")
     check(enemy not in force, f"and nothing of the enemy's force ({enemy})")
-    check("scouts saw" in news and "ambush" not in news and "Scott joins as a player" in news, "the campaign's public news reaches him; the GM's own notes do not")
+    check("scouts saw" in news and "ambush" not in news and "Scott is added as a player" in news and "Scott joins" in news, "the campaign's public news reaches him; the GM's own notes do not")
+    check(gm.evaluate("() => REC.log.filter(e => e.data.text === 'Scott joins').length") == 1, "his joining is logged when his page connects, once")
     # the march moves on from the console: his page follows, by changes
     day_before = pl.inner_text("#p-force").splitlines()[0]
     gm.click("#c-run")                                   # until something happens: the forces meet, or a night passes
@@ -162,6 +163,7 @@ with sync_playwright() as p:
     gm.wait_for_selector("textarea[data-pl-link]", timeout=15000)
     connect(gm, pl, gm.input_value("textarea[data-pl-link]"))
     check("Hal Ashby" in pl.inner_text("#p-men"), "Invite again and his new link: he is back")
+    check(gm.evaluate("() => REC.log.filter(e => e.data.text === 'Scott rejoins').length") >= 1, "and the log says he rejoins")
     # the console reloaded: who plays whom remembered, invited again
     gm.reload()
     gm.wait_for_selector('button[data-pl="invite"]', timeout=15000)
