@@ -79,7 +79,7 @@ function move(D, i){                                // one press of a clock butt
 }
 function snapshot(D){                               // all a game is: the travel state and what the day keeps beside it
   D.save();
-  return JSON.stringify(Object.fromEntries([...mem.entries()].sort()));
+  return JSON.stringify(Object.fromEntries([...mem.entries()].sort(([a], [b]) => (a < b ? -1 : 1))));
 }
 function holds(D, before){                          // the state holds together after a move
   const S = D.S, m = D.curMap(), c = S.clock[S.mapId], L = DATA.weather.fatigue.levels.length;
