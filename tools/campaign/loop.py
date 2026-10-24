@@ -3,7 +3,7 @@
     python3 tools/campaign/loop.py
 
 It follows a campaign round the loop: the team made in the team builder (in the frame), the march on the
-travel map run from the console until the forces meet and the fight set up from it, a fight sent from it noticed and the console moved to it, the fight won on the roller, the
+travel map, a force's route given from the console, the clock run from it until the forces meet, the fight set up from it, a fight sent from it noticed and the console moved to it, the fight won on the roller, the
 aftermath; then the whole game saved to a file, cleared, and loaded back. The pages' writes are made from
 inside the frame, as the pages make them. Needs Python's playwright with Chromium and a built site.
 Exits non-zero on any failure.
@@ -81,6 +81,19 @@ with sync_playwright() as p:
     page_in_frame(pg).evaluate("""() => { S.mapId = 'towton-1461'; S.clock = {}; const fs = forcesHere();
       for (const f of fs){ const foe = fs.find(o => o.side !== f.side); if (foe) addWaypoint(f, foe.pos) } save() }""")
     pg.wait_for_selector(RUN, timeout=6000)
+    # orders from the console: the first force's route set to a place, then back towards the enemy
+    pg.locator("button[data-orders]").first.click()
+    pg.wait_for_selector("tr.orders select[data-pick='to']", timeout=6000)
+    pg.click("button[data-order='to']")                              # the place the row shows, not chosen first
+    pg.wait_for_function("() => document.querySelector('#c-march-said').textContent.includes('will march to')", timeout=6000)
+    first = json.loads(pg.evaluate(TRAVEL))["forces"]["towton-1461"][0]
+    check(len(first["waypoints"]) == 1 and first["order"] == "march", f"Orders sets a force's route from the console ({pg.inner_text(SAID)[:80]})")
+    foe = pg.locator("select[data-pick='to'] optgroup[label='The enemy'] option").first.get_attribute("value")
+    pg.select_option("select[data-pick='to']", foe)
+    pg.click("button[data-order='to']")
+    pg.wait_for_function(f"() => JSON.parse(localStorage.getItem('gravewounds-travel')).forces['towton-1461'][0].waypoints.join() === {J(foe)}", timeout=6000)
+    check(any("will march to" in e["data"]["text"] for e in pg.evaluate(LOG)), "orders go into the campaign's log, and a new route replaces the old")
+    pg.locator("button[data-orders]").first.click()                 # closed again
     rows = pg.locator("#c-march tbody tr").count()
     check(rows >= 2 and "Day 1" in pg.inner_text("#c-march"), f"the march panel shows the map's clock and its {rows} forces")
     met, presses = False, 0

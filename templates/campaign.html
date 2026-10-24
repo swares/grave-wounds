@@ -61,6 +61,8 @@ button:disabled{opacity:.45;cursor:default}
 .march th{color:var(--muted);font-weight:500}
 .march .when{font-family:var(--mono);font-size:.85rem}
 .tablewrap{overflow-x:auto}
+.march tr.orders td{background:var(--bg);padding:8px;display:table-cell}
+.march tr.orders .toolbar{margin:4px 0}
 .fights{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
 .fights li{border-left:3px solid var(--blood);padding:4px 0 4px 10px;display:flex;flex-direction:column;gap:4px}
 .fights .muted{font-size:.85rem}
@@ -182,7 +184,7 @@ function marchLines(st){
   const map = st.travel ? "On the map of " + esc(st.travel.mapName) + bit(st.travel.day, ", day " + st.travel.day) + "." : "Choose the campaign's map on the travel map.";
   return [map,
     "Put the team's force on it (or use one of the map's own), and in the roller put each named man <b>With</b> it on his card.",
-    "Plan the route and make camp on the travel map. Move the clock there, or here with <b>Run the march</b>: weather, food, the sick and the road's incidents come each day.",
+    "Give each force its route, orders and camps under <b>Orders</b> in <b>Run the march</b> (or on the travel map), and move the clock on: weather, food, the sick and the road's incidents come each day.",
     "When the force meets the enemy, set up the fight under <b>Fights on offer</b> here, or with <b>Fight here</b> on the travel map: a skirmish on the roller, a battle on the field map. This page moves to the fight."];
 }
 function fightLines(st){
@@ -250,13 +252,48 @@ function statusRows(st){
 }
 /* ---------- Run the march: the travel map's clock, moved from here ---------- */
 let MARCH_SAID = "";                                  // what the last move of the clock came to
+let ORDERS_FOR = null;                                 // the force whose orders are open
+const ORDER_PICK = {};                                // the GM's choices in the orders row, kept across redraws: {to, camp}
+const optionsOf = (rows, cur) => rows.map(([v, name]) => `<option value="${esc(v)}"${v === cur ? " selected" : ""}>${esc(name)}</option>`).join("");
+function ordersRow(id){                               // the orders that can be given to one force, as on the travel map
+  const o = newDay().orderChoices(id);
+  if (!o) return "";
+  if (o.led) return `<tr class="orders"><td colspan="7" class="muted">${esc(o.name)} marches with ${esc(o.led)}: its orders are ${esc(o.led)}'s. Leave the column on the travel map.</td></tr>`;
+  const to = ORDER_PICK.to || o.places[0]?.[0] || "";
+  const camp = ORDER_PICK.camp || o.camps.find(c => c[3])?.[0] || o.camps[0][0];
+  const campNote = o.camps.find(c => c[0] === camp)?.[2] || "";
+  const route = o.route.length ? "Its route: " + o.route.join(" → ") + "." : "No route.";
+  return `<tr class="orders"><td colspan="7"><div class="toolbar">
+      <label class="muted">March to <select data-pick="to"><optgroup label="Places">${optionsOf(o.places, to)}</optgroup>${o.foes.length ? `<optgroup label="The enemy">${optionsOf(o.foes, to)}</optgroup>` : ""}</select></label>
+      <button type="button" class="small primary" data-order="to">Set the route</button><button type="button" class="small" data-order="via">Add as a waypoint</button>
+      <button type="button" class="small" data-order="clear">Clear the route</button></div>
+    <div class="toolbar"><span class="muted">${esc(route)}</span>
+      <button type="button" class="small" data-order="${o.order === "march" ? "halt" : "march"}"${o.order !== "march" && !o.routed ? " disabled" : ""}>${o.order === "march" ? "Halt" : "March on its route"}</button>
+      <button type="button" class="small" data-order="rest" title="It stops for the day: its night's rest now, and it waits for the clock to reach the next morning">Rest until next morning</button></div>
+    <div class="toolbar"><label class="muted">Make camp <select data-pick="camp">${optionsOf(o.camps.map(c => [c[0], c[1] + (c[3] ? "" : " (not here)")]), camp)}</select></label>
+      <button type="button" class="small" data-order="camp">Make camp</button></div>
+    <p class="muted" style="margin:0;font-size:.85rem">${esc(campNote)}</p></td></tr>`;
+}
 function forceRow(f){
-  return `<tr><td>${esc(f.name)}</td><td>${esc(f.side)}</td><td>${esc(f.order)}</td><td>${esc(f.where)}</td><td>${f.fit}/${f.men}</td><td>${esc(f.fatigue)}</td></tr>`;
+  const open = ORDERS_FOR === f.id;
+  return `<tr><td>${esc(f.name)}</td><td>${esc(f.side)}</td><td>${esc(f.order)}</td><td>${esc(f.where)}</td><td>${f.fit}/${f.men}</td><td>${esc(f.fatigue)}</td>
+    <td><button type="button" class="small" data-orders="${f.id}" aria-expanded="${open}">${open ? "Close" : "Orders"}</button></td></tr>${open ? ordersRow(f.id) : ""}`;
+}
+function giveOrder(what){                             // an order for the open force, given from the saved day and saved; what it came to goes into the log
+  const picked = k => $(`#c-march select[data-pick="${k}"]`)?.value ?? ORDER_PICK[k];   // what the row shows now, chosen or not
+  const arg = { to: picked("to"), via: picked("to"), camp: picked("camp") }[what] ?? null;
+  const said = newDay().giveOrder(ORDERS_FOR, what, arg);
+  MARCH_SAID = said || "";
+  if (said) note(said);
+  const f = $("#c-frame");
+  try { f.contentWindow.location.reload() } catch { f.setAttribute("src", f.getAttribute("src")) }
+  render();
 }
 function renderMarch(){
   const box = $("#c-march");
   box.hidden = REC.phase !== "march";
   if (box.hidden) return;
+  if (box.contains(document.activeElement) && document.activeElement.tagName === "SELECT") return;   // not while the GM picks
   let m = null;
   try { m = newDay().marchSummary() }
   catch (err){ box.innerHTML = `<h3 id="h-march">Run the march</h3><p class="muted" style="margin:0">The travel map's state cannot be run from here (${esc(err.message)}): use the travel map.</p>`; return }
@@ -267,10 +304,10 @@ function renderMarch(){
   const idle = !m.night && !m.working;
   box.innerHTML = `<h3 id="h-march">Run the march</h3>
     <p style="margin:0"><span class="when">Day ${m.day}, ${esc(m.time)}</span> · ${esc(m.date)} · ${esc(m.map)}${m.night ? "" : ` · marching until ${esc(m.until)}`}</p>
-    <div class="tablewrap"><table><thead><tr><th>Force</th><th>Side</th><th>Doing</th><th>At</th><th>Fit</th><th>Fatigue</th></tr></thead>
+    <div class="tablewrap"><table><thead><tr><th>Force</th><th>Side</th><th>Doing</th><th>At</th><th>Fit</th><th>Fatigue</th><th></th></tr></thead>
       <tbody>${m.forces.map(forceRow).join("")}</tbody></table></div>
     <div class="toolbar"><button type="button" class="primary" id="c-run"${idle ? " disabled" : ""} title="${esc(why)}">${label}</button>
-      <span class="muted" style="font-size:.88rem">${idle ? "No force is marching or making camp: give orders on the travel map." : "Routes, camps and orders are given on the travel map."}</span></div>
+      <span class="muted" style="font-size:.88rem">${idle ? "No force is marching or making camp: give one a route under <b>Orders</b>." : "Routes, orders and camps: <b>Orders</b> on each force, or the travel map."}</span></div>
     <p id="c-march-said" aria-live="polite" style="margin:0">${esc(MARCH_SAID)}</p>${fightsHtml()}`;
 }
 const MAP_CHOICE = {};                                // the page each fight on offer goes to, as the GM chose it (kept across redraws)
@@ -356,10 +393,19 @@ $("#c-actions").addEventListener("click", e => {
 });
 $("#c-march").addEventListener("click", e => {
   if (e.target.id === "c-run") return runMarch();
+  const t = e.target.closest("button[data-orders]");
+  if (t){ ORDERS_FOR = ORDERS_FOR === +t.dataset.orders ? null : +t.dataset.orders; for (const k of Object.keys(ORDER_PICK)) delete ORDER_PICK[k]; return render() }
+  const o = e.target.closest("button[data-order]");
+  if (o) return giveOrder(o.dataset.order);
   const b = e.target.closest("button[data-fight]");
   if (b) sendFight(+b.dataset.fight, +b.dataset.k);
 });
-$("#c-march").addEventListener("change", e => { const sel = e.target.closest("select[data-fightmap]"); if (sel) MAP_CHOICE[+sel.dataset.fightmap] = sel.value });
+$("#c-march").addEventListener("change", e => {
+  const sel = e.target.closest("select[data-fightmap]");
+  if (sel) MAP_CHOICE[+sel.dataset.fightmap] = sel.value;
+  const pick = e.target.closest("select[data-pick]");
+  if (pick){ ORDER_PICK[pick.dataset.pick] = pick.value; pick.blur(); render() }   // the camp's estimate follows the choice
+});
 $("#c-name").addEventListener("change", e => { REC.name = e.target.value.trim(); saveRecord() });
 $("#c-add-note").addEventListener("click", () => {
   const t = $("#c-note").value.trim();
