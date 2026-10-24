@@ -5400,10 +5400,11 @@ function renderChars(){
    postMessage (or next: a person's turn ends); this page does it as its own buttons would and answers {gw: "roller", status}. It
    answers only its own site's page that holds it in a frame, and only when it is the GM's page. */
 const consolePlain = html => { const d = document.createElement("div"); d.innerHTML = html; return d.textContent };
+const standText = won => (won ? `${won} still stand.` : null);
 function consoleStatus(){                           // the fight as the GM's console shows it
   const sides = sidesInOrder(), acting = actingChar(), won = winningSide();
   return {
-    round: S.round || 1, on: gmOn(), msg: S.gmMsg || "", over: gmOn() ? gmOver() : (won ? `${won} still stand.` : null),
+    round: S.round || 1, on: gmOn(), msg: S.gmMsg || "", over: gmOn() ? gmOver() : standText(won),
     standing: won, wonBy: S.wonBy || null, undo: GMQ.undo.length > 0, two: sides.length > 1,
     acting: acting ? { name: acting.name, side: sideOf(acting), by: GM_CTL[gmSide(sideOf(acting)).ctl], person: !scripted(acting) } : null,
     sides: sides.map(sd => ({ side: sd, by: gmOn() ? GM_CTL[gmSide(sd).ctl] : null, broken: !!(S.broken || {})[sd],

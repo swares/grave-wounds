@@ -383,18 +383,22 @@ window.addEventListener("message", e => {
   renderFight();
 });
 function manLine(m){
-  const state = m.down ? " · down" : (m.out ? " · out" : "");
+  let state = "";
+  if (m.down) state = " · down";
+  else if (m.out) state = " · out";
   return `${esc(m.name)} <span class="muted">${m.blood}/${m.pool}${state}</span>`;
 }
 function fightSideRow(sd){
   const by = sd.by ? ` <span class="muted">(${esc(sd.by)})</span>` : "", broken = sd.broken ? ' <span class="muted">· broken</span>' : "";
   return `<tr><td><b>${esc(sd.side)}</b>${by}${broken}</td><td>${sd.men.map(manLine).join(", ")}</td></tr>`;
 }
+const endTurnButton = name => `<button type="button" class="small" data-fightcmd="next" title="When he has moved and struck on the roller below">End ${esc(name)}'s turn</button>`;
+const winnerButton = side => `<button type="button" class="small" data-fightcmd="won" data-side="${esc(side)}">Mark ${esc(side)} the winner</button>`;
 function fightButtons(f){
   if (!f.on) return `<button type="button" class="primary" data-fightcmd="start" title="Run the fight on the roller: the GM's script plays the sides with no player">Run the fight</button>`;
   return `<button type="button" class="small" data-fightcmd="step">Step</button><button type="button" class="small primary" data-fightcmd="play">Play to my turn</button>
     <button type="button" class="small" data-fightcmd="undo"${f.undo ? "" : " disabled"}>Undo the script</button>
-    ${f.acting?.person ? `<button type="button" class="small" data-fightcmd="next" title="When he has moved and struck on the roller below">End ${esc(f.acting.name)}'s turn</button>` : ""}`;
+    ${f.acting?.person ? endTurnButton(f.acting.name) : ""}`;
 }
 function renderFight(){
   const box = $("#c-fight");
@@ -406,11 +410,12 @@ function renderFight(){
   if (!f){ box.innerHTML = head + '<p class="muted" style="margin:0">Waiting for the roller…</p>'; return }
   if (!f.two){ box.innerHTML = head + '<p class="muted" style="margin:0">The roller needs fighters on two sides: add them there, or set up a fight from the march.</p>'; return }
   const turn = f.acting ? ` · ${esc(f.acting.name)}'s turn (${esc(f.acting.side)}, ${esc(f.acting.by)})` : "";
-  const over = f.over ? `<p class="notice" style="margin:0">${esc(f.over)}${f.standing && !f.wonBy ? ` <button type="button" class="small" data-fightcmd="won" data-side="${esc(f.standing)}">Mark ${esc(f.standing)} the winner</button>` : ""}</p>` : "";
+  const mark = f.standing && !f.wonBy ? " " + winnerButton(f.standing) : "";
+  const over = f.over ? `<p class="notice" style="margin:0">${esc(f.over)}${mark}</p>` : "";
   box.innerHTML = `${head}<p style="margin:0"><span class="when">Round ${f.round}</span>${turn}</p>
     <div class="tablewrap"><table><tbody>${f.sides.map(fightSideRow).join("")}</tbody></table></div>
     ${over}<div class="toolbar">${fightButtons(f)}<span class="muted" style="font-size:.88rem">${esc(f.msg)}</span></div>
-    ${f.lines.length ? `<ol class="log" style="max-height:10rem" aria-label="The fight's last events, newest first">${f.lines.map(l => `<li>${esc(l)}</li>`).join("")}</ol>` : ""}`;
+    ${f.lines.length ? '<ol class="log" style="max-height:10rem" aria-label="The fight\'s last events, newest first">' + f.lines.map(l => "<li>" + esc(l) + "</li>").join("") + "</ol>" : ""}`;
 }
 $("#c-fight").addEventListener("click", e => {
   const b = e.target.closest("button[data-fightcmd]");
