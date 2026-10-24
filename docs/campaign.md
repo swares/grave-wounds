@@ -26,6 +26,9 @@ It also notices, logs and shows at the top what happens by itself:
 
 - a named man's death, on the march, in camp, of wounds or sickness: what he died of and his force;
 - a man of the team taken prisoner;
+- in a skirmish on the roller, a named man (one with a team-builder sheet) down or out of the
+  fight, with the round;
+- in a battle on the field map, a unit broken or fled, with the exchange;
 - sickness breaking out in a force: the first cases of a disease (battle wounds are the fight's news,
   not sickness; wound fever is); once the force is clear of it, a new outbreak is news again;
 - a force out of rations, water, medical stores or ammunition (news again once refilled and out
@@ -135,8 +138,8 @@ they may hold a service key, and they belong to the browser, not the game.
 ## Tests
 
 `node tools/campaign/test.js` checks the console's reading of the pages: the status, what it
-notices (fights, deaths, prisoners, outbreaks and supplies out over and back, ranks, the end of
-days and of a season), and save files. `python3 tools/campaign/loop.py` follows a campaign round the loop in a
+notices (fights, named men felled, units broken, deaths, prisoners, outbreaks and supplies out
+over and back, ranks, the end of days and of a season), and save files. `python3 tools/campaign/loop.py` follows a campaign round the loop in a
 headless browser over the real pages, served by a local web server: the team rolled in the frame,
 a force's route given from the console, the clock run from it until the forces meet, a long
 march across nights, a fight set up from the console where the forces met,

@@ -149,6 +149,22 @@ check("a skirmish still waiting on the roller does not hide a battle sent to the
   assert.equal(second.page, "field.html");
   assert.match(second.why, /battle at Towton/);
 });
+check("on the roller, a named man felled is news once; a man with no sheet is not", () => {
+  const ev = (n, id, name, pub) => ({ n, round: 3, type: "wound", vis: ["side:York"], data: {}, pub: { who: { id, name, side: "York" }, loc: "thigh", ...pub } });
+  const raw = { "gravewounds-chars": J({ chars: [{ id: 1, name: "Will", side: "York", sheet: {} }, { id: 2, name: "Spearman", side: "York" }, { id: 3, name: "Hal", side: "York", pid: "p3" }],
+    events: [ev(1, 1, "Will", { down: true }), ev(2, 2, "Spearman", { down: true }), ev(3, 3, "Hal", { down: false, state: "out" }), ev(4, 3, "Hal", { down: false, state: "stunned" })] }) };
+  const r = C.notices(C.status(raw, CDN), {}, CDN);
+  assert.deepEqual(r.news.map(n => n.why), ["Will (York) is down, round 3.", "Hal (York) is out of the fight, round 3."]);
+  assert.equal(C.notices(C.status(raw, CDN), apply({}, r), CDN).news.length, 0);
+});
+check("on the field map, a unit broken or fled is news once; in set-up, nothing", () => {
+  const field = phase => ({ "gravewounds-field": J({ phase, exchange: 4, sides: ["Yorkists", "Lancastrians"], from: { battle: "towton-1461:2:3:1" },
+    units: [{ id: 1, name: "Archers", side: "Yorkists", state: "broken" }, { id: 2, name: "Bills", side: "Lancastrians", state: "fled" }, { id: 3, name: "Horse", side: "Lancastrians", state: "steady" }] }) });
+  assert.equal(C.notices(C.status(field("setup"), CDN), {}, CDN).news.length, 0);
+  const r = C.notices(C.status(field(1), CDN), {}, CDN);
+  assert.deepEqual(r.news.map(n => n.why), ["Archers (Yorkists) have broken, exchange 4.", "Bills (Lancastrians) have fled the field, exchange 4."]);
+  assert.equal(C.notices(C.status(field("over"), CDN), apply({}, r), CDN).news.length, 0);
+});
 check("a man taken prisoner is news once", () => {
   const raw = { "gravewounds-team-builder": J({ era: "medieval", team: [{ name: "Will", pid: "p1" }], prisoners: [{ name: "Hal", pid: "p2" }] }) };
   const r = C.notices(C.status(raw, CDN), {}, CDN);

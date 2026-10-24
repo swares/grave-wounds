@@ -86,12 +86,21 @@ const CAMPAIGN = (() => {
     const chars = r && Array.isArray(r.chars) ? r.chars : [];
     const roller = chars.length ? { fighters: chars.length, sides: [...new Set(chars.map(c => (c.side || "Side A").trim() || "Side A"))], round: r.round || 1,
       wonBy: r.wonBy || null, strikes: (r.events || []).filter(e => e.type === "strike").length } : null;
+    // the roller's named men felled (down, or out of the fight), each by his wound's event
+    const named = new Map(chars.filter(c => c.sheet || c.pid).map(c => [c.id, c]));
+    const fell = (r?.events || []).filter(e => e.type === "wound" && (e.pub?.down || e.pub?.state === "out") && named.has(e.pub?.who?.id))
+      .map(e => ({ id: e.pub.who.id, n: e.n, name: e.pub.who.name, side: e.pub.who.side, round: e.round, how: e.pub.down ? "is down" : "is out of the fight" }));
+    // the field map's units broken or fled, in the battle under way (or just over)
+    const fm = obj(snap["gravewounds-field"]);
+    const battle = fm && fm.phase !== "setup" ? (fm.from?.battle || (fm.sides || []).join(" v ")) : null;
+    const routed = battle ? (fm.units || []).filter(u => u.state === "broken" || u.state === "fled")
+      .map(u => ({ battle, id: u.id, name: u.name || "?", side: u.banner || u.side, state: u.state, exchange: fm.exchange || 0 })) : [];
     const result = obj(snap["gravewounds-field-result"]);
     const waiting = [];                              // fights sent from the travel map and not yet set up: a skirmish for the roller, a battle for the field map
     if (rh) waiting.push({ page: "roller.html", key: "gravewounds-handoff", place: rh.place || "", force: rh.force?.name || "", foes: (rh.foes || []).map(f => f.name) });
     if (fh) waiting.push({ page: "field.html", key: "gravewounds-field-handoff", place: fh.place || "", battle: fh.battle || "", day: fh.day || "", forces: (fh.forces || []).map(f => f.name) });
     return {
-      sent: waiting[0] || null, waiting,
+      sent: waiting[0] || null, waiting, fell, routed,
       roller,
       fieldResult: result ? { battle: result.battle || "", place: result.place || "", minutes: result.minutes || 0,
         lost: Object.values(result.forces || {}).reduce((a, x) => a + (x.lost || 0), 0) } : null,
@@ -130,7 +139,8 @@ const CAMPAIGN = (() => {
   }
 
   // What happened that is worth the log by itself, once each (seen holds what was noticed): a named man's
-  // death, a man taken prisoner, sickness breaking out in a force, a force out of supplies, a man's new
+  // death, a named man felled on the roller, a unit broken or fled on the field map, a man taken
+  // prisoner, sickness breaking out in a force, a force out of supplies, a man's new
   // rank, the end of a day on the travel map, the end of a season.
   // -> {news: [{mark, value, why, phase?}], forget: [marks]}: forget, the outbreaks that are over (a new
   // one is news again).
@@ -179,6 +189,18 @@ const CAMPAIGN = (() => {
     }
     return { news, forget: Object.keys(seen).filter(k => k.startsWith("out:") && !active.has(k)) };
   }
+  function fightNews(st, seen){                     // a named man felled on the roller; a unit broken or fled on the field map
+    const f = st.fight, news = [];
+    for (const x of f.fell){
+      const mark = `fell:${x.id}:${x.n}`;
+      if (!seen[mark]) news.push({ mark, value: true, why: `${x.name} (${x.side}) ${x.how}${x.round ? ", round " + x.round : ""}.` });
+    }
+    for (const u of f.routed){
+      const mark = `routed:${u.battle}:${u.id}`;
+      if (!seen[mark]) news.push({ mark, value: true, why: `${u.name} (${u.side}) ${u.state === "fled" ? "have fled the field" : "have broken"}, exchange ${u.exchange}.` });
+    }
+    return news;
+  }
   function seasonNews(st, seen){
     const s = st.season;
     if (!s || seen["season:" + s.stamp]) return [];
@@ -187,7 +209,7 @@ const CAMPAIGN = (() => {
   }
   function notices(st, seen = {}, CD = {}, temp = c => c + " °C"){   // temp: a temperature in the reader's units
     const sick = sickNews(st, seen, CD), out = shortNews(st, seen);
-    return { news: [...deathNews(st, seen, CD), ...heldNews(st, seen), ...sick.news, ...out.news, ...rankNews(st, seen, CD), ...dayNews(st, seen, CD, temp), ...seasonNews(st, seen)],
+    return { news: [...fightNews(st, seen), ...deathNews(st, seen, CD), ...heldNews(st, seen), ...sick.news, ...out.news, ...rankNews(st, seen, CD), ...dayNews(st, seen, CD, temp), ...seasonNews(st, seen)],
       forget: [...sick.forget, ...out.forget] };
   }
 

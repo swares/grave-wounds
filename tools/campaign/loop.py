@@ -48,6 +48,7 @@ PHASE = "() => REC.phase"
 NO_TEAM = "not made yet"
 RUN, SAID, NOTICE = "#c-run", "#c-march-said", "#c-notice"
 FIGHTS = "#c-march .fights li"
+B_NEXT, B_END, B_FIGHT = "#c-fight button[data-battlecmd='next']", "#c-fight button[data-battlecmd='end']", "button[data-fight]"
 TAKE, LOG, TRAVEL = "#c-take-battle", "() => REC.log", "() => localStorage.getItem('gravewounds-travel')"
 
 
@@ -163,7 +164,7 @@ with sync_playwright() as p:
     first = pg.locator(FIGHTS).first
     check(offered >= 1 and " against " in first.inner_text() and "Surprise:" in first.inner_text(), f"the console offers {offered} fight(s) where the forces met, with the odds of surprise")
     first.locator("select").select_option("roller")
-    first.locator("button[data-fight]").first.click()
+    first.locator(B_FIGHT).first.click()
     pg.wait_for_function("() => REC.phase === 'fight'", timeout=6000)
     handoff = json.loads(pg.evaluate("() => localStorage.getItem('gravewounds-handoff')") or "null")
     check(bool(handoff) and handoff["foes"] and handoff["surprise"]["text"].startswith("Surprise"), f"sending it writes the roller's handoff as Fight here does ({(handoff or {}).get('place')})")
@@ -199,8 +200,9 @@ with sync_playwright() as p:
     pg.click('#c-phases button[data-phase="march"]')
     pg.wait_for_selector(FIGHTS, timeout=10000)
     first = pg.locator(FIGHTS).first
-    first.locator("select").select_option("field")
-    first.locator("button[data-fight]").first.click()
+    fid = int(first.locator(B_FIGHT).first.get_attribute("data-fight"))
+    pg.evaluate("(id) => { MAP_CHOICE[id] = 'field:towton-1461' }", fid)   # on the Towton battlefield as drawn up (the GM's choice: units already placed)
+    first.locator(B_FIGHT).first.click()
     pg.wait_for_function("() => REC.phase === 'fight' && document.querySelector('#c-showing').textContent.includes('Field map')", timeout=15000)
     pg.wait_for_selector("#c-fight button[data-battlecmd='setup']", timeout=15000)
     pg.click("#c-fight button[data-battlecmd='setup']")
@@ -210,14 +212,25 @@ with sync_playwright() as p:
     for k in (0, 1):
         pg.select_option(f"#c-fight select[data-battleai='{k}']", "attack")
         pg.wait_for_timeout(300)
-    pg.click("#c-fight button[data-battlecmd='next']")              # Start the battle
-    pg.wait_for_selector("#c-fight button[data-battlecmd='end']", timeout=10000)
+    pg.click(B_NEXT)              # Start the battle
+    pg.wait_for_selector(B_END, timeout=10000)
     for _ in range(4):
-        pg.click("#c-fight button[data-battlecmd='next']")
+        pg.click(B_NEXT)
         pg.wait_for_timeout(250)
     ex = page_in_frame(pg).evaluate("() => S.exchange")
-    check(ex >= 2 and pg.locator("#c-fight ol.log li").count() >= 1, f"Start and Next from the console play the battle, the commander moving both sides (exchange {ex})")
-    pg.click("#c-fight button[data-battlecmd='end']")
+    units = page_in_frame(pg).evaluate("() => S.units.length")
+    check(ex >= 2 and units >= 2 and pg.locator("#c-fight ol.log li").count() >= 1, f"Start and Next from the console play the battle, the commander moving both sides ({units} units, exchange {ex})")
+    for _ in range(40):                                                # on until a unit breaks, or the battle ends by itself
+        if page_in_frame(pg).evaluate("() => S.phase === 'over' || S.units.some(u => u.state === 'broken' || u.state === 'fled')"):
+            break
+        pg.click(B_NEXT)
+        pg.wait_for_timeout(200)
+    pg.wait_for_timeout(3500)                                          # the console looks again
+    routed = page_in_frame(pg).evaluate("() => S.units.filter(u => u.state === 'broken' || u.state === 'fled').map(u => u.name)")
+    logged = [e["data"]["text"] for e in pg.evaluate(LOG) if "have broken" in e["data"]["text"] or "have fled" in e["data"]["text"]]
+    check(len(routed) >= 1 and len(logged) == len(routed), f"each unit broken or fled goes into the campaign's log by itself ({routed})")
+    if pg.locator(B_END).count():
+        pg.click(B_END)
     pg.wait_for_selector("#c-fight button[data-battlecmd='send']", timeout=10000)
     pg.click("#c-fight button[data-battlecmd='send']")
     pg.wait_for_function("() => REC.phase === 'aftermath'", timeout=8000)
