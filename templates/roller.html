@@ -1257,7 +1257,18 @@ const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 /* ---------- storage (per-viewer convenience only) ---------- */
 let SAVED_AS = null;                                 // the fight as this page last wrote or read it: another page changing it means a reload, not a save over it
 function save(){ try{ SAVED_AS = JSON.stringify({chars:S.chars,events:S.events,gm:S.gm,screen:S.screen,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone}); localStorage.setItem("gravewounds-chars", SAVED_AS) }catch(e){ /* storage off: the fight lasts while the page is open */ } }
-function restore(){ try{ SAVED_AS = localStorage.getItem("gravewounds-chars"); const j = JSON.parse(SAVED_AS||"null"); if (j?.chars?.length){ Object.assign(S, j); if (!Array.isArray(S.events)) S.events = []; return true } }catch(e){ /* storage off or a damaged save: a fresh fight starts */ } return false }
+function restore(){
+  try {
+    SAVED_AS = localStorage.getItem("gravewounds-chars");
+    const j = JSON.parse(SAVED_AS || "null");
+    if (j?.chars?.length){
+      Object.assign(S, j);
+      if (!Array.isArray(S.events)) S.events = [];
+      return true;
+    }
+  } catch { /* storage off or a damaged save: a fresh fight starts */ }
+  return false;
+}
 
 /* ---------- body figure ---------- */
 const C = 90;

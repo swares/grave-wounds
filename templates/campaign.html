@@ -620,6 +620,9 @@ async function dropSlot(id){
   SLOTS = await IDB.all(); renderSlots();
 }
 const when = iso => (iso ? iso.slice(0, 16).replace("T", " ") : "");
+const slotRow = x => `<li><b>${esc(x.name)}</b> <span class="muted">kept ${esc(when(x.saved))}</span>
+  <button type="button" class="small" data-slot="switch" data-id="${esc(x.id)}">Switch to it</button>
+  <button type="button" class="small" data-slot="drop" data-id="${esc(x.id)}">Delete</button></li>`;
 function renderSlots(){
   const box = $("#c-slots"), mine = SLOTS.find(x => x.id === REC.slot), others = SLOTS.filter(x => x.id !== REC.slot)
     .sort((a, b) => b.saved.localeCompare(a.saved));
@@ -630,9 +633,7 @@ function renderSlots(){
       <button type="button" class="small" data-slot="keep" title="Kept by itself as the campaign moves on; this keeps it now, with a snapshot">Keep it now</button>
       <button type="button" class="small" data-slot="another" title="This one is kept; every page starts empty">Start another campaign</button></div>
     ${snaps ? `<div class="toolbar"><label class="muted" for="c-snap">Roll back to</label><select id="c-snap" style="width:auto">${snaps}</select><button type="button" class="small" data-slot="back">Roll back</button></div>` : ""}
-    ${others.length ? `<ul class="slots">${others.map(x => `<li><b>${esc(x.name)}</b> <span class="muted">kept ${esc(when(x.saved))}</span>
-      <button type="button" class="small" data-slot="switch" data-id="${esc(x.id)}">Switch to it</button>
-      <button type="button" class="small" data-slot="drop" data-id="${esc(x.id)}">Delete</button></li>`).join("")}</ul>` : ""}`;
+    ${others.length ? '<ul class="slots">' + others.map(slotRow).join("") + "</ul>" : ""}`;
 }
 $("#c-slots").addEventListener("click", e => {
   const b = e.target.closest("button[data-slot]"); if (!b) return;
