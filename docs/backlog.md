@@ -15,8 +15,10 @@ When an item is done, delete it here and note it in the pull request that closes
   and disease need the travel map's rules lifted out of the page first); it notices fights sent and
   won, not the end of a day or season, a death or sickness; the pages do not link back to it; the
   pages' state is still per page; players online join a fight, not the campaign. The travel map's
-  rules are now out of the page (`templates/travelrules.js`, checked against the Python). Next: its
-  clock, march and night the same way, so the console can run a march day itself.
+  rules and its day are now out of the page (`templates/travelrules.js`, checked against the
+  Python; `templates/travelday.js`, played with no page). Next: Run the march in the console.
+  The day still keeps the named men, purses and experience in the browser's storage as the other
+  pages do, and the stress rolls in ranks.js take the browser's dice, not the day's.
 - **Virtual GM, first cut.** The roller's strike is decided with no page (`templates/strike.js`),
   each strike, wound and scripted move goes into an event log tagged with who may see it
   (`templates/gamelog.js`), and Run the fight plays each side as a player, the GM by hand, or the

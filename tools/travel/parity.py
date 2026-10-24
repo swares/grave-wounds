@@ -18,6 +18,7 @@ import copy
 import json
 import os
 import random
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -229,6 +230,58 @@ def cases(d, n, seed):
     return out
 
 
+SHARED = ["purse.js", "xp.js", "ranks.js", "events.js", "measure.js", "lethality.js", "camp.js"]
+
+
+def top_names(text: str) -> list:
+    """The names a shared file declares at its top level (function, const, let), in order."""
+    names = []
+    for line in text.split("\n"):
+        m = re.match(r"(?:async\s+)?function\s+(\w+)\s*\(", line)
+        if m:
+            names.append(m.group(1))
+            continue
+        m = re.match(r"(?:const|let)\s+(.*)", line)
+        if not m:
+            continue
+        depth, cur, parts = 0, "", []
+        for ch in m.group(1):
+            depth += ch in "([{"
+            depth -= ch in ")]}"
+            if ch == "," and depth == 0:
+                parts.append(cur)
+                cur = ""
+            else:
+                cur += ch
+        parts.append(cur)
+        names += [mm.group(1) for mm in (re.match(r"\s*(\w+)\s*=", x) for x in parts) if mm]
+    return list(dict.fromkeys(names))
+
+
+def write_shared(d) -> None:
+    """The shared rule files the travel day needs, as the travel page has them (one script, the
+    lethality presets filled in as build.py fills them), made one Node module for test.js."""
+    lethal = {"default": d.wounds["lethality"]["default"], "presets": d.wounds["lethality"]["presets"]}
+    parts = [(ROOT / "templates" / f).read_text(encoding="utf-8") for f in SHARED]
+    text = "\n".join(parts).replace("/*__LETHAL_DATA__*/null", json.dumps(lethal))
+    out = "// Made by tools/travel/parity.py from templates/" + ", ".join(SHARED) + ": do not edit.\n" + text
+    out += "\nmodule.exports = { " + ", ".join(top_names(text)) + " };\n"
+    (CACHE / "shared.js").write_text(out, encoding="utf-8")
+
+
+def check_page() -> int:
+    """The built travel page's scripts parse (node --check): a name declared twice in the page, say
+    one the day also gives it, is caught here as it would stop the page loading."""
+    page = (ROOT / "dist" / "travel.html").read_text(encoding="utf-8")
+    bad = 0
+    for i, js in enumerate(re.findall(r"<script>(.*?)</script>", page, re.S)):
+        f = CACHE / f"page-{i}.js"
+        f.write_text(js, encoding="utf-8")
+        bad += subprocess.call(["node", "--check", str(f)]) != 0
+    print("dist/travel.html: its scripts parse" if not bad else f"dist/travel.html: {bad} script(s) do not parse")
+    return 1 if bad else 0
+
+
 def main(argv) -> int:
     n = int(argv[1]) if len(argv) > 1 else 200
     seed = int(argv[2]) if len(argv) > 2 else 1
@@ -236,8 +289,11 @@ def main(argv) -> int:
     CACHE.mkdir(exist_ok=True)
     (CACHE / "data.json").write_text(json.dumps(travel_bundle(d)), encoding="utf-8")
     (CACHE / "cases.json").write_text(json.dumps(cases(d, n, seed)), encoding="utf-8")
+    write_shared(d)
     env = {**os.environ, "TRAVEL_PARITY": "1"}
-    return subprocess.call(["node", str(Path(__file__).parent / "test.js")], env=env)
+    rules = subprocess.call(["node", str(Path(__file__).parent / "test.js")], env=env)
+    day = subprocess.call(["node", str(Path(__file__).parent / "day.js")], env=env)
+    return rules or day or check_page()
 
 
 if __name__ == "__main__":
