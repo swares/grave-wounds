@@ -2999,19 +2999,23 @@ function makeTravelDay(DATA, RULES, env = {}){
     const km = (L.path.length - 1 - L.index) * curMap().hex_km;
     return `${colName(L)} will march to ${where(L.path[L.path.length - 1])}, ${fmtKm(km)} by its road, as the clock moves on.`;
   }
+  function routeOrder(L, hex, fresh){              // a new route to hex (fresh), or hex added to it; refused, the route stays as it was
+    const keep = L.waypoints.slice();
+    if (fresh){ L.waypoints = []; replan(L) }
+    addWaypoint(L, hex);
+    if (S.msg){ L.waypoints = keep; replan(L) }
+    else S.msg = routeText(L);
+  }
   function giveOrder(id, what, arg = null){        // what: to (arg "c,r"), via (arg "c,r"), clear, march, halt, camp (arg the kind), rest -> what it came to
     restore();
     const f = S.forces[S.mapId] && byId(id);
     if (!f) return "That force is not on the map.";
-    const L = leaderOf(f), hex = typeof arg === "string" && arg.includes(",") ? arg.split(",").map(Number) : null;
+    const L = leaderOf(f);
     S.msg = "";
     if (what === "to" || what === "via"){
+      const hex = typeof arg === "string" && arg.includes(",") ? arg.split(",").map(Number) : null;
       if (!hex) return "No place given.";
-      const keep = L.waypoints.slice();
-      if (what === "to"){ L.waypoints = []; replan(L) }
-      addWaypoint(L, hex);
-      if (S.msg){ L.waypoints = keep; replan(L) }   // refused: the route stays as it was
-      else S.msg = routeText(L);
+      routeOrder(L, hex, what === "to");
     }
     else if (what === "clear"){ L.waypoints = []; replan(L); L.order = "halt"; S.msg = `${colName(L)}'s route is cleared; it halts.` }
     else if (what === "march" || what === "halt") setOrder(L, what);
@@ -3564,7 +3568,11 @@ $("#c-actions").addEventListener("click", e => {
 $("#c-march").addEventListener("click", e => {
   if (e.target.id === "c-run") return runMarch();
   const t = e.target.closest("button[data-orders]");
-  if (t){ ORDERS_FOR = ORDERS_FOR === +t.dataset.orders ? null : +t.dataset.orders; for (const k of Object.keys(ORDER_PICK)) delete ORDER_PICK[k]; return render() }
+  if (t){
+    ORDERS_FOR = ORDERS_FOR === +t.dataset.orders ? null : +t.dataset.orders;
+    for (const k of Object.keys(ORDER_PICK)) delete ORDER_PICK[k];
+    return render();
+  }
   const o = e.target.closest("button[data-order]");
   if (o) return giveOrder(o.dataset.order);
   const b = e.target.closest("button[data-fight]");

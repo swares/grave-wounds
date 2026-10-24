@@ -394,7 +394,11 @@ $("#c-actions").addEventListener("click", e => {
 $("#c-march").addEventListener("click", e => {
   if (e.target.id === "c-run") return runMarch();
   const t = e.target.closest("button[data-orders]");
-  if (t){ ORDERS_FOR = ORDERS_FOR === +t.dataset.orders ? null : +t.dataset.orders; for (const k of Object.keys(ORDER_PICK)) delete ORDER_PICK[k]; return render() }
+  if (t){
+    ORDERS_FOR = ORDERS_FOR === +t.dataset.orders ? null : +t.dataset.orders;
+    for (const k of Object.keys(ORDER_PICK)) delete ORDER_PICK[k];
+    return render();
+  }
   const o = e.target.closest("button[data-order]");
   if (o) return giveOrder(o.dataset.order);
   const b = e.target.closest("button[data-fight]");
