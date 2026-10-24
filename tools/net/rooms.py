@@ -90,6 +90,9 @@ try:
         ann.wait_for_function(CONNECTED, timeout=30000)
         ann.wait_for_function("() => document.querySelector('#p-men').textContent.includes('Ann Fenwick')", timeout=10000)
         check(gm.evaluate("() => REC.players.every(pl => PL.conn[pl.id].state === 'open')"), "she types her room's code (in small letters) and is connected too")
+        texts = gm.evaluate("() => REC.log.map(e => e.data.text)")
+        check("Ann is added as a player for Ann Fenwick" in texts and "Ann joins" in texts and texts.index("Ann joins") > texts.index("Ann is added as a player for Ann Fenwick"),
+              "the log says she was added when the GM added her, and that she joins when her page connects")
         # his page reloaded: back by itself
         scott.reload()
         scott.wait_for_function("() => document.querySelector('#p-men').textContent.includes('Hal Ashby')", timeout=10000)

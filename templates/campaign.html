@@ -876,6 +876,11 @@ async function playerConnect(pl){                     // an invitation for his s
   const peer = NET.hostPeer({ seat: seatOf(pl), stun: PL.stun, onMessage: m => playerCommand(pl, m), onState: st => {
     if (c.peer !== peer) return;                       // an old connection of his, closing
     c.state = st;
+    if (st === "open" && !peer.joined){               // this connection's first opening (not a blink mending itself): he is here
+      peer.joined = true;
+      note(pl.joined ? `${pl.name} rejoins` : `${pl.name} joins`);
+      pl.joined = true; saveRecord(); render();
+    }
     if (st === "open"){ c.last = null; playerSend(pl); tellRoller("resend", { id: pl.id }) }   // his screens, whole: first or again
     if (st !== "open") PL.fighting.delete(pl.id);
     if (NET_LOST.has(st)) roomAgain(pl, peer);
@@ -976,7 +981,7 @@ function addPlayer(){
   const pl = { id: `p${Date.now().toString(36)}`, name, men };
   players().push(pl);
   const who = namedMen().filter(([u]) => men.includes(u)).map(([, n]) => n.name).join(", ");
-  note(`${name} joins as a player${who ? " for " + who : ""}`);
+  note(`${name} is added as a player${who ? " for " + who : ""}`);
   render(); renderPlayers();
   playerConnect(pl);
 }

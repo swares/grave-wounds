@@ -116,8 +116,8 @@ moves, strikes, first aid and the rest are still made on the roller.
 
 **Players online** on the console gives each player one link for the session (copy and paste, as
 on the roller: no server yet). The GM adds a player, ticks the named men he plays (one or more; it
-can be changed at any time), and sends him the link; his page (the campaign page, opened from the
-link) gives a reply code the GM pastes back. His page then shows:
+can be changed at any time; the log says he is added), and sends him the link; his page (the campaign page, opened from the
+link) gives a reply code the GM pastes back. When his page connects the log says he joins (and, after he was lost, that he rejoins). His page then shows:
 
 - **Your men**: each of his named men, how he is (well, sick, his wounds mending, dead), the force
   he is with, and his purse;
