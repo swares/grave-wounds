@@ -27,7 +27,7 @@ It also notices, logs and shows at the top what happens by itself:
 - a named man's death, on the march, in camp, of wounds or sickness: what he died of and his force;
 - a man of the team taken prisoner;
 - in a skirmish on the roller, a named man (one with a team-builder sheet) down or out of the
-  fight, with the round;
+  fight, with the round, and a side whose morale breaks;
 - in a battle on the field map, a unit broken or fled, with the exchange;
 - sickness breaking out in a force: the first cases of a disease (battle wounds are the fight's news,
   not sickness; wound fever is); once the force is clear of it, a new outbreak is news again;

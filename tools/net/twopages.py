@@ -125,6 +125,8 @@ with sync_playwright() as p:
     got = pl.evaluate("() => window.__got.join('')")
     enemy = gm.evaluate(f"() => S.chars.filter(c => sideOf(c) === {foe!r}).map(c => [c.name, c.blood, poolOf(c)])")
     check(len(got) > 10000, f"the player's page received its screens ({len(got)} characters in all)")
+    kinds = gm.evaluate("() => [...new Set(S.events.map(e => e.type))]")
+    check("initiative" in kinds and "Initiative:" in pl.evaluate("() => document.querySelector('#events').textContent"), f"initiative goes into the log, and his page shows it ({kinds})")
     check(any(b < pool for _, b, pool in enemy), f"the enemy was hurt, so the checks below mean something {enemy}")
     veiled_cards = " ".join(pl.locator("#chars .char.veiled").all_inner_texts())
     leaks = [s for s in ENEMY_SECRETS if s in veiled_cards]
