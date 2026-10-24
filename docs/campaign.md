@@ -117,7 +117,9 @@ a force's route given from the console, the clock run from it until the forces m
 march across nights, a fight set up from the console where the forces met,
 a battle's result taken in from the console, the end of the days logged by itself, the end of a
 season moving it to downtime, a fight sent from the travel map, a winner marked on the
-roller, notes, and a save, clear and load. `python3 tools/travel/parity.py` (in CI) also checks the
+roller, notes, and a save, clear and load, on dice seeded from its argument (CI runs it with seed 1,
+in the browser workflow, on every pull request that changes the pages). `python3 tools/travel/parity.py`
+(in CI) also checks the
 console's way into the day with no page: the summary changes nothing, a press moves on and saves,
 a meeting is reported, orders (routes, march and halt, camp and rest) are given and saved and a
 refused route changes nothing, the fights on offer are sent as Fight here sends them, and a battle's result

@@ -322,10 +322,11 @@ count goes on from there.
   - A dropped player needs a new invitation (Drop, then Invite again). The GM's page sends whole
     panels (tens of kB at each change), and the player's page shows only what it is sent.
   - `node tools/net/test.mjs` tests the codes and the message pieces; `python3 tools/net/twopages.py`
-    connects a GM's page and a player's page in a headless browser and plays a turn from each.
+    connects a GM's page and a player's page in a headless browser and plays a turn from each
+    (in CI, with the other browser tests: `.github/workflows/browser.yml`).
   - The script's choices are design guesses, not calibrated against any record.
     `python3 tools/gm/selfplay.py` plays it against itself on a spread of tables and checks every
-    fight runs to an end; `node tools/gm/test.js` checks its choices one by one.
+    fight runs to an end (in CI too); `node tools/gm/test.js` checks its choices one by one.
 
 **How the roller decides a strike.** The attack, defence, location, blow, severity and armour
 are worked out in `templates/strike.js`, which never touches the page: the page measures the
