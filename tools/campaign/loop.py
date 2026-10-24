@@ -76,6 +76,7 @@ with sync_playwright() as p:
     pg.on("dialog", lambda d: d.accept())
     pg.goto(BASE + "campaign.html"); pg.evaluate("() => localStorage.clear()"); pg.reload()
     check(phase_of(pg) == "muster" and NO_TEAM in status_of(pg), "a new campaign starts at the muster, with no team")
+    check("Players online" in pg.inner_text("#c-players") and pg.is_visible("#pl-add"), "Players online is there from the start, before any named men")
     pg.wait_for_function("() => document.querySelector('#c-showing').textContent.includes('Team builder')", timeout=15000)
     check(True, "the team builder is in the frame")
     # the team, made in the team builder in the frame

@@ -700,7 +700,7 @@ $("#c-load").addEventListener("change", async e => {
    are with, the campaign's news as he hears it) and sends him only that, and after the first time only
    what changed. Who plays whom is kept with the campaign (REC.players); the connections are not, and
    after a reload the GM invites each again. */
-const PL = { conn: {}, stun: true, timer: null, menKey: "", relayKey: "", fighting: new Set() };   // conn by player id: {state, code, err, peer, last}
+const PL = { conn: {}, stun: true, timer: null, menKey: null, relayKey: "", fighting: new Set() };   // conn by player id: {state, code, err, peer, last}
 const players = () => (REC.players ||= []);
 const seatOf = pl => `player:${pl.id}`;
 const NET_LOST = new Set(["closed", "failed", "disconnected"]);
