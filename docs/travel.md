@@ -385,7 +385,8 @@ each day, and mud, snow and flooded fords change the going. See [weather.md](wea
   issued**, **Fed by its army**, **Events on the march**, **Withdrawing**, **Short of food**,
   **Pay in arrears** and **Named men can be injured**, with a note on its sick, nursing, days without fresh food,
   its named men's keep and the week's chances.
-- Forces, routes, clocks and painting are kept in your browser.
+- Forces, routes, clocks and painting are kept in your browser. When the day changes in another
+  tab or in the campaign console, the page takes the new day and says so.
 
 The page's rules are in one file with no page, `templates/travelrules.js`: the calendar,
 daylight, weather, rest and fatigue; routes, marching, camps' hours and who fights; camp disease.

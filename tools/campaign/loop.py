@@ -93,6 +93,20 @@ with sync_playwright() as p:
     pg.click("button[data-order='to']")
     pg.wait_for_function(f"() => JSON.parse(localStorage.getItem('gravewounds-travel')).forces['towton-1461'][0].waypoints.join() === {J(foe)}", timeout=6000)
     check(any("will march to" in e["data"]["text"] for e in pg.evaluate(LOG)), "orders go into the campaign's log, and a new route replaces the old")
+    # a travel map open in another tab follows the console, and does not save its old day over it
+    tab = ctx.new_page()
+    tab.on("pageerror", lambda e: errors.append(str(e)))
+    tab.goto(BASE + "travel.html")
+    tab.wait_for_function("() => typeof forcesHere === 'function'", timeout=15000)
+    pg.click("button[data-order='halt']")
+    pg.wait_for_function("() => JSON.parse(localStorage.getItem('gravewounds-travel')).forces['towton-1461'][0].order === 'halt'", timeout=6000)
+    tab.wait_for_function("() => forcesHere()[0].order === 'halt'", timeout=6000)
+    tab.evaluate("() => render()")                                  # the tab saves as it draws: the console's day, not its own old one
+    check(json.loads(pg.evaluate(TRAVEL))["forces"]["towton-1461"][0]["order"] == "halt" and "moved on elsewhere" in tab.inner_text("#msg"),
+          "a travel map open in another tab follows the console's orders, and saves them, not its old day")
+    tab.close()
+    pg.click("button[data-order='march']")
+    pg.wait_for_function("() => JSON.parse(localStorage.getItem('gravewounds-travel')).forces['towton-1461'][0].order === 'march'", timeout=6000)
     pg.locator("button[data-orders]").first.click()                 # closed again
     rows = pg.locator("#c-march tbody tr").count()
     check(rows >= 2 and "Day 1" in pg.inner_text("#c-march"), f"the march panel shows the map's clock and its {rows} forces")
