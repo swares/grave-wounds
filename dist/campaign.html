@@ -4782,7 +4782,7 @@ if (PLAYER_PAGE){
   loadRecord();
   render();
   show(phaseOf(REC.phase).page);
-  if (roomServer()) for (const pl of players().filter(x => x.room)) playerConnect(pl).catch(() => renderPlayers());   // through their rooms, his players are invited again by themselves
+  if (roomServer()) for (const pl of players().filter(x => x.room)) playerConnect(pl);   // (it catches its own failures)   // through their rooms, his players are invited again by themselves
   IDB.all().then(x => { SLOTS = x; renderSlots() }).catch(() => { $("#c-slots").innerHTML = '<p class="muted" style="margin:0">This browser keeps no campaigns side by side (IndexedDB is off): save to a file instead.</p>' });
 }
 </script>
