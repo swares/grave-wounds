@@ -191,7 +191,45 @@ const NET = (() => {
     return out.join("");
   }
 
-  return { packCode, unpackCode, pieces, joiner, hostPeer, guestPeer, PIECE, edit, apply };
+  // A seat's screen, as panels of HTML: the first whole, then each later one as only what changed.
+  // screenPart(was, now, always) -> the message to send (now itself when there was none before; a
+  // part {part: true, ...} with the `always` fields and the changed panels as edits), or null when
+  // nothing at all changed. merge(screen, m) is the other end's half: the whole screen again.
+  function screenPart(was, now, always = []){
+    if (!was) return now;
+    const part = { part: true };
+    let changed = false;
+    for (const [k, v] of Object.entries(now)){
+      const same = JSON.stringify(v) === JSON.stringify(was[k]);
+      if (always.includes(k)) part[k] = v;
+      else if (!same) part[k] = edit(was[k], v);
+      if (!same) changed = true;
+    }
+    return changed ? part : null;
+  }
+  function merge(screen, m){
+    if (!m.part) return m;
+    const whole = { ...screen, part: false };
+    for (const [k, v] of Object.entries(m)) if (k !== "part") whole[k] = apply(screen?.[k], v);
+    return whole;
+  }
+  // The host's drawing as elements, with nothing in it that could run (a player's page shows only this).
+  const DROP = "script,iframe,object,embed,link,meta,base,form";
+  function safeAttrs(el){                                // no event handler, no javascript: link
+    for (const a of Array.from(el.attributes)){
+      const name = a.name.toLowerCase(), v = a.value.replaceAll(/\s+/g, "").toLowerCase();
+      const link = (name.endsWith("href") || name === "src") && v.startsWith("javascript:");
+      if (name.startsWith("on") || link) el.removeAttribute(a.name);
+    }
+  }
+  function clean(html){
+    const doc = new DOMParser().parseFromString(`<body>${typeof html === "string" ? html : ""}</body>`, "text/html");
+    doc.body.querySelectorAll(DROP).forEach(el => el.remove());
+    doc.body.querySelectorAll("*").forEach(safeAttrs);
+    return Array.from(doc.body.childNodes);
+  }
+
+  return { packCode, unpackCode, pieces, joiner, hostPeer, guestPeer, PIECE, edit, apply, screenPart, merge, clean };
 })();
 
 if (typeof module !== "undefined") module.exports = NET;   // Node (the tests); the page has no `module`

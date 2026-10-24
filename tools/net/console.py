@@ -1,0 +1,152 @@
+"""The GM's campaign console and a player's page, connected over WebRTC in one headless browser (no STUN).
+
+    python3 tools/net/console.py
+
+The player's page is in a browser profile of its own, as on his own computer: it holds nothing of
+the GM's. The GM adds a player for two named men; the player opens his link, the GM pastes his reply.
+Then: his page shows his men, the force they are with, and the campaign's public news; nothing of
+the enemy's force, its named man, or the GM's own notes reaches it. The march moves on from the
+console and his page follows, by changes only. His page reloaded keeps his last screen and rejoins;
+the console reloaded remembers who plays whom and invites him again. Needs Python's playwright with
+Chromium and a built site. Exits non-zero on any failure.
+"""
+import functools, http.server, json, threading
+from pathlib import Path
+from playwright.sync_api import sync_playwright
+
+ROOT = Path(__file__).resolve().parents[2]
+MAP = "towton-1461"
+failures = []
+# Every message the player's page gets, put back together from the channel's pieces
+GOT = """() => { const whole = {}, out = [];
+  for (const x of window.__got){ const p = JSON.parse(x); (whole[p.id] ||= []).push(p);
+    if (whole[p.id].length === p.of) out.push(whole[p.id].sort((a, b) => a.k - b.k).map(q => q.part).join("")) }
+  return out }"""
+TAP = """(() => { const real = window.RTCPeerConnection; window.__got = [];
+  window.RTCPeerConnection = function(...a){ const pc = new real(...a);
+    pc.addEventListener('datachannel', e => e.channel.addEventListener('message', m => window.__got.push(m.data)));
+    return pc }; window.RTCPeerConnection.prototype = real.prototype })()"""
+
+
+def check(ok, what):
+    print(("ok   " if ok else "FAIL ") + what)
+    if not ok:
+        failures.append(what)
+
+
+class Quiet(http.server.SimpleHTTPRequestHandler):
+    def log_message(self, format, *args):
+        return None
+
+
+server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), functools.partial(Quiet, directory=str(ROOT)))
+threading.Thread(target=server.serve_forever, daemon=True).start()
+BASE = f"http://127.0.0.1:{server.server_port}/dist/"
+shots = Path(__file__).parent / ".cache"
+shots.mkdir(exist_ok=True)
+
+
+def connect(gm, pl, link):
+    """The player opens the link; the GM pastes his reply; both wait for the connection."""
+    was = pl.evaluate("() => (document.querySelector('#p-reply') || {}).value || ''") if pl.url.startswith(BASE) else ""
+    pl.goto(link)
+    pl.wait_for_function("was => { const v = (document.querySelector('#p-reply') || {}).value; return v && v !== was }", arg=was, timeout=20000)
+    reply = pl.input_value("#p-reply")
+    gm.fill("textarea[data-pl-reply]", reply)
+    gm.click('button[data-pl="accept"]')
+    pl.wait_for_function("() => document.querySelector('#p-status').textContent.startsWith('Connected')", timeout=20000)
+
+
+with sync_playwright() as p:
+    br = p.chromium.launch(args=["--disable-features=WebRtcHideLocalIpsWithMdns"])
+    gctx = br.new_context(viewport={"width": 1400, "height": 1100})
+    pctx = br.new_context(viewport={"width": 1100, "height": 900})   # his own computer: nothing of the GM's storage
+    pctx.add_init_script(TAP)
+    gm, pl = gctx.new_page(), pctx.new_page()
+    errors = []
+    for pg in (gm, pl):
+        pg.on("pageerror", lambda e: errors.append(str(e)))
+        pg.on("dialog", lambda d: d.accept())
+    # the campaign: a map with its forces, two named men with the first force, one with the enemy's
+    gm.goto(BASE + "travel.html"); gm.evaluate("() => localStorage.clear()"); gm.reload()
+    gm.wait_for_function("() => typeof forcesHere === 'function'", timeout=15000)
+    gm.evaluate(f"""() => {{ S.mapId = {MAP!r}; S.clock = {{}}; const fs = forcesHere(), a = fs[0], foe = fs.find(o => o.side !== a.side);
+      addWaypoint(a, foe.pos); a.order = 'march'; save();
+      const man = (name, f) => ({{ name, map: {MAP!r}, force: f.id, pid: 'pid-' + name, endurance: 50, str: 50, sex: 'm', fieldcraft: 40, leechcraft: 20, log: [], health: {{ cases: [], immune: {{}}, had: {{}}, dead: 0 }} }});
+      localStorage.setItem('gravewounds-named', JSON.stringify({{ u1: man('Hal Ashby', a), u2: man('Wat Tyler', a), u3: man('Clifford Spy', foe) }}));
+      localStorage.setItem('gravewounds-purses', JSON.stringify({{ 'pid-Hal Ashby': {{ name: 'Hal Ashby', start: 12, ledger: [] }} }})) }}""")
+    mine, enemy = gm.evaluate("() => { const fs = forcesHere(), a = fs[0]; return [a.name, fs.find(o => o.side !== a.side).name] }")
+    gm.goto(BASE + "campaign.html")
+    gm.wait_for_function("() => typeof REC === 'object' && REC", timeout=15000)
+    gm.evaluate("() => { setPhase('march'); render() }")
+    gm.fill("#c-note", "The scouts saw Clifford's banners."); gm.uncheck("#c-note-gm"); gm.click("#c-add-note")
+    gm.fill("#c-note", "Clifford waits in ambush at the ford."); gm.check("#c-note-gm"); gm.click("#c-add-note")
+    # the player added for his two men; his link, his reply
+    gm.wait_for_selector("[data-pl-new]")
+    gm.fill("#pl-name", "Scott"); gm.uncheck("#pl-stun")
+    gm.check('[data-pl-new][value="u1"]'); gm.check('[data-pl-new][value="u2"]')
+    gm.click("#pl-add")
+    gm.wait_for_selector("textarea[data-pl-link]", timeout=15000)
+    check(gm.evaluate("() => REC.players.length === 1 && REC.players[0].men.join() === 'u1,u2'"), "the GM adds a player for two named men; who plays whom is kept with the campaign")
+    link = gm.input_value("textarea[data-pl-link]")
+    check("campaign.html#join=" in link and len(link) < 6000, f"his invitation is a link to the campaign page ({len(link)} characters)")
+    connect(gm, pl, link)
+    check("connected" in gm.inner_text("#c-players"), "his reply pasted, the console shows him connected")
+    pl.wait_for_function("() => document.querySelector('#p-men').textContent.includes('Hal Ashby')", timeout=10000)
+    men, force, news = pl.inner_text("#p-men"), pl.inner_text("#p-force"), pl.inner_text("#p-news")
+    check("Hal Ashby" in men and "Wat Tyler" in men and "Clifford Spy" not in men, "his page shows his two men, and not the enemy's named man")
+    check("12 Days" in men or "12" in men, f"his man's purse ({men.splitlines()[1] if len(men.splitlines()) > 1 else men})")
+    check(mine in force and "Day 1" in force, f"his page shows the force his men are with ({mine}) and the map's day")
+    check(enemy not in force, f"and nothing of the enemy's force ({enemy})")
+    check("scouts saw" in news and "ambush" not in news and "Scott joins as a player" in news, "the campaign's public news reaches him; the GM's own notes do not")
+    # the march moves on from the console: his page follows, by changes
+    day_before = pl.inner_text("#p-force").splitlines()[0]
+    gm.click("#c-run")                                   # until something happens: the forces meet, or a night passes
+    pl.wait_for_function(f"() => document.querySelector('#p-force').textContent.split('\\n')[0] !== {json.dumps(day_before)} || !document.querySelector('#p-force').textContent.includes({json.dumps(day_before)})", timeout=10000)
+    gm.wait_for_timeout(500)
+    check(pl.inner_text("#p-force").splitlines()[0] != day_before, f"the console's march moves on, and his page follows ({pl.inner_text('#p-force').splitlines()[0]})")
+    msgs = [json.loads(x) for x in pl.evaluate(GOT)]
+    sizes = [len(json.dumps(m)) for m in msgs]
+    check(len(msgs) >= 2 and not msgs[0].get("part") and all(m.get("part") for m in msgs[1:]) and max(sizes[1:]) < sizes[0],
+          f"his first screen comes whole, then only what changed ({sizes[0]} characters, then {sizes[1:]})")
+    same = pl.evaluate("() => PG.screen"), gm.evaluate("() => playerScreen(REC.players[0])")
+    check(all(same[0][k] == same[1][k] for k in ("men", "force", "news")), "the screen put together from the changes is the console's drawing for him")
+    marched = gm.evaluate("() => REC.log.filter(e => e.data.kind === 'march').map(e => e.data.text)")
+    check(marched and not any(t[:40] in pl.inner_text("#p-news") for t in marched), f"the march's word on every force stays in the console's log, not his news ({marched[-1][:60] if marched else ''})")
+    raw = "".join(pl.evaluate(GOT))
+    check(enemy not in raw and "Clifford Spy" not in raw and "ambush" not in raw, "no message to his page names the enemy's force, its named man, or the GM's notes")
+    # his men changed by the GM: his page follows
+    gm.uncheck('[data-pl-man][value="u2"]')
+    pl.wait_for_function("() => !document.querySelector('#p-men').textContent.includes('Wat Tyler')", timeout=10000)
+    check(True, "the GM changes which men he plays, and his page follows")
+    # his page reloaded: his last screen at once, then rejoined on a new link
+    pl.reload()
+    pl.wait_for_function("() => document.querySelector('#p-men').textContent.includes('Hal Ashby')", timeout=10000)
+    check("Rejoining" in pl.inner_text("#p-status"), "his page reloaded shows his last screen while it rejoins")
+    gm.wait_for_selector('button[data-pl="invite"]', timeout=15000)
+    check("Invite again" in gm.inner_text("#c-players"), "the console sees him gone, and offers Invite again")
+    gm.click('button[data-pl="invite"]')
+    gm.wait_for_selector("textarea[data-pl-link]", timeout=15000)
+    connect(gm, pl, gm.input_value("textarea[data-pl-link]"))
+    check("Hal Ashby" in pl.inner_text("#p-men"), "Invite again and his new link: he is back")
+    # the console reloaded: who plays whom remembered, invited again
+    gm.reload()
+    gm.wait_for_selector('button[data-pl="invite"]', timeout=15000)
+    check("Scott" in gm.inner_text("#c-players") and "Invite" in gm.inner_text("#c-players"), "the console reloaded remembers its player and offers to invite him")
+    pl.wait_for_function("() => document.querySelector('#p-status').textContent.startsWith('Lost')", timeout=20000)
+    check("Hal Ashby" in pl.inner_text("#p-men"), "his page, its console gone, keeps his last screen and offers to rejoin")
+    gm.click('button[data-pl="invite"]')
+    gm.wait_for_selector("textarea[data-pl-link]", timeout=15000)
+    relink = gm.input_value("textarea[data-pl-link]")
+    pl.fill("#p-relink", relink); pl.click("#p-rejoin")
+    pl.wait_for_function("() => (document.querySelector('#p-reply') || {}).value && !document.querySelector('#p-join').hidden && document.querySelector('#p-copy')", timeout=20000)
+    gm.fill("textarea[data-pl-reply]", pl.input_value("#p-reply")); gm.click('button[data-pl="accept"]')
+    pl.wait_for_function("() => document.querySelector('#p-status').textContent.startsWith('Connected')", timeout=20000)
+    check(not pl.is_visible("#p-join"), "he rejoins from the link pasted into his page, and the reply box goes away")
+    gm.screenshot(path=str(Path(__file__).parent / ".cache" / "campaign-gm.png"), full_page=True)
+    pl.screenshot(path=str(shots / "campaign-player.png"), full_page=True)
+    check(not errors, f"no page errors {errors[:3]}")
+    br.close()
+
+print(f"{'all checks passed' if not failures else str(len(failures)) + ' failed'}")
+raise SystemExit(1 if failures else 0)

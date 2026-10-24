@@ -1826,13 +1826,9 @@ function netSeatScreen(seat){                      // the page as this seat's sc
 }
 const NET_ALWAYS = ["t", "seat", "mine", "msg", "round"];   // small: sent every time
 function netSendScreen(p){                           // his screen: whole the first time, then only the panels that changed since the last he got
-  const now = netSeatScreen(p.seat), was = p.last;
+  const now = netSeatScreen(p.seat), msg = NET.screenPart(p.last, now, NET_ALWAYS);
   p.last = now;
-  if (!was) return p.peer.send(now);
-  const part = { part: true };
-  for (const [k, v] of Object.entries(now)) if (NET_ALWAYS.includes(k)) part[k] = v;
-  else if (v !== was[k]) part[k] = NET.edit(was[k], v);
-  p.peer.send(part);
+  if (msg) p.peer.send(msg);
 }
 function netSync(){                                 // after a change: each connected player gets his side's screen, soon
   if (NETH.rendering || !netOpen().length) return;
@@ -2008,20 +2004,7 @@ function guestRollBar(mine){                        // aim, gap, blow and the pl
     if (el.type === "checkbox") el.checked = keep[el.dataset.g]; else el.value = keep[el.dataset.g];
   });
 }
-const GUEST_DROP = "script,iframe,object,embed,link,meta,base,form";
-function guestSafeAttrs(el){                       // no event handler, no javascript: link
-  for (const a of Array.from(el.attributes)){
-    const name = a.name.toLowerCase(), v = a.value.replaceAll(/\s+/g, "").toLowerCase();
-    const link = (name.endsWith("href") || name === "src") && v.startsWith("javascript:");
-    if (name.startsWith("on") || link) el.removeAttribute(a.name);
-  }
-}
-function guestClean(html){                          // the host's drawing as elements, with nothing in it that could run
-  const doc = new DOMParser().parseFromString(`<body>${typeof html === "string" ? html : ""}</body>`, "text/html");
-  doc.body.querySelectorAll(GUEST_DROP).forEach(el => el.remove());
-  doc.body.querySelectorAll("*").forEach(guestSafeAttrs);
-  return Array.from(doc.body.childNodes);
-}
+const guestClean = NET.clean;                       // the host's drawing, with nothing in it that could run
 function guestShow(m, changed = null){               // the host's drawing of this seat's screen (changed: only those panels are drawn again)
   const open = !!$("#events details")?.open;
   for (const [id, k] of [["chars", "chars"], ["map", "map"], ["map-actions", "bar"], ["map-key", "key"], ["result", "result"], ["round-log", "log"], ["turn-no", "turn"], ["events", "events"]])
@@ -2098,8 +2081,7 @@ async function guestJoin(){                           // join (or rejoin) the GM
     const g = await NET.guestPeer({ invite, stun: invite.stun !== false,
       onMessage: m => {
         if (m.t !== "screen") return;
-        const whole = m.part ? { ...GUEST.screen, part: false } : m;      // a part: the panels that changed, over the last screen
-        if (m.part) for (const [k, v] of Object.entries(m)) if (k !== "part") whole[k] = NET.apply(GUEST.screen?.[k], v);
+        const whole = NET.merge(GUEST.screen, m);    // a part: the panels that changed, over the last screen
         GUEST.screen = whole;
         $("#g-join").style.display = "none";
         guestShow(whole, m.part ? Object.keys(m) : null);

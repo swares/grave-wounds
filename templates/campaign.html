@@ -20,6 +20,7 @@
   --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
   --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --warn:#e3a14d; --ok:#7fc28a; color-scheme:dark}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--bg);color:var(--ink);font:16px/1.45 var(--body);padding-inline:16px;padding-block:20px 40px;margin:0}
 .wrap{max-width:1500px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
 header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 20px;border-bottom:2px solid var(--ink);padding-bottom:10px}
@@ -69,6 +70,11 @@ button:disabled{opacity:.45;cursor:default}
 .fights li{border-left:3px solid var(--blood);padding:4px 0 4px 10px;display:flex;flex-direction:column;gap:4px}
 .fights .muted{font-size:.85rem}
 iframe{display:block;width:100%;height:82vh;border:0;background:var(--bg)}
+.players{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.players li{border-left:3px solid var(--steel);padding:4px 0 4px 10px;display:flex;flex-direction:column;gap:6px}
+.men{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.9rem}
+.men label{display:inline-flex;gap:4px;align-items:center}
+.bad{color:var(--blood);margin:0}
 </style>
 <div class="wrap">
   <header>
@@ -101,6 +107,8 @@ iframe{display:block;width:100%;height:82vh;border:0;background:var(--bg)}
       <div id="c-slots" style="border-top:1px dashed var(--line);padding-top:8px;display:flex;flex-direction:column;gap:6px" aria-labelledby="h-slots"></div>
     </section>
   </div>
+
+  <section class="panel" id="c-players" aria-labelledby="h-players"></section>
 
   <section class="panel" aria-labelledby="h-log">
     <div class="toolbar" style="justify-content:space-between"><h2 id="h-log">Campaign log</h2>
@@ -136,6 +144,7 @@ const { NEIGHBOURS, hexDistance, hkey, edgeKey } = RULES;
 /*__TRAVELDAY_JS__*/
 const newDay = () => makeTravelDay(TDATA, RULES);   // a fresh day each time: it starts from what is saved
 </script>
+<script>/*__NET_JS__*/</script>
 <script>
 const CD = /*__CAMPAIGN_DATA__*/null;
 /*__GAMELOG_JS__*/
@@ -165,9 +174,9 @@ function saveRecord(){
   catch { $("#c-saved").textContent = "The browser would not keep the campaign's log (storage is off or full)." }
 }
 const phaseOf = id => CAMPAIGN.PHASES.find(p => p.id === id) || CAMPAIGN.PHASES[0];
-function note(text, gm = false){                     // a line in the campaign's log, at today's day on the travel map
+function note(text, gm = false, kind = null){         // a line in the campaign's log, at today's day on the travel map (kind "march": the clock's and the orders' word on every force)
   const st = CAMPAIGN.status(CAMPAIGN.read(localStorage), CD);
-  logEvent(REC.log, { round: st.travel?.day ?? null, type: "note", vis: gm ? [] : "public", data: { phase: REC.phase, text } });
+  logEvent(REC.log, { round: st.travel?.day ?? null, type: "note", vis: gm ? [] : "public", data: { phase: REC.phase, text, ...(kind ? { kind } : {}) } });
   saveRecord();
 }
 function setPhase(id, why = ""){
@@ -290,7 +299,7 @@ function giveOrder(what){                             // an order for the open f
   const arg = { to: picked("to"), via: picked("to"), camp: picked("camp") }[what] ?? null;
   const said = newDay().giveOrder(ORDERS_FOR, what, arg);
   MARCH_SAID = said || "";
-  if (said) note(said);
+  if (said) note(said, false, "march");
   const f = $("#c-frame");
   try { f.contentWindow.location.reload() } catch { f.setAttribute("src", f.getAttribute("src")) }
   render();
@@ -343,7 +352,7 @@ function sendFight(id, k){                             // the fight sent as the 
 function runMarch(){                                  // one press: the day moves on from what is saved, and is saved again
   const r = newDay().marchStep("event");
   MARCH_SAID = r.text || "";
-  if (r.text) note(r.text);
+  if (r.text) note(r.text, false, "march");
   if (r.met.length){
     const who = r.met.map(p => p.join(" and ")).join("; ");
     $("#c-notice").textContent = `${who} have met. Set up the fight on the travel map: the force is selected there; choose Fight here.`;
@@ -496,6 +505,7 @@ function render(){
   renderFight();
   if (ph.id === "fight"){ tellRoller("status"); tellField("status") }   // and the page answers with its fight as it stands
   $("#c-status").innerHTML = statusRows(st);
+  playersFollow();
   $("#c-log").innerHTML = [...REC.log].reverse().map(e => `<li class="${e.vis === "public" ? "" : "gm"}"><b>${e.round ? "Day " + e.round : "–"}</b>${esc(phaseOf(e.data.phase).name)} · ${esc(e.data.text)}${e.vis === "public" ? "" : ' <span class="muted">(GM)</span>'}</li>`).join("")
     || '<li class="muted">Nothing yet. The log fills as the campaign moves from phase to phase; add notes of your own.</li>';
 }
@@ -542,8 +552,11 @@ $("#c-add-note").addEventListener("click", () => {
 });
 $("#c-note").addEventListener("keydown", e => { if (e.key === "Enter") $("#c-add-note").click() });
 $("#c-frame").addEventListener("load", () => { showing(); FIGHT = null; FIELD = null; renderFight(); tellRoller("status"); tellField("status") });
-window.addEventListener("storage", e => { if (!e.key || e.key.startsWith(CAMPAIGN.PREFIX)) render() });   // a page in the frame wrote: look again
-setInterval(render, 3000);                             // and now and then, in case a write was missed
+const PLAYER_PAGE = location.hash.startsWith("#join=");   // opened from a GM's invitation: the player's page, not the console
+if (!PLAYER_PAGE){
+  window.addEventListener("storage", e => { if (!e.key || e.key.startsWith(CAMPAIGN.PREFIX)) render() });   // a page in the frame wrote: look again
+  setInterval(render, 3000);                           // and now and then, in case a write was missed
+}
 
 /* ---------- campaigns side by side: slots in the browser's IndexedDB ----------
    Each slot is one campaign: every page's state as a save file holds it, kept when the console moves
@@ -670,8 +683,231 @@ $("#c-load").addEventListener("change", async e => {
   finally { e.target.value = "" }
 });
 
-loadRecord();
-render();
-show(phaseOf(REC.phase).page);
-IDB.all().then(x => { SLOTS = x; renderSlots() }).catch(() => { $("#c-slots").innerHTML = '<p class="muted" style="margin:0">This browser keeps no campaigns side by side (IndexedDB is off): save to a file instead.</p>' });
+/* ---------- players online: each player's own link, held by this console for the session ----------
+   The GM adds a player and names the named men he plays. His link (copy and paste, as on the roller:
+   no server) connects his page to this one; this page draws what he may see (his men, the forces they
+   are with, the campaign's news as he hears it) and sends him only that, and after the first time only
+   what changed. Who plays whom is kept with the campaign (REC.players); the connections are not, and
+   after a reload the GM invites each again. */
+const PL = { conn: {}, stun: true, timer: null, menKey: "" };   // conn by player id: {state, code, err, peer, last}
+const players = () => (REC.players ||= []);
+const seatOf = pl => `player:${pl.id}`;
+const NET_LOST = new Set(["closed", "failed", "disconnected"]);
+function namedMen(){                                  // [uid, man] of every named man, the living first
+  let all = {};
+  try { all = JSON.parse(localStorage.getItem("gravewounds-named") || "{}") || {} } catch { all = {} }
+  return Object.entries(all).sort((a, b) => (a[1].dead === b[1].dead ? (a[1].name || "").localeCompare(b[1].name || "") : (a[1].dead ? 1 : -1)));
+}
+function menHtml(v){                                  // his men, as he sees them
+  if (!v.men.length) return '<p class="muted" style="margin:0">No named men yet: the GM gives you yours.</p>';
+  const row = m => `<tr><td><b>${esc(m.name)}</b></td><td>${esc(m.health)}</td><td>${esc(m.force || (m.dead ? "" : "with no force"))}</td><td>${esc(m.purse || "")}</td></tr>`;
+  return `<div class="tablewrap"><table><thead><tr><th>Man</th><th>How he is</th><th>With</th><th>Purse</th></tr></thead><tbody>${v.men.map(row).join("")}</tbody></table></div>`;
+}
+function forceHtml(v){                                // the forces his men are with, and nothing of anyone else's
+  if (!v.map) return '<p class="muted" style="margin:0">No map yet.</p>';
+  const head = `<p style="margin:0"><span class="when">Day ${v.day}, ${esc(v.time)}</span> · ${esc(v.date)} · ${esc(v.map)}</p>`;
+  if (!v.forces.length) return head + '<p class="muted" style="margin:0">None of your men is with a force on the map.</p>';
+  const one = f => `<h3>${esc(f.name)} <span class="muted">(${esc(f.side)})</span></h3>
+    <p style="margin:0">${esc(f.order)} · at ${esc(f.where)} · ${f.fit}/${f.men} fit · ${esc(f.fatigue)}</p>
+    <p class="muted" style="margin:0">${f.route ? "Route: " + esc(f.route) : "No route."}</p>
+    ${f.log.length ? '<ol class="log" style="max-height:9rem">' + f.log.map(l => "<li>" + esc(l) + "</li>").join("") + "</ol>" : ""}`;
+  return head + v.forces.map(one).join("");
+}
+function newsHtml(seat){                              // the campaign's log as this seat hears it, newest first
+  const lines = viewFor(REC.log, seat).filter(e => e.full && e.data.kind !== "march").slice(-40).reverse();   // the clock's word tells of every force: his own force's comes in its own log
+  return lines.map(e => `<li><b>${e.round ? "Day " + e.round : "–"}</b>${esc(e.data.text || "")}</li>`).join("") || '<li class="muted">Nothing yet.</li>';
+}
+function playerScreen(pl){                            // what this player's page shows: drawn here, as HTML
+  let v;
+  try { v = newDay().seatView(pl.men) } catch { v = { map: null, men: [], forces: [] } }
+  const phase = phaseOf(REC.phase).name;
+  return { t: "camp", seat: seatOf(pl), name: pl.name, campaign: REC.name || "The campaign", phase,
+    men: menHtml(v), force: forceHtml(v), news: newsHtml(seatOf(pl)) };
+}
+function playerSend(pl){
+  const c = PL.conn[pl.id];
+  if (c?.state !== "open") return;
+  const now = playerScreen(pl), msg = NET.screenPart(c.last, now, ["t", "seat"]);
+  c.last = now;
+  if (msg) c.peer.send(msg);
+}
+function playersSync(){                               // each connected player's page, soon after a change
+  clearTimeout(PL.timer);
+  PL.timer = setTimeout(() => players().forEach(playerSend), 80);
+}
+function playersFollow(){                             // after the console draws: the players' pages follow; the panel when the named men change
+  const key = namedMen().map(([u, n]) => u + (n.dead ? "+" : "") + n.name).join("|");
+  if (key !== PL.menKey){ PL.menKey = key; renderPlayers() }
+  playersSync();
+}
+function playerCommand(pl, m){                         // nothing a player sends is acted on yet (his proposed orders come next)
+  if (!m || typeof m.t !== "string") return;
+}
+async function playerConnect(pl){                     // an invitation for his seat: a first one, or again after he was lost or this page reloaded
+  const c = (PL.conn[pl.id] ||= {});
+  c.peer?.close();
+  Object.assign(c, { state: "inviting", code: "", err: "", last: null });
+  const peer = NET.hostPeer({ seat: seatOf(pl), stun: PL.stun, onMessage: m => playerCommand(pl, m), onState: st => {
+    if (c.peer !== peer) return;                       // an old connection of his, closing
+    c.state = st;
+    if (st === "open"){ c.last = null; playerSend(pl) }   // his screen, whole: first or again
+    renderPlayers();
+  } });
+  c.peer = peer;
+  renderPlayers();
+  try { c.code = await peer.invite({ stun: PL.stun, name: pl.name }); c.state = "waiting for the reply" }
+  catch (e){ c.state = "failed"; c.err = String(e.message || e) }
+  renderPlayers();
+}
+async function playerAccept(pl, reply){
+  const c = PL.conn[pl.id];
+  if (!c?.peer) return;
+  c.err = "";
+  try { await c.peer.accept(reply); c.state = "connecting" }
+  catch (e){ c.err = String(e.message || e) }
+  renderPlayers();
+}
+const playerLink = code => `${location.href.split("#")[0]}#join=${code}`;
+function menPicker(chosen, attrs){                     // a checkbox for each named man
+  const men = namedMen();
+  if (!men.length) return '<span class="muted">No named men yet (Send to the roller from the team builder).</span>';
+  return `<span class="men">${men.map(([u, n]) => `<label><input type="checkbox" ${attrs} value="${esc(u)}"${chosen.includes(u) ? " checked" : ""}>${esc(n.name || "?")}${n.dead ? " (dead)" : ""}</label>`).join("")}</span>`;
+}
+function playerRow(pl){
+  const c = PL.conn[pl.id] || { state: "not connected" };
+  const st = { open: "connected", closed: "gone", failed: "could not connect", disconnected: "lost" }[c.state] || c.state;
+  const waiting = c.code && c.state !== "open" && !NET_LOST.has(c.state);
+  const invite = waiting ? `<label class="muted">1. Send this link to ${esc(pl.name)}:
+      <textarea readonly rows="2" data-pl-link="${esc(pl.id)}" style="width:100%">${esc(playerLink(c.code))}</textarea></label>
+      <span class="toolbar"><button type="button" class="small" data-pl="copy" data-id="${esc(pl.id)}">Copy the link</button></span>
+      <label class="muted">2. Paste the reply code his page gives him:
+      <textarea rows="2" data-pl-reply="${esc(pl.id)}" style="width:100%"></textarea></label>
+      <span class="toolbar"><button type="button" class="small" data-pl="accept" data-id="${esc(pl.id)}">Connect</button></span>` : "";
+  const connect = c.state === "open" || waiting ? "" : `<button type="button" class="small primary" data-pl="invite" data-id="${esc(pl.id)}">${c.peer ? "Invite again" : "Invite"}</button>`;
+  return `<li><span class="toolbar"><b>${esc(pl.name)}</b> <span class="muted">${esc(st)}</span>${connect}
+      <button type="button" class="small" data-pl="drop" data-id="${esc(pl.id)}">Remove</button></span>
+    <span class="muted" style="font-size:.88rem">Plays: ${menPicker(pl.men, `data-pl-man="${esc(pl.id)}"`)}</span>
+    ${invite}${c.err ? `<p class="bad">${esc(c.err)}</p>` : ""}</li>`;
+}
+function renderPlayers(){
+  const box = $("#c-players");
+  if (!box || PLAYER_PAGE) return;
+  if (box.contains(document.activeElement) && ["TEXTAREA", "INPUT"].includes(document.activeElement.tagName) && document.activeElement.type !== "checkbox") return;   // not while the GM types
+  const open = players().filter(pl => PL.conn[pl.id]?.state === "open").length;
+  box.innerHTML = `<div class="toolbar" style="justify-content:space-between"><h2 id="h-players">Players online</h2><span class="muted">${open} connected</span></div>
+    <p class="muted" style="margin:0;font-size:.9rem">Each player gets his own link for the session and sees his men, the forces they are with and the campaign's news (not the GM's notes, nor the march's word on other forces), from his own computer. No server: the link and his reply are passed by hand.</p>
+    ${players().length ? `<ul class="players">${players().map(playerRow).join("")}</ul>` : ""}
+    <div class="toolbar"><label class="muted">Player <input type="text" id="pl-name" placeholder="His name" style="width:12em"></label>
+      <button type="button" class="small" id="pl-add">Add a player</button>
+      <label class="muted" style="display:inline-flex;gap:4px;align-items:center" title="Lets pages find each other across the internet; on one network it is not needed"><input type="checkbox" id="pl-stun"${PL.stun ? " checked" : ""}> Public STUN server</label></div>
+    <span class="muted" style="font-size:.88rem">His men: ${menPicker([], 'data-pl-new')}</span>`;
+}
+function addPlayer(){
+  const name = $("#pl-name").value.trim(), men = [...document.querySelectorAll("[data-pl-new]:checked")].map(x => x.value);
+  if (!name) return $("#pl-name").focus();
+  const pl = { id: `p${Date.now().toString(36)}`, name, men };
+  players().push(pl);
+  const who = namedMen().filter(([u]) => men.includes(u)).map(([, n]) => n.name).join(", ");
+  note(`${name} joins as a player${who ? " for " + who : ""}`);
+  render(); renderPlayers();
+  playerConnect(pl);
+}
+$("#c-players").addEventListener("click", e => {
+  if (e.target.id === "pl-add") return addPlayer();
+  const b = e.target.closest("button[data-pl]"); if (!b) return;
+  const pl = players().find(x => x.id === b.dataset.id); if (!pl) return;
+  const what = b.dataset.pl;
+  if (what === "invite") playerConnect(pl);
+  else if (what === "copy") navigator.clipboard?.writeText(playerLink(PL.conn[pl.id].code)).catch(() => $(`[data-pl-link="${pl.id}"]`).select());
+  else if (what === "accept") playerAccept(pl, $(`[data-pl-reply="${pl.id}"]`).value);
+  else if (what === "drop" && confirm(`Remove ${pl.name}? His page is cut off.`)){
+    PL.conn[pl.id]?.peer?.close(); delete PL.conn[pl.id];
+    REC.players = players().filter(x => x !== pl); saveRecord(); renderPlayers();
+  }
+});
+$("#c-players").addEventListener("change", e => {
+  if (e.target.id === "pl-stun") PL.stun = e.target.checked;
+  const man = e.target.closest("[data-pl-man]");
+  if (man){
+    const pl = players().find(x => x.id === man.dataset.plMan); if (!pl) return;
+    pl.men = [...document.querySelectorAll(`[data-pl-man="${pl.id}"]:checked`)].map(x => x.value);
+    saveRecord(); playersSync();
+  }
+});
+$("#c-players").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.id === "pl-name") addPlayer() });
+
+/* ---------- the player's page: opened from his invitation link, it shows what the console sends ---------- */
+const PG = { send: () => {}, peer: null, screen: null };
+const PG_KEY = "gravewounds-guest-campaign";          // this tab's last screen, by seat: kept while it rejoins
+function pgLayout(){
+  document.title = "Grave Wounds: player";
+  document.querySelector(".wrap").innerHTML = `<header><div><h1 id="p-title">Campaign</h1><p class="sub" id="p-who"></p></div></header>
+    <p id="p-status" aria-live="polite" style="margin:0"></p>
+    <section class="panel" id="p-join"></section>
+    <div class="top"><section class="panel" aria-labelledby="h-pmen"><h2 id="h-pmen">Your men</h2><div id="p-men"></div></section>
+      <section class="panel march" style="border-top:0;padding-top:14px" aria-labelledby="h-pforce"><h2 id="h-pforce">Your force</h2><div id="p-force" style="display:flex;flex-direction:column;gap:6px"></div></section></div>
+    <section class="panel" aria-labelledby="h-pnews"><h2 id="h-pnews">News</h2><ol class="log" id="p-news" aria-label="The campaign's news, newest first"></ol></section>`;
+}
+function pgShow(m, changed = null){
+  for (const k of ["men", "force", "news"]) if (!changed || changed.includes(k)) $("#p-" + k).replaceChildren(...NET.clean(m[k]));
+  $("#p-title").textContent = m.campaign || "Campaign";
+  $("#p-who").textContent = `${m.name}, playing · ${m.phase}`;
+}
+function pgKeep(seat, m){ try { sessionStorage.setItem(PG_KEY, JSON.stringify({ seat, m })) } catch { /* storage off: a rejoin starts blank */ } }
+function pgKept(seat){ try { const k = JSON.parse(sessionStorage.getItem(PG_KEY) || "null"); return k?.seat === seat ? k.m : null } catch { return null } }
+function pgLost(){                                    // the GM's console is gone: his last screen stays; a new invitation can be pasted
+  PG.send = () => {};
+  $("#p-status").textContent = "Lost the GM's console. Your last screen stays below; ask the GM to invite you again.";
+  $("#p-join").hidden = false;
+  $("#p-join").innerHTML = `<h2>Rejoin</h2><p class="muted" style="margin:0">The GM presses <b>Invite again</b> for you and sends a new link. Paste it here (or open it in this tab).</p>
+    <label for="p-relink" style="position:absolute;left:-9999px">The GM's new invitation link</label><input type="text" id="p-relink" style="width:100%" placeholder="The new invitation link">
+    <span class="toolbar"><button type="button" class="small" id="p-rejoin">Rejoin</button></span>`;
+  $("#p-rejoin").onclick = () => {
+    const v = $("#p-relink").value.trim(), at = v.indexOf("#join=");
+    if (at >= 0) location.hash = v.slice(at);
+    else $("#p-status").textContent = "That is not an invitation link: it should have #join= in it.";
+  };
+}
+async function pgJoin(){
+  const status = t => { $("#p-status").textContent = t };
+  let invite;
+  try { invite = await NET.unpackCode(location.hash) }
+  catch { return status("This link is not a working invitation. Ask the GM for a new one.") }
+  if (!String(invite.seat).startsWith("player:")) return status("This invitation is for a fight on the wound roller: open it there.");
+  const kept = pgKept(invite.seat);
+  if (kept){ pgShow(kept); PG.screen = kept }
+  status(`${kept ? "Rejoining" : "Joining"} the GM's campaign${invite.name ? " as " + invite.name : ""}...`);
+  PG.peer?.close?.();
+  try {
+    const g = await NET.guestPeer({ invite, stun: invite.stun !== false,
+      onMessage: m => {
+        if (m.t !== "camp") return;
+        const whole = NET.merge(PG.screen, m);
+        PG.screen = whole;
+        $("#p-join").hidden = true;
+        status("Connected to the GM's console.");
+        pgShow(whole, m.part ? Object.keys(m) : null);
+        pgKeep(invite.seat, whole);
+      },
+      onState: st => { if (st !== "open" && PG.peer === g) pgLost() } });
+    PG.peer = g; PG.send = g.send;
+    $("#p-join").hidden = false;
+    $("#p-join").innerHTML = `<h2>Send this reply to the GM</h2><p class="muted" style="margin:0">The GM pastes it under your name in Players online. This page then shows your men and their force.</p>
+      <textarea readonly rows="3" id="p-reply" style="width:100%">${esc(g.reply)}</textarea>
+      <span class="toolbar"><button type="button" class="small" id="p-copy">Copy the reply</button></span>`;
+    $("#p-copy").onclick = () => navigator.clipboard?.writeText(g.reply).catch(() => $("#p-reply").select());
+    status(kept ? "Rejoining: waiting for the GM to paste your reply. Your last screen is below." : "Waiting for the GM to paste your reply.");
+  } catch (e){ status(`Could not answer the invitation: ${e.message || e}`) }
+}
+
+if (PLAYER_PAGE){
+  pgLayout();
+  window.addEventListener("hashchange", () => { if (location.hash.startsWith("#join=")) pgJoin() });
+  pgJoin();
+} else {
+  loadRecord();
+  render();
+  show(phaseOf(REC.phase).page);
+  IDB.all().then(x => { SLOTS = x; renderSlots() }).catch(() => { $("#c-slots").innerHTML = '<p class="muted" style="margin:0">This browser keeps no campaigns side by side (IndexedDB is off): save to a file instead.</p>' });
+}
 </script>

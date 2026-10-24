@@ -112,11 +112,36 @@ stands after every change (by the browser's messages between a page and the page
 each answers only the page that holds it, and a player's page joined online never). The
 moves, strikes, first aid and the rest are still made on the roller.
 
+## Players online
+
+**Players online** on the console gives each player one link for the session (copy and paste, as
+on the roller: no server yet). The GM adds a player, ticks the named men he plays (one or more; it
+can be changed at any time), and sends him the link; his page (the campaign page, opened from the
+link) gives a reply code the GM pastes back. His page then shows:
+
+- **Your men**: each of his named men, how he is (well, sick, his wounds mending, dead), the force
+  he is with, and his purse;
+- **Your force**: the map's day and hour, and each force his men are with (its orders, where it is,
+  how many are fit, its fatigue, its route and its own log of the march);
+- **News**: the campaign's log as he hears it: the public lines, not the GM's notes, and not the
+  march clock's word on every force (his own force's comes in its own log).
+
+The console draws his screen and sends him only that, whole the first time and then only what
+changed (`NET.screenPart` in `templates/net.js`); nothing of another side's forces or named men
+reaches his page. Who plays whom is kept with the campaign (its record, so in saves and slots);
+the connections are not. If his page reloads it shows his last screen and rejoins; if he is lost,
+or the console reloads, the GM presses **Invite again** and sends a new link, which he opens or
+pastes into **Rejoin**.
+
+Not yet: his proposed orders for his force (the GM accepts or declines them), his fights coming
+through the same link (the roller's own **Play online** still gives a link per fight), room codes
+in place of copy and paste, and the travel and field maps on his page.
+
 ## The log
 
 Each phase the campaign moves to, and why, goes into the campaign's log at the travel map's day,
 with the GM's own notes (for everyone, or ticked **GM only**). It is the same kind of log as the
-roller's event log, with the same idea of who may see what, ready for players online.
+roller's event log, with the same idea of who may see what: a player online hears the public lines.
 
 ## Saving the game
 
@@ -168,4 +193,7 @@ in the browser workflow, on every pull request that changes the pages). `python3
 console's way into the day with no page: the summary changes nothing, a press moves on and saves,
 a meeting is reported, orders (routes, march and halt, camp and rest) are given and saved and a
 refused route changes nothing, the fights on offer are sent as Fight here sends them, and a battle's result
-is taken in once.
+is taken in once. `python3 tools/net/console.py` (in CI, with the other browser tests) connects the
+console and a player's page in browser profiles of their own: his men, his force and the public
+news shown and nothing of the enemy's or the GM's notes, the march followed by changes only, the
+men he plays changed, and his page and the console each reloaded and joined again.
