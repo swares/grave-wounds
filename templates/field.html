@@ -1486,10 +1486,11 @@ const narratorOn = () => (!!NARR.key || narrLocal()) && !!narrModel() && !!narrU
 const narrProvider = () => FD.units.narrator.providers[NARR.provider];
 const narrModel = () => NARR.model || narrProvider().model;
 const narrUrl = () => (NARR.provider === "openai" ? NARR.url || narrProvider().url : narrProvider().url);
-const LOCAL_HOSTS = ["localhost", "127.0.0.1", "[::1]"];
+const narrAddress = () => (URL.canParse(narrUrl()) ? new URL(narrUrl()) : null);   // null until the address is a full one
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]"]);
 const narrLocal = () => {                         // an OpenAI-compatible model on this computer (Ollama, LM Studio): no key needed
-  if (NARR.provider !== "openai") return false;
-  try { const h = new URL(narrUrl()).hostname; return LOCAL_HOSTS.includes(h) || h.endsWith(".localhost") }catch(e){ return false /* not a full address yet */ }
+  const h = NARR.provider === "openai" ? narrAddress()?.hostname : null;
+  return !!h && (LOCAL_HOSTS.has(h) || h.endsWith(".localhost"));
 };
 const warVoice = () => { const N = FD.units.narrator; return N.battles[FD.tables[S.table]?.battle] || N.default };   // the voice for this battle's war
 const voiceKey = () => (S.voice && FD.units.narrator.voices[S.voice] ? S.voice : warVoice());   // the GM's choice for this battle, else the war's
@@ -1558,12 +1559,12 @@ function renderNarrator(){
   $("#narr-url").placeholder = narrProvider().url;
   $("#narr-remember").checked = NARR.remember;
   $("#narr-forget").disabled = !NARR.key;
-  const host = (() => { try { return new URL(narrUrl()).host }catch(e){ return "the address above" /* not a full address yet */ } })();
+  const host = narrAddress()?.host || "the address above";
   const sent = `Each turning point's plain text, the battlefield's name, the sides and the war, and the last ${nOf(FD.units.narrator.context, "passage")} are sent to ${host}`;
-  $("#narr-note").textContent = (narrLocal() && !NARR.key ? `${sent}, a model on this computer, and nowhere else; no key is needed. `
-    : `${sent} with your key, and nowhere else; the service bills your key or counts the calls against its free allowance. `
-    + (NARR.remember ? "The key is kept in this browser until you press Forget." : "The key is kept only while this page is open."))
-    + " The passages use only what the game gives them; the plain line stays under each.";
+  const kept = NARR.remember ? "The key is kept in this browser until you press Forget." : "The key is kept only while this page is open.";
+  let note = `${sent} with your key, and nowhere else; the service bills your key or counts the calls against its free allowance. ${kept}`;
+  if (narrLocal() && !NARR.key) note = `${sent}, a model on this computer, and nowhere else; no key is needed.`;
+  $("#narr-note").textContent = note + " The passages use only what the game gives them; the plain line stays under each.";
   const voice = FD.units.narrator.voices[voiceKey()].name.toLowerCase();
   $("#narr-status").textContent = narratorOn() ? `On: ${narrModel()}, writing ${voice}.`
     : `Off: enter a key (and, for an OpenAI-compatible service, its address and a model; a model on this computer, at localhost, needs no key) to turn it on. Voice: ${voice}.`;
