@@ -176,7 +176,8 @@ When an item is done, delete it here and note it in the pull request that closes
   straggling, fatigue and the hard nights (no march-rate or heat-casualty rule).
 - **A narrator, first cut.** The field page tells each exchange's turning points (phases,
   units breaking or fleeing, reserves committed, the objective taken or lost, the end) in plain
-  words, and with the player's own key (Anthropic, or any OpenAI-compatible service) a model
+  words, and with the player's own key (Anthropic, or any OpenAI-compatible service, Gemini's
+  free tier among them), or a model on the player's own computer with no key, a model
   retells each in a short passage in a voice for the war, using only the facts given. The key
   is kept only while the page is open unless the player ticks Remember. Still left out: only what changed
   over a whole exchange is told (a unit that broke and rallied within one is missed), no rally or hero turning points, no narration on the travel map, no streamed or
