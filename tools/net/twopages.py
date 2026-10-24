@@ -123,6 +123,32 @@ with sync_playwright() as p:
       return box.innerHTML }""")
     check("onerror" not in cleaned and "javascript" not in cleaned and "<script" not in cleaned and "onclick" not in cleaned and "<b>ok</b>" in cleaned and "<circle" in cleaned,
           "his page drops anything in a drawing that could run, and keeps the rest")
+    # lost, and back: the same seat, a new link, his last screen kept meanwhile
+    pl.evaluate("() => GUEST.peer.close()")               # his connection goes (a network gone, a laptop shut)
+    gm.wait_for_function("() => ['closed', 'failed', 'disconnected'].includes(NETH.peers[0].state)", timeout=20000)
+    check(gm.locator('button[data-net="again"]').count() == 1, "the GM's page shows him lost, with Invite again")
+    pl.wait_for_selector("#g-relink", timeout=10000)
+    check(pl.locator("#chars").evaluate("e => e.children.length") > 0 and "Lost the GM's page" in pl.inner_text("#g-status"), "his page keeps his side's last screen and offers to rejoin")
+    gm.click('button[data-net="again"]')
+    gm.wait_for_function("() => NETH.peers[0].state === 'waiting for the reply'", timeout=20000)
+    link2 = gm.input_value("textarea[data-net-link]")
+    check(link2 != link and gm.evaluate("() => NETH.peers.length") == 1, "Invite again makes a new link for the same seat, in the same row")
+    pl.fill("#g-relink", link2)
+    pl.click("#g-rejoin")
+    pl.wait_for_function("() => (document.querySelector('#g-reply') || {}).value", timeout=20000)
+    gm.fill("textarea[data-net-reply]", pl.input_value("#g-reply"))
+    gm.click('button[data-net="accept"]')
+    gm.wait_for_function("() => NETH.peers[0].state === 'open'", timeout=20000)
+    pl.wait_for_function("() => document.querySelector('#g-join').style.display === 'none'", timeout=20000)
+    check(gm.evaluate(f"() => gmSide({me!r}).ctl") == "player", "rejoined: he plays his side again, and his page shows the fight")
+    # his page reloaded: the last screen at once, from this tab, before anything is connected
+    pl.reload()
+    pl.wait_for_function("() => document.querySelector('#chars') && document.querySelector('#chars').children.length > 0", timeout=5000)
+    check("Rejoining" in pl.inner_text("#g-status"), "a reloaded player's page shows his last screen while it rejoins")
+    # the GM's page reloaded: his players' seats are remembered, to invite again
+    gm.reload()
+    gm.wait_for_selector('button[data-net="again"]', timeout=10000)   # Play online opens by itself, with the seat to invite again
+    check(gm.evaluate("() => NETH.peers.map(p => p.seat)") == [f"side:{me}"], "after the GM's page is reloaded, his player's seat waits to be invited again")
     check(not errors, f"no page errors {errors[:3]}")
     br.close()
 

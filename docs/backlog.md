@@ -38,7 +38,8 @@ When an item is done, delete it here and note it in the pull request that closes
   public part is fixed, not a GM setting; the field and travel pages have no log. Play online
   (first cut): the GM's page is the host over WebRTC, codes passed by hand. Still left out: a
   signalling service (room codes instead of copy and paste), a TURN relay for strict networks,
-  rejoining without a new invitation, sending only what changed (whole panels now), a player's
+  rejoining without passing a new link and reply by hand (a lost player is invited again to the
+  same seat, his page keeping his last screen; a blinked connection mends itself), sending only what changed (whole panels now), a player's
   first aid, works and the other panels from his page, and the field and travel pages online.
 - **Lethality, first cut.** Gritty | Standard | Heroic for player characters (wounds.yaml
   lethality): fate a season, Blood and the stop check, on every page. Still left out: fate does
