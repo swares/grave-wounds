@@ -270,15 +270,17 @@ def write_shared(d) -> None:
 
 
 def check_page() -> int:
-    """The built travel page's scripts parse (node --check): a name declared twice in the page, say
-    one the day also gives it, is caught here as it would stop the page loading."""
-    page = (ROOT / "dist" / "travel.html").read_text(encoding="utf-8")
+    """The built travel page's and campaign console's scripts parse (node --check): a name declared
+    twice in a page, say one the day also gives it, is caught here as it would stop the page loading."""
     bad = 0
-    for i, js in enumerate(re.findall(r"<script>(.*?)</script>", page, re.S)):
-        f = CACHE / f"page-{i}.js"
-        f.write_text(js, encoding="utf-8")
-        bad += subprocess.call(["node", "--check", str(f)]) != 0
-    print("dist/travel.html: its scripts parse" if not bad else f"dist/travel.html: {bad} script(s) do not parse")
+    for name in ("travel.html", "campaign.html"):        # the travel map, and the console that runs its day
+        page, wrong = (ROOT / "dist" / name).read_text(encoding="utf-8"), 0
+        for i, js in enumerate(re.findall(r"<script>(.*?)</script>", page, re.S)):
+            f = CACHE / f"{name}-{i}.js"
+            f.write_text(js, encoding="utf-8")
+            wrong += subprocess.call(["node", "--check", str(f)]) != 0
+        print(f"dist/{name}: its scripts parse" if not wrong else f"dist/{name}: {wrong} script(s) do not parse")
+        bad += wrong
     return 1 if bad else 0
 
 

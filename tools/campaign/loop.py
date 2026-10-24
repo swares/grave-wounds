@@ -3,7 +3,7 @@
     python3 tools/campaign/loop.py
 
 It follows a campaign round the loop: the team made in the team builder (in the frame), the march on the
-travel map, a fight sent from it noticed and the console moved to it, the fight won on the roller, the
+travel map run from the console until the forces meet, a fight sent from it noticed and the console moved to it, the fight won on the roller, the
 aftermath; then the whole game saved to a file, cleared, and loaded back. The pages' writes are made from
 inside the frame, as the pages make them. Needs Python's playwright with Chromium and a built site.
 Exits non-zero on any failure.
@@ -73,6 +73,46 @@ with sync_playwright() as p:
     pg.click("#c-next")
     pg.wait_for_function("() => document.querySelector('#c-showing').textContent.includes('Travel map')", timeout=15000)
     check(phase_of(pg) == "march", "Done moves to the march, with the travel map in the frame")
+    # Run the march: the travel map's forces given routes there, the clock moved on from here
+    page_in_frame(pg).wait_for_function("() => typeof addWaypoint === 'function' && location.pathname.endsWith('travel.html')", timeout=15000)
+    page_in_frame(pg).evaluate("""() => { S.mapId = 'towton-1461'; S.clock = {}; const fs = forcesHere();
+      for (const f of fs){ const foe = fs.find(o => o.side !== f.side); if (foe) addWaypoint(f, foe.pos) } save() }""")
+    pg.wait_for_function("() => !!document.querySelector('#c-run')", timeout=6000)
+    rows = pg.locator("#c-march tbody tr").count()
+    check(rows >= 2 and "Day 1" in pg.inner_text("#c-march"), f"the march panel shows the map's clock and its {rows} forces")
+    met, presses = False, 0
+    while not met and presses < 20:
+        pg.click("#c-run"); presses += 1
+        pg.wait_for_function("() => document.querySelector('#c-march-said').textContent.length > 0", timeout=8000)
+        met = not pg.locator("#c-notice").is_hidden() and "have met" in pg.inner_text("#c-notice")
+    said = pg.inner_text("#c-march-said")
+    check(met, f"Run the march moves the clock until forces meet, and says so ({presses} presses: {said[:90]})")
+    texts = [e["data"]["text"] for e in pg.evaluate("() => REC.log")]
+    check(sum(1 for t in texts if " meet " in t or "Night passes" in t or "marching is done" in t or ":" in t) >= presses, "each move of the clock goes into the campaign's log")
+    saved = json.loads(pg.evaluate("() => localStorage.getItem('gravewounds-travel')"))
+    pg.wait_for_timeout(500)
+    page_in_frame(pg).wait_for_function("() => typeof clockNow === 'function'", timeout=15000)
+    frame_clock = page_in_frame(pg).evaluate("() => clockNow()")
+    check(frame_clock == saved["clock"]["towton-1461"], f"the travel map in the frame shows the day the console moved to ({frame_clock})")
+    check("Travel map" in pg.inner_text("#c-showing"), "a meeting puts the travel map in the frame, to set up the fight")
+    # a long march with the enemy gone: the nights pass as the console moves the clock on
+    page_in_frame(pg).evaluate("""() => { const all = forcesHere(), f = all[0], m = curMap(), foes = all.filter(o => o.side !== f.side);
+      S.forces[S.mapId] = all.filter(o => o.side === f.side);   // the enemy gone from the map: nothing to meet
+      for (const o of forcesHere()){ o.waypoints = []; o.path = null; o.order = "halt" }
+      let best = null, far = -1;
+      for (let r = 0; r < m.rows.length; r += 2) for (let c = 0; c < m.rows[0].length; c += 2){
+        const d = Math.min(...foes.map(o => hexDistance(o.pos, [c, r]))), go = hexDistance(f.pos, [c, r]);
+        if (d > far && go > 25 && go < 60 && passable(m, [c, r], colType(f), groundOf(f.day)) && plan(m, f.pos, [[c, r]], colType(f), groundOf(f.day))){ far = d; best = [c, r] } }
+      addWaypoint(f, best); save() }""")
+    pg.wait_for_timeout(3500)                                # the console looks again
+    presses = 0
+    while presses < 25 and pg.locator("#c-run").is_enabled() and "arrives" not in pg.inner_text("#c-march-said"):
+        pg.click("#c-run"); presses += 1
+    said = pg.inner_text("#c-march-said")
+    day = json.loads(pg.evaluate("() => localStorage.getItem('gravewounds-travel')"))["clock"]["towton-1461"]["day"]
+    named = pg.evaluate("() => JSON.parse(localStorage.getItem('gravewounds-travel')).forces['towton-1461'][0].log.slice(0, 40).join(' | ')")
+    check("arrives" in said and day >= 3 and "Night of" in named, f"marching on, nights pass until it arrives: day {day} after {presses} presses ({said[:70]})")
+    check("Day " + str(day) in pg.inner_text("#c-march"), "the march panel follows the clock")
     # the travel map's state, then a fight sent from it, as Fight here writes it
     page_in_frame(pg).evaluate(f"""() => localStorage.setItem('gravewounds-travel', {J(J({"mapId": "towton-1461", "forces": {"towton-1461": [{"side": "York"}, {"side": "Lancaster"}]}, "clock": {"towton-1461": {"day": 3, "used": 4}}, "fought": []}))})""")
     page_in_frame(pg).evaluate(f"""() => localStorage.setItem('gravewounds-handoff', {J(J({"from": "travel", "force": {"name": "Will's lances", "side": "York"}, "place": "Ferrybridge", "foes": [{"name": "Clifford's flankers"}]}))})""")

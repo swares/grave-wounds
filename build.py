@@ -2133,6 +2133,9 @@ def main() -> int:
     ctpl = (ROOT / "templates" / "campaign.html").read_text(encoding="utf-8")       # the GM's console over the pages
     chtml = ctpl.replace("/*__CAMPAIGN_JS__*/", (ROOT / "templates" / "campaign.js").read_text(encoding="utf-8"))
     chtml = chtml.replace("/*__GAMELOG_JS__*/", (ROOT / "templates" / "gamelog.js").read_text(encoding="utf-8"))
+    chtml = chtml.replace("/*__PURSE_JS__*/", purse_js).replace("/*__EVENTS_JS__*/", events_js).replace(MEASURE_MARK, measure_js).replace("/*__LETHAL_JS__*/", lethal_js)   # Run the march: the travel day and what it needs
+    chtml = chtml.replace("/*__TRAVELRULES_JS__*/", travelrules_js).replace(CAMP_MARK, camp_js).replace("/*__TRAVELDAY_JS__*/", travelday_js)
+    chtml = chtml.replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":")))
     (DIST / "campaign.html").write_text(chtml.replace("/*__CAMPAIGN_DATA__*/null", json.dumps(campaign_bundle(d), separators=(",", ":"))), encoding="utf-8")
     (ROOT / "index.html").write_text(index_page(d), encoding="utf-8")
     print("Built:", ", ".join(p.name for p in sorted(DIST.iterdir())), "+ index.html")
