@@ -304,6 +304,14 @@ function makeTravelRules(DATA, lib = {}){
     return { defender: defender.id, allies: friends.filter(o => !clockAfter(o, day, used)).map(o => o.id),
       attackers: attackers.map(o => o.id), late: friends.filter(o => clockAfter(o, day, used)).map(o => o.id), day, used, early };
   }
+  // Surprise (as gravewounds.travel.surprise): the defenders caught unawares
+  function surpriseChance(campKind, dark, fog, stealth = 0, watch = 0){   // {chance, parts: [[why, n]]}
+    const S0 = WK.surprise, camp = campKind ? WK.camps[campKind].surprise : S0.none;
+    const parts = [["base", S0.base], ["camp", camp], ["dark", dark ? S0.dark : 0], ["fog", fog ? S0.fog : 0],
+      ["stealth", Math.floor(Math.max(0, stealth) / S0.per)], ["watch", -Math.floor(Math.max(0, watch) / S0.per)]];
+    const [lo, hi] = S0.range;
+    return { chance: Math.max(lo, Math.min(hi, parts.reduce((t, [, n]) => t + n, 0))), parts: parts.filter(([, n]) => n) };
+  }
   /* ---------- camp disease: same rules as gravewounds/disease.py ---------- */
   // A force's health: {cases, immune, had, dead}; cases are the men sick or incubating, one
   // disease each: {d, inc, step, peak (0 once reached), shown, chronic}. rng() returns d100.
@@ -568,7 +576,7 @@ function makeTravelRules(DATA, lib = {}){
       ev.shown.frostbite = (ev.shown.frostbite || 0) + 1;
     }
   }
-  return { fdiv, jdn, fromJdn, parseDate, mapJdn, mapDate, solarDayOfYear, daysInMonth, daylight, marchWindow, coldLevel, MOON_DAYS, NEW_MOON_JDN, moonAge, lightAt, pickRow, rollWeather, windDir, WIND_NAMES, nextGround, terrainPct, flooded, nightRest, fatigueAfter, NEIGHBOURS, neighbours, terrainAt, forceTypes, fordFrac, fordHere, tooDeep, passable, columnKmh, hexWeight, stepWeight, stepHours, heapPush, heapPop, less, tracePath, route, plan, hpdAt, groundAt, schedule, advance, hexDistance, hkey, edgeKey, campDone, campWorked, campLabourDone, camped, nearForces, arrived, clockAfter, before, laterOf, fightPlan, dzProfile, newHealth, copyHealth, dzStep, dzPick, healthCounts, sickMarchPct, campHygiene, CARE_STEPS, campCare, weekFactors, weatherFactors, outbreakChance, patientsOf, nursingOf, contagionOf, nurseChance, nursesCatch, newCase, catchChance, d10000, freshToday, fieldcraftNeeded, leechBonus, scurvyChance, scurvyCase, scurvyWeek, reopenOld, healthWeek, relapses, checksToday, recoverCase, scurvyCheck, septic, caseDay, healthDay, frostbiteChance, frostbiteNight };
+  return { fdiv, jdn, fromJdn, parseDate, mapJdn, mapDate, solarDayOfYear, daysInMonth, daylight, marchWindow, coldLevel, MOON_DAYS, NEW_MOON_JDN, moonAge, lightAt, pickRow, rollWeather, windDir, WIND_NAMES, nextGround, terrainPct, flooded, nightRest, fatigueAfter, NEIGHBOURS, neighbours, terrainAt, forceTypes, fordFrac, fordHere, tooDeep, passable, columnKmh, hexWeight, stepWeight, stepHours, heapPush, heapPop, less, tracePath, route, plan, hpdAt, groundAt, schedule, advance, hexDistance, hkey, edgeKey, campDone, campWorked, campLabourDone, camped, nearForces, arrived, clockAfter, before, laterOf, fightPlan, surpriseChance, dzProfile, newHealth, copyHealth, dzStep, dzPick, healthCounts, sickMarchPct, campHygiene, CARE_STEPS, campCare, weekFactors, weatherFactors, outbreakChance, patientsOf, nursingOf, contagionOf, nurseChance, nursesCatch, newCase, catchChance, d10000, freshToday, fieldcraftNeeded, leechBonus, scurvyChance, scurvyCase, scurvyWeek, reopenOld, healthWeek, relapses, checksToday, recoverCase, scurvyCheck, septic, caseDay, healthDay, frostbiteChance, frostbiteNight };
 }
 
 if (typeof module !== "undefined") module.exports = makeTravelRules;   // Node (the tests); the page has no `module`

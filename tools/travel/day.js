@@ -148,6 +148,35 @@ check("the console's march: a summary looks without changing anything, a step mo
   const orders = makeTravelDay(DATA, RULES).marchSummary().forces.map(f => f.order);
   assert.ok(orders.some(o => o.startsWith("halted")) && !orders.some(o => o.startsWith("busy")), `after the meeting: ${orders.join(", ")}`);
 });
+check("the console's fights: offered where enemies are within reach, sent as Fight here sends them, a battle's result taken in once", () => {
+  const D = fresh(31).D;
+  setUp(D, "towton-1461");
+  D.save();
+  let n = 0;
+  while (!makeTravelDay(DATA, RULES).fightsOnOffer().length && n++ < 20) makeTravelDay(DATA, RULES, { roll100: parkMiller(40 + n) }).marchStep();
+  const fights = makeTravelDay(DATA, RULES).fightsOnOffer(), x = fights[0];
+  assert.ok(x, "no fight on offer after the forces met");
+  assert.ok(x.title.includes(" against ") && x.options[0].when && /Surprise: \d+%/.test(x.options[0].note), JSON.stringify(x).slice(0, 300));
+  assert.equal(x.maps[0][0], "roller");
+  const keys = new Set(fights.map(f => f.title));
+  assert.equal(keys.size, fights.length, "the same fight offered twice");
+  const page = makeTravelDay(DATA, RULES, { roll100: parkMiller(77) }).sendFightFor(x.id, 0, "roller");
+  assert.equal(page, "roller.html");
+  const h = JSON.parse(store.getItem("gravewounds-handoff"));
+  assert.ok(h.from === "travel" && h.foes.length && h.surprise && typeof h.surprise.roll === "number" && h.place, JSON.stringify(h).slice(0, 200));
+  assert.equal(makeTravelDay(DATA, RULES).sendFightFor(x.id, 0, "field"), "field.html");
+  const fh = JSON.parse(store.getItem("gravewounds-field-handoff"));
+  assert.ok(fh.forces.some(f => f.role === "defender") && fh.forces.some(f => f.role === "attacker") && fh.start, JSON.stringify(fh).slice(0, 200));
+  const t = JSON.parse(store.getItem("gravewounds-travel")), f = t.forces["towton-1461"][0];
+  store.setItem("gravewounds-field-result", JSON.stringify({ battle: fh.battle, mapId: "towton-1461", place: fh.place, minutes: 90, start: fh.start,
+    forces: { [f.id]: { lost: 100, killed: 80, left: 10, died: 10, cases: [{ d: "wound", inc: 0, step: 3, peak: 0, shown: 0, chronic: false, inf: "low", fever: 2 }] } } }));
+  const said = makeTravelDay(DATA, RULES).takeBattle();
+  assert.match(said, /battle at .* is over/);
+  const after = JSON.parse(store.getItem("gravewounds-travel")), g = after.forces["towton-1461"][0];
+  assert.equal(g.men, f.men - 100);
+  assert.ok(after.fought.includes(fh.battle) && store.getItem("gravewounds-field-result") === null);
+  assert.equal(makeTravelDay(DATA, RULES).takeBattle(), null, "taken twice");
+});
 check("the console's march with nothing saved: it says to choose a map", () => {
   store.clear();
   const D = makeTravelDay(DATA, RULES);

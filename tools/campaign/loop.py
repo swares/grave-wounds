@@ -3,7 +3,7 @@
     python3 tools/campaign/loop.py
 
 It follows a campaign round the loop: the team made in the team builder (in the frame), the march on the
-travel map run from the console until the forces meet, a fight sent from it noticed and the console moved to it, the fight won on the roller, the
+travel map run from the console until the forces meet and the fight set up from it, a fight sent from it noticed and the console moved to it, the fight won on the roller, the
 aftermath; then the whole game saved to a file, cleared, and loaded back. The pages' writes are made from
 inside the frame, as the pages make them. Needs Python's playwright with Chromium and a built site.
 Exits non-zero on any failure.
@@ -40,6 +40,7 @@ def page_in_frame(pg):
 PHASE = "() => REC.phase"
 NO_TEAM = "not made yet"
 RUN, SAID, NOTICE = "#c-run", "#c-march-said", "#c-notice"
+FIGHTS = "#c-march .fights li"
 
 
 def phase_of(pg) -> str:
@@ -96,6 +97,7 @@ with sync_playwright() as p:
     frame_clock = page_in_frame(pg).evaluate("() => clockNow()")
     check(frame_clock == saved["clock"]["towton-1461"], f"the travel map in the frame shows the day the console moved to ({frame_clock})")
     check("Travel map" in pg.inner_text("#c-showing"), "a meeting puts the travel map in the frame, to set up the fight")
+    met_state = pg.evaluate("() => localStorage.getItem('gravewounds-travel')")   # kept, to set up the fight after the long march
     # a long march with the enemy gone: the nights pass as the console moves the clock on
     page_in_frame(pg).evaluate("""() => { const all = forcesHere(), f = all[0], m = curMap(), foes = all.filter(o => o.side !== f.side);
       S.forces[S.mapId] = all.filter(o => o.side === f.side);   // the enemy gone from the map: nothing to meet
@@ -114,6 +116,20 @@ with sync_playwright() as p:
     named = pg.evaluate("() => JSON.parse(localStorage.getItem('gravewounds-travel')).forces['towton-1461'][0].log.slice(0, 40).join(' | ')")
     check("arrives" in said and day >= 3 and "Night of" in named, f"marching on, nights pass until it arrives: day {day} after {presses} presses ({said[:70]})")
     check("Day " + str(day) in pg.inner_text("#c-march"), "the march panel follows the clock")
+    # back to where the forces met: the fight set up from the console
+    pg.evaluate("(s) => localStorage.setItem('gravewounds-travel', s)", met_state)
+    page_in_frame(pg).evaluate("() => location.reload()")
+    pg.wait_for_selector(FIGHTS, timeout=8000)
+    offered = pg.locator(FIGHTS).count()
+    first = pg.locator(FIGHTS).first
+    check(offered >= 1 and " against " in first.inner_text() and "Surprise:" in first.inner_text(), f"the console offers {offered} fight(s) where the forces met, with the odds of surprise")
+    first.locator("select").select_option("roller")
+    first.locator("button[data-fight]").first.click()
+    pg.wait_for_function("() => REC.phase === 'fight'", timeout=6000)
+    handoff = json.loads(pg.evaluate("() => localStorage.getItem('gravewounds-handoff')") or "null")
+    check(bool(handoff) and handoff["foes"] and handoff["surprise"]["text"].startswith("Surprise"), f"sending it writes the roller's handoff as Fight here does ({(handoff or {}).get('place')})")
+    pg.wait_for_function("() => document.querySelector('#c-showing').textContent.includes('Wound roller')", timeout=15000)
+    check(any(e["data"]["text"].startswith("Fight set up:") for e in pg.evaluate("() => REC.log")), "the console moves to the fight, logs it, and opens the roller")
     # the travel map's state, then a fight sent from it, as Fight here writes it
     page_in_frame(pg).evaluate(f"""() => localStorage.setItem('gravewounds-travel', {J(J({"mapId": "towton-1461", "forces": {"towton-1461": [{"side": "York"}, {"side": "Lancaster"}]}, "clock": {"towton-1461": {"day": 3, "used": 4}}, "fought": []}))})""")
     page_in_frame(pg).evaluate(f"""() => localStorage.setItem('gravewounds-handoff', {J(J({"from": "travel", "force": {"name": "Will's lances", "side": "York"}, "place": "Ferrybridge", "foes": [{"name": "Clifford's flankers"}]}))})""")
@@ -129,6 +145,12 @@ with sync_playwright() as p:
     page_in_frame(pg).evaluate("() => { S.wonBy = 'York'; renderChars() }")   # the GM marks the winner in After the fight
     pg.wait_for_function("() => REC.phase === 'aftermath'", timeout=6000)
     check("York won" in pg.inner_text(NOTICE), "a fight won on the roller moves the console to the aftermath")
+    pg.evaluate(f"""() => localStorage.setItem('gravewounds-field-result', {J(J({"battle": "towton-1461:3:4:1", "mapId": "towton-1461", "place": "Ferrybridge", "minutes": 60, "forces": {}}))})""")
+    pg.wait_for_selector("#c-take-battle", timeout=6000)
+    pg.click("#c-take-battle")
+    pg.wait_for_function("() => localStorage.getItem('gravewounds-field-result') === null", timeout=6000)
+    check(any("battle at Ferrybridge is over" in e["data"]["text"] for e in pg.evaluate("() => REC.log")) and pg.locator("#c-take-battle").count() == 0,
+          "the console takes a battle's result into the travel map, once, and logs it")
     # notes
     pg.fill("#c-note", "Hal took an arrow at the ford."); pg.uncheck("#c-note-gm"); pg.click("#c-add-note")
     pg.fill("#c-note", "Clifford's men will be back with more."); pg.check("#c-note-gm"); pg.click("#c-add-note")

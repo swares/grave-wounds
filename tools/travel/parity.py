@@ -6,7 +6,7 @@ disease.py, on the same inputs and the same dice.
 Makes `cases` random cases of each kind: a run of days' weather and ground with each day's light,
 marching hours, rest and fatigue; a route on a real map with its schedule, a march along it and the
 hexes either side passable or not (fords and flood included); camp work against the clock; who
-fights when forces meet; a force's health over weeks and days of camp disease, with wounds, scurvy,
+fights when forces meet, and the odds of surprise; a force's health over weeks and days of camp disease, with wounds, scurvy,
 frostbite and nursing. Each is played through the Python with scripted dice, written with the travel
 page's data bundle to tools/travel/.cache/, then tools/travel/test.js plays them through the
 JavaScript and compares every result. Needs Python 3 with PyYAML and Node; exits non-zero on any
@@ -163,6 +163,13 @@ def fight_case(d, t):
             "out": tv.fight_plan(d, forces, sel, wait), "dist": [[hex_distance(a["pos"], b["pos"]) for b in forces] for a in forces]}
 
 
+def surprise_case(d, t):
+    camp = t.pick([None] + list(d.works["camps"]))
+    dark, fog, stealth, watch = t.chance(0.4), t.chance(0.3), t.pick([0, t.int(0, 120)]), t.pick([0, t.int(0, 120)])
+    return {"kind": "surprise", "camp": camp, "dark": dark, "fog": fog, "stealth": stealth, "watch": watch,
+            "out": tv.surprise(d, camp, dark, fog, stealth, watch)}
+
+
 def health_case(d, t):
     D = d.disease
     men = t.int(1, 300)
@@ -225,6 +232,7 @@ def cases(d, n, seed):
         out.append(route_case(d, t, t.pick(maps)))
         out.append(camp_case(d, t))
         out.append(fight_case(d, t))
+        out.append(surprise_case(d, t))
     for _ in range(n):
         out.append(health_case(d, t))
     return out

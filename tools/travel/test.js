@@ -112,7 +112,10 @@ function health(c){
   const f = c.fresh;
   same([R.freshToday(f.forage, f.camped, f.issued, f.found), R.fieldcraftNeeded(f.forage, f.camped), R.leechBonus(f.leech)], f.out, "fresh food");
 }
-const KINDS = { weather, route, camp, fight, health };
+function surprise(c){
+  same(R.surpriseChance(c.camp, c.dark, c.fog, c.stealth, c.watch), c.out, "surprise");
+}
+const KINDS = { weather, route, camp, fight, surprise, health };
 
 const cases = readJson(path.join(CACHE, "cases.json"));
 const count = {};
