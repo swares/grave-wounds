@@ -785,8 +785,11 @@ function playerScreen(pl){                            // what this player's page
   let v;
   try { v = newDay().seatView(pl.men) } catch { v = { map: null, men: [], forces: [] } }
   const phase = phaseOf(REC.phase).name;
+  const side = v.forces[0]?.side;                     // his side: the side of the forces his men are with
+  let map = null;
+  try { map = side ? newDay().fogView(side) : null } catch { map = null }
   return { t: "camp", seat: seatOf(pl), name: pl.name, campaign: REC.name || "The campaign", phase,
-    men: menHtml(v), force: forceHtml(v, pl), news: newsHtml(seatOf(pl)) };
+    men: menHtml(v), force: forceHtml(v, pl), news: newsHtml(seatOf(pl)), map };
 }
 function playerSend(pl){
   const c = PL.conn[pl.id];
@@ -1076,6 +1079,8 @@ function pgLayout(){
     <section class="panel" id="p-fight" hidden aria-labelledby="h-pfight"><h2 id="h-pfight">Your fight</h2></section>
     <div class="top"><section class="panel" aria-labelledby="h-pmen"><h2 id="h-pmen">Your men</h2><div id="p-men"></div></section>
       <section class="panel march" style="border-top:0;padding-top:14px" aria-labelledby="h-pforce"><h2 id="h-pforce">Your force</h2><div id="p-force" style="display:flex;flex-direction:column;gap:6px"></div></section></div>
+    <section class="panel" id="p-mapbox" hidden aria-labelledby="h-pmap"><h2 id="h-pmap">Your map</h2>
+      <p class="muted" style="margin:0;font-size:.88rem">Your side's forces, and of the enemy only what your side's forces can see from where they are, or where they last saw it.</p></section>
     <section class="panel" aria-labelledby="h-pnews"><h2 id="h-pnews">News</h2><ol class="log" id="p-news" aria-label="The campaign's news, newest first"></ol></section>`;
 }
 function pgShow(m, changed = null){
@@ -1087,7 +1092,25 @@ function pgShow(m, changed = null){
   }
   $("#p-title").textContent = m.campaign || "Campaign";
   $("#p-who").textContent = `${m.name}, playing · ${m.phase}`;
+  if (!changed || changed.includes("map")) pgMap(m.map);
 }
+const PM = { frame: null, ready: false, view: null };   // his map: the travel map's page in a frame, drawing only what it is sent
+function pgMap(view){
+  PM.view = view ?? null;
+  $("#p-mapbox").hidden = !view;
+  if (!view) return;
+  if (!PM.frame){
+    PM.frame = document.createElement("iframe");
+    PM.frame.title = "Your map"; PM.frame.src = "travel.html#seat"; PM.frame.style.height = "78vh";
+    $("#p-mapbox").append(PM.frame);
+  }
+  if (PM.ready) PM.frame.contentWindow.postMessage({ gw: "seat-map", v: view }, SITE);
+}
+window.addEventListener("message", e => {               // his map's frame, ready: it gets the latest view
+  if (!PM.frame || e.source !== PM.frame.contentWindow || (SITE !== "*" && e.origin !== SITE) || !e.data?.ready || e.data.gw !== "seat-map") return;
+  PM.ready = true;
+  if (PM.view) PM.frame.contentWindow.postMessage({ gw: "seat-map", v: PM.view }, SITE);
+});
 function pgPropose(e){                                // his proposal: the order and its place or camp, as he chose them
   const b = e.target.closest("button[data-propose]"), box = b?.closest(".propose");
   if (!box) return;

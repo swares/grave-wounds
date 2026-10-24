@@ -121,6 +121,27 @@ with sync_playwright() as p:
     check(marched and not any(t[:40] in pl.inner_text("#p-news") for t in marched), f"the march's word on every force stays in the console's log, not his news ({marched[-1][:60] if marched else ''})")
     raw = "".join(pl.evaluate(GOT))
     check(enemy not in raw and "Clifford Spy" not in raw and "ambush" not in raw, "no message to his page names the enemy's force, its named man, or the GM's notes")
+    # his map: his side's forces; of the enemy, only what his side sees now, or where it last saw it
+    pl.wait_for_selector("#p-mapbox iframe", timeout=10000)
+    mp = pl.frame_locator("#p-mapbox iframe")
+    mp.locator("#map svg .force").first.wait_for(timeout=15000)
+    marks = mp.locator("#map svg .force title").all_text_contents()
+    seen = [t for t in marks if t.endswith("seen now")]
+    ours = gm.evaluate(f"() => newDay().marchSummary().forces.filter(f => f.side === newDay().marchSummary().forces.find(x => x.name === {mine!r}).side).map(f => f.name)")
+    check(all(any(t.startswith(n + " (") for t in marks) for n in ours), f"his map shows his side's forces ({len(ours)})")
+    check(not any(t.startswith(enemy + " (") for t in marks), f"and not the enemy his side cannot see ({enemy})")
+    met = [x for x in seen if x.startswith("Clifford's horse")]
+    check(bool(met) and "about" in met[0] and "men" not in met[0], f"the enemy force his men met is on his map, roughly sized ({met[:1]})")
+    was = gm.evaluate("() => localStorage.getItem('gravewounds-travel')")
+    gm.evaluate(f"""() => {{ const t = JSON.parse(localStorage.getItem('gravewounds-travel')), f = t.forces[{MAP!r}].find(x => x.name === "Clifford's horse");
+      f.pos = [1, 1]; f.path = null; f.waypoints = []; localStorage.setItem('gravewounds-travel', JSON.stringify(t)); render() }}""")
+    mp.locator("#map svg .force.ghost").first.wait_for(timeout=15000)
+    ghost = mp.locator("#map svg .force.ghost title").first.text_content()
+    check(ghost.startswith("Clifford's horse") and "last seen here" in ghost and not any(t.startswith("Clifford's horse") and t.endswith("seen now") for t in mp.locator("#map svg .force title").all_text_contents()),
+          f"gone out of sight, it stays where it was last seen, faded, with when ({ghost[-40:]})")
+    check("[1,1]" not in "".join(pl.evaluate(GOT)).replace(" ", ""), "and where it went never reaches his page")
+    pl.locator("#p-mapbox").screenshot(path=str(shots / "player-map.png"))
+    gm.evaluate("w => { localStorage.setItem('gravewounds-travel', w); render() }", was)   # back where it met his force, for the fight below
     # his proposed orders: sent from his page, waiting for the GM, accepted or declined there
     TRAVEL_FORCE = f"() => JSON.parse(localStorage.getItem('gravewounds-travel')).forces[{MAP!r}].find(f => f.id === {mine_id})"
     OPEN = "() => REC.proposals.filter(x => x.state === 'open').length"

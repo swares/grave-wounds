@@ -220,6 +220,74 @@ check("the console's march with nothing saved: it says to choose a map", () => {
   const D = makeTravelDay(DATA, RULES);
   assert.equal(D.marchSummary(), null);
 });
+const CLEAR = new Set(["open", "farmland", "heath", "road"]);   // ground where a force is in plain sight
+check("fog of war: a side sees the enemy within its sight, not beyond it, nor in woods unless next to it", () => {
+  const { D } = fresh(3);
+  D.S.mapId = "towton-1461";
+  const fs = D.forcesHere(), a = fs[0], e = fs.find(o => o.side !== a.side), m = D.curMap();
+  const open = []; for (let r = 0; r < m.rows.length; r++) for (let c = 0; c < m.rows[0].length; c++) if (CLEAR.has(RULES.terrainAt(m, [c, r]).id)) open.push([c, r]);
+  const forest = []; for (let r = 0; r < m.rows.length; r++) for (let c = 0; c < m.rows[0].length; c++) if (RULES.terrainAt(m, [c, r]).id === "forest") forest.push([c, r]);
+  for (const f of fs) f.pos = [0, 0];                         // the others out of the way
+  for (const f of fs.filter(o => o !== a && o !== e)) f.pos = null;
+  a.type = "foot"; a.pos = open[0];
+  const reach = D.sightOf(a);
+  assert.ok(reach >= 1);
+  const at = d => open.find(h => RULES.hexDistance(h, a.pos) === d);
+  e.pos = at(reach);
+  assert.deepEqual(D.sightings(a.side).map(x => x.id), [e.id], `seen at ${reach} hexes`);
+  e.pos = at(reach + 1);
+  assert.deepEqual(D.sightings(a.side), [], "not seen beyond its sight");
+  a.type = "mounted";
+  if (D.sightOf(a) > reach){ assert.deepEqual(D.sightings(a.side).map(x => x.id), [e.id], "horse sees further") }
+  a.type = "foot";
+  const wood = forest.find(h => RULES.hexDistance(h, a.pos) === 2) || forest.find(h => RULES.hexDistance(h, a.pos) > 1);
+  if (wood){
+    e.pos = wood;
+    assert.deepEqual(D.sightings(a.side), [], "not seen in woods, two hexes off");
+    const next = RULES.neighbours(a.pos, m.rows[0].length, m.rows.length)[0];
+    e.pos = next;
+    assert.deepEqual(D.sightings(a.side).map(x => x.id), [e.id], "next to it: always seen");
+  }
+});
+check("fog of war: the weather and the dark cut how far a force sees", () => {
+  const { D } = fresh(4);
+  D.S.mapId = "towton-1461";
+  const a = D.forcesHere()[0], H = DATA.terrain.sight.hexes;
+  a.type = "mounted";
+  const X = D.wxState(); D.dayWeather(1);
+  const day = { ...X.days[1].w };
+  X.days[1].w = { ...day, cond: "fog" };
+  assert.equal(D.sightOf(a), 1, "fog: one hex");
+  X.days[1].w = { ...day, cond: "rain" };
+  assert.equal(D.sightOf(a, { cond: "rain", light: "day" }), Math.max(1, Math.floor(H.mounted / 2)), "rain: halved");
+  assert.equal(D.sightOf(a, { cond: "fair", light: "night" }), 1, "a dark night: one hex");
+  assert.equal(D.sightOf(a, { cond: "fair", light: "day" }), H.mounted, "a clear day: its full sight");
+});
+check("fog of war: a player's view holds his side's forces and only the enemy it sees, or saw", () => {
+  const { D } = fresh(5);
+  D.S.mapId = "towton-1461";
+  const fs = D.forcesHere(), a = fs[0], e = fs.find(o => o.side !== a.side), m = D.curMap();
+  for (const f of fs.filter(o => o.side !== a.side && o !== e)) f.pos = null;
+  const open = []; for (let r = 0; r < m.rows.length; r++) for (let c = 0; c < m.rows[0].length; c++) if (CLEAR.has(RULES.terrainAt(m, [c, r]).id)) open.push([c, r]);
+  a.pos = open[0]; a.type = "foot";
+  e.pos = open.find(h => RULES.hexDistance(h, a.pos) === 1);
+  D.save();
+  D.noteSightings(); D.save();
+  let v = makeTravelDay(DATA, RULES).fogView(a.side);
+  assert.deepEqual(v.seen.map(x => x.name), [e.name], "seen next to him");
+  assert.match(v.seen[0].size, /^about |^fewer than/, "a rough size, not his count");
+  assert.ok(!("men" in v.seen[0]) && !("route" in v.seen[0]) && !("health" in v.seen[0]), "nothing else of the enemy's");
+  assert.ok(v.ours.every(f => f.side === a.side) && v.ours.some(f => f.name === a.name));
+  e.pos = open.find(h => RULES.hexDistance(h, a.pos) > 10);
+  D.save();
+  v = makeTravelDay(DATA, RULES).fogView(a.side);
+  assert.deepEqual(v.seen, [], "gone out of sight");
+  assert.equal(v.last.length, 1, "remembered where it was last seen");
+  assert.ok(RULES.hexDistance(v.last[0].pos, a.pos) === 1 && v.last[0].when.includes(","), JSON.stringify(v.last[0]));
+  assert.ok(!JSON.stringify(v).includes(JSON.stringify(e.pos)), "and not where it is now");
+  const theirs = makeTravelDay(DATA, RULES).fogView(e.side);
+  assert.ok(theirs.ours.every(f => f.side === e.side), "the other side's view is its own");
+});
 check("the day runs with no page: no document or window", () => assert.equal(typeof document + typeof window, "undefinedundefined"));
 
 const tally = failed ? `${failed} failed, ${passed} passed` : `all ${passed} passed`;

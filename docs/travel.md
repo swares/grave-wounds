@@ -358,6 +358,18 @@ defence (`defenceFor`: the better of Parry and Dodge less the band's) and, Overl
 the run. **Drop packs** (After the fight) puts a side in fighting order; if it loses the field its
 packs are lost, and the travel forces its named men go with are told.
 
+## Fog of war
+
+What each side's forces see of the enemy's, for a player online (his map shows only what his side
+sees; the GM's travel map shows everything). A force sees enemy forces within a number of hexes
+by its type: on foot 2, mounted 4, wagons 1, by day in clear weather; halved (at least 1) in rain,
+at dusk or by moonlight; 1 in fog, heavy rain or a storm, or on a dark night (the day's weather
+and the light as the travel map has them). A force in woods or a town or village is seen only from
+the next hex, and a force next to one of the side's is always seen. A side sees what any of its
+forces sees. Each time the clock moves, each side remembers where it saw each enemy force and when;
+a player's map shows that, faded, once the force is out of sight. These numbers are in
+`data/terrain.yaml` (`sight`) and are **placeholders**, not yet calibrated from period sources.
+
 ## Calendar and weather
 
 Days have real dates, and daylight sets each day's marching hours. The weather is rolled
