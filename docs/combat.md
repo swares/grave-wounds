@@ -9,8 +9,8 @@ the Python engine and the printed tables read them from there, so change them th
    fight, or on a side that has broken does not act. A fighter who can only defend, or who
    is stunned, gets his turn but cannot attack. Nor can a fighter with an arm hurt (an arm
    wound, a lost grip, a useless hand or arm, on either side) attack with a two-handed
-   weapon: a bow, crossbow, musket, rifle, machine gun, rocket launcher, bill, pike or
-   poleaxe. He can only defend until he takes up a one-handed weapon.
+   weapon: a bow, crossbow, musket, rifle, machine gun, rocket launcher, bill, pike, halberd,
+   poleaxe, bayonet or clubbed musket. He can only defend until he takes up a one-handed weapon.
 2. **Move or stay.** See *The battle map* below. A fighter who runs does not attack.
    **Attack** only an enemy within the weapon's reach or range.
 3. **Attack.** He may first declare an aim: at a zone (head, body, arms, legs), at a gap
@@ -98,7 +98,7 @@ attack. Stepping back 1 hex is a careful withdrawal and draws no free attack.
 **Reach and range.**
 
 - Close-combat weapons strike enemies within their reach. Reach 1 is the next hex;
-  spears, bills and lances have reach 2, the pike 3.
+  spears, bills, halberds and lances have reach 2, the pike 3.
 - Missile weapons have short, medium and long range in hexes: +0, −20% and −40% to hit.
   There is no shot past long range.
 - **In the way.** Each fighter standing on the line between a shooter and his target
@@ -212,14 +212,20 @@ Nerve is used for the stop check and for team morale.
 ## Characteristics in the fight
 
 A fighter from the team builder brings his sheet's characteristics. Anyone else counts as
-50 in each, which changes nothing. All are design estimates, rounded down:
+50 in each, which changes nothing. All are design estimates, rounded down (Toil to the nearest):
 
 | Characteristic | In the fight |
 | --- | --- |
 | Agility | **Roll initiative** gives d10 + Agility ÷ 10 (the GM can still type any number) |
 | Endurance | Blood pool 20 + (Endurance − 50) ÷ 10: 16 at 15, 24 at 95. The Endurance on his card sets it |
-| Strength | Toil: each hand-to-hand exchange he attacks or defends in counts. After 30 in light kit, 20 in medium or 12 in heavy, times Strength ÷ 50, he is a fatigue step worse, to Exhausted at most. Shooting costs none |
+| Strength | Toil: each hand-to-hand exchange he attacks or defends in counts. After 30 in light kit, 20 in medium or 12 in heavy, times Strength ÷ 50 (rounded to the nearest), he is a fatigue step worse, to Exhausted at most. Shooting costs none |
 | Presence | A leader who is up adds (Presence − 50) ÷ 5 to his side's morale |
+
+**Load and Strain.** A team-builder man's load band (the **Load** select on his card) costs
+Dodge: 10 Light, 20 Medium, 35 Heavy, 50 Overloaded, 75 Immobile; Overloaded or Immobile, he
+cannot run (`data/loads.yaml`; [travel.md](travel.md), *Loads*). His Strain state costs attack and
+Nerve: shaken −10, strained −20; broken down, he is out of the fight (`data/stress.yaml`
+`results`; [team.md](team.md), *Strain*).
 
 **First aid.** On a side with any team-builder character, the best Leechcraft among them
 still up rolls d100 for each **Bind**, **Tourniquet** or **Cauterise**. Success: a bind stops

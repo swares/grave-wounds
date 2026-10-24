@@ -35,7 +35,7 @@ Each of the six games got one part of this right; the common failure was paying 
 Everything is d100 roll-under a skill, and in a fight a hit takes at most three rolls, read off one result line.
 
 - **Skill roll:** d100 at or under skill succeeds. Wounds, cover, position and fatigue subtract from skill, as HitLoc's attack and defence penalties already do.
-- **Margin matters:** how far under the skill you rolled grades the result. In a fight the margin raises the wound's severity, so skill buys clean hits, not just more of them. A hit by the barest margin is a graze: it lands one severity step lighter.
+- **Margin matters:** how far under the skill you rolled grades the result. In a fight the margin raises the wound's severity, so skill buys clean hits, not just more of them. A hit by the barest margin is a graze: its bleed and pain are one step less and it calls for no stop check; its severity is unchanged.
 - **Opposed fights:** attacker rolls, defender may roll to parry, dodge or take cover. A defence success turns the hit into a near miss or a glancing blow.
 
 A fighting turn runs in this order:
@@ -65,7 +65,7 @@ There are no hit points: each wound is recorded on its own and its effects add u
 
 A wound is three things, each from a roll or a table:
 
-- **Location:** one of 26 (skull left and right, face, neck, chest, abdomen, groin, back, and each shoulder, upper arm, forearm, hand, thigh, knee, lower leg and foot), weighted by the era's real wound records.
+- **Location:** one of 26 (skull left and right, face, neck, chest left and right, abdomen, groin, upper and lower back, and each shoulder, upper arm, forearm, hand, thigh, knee, lower leg and foot), weighted by the era's real wound records.
 - **Mechanism:** cut, pierce, crush, gunshot, blast fragment or burn, from the weapon.
 - **Severity:** light, serious or critical, from the attack's margin, reduced a step at a time by armour. Light means a penalty up to -20 or slow bleeding; serious means -21 to -50, faster bleeding or a fracture; critical means worse than -50, heavy bleeding, a shattered bone or a lost organ.
 
@@ -81,7 +81,7 @@ Together they give an effects line, the same five effects HitLoc already uses:
 
 **Most hits stop a fighter without killing him.** In the Peninsular War records, 4,129 French officers were wounded against 230 killed outright or dying of wounds; at Bougainville about one gunshot hit in five killed. So a wound can force a **stop check**: every serious or critical wound (light ones do not) calls for d100 against the character's Nerve, harder for worse wounds, pain and blood loss. Fail by a little and he can only defend for a few turns; by more, he is stunned; by a lot, he is down and out of the fight, even if the wound itself is not fatal. That is what ends real fights, and it keeps them short.
 
-**Sides break before they die.** When a quarter of a side is down, it checks morale each turn: d100 against its leader's Nerve, +10 with a leader present, +10 if he has tactics, +10 for a trained military unit, -20 if the leader has fallen, -20 once half the side is down. Failure means the side breaks and runs or surrenders. Non-player fighters are rated green, regular or veteran, which sets their Nerve.
+**Sides break before they die.** When a quarter of a side is down, it checks morale each turn: d100 against its leader's Nerve, +10 while a leader is up, plus (his Presence - 50) / 5, -20 if the leader has fallen, -20 once half the side is down. Failure means the side breaks and runs or surrenders. Non-player fighters are rated green, regular or veteran, which sets their Nerve.
 
 **Death runs on the clock, and treatment stops it.** A bind slows bleeding; a tourniquet stops a limb bleed; surgery and later medicine change the clock. Days-long clocks bring infection in eras before antibiotics. Recovery takes weeks and can leave a permanent impairment, which is good story for a team game.
 
@@ -110,8 +110,8 @@ Wounds, disease and poison share one simple model: each is a condition on a five
 | Step | Meaning | Penalty |
 | --- | --- | --- |
 | Deadly | Will die without help, on its lethality clock | Cannot act |
-| Grave | Bedridden; needs care to improve | -50% |
-| Serious | Can ride or be carried, light work only | -30% |
+| Grave | Bedridden; needs care to improve | -25%; crawls and only defends |
+| Serious | Can ride or be carried, light work only | -25%; cannot run |
 | Mending | Can march and fight, carefully | -10% |
 | Healed | Gone, or a permanent mark or impairment | None or the impairment |
 
@@ -203,14 +203,7 @@ As a check on the numbers: a fair camp gives a man about a 1 in 20 chance a week
 
 Later eras add their own diet diseases: beriberi on polished-rice rations, pellagra on maize, and in the speculative eras whatever a vault or a ship's stores lack.
 
-**Weather.** Each morning the GM rolls d100 on the season's table for the region; on a second roll of 01-50 yesterday's weather holds instead, so wet and dry spells last. The effects feed the checks the team already makes: fatigue on the march, water, the disease outbreak roll, and recovery. The tables below are for temperate Europe in the first playtest; all numbers are design estimates, and the mud rule follows Aftermath!'s.
-
-| Season | Fair | Hot | Rain | Storm | Cold | Snow | Fog |
-| --- | --- | --- | --- | --- | --- | --- | --- |
-| Spring | 01-45 | - | 46-75 | 76-80 | 81-90 | - | 91-00 |
-| Summer | 01-50 | 51-80 | 81-92 | 93-97 | - | - | 98-00 |
-| Autumn | 01-35 | - | 36-70 | 71-78 | 79-88 | - | 89-00 |
-| Winter | 01-25 | - | 81-92 | - | 26-60 | 61-80 | 93-00 |
+**Weather.** Each day's weather is rolled from the map's climate normals for the month (rain days, highs and lows, fog), and wet and dry spells, warm and cold spells, carry over from day to day; see [weather.md](weather.md). The effects feed the checks the team already makes: fatigue on the march, water, the disease outbreak roll, and recovery. The table below is the first draft of those effects; the numbers are design estimates, and the mud rule follows Aftermath!'s.
 
 | Weather | March | Body | Fighting and camp |
 | --- | --- | --- | --- |
@@ -236,13 +229,13 @@ A character is built in five rolls:
 2. **Origin:** one d100 roll on the era's origin table: where he comes from, a starting skill, and a trait with a matching drawback (a farrier's son who can shoe a horse but never learned his letters; a former monk who reads Latin but faints at the sight of blood).
 3. **Career terms:** Traveller's idea, kept short. Each term is one d100 roll on the career's table and gives a skill, an event and a chance of an old wound. Leaders take three terms, others one or two. Nobody dies in generation.
 4. **Old wounds:** an old wound is rolled on the era's HitLoc table and leaves a healed mark or a small permanent impairment. The Towton and Sidon skeletons show many men with healed wounds from earlier fights; here they become history you can see on the character sheet.
-5. **Kit:** a package from the team template: armour kit, weapons and gear, as HitLoc's example combatants already define them.
+5. **Kit:** from his first career and his region: armour kit and weapon, as HitLoc's example combatants already define them.
 
 For post-apocalyptic eras, a Gamma World-style **mutation or implant roll** can replace one career term.
 
 **Team templates** set the shape of the team and its kit: a man-at-arms with his archers and servants, a Morrow Project recon team in its vehicle, a merchant crew, a vault scavenging party. **Followers** get a one-line stat block (one skill rating, nerve and kit) so that a team of six stays fast to run in a fight.
 
-A leader's Presence sets how many followers he can keep and how steady they are. When the leader falls, a follower can step up, and the player carries on with him: the team, not the hero, is what survives. For the after-the-bomb era, Morrow-style templates give recon teams of five or six, military teams with a medic, mechanic and negotiator, and science teams. Between adventures, a Down Time scale of weeks or months covers healing, training and rebuilding.
+A leader's Presence adds to his side's morale while he is up. Presence setting how many followers he can keep is not built; it is in the backlog. When the leader falls, a follower can step up, and the player carries on with him: the team, not the hero, is what survives. For the after-the-bomb era, Morrow-style templates give recon teams of five or six, military teams with a medic, mechanic and negotiator, and science teams. Between adventures, a Down Time scale of weeks or months covers healing, training and rebuilding.
 
 ## Eras and settings
 
@@ -266,29 +259,29 @@ About half of the combat engine already exists in HitLoc; the new work is the ch
 
 | Part | Status |
 | --- | --- |
-| Hit-location tables, 37 tables across 17 eras and groups, with sources | Exists |
+| Hit-location tables, 43 tables across 21 wars and groups, with sources | Exists |
 | Wound effects: bleed, pain, lost function, shock, lethality clock | Exists |
 | Armour by slot and coverage, severity steps per mechanism | Exists |
 | Attack and defence roll with margin, wound penalties | Exists |
 | Casualty tracker: Blood, rounds, treatment, initiative order | Exists |
 | Combatant figures, example fighters per era, period pictures | Exists |
-| Stop checks and nerve | New |
-| Lethality dials and fate points | New |
-| Characteristics, skills, origin and career tables, old wounds | New |
-| Team templates and follower stat lines | New |
+| Stop checks and nerve | New: built |
+| Lethality dials and fate points | New: built |
+| Characteristics, skills, origin and career tables, old wounds | New: built |
+| Team templates and follower stat lines | New: built |
 | Radiation, disease, burns and vacuum for speculative eras | New |
-| Recovery track, disease and poison profiles, downtime actions | New (each HitLoc wound already has an infection risk) |
-| Team morale, fatigue track, first aid and healing by tissue | New |
-| The rulebook itself, written to be fast to read at the table | New |
+| Recovery track, disease and poison profiles, downtime actions | New: built (each HitLoc wound already has an infection risk) |
+| Team morale, fatigue track, first aid and healing by tissue | New: built, but for healing by tissue |
+| The rulebook itself, written to be fast to read at the table | New: built (`dist/rules.html`) |
 
 ## Changes from the rulebook comparison (for approval)
 
-The comparisons below suggested about 27 changes. Merged and de-duplicated, they come to twelve, plus two optional rules; the game each idea comes from is in brackets. Approved Oct 9, 2026: items 1-12 are now written into the rules above; the two optional rules are not.
+The comparisons below suggested about 27 changes. Merged and de-duplicated, they come to twelve, plus two optional rules; the game each idea comes from is in brackets. Approved Oct 9, 2026: items 1-12 are now written into the rules above, but for Presence setting a leader's followers (12a, not built, in the backlog); the two optional rules are not.
 
 **Wounds and the stop check**
 
 - [x] **1. Severity bands.** Light: a penalty up to -20 or slow bleeding. Serious: -21 to -50, faster bleeding, or a fracture. Critical: worse than -50, heavy bleeding, a shattered bone or a lost organ. (Rolemaster Campaign Law)
-- [x] **2. Graze.** A hit by the barest margin lands one severity step lighter. (Morrow Project)
+- [x] **2. Graze.** A hit by the barest margin bleeds and hurts one step less and calls for no stop check; its severity is unchanged. (Morrow Project)
 - [x] **3. Stop check: when and what.** Only serious and critical wounds force a stop check. Failing it puts the fighter at must-defend-only, stunned, or down for a number of turns, by how badly it failed. (Aftermath!, Morrow Project, Arms Law)
 - [x] **4. Which side, and cover.** When a man faces the attacker, front or back is 50/50; turned sideways, the near side is hit 70% of the time. When only part of a man shows (head and shoulders in a window, legs under a wagon), roll location on the part that shows. (Aftermath!, Morrow Project)
 - [x] **5. Blunt trauma behind soft armour.** For the modern era, a bullet stopped by soft body armour still bruises. (Morrow Project)
@@ -299,7 +292,7 @@ The comparisons below suggested about 27 changes. Merged and de-duplicated, they
 
 **Morale and fatigue**
 
-- [x] **7. Team morale.** When a quarter of a side is down, it checks each turn to stand or break: better with a leader present, a leader with tactics, or a military unit; worse if the leader falls or half the side is down. Non-player fighters are rated green, regular or veteran. (Traveller, Morrow Project)
+- [x] **7. Team morale.** When a quarter of a side is down, it checks each turn to stand or break: +10 while a leader is up, plus (his Presence - 50) / 5; worse if the leader falls or half the side is down. Non-player fighters are rated green, regular or veteran. (Traveller, Morrow Project)
 - [x] **8. Fatigue track.** Fatigue is spent by pace, load, terrain, hand-to-hand fighting (not shooting) and blood loss, and spent faster in heat or cold, with wounds, or without sleep; heavy armour and weapons tire a fighter within a few minutes of fighting. Tired brings a penalty, exhausted means stunned; rest and sleep restore it. (Morrow Project, Traveller, Campaign Law, Gamma World)
 
 **Healing**
@@ -313,7 +306,8 @@ The comparisons below suggested about 27 changes. Merged and de-duplicated, they
 
 **Characters and teams**
 
-- [x] **12. Teams.** Each origin roll gives a trait with a matching drawback. Presence sets how many followers a leader can keep, and their morale. When a leader falls, a follower can step up and the player carries on. Morrow-style team templates for the after-the-bomb era, and a Down Time scale between adventures. (Campaign Law, Gamma World, Morrow Project, Aftermath!)
+- [x] **12. Teams.** Each origin roll gives a trait with a matching drawback. When a leader falls, a follower can step up and the player carries on. Morrow-style team templates for the after-the-bomb era, and a Down Time scale between adventures. (Campaign Law, Gamma World, Morrow Project, Aftermath!)
+- [ ] **12a. Presence and followers.** Presence sets how many followers a leader can keep, and their morale. Not built: moved to the backlog. (Gamma World)
 
 **Optional rules**
 
@@ -338,8 +332,6 @@ Read from the FGU boxed rules (Basic Rules and Gamesmaster's book). Aftermath! m
 | Food, water and weather | Safe days on half rations, then starvation advances like a disease to fatigue and death; thirst is twice as fast. Rations assumed balanced; deficiency diseases left to the GM. Heat doubles water need; cold without proper clothes brings fatigue, and a night exposed risks pneumonia | Calories, fresh food, sunlight and vitamin A marks | Add their thirst rule and cold exposure leading to pneumonia |
 | Poison | Works like a disease: two stages (attributes -25%, then -50%), then a crisis save | Poison as a disease profile | Confirmed |
 
-The proposed changes above wait for your decision; none are written into the rules sections yet.
-
 ## Checked against Rolemaster's Arms Law
 
 Read from Arms Law & Claw Law (ICE, 2nd edition). Rolemaster resolves a blow in two d100 rolls: the attack roll, open-ended on 96-00, plus offence minus defence, read against the target's armour type, gives concussion hits and a critical of severity A to E; a second d100 on that critical's table (slash, puncture, krush and others) gives the named effect.
@@ -352,8 +344,6 @@ Read from Arms Law & Claw Law (ICE, 2nd edition). Rolemaster resolves a blow in 
 | Critical effects | Extra hits, hits per round (bleeding), cumulative penalties (fights at -10 to -90), stunned, must parry, down for N rounds, broken or useless limbs, severs, and death in N rounds | Bleed, pain, lost function, shock, lethality clock | Confirmed. Add their action states as the results of a failed stop check: must defend only, stunned, down for N turns |
 | Damage pool | Concussion hits against a limit; unconscious past it; death at about twice it | No pool | Keep ours |
 | Recovery | Concussion hits heal 1 an hour resting, 1 per 3 hours active. Injuries heal by type of tissue: a d100 + Constitution roll gives days for a light injury (about 1-10 by type), x5 for medium and x10 for severe; hospital care halves it | Weekly steps on one track | Add tissue type: bone, tendon, organ and head wounds take longer per step than muscle and skin |
-
-The proposed changes above wait for your decision; none are written into the rules sections yet.
 
 ## Checked against Rolemaster's Character Law & Campaign Law
 
@@ -370,8 +360,6 @@ Read from Character Law & Campaign Law (ICE): the healing, death, injury, diseas
 | Exhaustion | Exhaustion points spent by pace and fighting, multiplied by heat or cold, rough ground, bog, wounds over 25% (x2) and 50% (x4), and going without sleep | Fatigue mentioned, not defined | Add a simple fatigue track that heat, cold, bad ground, wounds and lack of sleep speed up |
 | Characteristics and background | Ten stats from 1 to 100, each with a current and a potential value. Background rolls give a special ability that comes with a drawback | Six characteristics, origin roll | Give each origin roll a trait with a matching drawback, for colour |
 
-The proposed changes above wait for your decision; none are written into the rules sections yet.
-
 ## Checked against Gamma World and a Morrow Project conversion
 
 Gamma World read from the first edition (TSR, 1978). The Morrow Project material is a fan conversion to the Genesys system (Thomas Clegg, on GM Binder), not Timeline's original rules, so it shows how the team setting can be run but does not confirm the original wound procedure.
@@ -386,8 +374,6 @@ Gamma World read from the first edition (TSR, 1978). The Morrow Project material
 | Characters and followers | Gamma World | Three kinds of character (pure human, mutated human, mutated animal); random mutations, some of them defects; Charisma sets the number of followers and their morale | Confirmed: mutation with defects for the speculative eras. Let Presence set how many followers a leader can keep and their morale |
 | Succession | Gamma World | When a character dies, a relative or the most loyal follower inherits and the player can carry on with them | Adopt for team play: a follower can step up when the leader falls |
 | Teams | Morrow conversion | Recon teams of 5-6 (up to 8); military teams with a medic, mechanic and negotiator; science teams; specialist teams; a frozen reserve that replaces casualties | Use as team templates for the after-the-bomb era |
-
-The proposed changes above wait for your decision; none are written into the rules sections yet.
 
 ## Checked against Classic Traveller
 
@@ -428,15 +414,15 @@ Six decisions shape everything else; a playtest of one era can answer the rest.
 - [x] **Name and first era.** Decided: the game is Grave Wounds: blood, bivouac and weather, and the medieval era leads the first playtest, for its wound data (Sidon, Visby, Towton).
 - [x] **Six characteristics or fewer?** Decided: six (Strength, Agility, Endurance, Wits, Nerve, Presence), because six gives colour.
 - [x] **Margin or separate severity roll?** Decided: the attack's margin sets severity, so a hit needs no extra roll.
-- [ ] **How much the book reads from the roller.** Undecided. A paper-only game needs printed tables; a roller-first game can hide the arithmetic. The medieval playtest can show how much players lean on the roller.
+- [x] **How much the book reads from the roller.** Decided: both. The rule book fills in every number from the data, the printed tables carry every table for a paper game, and the roller does the arithmetic for a roller-first one.
 - [ ] **Stop check thresholds.** Agreed approach: calibrate against the records, how often a wounded man really stopped fighting. Still to do: find those figures for the medieval era.
 - [x] **Recovery time step.** Decided: daily checks for fever and poison, weekly for wounds and slow illness. The medieval disease set is drafted above. Draft numbers for each medieval disease are in, with the weekly outbreak check. Still open: the disease sets for later eras.
 
 Next steps:
 
-1. Settle the roller question and playtest the draft disease numbers over a few weeks of camp.
-2. Write the one-page combat rules and the stop check, and test them in HitLoc's tracker.
-3. Draft the character generation tables for the first era and make a team in 20 minutes.
+1. Playtest the draft disease numbers over a few weeks of camp.
+2. Done: the one-page combat rules and the stop check ([combat.md](combat.md)), in the roller.
+3. Done: the character generation tables for every era ([team.md](team.md)); still to time a team in 20 minutes.
 4. Playtest one fight with two teams, then adjust the dials.
 5. If you find the Aftermath! or Rolemaster books, compare their turn structure and critical layout with this draft.
 
