@@ -149,6 +149,7 @@ function freshRecord(){                             // a new campaign: what the 
   for (const phase of Object.keys(GUIDE)){
     for (let s = CAMPAIGN.suggest(phase, st, rec.seen); s; s = CAMPAIGN.suggest(phase, st, rec.seen)) rec.seen[s.mark] = true;
   }
+  for (const n of CAMPAIGN.notices(st, rec.seen, CD).news) rec.seen[n.mark] = n.value;
   return rec;
 }
 function loadRecord(){
@@ -349,6 +350,20 @@ function runMarch(){                                  // one press: the day move
   render();
 }
 
+function takeNews(st){                               // what happened by itself (a death, an outbreak, a day's end, a season's end): logged once, the latest shown at the top
+  const { news, forget } = CAMPAIGN.notices(st, REC.seen, CD, c => fmtC(c));
+  for (const k of forget) delete REC.seen[k];
+  const said = [];
+  for (const n of news){
+    REC.seen[n.mark] = n.value;
+    if (!n.why) continue;                           // only a mark (a map first seen): nothing to say
+    if (n.phase && n.phase !== REC.phase) setPhase(n.phase, n.why);
+    else note(n.why);
+    said.push(n.why);
+  }
+  if (news.length || forget.length) saveRecord();
+  if (said.length){ $("#c-notice").textContent = said.slice(-3).join(" "); $("#c-notice").hidden = false }
+}
 function render(){
   const raw = CAMPAIGN.read(localStorage), st = CAMPAIGN.status(raw, CD), ph = phaseOf(REC.phase);
   const s = CAMPAIGN.suggest(REC.phase, st, REC.seen);
@@ -361,6 +376,9 @@ function render(){
     saveRecord();
     return render();
   }
+  const was = REC.phase;
+  takeNews(st);
+  if (REC.phase !== was) return render();           // the season ended: on to downtime
   if (document.activeElement !== $("#c-name")) $("#c-name").value = REC.name || "";   // not while the GM types it
   $("#c-phases").innerHTML = CAMPAIGN.PHASES.map(p => `<li><button type="button" data-phase="${p.id}"${p.id === ph.id ? ' aria-current="step"' : ""}>${p.name}</button></li>`).join("");
   const items = GUIDE[ph.id](st).map(x => "<li>" + x + "</li>").join("");

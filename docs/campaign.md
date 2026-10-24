@@ -22,6 +22,16 @@ The console also follows the pages by itself, and says so at the top:
 - a battle's result sent back from the field map, or a winner marked on the roller, moves it to the
   **Aftermath**.
 
+It also notices, logs and shows at the top what happens by itself:
+
+- a named man's death, on the march, in camp, of wounds or sickness: what he died of and his force;
+- sickness breaking out in a force: the first cases of a disease (battle wounds are the fight's news,
+  not sickness; wound fever is); once the force is clear of it, a new outbreak is news again;
+- the end of a day on the travel map: one line for the day or days that ended, with the weather
+  and each side's forces, men and sick;
+- the end of a season in the team builder (experience, rank and age rolled), which moves it to
+  **Downtime**.
+
 Each is noticed once. A new campaign takes what the pages already hold as old news, not news to
 follow.
 
@@ -91,19 +101,20 @@ they may hold a service key, and they belong to the browser, not the game.
 - It gives routes, orders and camps, runs the march's clock, sets up fights and takes a battle's
   result back; columns, the forces' own settings, adding forces and painting the map are on the
   travel map, and the fights are fought on the roller and the field map.
-- It notices fights sent and fights won; it does not yet notice the end of a march day, the end of a
-  season, a man's death or a camp's sickness by themselves (the GM moves on with **Done**).
+- It notices fights sent and won, deaths, outbreaks, the end of a day and of a season; not yet a man
+  taken prisoner, a promotion, or a force's supplies running out.
 - The other pages do not link back to it; open it from the start page.
 - The pages' own state is still per page; a campaign's whole state exists only as a save file.
 
 ## Tests
 
 `node tools/campaign/test.js` checks the console's reading of the pages: the status, what it
-notices, and save files. `python3 tools/campaign/loop.py` follows a campaign round the loop in a
+notices (fights, deaths, outbreaks over and back, the end of days and of a season), and save files. `python3 tools/campaign/loop.py` follows a campaign round the loop in a
 headless browser over the real pages, served by a local web server: the team rolled in the frame,
 a force's route given from the console, the clock run from it until the forces meet, a long
 march across nights, a fight set up from the console where the forces met,
-a battle's result taken in from the console, a fight sent from the travel map, a winner marked on the
+a battle's result taken in from the console, the end of the days logged by itself, the end of a
+season moving it to downtime, a fight sent from the travel map, a winner marked on the
 roller, notes, and a save, clear and load. `python3 tools/travel/parity.py` (in CI) also checks the
 console's way into the day with no page: the summary changes nothing, a press moves on and saves,
 a meeting is reported, orders (routes, march and halt, camp and rest) are given and saved and a

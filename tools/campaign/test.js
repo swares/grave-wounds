@@ -86,5 +86,55 @@ check("a file that is not a save, or a damaged one, is refused", () => {
   assert.deepEqual(keys, { "gravewounds-x": "1" });
 });
 
+/* ----- what happens by itself: noticed once each ----- */
+const CDN = { ...CD, weather: { rain: "Rain" }, diseases: { typhus: "Camp fever", fever: "Wound fever" } };
+const apply = (seen, r) => { for (const n of r.news) seen[n.mark] = n.value; for (const k of r.forget) delete seen[k]; return seen };
+const travelWith = (forces, day, wx = {}) => J({ mapId: "towton-1461", forces: { "towton-1461": forces }, clock: { "towton-1461": { day, used: 0 } }, wx: { "towton-1461": { days: wx } }, fought: [] });
+const sickCase = d => ({ d, inc: 0, step: 3 }), incubating = d => ({ d, inc: 2, step: 0 });
+check("a named man's death is news once, with what he died of and his force", () => {
+  const raw = { ...C.read(store(pages)),
+    "gravewounds-named": J({ a: { name: "Will", map: "towton-1461", force: 3, dead: true, died: "typhus", pid: "p1" }, b: { name: "Hal", dead: true, pid: "p2" } }),
+    "gravewounds-purses": J({ p2: { lost: { why: "killed" } } }),
+    "gravewounds-travel": travelWith([{ id: 3, name: "Edward's army", side: "York", men: 900 }], 2) };
+  const r = C.notices(C.status(raw, CDN), { "day:towton-1461": 2 }, CDN);
+  const whys = r.news.map(n => n.why);
+  assert.ok(whys.includes("Will has died of camp fever, with Edward's army."), whys.join(" | "));
+  assert.ok(whys.includes("Hal has died (killed)."), whys.join(" | "));
+  assert.equal(C.notices(C.status(raw, CDN), apply({ "day:towton-1461": 2 }, r), CDN).news.length, 0);
+});
+check("sickness breaking out in a force is news once; over and back, news again; wounds are not sickness", () => {
+  const ill = travelWith([{ id: 3, name: "Edward's army", side: "York", men: 900, health: { cases: [sickCase("typhus"), sickCase("typhus"), incubating("typhus"), sickCase("wound"), sickCase("fever")] } }], 2);
+  const well = travelWith([{ id: 3, name: "Edward's army", side: "York", men: 900, health: { cases: [] } }], 2);
+  const seen = { "day:towton-1461": 2 };
+  let r = C.notices(C.status({ "gravewounds-travel": ill }, CDN), seen, CDN);
+  assert.deepEqual(r.news.map(n => n.why).sort(), ["Camp fever has broken out in Edward's army: 2 sick.", "Wound fever has broken out in Edward's army: 1 sick."]);
+  apply(seen, r);
+  assert.equal(C.notices(C.status({ "gravewounds-travel": ill }, CDN), seen, CDN).news.length, 0);
+  r = C.notices(C.status({ "gravewounds-travel": well }, CDN), seen, CDN);
+  assert.equal(r.forget.length, 2);
+  apply(seen, r);
+  assert.equal(C.notices(C.status({ "gravewounds-travel": ill }, CDN), seen, CDN).news.length, 2);
+});
+check("the end of a day: a map first seen is only marked; then one line for the days that ended, with the weather and each side", () => {
+  const forces = [{ id: 1, name: "A", side: "York", men: 1500, health: { cases: [sickCase("typhus")] } }, { id: 2, name: "B", side: "Lancaster", men: 25000 }];
+  const seen = {};
+  let r = C.notices(C.status({ "gravewounds-travel": travelWith(forces, 1) }, CDN), seen, CDN);
+  assert.deepEqual(r.news.filter(n => n.mark.startsWith("day:")).map(n => [n.value, n.why]), [[1, null]]);
+  apply(seen, r);
+  r = C.notices(C.status({ "gravewounds-travel": travelWith(forces, 2, { 1: { w: { cond: "rain", low: 3, high: 9 } } }) }, CDN), seen, CDN, c => c + " C");
+  const day = r.news.find(n => n.mark === "day:towton-1461");
+  assert.equal(day.why, "Day 1 has ended on the map of Towton, 1461: rain, 3 C to 9 C. York 1 force, 1,500 men, 1 sick; Lancaster 1 force, 25,000 men.");
+  apply(seen, r);
+  r = C.notices(C.status({ "gravewounds-travel": travelWith(forces, 5) }, CDN), seen, CDN);
+  assert.match(r.news.find(n => n.mark === "day:towton-1461").why, /^Days 2 to 4 have ended on the map of Towton, 1461\. York/);
+});
+check("the end of a season in the team builder is news once, and moves the campaign to downtime", () => {
+  const raw = { "gravewounds-xp": J({ p1: { stamp: 1700 }, p2: { stamp: 1700 }, p3: { stamp: 900 } }) };
+  const r = C.notices(C.status(raw, CDN), {}, CDN), n = r.news.find(x => x.mark.startsWith("season:"));
+  assert.equal(n.phase, "downtime");
+  assert.match(n.why, /rolled for 2 men/);
+  assert.equal(C.notices(C.status(raw, CDN), { [n.mark]: true }, CDN).news.length, 0);
+});
+
 console.log(`${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);
