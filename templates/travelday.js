@@ -31,8 +31,17 @@ function MEND_WORD(r){                          // what a day's Mend kit came to
   return r.success ? "mends them" : "cannot mend them yet";
 }
 function namesList(xs){ return xs.length < 3 ? xs.join(" and ") : xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] }
+function surpriseText(s){                        // the odds of surprise, and why, in words
+  const name = { base: "base", camp: "camp", dark: "dark", fog: "fog", stealth: `${s.who.stealth}'s Stealth`, watch: `${s.who.watch}'s Watch` };
+  const part = ([k, n]) => name[k] + " " + (n > 0 ? "+" : "\u2212") + Math.abs(n);
+  return `Surprise: ${s.chance}% (${s.parts.map(part).join(", ")}).`;
+}
+function fightLabel(n, k){                         // the button for fight k of n on offer
+  if (n < 2) return "Set up the fight";
+  return k ? "Wait for the camp" : "Attack now";
+}
 function makeTravelDay(DATA, RULES, env = {}){
-  const { mapJdn, mapDate, marchWindow, rollWeather, WIND_NAMES, nextGround, nightRest, fatigueAfter, NEIGHBOURS, terrainAt, forceTypes, fordHere, passable, stepHours, plan, advance, hexDistance, campDone, before, laterOf, dzProfile, newHealth, dzStep, healthCounts, sickMarchPct, campHygiene, campCare, weekFactors, nursingOf, contagionOf, freshToday, fieldcraftNeeded, leechBonus, reopenOld, healthWeek, healthDay, neighbours } = RULES;
+  const { mapJdn, mapDate, marchWindow, rollWeather, WIND_NAMES, nextGround, nightRest, fatigueAfter, NEIGHBOURS, terrainAt, forceTypes, fordHere, passable, stepHours, plan, advance, hexDistance, campDone, before, laterOf, dzProfile, newHealth, dzStep, healthCounts, sickMarchPct, campHygiene, campCare, weekFactors, nursingOf, contagionOf, freshToday, fieldcraftNeeded, leechBonus, reopenOld, healthWeek, healthDay, neighbours, campLabourDone, fightPlan, lightAt, coldLevel, surpriseChance } = RULES;
   const TER = DATA.terrain, TT = TER.terrain, FT = TER.forces;
   const WXD = DATA.weather, DZ = DATA.disease, WK = DATA.works;
   const roll100 = env.roll100 || (() => 1 + (crypto.getRandomValues(new Uint32Array(1))[0] % 100));   // a d100 for the weather
@@ -1024,6 +1033,147 @@ function makeTravelDay(DATA, RULES, env = {}){
     if (events.length){ S.msg = `${now}: ${events.join(" ")}`; return }
     S.msg = c.used >= dayEnd(c.day) - 1e-9 ? `${now}: the day's marching is done; the next move passes the night.` : `${now}.`;
   }
+  // ----- setting up a fight: who fights, the camp at the time, surprise, and the handoff to the roller or the field map -----
+  function campStatus(dfd, p){                 // the defender's camp at the fight's time: {camp, done (man-hours, null if finished), pct}
+    const camp = campHere(dfd);
+    if (!camp?.labour) return { camp, done: null, pct: 100 };
+    const done = campLabourDone(camp, p.day, p.used, camp.start ? hpdList(camp.start.day) : null);
+    if (done >= camp.labour - 1e-6) return { camp, done: null, pct: 100 };
+    return { camp, done, pct: Math.floor(100 * done / camp.labour) };
+  }
+  function planFor(f, wait){                   // a column defends behind its leader, the rest of it beside him
+    const p = fightPlan(forcesHere(), leaderOf(f).id, wait), dfd = byId(p.defender);
+    return leaderOf(dfd) === dfd ? p : fightPlan(forcesHere(), leaderOf(dfd).id, wait);
+  }
+  function fightOptions(f){                    // the fights on offer: attack now, and wait for the camp if it is unfinished
+    const wait = planFor(f, true);
+    if (!wait.early) return [wait];
+    const now = planFor(f, false);
+    return campStatus(byId(now.defender), now).done === null ? [now] : [now, wait];
+  }
+  function nearFields(dfd){
+    const places = baseMap().places || [];
+    return Object.entries(DATA.battlefields || {}).filter(([, b]) => {
+      const pl = b.map === S.mapId && places.find(x => x.name === b.place);
+      return pl && hexDistance(pl.hex, dfd.pos) <= b.within;
+    });
+  }
+  function surpriseFor(p){                      // this fight's odds: the camp as built, the hour, fog, and the named men's Stealth and Watch
+    const dfd = byId(p.defender), st = campStatus(dfd, p), w = win(p.day), t = w.start + p.used, today = dayWeather(p.day);
+    const all = readNamed(), [stealth, sneak, sp] = bestSkill(p.attackers.map(byId), "stealth", all), [watch, guard, wp] = bestSkill([dfd, ...p.allies.map(byId)], "watch", all);
+    const s = surpriseChance(st.camp && st.done === null ? st.camp.kind : null, t >= w.sunset || t < w.sunrise, today.w.cond === "fog", stealth, watch);
+    return { ...s, who: { stealth: sneak, watch: guard }, pid: { stealth: stealth ? sp : null, watch: watch ? wp : null } };
+  }
+  function rollSurprise(p){                     // rolled once, when the fight is sent
+    const s = surpriseFor(p), roll = roll100();
+    if (roll <= s.chance) xpTick(s.pid.stealth, "stealth", "surprising the enemy"); else xpTick(s.pid.watch, "watch", "keeping watch");
+    return { chance: s.chance, roll, surprised: roll <= s.chance, text: surpriseText(s) };
+  }
+  function sendFightTo(p, on){                    // the fight p sent to the roller ("roller"), the field map ("field") or a battlefield ("field:<id>") -> the page to open
+    if (on.startsWith("field")) return sendField(p, on.slice(6) || null);
+    const dfd = byId(p.defender), st = campStatus(dfd, p), m = curMap(), today = dayWeather(p.day);
+    const brief = o => ({ name: o.name, side: o.side, men: fitOf(o).fit, type: o.type, fatigue: o.fatigue || 0, km: +(hexDist(o.pos, dfd.pos) * m.hex_km).toFixed(1), from: cameFrom(dfd, o) });   // the sick stay out of it
+    const foes = p.attackers.map(byId).map(brief), allies = p.allies.map(byId).map(brief), surprise = rollSurprise(p);
+    try{ localStorage.setItem("gravewounds-handoff", JSON.stringify({ from: "travel", force: { name: dfd.name, side: dfd.side, men: fitOf(dfd).fit, type: dfd.type, fatigue: dfd.fatigue || 0 },
+      camp: st.camp ? st.camp.kind : null, campLabour: st.camp ? st.camp.labour || null : null, party: columnOf(dfd).length > 1 ? colType(dfd) : null, done: st.done, built: st.pct, hauled: !nearWoods(m, dfd.pos), foes, allies, place: where(dfd.pos), ground: terrainAt(m, dfd.pos).id, groundSeed: `${S.mapId}:${p.day}:${p.used}:${dfd.id}`, edges: sidesAround(m, dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day),
+      weather: { cond: today.w.cond, wind: today.w.wind, dir: today.w.dir, high: today.w.high, low: today.w.low, ground: today.ground }, surprise })) }catch(e){}
+    return "roller.html";
+  }
+  function sendField(p, battlefield){             // the fight on the field map: on open ground the GM splits each force into units; on a battlefield they stand as drawn up
+    const dfd = byId(p.defender), m = curMap(), today = dayWeather(p.day);
+    const brief = (o, role) => { const c = campHere(o); return { id: o.id, name: o.name, side: o.side, type: o.type, men: fitOf(o).fit, role, care: campCare(c ? c.kind : null, o), camp: c ? c.kind : null, ammo: supOf(o)?.ammo ?? 1 } };
+    const forces = [brief(dfd, "defender"), ...p.allies.map(byId).map(o => brief(o, "ally")), ...p.attackers.map(byId).map(o => brief(o, "attacker"))];
+    const st = campStatus(dfd, p), lay = st.camp && WK.camps[st.camp.kind].layout;   // the camp's works, as far as they are built
+    const camp = lay ? { kind: st.camp.kind, frac: st.done === null ? null : st.done / (st.camp.labour || 1), hauled: !nearWoods(m, dfd.pos), party: columnOf(dfd).length > 1 ? colType(dfd) : null } : null;
+    try{ localStorage.setItem("gravewounds-field-handoff", JSON.stringify({ from: "travel", battle: `${S.mapId}:${p.day}:${p.used}:${dfd.id}`, mapId: S.mapId, map: m.name || S.mapId,
+      place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day), start: { day: p.day, used: p.used }, forces, camp, battlefield,
+      weather: { cond: today.w.cond, wind: today.w.wind, dir: today.w.dir, high: today.w.high, low: today.w.low, ground: today.ground, light: lightAt(m, p.day, win(p.day).start + p.used, today.w.cond), cold: coldLevel(today.w.low) }, surprise: rollSurprise(p) })) }catch(e){ /* storage off: the field map opens without the forces */ }
+    return "field.html";
+  }
+  // ----- a battle fought on the field map, back on the travel map -----
+  function battleTime(f, start, hours){          // the force's clock moves on to the battle's end (from its start, if it was behind)
+    if (f.day < start.day || (f.day === start.day && f.used < start.used)){ f.day = start.day; f.used = start.used }
+    if (f.day !== start.day) return;              // its clock was already past the battle's day
+    const end = start.used + hours, ev = WK.evening_hours;
+    if (f.used >= end) return;
+    let left = end - f.used;
+    while (f.used + left > hpdOf(f.day) + ev + 1e-9){ left -= hpdOf(f.day) + ev - f.used; endDay(f) }
+    f.used += left;
+    f.log.unshift(`The battle ended ${dateText(f.day, true)}, ${clock(f.used, f.day)}.`);
+  }
+  function fieldSupplies(f, x){                  // after a battle: its ammunition as the units left it; the wounded draw on its medical stores
+    if (!supOf(f)) return;
+    if (x.ammo !== undefined && x.ammo !== null) f.sup.ammo = x.ammo;
+    f.newWounded = (f.newWounded || 0) + x.cases.length;
+  }
+  function applyFieldResult(){                 // a battle fought on the field map: the dead come off, the wounded join the sick
+    let r = null;
+    try{ r = JSON.parse(localStorage.getItem("gravewounds-field-result") || "null") }catch(e){ r = null /* unreadable: nothing to apply */ }
+    if (!r?.forces || !S.forces[r.mapId] || S.fought.includes(r.battle)) return;
+    const lines = [];
+    for (const [id, x] of Object.entries(r.forces)){
+      const f = S.forces[r.mapId].find(o => o.id === +id); if (!f) continue;
+      f.men = Math.max(0, f.men - x.lost);
+      fieldSupplies(f, x);
+      const h = healthOf(f);
+      h.cases.push(...x.cases);
+      for (const k of Object.keys(h.immune)) h.immune[k] = Math.min(h.immune[k], f.men);
+      const note = `Battle at ${r.place}: ${x.lost} dead (${x.killed} killed, ${x.left} left on the field, ${x.died} died of wounds), ${x.cases.length} wounded carried to camp.`;
+      f.log.unshift(note);
+      if (r.start) battleTime(f, r.start, (r.minutes || 0) / 60);
+      lines.push(`${f.name}: ${x.lost} dead, ${x.cases.length} wounded`);
+    }
+    S.fought.push(r.battle);
+    S.mapId = r.mapId;
+    S.msg = `The battle at ${r.place} is over. ${lines.join("; ")}.`;
+    try{ localStorage.removeItem("gravewounds-field-result") }catch(e){ /* storage off: the result stays applied once, by its battle id */ }
+  }
+  // For the campaign console: the fights on offer where enemies are within reach, sent from the saved state; a battle's result taken in.
+  function fightOffer(f, opts){                     // one fight on offer, set up from force f -> {id, title, options, maps, map}
+    const p = opts[0], dfd = byId(p.defender), st = campStatus(dfd, p), names = ids => namesList(ids.map(id => byId(id).name));
+    const built = st.done === null ? "" : " (" + st.pct + "% built)";
+    const at = st.camp ? `at its ${WK.camps[st.camp.kind].name.toLowerCase()}${built}` : `at ${where(dfd.pos)}`;
+    const when = q => `${dateText(q.day, true)}, ${clock(q.used, q.day)}`;
+    const near = nearFields(dfd), allies = p.allies.length ? " (with " + names(p.allies) + ")" : "";
+    return {
+      id: f.id,
+      title: `${names(p.attackers)} against ${dfd.name}${allies} ${at}`,
+      options: opts.map((q, k) => ({ label: fightLabel(opts.length, k), when: when(q),
+        note: `${q.late.length ? names(q.late) + " will miss it. " : ""}${surpriseText(surpriseFor(q))}` })),
+      maps: [["roller", "The wound roller (man by man)"], ["field", "The field map (in units, open ground)"], ...near.map(([id, b]) => ["field:" + id, `${b.name} (the field map, as drawn up)`])],
+      map: near.length ? "field:" + near[0][0] : "roller",
+    };
+  }
+  function fightsOnOffer(){                       // [{id (the force to set up from), title, options: [{label, when, note}], maps: [[value, name]], map (the default)}]
+    restore();
+    if (!S.mapId || !DATA.maps[S.mapId] || !S.forces[S.mapId]) return [];
+    const seen = new Set(), out = [], wx = JSON.stringify(S.wx);
+    for (const f of forcesHere().filter(o => leaderOf(o) === o)){
+      const opts = fightOptions(f), p = opts[0];
+      const key = [p.defender, ...[...p.attackers].sort((x, y) => x - y)].join(":");
+      if (!p.attackers.length || seen.has(key)) continue;
+      seen.add(key);
+      out.push(fightOffer(f, opts));
+    }
+    if (JSON.stringify(S.wx) !== wx) save();         // a later day's weather rolled for a fight that waits: kept, as the travel map keeps it
+    return out;
+  }
+  function sendFightFor(id, k, on){                // the fight force id sets up (k: 0 attack now / the only one, 1 wait), sent -> the page to open, or null
+    restore();
+    const f = byId(id), p = f && fightOptions(f)[k];
+    if (!p?.attackers.length) return null;
+    const page = sendFightTo(p, on);
+    save();
+    return page;
+  }
+  function takeBattle(){                          // a battle's result from the field map taken into the travel map now -> what it came to, or null
+    restore();
+    const before = S.fought.length;
+    applyFieldResult();
+    if (S.fought.length === before) return null;
+    save();
+    return S.msg;
+  }
   // For the campaign console: the clock moved on from the saved state, and the forces as a list.
   function marchStep(kind = "event"){            // restore, move the clock as the travel map's button does, save -> {text, met, day, used, night}
     restore();
@@ -1133,7 +1283,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
   function byId(id){ return forcesHere().find(o => o.id === id) }
 
-  return { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, roll100 };
+  return { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, roll100 };
 }
 
 if (typeof module !== "undefined") module.exports = makeTravelDay;   // Node (the tests); the page has no `module`

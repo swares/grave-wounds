@@ -17,8 +17,8 @@ When an item is done, delete it here and note it in the pull request that closes
   pages' state is still per page; players online join a fight, not the campaign. The travel map's
   rules and its day are now out of the page (`templates/travelrules.js`, checked against the
   Python; `templates/travelday.js`, played with no page), and the console runs the march's clock
-  (Run the march). Still on the travel map: orders, routes, camps and setting up a fight (surprise,
-  who fights, the handoff), which could come out of the page the same way. A travel map open in
+  (Run the march), sets up the fights on offer and takes a battle's result back. Still on the
+  travel map: orders, routes and camps. A travel map open in
   another tab keeps the day it had and would save it over the console's.
   The day still keeps the named men, purses and experience in the browser's storage as the other
   pages do, and the stress rolls in ranks.js take the browser's dice, not the day's.

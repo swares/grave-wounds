@@ -61,6 +61,9 @@ button:disabled{opacity:.45;cursor:default}
 .march th{color:var(--muted);font-weight:500}
 .march .when{font-family:var(--mono);font-size:.85rem}
 .tablewrap{overflow-x:auto}
+.fights{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.fights li{border-left:3px solid var(--blood);padding:4px 0 4px 10px;display:flex;flex-direction:column;gap:4px}
+.fights .muted{font-size:.85rem}
 iframe{display:block;width:100%;height:82vh;border:0;background:var(--bg)}
 </style>
 <div class="wrap">
@@ -1332,6 +1335,14 @@ function makeTravelRules(DATA, lib = {}){
     return { defender: defender.id, allies: friends.filter(o => !clockAfter(o, day, used)).map(o => o.id),
       attackers: attackers.map(o => o.id), late: friends.filter(o => clockAfter(o, day, used)).map(o => o.id), day, used, early };
   }
+  // Surprise (as gravewounds.travel.surprise): the defenders caught unawares
+  function surpriseChance(campKind, dark, fog, stealth = 0, watch = 0){   // {chance, parts: [[why, n]]}
+    const S0 = WK.surprise, camp = campKind ? WK.camps[campKind].surprise : S0.none;
+    const parts = [["base", S0.base], ["camp", camp], ["dark", dark ? S0.dark : 0], ["fog", fog ? S0.fog : 0],
+      ["stealth", Math.floor(Math.max(0, stealth) / S0.per)], ["watch", -Math.floor(Math.max(0, watch) / S0.per)]];
+    const [lo, hi] = S0.range;
+    return { chance: Math.max(lo, Math.min(hi, parts.reduce((t, [, n]) => t + n, 0))), parts: parts.filter(([, n]) => n) };
+  }
   /* ---------- camp disease: same rules as gravewounds/disease.py ---------- */
   // A force's health: {cases, immune, had, dead}; cases are the men sick or incubating, one
   // disease each: {d, inc, step, peak (0 once reached), shown, chronic}. rng() returns d100.
@@ -1596,7 +1607,7 @@ function makeTravelRules(DATA, lib = {}){
       ev.shown.frostbite = (ev.shown.frostbite || 0) + 1;
     }
   }
-  return { fdiv, jdn, fromJdn, parseDate, mapJdn, mapDate, solarDayOfYear, daysInMonth, daylight, marchWindow, coldLevel, MOON_DAYS, NEW_MOON_JDN, moonAge, lightAt, pickRow, rollWeather, windDir, WIND_NAMES, nextGround, terrainPct, flooded, nightRest, fatigueAfter, NEIGHBOURS, neighbours, terrainAt, forceTypes, fordFrac, fordHere, tooDeep, passable, columnKmh, hexWeight, stepWeight, stepHours, heapPush, heapPop, less, tracePath, route, plan, hpdAt, groundAt, schedule, advance, hexDistance, hkey, edgeKey, campDone, campWorked, campLabourDone, camped, nearForces, arrived, clockAfter, before, laterOf, fightPlan, dzProfile, newHealth, copyHealth, dzStep, dzPick, healthCounts, sickMarchPct, campHygiene, CARE_STEPS, campCare, weekFactors, weatherFactors, outbreakChance, patientsOf, nursingOf, contagionOf, nurseChance, nursesCatch, newCase, catchChance, d10000, freshToday, fieldcraftNeeded, leechBonus, scurvyChance, scurvyCase, scurvyWeek, reopenOld, healthWeek, relapses, checksToday, recoverCase, scurvyCheck, septic, caseDay, healthDay, frostbiteChance, frostbiteNight };
+  return { fdiv, jdn, fromJdn, parseDate, mapJdn, mapDate, solarDayOfYear, daysInMonth, daylight, marchWindow, coldLevel, MOON_DAYS, NEW_MOON_JDN, moonAge, lightAt, pickRow, rollWeather, windDir, WIND_NAMES, nextGround, terrainPct, flooded, nightRest, fatigueAfter, NEIGHBOURS, neighbours, terrainAt, forceTypes, fordFrac, fordHere, tooDeep, passable, columnKmh, hexWeight, stepWeight, stepHours, heapPush, heapPop, less, tracePath, route, plan, hpdAt, groundAt, schedule, advance, hexDistance, hkey, edgeKey, campDone, campWorked, campLabourDone, camped, nearForces, arrived, clockAfter, before, laterOf, fightPlan, surpriseChance, dzProfile, newHealth, copyHealth, dzStep, dzPick, healthCounts, sickMarchPct, campHygiene, CARE_STEPS, campCare, weekFactors, weatherFactors, outbreakChance, patientsOf, nursingOf, contagionOf, nurseChance, nursesCatch, newCase, catchChance, d10000, freshToday, fieldcraftNeeded, leechBonus, scurvyChance, scurvyCase, scurvyWeek, reopenOld, healthWeek, relapses, checksToday, recoverCase, scurvyCheck, septic, caseDay, healthDay, frostbiteChance, frostbiteNight };
 }
 
 if (typeof module !== "undefined") module.exports = makeTravelRules;   // Node (the tests); the page has no `module`
@@ -1825,8 +1836,17 @@ function MEND_WORD(r){                          // what a day's Mend kit came to
   return r.success ? "mends them" : "cannot mend them yet";
 }
 function namesList(xs){ return xs.length < 3 ? xs.join(" and ") : xs.slice(0, -1).join(", ") + " and " + xs[xs.length - 1] }
+function surpriseText(s){                        // the odds of surprise, and why, in words
+  const name = { base: "base", camp: "camp", dark: "dark", fog: "fog", stealth: `${s.who.stealth}'s Stealth`, watch: `${s.who.watch}'s Watch` };
+  const part = ([k, n]) => name[k] + " " + (n > 0 ? "+" : "\u2212") + Math.abs(n);
+  return `Surprise: ${s.chance}% (${s.parts.map(part).join(", ")}).`;
+}
+function fightLabel(n, k){                         // the button for fight k of n on offer
+  if (n < 2) return "Set up the fight";
+  return k ? "Wait for the camp" : "Attack now";
+}
 function makeTravelDay(DATA, RULES, env = {}){
-  const { mapJdn, mapDate, marchWindow, rollWeather, WIND_NAMES, nextGround, nightRest, fatigueAfter, NEIGHBOURS, terrainAt, forceTypes, fordHere, passable, stepHours, plan, advance, hexDistance, campDone, before, laterOf, dzProfile, newHealth, dzStep, healthCounts, sickMarchPct, campHygiene, campCare, weekFactors, nursingOf, contagionOf, freshToday, fieldcraftNeeded, leechBonus, reopenOld, healthWeek, healthDay, neighbours } = RULES;
+  const { mapJdn, mapDate, marchWindow, rollWeather, WIND_NAMES, nextGround, nightRest, fatigueAfter, NEIGHBOURS, terrainAt, forceTypes, fordHere, passable, stepHours, plan, advance, hexDistance, campDone, before, laterOf, dzProfile, newHealth, dzStep, healthCounts, sickMarchPct, campHygiene, campCare, weekFactors, nursingOf, contagionOf, freshToday, fieldcraftNeeded, leechBonus, reopenOld, healthWeek, healthDay, neighbours, campLabourDone, fightPlan, lightAt, coldLevel, surpriseChance } = RULES;
   const TER = DATA.terrain, TT = TER.terrain, FT = TER.forces;
   const WXD = DATA.weather, DZ = DATA.disease, WK = DATA.works;
   const roll100 = env.roll100 || (() => 1 + (crypto.getRandomValues(new Uint32Array(1))[0] % 100));   // a d100 for the weather
@@ -2818,6 +2838,147 @@ function makeTravelDay(DATA, RULES, env = {}){
     if (events.length){ S.msg = `${now}: ${events.join(" ")}`; return }
     S.msg = c.used >= dayEnd(c.day) - 1e-9 ? `${now}: the day's marching is done; the next move passes the night.` : `${now}.`;
   }
+  // ----- setting up a fight: who fights, the camp at the time, surprise, and the handoff to the roller or the field map -----
+  function campStatus(dfd, p){                 // the defender's camp at the fight's time: {camp, done (man-hours, null if finished), pct}
+    const camp = campHere(dfd);
+    if (!camp?.labour) return { camp, done: null, pct: 100 };
+    const done = campLabourDone(camp, p.day, p.used, camp.start ? hpdList(camp.start.day) : null);
+    if (done >= camp.labour - 1e-6) return { camp, done: null, pct: 100 };
+    return { camp, done, pct: Math.floor(100 * done / camp.labour) };
+  }
+  function planFor(f, wait){                   // a column defends behind its leader, the rest of it beside him
+    const p = fightPlan(forcesHere(), leaderOf(f).id, wait), dfd = byId(p.defender);
+    return leaderOf(dfd) === dfd ? p : fightPlan(forcesHere(), leaderOf(dfd).id, wait);
+  }
+  function fightOptions(f){                    // the fights on offer: attack now, and wait for the camp if it is unfinished
+    const wait = planFor(f, true);
+    if (!wait.early) return [wait];
+    const now = planFor(f, false);
+    return campStatus(byId(now.defender), now).done === null ? [now] : [now, wait];
+  }
+  function nearFields(dfd){
+    const places = baseMap().places || [];
+    return Object.entries(DATA.battlefields || {}).filter(([, b]) => {
+      const pl = b.map === S.mapId && places.find(x => x.name === b.place);
+      return pl && hexDistance(pl.hex, dfd.pos) <= b.within;
+    });
+  }
+  function surpriseFor(p){                      // this fight's odds: the camp as built, the hour, fog, and the named men's Stealth and Watch
+    const dfd = byId(p.defender), st = campStatus(dfd, p), w = win(p.day), t = w.start + p.used, today = dayWeather(p.day);
+    const all = readNamed(), [stealth, sneak, sp] = bestSkill(p.attackers.map(byId), "stealth", all), [watch, guard, wp] = bestSkill([dfd, ...p.allies.map(byId)], "watch", all);
+    const s = surpriseChance(st.camp && st.done === null ? st.camp.kind : null, t >= w.sunset || t < w.sunrise, today.w.cond === "fog", stealth, watch);
+    return { ...s, who: { stealth: sneak, watch: guard }, pid: { stealth: stealth ? sp : null, watch: watch ? wp : null } };
+  }
+  function rollSurprise(p){                     // rolled once, when the fight is sent
+    const s = surpriseFor(p), roll = roll100();
+    if (roll <= s.chance) xpTick(s.pid.stealth, "stealth", "surprising the enemy"); else xpTick(s.pid.watch, "watch", "keeping watch");
+    return { chance: s.chance, roll, surprised: roll <= s.chance, text: surpriseText(s) };
+  }
+  function sendFightTo(p, on){                    // the fight p sent to the roller ("roller"), the field map ("field") or a battlefield ("field:<id>") -> the page to open
+    if (on.startsWith("field")) return sendField(p, on.slice(6) || null);
+    const dfd = byId(p.defender), st = campStatus(dfd, p), m = curMap(), today = dayWeather(p.day);
+    const brief = o => ({ name: o.name, side: o.side, men: fitOf(o).fit, type: o.type, fatigue: o.fatigue || 0, km: +(hexDist(o.pos, dfd.pos) * m.hex_km).toFixed(1), from: cameFrom(dfd, o) });   // the sick stay out of it
+    const foes = p.attackers.map(byId).map(brief), allies = p.allies.map(byId).map(brief), surprise = rollSurprise(p);
+    try{ localStorage.setItem("gravewounds-handoff", JSON.stringify({ from: "travel", force: { name: dfd.name, side: dfd.side, men: fitOf(dfd).fit, type: dfd.type, fatigue: dfd.fatigue || 0 },
+      camp: st.camp ? st.camp.kind : null, campLabour: st.camp ? st.camp.labour || null : null, party: columnOf(dfd).length > 1 ? colType(dfd) : null, done: st.done, built: st.pct, hauled: !nearWoods(m, dfd.pos), foes, allies, place: where(dfd.pos), ground: terrainAt(m, dfd.pos).id, groundSeed: `${S.mapId}:${p.day}:${p.used}:${dfd.id}`, edges: sidesAround(m, dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day),
+      weather: { cond: today.w.cond, wind: today.w.wind, dir: today.w.dir, high: today.w.high, low: today.w.low, ground: today.ground }, surprise })) }catch(e){}
+    return "roller.html";
+  }
+  function sendField(p, battlefield){             // the fight on the field map: on open ground the GM splits each force into units; on a battlefield they stand as drawn up
+    const dfd = byId(p.defender), m = curMap(), today = dayWeather(p.day);
+    const brief = (o, role) => { const c = campHere(o); return { id: o.id, name: o.name, side: o.side, type: o.type, men: fitOf(o).fit, role, care: campCare(c ? c.kind : null, o), camp: c ? c.kind : null, ammo: supOf(o)?.ammo ?? 1 } };
+    const forces = [brief(dfd, "defender"), ...p.allies.map(byId).map(o => brief(o, "ally")), ...p.attackers.map(byId).map(o => brief(o, "attacker"))];
+    const st = campStatus(dfd, p), lay = st.camp && WK.camps[st.camp.kind].layout;   // the camp's works, as far as they are built
+    const camp = lay ? { kind: st.camp.kind, frac: st.done === null ? null : st.done / (st.camp.labour || 1), hauled: !nearWoods(m, dfd.pos), party: columnOf(dfd).length > 1 ? colType(dfd) : null } : null;
+    try{ localStorage.setItem("gravewounds-field-handoff", JSON.stringify({ from: "travel", battle: `${S.mapId}:${p.day}:${p.used}:${dfd.id}`, mapId: S.mapId, map: m.name || S.mapId,
+      place: where(dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day), start: { day: p.day, used: p.used }, forces, camp, battlefield,
+      weather: { cond: today.w.cond, wind: today.w.wind, dir: today.w.dir, high: today.w.high, low: today.w.low, ground: today.ground, light: lightAt(m, p.day, win(p.day).start + p.used, today.w.cond), cold: coldLevel(today.w.low) }, surprise: rollSurprise(p) })) }catch(e){ /* storage off: the field map opens without the forces */ }
+    return "field.html";
+  }
+  // ----- a battle fought on the field map, back on the travel map -----
+  function battleTime(f, start, hours){          // the force's clock moves on to the battle's end (from its start, if it was behind)
+    if (f.day < start.day || (f.day === start.day && f.used < start.used)){ f.day = start.day; f.used = start.used }
+    if (f.day !== start.day) return;              // its clock was already past the battle's day
+    const end = start.used + hours, ev = WK.evening_hours;
+    if (f.used >= end) return;
+    let left = end - f.used;
+    while (f.used + left > hpdOf(f.day) + ev + 1e-9){ left -= hpdOf(f.day) + ev - f.used; endDay(f) }
+    f.used += left;
+    f.log.unshift(`The battle ended ${dateText(f.day, true)}, ${clock(f.used, f.day)}.`);
+  }
+  function fieldSupplies(f, x){                  // after a battle: its ammunition as the units left it; the wounded draw on its medical stores
+    if (!supOf(f)) return;
+    if (x.ammo !== undefined && x.ammo !== null) f.sup.ammo = x.ammo;
+    f.newWounded = (f.newWounded || 0) + x.cases.length;
+  }
+  function applyFieldResult(){                 // a battle fought on the field map: the dead come off, the wounded join the sick
+    let r = null;
+    try{ r = JSON.parse(localStorage.getItem("gravewounds-field-result") || "null") }catch(e){ r = null /* unreadable: nothing to apply */ }
+    if (!r?.forces || !S.forces[r.mapId] || S.fought.includes(r.battle)) return;
+    const lines = [];
+    for (const [id, x] of Object.entries(r.forces)){
+      const f = S.forces[r.mapId].find(o => o.id === +id); if (!f) continue;
+      f.men = Math.max(0, f.men - x.lost);
+      fieldSupplies(f, x);
+      const h = healthOf(f);
+      h.cases.push(...x.cases);
+      for (const k of Object.keys(h.immune)) h.immune[k] = Math.min(h.immune[k], f.men);
+      const note = `Battle at ${r.place}: ${x.lost} dead (${x.killed} killed, ${x.left} left on the field, ${x.died} died of wounds), ${x.cases.length} wounded carried to camp.`;
+      f.log.unshift(note);
+      if (r.start) battleTime(f, r.start, (r.minutes || 0) / 60);
+      lines.push(`${f.name}: ${x.lost} dead, ${x.cases.length} wounded`);
+    }
+    S.fought.push(r.battle);
+    S.mapId = r.mapId;
+    S.msg = `The battle at ${r.place} is over. ${lines.join("; ")}.`;
+    try{ localStorage.removeItem("gravewounds-field-result") }catch(e){ /* storage off: the result stays applied once, by its battle id */ }
+  }
+  // For the campaign console: the fights on offer where enemies are within reach, sent from the saved state; a battle's result taken in.
+  function fightOffer(f, opts){                     // one fight on offer, set up from force f -> {id, title, options, maps, map}
+    const p = opts[0], dfd = byId(p.defender), st = campStatus(dfd, p), names = ids => namesList(ids.map(id => byId(id).name));
+    const built = st.done === null ? "" : " (" + st.pct + "% built)";
+    const at = st.camp ? `at its ${WK.camps[st.camp.kind].name.toLowerCase()}${built}` : `at ${where(dfd.pos)}`;
+    const when = q => `${dateText(q.day, true)}, ${clock(q.used, q.day)}`;
+    const near = nearFields(dfd), allies = p.allies.length ? " (with " + names(p.allies) + ")" : "";
+    return {
+      id: f.id,
+      title: `${names(p.attackers)} against ${dfd.name}${allies} ${at}`,
+      options: opts.map((q, k) => ({ label: fightLabel(opts.length, k), when: when(q),
+        note: `${q.late.length ? names(q.late) + " will miss it. " : ""}${surpriseText(surpriseFor(q))}` })),
+      maps: [["roller", "The wound roller (man by man)"], ["field", "The field map (in units, open ground)"], ...near.map(([id, b]) => ["field:" + id, `${b.name} (the field map, as drawn up)`])],
+      map: near.length ? "field:" + near[0][0] : "roller",
+    };
+  }
+  function fightsOnOffer(){                       // [{id (the force to set up from), title, options: [{label, when, note}], maps: [[value, name]], map (the default)}]
+    restore();
+    if (!S.mapId || !DATA.maps[S.mapId] || !S.forces[S.mapId]) return [];
+    const seen = new Set(), out = [], wx = JSON.stringify(S.wx);
+    for (const f of forcesHere().filter(o => leaderOf(o) === o)){
+      const opts = fightOptions(f), p = opts[0];
+      const key = [p.defender, ...[...p.attackers].sort((x, y) => x - y)].join(":");
+      if (!p.attackers.length || seen.has(key)) continue;
+      seen.add(key);
+      out.push(fightOffer(f, opts));
+    }
+    if (JSON.stringify(S.wx) !== wx) save();         // a later day's weather rolled for a fight that waits: kept, as the travel map keeps it
+    return out;
+  }
+  function sendFightFor(id, k, on){                // the fight force id sets up (k: 0 attack now / the only one, 1 wait), sent -> the page to open, or null
+    restore();
+    const f = byId(id), p = f && fightOptions(f)[k];
+    if (!p?.attackers.length) return null;
+    const page = sendFightTo(p, on);
+    save();
+    return page;
+  }
+  function takeBattle(){                          // a battle's result from the field map taken into the travel map now -> what it came to, or null
+    restore();
+    const before = S.fought.length;
+    applyFieldResult();
+    if (S.fought.length === before) return null;
+    save();
+    return S.msg;
+  }
   // For the campaign console: the clock moved on from the saved state, and the forces as a list.
   function marchStep(kind = "event"){            // restore, move the clock as the travel map's button does, save -> {text, met, day, used, night}
     restore();
@@ -2927,7 +3088,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
   function byId(id){ return forcesHere().find(o => o.id === id) }
 
-  return { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, roll100 };
+  return { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, roll100 };
 }
 
 if (typeof module !== "undefined") module.exports = makeTravelDay;   // Node (the tests); the page has no `module`
@@ -3152,7 +3313,7 @@ function marchLines(st){
   return [map,
     "Put the team's force on it (or use one of the map's own), and in the roller put each named man <b>With</b> it on his card.",
     "Plan the route and make camp on the travel map. Move the clock there, or here with <b>Run the march</b>: weather, food, the sick and the road's incidents come each day.",
-    "When the force meets the enemy, <b>Fight here</b> sends the fight to the roller (a skirmish) or the field map (a battle). This page notices and moves to the fight."];
+    "When the force meets the enemy, set up the fight under <b>Fights on offer</b> here, or with <b>Fight here</b> on the travel map: a skirmish on the roller, a battle on the field map. This page moves to the fight."];
 }
 function fightLines(st){
   const sent = st.fight.sent;
@@ -3167,7 +3328,7 @@ const GUIDE = {
   fight: fightLines,
   aftermath: () => [
     "On the roller: first aid, then <b>After the fight</b> (deeds, loot, prisoners), and <b>To camp</b> for each named man's wounds.",
-    "On the travel map: the battle's result and the wounded reach the camp; wound fever and the sick follow over the nights.",
+    "A battle's result comes back to the travel map (here, with <b>Take the battle's result</b>, or when the travel map next opens): the dead come off, the wounded reach the camp; wound fever and the sick follow over the nights.",
     "Then on to downtime, or straight back to the march.",
   ],
   downtime: () => [
@@ -3240,7 +3401,31 @@ function renderMarch(){
       <tbody>${m.forces.map(forceRow).join("")}</tbody></table></div>
     <div class="toolbar"><button type="button" class="primary" id="c-run"${idle ? " disabled" : ""} title="${esc(why)}">${label}</button>
       <span class="muted" style="font-size:.88rem">${idle ? "No force is marching or making camp: give orders on the travel map." : "Routes, camps and orders are given on the travel map."}</span></div>
-    <p id="c-march-said" aria-live="polite" style="margin:0">${esc(MARCH_SAID)}</p>`;
+    <p id="c-march-said" aria-live="polite" style="margin:0">${esc(MARCH_SAID)}</p>${fightsHtml()}`;
+}
+const MAP_CHOICE = {};                                // the page each fight on offer goes to, as the GM chose it (kept across redraws)
+function fightHtml(x){
+  const on = MAP_CHOICE[x.id] || x.map;
+  const maps = x.maps.map(([v, name]) => `<option value="${esc(v)}"${v === on ? " selected" : ""}>${esc(name)}</option>`).join("");
+  const buttons = x.options.map((o, k) => `<button type="button" class="small${k ? "" : " primary"}" data-fight="${x.id}" data-k="${k}">${esc(o.label)}: ${esc(o.when)}</button>`).join("");
+  const notes = x.options.map(o => `<span class="muted">${esc(o.label)}: ${esc(o.note)}</span>`).join("");
+  return `<li><span>${esc(x.title)}</span>
+    <span class="toolbar"><label class="muted" style="font-size:.85rem">Fight it on <select data-fightmap="${x.id}">${maps}</select></label>${buttons}</span>${notes}</li>`;
+}
+function fightsHtml(){                                // the fights on offer where enemies are within reach
+  let fights = [];
+  try { fights = newDay().fightsOnOffer() } catch { return "" }   // the map's state cannot be read here: the travel map sets them up
+  if (!fights.length) return "";
+  return `<h3>Fights on offer</h3><ul class="fights">${fights.map(fightHtml).join("")}</ul>`;
+}
+function sendFight(id, k){                             // the fight sent as the travel map's Fight here sends it; the console follows to the fight
+  const x = newDay().fightsOnOffer().find(f => f.id === id);
+  if (!x) return;
+  const on = MAP_CHOICE[id] || x.map, page = newDay().sendFightFor(id, k, on);
+  if (!page) return;
+  note(`Fight set up: ${x.title}, ${x.options[k].when}, on the ${PAGE_NAMES[page].toLowerCase()}`);
+  render();
+  show(page);
 }
 function runMarch(){                                  // one press: the day moves on from what is saved, and is saved again
   const r = newDay().marchStep("event");
@@ -3262,7 +3447,8 @@ function render(){
   const s = CAMPAIGN.suggest(REC.phase, st, REC.seen);
   if (s){                                             // the pages show the campaign has moved on: follow, once, and say so
     REC.seen[s.mark] = true;
-    setPhase(s.phase, s.why);
+    if (REC.phase === s.phase) note(s.why);           // already there (a second fight sent, say): still the log's news
+    else setPhase(s.phase, s.why);
     $("#c-notice").textContent = s.why + ` On to: ${phaseOf(s.phase).name}.`;
     $("#c-notice").hidden = false;
     saveRecord();
@@ -3275,7 +3461,8 @@ function render(){
   const page = ph.id === "fight" && st.fight.sent ? st.fight.sent.page : ph.page;
   const other = page === "roller.html" ? "field.html" : "roller.html";
   const alt = bit(ph.id === "fight", `<button type="button" data-open="${other}">Open the ${PAGE_NAMES[other].toLowerCase()} instead</button>`);
-  const travel = bit(ph.id === "aftermath", '<button type="button" data-open="travel.html">Open the travel map</button>');
+  const travel = bit(ph.id === "aftermath", '<button type="button" data-open="travel.html">Open the travel map</button>')
+    + bit(st.fight.fieldResult, '<button type="button" id="c-take-battle" title="The dead come off, the wounded go to camp, ammunition as the units left it, and the forces\' clocks move to the battle\'s end">Take the battle\'s result into the travel map</button>');
   $("#c-actions").innerHTML = `<button type="button" class="primary" data-open="${page}">Open the ${PAGE_NAMES[page].toLowerCase()}</button>${alt}${travel}
     <span style="flex:1"></span><button type="button" id="c-next">Done: on to ${phaseOf(NEXT[ph.id]).name.toLowerCase()}</button>`;
   renderMarch();
@@ -3288,9 +3475,21 @@ $("#c-phases").addEventListener("click", e => { const b = e.target.closest("butt
 $("#c-actions").addEventListener("click", e => {
   const o = e.target.closest("button[data-open]");
   if (o) return show(o.dataset.open);
+  if (e.target.id === "c-take-battle"){
+    const said = newDay().takeBattle();
+    note(said || "The battle's result was already on the travel map");
+    const f = $("#c-frame");
+    try { f.contentWindow.location.reload() } catch { f.setAttribute("src", f.getAttribute("src")) }
+    return render();
+  }
   if (e.target.id === "c-next"){ const next = NEXT[REC.phase]; setPhase(next); $("#c-notice").hidden = true; render(); show(phaseOf(next).page) }
 });
-$("#c-march").addEventListener("click", e => { if (e.target.id === "c-run") runMarch() });
+$("#c-march").addEventListener("click", e => {
+  if (e.target.id === "c-run") return runMarch();
+  const b = e.target.closest("button[data-fight]");
+  if (b) sendFight(+b.dataset.fight, +b.dataset.k);
+});
+$("#c-march").addEventListener("change", e => { const sel = e.target.closest("select[data-fightmap]"); if (sel) MAP_CHOICE[+sel.dataset.fightmap] = sel.value });
 $("#c-name").addEventListener("change", e => { REC.name = e.target.value.trim(); saveRecord() });
 $("#c-add-note").addEventListener("click", () => {
   const t = $("#c-note").value.trim();

@@ -61,6 +61,9 @@ button:disabled{opacity:.45;cursor:default}
 .march th{color:var(--muted);font-weight:500}
 .march .when{font-family:var(--mono);font-size:.85rem}
 .tablewrap{overflow-x:auto}
+.fights{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
+.fights li{border-left:3px solid var(--blood);padding:4px 0 4px 10px;display:flex;flex-direction:column;gap:4px}
+.fights .muted{font-size:.85rem}
 iframe{display:block;width:100%;height:82vh;border:0;background:var(--bg)}
 </style>
 <div class="wrap">
@@ -180,7 +183,7 @@ function marchLines(st){
   return [map,
     "Put the team's force on it (or use one of the map's own), and in the roller put each named man <b>With</b> it on his card.",
     "Plan the route and make camp on the travel map. Move the clock there, or here with <b>Run the march</b>: weather, food, the sick and the road's incidents come each day.",
-    "When the force meets the enemy, <b>Fight here</b> sends the fight to the roller (a skirmish) or the field map (a battle). This page notices and moves to the fight."];
+    "When the force meets the enemy, set up the fight under <b>Fights on offer</b> here, or with <b>Fight here</b> on the travel map: a skirmish on the roller, a battle on the field map. This page moves to the fight."];
 }
 function fightLines(st){
   const sent = st.fight.sent;
@@ -195,7 +198,7 @@ const GUIDE = {
   fight: fightLines,
   aftermath: () => [
     "On the roller: first aid, then <b>After the fight</b> (deeds, loot, prisoners), and <b>To camp</b> for each named man's wounds.",
-    "On the travel map: the battle's result and the wounded reach the camp; wound fever and the sick follow over the nights.",
+    "A battle's result comes back to the travel map (here, with <b>Take the battle's result</b>, or when the travel map next opens): the dead come off, the wounded reach the camp; wound fever and the sick follow over the nights.",
     "Then on to downtime, or straight back to the march.",
   ],
   downtime: () => [
@@ -268,7 +271,31 @@ function renderMarch(){
       <tbody>${m.forces.map(forceRow).join("")}</tbody></table></div>
     <div class="toolbar"><button type="button" class="primary" id="c-run"${idle ? " disabled" : ""} title="${esc(why)}">${label}</button>
       <span class="muted" style="font-size:.88rem">${idle ? "No force is marching or making camp: give orders on the travel map." : "Routes, camps and orders are given on the travel map."}</span></div>
-    <p id="c-march-said" aria-live="polite" style="margin:0">${esc(MARCH_SAID)}</p>`;
+    <p id="c-march-said" aria-live="polite" style="margin:0">${esc(MARCH_SAID)}</p>${fightsHtml()}`;
+}
+const MAP_CHOICE = {};                                // the page each fight on offer goes to, as the GM chose it (kept across redraws)
+function fightHtml(x){
+  const on = MAP_CHOICE[x.id] || x.map;
+  const maps = x.maps.map(([v, name]) => `<option value="${esc(v)}"${v === on ? " selected" : ""}>${esc(name)}</option>`).join("");
+  const buttons = x.options.map((o, k) => `<button type="button" class="small${k ? "" : " primary"}" data-fight="${x.id}" data-k="${k}">${esc(o.label)}: ${esc(o.when)}</button>`).join("");
+  const notes = x.options.map(o => `<span class="muted">${esc(o.label)}: ${esc(o.note)}</span>`).join("");
+  return `<li><span>${esc(x.title)}</span>
+    <span class="toolbar"><label class="muted" style="font-size:.85rem">Fight it on <select data-fightmap="${x.id}">${maps}</select></label>${buttons}</span>${notes}</li>`;
+}
+function fightsHtml(){                                // the fights on offer where enemies are within reach
+  let fights = [];
+  try { fights = newDay().fightsOnOffer() } catch { return "" }   // the map's state cannot be read here: the travel map sets them up
+  if (!fights.length) return "";
+  return `<h3>Fights on offer</h3><ul class="fights">${fights.map(fightHtml).join("")}</ul>`;
+}
+function sendFight(id, k){                             // the fight sent as the travel map's Fight here sends it; the console follows to the fight
+  const x = newDay().fightsOnOffer().find(f => f.id === id);
+  if (!x) return;
+  const on = MAP_CHOICE[id] || x.map, page = newDay().sendFightFor(id, k, on);
+  if (!page) return;
+  note(`Fight set up: ${x.title}, ${x.options[k].when}, on the ${PAGE_NAMES[page].toLowerCase()}`);
+  render();
+  show(page);
 }
 function runMarch(){                                  // one press: the day moves on from what is saved, and is saved again
   const r = newDay().marchStep("event");
@@ -290,7 +317,8 @@ function render(){
   const s = CAMPAIGN.suggest(REC.phase, st, REC.seen);
   if (s){                                             // the pages show the campaign has moved on: follow, once, and say so
     REC.seen[s.mark] = true;
-    setPhase(s.phase, s.why);
+    if (REC.phase === s.phase) note(s.why);           // already there (a second fight sent, say): still the log's news
+    else setPhase(s.phase, s.why);
     $("#c-notice").textContent = s.why + ` On to: ${phaseOf(s.phase).name}.`;
     $("#c-notice").hidden = false;
     saveRecord();
@@ -303,7 +331,8 @@ function render(){
   const page = ph.id === "fight" && st.fight.sent ? st.fight.sent.page : ph.page;
   const other = page === "roller.html" ? "field.html" : "roller.html";
   const alt = bit(ph.id === "fight", `<button type="button" data-open="${other}">Open the ${PAGE_NAMES[other].toLowerCase()} instead</button>`);
-  const travel = bit(ph.id === "aftermath", '<button type="button" data-open="travel.html">Open the travel map</button>');
+  const travel = bit(ph.id === "aftermath", '<button type="button" data-open="travel.html">Open the travel map</button>')
+    + bit(st.fight.fieldResult, '<button type="button" id="c-take-battle" title="The dead come off, the wounded go to camp, ammunition as the units left it, and the forces\' clocks move to the battle\'s end">Take the battle\'s result into the travel map</button>');
   $("#c-actions").innerHTML = `<button type="button" class="primary" data-open="${page}">Open the ${PAGE_NAMES[page].toLowerCase()}</button>${alt}${travel}
     <span style="flex:1"></span><button type="button" id="c-next">Done: on to ${phaseOf(NEXT[ph.id]).name.toLowerCase()}</button>`;
   renderMarch();
@@ -316,9 +345,21 @@ $("#c-phases").addEventListener("click", e => { const b = e.target.closest("butt
 $("#c-actions").addEventListener("click", e => {
   const o = e.target.closest("button[data-open]");
   if (o) return show(o.dataset.open);
+  if (e.target.id === "c-take-battle"){
+    const said = newDay().takeBattle();
+    note(said || "The battle's result was already on the travel map");
+    const f = $("#c-frame");
+    try { f.contentWindow.location.reload() } catch { f.setAttribute("src", f.getAttribute("src")) }
+    return render();
+  }
   if (e.target.id === "c-next"){ const next = NEXT[REC.phase]; setPhase(next); $("#c-notice").hidden = true; render(); show(phaseOf(next).page) }
 });
-$("#c-march").addEventListener("click", e => { if (e.target.id === "c-run") runMarch() });
+$("#c-march").addEventListener("click", e => {
+  if (e.target.id === "c-run") return runMarch();
+  const b = e.target.closest("button[data-fight]");
+  if (b) sendFight(+b.dataset.fight, +b.dataset.k);
+});
+$("#c-march").addEventListener("change", e => { const sel = e.target.closest("select[data-fightmap]"); if (sel) MAP_CHOICE[+sel.dataset.fightmap] = sel.value });
 $("#c-name").addEventListener("change", e => { REC.name = e.target.value.trim(); saveRecord() });
 $("#c-add-note").addEventListener("click", () => {
   const t = $("#c-note").value.trim();

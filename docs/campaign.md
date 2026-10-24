@@ -39,12 +39,24 @@ does: every force with a march order marches until one arrives, forces of differ
 a camp is finished, and the nights pass on the way with their rest, food, water, supplies, sickness,
 incidents and the named men's feet, keep and kit. When the day's marching is done the button reads
 **Pass the night**. What happened goes into the campaign's log. When forces meet, the console says
-so and puts the travel map in the frame with the force selected, to set up the fight with **Fight
-here**; the console then follows the fight as before.
+so and puts the travel map in the frame with the force selected.
+
+**Fights on offer** lists every fight that can be set up where enemies are within reach, as the
+travel map's **Fight here** would set it up: who attacks whom (and who stands with the defender),
+where, when, who will miss it, and the odds of surprise. Each has the page to fight it on (the
+roller, the field map on open ground, or a battlefield drawn up nearby, chosen by default as the
+travel map chooses), and **Attack now** and **Wait for the camp** when the defender's camp is not yet
+finished. Sending one rolls the surprise, writes the handoff the roller or the field map reads, logs
+it, moves the console to the **Fight** and opens that page.
+
+In the **Aftermath**, when the field map has sent a battle's result back, **Take the battle's result
+into the travel map** applies it from the console: the dead come off, the wounded go to the camp,
+ammunition is as the units left it, and the forces' clocks move on to the battle's end. The travel
+map still takes it itself if it is opened first; either way it is taken once.
 
 The console never keeps the day itself: each press starts from what the travel map last saved and
 saves the result, and the page in the frame is reloaded to show it. Routes, camps, orders and the
-fight's set-up are still given on the travel map. If the travel map is also open in another tab,
+the force's own settings are still given on the travel map. If the travel map is also open in another tab,
 reload it before using it: it still shows the day it had, and would save that over the console's.
 
 ## The log
@@ -63,8 +75,8 @@ they may hold a service key, and they belong to the browser, not the game.
 
 ## What it does not do yet
 
-- It runs the march's clock (Run the march), but not the rest: orders, routes, camps and the
-  fight's set-up are given on the travel map, and the fights on the roller and the field map.
+- It runs the march's clock, sets up fights and takes a battle's result back, but orders, routes
+  and camps are given on the travel map, and the fights are fought on the roller and the field map.
 - It notices fights sent and fights won; it does not yet notice the end of a march day, the end of a
   season, a man's death or a camp's sickness by themselves (the GM moves on with **Done**).
 - The other pages do not link back to it; open it from the start page.
@@ -76,7 +88,9 @@ they may hold a service key, and they belong to the browser, not the game.
 notices, and save files. `python3 tools/campaign/loop.py` follows a campaign round the loop in a
 headless browser over the real pages, served by a local web server: the team rolled in the frame,
 the travel map's forces given routes and the clock run from the console until they meet, a long
-march across nights until a force arrives, a fight sent from the travel map, a winner marked on the
+march across nights until a force arrives, a fight set up from the console where the forces met,
+a battle's result taken in from the console, a fight sent from the travel map, a winner marked on the
 roller, notes, and a save, clear and load. `python3 tools/travel/parity.py` (in CI) also checks the
 console's way into the day with no page: the summary changes nothing, a press moves on and saves,
-and a meeting is reported.
+a meeting is reported, the fights on offer are sent as Fight here sends them, and a battle's result
+is taken in once.
