@@ -75,6 +75,7 @@ button:disabled{opacity:.45;cursor:default}
 .force.s0 circle.body{fill:var(--side0)}.force.s1 circle.body{fill:var(--side1)}.force.s2 circle.body{fill:var(--side2)}.force.s3 circle.body{fill:var(--side3)}
 .force .ring{fill:none;stroke:none;stroke-width:2.2}
 .force.sel .ring{stroke:var(--ink)}
+[hidden]{display:none!important}
 .force.ghost{opacity:.45}.force.ghost .ring{stroke:var(--ink);stroke-dasharray:2 2}   /* a player's map: an enemy where it was last seen */
 .force.spotted .ring{stroke:var(--blood)}                                             /* a player's map: an enemy his side sees now */
 .force:focus{outline:none}.force:focus .ring{stroke:var(--ink);stroke-dasharray:1 2}
@@ -666,10 +667,30 @@ function seatShow(v){
   $("#map").innerHTML = `<svg viewBox="0 0 ${VW.toFixed(1)} ${VH.toFixed(1)}" style="max-width:${Math.round(VW * 1.5)}px">${hexesSvg(m)}${over}</svg>`;
   const light = v.light === "day" ? "" : `, ${v.light}`;
   $("#seat-when").textContent = `${DATA.maps[v.mapId].name} · ${v.when} · ${v.weather}${light}`;
+  seatPropose(v);
   $("#seat-key").textContent = `${v.ours.length} of your side's forces; ${v.seen.length} enemy seen now (red ring)${v.last.length ? `, ${v.last.length} last seen (faded, where and when it was seen)` : ""}. Hover a mark for more.`;
 }
+function seatPropose(v){                       // his forces' routes, proposed by clicking his map (when the GM takes proposals)
+  const mine = v.ours.filter(o => o.mine), bar = $("#seat-bar");
+  bar.hidden = !v.propose || !mine.length;
+  if (bar.hidden) return;
+  const sel = $("#seat-force"), keep = sel.value, opts = mine.map(o => `<option value="${o.id}">${esc(o.name)}</option>`).join("");
+  if (sel.dataset.opts !== opts){ sel.innerHTML = opts; sel.dataset.opts = opts; if (mine.some(o => String(o.id) === keep)) sel.value = keep }
+}
+function seatClick(e){                         // a hex clicked: his proposal, sent to his page and on to the GM
+  const hx = e.target.closest(".hx");
+  if (!hx || $("#seat-bar").hidden) return;
+  const what = document.querySelector('input[name="seat-how"]:checked')?.value || "to";
+  window.parent.postMessage({ gw: "seat-map", propose: { force: +$("#seat-force").value, what, hex: hx.dataset.h } }, location.origin);
+  $("#seat-said").textContent = `Proposed: ${$("#seat-force").selectedOptions[0]?.textContent || "your force"} ${what === "to" ? "to march to" : "to go by way of"} the hex you clicked. The GM accepts or declines it; your force's panel says which.`;
+}
 function seatMain(){
-  document.querySelector(".wrap").innerHTML = `<p id="seat-when" style="margin:0"></p><div class="mapbox" id="map"></div><p class="muted" id="seat-key" style="margin:0;font-size:.85rem"></p>`;
+  document.querySelector(".wrap").innerHTML = `<p id="seat-when" style="margin:0"></p>
+    <div class="toolbar" id="seat-bar" hidden><label class="muted">Click the map to propose a route for <select id="seat-force" style="width:auto"></select></label>
+      <label><input type="radio" name="seat-how" value="to" checked> march to the hex</label><label><input type="radio" name="seat-how" value="via"> go by way of it</label></div>
+    <p class="muted" id="seat-said" aria-live="polite" style="margin:0;font-size:.85rem"></p>
+    <div class="mapbox plan" id="map"></div><p class="muted" id="seat-key" style="margin:0;font-size:.85rem"></p>`;
+  $("#map").addEventListener("click", seatClick);
   terrainCss();
   window.addEventListener("message", e => {
     if (e.origin !== location.origin || e.source !== window.parent || e.data?.gw !== "seat-map") return;

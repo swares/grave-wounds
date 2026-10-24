@@ -142,9 +142,27 @@ with sync_playwright() as p:
     check("[1,1]" not in "".join(pl.evaluate(GOT)).replace(" ", ""), "and where it went never reaches his page")
     pl.locator("#p-mapbox").screenshot(path=str(shots / "player-map.png"))
     gm.evaluate("w => { localStorage.setItem('gravewounds-travel', w); render() }", was)   # back where it met his force, for the fight below
+    # a route proposed by clicking his map: a hex his force can enter, two hexes off
+    mp.locator("#seat-bar").wait_for(state="visible", timeout=10000)
+    target = gm.evaluate(f"""() => {{ const D = newDay(); D.restore(); const f = D.forcesHere().find(x => x.id === {mine_id}), m = D.curMap();
+      for (let r = 0; r < m.rows.length; r++) for (let c = 0; c < m.rows[0].length; c++)
+        if (RULES.hexDistance([c, r], f.pos) === 2 && D.hexChoice({mine_id}, c + ',' + r)) return c + ',' + r; return null }}""")
+    n0 = gm.evaluate("() => (REC.proposals || []).length")
+    mp.locator(f'#map polygon.hx[data-h="{target}"]').click(force=True)
+    gm.wait_for_function(f"() => (REC.proposals || []).length > {n0}", timeout=10000)
+    prop = gm.evaluate("() => REC.proposals.at(-1)")
+    check(prop["arg"] == target and prop["what"] == "to" and prop["text"].startswith("march to"), f"a hex clicked on his map proposes his force's route there ({prop['text']})")
+    gm.click('button[data-prop="yes"]')
+    gm.wait_for_function(f"() => JSON.parse(localStorage.getItem('gravewounds-travel')).forces[{MAP!r}].find(f => f.id === {mine_id}).waypoints.join() === {json.dumps(target)}", timeout=10000)
+    check(True, "the GM accepts it: the route goes to the hex he clicked")
+    pl.evaluate(f"() => {{ PG.send({{ t: 'propose', force: {mine_id}, what: 'to', arg: '999,999' }}); PG.send({{ t: 'propose', force: {mine_id}, what: 'to', arg: 'x' }}) }}")
+    gm.wait_for_timeout(500)
+    check(gm.evaluate("() => REC.proposals.length") == n0 + 1, "a hex off the map, or no hex at all, is not taken")
+    gm.evaluate("w => { localStorage.setItem('gravewounds-travel', w); render() }", was)   # his route as it was, for what follows
     # his proposed orders: sent from his page, waiting for the GM, accepted or declined there
     TRAVEL_FORCE = f"() => JSON.parse(localStorage.getItem('gravewounds-travel')).forces[{MAP!r}].find(f => f.id === {mine_id})"
     OPEN = "() => REC.proposals.filter(x => x.state === 'open').length"
+    before_n = gm.evaluate("() => (REC.proposals || []).length")
     pl.wait_for_selector(f'#p-force .propose[data-force="{mine_id}"] select[data-pick="to"]', timeout=10000)
     place = pl.evaluate(f"""() => {{ const s = document.querySelector('#p-force .propose[data-force="{mine_id}"] select[data-pick="to"]'); s.selectedIndex = s.options.length - 1; return [s.value, s.options[s.selectedIndex].text] }}""")
     check(enemy not in pl.inner_text("#p-force"), "his order choices list places, not where the enemy is")
@@ -153,9 +171,9 @@ with sync_playwright() as p:
     gm.wait_for_function(f"() => {OPEN[6:]} === 1", timeout=10000)
     check(place[1] in gm.inner_text("#c-players") and "Scott proposes" in gm.inner_text("#c-notice"), f"his proposal ({place[1]}) waits on the console, and the GM is told")
     check(gm.evaluate(TRAVEL_FORCE)["waypoints"] == before["waypoints"], "a proposal changes nothing until the GM accepts it")
-    pl.evaluate(f"() => {{ PG.send({{ t: 'propose', force: {enemy_id}, what: 'halt' }}); PG.send({{ t: 'propose', force: {mine_id}, what: 'to', arg: '0,0' }}); PG.send({{ t: 'propose', force: {mine_id}, what: 'burn' }}) }}")
+    pl.evaluate(f"() => {{ PG.send({{ t: 'propose', force: {enemy_id}, what: 'halt' }}); PG.send({{ t: 'propose', force: {mine_id}, what: 'to', arg: '999,999' }}); PG.send({{ t: 'propose', force: {mine_id}, what: 'burn' }}) }}")
     gm.wait_for_timeout(600)
-    check(gm.evaluate("() => REC.proposals.length") == 1, "a proposal for a force not his, or not among its choices, is ignored")
+    check(gm.evaluate("() => REC.proposals.length") == before_n + 1, "a proposal for a force not his, or not among its choices, is ignored")
     gm.click('button[data-prop="yes"]')
     gm.wait_for_function(f"() => {TRAVEL_FORCE[6:]}.waypoints.join() === {json.dumps(place[0])}", timeout=10000)
     pl.wait_for_function("() => document.querySelector('#p-force').textContent.includes('accepted')", timeout=10000)

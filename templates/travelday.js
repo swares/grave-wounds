@@ -1254,6 +1254,14 @@ function makeTravelDay(DATA, RULES, env = {}){
       night: c.used >= dayEnd(c.day) - 1e-9, working: anyAtWork(c),
       forces: forcesHere().filter(f => Array.isArray(f.pos)).map(f => ({ id: f.id, name: f.name, side: f.side, men: f.men, fit: fitOf(f).fit, where: where(f.pos), order: orderText(f, c), fatigue: L[f.fatigue || 0].name })) };
   }
+  function hexChoice(id, key){                     // a hex force id could be sent to ("c,r") -> where it is, in words, or null (off the map, its own hex, or one it cannot enter)
+    restore();
+    const f = S.forces[S.mapId] && byId(id), h = typeof key === "string" ? key.split(",").map(Number) : null, m = curMap();
+    if (!f || !h || h.length !== 2 || !h.every(Number.isInteger) || h[0] < 0 || h[1] < 0 || h[1] >= m.rows.length || h[0] >= m.rows[0].length) return null;
+    const L = leaderOf(f);
+    if (sameHex(h, L.pos) || !passable(m, h, colType(L), groundOf(L.day))) return null;
+    return where(h);
+  }
   // For the campaign console: the maps to choose from, as the travel map lists them, and the choice.
   function mapChoices(){                          // -> {current, groups: [[period, [[id, name], ...]], ...]}: periods in order, oldest map first
     restore();
@@ -1315,17 +1323,17 @@ function makeTravelDay(DATA, RULES, env = {}){
   // What one player's map shows: his side's forces, and of the enemy only what his side sees now, or
   // where it last saw them. side: his side. -> {mapId, edits, day, when, weather, light, sides, ours,
   // seen, last} or null with no map. Nothing else of the enemy's is in it.
-  function fogView(side){
+  function fogView(side, mine = []){                 // mine: the ids of the forces his own men are with (he may propose their routes)
     restore();
     if (!S.mapId || !DATA.maps[S.mapId] || !S.forces[S.mapId]) return null;
     const c = clockNow(), now = sightNow(), seenNow = sightings(side), ids = new Set(seenNow.map(e => e.id));
-    const mine = f => ({ name: f.name, side: f.side, type: f.type, men: f.men, pos: f.pos.slice(), route: f.path && f.index < f.path.length - 1 ? f.path.slice(f.index) : [],
+    const ours = f => ({ id: f.id, mine: mine.includes(f.id), name: f.name, side: f.side, type: f.type, men: f.men, pos: f.pos.slice(), route: f.path && f.index < f.path.length - 1 ? f.path.slice(f.index) : [],
       camp: f.camp ? { hex: f.camp.hex, kind: f.camp.kind } : null, order: orderText(f, c) });
     const last = Object.entries(S.seen[S.mapId]?.[side] || {}).filter(([id]) => !ids.has(+id))
       .map(([, x]) => ({ name: x.name, side: x.side, type: x.type, size: x.size, pos: x.pos, when: `${dateText(x.day, true)}, ${clock(x.used, x.day)}` }));
     return { mapId: S.mapId, edits: S.edits[S.mapId] || null, day: c.day, when: `${dateText(c.day, true)}, ${clock(c.used, c.day)}`,
       weather: WXD.conditions[now.cond]?.name || now.cond, light: now.light, sides: sides(),
-      ours: forcesHere().filter(f => f.side === side && placed(f)).map(mine), seen: seenNow.map(report), last };
+      ours: forcesHere().filter(f => f.side === side && placed(f)).map(ours), seen: seenNow.map(report), last };
   }
   // What one player sees of the map: his named men (uids) and the forces they are with, nothing of
   // anyone else's. -> {map, day, date, time, men: [{uid, name, dead, force, health, purse}], forces:
@@ -1425,7 +1433,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
   function byId(id){ return forcesHere().find(o => o.id === id) }
 
-  return { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, seatView, mapChoices, setMap, sightOf, sightings, noteSightings, fogView, roll100 };
+  return { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, seatView, hexChoice, mapChoices, setMap, sightOf, sightings, noteSightings, fogView, roll100 };
 }
 
 if (typeof module !== "undefined") module.exports = makeTravelDay;   // Node (the tests); the page has no `module`
