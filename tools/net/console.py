@@ -80,6 +80,7 @@ with sync_playwright() as p:
       localStorage.setItem('gravewounds-named', JSON.stringify({{ u1: man('Hal Ashby', a), u2: man('Wat Tyler', a), u3: man('Clifford Spy', foe) }}));
       localStorage.setItem('gravewounds-purses', JSON.stringify({{ 'pid-Hal Ashby': {{ name: 'Hal Ashby', start: 12, ledger: [] }} }})) }}""")
     mine, enemy, mine_id, enemy_id = gm.evaluate("() => { const fs = forcesHere(), a = fs[0], b = fs.find(o => o.side !== a.side); return [a.name, b.name, a.id, b.id] }")
+    gm.evaluate("() => localStorage.setItem('gw-room-server', 'off')")   # copy and paste (rooms: rooms.py), not the site's own room server
     gm.goto(BASE + "campaign.html")
     gm.wait_for_function("() => typeof REC === 'object' && REC", timeout=15000)
     gm.evaluate("() => { setPhase('march'); render() }")

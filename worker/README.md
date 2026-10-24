@@ -13,7 +13,7 @@ Files:
 - `rooms.js`: the Worker, with a Durable Object per room (`Room`).
 - `wrangler.toml`: its settings. These are the allowed origins (`ALLOWED_ORIGINS`), the room
   life (`ROOM_HOURS`), and the Durable Object binding with its SQLite migration.
-- `rooms.json`: the server's address, built into the site. It is empty until you deploy.
+- `rooms.json`: the server's address, built into the site: `https://grave-wounds-rooms.waresscott.workers.dev`, deployed October 2026.
 
 ## Deploying it (once)
 
@@ -26,6 +26,8 @@ Files:
    ```
 
    `deploy` prints the Worker's address, like `https://grave-wounds-rooms.<your-subdomain>.workers.dev`.
+   On a new account the first deploy may upload the Worker and then fail with "This Worker does not
+   exist on your account [code: 10007]"; running `npx wrangler deploy` again finished it (October 2026).
 3. Put that address in `rooms.json` (`{"server": "https://grave-wounds-rooms.<your-subdomain>.workers.dev"}`).
    Then rebuild the site (`python3 build.py`) and commit. The console and the players' pages then use
    it by themselves.
