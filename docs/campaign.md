@@ -86,6 +86,21 @@ saves the result, and the page in the frame is reloaded to show it. A travel map
 tab follows too: when the day changes elsewhere it takes the new one and says so, rather than save
 the day it had over it. (The roller and the team builder in another tab do not yet: reload them.)
 
+## The fight
+
+In the **Fight** phase, with the wound roller in the frame, the console shows the roller's fight
+as it stands: the round, whose turn it is and who plays him, each side (who plays it, broken or
+not) with each man's Blood and whether he is down or out, and the fight's last events. Its buttons
+work the roller's **Run the fight**: turn it on (the sides with no player go to the GM's script),
+**Step**, **Play to my turn**, **Undo the script**, and **End his turn** when it is a person's turn
+(he moves and strikes on the roller below). When one side still stands, **Mark … the winner** marks
+it as **After the fight** does, and the console moves on to the aftermath.
+
+The console asks; the roller does it, as its own buttons would, and tells the console how the fight
+stands after every change (by the browser's messages between a page and the page in its frame;
+the roller answers only the page that holds it, and a player's page joined online never). The
+moves, strikes, first aid and the rest are still made on the roller.
+
 ## The log
 
 Each phase the campaign moves to, and why, goes into the campaign's log at the travel map's day,
@@ -102,9 +117,10 @@ they may hold a service key, and they belong to the browser, not the game.
 
 ## What it does not do yet
 
-- It gives routes, orders and camps, runs the march's clock, sets up fights and takes a battle's
-  result back; columns, the forces' own settings, adding forces and painting the map are on the
-  travel map, and the fights are fought on the roller and the field map.
+- It gives routes, orders and camps, runs the march's clock, sets up fights, runs the roller's
+  script and marks the winner, and takes a battle's result back; columns, the forces' own settings,
+  adding forces and painting the map are on the travel map, a person's moves and strikes on the
+  roller, and battles of units on the field map.
 - The pages' own state is still per page; a campaign's whole state exists only as a save file.
 
 ## Tests
@@ -115,7 +131,8 @@ days and of a season), and save files. `python3 tools/campaign/loop.py` follows 
 headless browser over the real pages, served by a local web server: the team rolled in the frame,
 a force's route given from the console, the clock run from it until the forces meet, a long
 march across nights, a fight set up from the console where the forces met,
-a battle's result taken in from the console, the end of the days logged by itself, the end of a
+the roller's fight run from the console (Run the fight, Step, a player's turn ended, Undo, the
+winner marked), a battle's result taken in from the console, the end of the days logged by itself, the end of a
 season moving it to downtime, a fight sent from the travel map, a winner marked on the
 roller, notes, and a save, clear and load, on dice seeded from its argument (CI runs it with seed 1,
 in the browser workflow, on every pull request that changes the pages). `python3 tools/travel/parity.py`

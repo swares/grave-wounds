@@ -5393,6 +5393,39 @@ function renderChars(){
   save();
   veilInputs();
   renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); renderAfterFight(); renderHazards(); renderWords(); renderEvents(); renderGM(); netSides(); netSync();
+  consolePush();
+}
+/* ---------- the campaign console: this page in its frame, run from there ----------
+   The console sends {gw: "console", cmd} (status, start, step, play, undo, won with side) by
+   postMessage (or next: a person's turn ends); this page does it as its own buttons would and answers {gw: "roller", status}. It
+   answers only its own site's page that holds it in a frame, and only when it is the GM's page. */
+const consolePlain = html => { const d = document.createElement("div"); d.innerHTML = html; return d.textContent };
+function consoleStatus(){                           // the fight as the GM's console shows it
+  const sides = sidesInOrder(), acting = actingChar(), won = winningSide();
+  return {
+    round: S.round || 1, on: gmOn(), msg: S.gmMsg || "", over: gmOn() ? gmOver() : (won ? `${won} still stand.` : null),
+    standing: won, wonBy: S.wonBy || null, undo: GMQ.undo.length > 0, two: sides.length > 1,
+    acting: acting ? { name: acting.name, side: sideOf(acting), by: GM_CTL[gmSide(sideOf(acting)).ctl], person: !scripted(acting) } : null,
+    sides: sides.map(sd => ({ side: sd, by: gmOn() ? GM_CTL[gmSide(sd).ctl] : null, broken: !!(S.broken || {})[sd],
+      men: S.chars.filter(c => sideOf(c) === sd).map(c => ({ name: c.name, blood: Math.max(0, Math.round(c.blood)), pool: poolOf(c), down: isDown(c), out: isOut(c) })) })),
+    lines: viewFor(S.events || [], GM_SEAT).slice(-8).reverse().map(v => (v.round ? `Round ${v.round}: ` : "") + consolePlain(eventText(v))),
+  };
+}
+const inConsole = () => window.parent !== window && !location.hash.startsWith("#join=");
+function consolePush(){                             // after each change, the console hears of it
+  if (!inConsole()) return;
+  try { window.parent.postMessage({ gw: "roller", status: consoleStatus() }, location.origin) } catch { /* the console has gone: nothing to tell */ }
+}
+function consoleCommand(e){                         // a command from the console holding this page
+  if (e.origin !== location.origin || e.source !== window.parent || e.data?.gw !== "console" || !inConsole()) return;
+  const d = e.data, two = sidesInOrder().length > 1;
+  if (d.cmd === "start" && two && !gmOn()){ gmStart(); gmSoloScreen(); S.gmMsg = ""; S.gmOpen = true; renderChars() }   // as Run the fight's switch
+  else if (d.cmd === "step" && gmOn()) gmPlay(1);                                                                 // as its buttons
+  else if (d.cmd === "play" && gmOn()) gmPlay();
+  else if (d.cmd === "undo" && gmOn()) gmUndo();
+  else if (d.cmd === "next" && gmOn() && actingChar() && !scripted(actingChar())){ nextFighter(); gmKick() }   // as Next fighter: a person's turn ends
+  else if (d.cmd === "won" && sidesInOrder().includes(d.side)){ S.wonBy = d.side; S.afterOpen = true; renderChars() }
+  else consolePush();
 }
 $("#after-fight").addEventListener("change", e => {
   if (e.target.id === "sel-won"){ S.wonBy = e.target.value || null; S.afterOpen = true; renderChars() }
@@ -5655,6 +5688,7 @@ function startExamples(){                       // example combatants from this 
 }
 function init(){
   if (location.hash.startsWith("#join=")) return guestMain();   // a player's page, joined to the GM's: it runs no rules of its own
+  window.addEventListener("message", consoleCommand);
   const ids = Object.keys(DATA.tables);   // already in data order
   S.table = ids.find(i => DATA.tables[i].variant === "adjusted") || ids[0];
   const battles = [...new Set(ids.map(id => DATA.tables[id].battle))];

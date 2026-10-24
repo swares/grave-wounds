@@ -168,6 +168,26 @@ with sync_playwright() as p:
     check(bool(handoff) and handoff["foes"] and handoff["surprise"]["text"].startswith("Surprise"), f"sending it writes the roller's handoff as Fight here does ({(handoff or {}).get('place')})")
     pg.wait_for_function("() => document.querySelector('#c-showing').textContent.includes('Wound roller')", timeout=15000)
     check(any(e["data"]["text"].startswith("Fight set up:") for e in pg.evaluate(LOG)), "the console moves to the fight, logs it, and opens the roller")
+    # the fight run from the console: the roller in the frame does it, and says how it stands
+    pg.wait_for_selector("#c-fight button[data-fightcmd='start']", timeout=15000)
+    sides_shown = pg.locator("#c-fight tbody tr").count()
+    check(sides_shown == 2 and "Round 1" in pg.inner_text("#c-fight"), f"the console shows the roller's fight: the round and its {sides_shown} sides")
+    pg.click("#c-fight button[data-fightcmd='start']")
+    pg.wait_for_selector("#c-fight button[data-fightcmd='step']", timeout=6000)
+    check(page_in_frame(pg).evaluate("() => gmOn()"), "Run the fight from the console turns on the roller's Run the fight")
+    for _ in range(6):
+        pg.click("#c-fight button[data-fightcmd='step']")
+        pg.wait_for_timeout(250)
+    lines = pg.locator("#c-fight ol.log li").count()
+    check(lines >= 1 and page_in_frame(pg).evaluate("() => (S.events || []).length") >= 1, f"Step plays the script on the roller, and the console shows its events ({lines} lines)")
+    if pg.locator("#c-fight button[data-fightcmd='next']").count():     # a person's turn: ended from the console, and the script plays on
+        before = page_in_frame(pg).evaluate("() => S.turn")
+        pg.click("#c-fight button[data-fightcmd='next']")
+        pg.wait_for_timeout(600)
+        check(page_in_frame(pg).evaluate("() => S.turn") != before, "a player's turn ended from the console moves the roller to the next fighter")
+    pg.click("#c-fight button[data-fightcmd='undo']")
+    pg.wait_for_timeout(300)
+    check(page_in_frame(pg).evaluate("() => (S.events || []).some(e => e.type === 'undo')"), "Undo from the console takes back the script's last step")
     # the travel map's state, then a fight sent from it, as Fight here writes it
     page_in_frame(pg).evaluate(f"""() => localStorage.setItem('gravewounds-travel', {J(J({"mapId": "towton-1461", "forces": {"towton-1461": [{"side": "York"}, {"side": "Lancaster"}]}, "clock": {"towton-1461": {"day": 3, "used": 4}}, "fought": []}))})""")
     page_in_frame(pg).evaluate(f"""() => localStorage.setItem('gravewounds-handoff', {J(J({"from": "travel", "force": {"name": "Will's lances", "side": "York"}, "place": "Ferrybridge", "foes": [{"name": "Clifford's flankers"}]}))})""")
@@ -180,9 +200,11 @@ with sync_playwright() as p:
     pg.click('#c-actions button.primary')
     pg.wait_for_function("() => document.querySelector('#c-showing').textContent.includes('Wound roller')", timeout=15000)
     pg.wait_for_function("() => { try { return typeof document.querySelector('#c-frame').contentWindow.renderChars === 'function' } catch { return false } }", timeout=15000)
-    page_in_frame(pg).evaluate("() => { S.wonBy = 'York'; renderChars() }")   # the GM marks the winner in After the fight
+    pg.wait_for_function("() => !!FIGHT && FIGHT.two", timeout=8000)
+    winner = pg.evaluate("() => FIGHT.sides[0].side")
+    pg.evaluate("(side) => tellRoller('won', { side })", winner)   # the GM marks the winner from the console, as After the fight does
     pg.wait_for_function("() => REC.phase === 'aftermath'", timeout=6000)
-    check("York won" in pg.inner_text(NOTICE), "a fight won on the roller moves the console to the aftermath")
+    check(f"{winner} won" in pg.inner_text(NOTICE) and page_in_frame(pg).evaluate("() => S.wonBy") == winner, f"the winner marked from the console moves it to the aftermath ({winner})")
     pg.evaluate(f"""() => localStorage.setItem('gravewounds-field-result', {J(J({"battle": "towton-1461:3:4:1", "mapId": "towton-1461", "place": "Ferrybridge", "minutes": 60, "forces": {}}))})""")
     pg.wait_for_selector(TAKE, timeout=6000)
     pg.click(TAKE)

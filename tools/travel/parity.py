@@ -278,10 +278,10 @@ def write_shared(d) -> None:
 
 
 def check_page() -> int:
-    """The built travel page's and campaign console's scripts parse (node --check): a name declared
-    twice in a page, say one the day also gives it, is caught here as it would stop the page loading."""
+    """The built pages' scripts parse (node --check): a name declared twice in a page's script, say one
+    a shared file also declares, is caught here as it would stop the page loading."""
     bad = 0
-    for name in ("travel.html", "campaign.html"):        # the travel map, and the console that runs its day
+    for name in ("travel.html", "campaign.html", "roller.html", "team.html", "field.html"):   # every page with rules in it
         page, wrong = (ROOT / "dist" / name).read_text(encoding="utf-8"), 0
         for i, js in enumerate(re.findall(r"<script>(.*?)</script>", page, re.S)):
             f = CACHE / f"{name}-{i}.js"
