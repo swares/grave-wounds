@@ -620,12 +620,11 @@ function mapOptions(){                          // the campaign maps under their
     .filter(([, ms]) => ms.length).map(([p, ms]) => `<optgroup label="${esc(p)}">${ms.map(opt).join("")}</optgroup>`).join("")
     + maps.filter(m => !(DATA.period_order || []).includes(m.period)).map(opt).join("");
 }
-function followStorage(e){                     // another tab, or the campaign console, changed the day: show it, and never save the old one over it
-  if (e.key === NAMED_KEY) return render();     // the named men (the roller, the console's night): drawn afresh
-  if (e.key !== KEY || painting || e.newValue === null) return;
-  restore();
+function followStorage(e){                     // another tab, or the campaign console, changed the day or the named men: show it, and never save the old day over it
+  if ((e.key !== KEY && e.key !== NAMED_KEY) || painting) return;
+  restore();                                    // first: drawing saves, and must save the newest day (the console's night writes the named men before the day)
   $("#sel-map").value = S.mapId;
-  S.msg = "The day moved on elsewhere (another tab, or the campaign console): this map shows it now.";
+  if (e.key === KEY && e.newValue !== null) S.msg = "The day moved on elsewhere (another tab, or the campaign console): this map shows it now.";
   render();
 }
 function init(){
