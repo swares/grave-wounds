@@ -10,7 +10,7 @@
    net section), the player sends his choices. Messages are cut into pieces the channel carries.
    NET.packCode / NET.unpackCode turn a session description into a short code and back (deflated,
    then base64url). build.py puts this file into the roller at its NET_JS marker; in Node it is a
-   module (tools/net/test.mjs tests the codes and the pieces). */
+   module (tools/net/test.mjs tests the codes, the pieces and the changes). */
 const NET = (() => {
   const PIECE = 60000;                                   // under the 256 kB a Chromium data channel message may be
   const STUN = [{ urls: "stun:stun.l.google.com:19302" }];
@@ -117,7 +117,81 @@ const NET = (() => {
     return { reply: await packCode({ kind: "reply", seat: invite.seat, sdp: d.sdp }), send: msg => send(msg), close: () => pc.close() };
   }
 
-  return { packCode, unpackCode, pieces, joiner, hostPeer, guestPeer, PIECE };
+  // A drawing that changed, sent as its changes: the HTML cut into tags, the tags that stayed the same
+  // kept by count (Myers' shortest edit), the rest sent. edit(was, now) → now itself (short or not text),
+  // { cut: [a, b, middle] } (all but the a characters at the start and b at the end, when that is
+  // shorter or the changes are too many to look for) or { ops: [...] }: n > 0 keeps n tags, n < 0 drops
+  // n, a string is put in. apply(was, change) is the other end's half: the new drawing.
+  const SHORT = 2000, MOST_EDITS = 800;
+  const tags = text => text.split(/(?=<)/);
+  function shortestEdit(A, B){                           // Myers: the fewest drops and puts that make A into B, or null past MOST_EDITS
+    const N = A.length, M = B.length, max = Math.min(N + M, MOST_EDITS), off = max + 1, trace = [];
+    let V = new Int32Array(2 * max + 3);
+    for (let d = 0; d <= max; d++){
+      trace.push(V.slice());
+      for (let k = -d; k <= d; k += 2){
+        let x = (k === -d || (k !== d && V[off + k - 1] < V[off + k + 1])) ? V[off + k + 1] : V[off + k - 1] + 1, y = x - k;
+        while (x < N && y < M && A[x] === B[y]){ x++; y++ }
+        V[off + k] = x;
+        if (x >= N && y >= M) return backtrack(trace, d, N, M, off, B);
+      }
+    }
+    return null;
+  }
+  function backtrack(trace, D, N, M, off, B){
+    const out = [];                                      // from the end: ["k"], ["d"], ["i", tag]
+    let x = N, y = M;
+    for (let d = D; d > 0; d--){
+      const V = trace[d], k = x - y;
+      const pk = (k === -d || (k !== d && V[off + k - 1] < V[off + k + 1])) ? k + 1 : k - 1;
+      const px = V[off + pk], py = px - pk;
+      while (x > px && y > py){ out.push(["k"]); x--; y-- }
+      if (pk === k + 1) out.push(["i", B[py]]); else out.push(["d"]);
+      x = px; y = py;
+    }
+    while (x > 0){ out.push(["k"]); x-- }
+    return out.reverse();
+  }
+  function compact(steps){                               // the steps as the message carries them
+    const ops = [];
+    for (const [s, tag] of steps){
+      const last = ops.length - 1;
+      if (s === "i"){ if (typeof ops[last] === "string") ops[last] += tag; else ops.push(tag) }
+      else {
+        const n = s === "k" ? 1 : -1;
+        if (typeof ops[last] === "number" && Math.sign(ops[last]) === n) ops[last] += n; else ops.push(n);
+      }
+    }
+    return ops;
+  }
+  function edit(was, now){
+    if (typeof was !== "string" || typeof now !== "string" || now.length < SHORT) return now;
+    let a = 0, b = 0;
+    const most = Math.min(was.length, now.length);
+    while (a < most && was[a] === now[a]) a++;
+    while (b < most - a && was[was.length - 1 - b] === now[now.length - 1 - b]) b++;
+    const cut = { cut: [a, b, now.slice(a, now.length - b)] };
+    if (cut.cut[2].length < 200) return cut;
+    const steps = shortestEdit(tags(was), tags(now));
+    if (!steps) return cut;
+    const ops = { ops: compact(steps) };
+    return JSON.stringify(ops).length < JSON.stringify(cut).length ? ops : cut;
+  }
+  function apply(was, change){
+    if (!change || typeof change !== "object" || !(Array.isArray(change.cut) || Array.isArray(change.ops))) return change;   // anything else is itself
+    const old = String(was ?? "");
+    if (Array.isArray(change.cut)){ const [a, b, mid] = change.cut; return old.slice(0, a) + mid + old.slice(old.length - b) }
+    const from = tags(old), out = [];
+    let i = 0;
+    for (const op of change.ops){
+      if (typeof op === "string") out.push(op);
+      else if (op > 0){ out.push(...from.slice(i, i + op)); i += op }
+      else i -= op;
+    }
+    return out.join("");
+  }
+
+  return { packCode, unpackCode, pieces, joiner, hostPeer, guestPeer, PIECE, edit, apply };
 })();
 
 if (typeof module !== "undefined") module.exports = NET;   // Node (the tests); the page has no `module`

@@ -189,8 +189,8 @@ const FIG = (() => {
   }).join("");
 
   let seq = 0;
-  function svg({ kit = null, weapon = null, look = {}, size = 96, title = "", wounds = null } = {}) {
-    const uid = "fg" + (seq++).toString(36);
+  function svg({ kit = null, weapon = null, look = {}, size = 96, title = "", wounds = null, id = null } = {}) {
+    const uid = "fg" + (id ?? (seq++).toString(36));     // id: the same drawing gets the same ids each time it is drawn (a player's screen sends only what changed)
     const slots = (kit && kit.slots) || {};
     const colour = look.colour || "#6b7480";
     const coat = look.coat === "skin" ? SKIN : colour;

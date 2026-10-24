@@ -46,5 +46,33 @@ await check("a short message is one piece, under the channel's limit", () => {
   assert.equal(ps.length, 1);
   assert.ok(ps[0].length < NET.PIECE + 200);
 });
+const hexes = n => Array.from({ length: n }, (_, i) => `<polygon class="hex${i % 7 ? "" : " wood"}" data-h="${i % 30},${(i / 30) | 0}" points="1,2 3,4"/>`).join("");
+await check("a changed drawing goes as its changes, and comes back the same", () => {
+  let seed = 5;
+  const roll = n => (seed = (seed * 16807) % 2147483647) % n;
+  for (let t = 0; t < 60; t++){
+    const was = `<svg>${hexes(400 + roll(50))}<g class="unit" data-x="${roll(90)}"></g></svg>`;
+    const bits = was.split(/(?=<)/);
+    for (let j = 0, n = roll(40); j < n; j++){               // some tags changed, dropped, put in, anywhere
+      const at = roll(bits.length), what = roll(3);
+      if (what === 0) bits[at] = bits[at].replace("hex", "hex reach");
+      else if (what === 1) bits.splice(at, 1);
+      else bits.splice(at, 0, `<circle r="${roll(9)}"/>`);
+    }
+    const now = bits.join("");
+    const change = NET.edit(was, now);
+    assert.equal(NET.apply(was, change), now, `case ${t}`);
+    if (now !== was) assert.ok(JSON.stringify(change).length < now.length / 2, `case ${t}: smaller than the drawing (${JSON.stringify(change).length} of ${now.length})`);
+  }
+});
+await check("a short panel, or one wholly redrawn, goes whole or cut, and still comes back the same", () => {
+  assert.equal(NET.edit("<b>1</b>", "<b>2</b>"), "<b>2</b>");
+  const was = hexes(300), now = hexes(300).replaceAll("hex", "hx");
+  assert.equal(NET.apply(was, NET.edit(was, now)), now);
+  assert.equal(NET.apply(was, NET.edit(was, was + "<i>x</i>")), was + "<i>x</i>");
+  assert.equal(NET.apply("", NET.edit("", now)), now);
+  assert.equal(NET.apply(undefined, now), now);
+  assert.deepEqual(NET.apply(null, { acts: 1 }), { acts: 1 }, "an object that is not a change is itself");
+});
 console.log(`${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

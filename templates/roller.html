@@ -1429,7 +1429,7 @@ function veiledCard(c, i){                          // an enemy's card as the ta
   else if (down) tag = `<span class="turn-tag" style="background:var(--muted)">Down</span>`;
   else if (broken) tag = `<span class="turn-tag" style="background:var(--crit)">Broken</span>`;
   const state = c.state && !down ? `<div class="state"><span><b>${CMB.states[c.state.id].name}</b></span></div>` : "";
-  const fig = FIG.svg({ kit: KITS[c.kit || "none"], weapon: c.weapon ? DATA.weapons[c.weapon] : null, look: c.look || {}, size: 104, title: c.name,
+  const fig = FIG.svg({ kit: KITS[c.kit || "none"], weapon: c.weapon ? DATA.weapons[c.weapon] : null, look: c.look || {}, size: 104, title: c.name, id: "c" + c.id,
     wounds: c.wounds.filter(w => !w.stopped).map(w => ({ loc: w.loc, sev: null })) });
   const hits = c.wounds.map(w => `<li><b>${LOC[w.loc].name}</b> <span class="muted">hit</span></li>`).join("") || `<li class="muted">Not hit yet.</li>`;
   const cls = ["char", "veiled", isDef ? "active" : "", isAtt ? "attacker" : "", isTurn ? "turn" : "", down ? "isdown" : ""].filter(Boolean).join(" ");
@@ -1824,10 +1824,20 @@ function netSeatScreen(seat){                      // the page as this seat's sc
     NETH.rendering = false;
   }
 }
+const NET_ALWAYS = ["t", "seat", "mine", "msg", "round"];   // small: sent every time
+function netSendScreen(p){                           // his screen: whole the first time, then only the panels that changed since the last he got
+  const now = netSeatScreen(p.seat), was = p.last;
+  p.last = now;
+  if (!was) return p.peer.send(now);
+  const part = { part: true };
+  for (const [k, v] of Object.entries(now)) if (NET_ALWAYS.includes(k)) part[k] = v;
+  else if (v !== was[k]) part[k] = NET.edit(was[k], v);
+  p.peer.send(part);
+}
 function netSync(){                                 // after a change: each connected player gets his side's screen, soon
   if (NETH.rendering || !netOpen().length) return;
   clearTimeout(NETH.timer);
-  NETH.timer = setTimeout(() => { for (const p of netOpen()) p.peer.send(netSeatScreen(p.seat)) }, 60);
+  NETH.timer = setTimeout(() => { for (const p of netOpen()) netSendScreen(p) }, 60);
 }
 const netInt = (v, lo, hi) => (Number.isInteger(v) && v >= lo && v <= hi ? v : null);
 function netRoll(m){                                // the player's roll: his aim, gap, blow and typed dice, then the strike
@@ -1889,7 +1899,7 @@ async function netConnect(p){                       // an invitation for p's sea
   const peer = NET.hostPeer({ seat: p.seat, stun: NETH.stun, onMessage: m => netCommand(p, m), onState: st => {
     if (p.peer !== peer) return;                     // an old connection of his, closing
     p.state = st;
-    if (st === "open") p.peer.send(netSeatScreen(p.seat));   // his screen, first or again
+    if (st === "open"){ p.last = null; netSendScreen(p) }   // his screen, whole: first or again
     renderNet();
   } });
   p.peer = peer;
@@ -2012,9 +2022,10 @@ function guestClean(html){                          // the host's drawing as ele
   doc.body.querySelectorAll("*").forEach(guestSafeAttrs);
   return Array.from(doc.body.childNodes);
 }
-function guestShow(m){                               // the host's drawing of this seat's screen
+function guestShow(m, changed = null){               // the host's drawing of this seat's screen (changed: only those panels are drawn again)
   const open = !!$("#events details")?.open;
-  for (const [id, k] of [["chars", "chars"], ["map", "map"], ["map-actions", "bar"], ["map-key", "key"], ["result", "result"], ["round-log", "log"], ["turn-no", "turn"], ["events", "events"]]) $("#" + id).replaceChildren(...guestClean(m[k]));
+  for (const [id, k] of [["chars", "chars"], ["map", "map"], ["map-actions", "bar"], ["map-key", "key"], ["result", "result"], ["round-log", "log"], ["turn-no", "turn"], ["events", "events"]])
+    if (!changed || changed.includes(k)) $("#" + id).replaceChildren(...guestClean(m[k]));
   $("#round-no").textContent = m.round || "";
   if (open) $("#events details")?.setAttribute("open", "");
   $("#g-status").textContent = m.mine.acting ? `Your turn: ${m.mine.acting}.` : m.msg || "Waiting for the other side.";
@@ -2022,7 +2033,7 @@ function guestShow(m){                               // the host's drawing of th
   guestRollBar(m.mine);
   GUEST.mine = m.mine;
 }
-const GUEST = { send: () => {}, mine: {}, peer: null };
+const GUEST = { send: () => {}, mine: {}, peer: null, screen: null };
 function guestWire(){                                // the player's clicks, as choices sent to the host
   $("#map").addEventListener("click", e => {
     const tok = e.target.closest(".tok"), hx = e.target.closest(".hex");
@@ -2080,12 +2091,20 @@ async function guestJoin(){                           // join (or rejoin) the GM
   try { invite = await NET.unpackCode(location.hash) }
   catch { return status("This link is not a working invitation. Ask the GM for a new one.") }
   const side = esc(invite.seat.slice(5)), kept = guestKept(invite.seat);
-  if (kept) guestShow(kept);                         // rejoining: his last screen while the GM pastes the reply
+  if (kept){ guestShow(kept); GUEST.screen = kept }  // rejoining: his last screen while the GM pastes the reply
   status(`${kept ? "Rejoining" : "Joining"} the GM's fight as ${invite.seat.slice(5)}...`);
   GUEST.peer?.close?.();
   try {
     const g = await NET.guestPeer({ invite, stun: invite.stun !== false,
-      onMessage: m => { if (m.t === "screen"){ $("#g-join").style.display = "none"; guestShow(m); guestKeep(invite.seat, m) } },
+      onMessage: m => {
+        if (m.t !== "screen") return;
+        const whole = m.part ? { ...GUEST.screen, part: false } : m;      // a part: the panels that changed, over the last screen
+        if (m.part) for (const [k, v] of Object.entries(m)) if (k !== "part") whole[k] = NET.apply(GUEST.screen?.[k], v);
+        GUEST.screen = whole;
+        $("#g-join").style.display = "none";
+        guestShow(whole, m.part ? Object.keys(m) : null);
+        guestKeep(invite.seat, whole);
+      },
       onState: st => {
         if (st !== "open" && GUEST.peer === g) guestLost();
       } });
@@ -2327,7 +2346,7 @@ const commonsUrl = f => "https://commons.wikimedia.org/wiki/File:" + encodeURICo
 const attr = s => String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
 const exLink = e => e.image ? `<a class="exlink" href="${commonsUrl(e.image.file)}" target="_blank" rel="noopener" title="${attr(e.image.caption)} (Wikimedia Commons)" aria-label="Picture: ${attr(e.image.caption)} (opens Wikimedia Commons)"><svg viewBox="0 0 16 16" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="5.5" cy="6.5" r="1.4" fill="currentColor"/><path d="M2.5 12.5l4-4 3 3 2-2 2.5 2.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>picture</a>` : "";
 const exFigure = (conflict, e, size) => FIG.svg({ kit: KITS[e.kit], weapon: DATA.weapons[e.weapon], look: FIG.lookFor(conflict, e), size, title: e.name });
-const charFigure = (c, size) => FIG.svg({ kit: KITS[c.kit || "none"], weapon: c.weapon ? DATA.weapons[c.weapon] : null, look: c.look || {}, size, title: c.name,
+const charFigure = (c, size, id = null) => FIG.svg({ kit: KITS[c.kit || "none"], weapon: c.weapon ? DATA.weapons[c.weapon] : null, look: c.look || {}, size, title: c.name, id,
   wounds: c.wounds.filter(w => !w.stopped).map(w => ({ loc: w.loc, sev: w.sev })).concat(oldShown(c)) });
 function oldShown(c){                            // old wounds and scars on his figure: open again while scurvy has reopened them
   const re = new Set(reopenedOf(c).map(o => o.loc));
@@ -3533,7 +3552,7 @@ function renderChars(){
         ${placeButton(c)}
         ${c.uid && NAMED[c.uid] && !NAMED[c.uid].dead && campable(c).length ? `<button class="small" data-act="tocamp" title="After the fight: his wounds go onto the travel map's wound track with his force">To camp</button>` : ""}
         <button class="small" data-act="remove">Remove</button></div>
-      <div class="charid">${charFigure(c, 104)}<div style="display:flex;flex-direction:column;gap:6px">
+      <div class="charid">${charFigure(c, 104, "c" + c.id)}<div style="display:flex;flex-direction:column;gap:6px">
         <div class="wears">Wears: ${kitName(c.kit || "none")}${c.weapon ? " · Fights with: " + DATA.weapons[c.weapon].name : ""}</div>
         ${sheetLine(c)}
         ${penLine(cp)}</div></div>

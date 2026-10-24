@@ -40,7 +40,7 @@ When an item is done, delete it here and note it in the pull request that closes
   (first cut): the GM's page is the host over WebRTC, codes passed by hand. Still left out: a
   signalling service (room codes instead of copy and paste), a TURN relay for strict networks,
   rejoining without passing a new link and reply by hand (a lost player is invited again to the
-  same seat, his page keeping his last screen; a blinked connection mends itself), sending only what changed (whole panels now), a player's
+  same seat, his page keeping his last screen; a blinked connection mends itself), sending changes of the whole picture (the panels that changed go as their changed tags, but a turn that lights every hex still sends them all), a player's
   works and the other panels from his page (first aid he gives, on his side's turn), and the field
   and travel pages online.
 - **Lethality, first cut.** Gritty | Standard | Heroic for player characters (wounds.yaml
