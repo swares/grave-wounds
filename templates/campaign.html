@@ -744,7 +744,10 @@ const ORDER_WORDS = { to: "march to", via: "go by way of", clear: "clear its rou
 const proposals = () => (REC.proposals ||= []);
 function proposalText(o, what, arg){                  // a proposal in words, from the force's choices; null if it is not one of them
   if (!Object.hasOwn(ORDER_WORDS, what)) return null;
-  if (what === "to" || what === "via"){ const place = o.places.find(x => x[0] === arg); return place ? `${ORDER_WORDS[what]} ${place[1]}` : null }
+  if (what === "to" || what === "via"){                // one of the map's places, or a hex clicked on his map that the force can enter
+    const place = o.places.find(x => x[0] === arg), at = place ? place[1] : newDay().hexChoice(o.id, arg);
+    return at ? `${ORDER_WORDS[what]} ${at}` : null;
+  }
   if (what === "camp"){ const c = o.camps.find(x => x[0] === arg && x[3]); return c ? `make a ${c[1].toLowerCase()}` : null }
   return ORDER_WORDS[what];
 }
@@ -787,7 +790,8 @@ function playerScreen(pl){                            // what this player's page
   const phase = phaseOf(REC.phase).name;
   const side = v.forces[0]?.side;                     // his side: the side of the forces his men are with
   let map = null;
-  try { map = side ? newDay().fogView(side) : null } catch { map = null }
+  try { map = side ? newDay().fogView(side, v.forces.map(f => f.id)) : null } catch { map = null }
+  if (map) map.propose = !REC.proposeOff;             // he may propose his forces' routes by clicking his map
   return { t: "camp", seat: seatOf(pl), name: pl.name, campaign: REC.name || "The campaign", phase,
     men: menHtml(v), force: forceHtml(v, pl), news: newsHtml(seatOf(pl)), map };
 }
@@ -1106,8 +1110,14 @@ function pgMap(view){
   }
   if (PM.ready) PM.frame.contentWindow.postMessage({ gw: "seat-map", v: view }, SITE);
 }
-window.addEventListener("message", e => {               // his map's frame, ready: it gets the latest view
-  if (!PM.frame || e.source !== PM.frame.contentWindow || (SITE !== "*" && e.origin !== SITE) || !e.data?.ready || e.data.gw !== "seat-map") return;
+window.addEventListener("message", e => {               // his map's frame: ready for the latest view, or his route proposed by a click on it
+  if (!PM.frame || e.source !== PM.frame.contentWindow || (SITE !== "*" && e.origin !== SITE) || e.data?.gw !== "seat-map") return;
+  const pr = e.data.propose;
+  if (pr && typeof pr.hex === "string" && ["to", "via"].includes(pr.what)){
+    PG.send({ t: "propose", force: +pr.force, what: pr.what, arg: pr.hex });
+    return pgStatus("Your proposal has gone to the GM.");
+  }
+  if (!e.data.ready) return;
   PM.ready = true;
   if (PM.view) PM.frame.contentWindow.postMessage({ gw: "seat-map", v: PM.view }, SITE);
 });

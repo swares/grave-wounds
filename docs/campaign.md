@@ -156,7 +156,10 @@ forces his side's forces can see now (ringed red: name, side, foot or mounted, a
 as "about 500", nothing more), and, faded, where each one was last seen and when. What a side sees is
 the travel map's fog of war (`docs/travel.md`, Fog of war); each side's last sightings are kept with
 the map as the clock moves. The console sends him only that view, so where an unseen enemy is never
-reaches his page.
+reaches his page. While the GM takes proposals, he can also propose a route by clicking his map:
+he picks which of his forces (those his men are with) and whether to march to the hex or go by way
+of it, and clicks a hex; it goes to the GM as any other proposal (a hex his force cannot enter, or
+off the map, is not taken).
 
 **He proposes his force's orders.** Under each force his men are with, his page offers its orders
 as the console's **Orders** row does (a route to one of the map's places or a waypoint, march or
@@ -179,8 +182,7 @@ and his page answers, by themselves; his room stays his. Without a room server i
 as before. See `worker/README.md` to deploy it, what it costs (nothing, on Cloudflare's free plan)
 and what it does not do.
 
-Not yet: a relay (TURN) for strict networks, proposing a route by clicking his map, and the field
-map on his page.
+Not yet: a relay (TURN) for strict networks, and the field map on his page.
 
 ## The log
 
