@@ -289,9 +289,39 @@ with sync_playwright() as p:
     pg.wait_for_function("() => document.querySelector('#c-saved').textContent.includes('Could not load')", timeout=4000)
     check(pg.evaluate(PHASE) == "downtime", "a file that is not a save is refused and changes nothing")
     pg.screenshot(path=str(bad / "campaign.png"), full_page=False)
-    pg.click("#c-new")
-    pg.wait_for_timeout(3500)                                  # the console looks again: the old fight must not be news to the new campaign
-    check(pg.evaluate("() => [REC.phase, REC.log.length]") == ["muster", 1], "a new campaign starts a fresh log at the muster, and what the pages already hold is not news to it")
+    # campaigns side by side: this one kept, another started, then back to this one; a snapshot rolled back to
+    pg.fill("#c-name", "Towton"); pg.press("#c-name", "Tab")
+    pg.click('#c-slots button[data-slot="keep"]')
+    pg.wait_for_function("() => SLOTS.some(x => x.id === REC.slot && x.name === 'Towton')", timeout=6000)
+    check(True, "Keep it now keeps this campaign in the browser, under its name")
+    team_before = status_of(pg)
+    other = ctx.new_page()                                     # the team builder open in another tab: it must not write the old team back
+    other.on("pageerror", lambda e: errors.append(str(e)))
+    other.goto(BASE + "team.html")
+    other.wait_for_function("() => typeof render === 'function'", timeout=15000)
+    pg.click('#c-slots button[data-slot="another"]')
+    pg.wait_for_function("() => REC.phase === 'muster' && SLOTS.length === 2", timeout=8000)
+    pg.wait_for_timeout(3500)                                  # the console looks again: nothing from the other campaign is news here
+    check(NO_TEAM in status_of(pg) and pg.evaluate("() => REC.log.length") == 1 and pg.evaluate("() => localStorage.getItem('gravewounds-travel')") is None,
+          "Start another campaign keeps this one and starts with every page empty")
+    other.wait_for_timeout(1500)
+    check(pg.evaluate("() => localStorage.getItem('gravewounds-team-builder')") is None or NO_TEAM in status_of(pg),
+          "a team builder open in another tab starts again from the empty campaign, and does not write the old team back")
+    other.close()
+    pg.click('#c-slots button[data-slot="switch"]')
+    pg.wait_for_function("() => REC.name === 'Towton'", timeout=8000)
+    check(pg.evaluate(PHASE) == "downtime" and status_of(pg) == team_before and "Back to Towton" in pg.inner_text("#c-log"),
+          "Switch to it brings that campaign back whole: its team, map, phase and log")
+    snaps = pg.evaluate("() => SLOTS.find(x => x.id === REC.slot).snaps.map(x => x.label)")
+    check(len(snaps) >= 2, f"the campaign keeps snapshots as it moves on ({snaps[:4]})")
+    pg.select_option("#c-snap", index=len(snaps) - 1)            # the oldest kept
+    oldest = snaps[-1]
+    pg.click('#c-slots button[data-slot="back"]')
+    pg.wait_for_function(f"() => REC.log.some(e => e.data.text === 'Rolled back to: ' + {J(oldest)})", timeout=8000)
+    check(True, f"Roll back takes every page back to a snapshot ({oldest})")
+    pg.click('#c-slots button[data-slot="drop"]')
+    pg.wait_for_function("() => SLOTS.length === 1", timeout=6000)
+    check(pg.evaluate("() => SLOTS[0].id === REC.slot"), "Delete removes the other campaign, never this one")
     check(not errors, f"no page errors {errors[:3]}")
     br.close()
 server.shutdown()

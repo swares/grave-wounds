@@ -1092,9 +1092,14 @@ function namedRow(c){                             // Endurance, the force he goe
     <label class="order" title="Goes with this force on the travel map: its days, camp, weather and marching run his sickness">With ${sel}</label>
     ${nurseTick(n)}${loadSel(c)}${sick}</div>`;
 }
-if (typeof window !== "undefined"){                // the travel map may have run his days
+if (typeof window !== "undefined" && !location.hash.startsWith("#join=")){   // the travel map may have run his days (the GM's page: a player's page holds no game)
   window.addEventListener("focus", () => { syncNamed(); renderChars() });
-  window.addEventListener("storage", e => { if (e.key === NAMED_KEY || e.key === XP_KEY){ syncNamed(); renderChars() } else if (e.key === PURSES_KEY) renderChars() });
+  window.addEventListener("storage", e => {
+    let now = null;
+    try { now = localStorage.getItem("gravewounds-chars") } catch { return }
+    if (now !== SAVED_AS && !NETH.peers.length) return location.reload();   // the whole game changed under it: start from that (not while hosting players online: the GM decides)
+    if (e.key === NAMED_KEY || e.key === XP_KEY){ syncNamed(); renderChars() } else if (e.key === PURSES_KEY) renderChars();
+  });
 }
 function cubeOf([c, r]){ const q = c - (r - (r & 1)) / 2; return [q, r, -q - r] }
 function hexDistance(a, b){ const x = cubeOf(a), y = cubeOf(b); return Math.max(Math.abs(x[0] - y[0]), Math.abs(x[1] - y[1]), Math.abs(x[2] - y[2])) }
@@ -1250,8 +1255,9 @@ function figRanges(){ return (S.aim && aimedRanges(S.weapon, S.aim)) || curRange
 const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
-function save(){ try{ localStorage.setItem("gravewounds-chars", JSON.stringify({chars:S.chars,events:S.events,gm:S.gm,screen:S.screen,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone})) }catch(e){ /* storage off: the fight lasts while the page is open */ } }
-function restore(){ try{ const j = JSON.parse(localStorage.getItem("gravewounds-chars")||"null"); if (j?.chars?.length){ Object.assign(S, j); if (!Array.isArray(S.events)) S.events = []; return true } }catch(e){ /* storage off or a damaged save: a fresh fight starts */ } return false }
+let SAVED_AS = null;                                 // the fight as this page last wrote or read it: another page changing it means a reload, not a save over it
+function save(){ try{ SAVED_AS = JSON.stringify({chars:S.chars,events:S.events,gm:S.gm,screen:S.screen,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone}); localStorage.setItem("gravewounds-chars", SAVED_AS) }catch(e){ /* storage off: the fight lasts while the page is open */ } }
+function restore(){ try{ SAVED_AS = localStorage.getItem("gravewounds-chars"); const j = JSON.parse(SAVED_AS||"null"); if (j?.chars?.length){ Object.assign(S, j); if (!Array.isArray(S.events)) S.events = []; return true } }catch(e){ /* storage off or a damaged save: a fresh fight starts */ } return false }
 
 /* ---------- body figure ---------- */
 const C = 90;

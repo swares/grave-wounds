@@ -1670,8 +1670,9 @@ const tplFollowers = id => (id === "own" ? [] : (byId(T.templates, id).followers
 const tplQuality = id => (id === "own" ? "default" : byId(T.templates, id).follower_quality || "default");
 let S = { era: T.id, region: T.regions[0].id, template: T.templates[0].id, mode: "roll", women: "none", side: "Side A", slots: T.templates[0].slots.map(s => [...s]), team: [], swap: null, msg: "",
   fcounts: tplFollowers(T.templates[0].id), crew: [] };
+let SAVED_AS = null;                                 // this page's state as it last wrote or read it: another page changing it means a reload, not a save over it
 function save(){
-  try { localStorage.setItem(KEY, JSON.stringify(S)); localStorage.setItem("gravewounds-interpreter", JSON.stringify(S.interp || null)) } catch (e) { /* storage may be off: the page still works */ }
+  try { SAVED_AS = JSON.stringify(S); localStorage.setItem(KEY, SAVED_AS); localStorage.setItem("gravewounds-interpreter", JSON.stringify(S.interp || null)) } catch (e) { /* storage may be off: the page still works */ }
   pushPurses();
 }
 /* Each character's purse is shared with the wound roller and the travel map (purse.js): this page
@@ -1703,7 +1704,7 @@ function pullPurses(){                            // -> true if a ledger changed
   return changed;
 }
 function restore(){
-  try { const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j && j.team) S = { ...S, fcounts: null, crew: [], ...j, swap: null, msg: "" } }   /* fcounts: filled for its era once that is set */ catch (e) { /* start fresh */ }
+  try { SAVED_AS = localStorage.getItem(KEY); const j = JSON.parse(SAVED_AS || "null"); if (j && j.team) S = { ...S, fcounts: null, crew: [], ...j, swap: null, msg: "" } }   /* fcounts: filled for its era once that is set */ catch (e) { /* start fresh */ }
 }
 const statName = id => byId(T.characteristics, id).name;
 const tongueName = t => (TD.languages?.tongues?.[t] || { name: t }).name;
@@ -3077,7 +3078,12 @@ function init(){
   if (!S.fcounts) S.fcounts = tplFollowers(S.template);
   pullPurses();
   window.addEventListener("focus", () => { if (pullPurses()) render() });
-  window.addEventListener("storage", e => { if ((e.key === PURSES_KEY && pullPurses()) || e.key === XP_KEY) render() });
+  window.addEventListener("storage", e => {
+    let now = null;
+    try { now = localStorage.getItem(KEY) } catch { return }
+    if (now !== SAVED_AS) return location.reload();   // the whole game changed under it (a campaign switched, a save loaded): start from that, never save the old team over it
+    if ((e.key === PURSES_KEY && pullPurses()) || e.key === XP_KEY) render();
+  });
   fill();
   $("#sel-era").onchange = e => { setEra(e.target.value); S.era = T.id; startEra(); fill(); render() };
   $("#fcounts").addEventListener("click", e => {
