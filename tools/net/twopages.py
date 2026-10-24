@@ -138,6 +138,11 @@ with sync_playwright() as p:
       return box.innerHTML }""")
     check("onerror" not in cleaned and "javascript" not in cleaned and "<script" not in cleaned and "onclick" not in cleaned and "<b>ok</b>" in cleaned and "<circle" in cleaned,
           "his page drops anything in a drawing that could run, and keeps the rest")
+    # the page's other rolls told in a line (a hazard here): his side's go to his page, the enemy's do not
+    gm.evaluate(f"""() => {{ const a = S.chars.find(c => sideOf(c) === {me!r}), b = S.chars.find(c => sideOf(c) === {foe!r});
+      hzLog(a.name + " sheds his pack (ours).", a); hzLog(b.name + " sheds his pack (theirs).", b); renderChars() }}""")
+    pl.wait_for_function("() => document.querySelector('#events').textContent.includes('(ours)')", timeout=10000)
+    check("(theirs)" not in pl.evaluate("() => document.querySelector('#events').textContent"), "his side's hazards reach his page's log; the enemy's do not")
     # out of his turn, his first aid is not his to give
     n = gm.evaluate(EVENTS)
     pl.evaluate(f"() => GUEST.send({{ t: 'treat', id: {gm.evaluate(f'() => S.chars.find(c => sideOf(c) === {me!r}).id')}, j: 0, how: 'bind' }})")

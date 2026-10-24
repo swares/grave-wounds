@@ -2261,6 +2261,7 @@ function markDeeds(){
     xpMark(c.sheet.pid, "deed", deedWhy(c) || "a deed in the fight");
     (S.deedsDone ||= []).push(c.id);
     lines.push(`${c.name}: a deed (${deedWhy(c) || "marked by the GM"}), for his next promotion.`);
+    logLine("deed", lines.at(-1), c);
   }
   S.afterLog = [...lines, ...(S.afterLog || [])];
   renderChars();
@@ -2283,6 +2284,7 @@ function rollAfterLoot(){
     }
     if (r.horses) xpMark(c.sheet.pid, "horses", r.horses);
     lines.push(t + ".");
+    logLine("loot", t + ".", c);
   }
   writePurses(all);
   S.afterLog = [...lines, ...(S.afterLog || [])].slice(0, 40);
@@ -2297,7 +2299,21 @@ const skillAt = (c, id) => (c && c.sheet && c.sheet.skills ? c.sheet.skills[id] 
 const bandOf = c => (loadInfo(c) || { band: 0 }).band;
 const ZONE_LOCS = { legs: ["thigh_l", "thigh_r", "knee_l", "knee_r", "lower_leg_l", "lower_leg_r", "foot_l", "foot_r"], lower_back: ["back_lower"],
   torso: ["chest_l", "chest_r", "abdomen", "back_upper"], arms: ["shoulder_l", "shoulder_r", "upper_arm_l", "upper_arm_r", "forearm_l", "forearm_r", "hand_l", "hand_r"], head: ["skull_l", "skull_r", "face", "neck"] };
-function hzLog(line){ S.hzlog = [line, ...(S.hzlog || [])].slice(0, 30) }
+// A roll the page tells in a line (a hazard, words across tongues, loot, a deed, a stop check for pain)
+// into the event log too: for the man's side and the GM, or the GM's alone when no one man made it.
+function tagless(html){                           // the line's words without its markup
+  let out = "", inTag = false;
+  for (const ch of String(html)){
+    if (ch === "<") inTag = true;
+    else if (ch === ">") inTag = false;
+    else if (!inTag) out += ch;
+  }
+  return out;
+}
+function logLine(type, line, c = null){
+  logEvent(S.events, { round: evRound(), type, vis: c ? [sideSeat(sideOf(c))] : [], data: { who: evWho(c), text: tagless(line) }, pub: null });
+}
+function hzLog(line, c = null){ S.hzlog = [line, ...(S.hzlog || [])].slice(0, 30); logLine("hazard", line, c) }
 function plainText(html){ const el = document.createElement("span"); el.innerHTML = html; return el.textContent }
 function crushWound(c, sev, zone){                // a fall's wound on his card, with its stop check
   const locs = ZONE_LOCS[zone] || ZONE_LOCS.torso, loc = locs[(d100() - 1) % locs.length], fx = DATA.wounds[`${LOC[loc].class}|crush|${sev}`];
@@ -2313,7 +2329,7 @@ function doFall(c, height, landing, shift, why){
     t += " (" + crushWound(c, r.wound, zone) + ")";
   }
   if (r.severity === "dead") t += ". A fatal fall, unless the GM rules otherwise";
-  hzLog(t + ".");
+  hzLog(t + ".", c);
 }
 function hazardOpts(id, pairs, cur){
   const opt = ([v, t]) => `<option value="${v}"${String(v) === String(cur) ? " selected" : ""}>${attr(t)}</option>`;
@@ -2381,7 +2397,7 @@ function swimMinute(c){                          // a minute in the water
     if (st.worst >= 3){ c.fatigue = Math.min(WXD.fatigue.levels.length - 1, (c.fatigue || 0) + 2); t2 += ", near-drowned (two steps of fatigue)" }
     st.out = true;
   }
-  hzLog(t2 + ".");
+  hzLog(t2 + ".", c);
 }
 function climbStep(c){
   const cl = c.climbState, sf = HZD().climb.surfaces[cl.surface];
@@ -2393,7 +2409,7 @@ function climbStep(c){
   }
   if (k.fumble){ cl.done = "fell"; doFall(c, cl.at, "thrown", 0, "slips and falls from"); return }
   if (k.success) cl.at = Math.min(cl.height, cl.at + sf.step_m);
-  hzLog(`${c.name} climbs (${k.target}, rolled ${k.roll}): ` + (k.success ? `up to ${cl.at} m.` : "no higher."));
+  hzLog(`${c.name} climbs (${k.target}, rolled ${k.roll}): ` + (k.success ? `up to ${cl.at} m.` : "no higher."), c);
   if (cl.at >= cl.height) cl.done = "at the top";
 }
 function chaseValue(c, mounted){ return mounted ? skillAt(c, "ride") || statOf(c, "agi") : statOf(c, "agi") }
@@ -2416,7 +2432,7 @@ function chaseRound(q, p){                        // q flees, p pursues
   let t = `Round ${ch.round}: ${p.name} ${r.opposed.a.roll} against ${pt}, ${q.name} ${r.opposed.b.roll} against ${qt}: ${C.gaps[ch.gap]}`;
   if (ch.gap === 0) t += `. ${p.name} has him`;
   if (ch.gap === C.gaps.length - 1) t += `. ${q.name} gets away`;
-  hzLog(t + ".");
+  hzLog(t + ".", q);
 }
 const HZ_SET = {                                  // the panel's inputs -> S.hz
   "hz-who": (K, el) => { K.who = +el.value }, "hz-cold": (K, el) => { K.cold = +el.value }, "hz-current": (K, el) => { K.current = el.value },
@@ -2437,29 +2453,29 @@ function intoWater(c, K){
   const k = hzColdShock(nerveOf(c), +K.cold, d100());
   if (HZD().cold[K.cold].shock && !k.success){
     c.swimState.step = 1;
-    hzLog(`${c.name} goes in: the cold takes his breath (Nerve ${k.target}, rolled ${k.roll}).`);
-  } else hzLog(`${c.name} goes into the water.`);
+    hzLog(`${c.name} goes in: the cold takes his breath (Nerve ${k.target}, rolled ${k.roll}).`, c);
+  } else hzLog(`${c.name} goes into the water.`, c);
 }
 function startClimb(c, K){
   const sf = HZD().climb.surfaces[K.surface], steps = hzClimbSteps(K.surface, K.height);
   const gives = sf.anchor && d100() <= sf.anchor;               // the rope or ladder gives way at some step on the way
   c.climbState = { surface: K.surface, height: K.height, at: 0, done: null, anchorAt: gives ? sf.step_m * Math.floor((d100() - 1) * steps / 100) : null };
-  hzLog(`${c.name} starts up ${sf.name.toLowerCase()}, ${K.height} m.`);
+  hzLog(`${c.name} starts up ${sf.name.toLowerCase()}, ${K.height} m.`, c);
 }
 function fallNow(c, K){
   let shift = +K.ground + (bandOf(c) >= 3 || kitLoad(c.kit) === "heavy" ? 1 : 0) + (K.landing === "head" ? 1 : 0);
   if (K.jump){
     const k = skillCheck(statOf(c, "agi"), "ordinary", d100());
     if (k.success) shift -= 1;
-    hzLog(`${c.name} jumps (Agility ${k.target}, rolled ${k.roll}): ${k.success ? "lands feet first" : "lands badly"}.`);
+    hzLog(`${c.name} jumps (Agility ${k.target}, rolled ${k.roll}): ${k.success ? "lands feet first" : "lands badly"}.`, c);
   }
   doFall(c, K.height, K.jump ? "feet" : K.landing, shift, "falls");
 }
 const foeOf = K => S.chars.find(x => x.id === K.foe);
 const HZ_DO = {                                   // the panel's buttons
-  "hz-in": intoWater, "hz-min": c => swimMinute(c), "hz-shed": c => { c.loadOrder = "fighting"; hzLog(`${c.name} sheds his pack.`) },
+  "hz-in": intoWater, "hz-min": c => swimMinute(c), "hz-shed": c => { c.loadOrder = "fighting"; hzLog(`${c.name} sheds his pack.`, c) },
   "hz-climb-start": startClimb, "hz-climb": c => climbStep(c), "hz-fall": fallNow,
-  "hz-chase-start": (c, K) => { S.chase = { gap: HZD().chase.start, round: 0 }; hzLog(`${foeOf(K).name} goes after ${c.name}.`) },
+  "hz-chase-start": (c, K) => { S.chase = { gap: HZD().chase.start, round: 0 }; hzLog(`${foeOf(K).name} goes after ${c.name}.`, c) },
   "hz-chase": (c, K) => chaseRound(c, foeOf(K))
 };
 $("#hazards").addEventListener("click", e => {
@@ -2531,6 +2547,7 @@ function speak(){
   const pid = c.sheet.pid, { line, ok, t } = K.purpose === "pass" ? speakPass(c, L) : speakWords(c, L, K);
   if (ok && t && t !== c.sheet.native && pid) xpTick(pid, "tongue:" + t, "words across tongues");
   S.wdlog = [line + ".", ...(S.wdlog || [])].slice(0, 30);
+  logLine("words", line + ".", c);
 }
 $("#words").addEventListener("change", e => {
   const K = S.wd, el = e.target;
@@ -3509,6 +3526,7 @@ function eventText(v){                            // one event as a seat sees it
   if (v.type === "turn") return turnText(v);
   if (v.type === "undo") return `The GM took back the script's last step (${v.data.events} event${v.data.events === 1 ? "" : "s"} undone).`;
   if (v.type === "aid") return aidText(v.data);
+  if (["hazard", "words", "loot", "deed", "stop"].includes(v.type)) return esc(v.data.text);
   if (v.type === "initiative") return "Initiative: " + v.data.order.map(o => `${evName(o.who)} ${o.init}`).join(", ");
   if (v.type === "bleed") return bleedText(v.data);
   if (v.type === "morale") return moraleText(v);
@@ -5772,6 +5790,7 @@ function painChecks(){
     if (!r) continue;
     $("#in-stop").value = "";
     out.push(stopResult(c, r, " (pain)"));
+    logLine("stop", out.at(-1), c);
   }
   return out;
 }
