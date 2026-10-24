@@ -221,47 +221,60 @@ check("the console's march with nothing saved: it says to choose a map", () => {
   assert.equal(D.marchSummary(), null);
 });
 const CLEAR = new Set(["open", "farmland", "heath", "road"]);   // ground where a force is in plain sight
-check("fog of war: a side sees the enemy within its sight, not beyond it, nor in woods unless next to it", () => {
-  const { D } = fresh(3);
-  D.S.mapId = "towton-1461";
+const CLEAR_DAY = { cond: "fair", light: "day" };
+function lone(D){                                   // one force of each side on the map's clear ground, the rest off it
   const fs = D.forcesHere(), a = fs[0], e = fs.find(o => o.side !== a.side), m = D.curMap();
-  const open = []; for (let r = 0; r < m.rows.length; r++) for (let c = 0; c < m.rows[0].length; c++) if (CLEAR.has(RULES.terrainAt(m, [c, r]).id)) open.push([c, r]);
-  const forest = []; for (let r = 0; r < m.rows.length; r++) for (let c = 0; c < m.rows[0].length; c++) if (RULES.terrainAt(m, [c, r]).id === "forest") forest.push([c, r]);
-  for (const f of fs) f.pos = [0, 0];                         // the others out of the way
-  for (const f of fs.filter(o => o !== a && o !== e)) f.pos = null;
-  a.type = "foot"; a.pos = open[0];
-  const reach = D.sightOf(a);
-  assert.ok(reach >= 1);
-  const at = d => open.find(h => RULES.hexDistance(h, a.pos) === d);
-  e.pos = at(reach);
-  assert.deepEqual(D.sightings(a.side).map(x => x.id), [e.id], `seen at ${reach} hexes`);
-  e.pos = at(reach + 1);
+  for (const f of fs) if (f !== a && f !== e) f.pos = null;
+  const hexes = id => { const out = []; for (let r = 0; r < m.rows.length; r++) for (let c = 0; c < m.rows[0].length; c++) if (id(RULES.terrainAt(m, [c, r]).id)) out.push([c, r]); return out };
+  const open = hexes(t => CLEAR.has(t));
+  a.pos = open[Math.floor(open.length / 2)];
+  const at = (km, where = open) => where.find(h => Math.abs(RULES.hexDistance(h, a.pos) * m.hex_km - km) < 1e-9);
+  return { a, e, m, at, forest: hexes(t => t === "forest") };
+}
+check("fog of war: a side sees the enemy within its sight in km, not beyond, nor in woods unless its outposts are on it", () => {
+  const { D } = fresh(3);
+  D.S.mapId = "towton-1461";                        // 1 km hexes
+  const { a, e, at, forest } = lone(D), K = DATA.terrain.sight;
+  a.type = "foot";
+  assert.equal(D.sightOf(a, CLEAR_DAY), K.km.foot);
+  e.pos = at(K.km.foot);
+  assert.deepEqual(D.sightings(a.side).map(x => x.id), [e.id], `seen at ${K.km.foot} km`);
+  e.pos = at(K.km.foot + 1);
   assert.deepEqual(D.sightings(a.side), [], "not seen beyond its sight");
   a.type = "mounted";
-  if (D.sightOf(a) > reach){ assert.deepEqual(D.sightings(a.side).map(x => x.id), [e.id], "horse sees further") }
+  assert.deepEqual(D.sightings(a.side).map(x => x.id), [e.id], "a mounted force, its patrols out, sees further");
   a.type = "foot";
-  const wood = forest.find(h => RULES.hexDistance(h, a.pos) === 2) || forest.find(h => RULES.hexDistance(h, a.pos) > 1);
+  const wood = at(2, forest);
   if (wood){
     e.pos = wood;
-    assert.deepEqual(D.sightings(a.side), [], "not seen in woods, two hexes off");
-    const next = RULES.neighbours(a.pos, m.rows[0].length, m.rows.length)[0];
-    e.pos = next;
-    assert.deepEqual(D.sightings(a.side).map(x => x.id), [e.id], "next to it: always seen");
+    assert.deepEqual(D.sightings(a.side), [], "not seen in woods, 2 km off");
+    e.pos = at(K.contact_km, forest) || at(K.contact_km);
+    assert.deepEqual(D.sightings(a.side).map(x => x.id), [e.id], "within its outposts' reach: always found");
+  }
+});
+check("fog of war: in km, so a map's hex size does not change how far a force sees", () => {
+  for (const id of ["towton-1461", "agincourt-1415", "mogadishu-1993"].filter(x => DATA.maps[x])){
+    const { D } = fresh(6);
+    D.S.mapId = id;
+    const { a, e, m, at } = lone(D), K = DATA.terrain.sight;
+    a.type = "foot";
+    const near = at(Math.floor(K.km.foot / m.hex_km) * m.hex_km), far = at((Math.floor(K.km.foot / m.hex_km) + 1) * m.hex_km);
+    if (near){ e.pos = near; assert.equal(D.sightings(a.side).length, 1, `${id}: seen within ${K.km.foot} km`) }
+    if (far && (Math.floor(K.km.foot / m.hex_km) + 1) * m.hex_km > Math.max(K.km.foot, K.contact_km)){ e.pos = far; assert.equal(D.sightings(a.side).length, 0, `${id}: not beyond`) }
   }
 });
 check("fog of war: the weather and the dark cut how far a force sees", () => {
   const { D } = fresh(4);
   D.S.mapId = "towton-1461";
-  const a = D.forcesHere()[0], H = DATA.terrain.sight.hexes;
+  const a = D.forcesHere()[0], K = DATA.terrain.sight, vis = c => DATA.weather.conditions[c].visibility * DATA.battle_hex_m * K.weather_mass / 1000;
   a.type = "mounted";
-  const X = D.wxState(); D.dayWeather(1);
-  const day = { ...X.days[1].w };
-  X.days[1].w = { ...day, cond: "fog" };
-  assert.equal(D.sightOf(a), 1, "fog: one hex");
-  X.days[1].w = { ...day, cond: "rain" };
-  assert.equal(D.sightOf(a, { cond: "rain", light: "day" }), Math.max(1, Math.floor(H.mounted / 2)), "rain: halved");
-  assert.equal(D.sightOf(a, { cond: "fair", light: "night" }), 1, "a dark night: one hex");
-  assert.equal(D.sightOf(a, { cond: "fair", light: "day" }), H.mounted, "a clear day: its full sight");
+  assert.equal(D.sightOf(a, CLEAR_DAY), K.km.mounted, "a clear day: its full sight");
+  assert.equal(D.sightOf(a, { cond: "fog", light: "day" }), vis("fog"), "fog");
+  assert.equal(D.sightOf(a, { cond: "rain", light: "day" }), vis("rain"), "rain");
+  assert.ok(vis("fog") < vis("rain") && vis("rain") < K.km.foot, "fog cuts more than rain, and both less than a clear day");
+  assert.equal(D.sightOf(a, { cond: "fair", light: "dusk" }), K.km.mounted * K.dusk, "dusk");
+  assert.equal(D.sightOf(a, { cond: "fair", light: "moonlit" }), K.moonlit_km, "by moonlight");
+  assert.equal(D.sightOf(a, { cond: "fair", light: "night" }), K.night_km, "a dark night");
 });
 check("fog of war: a player's view holds his side's forces and only the enemy it sees, or saw", () => {
   const { D } = fresh(5);
@@ -270,7 +283,7 @@ check("fog of war: a player's view holds his side's forces and only the enemy it
   for (const f of fs.filter(o => o.side !== a.side && o !== e)) f.pos = null;
   const open = []; for (let r = 0; r < m.rows.length; r++) for (let c = 0; c < m.rows[0].length; c++) if (CLEAR.has(RULES.terrainAt(m, [c, r]).id)) open.push([c, r]);
   a.pos = open[0]; a.type = "foot";
-  e.pos = open.find(h => RULES.hexDistance(h, a.pos) === 1);
+  e.pos = open.find(h => RULES.hexDistance(h, a.pos) === 1);   // 1 km: within its outposts' reach
   D.save();
   D.noteSightings(); D.save();
   let v = makeTravelDay(DATA, RULES).fogView(a.side);

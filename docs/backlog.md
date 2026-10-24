@@ -44,12 +44,14 @@ When an item is done, delete it here and note it in the pull request that closes
   same seat, his page keeping his last screen; a blinked connection mends itself), sending changes of the whole picture (the panels that changed go as their changed tags, but a turn that lights every hex still sends them all), a player's
   works and the other panels from his page (first aid he gives, on his side's turn), and the field
   and travel pages online.
-- **Fog of war on the travel map, first cut** (`docs/travel.md`). A side sees enemy forces within
-  a few hexes (more mounted, less in rain, fog and the dark, not in woods or towns unless next to
-  them) and remembers where it last saw them; a player's map online shows only that. Still left
-  out: the numbers are placeholders (calibrate them from research on period scouting and sighting
-  distances: cavalry screens, patrols, dust and campfires, local reports), no scouting orders or
-  patrols, no false or stale reports beyond the last sighting.
+- **Fog of war on the travel map, second cut** (`docs/travel.md`, `docs/fog-of-war-research.md`).
+  A side sees enemy forces within a distance in km (3 on foot, 8 mounted, 2 with wagons; cut by the
+  weather, dusk and the dark; outposts find any enemy within 1 km; woods and towns hide a force
+  beyond that) and remembers where it last saw them; a player's map online shows only that, and the
+  GM's travel map can show any side's view. Still
+  left out: campfires at night, dust, height, optics and aircraft (the 20th-century maps get
+  naked-eye sight: a per-period factor is next), scouting orders and patrols, and the delay of
+  reports; the weather factor (5) and several distances are judgments, not sourced.
 - **Lethality, first cut.** Gritty | Standard | Heroic for player characters (wounds.yaml
   lethality): fate a season, Blood and the stop check, on every page. Still left out: fate does
   not save a man from drowning, a fall or the other hazards; the roller offers fate only on the hit

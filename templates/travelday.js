@@ -1283,23 +1283,26 @@ function makeTravelDay(DATA, RULES, env = {}){
     save();
     return DATA.maps[id].name;
   }
-  // ----- fog of war: what a side's forces see of the enemy's (terrain.yaml sight: placeholder numbers) -----
-  const SIGHT = DATA.terrain.sight || { hexes: { foot: 2 } };
+  // ----- fog of war: what a side's forces see of the enemy's (terrain.yaml sight, in km; docs/fog-of-war-research.md) -----
+  const SIGHT = DATA.terrain.sight || { km: { foot: 3 }, contact_km: 1 };
   function sightNow(){                            // {cond, light} now: the day's weather if rolled (never rolled here: no dice spent), else fair
     const c = clockNow(), day = wxState().days[c.day], cond = day ? day.w.cond : "fair";
     return { cond, light: lightAt(curMap(), c.day, win(c.day).start + Math.min(c.used, dayEnd(c.day)), cond) };
   }
-  function sightOf(f, now = sightNow()){         // hexes force f sees the enemy at, now
-    const n = SIGHT.hexes[f.type] ?? SIGHT.hexes.foot ?? 2, has = (rule, k, v) => !!SIGHT[rule]?.[k]?.includes(v);
-    if (has("one", "conditions", now.cond) || has("one", "light", now.light)) return 1;
-    if (has("halved", "conditions", now.cond) || has("halved", "light", now.light)) return Math.max(1, Math.floor(n / 2));
-    return n;
+  function sightOf(f, now = sightNow()){         // km force f sees a body of enemy troops at, now
+    let km = SIGHT.km[f.type] ?? SIGHT.km.foot ?? 3;
+    const vis = WXD.conditions[now.cond]?.visibility;
+    if (vis) km = Math.min(km, vis * DATA.battle_hex_m * (SIGHT.weather_mass ?? 5) / 1000);
+    if (now.light === "dusk") km *= SIGHT.dusk ?? 0.5;
+    else if (now.light === "moonlit") km = Math.min(km, SIGHT.moonlit_km ?? 0.5);
+    else if (now.light === "night") km = Math.min(km, SIGHT.night_km ?? 0.2);
+    return km;
   }
-  function sees(f, e, reach){                     // force f sees enemy force e, f seeing `reach` hexes
-    const d = hexDistance(f.pos, e.pos);
-    if (d <= 1) return true;                      // next to it: always
+  function sees(f, e, reach){                     // force f sees enemy force e, f seeing `reach` km
+    const km = hexDistance(f.pos, e.pos) * curMap().hex_km, contact = SIGHT.contact_km ?? 1;
+    if (km <= contact + 1e-9) return true;        // its outposts find it: any weather, light or cover
     if ((SIGHT.hidden_in || []).includes(terrainAt(curMap(), e.pos).id)) return false;
-    return d <= reach;
+    return km <= reach + 1e-9;
   }
   const placed = f => Array.isArray(f.pos);
   function sightings(side){                       // the enemy forces side's forces see now

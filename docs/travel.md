@@ -361,14 +361,16 @@ packs are lost, and the travel forces its named men go with are told.
 ## Fog of war
 
 What each side's forces see of the enemy's, for a player online (his map shows only what his side
-sees; the GM's travel map shows everything). A force sees enemy forces within a number of hexes
-by its type: on foot 2, mounted 4, wagons 1, by day in clear weather; halved (at least 1) in rain,
-at dusk or by moonlight; 1 in fog, heavy rain or a storm, or on a dark night (the day's weather
-and the light as the travel map has them). A force in woods or a town or village is seen only from
-the next hex, and a force next to one of the side's is always seen. A side sees what any of its
-forces sees. Each time the clock moves, each side remembers where it saw each enemy force and when;
-a player's map shows that, faded, once the force is out of sight. These numbers are in
-`data/terrain.yaml` (`sight`) and are **placeholders**, not yet calibrated from period sources.
+sees; the GM's travel map shows everything). Sight is in kilometres, so a map's hex size does not
+change it. On a clear day a force sees a body of enemy troops within 3 km on foot, 8 km mounted (its
+patrols out) and 2 km with wagons. In rain, snow or fog it sees five times as far as a man can see
+to aim in that weather (`weather.yaml` visibility): fog 250 m, rain 1.5 km. At dusk sight is halved;
+by moonlight it is 500 m, and on a dark night 200 m. Within 1 km its outposts find an enemy in any
+weather, light or cover, and a force in woods or a town or village is seen only that close. A side
+sees what any of its forces sees. Each time the clock moves, each side remembers where it saw each
+enemy force and when; a player's map shows that, faded, once the force is out of sight. The numbers
+are in `data/terrain.yaml` (`sight`); where they come from, and what they leave out (campfires,
+dust, height, optics and aircraft), is in `docs/fog-of-war-research.md`.
 
 The GM's travel map shows everything; its **view** choice beside the map's scale (Everything, or
 As *side* sees it) draws it as one side sees it, as that side's players see it online: the side's
