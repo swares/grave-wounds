@@ -2,6 +2,8 @@
 name = "grave-wounds-rooms"
 main = "rooms.js"
 compatibility_date = "2026-06-01"
+workers_dev = true                              # its address: https://grave-wounds-rooms.waresscott.workers.dev (in rooms.json)
+preview_urls = false                            # no extra per-version addresses: the site uses only the one above
 
 [vars]
 ALLOWED_ORIGINS = "https://swares.github.io"   # the site's pages; add others with commas (localhost is always allowed)

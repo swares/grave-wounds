@@ -834,9 +834,11 @@ function relayGone(){                                  // the roller left the fr
    is lost (or this page reloads) he is invited again by itself, and his page answers by itself. His
    room's code stays his for the session (kept with the campaign, and its host key with it). */
 const ROOM_KEY = "gw-room-server";                    // this browser's own choice (not part of any campaign)
+const ROOM_OFF = "off";                                // this browser's choice: copy and paste, even with the site's room server
 function roomServer(){
   let s = "";
   try { s = localStorage.getItem(ROOM_KEY) || "" } catch { s = "" }
+  if (s === ROOM_OFF) return "";
   return (s || CD.room_server || "").trim();
 }
 async function roomFor(pl, R, server){                 // his room: kept, or a new one
@@ -956,8 +958,8 @@ function renderPlayers(){
       <label class="muted" style="display:inline-flex;gap:4px;align-items:center" title="Lets pages find each other across the internet; on one network it is not needed"><input type="checkbox" id="pl-stun"${PL.stun ? " checked" : ""}> Public STUN server</label></div>
     <details><summary class="muted" style="font-size:.88rem">Room server${roomServer() ? ": " + esc(roomServer()) : ": none (copy and paste)"}</summary>
       <span class="toolbar"><label class="muted" for="pl-room">Its address</label><input type="text" id="pl-room" value="${esc(roomServer())}" placeholder="https://grave-wounds-rooms.you.workers.dev" style="width:24em">
-        <button type="button" class="small" id="pl-room-set">Use it</button></span>
-      <p class="muted" style="margin:0;font-size:.85rem">A Cloudflare Worker that passes the connection codes (worker/README.md). This browser keeps the choice; blank means the site's own${CD.room_server ? " (" + esc(CD.room_server) + ")" : ", which is none"}.</p></details>
+        <button type="button" class="small" id="pl-room-set">Use it</button><button type="button" class="small" id="pl-room-off">Copy and paste instead</button></span>
+      <p class="muted" style="margin:0;font-size:.85rem">A Cloudflare Worker that passes the connection codes (worker/README.md). This browser keeps the choice; blank (Use it) means the site's own${CD.room_server ? " (" + esc(CD.room_server) + ")" : ", which is none"}.</p></details>
     <span class="muted" style="font-size:.88rem">His men: ${menPicker([], 'data-pl-new')}</span>`;
 }
 function proposalsHtml(){                             // the players' proposed orders waiting for the GM
@@ -980,8 +982,9 @@ function addPlayer(){
 }
 $("#c-players").addEventListener("click", e => {
   if (e.target.id === "pl-add") return addPlayer();
-  if (e.target.id === "pl-room-set"){
-    try { localStorage.setItem(ROOM_KEY, $("#pl-room").value.trim()) } catch { /* storage off: the site's own */ }
+  if (e.target.id === "pl-room-set" || e.target.id === "pl-room-off"){
+    const v = e.target.id === "pl-room-off" ? ROOM_OFF : $("#pl-room").value.trim();
+    try { localStorage.setItem(ROOM_KEY, v) } catch { /* storage off: the site's own */ }
     return renderPlayers();
   }
   const prop = e.target.closest("button[data-prop]");
@@ -1137,6 +1140,7 @@ function pgRoomArgs(){                                // #room=CODE&s=SERVER -> 
   const q = new URLSearchParams(location.hash.slice(1));
   let local = "";
   try { local = localStorage.getItem("gw-room-server") || "" } catch { local = "" }
+  if (local === "off") local = "";                    // copy and paste chosen in this browser: the link's server, or the site's
   return { code: (q.get("room") || "").trim().toUpperCase(), server: (q.get("s") || local || CD.room_server || "").trim() };
 }
 async function pgAnswer(R, code, inv, mine){          // one invitation from his room answered -> true, or false if it was already answered
