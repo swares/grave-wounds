@@ -4459,7 +4459,9 @@ function advance(rounds){
     c.blood = Math.max(0, +(c.blood - before.bleed * rounds).toFixed(1)); c.rounds += rounds;
     const after = charStats(c), lost = +(b0 - c.blood).toFixed(1);
     if (!lost) return;
-    (bled[sideOf(c)] ||= []).push({ who: evWho(c), lost, blood: c.blood, pool: poolOf(c), now: after.th !== before.th ? thLabel(after.th) : null });
+    const side = sideOf(c);
+    bled[side] ||= [];
+    bled[side].push({ who: evWho(c), lost, blood: c.blood, pool: poolOf(c), now: after.th !== before.th ? thLabel(after.th) : null });
     const changed = after.th !== before.th;
     const cls = after.th && (after.th.down || after.th.incapacitated) ? "ev-bad" : changed ? "ev-warn" : "";
     const ap = penalties(c);

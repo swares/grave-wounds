@@ -3381,21 +3381,15 @@ const CAMPAIGN = (() => {
     }
     return { news, forget: Object.keys(seen).filter(k => k.startsWith("out:") && !active.has(k)) };
   }
-  function fightNews(st, seen){                     // a named man felled on the roller; a unit broken or fled on the field map
-    const f = st.fight, news = [];
-    for (const x of f.fell){
-      const mark = `fell:${x.id}:${x.n}`;
-      if (!seen[mark]) news.push({ mark, value: true, why: `${x.name} (${x.side}) ${x.how}${x.round ? ", round " + x.round : ""}.` });
-    }
-    for (const b of f.broke){
-      const mark = `broke:${b.n}:${b.side}`;
-      if (!seen[mark]) news.push({ mark, value: true, why: `${b.side} ${b.side.endsWith("s") ? "break" : "breaks"} on the roller${b.round ? ", round " + b.round : ""}: they run or surrender.` });
-    }
-    for (const u of f.routed){
-      const mark = `routed:${u.battle}:${u.id}`;
-      if (!seen[mark]) news.push({ mark, value: true, why: `${u.name} (${u.side}) ${u.state === "fled" ? "have fled the field" : "have broken"}, exchange ${u.exchange}.` });
-    }
-    return news;
+  const felledNews = x => ({ mark: `fell:${x.id}:${x.n}`, why: `${x.name} (${x.side}) ${x.how}${x.round ? ", round " + x.round : ""}.` });
+  const brokeNews = b => ({ mark: `broke:${b.n}:${b.side}`,
+    why: `${b.side} ${b.side.endsWith("s") ? "break" : "breaks"} on the roller${b.round ? ", round " + b.round : ""}: they run or surrender.` });
+  const routedNews = u => ({ mark: `routed:${u.battle}:${u.id}`,
+    why: `${u.name} (${u.side}) ${u.state === "fled" ? "have fled the field" : "have broken"}, exchange ${u.exchange}.` });
+  function fightNews(st, seen){                     // a named man felled or a side broken on the roller; a unit broken or fled on the field map
+    const f = st.fight;
+    return [...f.fell.map(felledNews), ...f.broke.map(brokeNews), ...f.routed.map(routedNews)]
+      .filter(n => !seen[n.mark]).map(n => ({ ...n, value: true }));
   }
   function seasonNews(st, seen){
     const s = st.season;
