@@ -34,6 +34,19 @@ In the **March** phase the console shows the travel map's clock (the day, the ti
 end of the day's marching) and its forces: what each is doing (marching to where, halted, making or
 in a camp, resting, with another's column), where it is, how many are fit, and its fatigue.
 
+**Orders** on a force opens its orders, as the travel map gives them:
+
+- **March to** a place on the map or an enemy force: **Set the route** replaces its route, **Add as a
+  waypoint** adds to it. Only places it can reach on today's ground are offered; a route it cannot
+  take is refused, and the old route stands.
+- **Clear the route**, **Halt** or **March on its route**, and **Rest until next morning**.
+- **Make camp**, with what the chosen camp costs here (the hours, the man-hours of its works, and
+  where the timber comes from), or why it cannot be made here.
+
+A force marching in another's column takes that force's orders; leaving a column, joining one,
+and the force's own settings (its load, its men and horses, hygiene, foraging and the rest) are
+still set on the travel map. Each order starts from the saved day, is saved, and goes into the log.
+
 **Until something happens** moves the map's clock on exactly as the travel map's button of that name
 does: every force with a march order marches until one arrives, forces of different sides meet, or
 a camp is finished, and the nights pass on the way with their rest, food, water, supplies, sickness,
@@ -55,8 +68,7 @@ ammunition is as the units left it, and the forces' clocks move on to the battle
 map still takes it itself if it is opened first; either way it is taken once.
 
 The console never keeps the day itself: each press starts from what the travel map last saved and
-saves the result, and the page in the frame is reloaded to show it. Routes, camps, orders and the
-the force's own settings are still given on the travel map. If the travel map is also open in another tab,
+saves the result, and the page in the frame is reloaded to show it. If the travel map is also open in another tab,
 reload it before using it: it still shows the day it had, and would save that over the console's.
 
 ## The log
@@ -75,8 +87,9 @@ they may hold a service key, and they belong to the browser, not the game.
 
 ## What it does not do yet
 
-- It runs the march's clock, sets up fights and takes a battle's result back, but orders, routes
-  and camps are given on the travel map, and the fights are fought on the roller and the field map.
+- It gives routes, orders and camps, runs the march's clock, sets up fights and takes a battle's
+  result back; columns, the forces' own settings, adding forces and painting the map are on the
+  travel map, and the fights are fought on the roller and the field map.
 - It notices fights sent and fights won; it does not yet notice the end of a march day, the end of a
   season, a man's death or a camp's sickness by themselves (the GM moves on with **Done**).
 - The other pages do not link back to it; open it from the start page.
@@ -87,10 +100,11 @@ they may hold a service key, and they belong to the browser, not the game.
 `node tools/campaign/test.js` checks the console's reading of the pages: the status, what it
 notices, and save files. `python3 tools/campaign/loop.py` follows a campaign round the loop in a
 headless browser over the real pages, served by a local web server: the team rolled in the frame,
-the travel map's forces given routes and the clock run from the console until they meet, a long
-march across nights until a force arrives, a fight set up from the console where the forces met,
+a force's route given from the console, the clock run from it until the forces meet, a long
+march across nights, a fight set up from the console where the forces met,
 a battle's result taken in from the console, a fight sent from the travel map, a winner marked on the
 roller, notes, and a save, clear and load. `python3 tools/travel/parity.py` (in CI) also checks the
 console's way into the day with no page: the summary changes nothing, a press moves on and saves,
-a meeting is reported, the fights on offer are sent as Fight here sends them, and a battle's result
+a meeting is reported, orders (routes, march and halt, camp and rest) are given and saved and a
+refused route changes nothing, the fights on offer are sent as Fight here sends them, and a battle's result
 is taken in once.
