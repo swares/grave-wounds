@@ -1,8 +1,9 @@
 """The campaign page over the real pages, in a headless browser, served as the site is (a local web server).
 
-    python3 tools/campaign/loop.py
+    python3 tools/campaign/loop.py [seed]
 
-It follows a campaign round the loop: the team made in the team builder (in the frame), the march on the
+The pages' dice (the browser's crypto) are seeded, so a run can be repeated: seed 1 unless given
+(CI runs seed 1; other seeds play other games). It follows a campaign round the loop: the team made in the team builder (in the frame), the march on the
 travel map, a force's route given from the console, the clock run from it until the forces meet, the fight set up from it, a fight sent from it noticed and the console moved to it, the fight won on the roller, the
 aftermath; then the whole game saved to a file, cleared, and loaded back. The pages' writes are made from
 inside the frame, as the pages make them. Needs Python's playwright with Chromium and a built site.
@@ -37,6 +38,11 @@ def page_in_frame(pg):
     return pg.frames[1]
 
 
+SEED = int(sys.argv[1]) if len(sys.argv) > 1 else 1
+# The test's dice: Park-Miller from the seed, in place of the browser's crypto, never for anything secret
+# (the WebRTC keys of the online game are not made here: this test plays no online game).
+DICE = """(() => { let s = Math.max(1, %d * 7919 %% 2147483647);
+  crypto.getRandomValues = a => { for (let i = 0; i < a.length; i++){ s = (s * 16807) %% 2147483647; a[i] = s } return a } })();"""
 PHASE = "() => REC.phase"
 NO_TEAM = "not made yet"
 RUN, SAID, NOTICE = "#c-run", "#c-march-said", "#c-notice"
@@ -60,6 +66,7 @@ J = json.dumps
 with sync_playwright() as p:
     br = p.chromium.launch()
     ctx = br.new_context(viewport={"width": 1500, "height": 1200}, accept_downloads=True)
+    ctx.add_init_script(DICE % SEED)                         # every page and frame: the same dice from the seed
     pg = ctx.new_page()
     errors = []
     pg.on("pageerror", lambda e: errors.append(str(e)))

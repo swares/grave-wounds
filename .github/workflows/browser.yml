@@ -1,0 +1,44 @@
+# The built pages in a headless browser (Chromium through Playwright): the campaign console over the
+# real pages round the whole loop (tools/campaign/loop.py, seeded dice), two roller pages playing a
+# fight online over WebRTC (tools/net/twopages.py), and the GM's script fighting itself on the roller
+# (tools/gm/selfplay.py). A few minutes; runs on pull requests and on main when the pages change.
+# The pages are tested as built and committed in dist/.
+name: browser
+
+on:
+  pull_request:
+    paths: ["dist/**", "templates/**", "tools/campaign/**", "tools/net/**", "tools/gm/**", ".github/workflows/browser.yml"]
+  push:
+    branches: [main]
+    paths: ["dist/**", "templates/**", "tools/campaign/**", "tools/net/**", "tools/gm/**", ".github/workflows/browser.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  pages:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - run: "pip install --only-binary :all: playwright==1.63.0"
+      - run: python3 -m playwright install --with-deps chromium
+      - name: The campaign console round the loop
+        run: python3 tools/campaign/loop.py 1
+      - name: Two pages playing a fight online
+        run: python3 tools/net/twopages.py
+      - name: The GM's script against itself
+        run: python3 tools/gm/selfplay.py
+      - name: Keep the pictures the tests take
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: browser-pictures
+          path: |
+            tools/campaign/.cache/*.png
+            tools/net/.cache/*.png
+          if-no-files-found: ignore
