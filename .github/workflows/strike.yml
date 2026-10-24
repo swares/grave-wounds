@@ -32,6 +32,6 @@ jobs:
       - run: python3 tools/strike/parity.py 5000 1
       - run: node tools/gm/test.js
       - run: node tools/net/test.mjs
-      - run: node tools/net/rooms.test.mjs
+      - run: node tools/net/roomscheck.mjs
       - run: node tools/campaign/test.js
       - run: python3 tools/travel/parity.py 300 1

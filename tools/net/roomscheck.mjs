@@ -1,7 +1,7 @@
 // The room Worker (worker/rooms.js), its own code with an in-memory Durable Object namespace
 // (tools/net/fakerooms.mjs) in place of Cloudflare's.
-//   node tools/net/rooms.test.mjs
-//   ROOMS_URL=http://127.0.0.1:8787 node tools/net/rooms.test.mjs   the same against a running Worker
+//   node tools/net/roomscheck.mjs
+//   ROOMS_PORT=8787 node tools/net/roomscheck.mjs   the same against a Worker running on this computer
 //     (wrangler dev in worker/, Cloudflare's own local runtime); the alarm's check is skipped there
 import assert from "node:assert/strict";
 import worker from "../../worker/rooms.js";
@@ -12,12 +12,14 @@ async function check(name, fn){
   try { await fn(); passed++ } catch (e){ failed++; console.error(`FAIL ${name}\n  ${e.message.split("\n").slice(0, 6).join("\n  ")}`) }
 }
 const SITE = "https://swares.github.io";
+const PORT = Number.parseInt(process.env.ROOMS_PORT || "", 10);
+const LIVE = PORT > 0 && PORT < 65536 ? `http://127.0.0.1:${PORT}` : null;   // a Worker on this computer (wrangler dev), by its port only
 function call(env, method, path, { body, key, origin = SITE } = {}){
   const headers = { Origin: origin };
   if (key) headers["X-Room-Key"] = key;
   if (body !== undefined) headers["Content-Type"] = "application/json";
   const init = { method, headers, body: body === undefined ? undefined : JSON.stringify(body) };
-  if (process.env.ROOMS_URL) return fetch(process.env.ROOMS_URL + path, init);
+  if (LIVE) return fetch(new URL(path, LIVE), init);
   return worker.fetch(new Request(`https://rooms.example${path}`, init), env);
 }
 async function newRoom(env){
@@ -70,7 +72,7 @@ await check("a code not made, a bad path, a bad body or one too big is refused",
   assert.equal((await call(env, "PUT", `/rooms/${code}/invite`, { key, body: { data: "x".repeat(20000) } })).status, 400);
   assert.equal((await call(env, "PUT", `/rooms/${code}/reply`, { body: { v: "1", data: "R" } })).status, 400);
 });
-const REMOTE = !!process.env.ROOMS_URL;
+const REMOTE = !!LIVE;
 await check("only the site's pages (and local ones) may call it", async () => {
   const env = makeEnv();
   assert.equal((await call(env, "POST", "/rooms", { origin: "https://evil.example" })).status, 403);

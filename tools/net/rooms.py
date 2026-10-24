@@ -16,6 +16,7 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parents[2]
 MAP = "towton-1461"
 CONNECTED = "() => document.querySelector('#p-status').textContent.startsWith('Connected')"
+PANEL, CODE = "#c-players", "#p-code"
 failures = []
 
 
@@ -61,15 +62,15 @@ try:
           localStorage.setItem('gravewounds-named', JSON.stringify({{ u1: man('Hal Ashby'), u2: man('Ann Fenwick') }})) }}""")
         gm.goto(BASE + "campaign.html")
         gm.wait_for_selector("#pl-room", state="attached", timeout=15000)
-        gm.click("#c-players details summary")
+        gm.click(PANEL + " details summary")
         gm.fill("#pl-room", ROOMS); gm.click("#pl-room-set")
-        check(ROOMS in gm.inner_text("#c-players") and "invited again by itself" in gm.inner_text("#c-players"), f"the GM chooses a room server ({ROOMS})")
+        check(ROOMS in gm.inner_text(PANEL) and "invited again by itself" in gm.inner_text(PANEL), f"the GM chooses a room server ({ROOMS})")
         for name, uid in (("Scott", "u1"), ("Ann", "u2")):
             gm.fill("#pl-name", name); gm.uncheck("#pl-stun"); gm.check(f'[data-pl-new][value="{uid}"]'); gm.click("#pl-add")
             gm.wait_for_function(f"() => {{ const pl = REC.players.find(p => p.name === {name!r}); return pl && PL.conn[pl.id]?.room }}", timeout=15000)
         codes = gm.evaluate("() => REC.players.map(pl => PL.conn[pl.id].room)")
         check(len(set(codes)) == 2 and all(c.count("-") == 2 for c in codes), f"each player gets a room of his own, with a code to say aloud ({codes})")
-        check("Paste the reply" not in gm.inner_text("#c-players"), "no reply to paste: the console waits for it in his room")
+        check("Paste the reply" not in gm.inner_text(PANEL), "no reply to paste: the console waits for it in his room")
         link = gm.input_value(f'textarea[data-pl-link="{gm.evaluate("() => REC.players[0].id")}"]')
         check(f"#room={codes[0]}" in link and "&s=" in link, "his link names his room and the server")
         # Scott by his link
@@ -81,11 +82,11 @@ try:
         # Ann by typing her code (and a wrong one first)
         actx = br.new_context(); ann = actx.new_page(); watch(ann); pages.append(ann)
         ann.goto(BASE + "campaign.html#room&s=" + ROOMS)
-        ann.wait_for_selector("#p-code")
-        ann.fill("#p-code", "nope-nope-00"); ann.click("#p-code-go")
+        ann.wait_for_selector(CODE)
+        ann.fill(CODE, "nope-nope-00"); ann.click("#p-code-go")
         ann.wait_for_function("() => document.querySelector('#p-status').textContent.includes('no room')", timeout=10000)
         check(True, "a code that is no room is told, and the code can be typed again")
-        ann.fill("#p-code", codes[1].lower()); ann.click("#p-code-go")
+        ann.fill(CODE, codes[1].lower()); ann.click("#p-code-go")
         ann.wait_for_function(CONNECTED, timeout=30000)
         ann.wait_for_function("() => document.querySelector('#p-men').textContent.includes('Ann Fenwick')", timeout=10000)
         check(gm.evaluate("() => REC.players.every(pl => PL.conn[pl.id].state === 'open')"), "she types her room's code (in small letters) and is connected too")
@@ -105,7 +106,7 @@ try:
         scott.wait_for_function("() => document.querySelector('#p-news').textContent.includes('Rooms work.')", timeout=10000)
         check(True, "and his page follows the campaign again")
         shots = Path(__file__).parent / ".cache"; shots.mkdir(exist_ok=True)
-        gm.locator("#c-players").screenshot(path=str(shots / "rooms-gm.png"))
+        gm.locator(PANEL).screenshot(path=str(shots / "rooms-gm.png"))
         check(not errors, f"no page errors {errors[:3]}")
         br.close()
 finally:

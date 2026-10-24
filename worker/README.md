@@ -51,10 +51,10 @@ and paste works with the room server setting left blank.
 
 ## Testing it
 
-`node tools/net/rooms.test.mjs` runs the Worker's own code with an in-memory stand-in for the Durable
+`node tools/net/roomscheck.mjs` runs the Worker's own code with an in-memory stand-in for the Durable
 Object namespace (`tools/net/fakerooms.mjs`). To run the same checks against Cloudflare's local
 runtime, start `npx wrangler dev` here and run
-`ROOMS_URL=http://127.0.0.1:8787 node tools/net/rooms.test.mjs`. `python3 tools/net/rooms.py` connects
+`ROOMS_PORT=8787 node tools/net/roomscheck.mjs`. `python3 tools/net/rooms.py` connects
 a console and two players' pages through it in a headless browser.
 
 ## What it does not do

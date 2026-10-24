@@ -27,7 +27,9 @@ export function makeEnv(vars = {}){
   };
   env.rooms = rooms;                                        // for the tests: run the alarms that are due
   env.runAlarms = async (now = Date.now()) => {
-    for (const r of rooms.values()) if (r.state.storage.alarmAt !== null && r.state.storage.alarmAt <= now){ r.state.storage.alarmAt = null; await r.obj.alarm() }
+    const due = [...rooms.values()].filter(r => r.state.storage.alarmAt !== null && r.state.storage.alarmAt <= now);
+    for (const r of due) r.state.storage.alarmAt = null;
+    await Promise.all(due.map(r => r.obj.alarm()));
   };
   return env;
 }
@@ -37,7 +39,8 @@ export function serve(port = 0, vars = {}){                  // the Worker on a 
     const chunks = [];
     for await (const c of req) chunks.push(c);
     const body = chunks.length ? Buffer.concat(chunks) : undefined;
-    const request = new Request(`http://127.0.0.1${req.url}`, { method: req.method, headers: req.headers, body: ["GET", "HEAD", "OPTIONS"].includes(req.method) ? undefined : body });
+    const at = new URL(req.url, "http://127.0.0.1");          // the path and query only: always this server
+    const request = new Request(`http://127.0.0.1${at.pathname}${at.search}`, { method: req.method, headers: req.headers, body: ["GET", "HEAD", "OPTIONS"].includes(req.method) ? undefined : body });
     const r = await worker.fetch(request, env);
     res.writeHead(r.status, Object.fromEntries(r.headers));
     res.end(Buffer.from(await r.arrayBuffer()));

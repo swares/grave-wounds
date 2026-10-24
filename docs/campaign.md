@@ -229,4 +229,4 @@ men he plays changed, his proposals accepted, declined, ignored when not his and
 console's roller played from his page on the same link. `python3 tools/net/rooms.py` connects the
 console and two players through room codes (the room Worker's own code, run locally): one by his
 link, one by typing her code, a wrong code told, and a player's page and then the console reloaded,
-both coming back by themselves. `node tools/net/rooms.test.mjs` checks the Worker itself.
+both coming back by themselves. `node tools/net/roomscheck.mjs` checks the Worker itself.

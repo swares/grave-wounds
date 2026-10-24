@@ -907,25 +907,40 @@ function menPicker(chosen, attrs){                     // a checkbox for each na
   if (!men.length) return '<span class="muted">No named men yet (Send to the roller from the team builder).</span>';
   return `<span class="men">${men.map(([u, n]) => `<label><input type="checkbox" ${attrs} value="${esc(u)}"${chosen.includes(u) ? " checked" : ""}>${esc(n.name || "?")}${n.dead ? " (dead)" : ""}</label>`).join("")}</span>`;
 }
-function playerRow(pl){
-  const c = PL.conn[pl.id] || { state: "not connected" };
-  const st = { open: "connected", closed: "gone", failed: "could not connect", disconnected: "lost" }[c.state] || c.state;
-  const waiting = c.code && c.state !== "open" && !NET_LOST.has(c.state);
-  const room = c.room && c.state !== "open" ? `<span class="muted">His room: <b style="font-family:var(--mono);color:var(--ink)">${esc(c.room)}</b>. Send him this link (or the code, to type on the campaign page):</span>
+function roomHtml(pl, c){                             // his room's code and link, while he is not connected
+  return `<span class="muted">His room: <b style="font-family:var(--mono);color:var(--ink)">${esc(c.room)}</b>. Send him this link (or the code, to type on the campaign page):</span>
       <textarea readonly rows="1" data-pl-link="${esc(pl.id)}" style="width:100%">${esc(roomLink(c.room))}</textarea>
-      <span class="toolbar"><button type="button" class="small" data-pl="copyroom" data-id="${esc(pl.id)}">Copy the link</button></span>` : "";
-  const invite = room || (waiting && !roomServer() ? `<label class="muted">1. Send this link to ${esc(pl.name)}:
+      <span class="toolbar"><button type="button" class="small" data-pl="copyroom" data-id="${esc(pl.id)}">Copy the link</button></span>`;
+}
+function pasteHtml(pl, c){                            // his link, and a box for his reply, passed by hand
+  return `<label class="muted">1. Send this link to ${esc(pl.name)}:
       <textarea readonly rows="2" data-pl-link="${esc(pl.id)}" style="width:100%">${esc(playerLink(c.code))}</textarea></label>
       <span class="toolbar"><button type="button" class="small" data-pl="copy" data-id="${esc(pl.id)}">Copy the link</button></span>
       <label class="muted">2. Paste the reply code his page gives him:
       <textarea rows="2" data-pl-reply="${esc(pl.id)}" style="width:100%"></textarea></label>
-      <span class="toolbar"><button type="button" class="small" data-pl="accept" data-id="${esc(pl.id)}">Connect</button></span>` : "");
-  const connect = c.state === "open" || waiting || (c.room && c.state !== "failed") ? "" : `<button type="button" class="small primary" data-pl="invite" data-id="${esc(pl.id)}">${c.peer ? "Invite again" : "Invite"}</button>`;
+      <span class="toolbar"><button type="button" class="small" data-pl="accept" data-id="${esc(pl.id)}">Connect</button></span>`;
+}
+function inviteHtml(pl, c){                           // how he is being invited, if he is
+  const waiting = c.code && c.state !== "open" && !NET_LOST.has(c.state);
+  if (c.room && c.state !== "open") return roomHtml(pl, c);
+  if (waiting && !roomServer()) return pasteHtml(pl, c);
+  return "";
+}
+function connectButton(pl, c){                        // Invite, or Invite again, when he is neither connected nor being invited
+  const waiting = c.code && c.state !== "open" && !NET_LOST.has(c.state);
+  if (c.state === "open" || waiting || (c.room && c.state !== "failed")) return "";
+  const label = c.peer ? "Invite again" : "Invite";
+  return `<button type="button" class="small primary" data-pl="invite" data-id="${esc(pl.id)}">${label}</button>`;
+}
+function playerRow(pl){
+  const c = PL.conn[pl.id] || { state: "not connected" };
+  const st = { open: "connected", closed: "gone", failed: "could not connect", disconnected: "lost" }[c.state] || c.state;
   const code = c.room && c.state === "open" ? ` · room <span style="font-family:var(--mono)">${esc(c.room)}</span>` : "";
-  return `<li><span class="toolbar"><b>${esc(pl.name)}</b> <span class="muted">${esc(st)}${code}</span>${connect}
+  const err = c.err ? `<p class="bad">${esc(c.err)}</p>` : "";
+  return `<li><span class="toolbar"><b>${esc(pl.name)}</b> <span class="muted">${esc(st)}${code}</span>${connectButton(pl, c)}
       <button type="button" class="small" data-pl="drop" data-id="${esc(pl.id)}">Remove</button></span>
     <span class="muted" style="font-size:.88rem">Plays: ${menPicker(pl.men, `data-pl-man="${esc(pl.id)}"`)}</span>
-    ${invite}${c.err ? `<p class="bad">${esc(c.err)}</p>` : ""}</li>`;
+    ${inviteHtml(pl, c)}${err}</li>`;
 }
 function renderPlayers(){
   const box = $("#c-players");
@@ -1119,6 +1134,20 @@ function pgRoomArgs(){                                // #room=CODE&s=SERVER -> 
   try { local = localStorage.getItem("gw-room-server") || "" } catch { local = "" }
   return { code: (q.get("room") || "").trim().toUpperCase(), server: (q.get("s") || local || CD.room_server || "").trim() };
 }
+async function pgAnswer(R, code, inv, mine){          // one invitation from his room answered -> true, or false if it was already answered
+  try {
+    const invite = await NET.unpackCode(inv.data);
+    pgReady(invite);
+    const g = await pgPeer(invite, () => { if (mine()){ pgStatus("Lost the GM's console. Your last screen stays below; waiting to be invited again..."); void pgRoom() } });
+    await R.reply(code, inv.v, g.reply);
+    pgStatus("Connecting to the GM's console...");
+    return true;
+  } catch (e){
+    if (e.status === 409) return false;               // already answered (this tab before a reload): wait for the next one
+    pgStatus(`Could not answer the invitation: ${e.message || e}`);
+    return true;
+  }
+}
 async function pgRoom(){
   const { code, server } = pgRoomArgs(), run = ++PR.run;
   Object.assign(PR, { code, server, after: code === PR.code ? PR.after : 0 });
@@ -1132,31 +1161,21 @@ async function pgRoom(){
     catch (e){ return pgRoomForm(e.status === 404 ? `There is no room ${code} (or it has been forgotten): check the code with the GM.` : String(e.message || e)) }
     if (!inv) return;
     PR.after = inv.v;
-    try {
-      const invite = await NET.unpackCode(inv.data);
-      pgReady(invite);
-      const g = await pgPeer(invite, () => { if (mine()){ pgStatus("Lost the GM's console. Your last screen stays below; waiting to be invited again..."); pgRoom() } });
-      await R.reply(code, inv.v, g.reply);
-      pgStatus("Connecting to the GM's console...");
-      return;
-    } catch (e){
-      if (e.status === 409) continue;                 // already answered (this tab before a reload): wait for the next one
-      return pgStatus(`Could not answer the invitation: ${e.message || e}`);
-    }
+    if (await pgAnswer(R, code, inv, mine)) return;
   }
 }
 
 if (PLAYER_PAGE){
   pgLayout();
   $("#p-force").addEventListener("click", pgPropose);
-  const go = () => (location.hash.startsWith("#room") ? pgRoom() : pgJoin());
+  const go = () => void (location.hash.startsWith("#room") ? pgRoom() : pgJoin());
   window.addEventListener("hashchange", () => { if (/^#(join=|room)/.test(location.hash)) go() });   // a new invitation or room opened in this tab
   go();
 } else {
   loadRecord();
   render();
   show(phaseOf(REC.phase).page);
-  if (roomServer()) for (const pl of players().filter(x => x.room)) playerConnect(pl);   // through their rooms, his players are invited again by themselves
+  if (roomServer()) for (const pl of players().filter(x => x.room)) void playerConnect(pl);   // through their rooms, his players are invited again by themselves
   IDB.all().then(x => { SLOTS = x; renderSlots() }).catch(() => { $("#c-slots").innerHTML = '<p class="muted" style="margin:0">This browser keeps no campaigns side by side (IndexedDB is off): save to a file instead.</p>' });
 }
 </script>

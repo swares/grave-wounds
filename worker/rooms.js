@@ -37,8 +37,8 @@ const LOCAL = /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/;
 
 function corsHeaders(request, env){                         // only the site's own pages (and local ones) may call it
   const origin = request.headers.get("Origin") || "";
-  const allowed = String(env.ALLOWED_ORIGINS || "https://swares.github.io").split(",").map(s => s.trim()).filter(Boolean);
-  if (!origin || !(allowed.includes("*") || allowed.includes(origin) || LOCAL.test(origin))) return null;
+  const allowed = new Set(String(env.ALLOWED_ORIGINS || "https://swares.github.io").split(",").map(s => s.trim()).filter(Boolean));
+  if (!origin || !(allowed.has("*") || allowed.has(origin) || LOCAL.test(origin))) return null;
   return { "Access-Control-Allow-Origin": origin, "Access-Control-Allow-Methods": "GET, POST, PUT, OPTIONS",
     "Access-Control-Allow-Headers": "Content-Type, X-Room-Key", "Access-Control-Max-Age": "86400", Vary: "Origin" };
 }
@@ -46,6 +46,13 @@ function withHeaders(response, headers){
   const out = new Response(response.body, response);
   for (const [k, v] of Object.entries(headers)) out.headers.set(k, v);
   return out;
+}
+
+async function makeRoom(env, tries){                       // a room under a code not in use (a room that exists says so) -> {code, key}, or null
+  if (tries <= 0) return null;
+  const code = newCode(), stub = env.ROOMS.get(env.ROOMS.idFromName(code));
+  const r = await stub.fetch(new Request("https://room/create", { method: "POST" }));
+  return r.status === 201 ? { code, key: (await r.json()).key } : makeRoom(env, tries - 1);
 }
 
 export default {
@@ -56,12 +63,8 @@ export default {
     const url = new URL(request.url), parts = url.pathname.split("/").filter(Boolean);
     if (parts[0] !== "rooms") return json({ error: "not found" }, 404, cors);
     if (parts.length === 1 && request.method === "POST"){
-      for (let i = 0; i < 8; i++){                          // a code not in use (a room that exists says so)
-        const code = newCode(), stub = env.ROOMS.get(env.ROOMS.idFromName(code));
-        const r = await stub.fetch(new Request("https://room/create", { method: "POST" }));
-        if (r.status === 201) return json({ code, key: (await r.json()).key }, 201, cors);
-      }
-      return json({ error: "no free code" }, 503, cors);
+      const made = await makeRoom(env, 8);
+      return made ? json(made, 201, cors) : json({ error: "no free code" }, 503, cors);
     }
     const code = (parts[1] || "").toUpperCase(), what = parts[2];
     if (parts.length !== 3 || !CODE.test(code) || !["invite", "reply"].includes(what)) return json({ error: "not found" }, 404, cors);
@@ -85,46 +88,52 @@ export class Room {
     if (text.length > MAX_BODY) return null;
     try { const b = JSON.parse(text); return b && typeof b === "object" ? b : null } catch { return null }
   }
+  async create(){
+    const st = this.state.storage;
+    if (await st.get("key")) return empty(409);
+    const key = newKey();
+    await st.put("key", key);
+    await this.touch();
+    return json({ key }, 201);
+  }
+  async putInvite(request, host){                          // the host's invitation: a new version, any old reply gone
+    if (!host) return json({ error: "not the host" }, 403);
+    const b = await this.body(request), st = this.state.storage;
+    if (typeof b?.data !== "string") return json({ error: "bad invitation" }, 400);
+    const v = ((await st.get("invite"))?.v || 0) + 1;
+    await st.put("invite", { v, data: b.data });
+    await st.delete("reply");
+    await this.touch();
+    return json({ v });
+  }
+  async getInvite(url){
+    const after = Number(url.searchParams.get("after")) || 0, inv = await this.state.storage.get("invite");
+    return inv?.v > after ? json(inv) : empty(204);
+  }
+  async putReply(request){                                 // the player's reply: to the latest invitation, once
+    const b = await this.body(request), st = this.state.storage, inv = await st.get("invite");
+    if (typeof b?.data !== "string" || !Number.isInteger(b.v)) return json({ error: "bad reply" }, 400);
+    if (inv?.v !== b.v) return json({ error: "that invitation is old" }, 409);
+    if ((await st.get("reply"))?.v === b.v) return json({ error: "already answered" }, 409);
+    await st.put("reply", { v: b.v, data: b.data });
+    await this.touch();
+    return json({ ok: true });
+  }
+  async getReply(url, host){
+    if (!host) return json({ error: "not the host" }, 403);
+    const v = Number(url.searchParams.get("v")), rep = await this.state.storage.get("reply");
+    return rep?.v === v ? json({ data: rep.data }) : empty(204);
+  }
   async fetch(request){
-    const url = new URL(request.url), what = url.pathname.slice(1), st = this.state.storage, m = request.method;
-    if (what === "create" && m === "POST"){
-      if (await st.get("key")) return empty(409);
-      const key = newKey();
-      await st.put("key", key);
-      await this.touch();
-      return json({ key }, 201);
-    }
-    const key = await st.get("key");
+    const url = new URL(request.url), route = `${request.method} ${url.pathname.slice(1)}`;
+    if (route === "POST create") return this.create();
+    const key = await this.state.storage.get("key");
     if (!key) return json({ error: "no such room" }, 404);
     const host = request.headers.get("X-Room-Key") === key;
-    if (what === "invite" && m === "PUT"){
-      if (!host) return json({ error: "not the host" }, 403);
-      const b = await this.body(request);
-      if (typeof b?.data !== "string") return json({ error: "bad invitation" }, 400);
-      const v = ((await st.get("invite"))?.v || 0) + 1;
-      await st.put("invite", { v, data: b.data });
-      await st.delete("reply");
-      await this.touch();
-      return json({ v });
-    }
-    if (what === "invite" && m === "GET"){
-      const after = Number(url.searchParams.get("after")) || 0, inv = await st.get("invite");
-      return inv && inv.v > after ? json(inv) : empty(204);
-    }
-    if (what === "reply" && m === "PUT"){
-      const b = await this.body(request), inv = await st.get("invite");
-      if (typeof b?.data !== "string" || !Number.isInteger(b.v)) return json({ error: "bad reply" }, 400);
-      if (inv?.v !== b.v) return json({ error: "that invitation is old" }, 409);
-      if ((await st.get("reply"))?.v === b.v) return json({ error: "already answered" }, 409);
-      await st.put("reply", { v: b.v, data: b.data });
-      await this.touch();
-      return json({ ok: true });
-    }
-    if (what === "reply" && m === "GET"){
-      if (!host) return json({ error: "not the host" }, 403);
-      const v = Number(url.searchParams.get("v")), rep = await st.get("reply");
-      return rep && rep.v === v ? json({ data: rep.data }) : empty(204);
-    }
+    if (route === "PUT invite") return this.putInvite(request, host);
+    if (route === "GET invite") return this.getInvite(url);
+    if (route === "PUT reply") return this.putReply(request);
+    if (route === "GET reply") return this.getReply(url, host);
     return json({ error: "not found" }, 404);
   }
 }
