@@ -199,7 +199,8 @@ with sync_playwright() as p:
     pg.click('#c-phases button[data-phase="march"]')
     pg.wait_for_selector(FIGHTS, timeout=10000)
     first = pg.locator(FIGHTS).first
-    first.locator("select").select_option("field")
+    fid = int(first.locator("button[data-fight]").first.get_attribute("data-fight"))
+    pg.evaluate("(id) => { MAP_CHOICE[id] = 'field:towton-1461' }", fid)   # on the Towton battlefield as drawn up (the GM's choice: units already placed)
     first.locator("button[data-fight]").first.click()
     pg.wait_for_function("() => REC.phase === 'fight' && document.querySelector('#c-showing').textContent.includes('Field map')", timeout=15000)
     pg.wait_for_selector("#c-fight button[data-battlecmd='setup']", timeout=15000)
@@ -216,8 +217,19 @@ with sync_playwright() as p:
         pg.click("#c-fight button[data-battlecmd='next']")
         pg.wait_for_timeout(250)
     ex = page_in_frame(pg).evaluate("() => S.exchange")
-    check(ex >= 2 and pg.locator("#c-fight ol.log li").count() >= 1, f"Start and Next from the console play the battle, the commander moving both sides (exchange {ex})")
-    pg.click("#c-fight button[data-battlecmd='end']")
+    units = page_in_frame(pg).evaluate("() => S.units.length")
+    check(ex >= 2 and units >= 2 and pg.locator("#c-fight ol.log li").count() >= 1, f"Start and Next from the console play the battle, the commander moving both sides ({units} units, exchange {ex})")
+    for _ in range(40):                                                # on until a unit breaks, or the battle ends by itself
+        if page_in_frame(pg).evaluate("() => S.phase === 'over' || S.units.some(u => u.state === 'broken' || u.state === 'fled')"):
+            break
+        pg.click("#c-fight button[data-battlecmd='next']")
+        pg.wait_for_timeout(200)
+    pg.wait_for_timeout(3500)                                          # the console looks again
+    routed = page_in_frame(pg).evaluate("() => S.units.filter(u => u.state === 'broken' || u.state === 'fled').map(u => u.name)")
+    logged = [e["data"]["text"] for e in pg.evaluate(LOG) if "have broken" in e["data"]["text"] or "have fled" in e["data"]["text"]]
+    check(len(routed) >= 1 and len(logged) == len(routed), f"each unit broken or fled goes into the campaign's log by itself ({routed})")
+    if pg.locator("#c-fight button[data-battlecmd='end']").count():
+        pg.click("#c-fight button[data-battlecmd='end']")
     pg.wait_for_selector("#c-fight button[data-battlecmd='send']", timeout=10000)
     pg.click("#c-fight button[data-battlecmd='send']")
     pg.wait_for_function("() => REC.phase === 'aftermath'", timeout=8000)
