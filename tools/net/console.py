@@ -7,7 +7,9 @@ the GM's. The GM adds a player for two named men; the player opens his link, the
 Then: his page shows his men, the force they are with, and the campaign's public news; nothing of
 the enemy's force, its named man, or the GM's own notes reaches it. The march moves on from the
 console and his page follows, by changes only. His page reloaded keeps his last screen and rejoins;
-the console reloaded remembers who plays whom and invites him again. Needs Python's playwright with
+the console reloaded remembers who plays whom and invites him again. His named man in a fight on the
+console's roller: the fight comes to his page on the same link, his side his to play, his Next
+ending his turn there, and the fight gone from his page when the roller leaves the frame. Needs Python's playwright with
 Chromium and a built site. Exits non-zero on any failure.
 """
 import functools, http.server, json, threading
@@ -143,6 +145,32 @@ with sync_playwright() as p:
     gm.fill("textarea[data-pl-reply]", pl.input_value("#p-reply")); gm.click('button[data-pl="accept"]')
     pl.wait_for_function("() => document.querySelector('#p-status').textContent.startsWith('Connected')", timeout=20000)
     check(not pl.is_visible("#p-join"), "he rejoins from the link pasted into his page, and the reply box goes away")
+    # his fight through the same link: the roller in the console's frame, his man on one side
+    gm.evaluate("() => { setPhase('fight'); render(); show('roller.html') }")
+    gm.wait_for_function("() => !!rollerFrame()", timeout=20000)
+    rf = next(f for f in gm.frames if f.url.endswith("roller.html"))
+    rf.wait_for_function("() => typeof S === 'object' && S.chars.length > 1", timeout=20000)
+    me, foe = rf.evaluate("""() => { const [a, b] = S.chars; for (const c of S.chars){ c.wounds = []; c.blood = poolOf(c); c.state = null }
+      a.uid = 'u1'; a.name = 'Hal Ashby'; a.pos = [6, 5]; b.pos = [9, 5]; renderChars(); return [sideOf(a), sideOf(b)] }""")
+    pl.wait_for_selector("#p-fight iframe", timeout=15000)
+    pf = pl.frame_locator("#p-fight iframe")
+    pf.locator("#chars .char").first.wait_for(timeout=15000)
+    check(pl.is_visible("#p-fight") and pf.locator("#chars .char").count() >= 2, "his named man in a fight on the console's roller: his page shows the fight, on the same link")
+    check(rf.evaluate(f"() => gmSide({me!r}).ctl") == "player" and rf.evaluate(f"() => gmSide({foe!r}).ctl") == "script", f"the roller gives his man's side ({me}) to him, the other to the script")
+    rf.evaluate("() => { S.gm.auto = true; gmPlay() }")
+    inner = next(f for f in pl.frames if "roller.html#relay" in f.url)
+    inner.wait_for_function("() => (document.querySelector('#g-status') || {}).textContent.startsWith('Your turn')", timeout=60000)
+    check(True, "the script plays its side, then his page says it is his turn")
+    pl.screenshot(path=str(shots / "campaign-player-fight.png"), full_page=False)
+    before = rf.evaluate("() => S.round")
+    inner.click('#map-actions button[data-map="next"]')
+    rf.wait_for_function(f"() => !actingChar() || sideOf(actingChar()) !== {me!r} || S.round > {before}", timeout=10000)
+    check(True, "his Next fighter, clicked on his page, ends his turn on the console's roller")
+    veiled = " ".join(inner.locator("#chars .char.veiled").all_inner_texts())
+    check(veiled and "Blood" not in veiled and "Nerve" not in veiled, "the enemy's card on his page is veiled: no Blood, no Nerve")
+    gm.evaluate("() => show('travel.html')")
+    pl.wait_for_function("() => document.querySelector('#p-fight').hidden", timeout=15000)
+    check(True, "the roller gone from the console, his fight goes from his page")
     gm.screenshot(path=str(Path(__file__).parent / ".cache" / "campaign-gm.png"), full_page=True)
     pl.screenshot(path=str(shots / "campaign-player.png"), full_page=True)
     check(not errors, f"no page errors {errors[:3]}")

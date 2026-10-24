@@ -133,9 +133,17 @@ the connections are not. If his page reloads it shows his last screen and rejoin
 or the console reloads, the GM presses **Invite again** and sends a new link, which he opens or
 pastes into **Rejoin**.
 
-Not yet: his proposed orders for his force (the GM accepts or declines them), his fights coming
-through the same link (the roller's own **Play online** still gives a link per fight), room codes
-in place of copy and paste, and the travel and field maps on his page.
+**His fights come through the same link.** When the roller is in the console's frame and one of his
+named men is among its fighters (matched by the travel map's id or the team builder's), the roller
+gives that man's side to him, as **Play online** would, and draws his side's screen for him; the
+console passes it on, and his page shows it under **Your fight**, where he moves, strikes, gives
+first aid and ends his turn as on the roller's own player page. The roller checks every choice is
+his to make. When the roller leaves the frame the fight goes from his page. The roller's own **Play
+online** still works for a fight run without the console. (A fight set up from the travel map
+fills the roller with the forces' men; his named men join it when the GM adds the team.)
+
+Not yet: his proposed orders for his force (the GM accepts or declines them), room codes in place
+of copy and paste, and the travel and field maps on his page.
 
 ## The log
 
@@ -196,4 +204,5 @@ refused route changes nothing, the fights on offer are sent as Fight here sends 
 is taken in once. `python3 tools/net/console.py` (in CI, with the other browser tests) connects the
 console and a player's page in browser profiles of their own: his men, his force and the public
 news shown and nothing of the enemy's or the GM's notes, the march followed by changes only, the
-men he plays changed, and his page and the console each reloaded and joined again.
+men he plays changed, his page and the console each reloaded and joined again, and his fight on the
+console's roller played from his page on the same link.
