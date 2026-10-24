@@ -177,6 +177,44 @@ check("the console's fights: offered where enemies are within reach, sent as Fig
   assert.ok(after.fought.includes(fh.battle) && store.getItem("gravewounds-field-result") === null);
   assert.equal(makeTravelDay(DATA, RULES).takeBattle(), null, "taken twice");
 });
+check("the console's orders: routes, march and halt, camp and rest, given from the saved day and saved", () => {
+  const D = fresh(51).D;
+  D.S.mapId = "towton-1461";
+  D.forcesHere();
+  D.save();
+  const day = () => makeTravelDay(DATA, RULES, { roll100: parkMiller(9) });
+  const saved = () => JSON.parse(store.getItem("gravewounds-travel")).forces["towton-1461"];
+  const o = day().orderChoices(saved()[0].id), id = o.id;
+  assert.ok(o.places.length > 3 && o.foes.length && o.camps.length && !o.led && !o.routed, JSON.stringify(o).slice(0, 200));
+  let said = day().giveOrder(id, "to", o.places[0][0]);
+  let f = saved().find(x => x.id === id);
+  assert.match(said, /will march to/);
+  assert.equal(f.order, "march");
+  assert.deepEqual(f.waypoints, [o.places[0][0].split(",").map(Number)]);
+  said = day().giveOrder(id, "via", o.foes[0][0]);
+  assert.equal(saved().find(x => x.id === id).waypoints.length, 2, said);
+  const before = JSON.stringify(saved().find(x => x.id === id).waypoints);
+  const m = DATA.maps["towton-1461"], keyOf = Object.values(DATA.terrain.terrain).find(t => t.cost === null || t.cost === undefined)?.key;
+  const r = m.rows.findIndex(row => keyOf && row.includes(keyOf)), bad = r >= 0 ? `${m.rows[r].indexOf(keyOf)},${r}` : null;
+  if (bad){
+    said = day().giveOrder(id, "to", bad);
+    assert.match(said, /cannot/);
+    assert.equal(JSON.stringify(saved().find(x => x.id === id).waypoints), before, "a refused route changed the route");
+  }
+  assert.match(day().giveOrder(id, "halt"), /halts/);
+  assert.equal(saved().find(x => x.id === id).order, "halt");
+  assert.match(day().giveOrder(id, "march"), /will march/);
+  assert.match(day().giveOrder(id, "clear"), /cleared/);
+  f = saved().find(x => x.id === id);
+  assert.ok(!f.path && f.order === "halt" && !f.waypoints.length);
+  const camp = o.camps.find(c => c[3])[0];
+  day().giveOrder(id, "camp", camp);
+  assert.equal(saved().find(x => x.id === id).camp.kind, camp);
+  const other = saved()[1].id;
+  assert.match(day().giveOrder(other, "rest"), /rests/);
+  assert.ok(saved().find(x => x.id === other).day >= 2);
+  assert.match(day().giveOrder(999, "halt"), /not on the map/);
+});
 check("the console's march with nothing saved: it says to choose a map", () => {
   store.clear();
   const D = makeTravelDay(DATA, RULES);

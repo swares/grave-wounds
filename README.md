@@ -73,7 +73,7 @@ under it). See [docs/units.md](docs/units.md).
 
 **Campaign:** `dist/campaign.html` is the GM's console over the pages: muster, march, fight,
 aftermath and downtime, what to do in each, where the team, the map and the fight stand, the
-campaign's log, and the whole game saved to a file and loaded back. It runs the travel map's clock
+campaign's log, and the whole game saved to a file and loaded back. It gives the travel map's forces their routes and camps, runs its clock
 (Run the march) until forces meet, sets up the fight, takes a battle's result back, and follows the pages by itself when a fight is sent from the
 travel map or won. See [docs/campaign.md](docs/campaign.md).
 
