@@ -11,8 +11,8 @@ When an item is done, delete it here and note it in the pull request that closes
 
 - **The campaign, first cut** (`docs/campaign.md`). A console page over the others: the phase,
   what to do, where things stand, the campaign's log, and save and load of the whole game as a
-  file. Still left out: it runs the travel map's day but not the roller's or the field map's
-  fights, which are fought on their pages; it notices fights sent and won, deaths, prisoners,
+  file. Still left out: it runs the travel map's day and the roller's script, but a person's moves
+  and strikes are made on the roller, and the field map's battles on the field map; it notices fights sent and won, deaths, prisoners,
   outbreaks, supplies running out, new ranks and the end of a day or season; the pages' state is
   still per page; players online join a fight, not the campaign. The travel map's
   rules and its day are now out of the page (`templates/travelrules.js`, checked against the

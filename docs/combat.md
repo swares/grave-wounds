@@ -327,6 +327,9 @@ count goes on from there.
   - The script's choices are design guesses, not calibrated against any record.
     `python3 tools/gm/selfplay.py` plays it against itself on a spread of tables and checks every
     fight runs to an end (in CI too); `node tools/gm/test.js` checks its choices one by one.
+  - In the campaign console's frame, the console can work Run the fight (on, Step, Play to my turn,
+    Undo, a person's turn ended) and mark the winner; the roller tells it how the fight stands
+    (`docs/campaign.md`).
 
 **How the roller decides a strike.** The attack, defence, location, blow, severity and armour
 are worked out in `templates/strike.js`, which never touches the page: the page measures the
