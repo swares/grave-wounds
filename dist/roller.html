@@ -2301,7 +2301,15 @@ const ZONE_LOCS = { legs: ["thigh_l", "thigh_r", "knee_l", "knee_r", "lower_leg_
   torso: ["chest_l", "chest_r", "abdomen", "back_upper"], arms: ["shoulder_l", "shoulder_r", "upper_arm_l", "upper_arm_r", "forearm_l", "forearm_r", "hand_l", "hand_r"], head: ["skull_l", "skull_r", "face", "neck"] };
 // A roll the page tells in a line (a hazard, words across tongues, loot, a deed, a stop check for pain)
 // into the event log too: for the man's side and the GM, or the GM's alone when no one man made it.
-const tagless = html => String(html).replaceAll(/<[^>]*>/g, "");
+function tagless(html){                           // the line's words without its markup
+  let out = "", inTag = false;
+  for (const ch of String(html)){
+    if (ch === "<") inTag = true;
+    else if (ch === ">") inTag = false;
+    else if (!inTag) out += ch;
+  }
+  return out;
+}
 function logLine(type, line, c = null){
   logEvent(S.events, { round: evRound(), type, vis: c ? [sideSeat(sideOf(c))] : [], data: { who: evWho(c), text: tagless(line) }, pub: null });
 }
