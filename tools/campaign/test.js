@@ -140,5 +140,34 @@ check("the end of a season in the team builder is news once, and moves the campa
   assert.equal(C.notices(C.status(raw, CDN), { [n.mark]: true }, CDN).news.length, 0);
 });
 
+check("a man taken prisoner is news once", () => {
+  const raw = { "gravewounds-team-builder": J({ era: "medieval", team: [{ name: "Will", pid: "p1" }], prisoners: [{ name: "Hal", pid: "p2" }] }) };
+  const r = C.notices(C.status(raw, CDN), {}, CDN);
+  assert.deepEqual(r.news.filter(n => n.why).map(n => n.why), ["Hal has been taken prisoner."]);
+  assert.equal(C.notices(C.status(raw, CDN), apply({}, r), CDN).news.length, 0);
+});
+check("a new rank is news; a rank first seen is only marked", () => {
+  const CDR = { ...CDN, ranks: { medieval: { soldier: "Soldier", vintenar: "Vintenar" } } };
+  const team = rank => ({ "gravewounds-team-builder": J({ era: "medieval", team: [{ name: "Will", pid: "p1", rank }] }) });
+  const seen = apply({}, C.notices(C.status(team("soldier"), CDR), {}, CDR));
+  assert.equal(seen["rank:p1"], "soldier");
+  const r = C.notices(C.status(team("vintenar"), CDR), seen, CDR);
+  assert.deepEqual(r.news.map(n => n.why), ["Will is now vintenar."]);
+  assert.equal(C.notices(C.status(team("vintenar"), CDR), apply(seen, r), CDR).news.length, 0);
+});
+check("a force out of rations, water, medical stores or ammunition is news once; refilled and out again, news again", () => {
+  const f = sup => travelWith([{ id: 3, name: "Edward's army", side: "York", men: 900, ...sup }], 2);
+  const seen = { "day:towton-1461": 2 };
+  let r = C.notices(C.status({ "gravewounds-travel": f({ sup: { rations: 0, med: 0, ammo: 1 }, supHungry: true }) }, CDN), seen, CDN);
+  assert.deepEqual(r.news.map(n => n.why), ["Edward's army is out of rations.", "Edward's army is out of medical stores."]);
+  apply(seen, r);
+  assert.equal(C.notices(C.status({ "gravewounds-travel": f({ sup: { rations: 0, med: 0, ammo: 1 }, supHungry: true }) }, CDN), seen, CDN).news.length, 0);
+  r = C.notices(C.status({ "gravewounds-travel": f({ sup: { rations: 3, med: 0, ammo: 1 }, supHungry: false }) }, CDN), seen, CDN);
+  assert.deepEqual(r.forget, ["out:towton-1461:3:rations"]);
+  apply(seen, r);
+  r = C.notices(C.status({ "gravewounds-travel": f({ sup: { rations: 0, med: 0, ammo: 0 }, supHungry: true, thirsty: true }) }, CDN), seen, CDN);
+  assert.deepEqual(r.news.map(n => n.why), ["Edward's army is out of rations.", "Edward's army is out of water.", "Edward's army is out of ammunition."]);
+});
+
 console.log(`${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

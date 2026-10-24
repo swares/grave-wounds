@@ -2054,6 +2054,7 @@ def campaign_bundle(d) -> dict:
             "maps": {mid: {"name": m.get("name") or mid, "start_date": m.get("start_date")} for mid, m in d.maps.items()},
             "eras": {eid: e.get("name") or eid for eid, e in d.teams.items()},
             "weather": {k: c["name"] for k, c in d.weather["conditions"].items()},          # the day's weather, in the day's line
+            "ranks": {eid: {r["id"]: r["name"] for r in e.get("ladder", [])} for eid, e in (d.ranks.get("eras") or {}).items()},   # a promotion, by name
             "diseases": {k: v["name"].split(" (")[0] for k, v in [*d.disease["diseases"].items(), *d.disease["wounds"].items(),
                          ("scurvy", d.disease["scurvy"]), ("frostbite", d.disease.get("frostbite") or {})] if isinstance(v, dict) and v.get("name")}}
 
