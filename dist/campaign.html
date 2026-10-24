@@ -3695,8 +3695,9 @@ function battleSideRow(sd, k, f){
 }
 function battleButtons(f){
   if (f.phase === "setup") return '<button type="button" class="primary" data-battlecmd="next">Start the battle</button>';
+  const run = f.running ? "Stop" : "Run";
   if (f.phase === "moving") return `<button type="button" class="small primary" data-battlecmd="next" title="The side moving ends its move; a commander orders its side">Next</button>`
-    + (f.both ? `<button type="button" class="small" data-battlecmd="run">${f.running ? "Stop" : "Run"}</button>` : "")
+    + (f.both ? `<button type="button" class="small" data-battlecmd="run">${run}</button>` : "")
     + '<button type="button" class="small" data-battlecmd="end" title="The dead counted, the wounded carried or left">End the battle</button>';
   return f.fromTravel && !f.sent ? '<button type="button" class="primary" data-battlecmd="send">Send the result to the travel map</button>' : "";
 }
