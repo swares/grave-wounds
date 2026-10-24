@@ -77,6 +77,10 @@ campaign's log, and the whole game saved to a file and loaded back. It gives the
 (Run the march) until forces meet, sets up the fight, takes a battle's result back, and follows the pages by itself when a fight is sent from the
 travel map or won. See [docs/campaign.md](docs/campaign.md).
 
+**How to play:** `dist/guide.html` walks through the pages mode by mode: a fight at the table, the
+GM's script, a fight online, a battle, a campaign, a campaign with players online, and joining as a
+player. `python3 tools/guide/check.py` (in CI) checks every control it names is still on the pages.
+
 **Rule book:** `dist/rules.html` teaches the game: making a team, the fight, wounds, first
 aid and recovery, battles of hundreds, the march and the camp, and weather and works,
 following one team from the road to Towton into camp; then the other eras, guns and fire
@@ -164,6 +168,7 @@ python -m gravewounds selfplay --field wanat-2008   # the enemy commander on bot
 
 `build.py` writes:
 
+- `dist/guide.html`, how to play: `templates/guide.html`, copied as it is.
 - `dist/rules.html`, the rule book: chapters in `templates/rules/*.md`, every number filled
   in from the data (`gravewounds/rulebook.py`, and `rulebook_later.py` for chapters 9-13);
   the index is gathered from the terms set in bold (`rulebook.index_terms`)

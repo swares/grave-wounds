@@ -2,7 +2,7 @@
 
     python build.py            -> dist/tables.pdf, dist/tables.md,
                                   dist/gravewounds-data.json, dist/roller.html, dist/travel.html,
-                                  dist/field.html, dist/team.html, dist/rules.html (the rule book),
+                                  dist/field.html, dist/team.html, dist/rules.html (the rule book), dist/guide.html (how to play),
                                   dist/campaign.html (the GM's console over the pages),
                                   index.html (start page for GitHub Pages)
 """
@@ -2143,6 +2143,7 @@ def main() -> int:
     chtml = chtml.replace("/*__TRAVELRULES_JS__*/", travelrules_js).replace(CAMP_MARK, camp_js).replace("/*__TRAVELDAY_JS__*/", travelday_js)
     chtml = chtml.replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":"))).replace("/*__NET_JS__*/", net_js)   # players online
     (DIST / "campaign.html").write_text(chtml.replace("/*__CAMPAIGN_DATA__*/null", json.dumps(campaign_bundle(d), separators=(",", ":"))), encoding="utf-8")
+    (DIST / "guide.html").write_text((ROOT / "templates" / "guide.html").read_text(encoding="utf-8"), encoding="utf-8")   # how to play: the pages, mode by mode
     (ROOT / "index.html").write_text(index_page(d), encoding="utf-8")
     print("Built:", ", ".join(p.name for p in sorted(DIST.iterdir())), "+ index.html")
     return 0
