@@ -52,3 +52,14 @@ place_kinds:
   village:   {name: "Village"}
   town:      {name: "Town"}
   landmark:  {name: "Landmark"}
+
+# Fog of war on the travel map: how far a side's forces see the enemy's (a player online sees what
+# his side sees). PLACEHOLDER numbers, not yet calibrated from period sources (docs/backlog.md):
+# hexes by day in clear weather, by the observing force's type; halved (at least 1) in rain or at
+# dusk or by moonlight; 1 in fog, heavy rain, a storm or a dark night. A force in woods or a town or
+# village is seen only from the next hex; a force next to one of the side's is always seen.
+sight:
+  hexes: {foot: 2, mounted: 4, wagons: 1}
+  halved: {conditions: [rain], light: [dusk, moonlit]}
+  one: {conditions: [fog, heavy_rain, storm], light: [night]}
+  hidden_in: [forest, village, town]

@@ -149,6 +149,15 @@ online** still works for a fight run without the console. A fight set up from th
 brings the named men with its forces in as themselves (the fighters they are on the roller), so his
 fight comes to his page as soon as it is set up.
 
+**His map.** Under **Your map** his page shows the travel map as his side knows it, drawn by the
+travel map's own page (in a frame, `travel.html#seat`, which keeps and saves nothing of its own):
+the terrain and places, his side's forces with their routes and camps, and of the enemy only the
+forces his side's forces can see now (ringed red: name, side, foot or mounted, and a rough size such
+as "about 500", nothing more), and, faded, where each one was last seen and when. What a side sees is
+the travel map's fog of war (`docs/travel.md`, Fog of war); each side's last sightings are kept with
+the map as the clock moves. The console sends him only that view, so where an unseen enemy is never
+reaches his page.
+
 **He proposes his force's orders.** Under each force his men are with, his page offers its orders
 as the console's **Orders** row does (a route to one of the map's places or a waypoint, march or
 halt, rest until next morning, clear the route, make a camp it can make), but not the enemy's
@@ -170,7 +179,8 @@ and his page answers, by themselves; his room stays his. Without a room server i
 as before. See `worker/README.md` to deploy it, what it costs (nothing, on Cloudflare's free plan)
 and what it does not do.
 
-Not yet: a relay (TURN) for strict networks, and the travel and field maps on his page.
+Not yet: a relay (TURN) for strict networks, proposing a route by clicking his map, and the field
+map on his page.
 
 ## The log
 
@@ -232,7 +242,8 @@ is taken in once. `python3 tools/net/console.py` (in CI, with the other browser 
 console and a player's page in browser profiles of their own: his men, his force and the public
 news shown and nothing of the enemy's or the GM's notes, the march followed by changes only, the
 men he plays changed, his proposals accepted, declined, ignored when not his and turned off, his page and the console each reloaded and joined again, and his fight on the
-console's roller played from his page on the same link. `python3 tools/net/rooms.py` connects the
+console's roller played from his page on the same link, and his map: his side's forces, the enemy
+his side sees, nothing of the enemy it does not, and a faded mark where an enemy was last seen. `python3 tools/net/rooms.py` connects the
 console and two players through room codes (the room Worker's own code, run locally): one by his
 link, one by typing her code, a wrong code told, and a player's page and then the console reloaded,
 both coming back by themselves. `node tools/net/roomscheck.mjs` checks the Worker itself.

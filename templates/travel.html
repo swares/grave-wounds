@@ -75,6 +75,8 @@ button:disabled{opacity:.45;cursor:default}
 .force.s0 circle.body{fill:var(--side0)}.force.s1 circle.body{fill:var(--side1)}.force.s2 circle.body{fill:var(--side2)}.force.s3 circle.body{fill:var(--side3)}
 .force .ring{fill:none;stroke:none;stroke-width:2.2}
 .force.sel .ring{stroke:var(--ink)}
+.force.ghost{opacity:.45}.force.ghost .ring{stroke:var(--ink);stroke-dasharray:2 2}   /* a player's map: an enemy where it was last seen */
+.force.spotted .ring{stroke:var(--blood)}                                             /* a player's map: an enemy his side sees now */
 .force:focus{outline:none}.force:focus .ring{stroke:var(--ink);stroke-dasharray:1 2}
 .legend{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px 12px;font-size:.82rem}
 .legend span{display:flex;align-items:center;gap:6px}
@@ -284,13 +286,33 @@ function terrainCss(){
   $("#terrain-css").textContent = rules(0, "") + `@media (prefers-color-scheme:dark){${rules(1, ':root:not([data-theme="light"]) ')}}` + rules(1, ':root[data-theme="dark"] ');
 }
 function polyline(path){ return path.map(h => xy(h).map(v => v.toFixed(1)).join(",")).join(" ") }
-function renderMap(){
-  const m = curMap(), cols = m.rows[0].length, rows = m.rows.length, f = selForce(), sd = sides();
+function hexesSvg(m){                          // the map's hexes, by terrain
   let hx = "";
-  for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++){
+  for (let r = 0; r < m.rows.length; r++) for (let c = 0; c < m.rows[0].length; c++){
     const t = BYKEY[m.rows[r][c]];
     hx += `<polygon class="hx t-${t.id}" data-h="${c},${r}" points="${pts(xy([c, r]))}"/>`;
   }
+  return hx;
+}
+function placeMark(p, x, y){                   // a place's mark, by its kind
+  if (p.kind === "objective") return `<path class="mk" d="M${x - 1} ${y + 7}V${y - 8}l8 3-8 3"/>`;
+  if (p.kind === "camp") return `<path class="mk" d="M${x - 6} ${y + 5}L${x} ${y - 6}L${x + 6} ${y + 5}Z"/>`;
+  if (p.kind === "landmark") return `<circle class="mk" cx="${x}" cy="${y}" r="2.2"/>`;
+  return `<rect class="mk" x="${x - 3.5}" y="${y - 3.5}" width="7" height="7"/>`;
+}
+function placesSvg(){                          // the map's places, named
+  let out = "";
+  for (const p of baseMap().places || []){
+    const [x, y] = xy(p.hex);
+    const depot = p.depot?.length ? ` (depot of ${p.depot.join(", ")})` : "";   // where its sides' forces refill their supplies
+    const spoken = p.tongues?.length ? `; people speak ${tongueNames(p.tongues)}` : "";   // the place's own tongues (else the map's)
+    out += `<g class="place ${p.kind}${depot ? " depot" : ""}"><title>${esc(p.name + depot + spoken)}</title>${placeMark(p, x, y)}<text x="${(x + 8).toFixed(1)}" y="${(y - 7).toFixed(1)}">${esc(p.name)}${depot ? " ⚑" : ""}</text></g>`;
+  }
+  return out;
+}
+function renderMap(){
+  const m = curMap(), cols = m.rows[0].length, rows = m.rows.length, f = selForce(), sd = sides();
+  const hx = hexesSvg(m);
   let over = "";
   const L = f ? leaderOf(f) : null;
   for (const o of forcesHere()) if (o !== L && o.path) over += `<polyline class="route other" points="${polyline(o.path.slice(o.index))}"/>`;
@@ -302,16 +324,7 @@ function renderMap(){
     });
     L.waypoints.forEach((w, i) => { const [x, y] = xy(w); over += `<g class="wp"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5.5"/><text x="${x.toFixed(1)}" y="${(y + 2.8).toFixed(1)}">${i + 1}</text></g>` });
   }
-  for (const p of baseMap().places || []){
-    const [x, y] = xy(p.hex);
-    const mk = p.kind === "objective" ? `<path class="mk" d="M${x - 1} ${y + 7}V${y - 8}l8 3-8 3"/>`
-      : p.kind === "camp" ? `<path class="mk" d="M${x - 6} ${y + 5}L${x} ${y - 6}L${x + 6} ${y + 5}Z"/>`
-      : p.kind === "landmark" ? `<circle class="mk" cx="${x}" cy="${y}" r="2.2"/>`
-      : `<rect class="mk" x="${x - 3.5}" y="${y - 3.5}" width="7" height="7"/>`;
-    const depot = p.depot?.length ? ` (depot of ${p.depot.join(", ")})` : "";   // where its sides' forces refill their supplies
-    const spoken = p.tongues?.length ? `; people speak ${tongueNames(p.tongues)}` : "";   // the place's own tongues (else the map's)
-    over += `<g class="place ${p.kind}${depot ? " depot" : ""}"><title>${esc(p.name + depot + spoken)}</title>${mk}<text x="${(x + 8).toFixed(1)}" y="${(y - 7).toFixed(1)}">${esc(p.name)}${depot ? " ⚑" : ""}</text></g>`;
-  }
+  over += placesSvg();
   for (const o of forcesHere()) if (o.camp){
     const [x, y] = xy(o.camp.hex), letter = { bivouac: "B", watched: "W", staked: "S", fortified: "F", quartered: "Q" }[o.camp.kind] || "C";
     over += `<g class="campmk ${o.camp.kind}"><circle class="ring" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="12.5"/><text x="${(x + 9).toFixed(1)}" y="${(y + 13).toFixed(1)}">${letter}</text></g>`;
@@ -627,7 +640,45 @@ function followStorage(e){                     // another tab, or the campaign c
   if (e.key === KEY && e.newValue !== null) S.msg = "The day moved on elsewhere (another tab, or the campaign console): this map shows it now.";
   render();
 }
+/* ---------- a player's map: this page in a frame on his campaign page, drawing only what the GM's
+   console sends him (his side's forces, the enemy his side sees, and where it last saw others). It
+   reads and writes nothing of its own: no state, no clock, no saving. ---------- */
+const CAMP_LETTER = { bivouac: "B", watched: "W", staked: "S", fortified: "F", quartered: "Q" };
+function seatForce(o, k, cls, title, n){         // one force's mark on his map
+  const [x0, y0] = xy(o.pos), x = x0 + (n - 1) * 7, y = y0 + (n - 1) * 5;
+  return `<g class="force s${k} ${cls}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><title>${esc(title)}</title><circle class="ring" r="10"/><circle class="body" r="7.5"/><text dy="0.35em">${esc(initials(o.name))}</text></g>`;
+}
+function seatShow(v){
+  if (!v || !DATA.maps[v.mapId]){ $("#map").innerHTML = '<p class="muted">No map yet.</p>'; return }
+  S.mapId = v.mapId; S.edits = v.edits ? { [v.mapId]: v.edits } : {};
+  const m = curMap(), cols = m.rows[0].length, rows = m.rows.length, kOf = sd => Math.max(0, v.sides.indexOf(sd)) % 4, stack = {};
+  const type = t => (FT[t] || { name: t }).name.toLowerCase();
+  const count = o => (stack[o.pos.join()] = (stack[o.pos.join()] || 0) + 1);
+  let over = v.ours.filter(o => o.route.length > 1).map(o => `<polyline class="route" points="${polyline(o.route)}"/>`).join("") + placesSvg();
+  for (const o of v.ours.filter(f => f.camp)){
+    const [x, y] = xy(o.camp.hex);
+    over += `<g class="campmk ${o.camp.kind}"><circle class="ring" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="12.5"/><text x="${(x + 9).toFixed(1)}" y="${(y + 13).toFixed(1)}">${CAMP_LETTER[o.camp.kind] || "C"}</text></g>`;
+  }
+  for (const o of v.last) over += seatForce(o, kOf(o.side), "ghost", `${o.name} (${o.side}), ${type(o.type)}, ${o.size}: last seen here ${o.when}`, count(o));
+  for (const o of v.ours) over += seatForce(o, kOf(o.side), "", `${o.name} (${o.side}), ${type(o.type)}, ${o.men} men: ${o.order}`, count(o));
+  for (const o of v.seen) over += seatForce(o, kOf(o.side), "spotted", `${o.name} (${o.side}), ${type(o.type)}, ${o.size}: seen now`, count(o));
+  const VW = W * (cols + 0.5), VH = 1.5 * R * (rows - 1) + 2 * R;
+  $("#map").innerHTML = `<svg viewBox="0 0 ${VW.toFixed(1)} ${VH.toFixed(1)}" style="max-width:${Math.round(VW * 1.5)}px">${hexesSvg(m)}${over}</svg>`;
+  const light = v.light === "day" ? "" : `, ${v.light}`;
+  $("#seat-when").textContent = `${DATA.maps[v.mapId].name} · ${v.when} · ${v.weather}${light}`;
+  $("#seat-key").textContent = `${v.ours.length} of your side's forces; ${v.seen.length} enemy seen now (red ring)${v.last.length ? `, ${v.last.length} last seen (faded, where and when it was seen)` : ""}. Hover a mark for more.`;
+}
+function seatMain(){
+  document.querySelector(".wrap").innerHTML = `<p id="seat-when" style="margin:0"></p><div class="mapbox" id="map"></div><p class="muted" id="seat-key" style="margin:0;font-size:.85rem"></p>`;
+  terrainCss();
+  window.addEventListener("message", e => {
+    if (e.origin !== location.origin || e.source !== window.parent || e.data?.gw !== "seat-map") return;
+    seatShow(e.data.v);
+  });
+  window.parent.postMessage({ gw: "seat-map", ready: true }, location.origin);
+}
 function init(){
+  if (location.hash.startsWith("#seat")) return seatMain();   // a player's map: drawn from what it is sent, nothing of its own
   restore();
   applyFieldResult();
   window.addEventListener("storage", followStorage);
