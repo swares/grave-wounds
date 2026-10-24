@@ -52,10 +52,20 @@ and paste works with the room server setting left blank.
 ## Testing it
 
 `node tools/net/roomscheck.mjs` runs the Worker's own code with an in-memory stand-in for the Durable
-Object namespace (`tools/net/fakerooms.mjs`). To run the same checks against Cloudflare's local
-runtime, start `npx wrangler dev` here and run
-`ROOMS_LIVE=1 node tools/net/roomscheck.mjs`. `python3 tools/net/rooms.py` connects
-a console and two players' pages through it in a headless browser.
+Object namespace (`tools/net/fakerooms.mjs`). `python3 tools/net/rooms.py` connects a console and two
+players' pages through it in a headless browser. Both run in CI.
+
+To try it on Cloudflare's own local runtime, run `npx wrangler dev` here, then:
+
+```
+O="Origin: http://127.0.0.1:1"
+curl -s -X POST -H "$O" http://127.0.0.1:8787/rooms               # {"code":"SWORD-CAPE-14","key":"..."}
+curl -s -X PUT -H "$O" -H "X-Room-Key: <key>" -H "Content-Type: application/json" \
+  -d '{"data":"I"}' http://127.0.0.1:8787/rooms/<code>/invite       # {"v":1}
+curl -s -H "$O" "http://127.0.0.1:8787/rooms/<code>/invite?after=0" # {"v":1,"data":"I"}
+```
+
+With `npx wrangler dev --var ROOM_HOURS:0.0005`, the room is gone (404) a few seconds later.
 
 ## What it does not do
 

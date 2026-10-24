@@ -1098,7 +1098,12 @@ async function pgPeer(invite, onLost){                // his end of the connecti
       pgShow(whole, m.part ? Object.keys(m) : null);
       pgKeep(invite.seat, whole);
     },
-    onState: st => { if (st !== "open" && PG.peer === g) onLost() } });
+    onState: st => {
+      if (PG.peer !== g) return;                      // an old connection, closing
+      PG.state = st;
+      if (st === "open"){ pgStatus("Connected to the GM's console."); $("#p-join").hidden = true; PG.send = g.send }   // first, or back after a blink
+      else onLost(g);
+    } });
   PG.peer = g; PG.send = g.send;
   return g;
 }
@@ -1138,7 +1143,11 @@ async function pgAnswer(R, code, inv, mine){          // one invitation from his
   try {
     const invite = await NET.unpackCode(inv.data);
     pgReady(invite);
-    const g = await pgPeer(invite, () => { if (mine()){ pgStatus("Lost the GM's console. Your last screen stays below; waiting to be invited again..."); pgRoom().catch(err => pgStatus(String(err.message || err))) } });
+    const g = await pgPeer(invite, lost => setTimeout(() => {   // lost (not a blink that mends itself): wait in the room for the next invitation
+      if (!mine() || PG.peer !== lost || PG.state === "open") return;
+      pgStatus("Lost the GM's console. Your last screen stays below; waiting to be invited again...");
+      pgRoom().catch(err => pgStatus(String(err.message || err)));
+    }, 2000));
     await R.reply(code, inv.v, g.reply);
     pgStatus("Connecting to the GM's console...");
     return true;
