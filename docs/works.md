@@ -1,4 +1,4 @@
-# Grave Wounds: camps and defensive works (playtest draft, medieval)
+# Grave Wounds: camps and defensive works (playtest draft)
 
 All the numbers are in `data/works.yaml`. The travel page, the roller's battle map and the
 Python engine (`gravewounds/travel.py` and `gravewounds/combat.py`) read them from there.
@@ -83,13 +83,13 @@ to send it there. Until then the fight button is off and says why.
 - the defending force's camp laid out in the middle, sized for its men. If the selected
   force has no camp, the fight is at a camp within reach: a friendly force's first (that
   force defends, with the selected one beside it), else an enemy's (the enemy defends).
-- up to eight men from each defending force inside the camp, the camp's own force nearest
-  the middle. Friendly forces within reach of the camp join the defence if they had
+- up to 8 men from each defending force inside the camp (more if more of its named men are on
+  the roller), the camp's own force nearest the middle. Friendly forces within reach of the camp join the defence if they had
   arrived by the time the fight starts; a force still on the road misses it, and the page
   says so. A force that made camp counts as there from when it began, since it was there
   while it dug.
-- every force from another side within reach, up to eight men each, at the far edge facing
-  the way in, as the attackers
+- every force from another side within reach, up to 8 men each (plus any more named men), at
+  the far edge facing the way in, as the attackers
 - the fight's date and time: once the defender is ready (its camp finished) and the last
   attacker has arrived. The page says which.
 - **If the attackers arrive before the camp is finished, the GM chooses.** The page says
@@ -115,10 +115,15 @@ Linear works lie along the edges between hexes. The others fill a hex.
 | Stone wall | edge | blocks | −50% | −20% attacking up; only reach 2 strikes over it | – |
 | Stakes | hex | +1; no horses | – | – | 2 |
 | Abatis (felled trees) | hex | +2; no horses | −20% to a man in it | – | 8 |
-| Pavise | hex | free | −20% to the man behind it | – | – |
+| Pavise | hex | free | −20% to a man in its hex | – | – |
 | Wagon | hex | blocks | −40% to a man behind it | – | 10 |
+| Barbed wire | hex | +3; no horses | – | – | 6 |
+| Bunker | hex | +1; no horses | −50% to a man in it | – | – |
+| Trench | hex | +1; no horses | −40% to a man in it | – | – |
+| Downed helicopter | hex | +2; no horses | −30% to a man in its hex | – | – |
 
-- **Cover** applies to a man right behind the work, on the side away from the shooter.
+- **Cover** applies to a man right behind the work, on the side away from the shooter, or for
+  a work that fills a hex and says so, to a man in that hex. Only a wagon covers the man behind it.
 - **Height** applies when the attacker is on the low side and the defender on the high,
   inner side of a bank, ditch or wall.
 - A man can strike over a palisade, a barred gate or a wall only with a spear, a bill or
