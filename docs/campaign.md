@@ -28,6 +28,25 @@ follow.
 **Where things stand** shows the team (and its losses and prisoners), the named men (with a force,
 sick or mending, dead), the map and its day, and the fight, waiting or under way.
 
+## Run the march
+
+In the **March** phase the console shows the travel map's clock (the day, the time, the date, the
+end of the day's marching) and its forces: what each is doing (marching to where, halted, making or
+in a camp, resting, with another's column), where it is, how many are fit, and its fatigue.
+
+**Until something happens** moves the map's clock on exactly as the travel map's button of that name
+does: every force with a march order marches until one arrives, forces of different sides meet, or
+a camp is finished, and the nights pass on the way with their rest, food, water, supplies, sickness,
+incidents and the named men's feet, keep and kit. When the day's marching is done the button reads
+**Pass the night**. What happened goes into the campaign's log. When forces meet, the console says
+so and puts the travel map in the frame with the force selected, to set up the fight with **Fight
+here**; the console then follows the fight as before.
+
+The console never keeps the day itself: each press starts from what the travel map last saved and
+saves the result, and the page in the frame is reloaded to show it. Routes, camps, orders and the
+fight's set-up are still given on the travel map. If the travel map is also open in another tab,
+reload it before using it: it still shows the day it had, and would save that over the console's.
+
 ## The log
 
 Each phase the campaign moves to, and why, goes into the campaign's log at the travel map's day,
@@ -44,9 +63,8 @@ they may hold a service key, and they belong to the browser, not the game.
 
 ## What it does not do yet
 
-- It guides; it does not run the pages' rules itself. The march day, weather, camp and disease are
-  still run on the travel map; running them from the console needs the travel map's rules lifted out
-  of the page first, as the roller's strike was (`templates/strike.js`).
+- It runs the march's clock (Run the march), but not the rest: orders, routes, camps and the
+  fight's set-up are given on the travel map, and the fights on the roller and the field map.
 - It notices fights sent and fights won; it does not yet notice the end of a march day, the end of a
   season, a man's death or a camp's sickness by themselves (the GM moves on with **Done**).
 - The other pages do not link back to it; open it from the start page.
@@ -57,4 +75,8 @@ they may hold a service key, and they belong to the browser, not the game.
 `node tools/campaign/test.js` checks the console's reading of the pages: the status, what it
 notices, and save files. `python3 tools/campaign/loop.py` follows a campaign round the loop in a
 headless browser over the real pages, served by a local web server: the team rolled in the frame,
-a fight sent from the travel map, a winner marked on the roller, notes, and a save, clear and load.
+the travel map's forces given routes and the clock run from the console until they meet, a long
+march across nights until a force arrives, a fight sent from the travel map, a winner marked on the
+roller, notes, and a save, clear and load. `python3 tools/travel/parity.py` (in CI) also checks the
+console's way into the day with no page: the summary changes nothing, a press moves on and saves,
+and a meeting is reported.

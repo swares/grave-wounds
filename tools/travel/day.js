@@ -130,6 +130,29 @@ for (const id of MAPS){
     assert.ok(a.msgs.some(m => /meet|arrives|Night passes|marching is done/.test(m)), a.msgs.slice(0, 4).join(" | "));
   });
 }
+// The campaign console's way in: it never holds the day, it starts from what is saved each time.
+check("the console's march: a summary looks without changing anything, a step moves on and saves", () => {
+  const D = fresh(21).D;
+  setUp(D, "towton-1461");
+  D.save();
+  const before = snapshot(D), sum = makeTravelDay(DATA, RULES).marchSummary();
+  assert.equal(snapshot(D), before, "the summary changed the saved state");
+  assert.ok(sum.forces.length >= 2 && sum.day === 1 && sum.working, JSON.stringify(sum).slice(0, 200));
+  assert.ok(sum.forces.some(f => f.order.startsWith("marching to")), sum.forces.map(f => f.order).join(", "));
+  let r = null, n = 0;
+  do { r = makeTravelDay(DATA, RULES, { roll100: parkMiller(99 + n) }).marchStep(); n++ } while (!r.met.length && n < 20);
+  assert.ok(r.met.length && r.met[0].length === 2, `no meeting after ${n} steps: ${r.text}`);
+  assert.match(r.text, /meet/);
+  const saved = JSON.parse(store.getItem("gravewounds-travel"));
+  assert.deepEqual(saved.clock["towton-1461"], { day: r.day, used: r.used }, "the step was not saved");
+  const orders = makeTravelDay(DATA, RULES).marchSummary().forces.map(f => f.order);
+  assert.ok(orders.some(o => o.startsWith("halted")) && !orders.some(o => o.startsWith("busy")), `after the meeting: ${orders.join(", ")}`);
+});
+check("the console's march with nothing saved: it says to choose a map", () => {
+  store.clear();
+  const D = makeTravelDay(DATA, RULES);
+  assert.equal(D.marchSummary(), null);
+});
 check("the day runs with no page: no document or window", () => assert.equal(typeof document + typeof window, "undefinedundefined"));
 
 const tally = failed ? `${failed} failed, ${passed} passed` : `all ${passed} passed`;
