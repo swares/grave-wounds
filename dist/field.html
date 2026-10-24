@@ -6117,10 +6117,16 @@ function tell(exchange, points){                  // a new entry in the narrativ
   S.story.push(e);
   if (narratorOn()) narrate(e);
 }
-const narratorOn = () => !!NARR.key && !!narrModel() && !!narrUrl();
+const narratorOn = () => (!!NARR.key || narrLocal()) && !!narrModel() && !!narrUrl();
 const narrProvider = () => FD.units.narrator.providers[NARR.provider];
 const narrModel = () => NARR.model || narrProvider().model;
 const narrUrl = () => (NARR.provider === "openai" ? NARR.url || narrProvider().url : narrProvider().url);
+const narrAddress = () => (URL.canParse(narrUrl()) ? new URL(narrUrl()) : null);   // null until the address is a full one
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "[::1]"]);
+const narrLocal = () => {                         // an OpenAI-compatible model on this computer (Ollama, LM Studio): no key needed
+  const h = NARR.provider === "openai" ? narrAddress()?.hostname : null;
+  return !!h && (LOCAL_HOSTS.has(h) || h.endsWith(".localhost"));
+};
 const warVoice = () => { const N = FD.units.narrator; return N.battles[FD.tables[S.table]?.battle] || N.default };   // the voice for this battle's war
 const voiceKey = () => (S.voice && FD.units.narrator.voices[S.voice] ? S.voice : warVoice());   // the GM's choice for this battle, else the war's
 const narrVoice = () => FD.units.narrator.voices[voiceKey()].style;
@@ -6137,7 +6143,7 @@ function narrPrompt(e){                           // [system, user]: the rules i
 }
 function narrRequest(system, user){               // [url, fetch options] for the provider; the key goes only in its header
   const N = FD.units.narrator;
-  if (NARR.provider === "openai") return [narrUrl(), { method: "POST", headers: { "content-type": "application/json", authorization: "Bearer " + NARR.key },
+  if (NARR.provider === "openai") return [narrUrl(), { method: "POST", headers: { "content-type": "application/json", ...(NARR.key ? { authorization: "Bearer " + NARR.key } : {}) },
     body: JSON.stringify({ model: narrModel(), max_tokens: N.max_tokens, messages: [{ role: "system", content: system }, { role: "user", content: user }] }) }];
   return [narrUrl(), { method: "POST", headers: { "content-type": "application/json", "x-api-key": NARR.key, "anthropic-version": "2023-06-01", "anthropic-dangerous-direct-browser-access": "true" },
     body: JSON.stringify({ model: narrModel(), max_tokens: N.max_tokens, system, messages: [{ role: "user", content: user }] }) }];
@@ -6154,7 +6160,8 @@ function narrate(e){                              // one passage, in turn after 
       const res = await fetch(url, opts);
       let j = null;
       try { j = await res.json() }catch(err){ j = null /* not JSON: the status says what went wrong */ }
-      if (!res.ok) throw new Error(j?.error?.message || `the service answered ${res.status}`);
+      const fault = Array.isArray(j) ? j[0] : j;      // Gemini's OpenAI-compatible address sends its error inside a list
+      if (!res.ok) throw new Error(fault?.error?.message || `the service answered ${res.status}`);
       e.prose = narrText(j) || null;
       if (!e.prose) e.err = "an empty answer";
     } catch (err){ e.err = String(err.message || err).slice(0, 160) }
@@ -6187,11 +6194,15 @@ function renderNarrator(){
   $("#narr-url").placeholder = narrProvider().url;
   $("#narr-remember").checked = NARR.remember;
   $("#narr-forget").disabled = !NARR.key;
-  const host = (() => { try { return new URL(narrUrl()).host }catch(e){ return "the address above" /* not a full address yet */ } })();
-  $("#narr-note").textContent = `Each turning point's plain text, the battlefield's name, the sides and the war, and the last ${nOf(FD.units.narrator.context, "passage")} are sent to ${host} with your key, and nowhere else; the service charges your key. `
-    + (NARR.remember ? "The key is kept in this browser until you press Forget." : "The key is kept only while this page is open.") + " The passages use only what the game gives them; the plain line stays under each.";
+  const host = narrAddress()?.host || "the address above";
+  const sent = `Each turning point's plain text, the battlefield's name, the sides and the war, and the last ${nOf(FD.units.narrator.context, "passage")} are sent to ${host}`;
+  const kept = NARR.remember ? "The key is kept in this browser until you press Forget." : "The key is kept only while this page is open.";
+  let note = `${sent} with your key, and nowhere else; the service bills your key or counts the calls against its free allowance. ${kept}`;
+  if (narrLocal() && !NARR.key) note = `${sent}, a model on this computer, and nowhere else; no key is needed.`;
+  $("#narr-note").textContent = note + " The passages use only what the game gives them; the plain line stays under each.";
   const voice = FD.units.narrator.voices[voiceKey()].name.toLowerCase();
-  $("#narr-status").textContent = narratorOn() ? `On: ${narrModel()}, writing ${voice}.` : `Off: enter a key (and, for an OpenAI-compatible service, a model) to turn it on. Voice: ${voice}.`;
+  $("#narr-status").textContent = narratorOn() ? `On: ${narrModel()}, writing ${voice}.`
+    : `Off: enter a key (and, for an OpenAI-compatible service, its address and a model; a model on this computer, at localhost, needs no key) to turn it on. Voice: ${voice}.`;
 }
 function narrSave(){                              // the settings kept only when Remember is ticked; otherwise nothing is stored
   try {

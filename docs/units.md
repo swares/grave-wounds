@@ -934,10 +934,26 @@ line stays under each passage, so what the game decided can always be checked.
 
 - **Providers.** Anthropic (Claude, `claude-haiku-5-5` by default, called from the browser with
   Anthropic's browser-access header) or any OpenAI-compatible chat-completions service (an
-  address and model the player enters). The model name can be changed.
+  address and model the player enters). The model name can be changed. Both Anthropic's and
+  OpenAI's APIs are paid with prepaid credit, separate from any chat subscription. Two free
+  routes, both through *OpenAI-compatible*:
+  - *Google Gemini's free tier* (an AI Studio key, no card): address
+    `https://generativelanguage.googleapis.com/v1beta/openai/chat/completions`, and a Flash or
+    Flash-Lite model named as AI Studio lists it. Its limits are per Google project and modest,
+    but one call per turning point fits well inside them. On the free tier Google may use what
+    is sent (the turning points' plain text) to improve its products. Tested in October 2026:
+    the page's call passes Google's browser (CORS) check from a website and from a file opened
+    on the computer. (The OpenAI JavaScript library's extra `x-stainless-*` headers do not pass
+    it; the page does not use that library.)
+  - *A model on the player's own computer* (Ollama, LM Studio): its address at `localhost`,
+    `127.0.0.1` or `[::1]`, for example `http://localhost:11434/v1/chat/completions`, and its
+    model name; no key is needed there. If the local server refuses the page, allow the page's
+    origin in its settings (Ollama: `OLLAMA_ORIGINS`). Not yet tested against a local server.
 - **The key.** Sent only to the provider's address, in its header; never in the battle's save.
   Kept only while the page is open, unless **Remember on this computer** is ticked; **Forget the
-  key** clears it. The service charges the key's owner.
+  key** clears it. The service charges the key's owner, or counts the calls against a free
+  allowance. A service's error message is shown as it gave it (Gemini's, which comes inside a
+  list, included).
 - **Pace.** During a Run, play does not wait: passages are written in turn and appear as they
   arrive. With no key, or when a call fails, the plain entry stands, with the reason shown.
 

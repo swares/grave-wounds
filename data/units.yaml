@@ -1132,7 +1132,8 @@ commander:
 # voice for a battle on the page (kept with the battle); each has a `name` for that list and a
 # `style` the model is told to write as. `providers`: where
 # each kind of service is called, and its default model (none for OpenAI-compatible services:
-# the player names one). It may use only the facts it is given. Design choices.
+# the player names one; an address at localhost needs no key). It may use only the facts it is
+# given. Design choices.
 narrator:
   voices:
     chronicle: {name: "A chronicle", style: "a chronicler's account of the day, as a clerk or herald might set it down soon after from those who were there: plain and formal, in modern English"}
