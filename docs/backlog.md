@@ -19,8 +19,8 @@ When an item is done, delete it here and note it in the pull request that closes
   Python; `templates/travelday.js`, played with no page), and the console runs the march's clock
   (Run the march), gives routes, orders and camps, sets up the fights on offer and takes a
   battle's result back. Still on the travel map: columns, the forces' own settings, adding forces
-  and painting. A travel map open in
-  another tab keeps the day it had and would save it over the console's.
+  and painting. A travel map open in another tab follows the day when it changes elsewhere; the
+  roller and the team builder open in another tab still keep what they loaded until reloaded.
   The day still keeps the named men, purses and experience in the browser's storage as the other
   pages do, and the stress rolls in ranks.js take the browser's dice, not the day's.
 - **Virtual GM, first cut.** The roller's strike is decided with no page (`templates/strike.js`),

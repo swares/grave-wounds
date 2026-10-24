@@ -68,8 +68,9 @@ ammunition is as the units left it, and the forces' clocks move on to the battle
 map still takes it itself if it is opened first; either way it is taken once.
 
 The console never keeps the day itself: each press starts from what the travel map last saved and
-saves the result, and the page in the frame is reloaded to show it. If the travel map is also open in another tab,
-reload it before using it: it still shows the day it had, and would save that over the console's.
+saves the result, and the page in the frame is reloaded to show it. A travel map open in another
+tab follows too: when the day changes elsewhere it takes the new one and says so, rather than save
+the day it had over it. (The roller and the team builder in another tab do not yet: reload them.)
 
 ## The log
 
