@@ -3313,7 +3313,7 @@ const CAMPAIGN = (() => {
   // death, sickness breaking out in a force, the end of a day on the travel map, the end of a season.
   // -> {news: [{mark, value, why, phase?}], forget: [marks]}: forget, the outbreaks that are over (a new
   // one is news again).
-  const thousands = n => String(n).replaceAll(/\B(?=(\d{3})+(?!\d))/g, ",");
+  const thousands = n => Number(n).toLocaleString("en-US");   // 25,000
   function deathNews(st, seen, CD){
     return st.named.fallen.filter(x => !seen["dead:" + x.uid]).map(x => {
       const of = x.died ? " of " + (CD.diseases?.[x.died] || x.died).toLowerCase() : "";

@@ -88,7 +88,11 @@ check("a file that is not a save, or a damaged one, is refused", () => {
 
 /* ----- what happens by itself: noticed once each ----- */
 const CDN = { ...CD, weather: { rain: "Rain" }, diseases: { typhus: "Camp fever", fever: "Wound fever" } };
-const apply = (seen, r) => { for (const n of r.news) seen[n.mark] = n.value; for (const k of r.forget) delete seen[k]; return seen };
+function apply(seen, r){                          // the news taken, as the console takes it
+  for (const n of r.news) seen[n.mark] = n.value;
+  for (const k of r.forget) delete seen[k];
+  return seen;
+}
 const travelWith = (forces, day, wx = {}) => J({ mapId: "towton-1461", forces: { "towton-1461": forces }, clock: { "towton-1461": { day, used: 0 } }, wx: { "towton-1461": { days: wx } }, fought: [] });
 const sickCase = d => ({ d, inc: 0, step: 3 }), incubating = d => ({ d, inc: 2, step: 0 });
 check("a named man's death is news once, with what he died of and his force", () => {
@@ -107,7 +111,7 @@ check("sickness breaking out in a force is news once; over and back, news again;
   const well = travelWith([{ id: 3, name: "Edward's army", side: "York", men: 900, health: { cases: [] } }], 2);
   const seen = { "day:towton-1461": 2 };
   let r = C.notices(C.status({ "gravewounds-travel": ill }, CDN), seen, CDN);
-  assert.deepEqual(r.news.map(n => n.why).sort(), ["Camp fever has broken out in Edward's army: 2 sick.", "Wound fever has broken out in Edward's army: 1 sick."]);
+  assert.deepEqual(r.news.map(n => n.why).sort((a, b) => a.localeCompare(b)), ["Camp fever has broken out in Edward's army: 2 sick.", "Wound fever has broken out in Edward's army: 1 sick."]);
   apply(seen, r);
   assert.equal(C.notices(C.status({ "gravewounds-travel": ill }, CDN), seen, CDN).news.length, 0);
   r = C.notices(C.status({ "gravewounds-travel": well }, CDN), seen, CDN);
