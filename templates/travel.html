@@ -131,6 +131,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
         <div class="toolbar" style="min-width:0;max-width:100%">
           <select id="sel-map" aria-label="Map" style="width:auto;max-width:100%"></select>
           <span class="muted" id="map-scale"></span>
+          <select id="sel-view" aria-label="Whose view of the map" title="The GM sees everything; or the map as one side sees it (fog of war: what a player of that side sees online)" style="width:auto"></select>
         </div>
       </div>
       <div class="toolbar" role="group" aria-label="What clicking the map does">
@@ -276,7 +277,7 @@ const WK = DATA.works, CAMP_HEX_M = DATA.battle_hex_m, CG = DATA.ground;
 /*__CAMP_JS__*/
 /* ---------- the travel map's day: templates/travelday.js (state, march, night, the clock) ---------- */
 /*__TRAVELDAY_JS__*/
-const { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, roll100 } = makeTravelDay(DATA, RULES);
+const { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, sightings, roll100 } = makeTravelDay(DATA, RULES);
 /* ---------- drawing ---------- */
 const R = 12, W = Math.sqrt(3) * R;
 const xy = ([c, r]) => [W * (c + 0.5 * (r & 1)) + W / 2, 1.5 * R * r + R];
@@ -311,12 +312,27 @@ function placesSvg(){                          // the map's places, named
   }
   return out;
 }
+let VIEW_AS = "";                               // the GM's map as one side sees it ("": everything); this page only, never saved
+function renderViewChoice(sd){
+  if (VIEW_AS && !sd.includes(VIEW_AS)) VIEW_AS = "";
+  const opts = `<option value="">Everything (GM)</option>` + sd.map(x => `<option value="${esc(x)}">As ${esc(x)} sees it</option>`).join("");
+  const sel = $("#sel-view");
+  if (sel.dataset.opts !== opts){ sel.innerHTML = opts; sel.dataset.opts = opts }
+  sel.value = VIEW_AS;
+}
+function viewFilter(){                         // as one side sees it: its forces, the enemy it sees now, and where it last saw the rest
+  if (!VIEW_AS) return { shows: () => true, ghosts: [], seen: new Set() };
+  const seen = new Set(sightings(VIEW_AS).map(o => o.id));
+  const ghosts = Object.entries(S.seen[S.mapId]?.[VIEW_AS] || {}).filter(([id]) => !seen.has(+id)).map(([, x]) => x);
+  return { shows: o => o.side === VIEW_AS || seen.has(o.id), ghosts, seen };
+}
 function renderMap(){
   const m = curMap(), cols = m.rows[0].length, rows = m.rows.length, f = selForce(), sd = sides();
-  const hx = hexesSvg(m);
+  const hx = hexesSvg(m), V = viewFilter();
+  renderViewChoice(sd);
   let over = "";
   const L = f ? leaderOf(f) : null;
-  for (const o of forcesHere()) if (o !== L && o.path) over += `<polyline class="route other" points="${polyline(o.path.slice(o.index))}"/>`;
+  for (const o of forcesHere()) if (o !== L && o.path && (!VIEW_AS || o.side === VIEW_AS)) over += `<polyline class="route other" points="${polyline(o.path.slice(o.index))}"/>`;
   if (L && L.path){
     const sch = schedule(m, L.path.slice(L.index), colType(L), L.day, L.used, { hpdList: hpdList(L.day), ground: knownGround(L.day), speed: colSpeed(L) || 100 });
     over += `<polyline class="route" points="${polyline(L.path.slice(L.index))}"/>`;
@@ -326,15 +342,19 @@ function renderMap(){
     L.waypoints.forEach((w, i) => { const [x, y] = xy(w); over += `<g class="wp"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5.5"/><text x="${x.toFixed(1)}" y="${(y + 2.8).toFixed(1)}">${i + 1}</text></g>` });
   }
   over += placesSvg();
-  for (const o of forcesHere()) if (o.camp){
+  for (const o of forcesHere()) if (o.camp && V.shows(o)){
     const [x, y] = xy(o.camp.hex), letter = { bivouac: "B", watched: "W", staked: "S", fortified: "F", quartered: "Q" }[o.camp.kind] || "C";
     over += `<g class="campmk ${o.camp.kind}"><circle class="ring" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="12.5"/><text x="${(x + 9).toFixed(1)}" y="${(y + 13).toFixed(1)}">${letter}</text></g>`;
   }
   const stack = {};
-  for (const o of forcesHere()){
+  for (const x of V.ghosts){                     // where the side last saw an enemy force (not a force to click)
+    const n = stack[x.pos.join()] = (stack[x.pos.join()] || 0) + 1, [x0, y0] = xy(x.pos), k = Math.max(0, sd.indexOf(x.side)) % 4;
+    over += `<g class="force s${k} ghost" style="pointer-events:none" transform="translate(${(x0 + (n - 1) * 7).toFixed(1)},${(y0 + (n - 1) * 5).toFixed(1)})"><title>${esc(x.name)} (${esc(x.side)}): last seen here ${esc(dateText(x.day, true))}, ${esc(clock(x.used, x.day))}</title><circle class="ring" r="10"/><circle class="body" r="7.5"/><text dy="0.35em">${esc(initials(x.name))}</text></g>`;
+  }
+  for (const o of forcesHere().filter(V.shows)){
     const n = stack[o.pos.join()] = (stack[o.pos.join()] || 0) + 1;   // forces sharing a hex fan out a little
     const [x0, y0] = xy(o.pos), x = x0 + (n - 1) * 7, y = y0 + (n - 1) * 5, k = sd.indexOf(o.side) % 4;
-    over += `<g class="force s${k} ${o === f ? "sel" : ""}" data-id="${o.id}" tabindex="0" role="button" aria-label="${esc(o.name)}, ${esc(FT[o.type].name)}, at ${esc(where(o.pos))}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><title>${esc(o.name)} · ${esc(FT[o.type].name)}</title><circle class="ring" r="10"/><circle class="body" r="7.5"/><text dy="0.35em">${esc(initials(o.name))}</text></g>`;
+    over += `<g class="force s${k} ${o === f ? "sel" : ""}${V.seen.has(o.id) ? " spotted" : ""}" data-id="${o.id}" tabindex="0" role="button" aria-label="${esc(o.name)}, ${esc(FT[o.type].name)}, at ${esc(where(o.pos))}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})"><title>${esc(o.name)} · ${esc(FT[o.type].name)}</title><circle class="ring" r="10"/><circle class="body" r="7.5"/><text dy="0.35em">${esc(initials(o.name))}</text></g>`;
   }
   const VW = W * (cols + 0.5), VH = 1.5 * R * (rows - 1) + 2 * R;
   $("#map").innerHTML = `<svg viewBox="0 0 ${VW.toFixed(1)} ${VH.toFixed(1)}" style="max-width:${Math.round(VW * 1.5)}px">${hx}${over}</svg>`;
@@ -709,6 +729,7 @@ function init(){
   $("#sel-map").innerHTML = mapOptions();
   $("#sel-map").value = S.mapId;
   $("#sel-map").onchange = e => { S.mapId = e.target.value; S.msg = ""; render() };
+  $("#sel-view").onchange = e => { VIEW_AS = e.target.value; renderMap() };
   $("#in-ftype").innerHTML = Object.entries(FT).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   document.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { S.mode = b.dataset.mode; S.msg = ""; render() });
   const mapEl = $("#map");

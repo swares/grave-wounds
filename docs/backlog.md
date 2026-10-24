@@ -49,8 +49,7 @@ When an item is done, delete it here and note it in the pull request that closes
   them) and remembers where it last saw them; a player's map online shows only that. Still left
   out: the numbers are placeholders (calibrate them from research on period scouting and sighting
   distances: cavalry screens, patrols, dust and campfires, local reports), no scouting orders or
-  patrols, no false or stale reports beyond the last sighting, and the GM's own travel map has no
-  "as this side sees it" view.
+  patrols, no false or stale reports beyond the last sighting.
 - **Lethality, first cut.** Gritty | Standard | Heroic for player characters (wounds.yaml
   lethality): fate a season, Blood and the stop check, on every page. Still left out: fate does
   not save a man from drowning, a fall or the other hazards; the roller offers fate only on the hit

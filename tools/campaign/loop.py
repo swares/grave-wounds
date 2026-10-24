@@ -133,6 +133,17 @@ with sync_playwright() as p:
     pg.wait_for_function("() => JSON.parse(localStorage.getItem('gravewounds-travel')).mapId === 'towton-1461'", timeout=8000)
     check(json.loads(pg.evaluate(TRAVEL))["forces"]["towton-1461"] == towton, "back on the first map, its forces and orders are as they were")
     page_in_frame(pg).wait_for_function("() => typeof S === 'object' && S.mapId === 'towton-1461'", timeout=15000)
+    # the GM's travel map as one side sees it: its own forces, and of the enemy only what it sees
+    tf = page_in_frame(pg)
+    side, unseen, mine_n = tf.evaluate("""() => { const fs = forcesHere(), sd = fs[0].side, seen = new Set(sightings(sd).map(o => o.id));
+      return [sd, fs.filter(o => o.side !== sd && !seen.has(o.id)).map(o => o.name), fs.filter(o => o.side === sd).length] }""")
+    all_n = tf.evaluate("() => document.querySelectorAll('#map svg .force').length")
+    tf.select_option("#sel-view", side)
+    shown = tf.evaluate("() => [...document.querySelectorAll('#map svg .force:not(.ghost) title')].map(t => t.textContent)")
+    check(len(shown) < all_n and sum(1 for t in shown if any(t.startswith(n + " ·") for n in unseen)) == 0 and len(shown) >= mine_n,
+          f"the GM's travel map as {side} sees it: its {mine_n} forces, none of the {len(unseen)} enemy forces it cannot see")
+    tf.select_option("#sel-view", "")
+    check(tf.evaluate("() => document.querySelectorAll('#map svg .force').length") == all_n, "and back to everything")
     rows = pg.locator("#c-march tbody tr").count()
     check(rows >= 2 and "Day 1" in pg.inner_text("#c-march"), f"the march panel shows the map's clock and its {rows} forces")
     met, presses = False, 0
