@@ -39,6 +39,7 @@ def page_in_frame(pg):
 
 PHASE = "() => REC.phase"
 NO_TEAM = "not made yet"
+RUN, SAID, NOTICE = "#c-run", "#c-march-said", "#c-notice"
 
 
 def phase_of(pg) -> str:
@@ -77,15 +78,15 @@ with sync_playwright() as p:
     page_in_frame(pg).wait_for_function("() => typeof addWaypoint === 'function' && location.pathname.endsWith('travel.html')", timeout=15000)
     page_in_frame(pg).evaluate("""() => { S.mapId = 'towton-1461'; S.clock = {}; const fs = forcesHere();
       for (const f of fs){ const foe = fs.find(o => o.side !== f.side); if (foe) addWaypoint(f, foe.pos) } save() }""")
-    pg.wait_for_function("() => !!document.querySelector('#c-run')", timeout=6000)
+    pg.wait_for_selector(RUN, timeout=6000)
     rows = pg.locator("#c-march tbody tr").count()
     check(rows >= 2 and "Day 1" in pg.inner_text("#c-march"), f"the march panel shows the map's clock and its {rows} forces")
     met, presses = False, 0
     while not met and presses < 20:
-        pg.click("#c-run"); presses += 1
+        pg.click(RUN); presses += 1
         pg.wait_for_function("() => document.querySelector('#c-march-said').textContent.length > 0", timeout=8000)
-        met = not pg.locator("#c-notice").is_hidden() and "have met" in pg.inner_text("#c-notice")
-    said = pg.inner_text("#c-march-said")
+        met = not pg.locator(NOTICE).is_hidden() and "have met" in pg.inner_text(NOTICE)
+    said = pg.inner_text(SAID)
     check(met, f"Run the march moves the clock until forces meet, and says so ({presses} presses: {said[:90]})")
     texts = [e["data"]["text"] for e in pg.evaluate("() => REC.log")]
     check(sum(1 for t in texts if " meet " in t or "Night passes" in t or "marching is done" in t or ":" in t) >= presses, "each move of the clock goes into the campaign's log")
@@ -106,9 +107,9 @@ with sync_playwright() as p:
       addWaypoint(f, best); save() }""")
     pg.wait_for_timeout(3500)                                # the console looks again
     presses = 0
-    while presses < 25 and pg.locator("#c-run").is_enabled() and "arrives" not in pg.inner_text("#c-march-said"):
-        pg.click("#c-run"); presses += 1
-    said = pg.inner_text("#c-march-said")
+    while presses < 25 and pg.locator(RUN).is_enabled() and "arrives" not in pg.inner_text(SAID):
+        pg.click(RUN); presses += 1
+    said = pg.inner_text(SAID)
     day = json.loads(pg.evaluate("() => localStorage.getItem('gravewounds-travel')"))["clock"]["towton-1461"]["day"]
     named = pg.evaluate("() => JSON.parse(localStorage.getItem('gravewounds-travel')).forces['towton-1461'][0].log.slice(0, 40).join(' | ')")
     check("arrives" in said and day >= 3 and "Night of" in named, f"marching on, nights pass until it arrives: day {day} after {presses} presses ({said[:70]})")
@@ -117,7 +118,7 @@ with sync_playwright() as p:
     page_in_frame(pg).evaluate(f"""() => localStorage.setItem('gravewounds-travel', {J(J({"mapId": "towton-1461", "forces": {"towton-1461": [{"side": "York"}, {"side": "Lancaster"}]}, "clock": {"towton-1461": {"day": 3, "used": 4}}, "fought": []}))})""")
     page_in_frame(pg).evaluate(f"""() => localStorage.setItem('gravewounds-handoff', {J(J({"from": "travel", "force": {"name": "Will's lances", "side": "York"}, "place": "Ferrybridge", "foes": [{"name": "Clifford's flankers"}]}))})""")
     pg.wait_for_function("() => REC.phase === 'fight'", timeout=6000)
-    notice = pg.inner_text("#c-notice")
+    notice = pg.inner_text(NOTICE)
     check("Ferrybridge" in notice and "Fight" in notice, f"a fight sent from the travel map moves the console to the fight ({notice})")
     check("day 3" in status_of(pg).lower() and "waiting on the Wound roller" in status_of(pg), "the status shows the map's day and the fight waiting on the roller")
     check(any("Ferrybridge" in e["data"]["text"] for e in pg.evaluate("() => REC.log")), "the log records the encounter")
@@ -127,7 +128,7 @@ with sync_playwright() as p:
     pg.wait_for_function("() => { try { return typeof document.querySelector('#c-frame').contentWindow.renderChars === 'function' } catch { return false } }", timeout=15000)
     page_in_frame(pg).evaluate("() => { S.wonBy = 'York'; renderChars() }")   # the GM marks the winner in After the fight
     pg.wait_for_function("() => REC.phase === 'aftermath'", timeout=6000)
-    check("York won" in pg.inner_text("#c-notice"), "a fight won on the roller moves the console to the aftermath")
+    check("York won" in pg.inner_text(NOTICE), "a fight won on the roller moves the console to the aftermath")
     # notes
     pg.fill("#c-note", "Hal took an arrow at the ford."); pg.uncheck("#c-note-gm"); pg.click("#c-add-note")
     pg.fill("#c-note", "Clifford's men will be back with more."); pg.check("#c-note-gm"); pg.click("#c-add-note")
