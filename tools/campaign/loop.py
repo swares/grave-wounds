@@ -77,6 +77,7 @@ with sync_playwright() as p:
     pg.goto(BASE + "campaign.html"); pg.evaluate("() => localStorage.clear()"); pg.reload()
     check(phase_of(pg) == "muster" and NO_TEAM in status_of(pg), "a new campaign starts at the muster, with no team")
     check("Players online" in pg.inner_text("#c-players") and pg.is_visible("#pl-add"), "Players online is there from the start, before any named men")
+    check(pg.input_value("#c-map") == "" and "Choose a map" in pg.inner_text("#c-map"), "a new campaign has no map chosen yet: Map says so")
     pg.wait_for_function("() => document.querySelector('#c-showing').textContent.includes('Team builder')", timeout=15000)
     check(True, "the team builder is in the frame")
     # the team, made in the team builder in the frame
@@ -118,6 +119,20 @@ with sync_playwright() as p:
     pg.click("button[data-order='march']")
     pg.wait_for_function("() => JSON.parse(localStorage.getItem('gravewounds-travel')).forces['towton-1461'][0].order === 'march'", timeout=6000)
     pg.locator("button[data-orders]").first.click()                 # closed again
+    # the campaign's map chosen from the console: another map, then back, each keeping its own state
+    pg.wait_for_function("() => document.querySelector('#c-map').value === 'towton-1461'", timeout=8000)
+    towton = json.loads(pg.evaluate(TRAVEL))["forces"]["towton-1461"]
+    pg.select_option("#c-map", "agincourt-1415")
+    pg.wait_for_function("() => JSON.parse(localStorage.getItem('gravewounds-travel')).mapId === 'agincourt-1415'", timeout=8000)
+    pg.wait_for_function("() => document.querySelector('#c-status').textContent.includes('Agincourt')", timeout=8000)
+    page_in_frame(pg).wait_for_function("() => typeof S === 'object' && S.mapId === 'agincourt-1415'", timeout=15000)
+    check(any("marches on the map of" in e["data"]["text"] and "Agincourt" in e["data"]["text"] for e in pg.evaluate(LOG)) and "Agincourt" in pg.inner_text("#c-march"),
+          "Map on the console moves the campaign to another map: the status, the march panel and the travel map in the frame follow, and the log says so")
+    check(len(json.loads(pg.evaluate(TRAVEL))["forces"].get("agincourt-1415", [])) >= 1, "a map chosen the first time has its own forces")
+    pg.select_option("#c-map", "towton-1461")
+    pg.wait_for_function("() => JSON.parse(localStorage.getItem('gravewounds-travel')).mapId === 'towton-1461'", timeout=8000)
+    check(json.loads(pg.evaluate(TRAVEL))["forces"]["towton-1461"] == towton, "back on the first map, its forces and orders are as they were")
+    page_in_frame(pg).wait_for_function("() => typeof S === 'object' && S.mapId === 'towton-1461'", timeout=15000)
     rows = pg.locator("#c-march tbody tr").count()
     check(rows >= 2 and "Day 1" in pg.inner_text("#c-march"), f"the march panel shows the map's clock and its {rows} forces")
     met, presses = False, 0

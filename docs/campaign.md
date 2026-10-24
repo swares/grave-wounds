@@ -47,6 +47,12 @@ sick or mending, dead), the map and its day, and the fight, waiting or under way
 
 ## Run the march
 
+**Map**, beside the campaign's name, chooses the travel map the campaign marches on, as the travel
+map's own **Map** does: the maps by period, oldest first. A new campaign has none chosen. Choosing
+one moves the campaign to it (the status, Run the march and the travel map in the frame follow, and
+the log says so); a map chosen the first time starts with its own forces, and each map keeps its own
+forces, orders and clock, so going back finds it as it was.
+
 In the **March** phase the console shows the travel map's clock (the day, the time, the date, the
 end of the day's marching) and its forces: what each is doing (marching to where, halted, making or
 in a camp, resting, with another's column), where it is, how many are fit, and its fatigue.
@@ -211,7 +217,7 @@ A save file is still the way to move a campaign to another computer.
 notices (fights, named men felled, units broken, deaths, prisoners, outbreaks and supplies out
 over and back, ranks, the end of days and of a season), and save files. `python3 tools/campaign/loop.py` follows a campaign round the loop in a
 headless browser over the real pages, served by a local web server: the team rolled in the frame,
-a force's route given from the console, the clock run from it until the forces meet, a long
+the campaign's map chosen from the console and back, a force's route given from the console, the clock run from it until the forces meet, a long
 march across nights, a fight set up from the console where the forces met,
 the roller's fight run from the console (Run the fight, Step, a player's turn ended, Undo, the
 winner marked), a battle's result taken in from the console, the end of the days logged by itself, the end of a
