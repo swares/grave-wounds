@@ -126,6 +126,22 @@ computer or share. **Load a saved game** replaces every page's state in this bro
 file's, after asking. The narrator's settings stay out of save files and are left alone by a load:
 they may hold a service key, and they belong to the browser, not the game.
 
+**Campaigns in this browser** keeps several campaigns side by side (in the browser's IndexedDB,
+which holds far more than its ordinary storage). Each is every page's state, as a save file holds
+it, under the campaign's name:
+
+- it is kept by itself as the campaign moves on (each new phase, each day's end), and **Keep it
+  now** keeps it at once; each of those moments is also a snapshot, the last eight kept;
+- **Roll back to** a snapshot puts every page back as it was then;
+- **Start another campaign** keeps this one and starts with every page empty;
+- **Switch to it** keeps this one and brings another back whole: its team, map, fights, phase and
+  log; **Delete** removes another (never the one in play).
+
+The pages keep working on the browser's ordinary storage; switching swaps it all. A team builder or
+roller open in another tab notices that the game changed under it and starts again from the new
+one, rather than write the old one back (a roller hosting players online leaves that to the GM).
+A save file is still the way to move a campaign to another computer.
+
 ## What it does not do yet
 
 - It gives routes, orders and camps, runs the march's clock, sets up fights, runs the roller's

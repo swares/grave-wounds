@@ -194,5 +194,14 @@ check("a force out of rations, water, medical stores or ammunition is news once;
   assert.deepEqual(r.news.map(n => n.why), ["Edward's army is out of rations.", "Edward's army is out of water.", "Edward's army is out of ammunition."]);
 });
 
+check("campaign slots: names not already taken, and snapshots newest first, so many kept", () => {
+  assert.equal(C.slotName([]), "Campaign 1");
+  assert.equal(C.slotName([{ name: "Campaign 1" }, { name: "Campaign 2" }]), "Campaign 3");
+  assert.equal(C.slotName([{ name: "Towton" }], "Towton"), "Towton (2)");
+  assert.equal(C.slotName([], " Towton "), "Towton");
+  assert.deepEqual(C.addSnap([{ label: "b" }, { label: "c" }], { label: "a" }, 2).map(x => x.label), ["a", "b"]);
+  assert.deepEqual(C.addSnap(undefined, { label: "a" }).map(x => x.label), ["a"]);
+});
+
 console.log(`${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

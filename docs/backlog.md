@@ -15,7 +15,7 @@ When an item is done, delete it here and note it in the pull request that closes
   moves, but a person's moves and strikes are made on the roller, and units placed and ordered by
   hand on the field map; it notices fights sent and won, named men felled, units broken, deaths, prisoners,
   outbreaks, supplies running out, new ranks and the end of a day or season; the pages' state is
-  still per page; players online join a fight, not the campaign. The travel map's
+  still per page (campaigns are kept side by side as whole sets of it, in IndexedDB); players online join a fight, not the campaign. The travel map's
   rules and its day are now out of the page (`templates/travelrules.js`, checked against the
   Python; `templates/travelday.js`, played with no page), and the console runs the march's clock
   (Run the march), gives routes, orders and camps, sets up the fights on offer and takes a

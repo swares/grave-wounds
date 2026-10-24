@@ -229,7 +229,19 @@ const CAMPAIGN = (() => {
     return keys;
   }
 
-  return { read, status, suggest, notices, saveFile, checkFile, PHASES, RECORD, PREFIX, KEEP_OUT };
+  // Campaign slots (the console keeps them in the browser's IndexedDB): each a save file's keys, with its
+  // snapshots, the newest first, at most `keep` of them.
+  function addSnap(snaps, snap, keep = 8){
+    return [snap, ...(snaps || [])].slice(0, keep);
+  }
+  function slotName(slots, wanted = ""){             // a name not already taken: "Campaign 1", "Campaign 2"; "Towton", "Towton (2)"
+    const taken = new Set((slots || []).map(x => x.name));
+    const base = wanted.trim() || "Campaign";
+    if (wanted.trim() && !taken.has(base)) return base;
+    for (let n = wanted.trim() ? 2 : 1; ; n++){ const name = wanted.trim() ? `${base} (${n})` : `${base} ${n}`; if (!taken.has(name)) return name }
+  }
+
+  return { read, status, suggest, notices, saveFile, checkFile, addSnap, slotName, PHASES, RECORD, PREFIX, KEEP_OUT };
 })();
 
 if (typeof module !== "undefined") module.exports = CAMPAIGN;   // Node (the tests); the page has no `module`

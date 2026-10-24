@@ -61,6 +61,8 @@ button:disabled{opacity:.45;cursor:default}
 .march th{color:var(--muted);font-weight:500}
 .march .when{font-family:var(--mono);font-size:.85rem}
 .tablewrap{overflow-x:auto}
+.slots{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;font-size:.9rem}
+.slots li{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .march tr.orders td{background:var(--bg);padding:8px;display:table-cell}
 .march tr.orders .toolbar{margin:4px 0}
 .fights{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
@@ -94,9 +96,9 @@ iframe{display:block;width:100%;height:82vh;border:0;background:var(--bg)}
       <div class="toolbar" style="border-top:1px dashed var(--line);padding-top:8px">
         <button type="button" class="small" id="c-save" title="Every page's state, the campaign's log with it, as one file">Save the game to a file</button>
         <label class="small" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer"><span>Load a saved game</span><input type="file" id="c-load" accept=".json,application/json" style="max-width:14em"></label>
-        <button type="button" class="small" id="c-new" title="A new campaign log; the pages keep what they hold">New campaign</button>
       </div>
       <p class="muted" id="c-saved" style="margin:0;font-size:.85rem" aria-live="polite"></p>
+      <div id="c-slots" style="border-top:1px dashed var(--line);padding-top:8px;display:flex;flex-direction:column;gap:6px" aria-labelledby="h-slots"></div>
     </section>
   </div>
 
@@ -3417,7 +3419,19 @@ const CAMPAIGN = (() => {
     return keys;
   }
 
-  return { read, status, suggest, notices, saveFile, checkFile, PHASES, RECORD, PREFIX, KEEP_OUT };
+  // Campaign slots (the console keeps them in the browser's IndexedDB): each a save file's keys, with its
+  // snapshots, the newest first, at most `keep` of them.
+  function addSnap(snaps, snap, keep = 8){
+    return [snap, ...(snaps || [])].slice(0, keep);
+  }
+  function slotName(slots, wanted = ""){             // a name not already taken: "Campaign 1", "Campaign 2"; "Towton", "Towton (2)"
+    const taken = new Set((slots || []).map(x => x.name));
+    const base = wanted.trim() || "Campaign";
+    if (wanted.trim() && !taken.has(base)) return base;
+    for (let n = wanted.trim() ? 2 : 1; ; n++){ const name = wanted.trim() ? `${base} (${n})` : `${base} ${n}`; if (!taken.has(name)) return name }
+  }
+
+  return { read, status, suggest, notices, saveFile, checkFile, addSnap, slotName, PHASES, RECORD, PREFIX, KEEP_OUT };
 })();
 
 if (typeof module !== "undefined") module.exports = CAMPAIGN;   // Node (the tests); the page has no `module`
@@ -3456,6 +3470,7 @@ function setPhase(id, why = ""){
   if (REC.phase === id) return;
   REC.phase = id;
   note(why || `On to the ${phaseOf(id).name.toLowerCase()}`);   // the log's own column says which phase
+  keepSlot(`On to the ${phaseOf(id).name.toLowerCase()}`);       // kept as it moves on, with a snapshot to come back to
 }
 
 /* ---------- what to do in each phase ---------- */
@@ -3648,6 +3663,8 @@ function takeNews(st){                               // what happened by itself 
     said.push(n.why);
   }
   if (news.length || forget.length) saveRecord();
+  const ended = news.find(n => n.why && n.mark.startsWith("day:"));
+  if (ended) keepSlot(ended.why.split(" on the map")[0]);   // "Day 3 has ended": a snapshot
   if (said.length){ $("#c-notice").textContent = said.slice(-3).join(" "); $("#c-notice").hidden = false }
 }
 /* ---------- the fight: the roller or the field map in the frame, run from here ----------
@@ -3811,7 +3828,7 @@ $("#c-march").addEventListener("change", e => {
   const pick = e.target.closest("select[data-pick]");
   if (pick){ ORDER_PICK[pick.dataset.pick] = pick.value; pick.blur(); render() }   // the camp's estimate follows the choice
 });
-$("#c-name").addEventListener("change", e => { REC.name = e.target.value.trim(); saveRecord() });
+$("#c-name").addEventListener("change", e => { REC.name = e.target.value.trim(); saveRecord(); if (REC.slot) keepSlot() });
 $("#c-add-note").addEventListener("click", () => {
   const t = $("#c-note").value.trim();
   if (!t) return;
@@ -3823,6 +3840,106 @@ $("#c-note").addEventListener("keydown", e => { if (e.key === "Enter") $("#c-add
 $("#c-frame").addEventListener("load", () => { showing(); FIGHT = null; FIELD = null; renderFight(); tellRoller("status"); tellField("status") });
 window.addEventListener("storage", e => { if (!e.key || e.key.startsWith(CAMPAIGN.PREFIX)) render() });   // a page in the frame wrote: look again
 setInterval(render, 3000);                             // and now and then, in case a write was missed
+
+/* ---------- campaigns side by side: slots in the browser's IndexedDB ----------
+   Each slot is one campaign: every page's state as a save file holds it, kept when the console moves
+   on (a new phase, a day's end) or when asked, with snapshots of those moments to roll back to. The
+   pages keep working on the browser's ordinary storage: switching swaps it whole. */
+const IDB = (() => {
+  let opened = null;
+  const db = () => (opened ||= new Promise((ok, no) => {
+    const r = indexedDB.open("gravewounds", 1);
+    r.onupgradeneeded = () => r.result.createObjectStore("slots", { keyPath: "id" });
+    r.onsuccess = () => ok(r.result);
+    r.onerror = () => no(r.error);
+  }));
+  const run = async (mode, work) => {
+    const d = await db();
+    return new Promise((ok, no) => {
+      const t = d.transaction("slots", mode), req = work(t.objectStore("slots"));
+      t.oncomplete = () => ok(req?.result);
+      t.onerror = () => no(t.error);
+    });
+  };
+  return { all: () => run("readonly", st => st.getAll()), get: id => run("readonly", st => st.get(id)),
+    put: v => run("readwrite", st => st.put(v)), del: id => run("readwrite", st => st.delete(id)) };
+})();
+let SLOTS = [];                                       // the saved campaigns, as last read
+const gameKeys = () => CAMPAIGN.saveFile(CAMPAIGN.read(localStorage)).keys;
+async function keepSlot(label = ""){                  // this campaign into its slot (made the first time); a label: a snapshot too
+  try {
+    SLOTS = await IDB.all();
+    if (!REC.slot){ REC.slot = `c${Date.now()}`; saveRecord() }
+    const was = SLOTS.find(x => x.id === REC.slot), keys = gameKeys(), at = new Date().toISOString();
+    const slot = { id: REC.slot, name: REC.name || was?.name || CAMPAIGN.slotName(SLOTS), saved: at, keys,
+      snaps: label ? CAMPAIGN.addSnap(was?.snaps, { at, label, keys }) : (was?.snaps || []) };
+    await IDB.put(slot);
+    SLOTS = await IDB.all();
+    renderSlots();
+    return slot;
+  } catch (err){ $("#c-saved").textContent = `This browser would not keep the campaign (${err.message || err}): save it to a file.`; return null }
+}
+function swapIn(keys){                                // every page's state replaced by these keys, and the pages look again
+  for (const k of Object.keys(CAMPAIGN.read(localStorage))) localStorage.removeItem(k);
+  for (const [k, v] of Object.entries(keys)) localStorage.setItem(k, v);
+  loadRecord();
+  const f = $("#c-frame");
+  try { f.contentWindow.location.reload() } catch { f.setAttribute("src", f.getAttribute("src")) }
+}
+async function switchTo(id){
+  const to = SLOTS.find(x => x.id === id);
+  if (!to || !confirm(`Switch to ${to.name}? This campaign is kept as it is now, and ${to.name} takes its place in every page.`)) return;
+  if (!await keepSlot()) return;
+  swapIn((await IDB.get(id)).keys);
+  REC.slot = id; saveRecord();
+  note(`Back to ${to.name}`); render(); renderSlots(); show(phaseOf(REC.phase).page);
+}
+async function startAnother(){
+  if (!confirm("Start another campaign? This one is kept as it is now (switch back to it below), and every page starts empty.")) return;
+  if (!await keepSlot()) return;
+  swapIn({});
+  REC = freshRecord(); REC.slot = `c${Date.now()}`; REC.name = CAMPAIGN.slotName(SLOTS); saveRecord();
+  note("A new campaign"); $("#c-notice").hidden = true; render(); show("team.html");
+  keepSlot();
+}
+async function rollBack(at){
+  const slot = await IDB.get(REC.slot), snap = slot?.snaps.find(x => x.at === at);
+  if (!snap || !confirm(`Roll this campaign back to "${snap.label}" (${snap.at.slice(0, 16).replace("T", " ")})? Every page goes back to how it was then; what happened since is lost unless saved to a file first.`)) return;
+  swapIn(snap.keys);
+  REC.slot = slot.id; saveRecord();                 // the snapshot's record may predate the slot: it stays this campaign
+  note(`Rolled back to: ${snap.label}`); render(); renderSlots(); show(phaseOf(REC.phase).page);
+}
+async function dropSlot(id){
+  const x = SLOTS.find(y => y.id === id);
+  if (!x || id === REC.slot || !confirm(`Delete ${x.name} from this browser? It cannot be brought back unless it was saved to a file.`)) return;
+  await IDB.del(id);
+  SLOTS = await IDB.all(); renderSlots();
+}
+const when = iso => (iso ? iso.slice(0, 16).replace("T", " ") : "");
+const slotRow = x => `<li><b>${esc(x.name)}</b> <span class="muted">kept ${esc(when(x.saved))}</span>
+  <button type="button" class="small" data-slot="switch" data-id="${esc(x.id)}">Switch to it</button>
+  <button type="button" class="small" data-slot="drop" data-id="${esc(x.id)}">Delete</button></li>`;
+function renderSlots(){
+  const box = $("#c-slots"), mine = SLOTS.find(x => x.id === REC.slot), others = SLOTS.filter(x => x.id !== REC.slot)
+    .sort((a, b) => b.saved.localeCompare(a.saved));
+  const snaps = (mine?.snaps || []).map(x => `<option value="${esc(x.at)}">${esc(x.label)} · ${esc(when(x.at))}</option>`).join("");
+  const kept = mine ? `kept ${esc(when(mine.saved))}` : "not kept in this browser yet";
+  box.innerHTML = `<h2 id="h-slots" style="font-size:.95rem">Campaigns in this browser</h2>
+    <div class="toolbar"><span><b>${esc(REC.name || mine?.name || "This campaign")}</b> <span class="muted">(${kept})</span></span>
+      <button type="button" class="small" data-slot="keep" title="Kept by itself as the campaign moves on; this keeps it now, with a snapshot">Keep it now</button>
+      <button type="button" class="small" data-slot="another" title="This one is kept; every page starts empty">Start another campaign</button></div>
+    ${snaps ? `<div class="toolbar"><label class="muted" for="c-snap">Roll back to</label><select id="c-snap" style="width:auto">${snaps}</select><button type="button" class="small" data-slot="back">Roll back</button></div>` : ""}
+    ${others.length ? '<ul class="slots">' + others.map(slotRow).join("") + "</ul>" : ""}`;
+}
+$("#c-slots").addEventListener("click", e => {
+  const b = e.target.closest("button[data-slot]"); if (!b) return;
+  const what = b.dataset.slot;
+  if (what === "keep") keepSlot("Kept by the GM").then(x => { if (x) $("#c-saved").textContent = `Kept at ${when(x.saved)}.` });
+  else if (what === "another") startAnother();
+  else if (what === "back") rollBack($("#c-snap").value);
+  else if (what === "switch") switchTo(b.dataset.id);
+  else if (what === "drop") dropSlot(b.dataset.id);
+});
 
 /* ---------- the whole game as a file ---------- */
 $("#c-save").addEventListener("click", () => {
@@ -3848,12 +3965,9 @@ $("#c-load").addEventListener("change", async e => {
   } catch (err){ $("#c-saved").textContent = `Could not load it: ${err.message}` }
   finally { e.target.value = "" }
 });
-$("#c-new").addEventListener("click", () => {
-  if (!confirm("Start a new campaign log? The pages keep what they hold (the team, the maps, the fights); to clear those, use each page, or load a saved game.")) return;
-  REC = freshRecord(); saveRecord(); note("A new campaign"); $("#c-notice").hidden = true; render(); show("team.html");
-});
 
 loadRecord();
 render();
 show(phaseOf(REC.phase).page);
+IDB.all().then(x => { SLOTS = x; renderSlots() }).catch(() => { $("#c-slots").innerHTML = '<p class="muted" style="margin:0">This browser keeps no campaigns side by side (IndexedDB is off): save to a file instead.</p>' });
 </script>
