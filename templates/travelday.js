@@ -36,6 +36,10 @@ function surpriseText(s){                        // the odds of surprise, and wh
   const part = ([k, n]) => name[k] + " " + (n > 0 ? "+" : "\u2212") + Math.abs(n);
   return `Surprise: ${s.chance}% (${s.parts.map(part).join(", ")}).`;
 }
+function fightLabel(n, k){                         // the button for fight k of n on offer
+  if (n < 2) return "Set up the fight";
+  return k ? "Wait for the camp" : "Attack now";
+}
 function makeTravelDay(DATA, RULES, env = {}){
   const { mapJdn, mapDate, marchWindow, rollWeather, WIND_NAMES, nextGround, nightRest, fatigueAfter, NEIGHBOURS, terrainAt, forceTypes, fordHere, passable, stepHours, plan, advance, hexDistance, campDone, before, laterOf, dzProfile, newHealth, dzStep, healthCounts, sickMarchPct, campHygiene, campCare, weekFactors, nursingOf, contagionOf, freshToday, fieldcraftNeeded, leechBonus, reopenOld, healthWeek, healthDay, neighbours, campLabourDone, fightPlan, lightAt, coldLevel, surpriseChance } = RULES;
   const TER = DATA.terrain, TT = TER.terrain, FT = TER.forces;
@@ -1125,10 +1129,6 @@ function makeTravelDay(DATA, RULES, env = {}){
     try{ localStorage.removeItem("gravewounds-field-result") }catch(e){ /* storage off: the result stays applied once, by its battle id */ }
   }
   // For the campaign console: the fights on offer where enemies are within reach, sent from the saved state; a battle's result taken in.
-  function fightLabel(n, k){                       // the button for fight k of n on offer
-    if (n < 2) return "Set up the fight";
-    return k ? "Wait for the camp" : "Attack now";
-  }
   function fightOffer(f, opts){                     // one fight on offer, set up from force f -> {id, title, options, maps, map}
     const p = opts[0], dfd = byId(p.defender), st = campStatus(dfd, p), names = ids => namesList(ids.map(id => byId(id).name));
     const built = st.done === null ? "" : " (" + st.pct + "% built)";
