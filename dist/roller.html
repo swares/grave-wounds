@@ -2713,7 +2713,8 @@ function namedRow(c){                             // Endurance, the force he goe
     <label class="order" title="Goes with this force on the travel map: its days, camp, weather and marching run his sickness">With ${sel}</label>
     ${nurseTick(n)}${loadSel(c)}${sick}</div>`;
 }
-if (typeof window !== "undefined" && !location.hash.startsWith("#join=")){   // the travel map may have run his days (the GM's page: a player's page holds no game)
+const playerView = () => typeof location !== "undefined" && /^#(join=|relay)/.test(location.hash);   // a player's page: joined to the GM's, or his fight inside his campaign page
+if (typeof window !== "undefined" && !playerView()){   // the travel map may have run his days (the GM's page: a player's page holds no game)
   window.addEventListener("focus", () => { syncNamed(); renderChars() });
   window.addEventListener("storage", e => {
     let now = null;
@@ -3889,6 +3890,7 @@ $("#gm-bar").addEventListener("click", e => {
    free attack, through the same functions the buttons use. */
 const NETH = { peers: [], seq: 0, rendering: false, timer: null, stun: true };
 const netOpen = () => NETH.peers.filter(p => p.state === "open");
+const ownPeers = () => NETH.peers.filter(p => !p.relay);   // Play online's own players (not the campaign console's)
 function netSeatTurn(seat){                        // what this seat's player may do now: {acting, roll, free, blows, weapon}
   const side = seat.slice(5), acting = actingChar(), f = (S.free || [])[0];
   const fa = f && S.chars.find(c => c.id === f.att);
@@ -3966,10 +3968,10 @@ function netCommand(p, m){                          // a player's choice: made o
 }
 const NET_SEATS = "gravewounds-net-seats";          // the seats with a player, this tab only: after a reload the GM can invite them again
 function netKeepSeats(){
-  try { sessionStorage.setItem(NET_SEATS, JSON.stringify([...new Set(NETH.peers.map(p => p.seat))])) } catch { /* storage off: a reload forgets them */ }
+  try { sessionStorage.setItem(NET_SEATS, JSON.stringify([...new Set(ownPeers().map(p => p.seat))])) } catch { /* storage off: a reload forgets them */ }
 }
 function netRemembered(){                            // after the GM's page is reloaded: his players' seats, gone, to invite again
-  if (NETH.peers.length) return;
+  if (ownPeers().length) return;
   let seats = [];
   try { seats = JSON.parse(sessionStorage.getItem(NET_SEATS) || "[]") } catch { seats = [] }
   for (const seat of seats) if (sidesInOrder().includes(seat.slice(5))) NETH.peers.push({ n: ++NETH.seq, seat, state: "closed", code: "", err: "", peer: null });
@@ -4030,8 +4032,10 @@ function renderNet(){
   netRemembered();
   if (sides.length < 2){ box.innerHTML = oneSideNote("Play online", "players on their own computers"); return }
   const invites = sides.map(sd => `<button type="button" class="small" data-net="invite" data-side="${attr(sd)}">Invite a player for ${esc(sd)}</button>`).join("");
-  const rows = NETH.peers.length ? `<ul class="roundlog" style="max-height:none">${NETH.peers.map(netPeerRow).join("")}</ul>` : "";
-  box.innerHTML = `<details class="after"${NETH.open || NETH.peers.length ? " open" : ""}><summary><b>Play online</b> <span class="muted">${netOpen().length} player${netOpen().length === 1 ? "" : "s"} connected</span></summary>
+  const own = ownPeers(), on = own.filter(p => p.state === "open").length, relayed = NETH.peers.length - own.length;
+  const rows = own.length ? `<ul class="roundlog" style="max-height:none">${own.map(netPeerRow).join("")}</ul>` : "";
+  const camp = relayed ? `<p class="muted" style="margin:0">${relayed} player${relayed === 1 ? "" : "s"} from the campaign console, on its links.</p>` : "";
+  box.innerHTML = `<details class="after"${NETH.open || own.length ? " open" : ""}><summary><b>Play online</b> <span class="muted">${on} player${on === 1 ? "" : "s"} connected</span></summary>${camp}
     <div class="toolbar" style="flex-wrap:wrap">${invites}</div>
     <label class="check" title="Lets pages find each other across the internet; on one network it is not needed"><input type="checkbox" id="net-stun"${NETH.stun ? " checked" : ""}> Use a public STUN server (stun.l.google.com)</label>
     ${rows}<p class="muted" style="margin:0">Each player sees his side's screen and plays his side's fighters on their turns; you see everything. No server: the link and the reply are passed by hand. Some strict networks will not connect.</p></details>`;
@@ -4187,6 +4191,21 @@ async function guestJoin(){                           // join (or rejoin) the GM
     $("#g-copy").onclick = () => navigator.clipboard?.writeText(g.reply).catch(() => $("#g-reply").select());
     status(kept ? "Rejoining: waiting for the GM to paste your reply. Your last screen is below." : "Waiting for the GM to paste your reply.");
   } catch (e){ status(`Could not answer the invitation: ${e.message || e}`) }
+}
+function relayGuestMain(){                           // his fight inside his campaign page: the screens come from it, his choices go back to it
+  guestLayout(); guestWire();
+  document.querySelector("h1").remove();
+  $("#g-join").style.display = "none";
+  GUEST.send = m => window.parent.postMessage({ gw: "relay", m }, location.origin);
+  window.addEventListener("message", e => {
+    if (e.origin !== location.origin || e.source !== window.parent || e.data?.gw !== "relay-screen") return;
+    const m = e.data.m;
+    if (m?.t !== "screen") return;
+    const whole = NET.merge(GUEST.screen, m);
+    GUEST.screen = whole;
+    guestShow(whole, m.part ? Object.keys(m) : null);
+  });
+  window.parent.postMessage({ gw: "relay", ready: true }, location.origin);
 }
 async function guestMain(){
   guestLayout(); guestWire();
@@ -5640,7 +5659,7 @@ function renderChars(){
   renderMap();
   save();
   veilInputs();
-  renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); renderAfterFight(); renderHazards(); renderWords(); renderEvents(); renderGM(); netSides(); netSync();
+  renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); renderAfterFight(); renderHazards(); renderWords(); renderEvents(); renderGM(); relayFollow(); netSides(); netSync();
   consolePush();
 }
 /* ---------- the campaign console: this page in its frame, run from there ----------
@@ -5660,7 +5679,7 @@ function consoleStatus(){                           // the fight as the GM's con
     lines: viewFor(S.events || [], GM_SEAT).slice(-8).reverse().map(v => (v.round ? `Round ${v.round}: ` : "") + consolePlain(eventText(v))),
   };
 }
-const inConsole = () => window.parent !== window && !location.hash.startsWith("#join=");
+const inConsole = () => window.parent !== window && !playerView();
 function consolePush(){                             // after each change, the console hears of it
   if (!inConsole()) return;
   try { window.parent.postMessage({ gw: "roller", status: consoleStatus() }, location.origin) } catch { /* the console has gone: nothing to tell */ }
@@ -5674,7 +5693,47 @@ function consoleCommand(e){                         // a command from the consol
   else if (d.cmd === "undo" && gmOn()) gmUndo();
   else if (d.cmd === "next" && gmOn() && actingChar() && !scripted(actingChar())){ nextFighter(); gmKick() }   // as Next fighter: a person's turn ends
   else if (d.cmd === "won" && sidesInOrder().includes(d.side)){ S.wonBy = d.side; S.afterOpen = true; renderChars() }
+  else if (d.cmd === "seats" && Array.isArray(d.list)){ RELAY.list = d.list; relayFollow(); renderChars() }
+  else if (d.cmd === "resend") relayResend(d.id);
+  else if (d.cmd === "player") relayCommand(d.id, d.m);
   else consolePush();
+}
+/* The campaign console's players: each has one link to the console, which passes his fight on. The
+   console says who is connected and which named men each plays ({id, uids, pids}); a player whose man is
+   in this fight plays that man's side, as a Play online player does, and his screen goes back to the
+   console for him ({gw: "roller", relay: {id, m}}); his choices come in the same way. */
+const RELAY = { list: [] };
+function relayTell(id, m){
+  try { window.parent.postMessage({ gw: "roller", relay: { id, m } }, location.origin) } catch { /* the console has gone */ }
+}
+function relaySeatOf(x){                            // the side of the first of his men in this fight, as a seat, or null
+  const has = (list, v) => !!v && Array.isArray(list) && list.includes(v);
+  const c = S.chars.find(ch => has(x.uids, ch.uid) || has(x.pids, ch.sheet?.pid));
+  return c ? sideSeat(sideOf(c)) : null;
+}
+function relayFollow(){                              // the console's players in this fight: added, moved, gone
+  if (!inConsole() || NETH.rendering) return;
+  const want = new Map(RELAY.list.map(x => [String(x.id), relaySeatOf(x)]).filter(([, seat]) => seat));
+  for (const p of NETH.peers.filter(x => x.relay && want.get(x.id) !== x.seat)){
+    NETH.peers = NETH.peers.filter(x => x !== p);
+    relayTell(p.id, { t: "nofight" });
+  }
+  for (const [id, seat] of want){
+    if (NETH.peers.some(p => p.relay && p.id === id)) continue;
+    const side = seat.slice(5);
+    if (!gmOn()){ gmStart(); gmSoloScreen() }
+    S.gm.sides[side] = { ...gmSide(side), ctl: "player" };   // a person plays this side now
+    S.screen = null;
+    NETH.peers.push({ n: ++NETH.seq, relay: true, id, seat, state: "open", last: null, peer: { send: m => relayTell(id, m), close(){} } });
+  }
+}
+function relayResend(id){                            // he joined again: his screen whole
+  const p = NETH.peers.find(x => x.relay && x.id === String(id));
+  if (p){ p.last = null; netSendScreen(p) }
+}
+function relayCommand(id, m){
+  const p = NETH.peers.find(x => x.relay && x.id === String(id));
+  if (p) netCommand(p, m);
 }
 $("#after-fight").addEventListener("change", e => {
   if (e.target.id === "sel-won"){ S.wonBy = e.target.value || null; S.afterOpen = true; renderChars() }
@@ -5938,6 +5997,7 @@ function startExamples(){                       // example combatants from this 
 }
 function init(){
   if (location.hash.startsWith("#join=")) return guestMain();   // a player's page, joined to the GM's: it runs no rules of its own
+  if (location.hash.startsWith("#relay")) return relayGuestMain();   // his fight inside his campaign page: the same, through the console
   window.addEventListener("message", consoleCommand);
   const ids = Object.keys(DATA.tables);   // already in data order
   S.table = ids.find(i => DATA.tables[i].variant === "adjusted") || ids[0];

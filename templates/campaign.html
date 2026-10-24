@@ -397,6 +397,7 @@ const tellRoller = (cmd, extra = {}) => tellFrame(rollerFrame(), cmd, extra);
 const tellField = (cmd, extra = {}) => tellFrame(fieldFrame(), cmd, extra);
 window.addEventListener("message", e => {
   if (SITE !== "*" && e.origin !== SITE) return;
+  if (e.data?.gw === "roller" && e.data.relay && e.source === rollerFrame()) return relayOut(e.data.relay);   // a player's fight screen, for him
   if (e.data?.gw === "roller" && e.source === rollerFrame()) FIGHT = e.data.status;
   else if (e.data?.gw === "field" && e.source === fieldFrame()) FIELD = e.data.status;
   else return;
@@ -427,6 +428,7 @@ function renderFight(){
   const head = '<h3 id="h-fight">The fight</h3>';
   if (fieldFrame()){ box.innerHTML = '<h3 id="h-fight">The battle</h3>' + battleHtml(FIELD); return }
   if (!rollerFrame()){ box.innerHTML = head + '<p class="muted" style="margin:0">Open the wound roller or the field map below to run the fight from here.</p>'; return }
+  relayIn();
   const f = FIGHT;
   if (!f){ box.innerHTML = head + '<p class="muted" style="margin:0">Waiting for the roller…</p>'; return }
   if (!f.two){ box.innerHTML = head + '<p class="muted" style="margin:0">The roller needs fighters on two sides: add them there, or set up a fight from the march.</p>'; return }
@@ -551,7 +553,7 @@ $("#c-add-note").addEventListener("click", () => {
   render();
 });
 $("#c-note").addEventListener("keydown", e => { if (e.key === "Enter") $("#c-add-note").click() });
-$("#c-frame").addEventListener("load", () => { showing(); FIGHT = null; FIELD = null; renderFight(); tellRoller("status"); tellField("status") });
+$("#c-frame").addEventListener("load", () => { showing(); FIGHT = null; FIELD = null; relayGone(); renderFight(); tellRoller("status"); tellField("status") });
 const PLAYER_PAGE = location.hash.startsWith("#join=");   // opened from a GM's invitation: the player's page, not the console
 if (!PLAYER_PAGE){
   window.addEventListener("storage", e => { if (!e.key || e.key.startsWith(CAMPAIGN.PREFIX)) render() });   // a page in the frame wrote: look again
@@ -689,7 +691,7 @@ $("#c-load").addEventListener("change", async e => {
    are with, the campaign's news as he hears it) and sends him only that, and after the first time only
    what changed. Who plays whom is kept with the campaign (REC.players); the connections are not, and
    after a reload the GM invites each again. */
-const PL = { conn: {}, stun: true, timer: null, menKey: "" };   // conn by player id: {state, code, err, peer, last}
+const PL = { conn: {}, stun: true, timer: null, menKey: "", relayKey: "", fighting: new Set() };   // conn by player id: {state, code, err, peer, last}
 const players = () => (REC.players ||= []);
 const seatOf = pl => `player:${pl.id}`;
 const NET_LOST = new Set(["closed", "failed", "disconnected"]);
@@ -738,10 +740,32 @@ function playersSync(){                               // each connected player's
 function playersFollow(){                             // after the console draws: the players' pages follow; the panel when the named men change
   const key = namedMen().map(([u, n]) => u + (n.dead ? "+" : "") + n.name).join("|");
   if (key !== PL.menKey){ PL.menKey = key; renderPlayers() }
+  relayIn();
   playersSync();
 }
-function playerCommand(pl, m){                         // nothing a player sends is acted on yet (his proposed orders come next)
+function playerCommand(pl, m){                         // his choices in his fight go on to the roller, which checks they are his to make
   if (!m || typeof m.t !== "string") return;
+  if (PL.fighting.has(pl.id)) tellRoller("player", { id: pl.id, m });
+}
+/* His fight through his link: the roller in the frame draws his side's screen as for a Play online
+   player and hands it here; this page passes it on to him, and his choices back. */
+function relayIn(){                                    // the roller hears who is connected and which men each plays (when that changes)
+  if (!rollerFrame()) return;
+  const named = Object.fromEntries(namedMen());
+  const list = players().filter(pl => PL.conn[pl.id]?.state === "open")   // his men by their travel-map id, and by the team builder's (a man added to a fight anew has only that)
+    .map(pl => ({ id: pl.id, uids: pl.men, pids: pl.men.map(u => named[u]?.pid).filter(Boolean) }));
+  const key = JSON.stringify(list);
+  if (key !== PL.relayKey){ PL.relayKey = key; tellRoller("seats", { list }) }
+}
+function relayOut({ id, m }){
+  const c = PL.conn[id];
+  if (m?.t === "nofight") PL.fighting.delete(id); else PL.fighting.add(id);
+  if (c?.state === "open") c.peer.send(m);
+}
+function relayGone(){                                  // the roller left the frame: his fight is gone from his page
+  PL.relayKey = "";
+  for (const id of PL.fighting) if (PL.conn[id]?.state === "open") PL.conn[id].peer.send({ t: "nofight" });
+  PL.fighting.clear();
 }
 async function playerConnect(pl){                     // an invitation for his seat: a first one, or again after he was lost or this page reloaded
   const c = (PL.conn[pl.id] ||= {});
@@ -750,7 +774,9 @@ async function playerConnect(pl){                     // an invitation for his s
   const peer = NET.hostPeer({ seat: seatOf(pl), stun: PL.stun, onMessage: m => playerCommand(pl, m), onState: st => {
     if (c.peer !== peer) return;                       // an old connection of his, closing
     c.state = st;
-    if (st === "open"){ c.last = null; playerSend(pl) }   // his screen, whole: first or again
+    if (st === "open"){ c.last = null; playerSend(pl); tellRoller("resend", { id: pl.id }) }   // his screens, whole: first or again
+    if (st !== "open") PL.fighting.delete(pl.id);
+    relayIn();
     renderPlayers();
   } });
   c.peer = peer;
@@ -822,7 +848,7 @@ $("#c-players").addEventListener("click", e => {
   else if (what === "accept") playerAccept(pl, $(`[data-pl-reply="${pl.id}"]`).value);
   else if (what === "drop" && confirm(`Remove ${pl.name}? His page is cut off.`)){
     PL.conn[pl.id]?.peer?.close(); delete PL.conn[pl.id];
-    REC.players = players().filter(x => x !== pl); saveRecord(); renderPlayers();
+    REC.players = players().filter(x => x !== pl); saveRecord(); renderPlayers(); relayIn();
   }
 });
 $("#c-players").addEventListener("change", e => {
@@ -831,19 +857,41 @@ $("#c-players").addEventListener("change", e => {
   if (man){
     const pl = players().find(x => x.id === man.dataset.plMan); if (!pl) return;
     pl.men = [...document.querySelectorAll(`[data-pl-man="${pl.id}"]:checked`)].map(x => x.value);
-    saveRecord(); playersSync();
+    saveRecord(); playersSync(); relayIn();
   }
 });
 $("#c-players").addEventListener("keydown", e => { if (e.key === "Enter" && e.target.id === "pl-name") addPlayer() });
 
 /* ---------- the player's page: opened from his invitation link, it shows what the console sends ---------- */
-const PG = { send: () => {}, peer: null, screen: null };
+const PG = { send: () => {}, peer: null, screen: null, frame: null, ready: false, queue: [] };
+function pgFight(m){                                  // his fight: the roller's player screen in a frame of its own, fed from here
+  if (m.t === "nofight"){
+    PG.frame?.remove(); PG.frame = null; PG.ready = false; PG.queue = [];
+    $("#p-fight").hidden = true;
+    return;
+  }
+  $("#p-fight").hidden = false;
+  if (!PG.frame){
+    if (m.part) return;                             // a change to a fight this page never had: the whole one comes when it rejoins
+    PG.frame = document.createElement("iframe");
+    PG.frame.title = "Your fight"; PG.frame.src = "roller.html#relay"; PG.frame.style.height = "88vh";
+    $("#p-fight").append(PG.frame);
+  }
+  if (PG.ready) PG.frame.contentWindow.postMessage({ gw: "relay-screen", m }, SITE);
+  else PG.queue.push(m);
+}
+window.addEventListener("message", e => {               // the fight's frame: ready for its screens, and his choices in it
+  if (!PG.frame || e.source !== PG.frame.contentWindow || (SITE !== "*" && e.origin !== SITE) || e.data?.gw !== "relay") return;
+  if (e.data.ready){ PG.ready = true; for (const m of PG.queue.splice(0)) PG.frame.contentWindow.postMessage({ gw: "relay-screen", m }, SITE); return }
+  if (e.data.m && typeof e.data.m.t === "string") PG.send(e.data.m);
+});
 const PG_KEY = "gravewounds-guest-campaign";          // this tab's last screen, by seat: kept while it rejoins
 function pgLayout(){
   document.title = "Grave Wounds: player";
   document.querySelector(".wrap").innerHTML = `<header><div><h1 id="p-title">Campaign</h1><p class="sub" id="p-who"></p></div></header>
     <p id="p-status" aria-live="polite" style="margin:0"></p>
     <section class="panel" id="p-join"></section>
+    <section class="panel" id="p-fight" hidden aria-labelledby="h-pfight"><h2 id="h-pfight">Your fight</h2></section>
     <div class="top"><section class="panel" aria-labelledby="h-pmen"><h2 id="h-pmen">Your men</h2><div id="p-men"></div></section>
       <section class="panel march" style="border-top:0;padding-top:14px" aria-labelledby="h-pforce"><h2 id="h-pforce">Your force</h2><div id="p-force" style="display:flex;flex-direction:column;gap:6px"></div></section></div>
     <section class="panel" aria-labelledby="h-pnews"><h2 id="h-pnews">News</h2><ol class="log" id="p-news" aria-label="The campaign's news, newest first"></ol></section>`;
@@ -881,6 +929,7 @@ async function pgJoin(){
   try {
     const g = await NET.guestPeer({ invite, stun: invite.stun !== false,
       onMessage: m => {
+        if (m.t === "screen" || m.t === "nofight") return pgFight(m);
         if (m.t !== "camp") return;
         const whole = NET.merge(PG.screen, m);
         PG.screen = whole;
