@@ -105,7 +105,10 @@ const map = buildCampaign({
   woods: WOODS, marsh: MARSH, hills: HILLS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { harfleur: "camp", calais: "objective" },
   depots: { harfleur: ["England"], calais: ["England"], rouen: ["France"] },   // where each side resupplies (project doc "depots-research")
-  tongues: { calais: ["english", "flemish", "french"], guines: ["flemish", "english", "french"] },   // the people's own tongues where they differ from the map's (project doc "tongues-research")
+  tongues: { calais: ["english", "flemish", "french"], guines: ["flemish", "english", "french"],   // the people's own tongues where they differ from the map's (project doc "tongues-research")
+    // Normandy (the Caux, Bray and the Seine), where Picard was not spoken: French stands in for Norman
+    harfleur: ["french"], montivilliers: ["french"], fecamp: ["french"], stvaleryc: ["french"], dieppe: ["french"], arques: ["french"],
+    eu: ["french"], treport: ["french"], rouen: ["french"], caudebec: ["french"], tancarville: ["french"], aumale: ["french"], neufchatel: ["french"] },
   forces: [
     { name: "Henry V's army", type: "mounted", side: "England", men: 8500, tools: true, at: "harfleur" },
     { name: "English baggage", type: "wagons", side: "England", men: 300, tools: true, at: "montivilliers" },
