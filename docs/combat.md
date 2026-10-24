@@ -268,7 +268,9 @@ count goes on from there.
   **As seen by** shows the log as the GM sees it (everything) or as one side does. A side
   sees its own men's wounds in full; of the other side's it sees only what the table would:
   the outcome, where a blow landed, the attack and defence rolls, and whether the man fell.
-  **Save this view** downloads that side's view as a file. The log is kept with the fight in
+  It also records initiative (for all), each side's Blood lost at the round's end (for that side),
+  morale checks (the roll for that side, whether it held or broke for all), and first aid (for
+  that side). **Save this view** downloads that side's view as a file. The log is kept with the fight in
   the browser (the last 500 events); the examples on a fresh page and the roll the page opens
   with are not logged.
 - **Run the fight** (above the round log) lets the page run the turns. Tick it and choose, for

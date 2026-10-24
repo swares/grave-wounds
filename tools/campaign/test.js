@@ -157,6 +157,14 @@ check("on the roller, a named man felled is news once; a man with no sheet is no
   assert.deepEqual(r.news.map(n => n.why), ["Will (York) is down, round 3.", "Hal (York) is out of the fight, round 3."]);
   assert.equal(C.notices(C.status(raw, CDN), apply({}, r), CDN).news.length, 0);
 });
+check("on the roller, a side whose morale breaks is news once; one that holds is not", () => {
+  const raw = { "gravewounds-chars": J({ chars: [{ id: 1, name: "Will", side: "York" }], events: [
+    { n: 7, round: 4, type: "morale", vis: ["side:York"], data: {}, pub: { side: "York", broken: false } },
+    { n: 9, round: 5, type: "morale", vis: ["side:Lancastrians"], data: {}, pub: { side: "Lancastrians", broken: true } }] }) };
+  const r = C.notices(C.status(raw, CDN), {}, CDN);
+  assert.deepEqual(r.news.map(n => n.why), ["Lancastrians break on the roller, round 5: they run or surrender."]);
+  assert.equal(C.notices(C.status(raw, CDN), apply({}, r), CDN).news.length, 0);
+});
 check("on the field map, a unit broken or fled is news once; in set-up, nothing", () => {
   const field = phase => ({ "gravewounds-field": J({ phase, exchange: 4, sides: ["Yorkists", "Lancastrians"], from: { battle: "towton-1461:2:3:1" },
     units: [{ id: 1, name: "Archers", side: "Yorkists", state: "broken" }, { id: 2, name: "Bills", side: "Lancastrians", state: "fled" }, { id: 3, name: "Horse", side: "Lancastrians", state: "steady" }] }) });

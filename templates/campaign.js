@@ -90,6 +90,8 @@ const CAMPAIGN = (() => {
     const named = new Map(chars.filter(c => c.sheet || c.pid).map(c => [c.id, c]));
     const fell = (r?.events || []).filter(e => e.type === "wound" && (e.pub?.down || e.pub?.state === "out") && named.has(e.pub?.who?.id))
       .map(e => ({ id: e.pub.who.id, n: e.n, name: e.pub.who.name, side: e.pub.who.side, round: e.round, how: e.pub.down ? "is down" : "is out of the fight" }));
+    // a side broken on the roller (its morale check failed): the outcome everyone sees
+    const broke = (r?.events || []).filter(e => e.type === "morale" && e.pub?.broken).map(e => ({ n: e.n, side: e.pub.side, round: e.round }));
     // the field map's units broken or fled, in the battle under way (or just over)
     const fm = obj(snap["gravewounds-field"]);
     const battle = fm && fm.phase !== "setup" ? (fm.from?.battle || (fm.sides || []).join(" v ")) : null;
@@ -100,7 +102,7 @@ const CAMPAIGN = (() => {
     if (rh) waiting.push({ page: "roller.html", key: "gravewounds-handoff", place: rh.place || "", force: rh.force?.name || "", foes: (rh.foes || []).map(f => f.name) });
     if (fh) waiting.push({ page: "field.html", key: "gravewounds-field-handoff", place: fh.place || "", battle: fh.battle || "", day: fh.day || "", forces: (fh.forces || []).map(f => f.name) });
     return {
-      sent: waiting[0] || null, waiting, fell, routed,
+      sent: waiting[0] || null, waiting, fell, routed, broke,
       roller,
       fieldResult: result ? { battle: result.battle || "", place: result.place || "", minutes: result.minutes || 0,
         lost: Object.values(result.forces || {}).reduce((a, x) => a + (x.lost || 0), 0) } : null,
@@ -194,6 +196,10 @@ const CAMPAIGN = (() => {
     for (const x of f.fell){
       const mark = `fell:${x.id}:${x.n}`;
       if (!seen[mark]) news.push({ mark, value: true, why: `${x.name} (${x.side}) ${x.how}${x.round ? ", round " + x.round : ""}.` });
+    }
+    for (const b of f.broke){
+      const mark = `broke:${b.n}:${b.side}`;
+      if (!seen[mark]) news.push({ mark, value: true, why: `${b.side} ${b.side.endsWith("s") ? "break" : "breaks"} on the roller${b.round ? ", round " + b.round : ""}: they run or surrender.` });
     }
     for (const u of f.routed){
       const mark = `routed:${u.battle}:${u.id}`;
