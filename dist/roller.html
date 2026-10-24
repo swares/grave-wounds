@@ -3471,11 +3471,17 @@ function turnText(v){                             // the script's move, and for 
   }
   return `${evName(d.who)} ${d.did}${where}${why}`;
 }
+function aidText(d){                               // first aid given in the fight
+  const how = { bind: "bound", tourniquet: "given a tourniquet", cauterise: "cauterised" }[d.how] || esc(d.how);
+  const said = d.said ? ` (${esc(d.said)})` : "";
+  return d.done ? `${evName(d.who)}: ${evPlace(d.loc)} wound ${how}${said}` : `${evName(d.who)}: first aid on the ${evPlace(d.loc)} wound failed${said}`;
+}
 function eventText(v){                            // one event as a seat sees it, in a line
   if (v.type === "strike") return v.full ? strikeFullText(v.data) : strikeSeenText(v.data);
   if (v.type === "wound") return woundText(v);
   if (v.type === "turn") return turnText(v);
   if (v.type === "undo") return `The GM took back the script's last step (${v.data.events} event${v.data.events === 1 ? "" : "s"} undone).`;
+  if (v.type === "aid") return aidText(v.data);
   return esc(v.type);
 }
 function eventItem(v){
@@ -3778,6 +3784,10 @@ const NET_COMMANDS = {                              // each choice a player may 
   next: ({ may }) => { if (may.acting){ nextFighter(); gmKick() } },
   skip: ({ may }) => { if (may.free) freeDone("skipped") },
   roll: ({ may, m }) => { if (may.roll) netRoll(m) },
+  treat: ({ may, m, side }) => {                    // first aid to one of his side's men, on his side's turn, as the card's buttons give it
+    const c = may.acting && S.chars.find(x => x.id === m.id && sideOf(x) === side), w = c && Number.isInteger(m.j) ? c.wounds[m.j] : null;
+    if (w && ["bind", "tourniquet", "cauterise"].includes(m.how)) treat(c, w, m.how);
+  },
   stray: ({ side }) => {                            // his missed shot gone into a man in the way
     const striker = S.chars.find(x => x.id === S.hit?.att);
     if (S.hit?.stray?.hit && striker && sideOf(striker) === side) strayHit();
@@ -3884,7 +3894,8 @@ function guestLayout(){
     <section class="panel tracker"><div class="roundbar"><span class="roundno" id="round-no"></span><span class="turnno" id="turn-no"></span></div>
       <ol class="roundlog" id="round-log"></ol><div id="chars" style="display:flex;flex-direction:column;gap:10px"></div><div id="events"></div></section>
   </div><style>#ev-save{display:none}
-    #chars button:not([data-act="select"]),#chars .grip{display:none}   /* the GM's card controls: not the player's */
+    #chars button:not([data-act="select"]):not([data-act="bind"]):not([data-act="tourniquet"]):not([data-act="cauterise"]),#chars .grip{display:none}   /* the GM's card controls: not the player's (first aid is his) */
+    #chars.noturn .treat button{opacity:.45;pointer-events:none}   /* first aid on his side's turn only */
     #chars input,#chars select{pointer-events:none;border-color:transparent;background:transparent}
     #g-rollbar select{width:auto}</style>`;
 }
@@ -3936,6 +3947,7 @@ function guestShow(m){                               // the host's drawing of th
   $("#round-no").textContent = m.round || "";
   if (open) $("#events details")?.setAttribute("open", "");
   $("#g-status").textContent = m.mine.acting ? `Your turn: ${m.mine.acting}.` : m.msg || "Waiting for the other side.";
+  $("#chars").classList.toggle("noturn", !m.mine.acting);
   guestRollBar(m.mine);
   GUEST.mine = m.mine;
 }
@@ -3957,7 +3969,9 @@ function guestWire(){                                // the player's clicks, as 
   });
   $("#chars").addEventListener("click", e => {
     const b = e.target.closest('button[data-act="select"]'), card = b && b.closest(".char");
-    if (card) GUEST.send({ t: "target", id: +(card.dataset.id || -1), i: +card.dataset.i });
+    if (card) return GUEST.send({ t: "target", id: +(card.dataset.id || -1), i: +card.dataset.i });
+    const aid = e.target.closest(".treat button[data-act]"), li = aid?.closest("li[data-j]"), mine = aid?.closest(".char");
+    if (aid && li && mine) GUEST.send({ t: "treat", id: +mine.dataset.id, j: +li.dataset.j, how: aid.dataset.act });
   });
   $("#result").addEventListener("click", e => { if (e.target.closest("#btn-stray")) GUEST.send({ t: "stray" }) });
   $("#g-rollbar").addEventListener("click", e => {
@@ -4397,6 +4411,8 @@ function treat(c, w, how){
   const roll = leech ? d100() : null, r = firstAid(how, w.fx, isLimb, leech ? leech[0] : null, roll);
   const said = leech ? `${leech[1]} (Leechcraft ${leech[0]}) rolled ${roll}` : "";
   if (leech) $("#apply-msg").textContent = r.done ? `${how[0].toUpperCase() + how.slice(1)} on ${c.name}: ${said}, success.` : `${how[0].toUpperCase() + how.slice(1)} on ${c.name} failed: ${said}. Try again.`;
+  logEvent(S.events, { round: evRound(), type: "aid", vis: [sideSeat(sideOf(c))],   // his side and the GM see it
+    data: { who: evWho(c), loc: w.loc, how, done: r.done, said }, pub: null });
   if (!r.done) return renderChars();
   if (leech && leech[2]) xpHit(leech[2], "leechcraft", "first aid in a fight");   // experience: his first aid worked
   w.fx.bleed = r.bleed;

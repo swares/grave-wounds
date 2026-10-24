@@ -316,6 +316,9 @@ count goes on from there.
     The GM's page makes each choice only if it is his to make (his side's fighter on its turn, or
     his free attack), through the same functions as its own buttons. The GM's script plays on
     after his Next fighter.
+  - He gives first aid to his own side's men from their cards (Bind, Tourniquet, Cauterise), on his
+    side's turn, as the GM's buttons give it (his side's best Leechcraft rolls). First aid, by anyone,
+    goes into the event log for that side and the GM.
   - **Use a public STUN server** (on by default) lets the pages find each other across the
     internet through stun.l.google.com; on one network it is not needed. There is no relay
     (TURN), so a few strict networks (some offices, some mobile networks) will not connect.

@@ -16,6 +16,7 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parents[2]
 URL = Path(sys.argv[1] if len(sys.argv) > 1 else ROOT / "dist" / "roller.html").resolve().as_uri()
 SHOTS = Path(__file__).parent / ".cache"                    # the player's page, as a picture, for a look
+EVENTS = "() => S.events.length"
 LINK, AGAIN = "textarea[data-net-link]", 'button[data-net="again"]'
 ENEMY_SECRETS = ["Blood <b>", "Bleeding", "Worst untreated", "Nerve", "lethal:", "stop check d100", "Serious", "Critical", "Light ", "critical ", "serious "]
 failures = []
@@ -90,7 +91,7 @@ with sync_playwright() as p:
     except Exception:
         print("     no roll for him:", gm.evaluate("() => [actingChar()?.name, attackerChar()?.name, defenderChar()?.name, S.chars.map(c => [c.name.slice(9, 16), c.pos, c.blood, c.state && c.state.id, isOut(c)]), netSeatTurn(NETH.peers[0].seat), S.tm]"))
         raise
-    n = gm.evaluate("() => S.events.length")
+    n = gm.evaluate(EVENTS)
     pl.fill('#g-rollbar [data-g="atk"]', "1"); pl.fill('#g-rollbar [data-g="loc"]', "50")   # a 1 is a critical: it cannot be parried
     pl.click("#g-roll")
     gm.wait_for_function(f"() => S.events.length > {n}", timeout=10000)
@@ -105,6 +106,17 @@ with sync_playwright() as p:
     check(True, "his page shows where the blow landed, not how badly")
     SHOTS.mkdir(parents=True, exist_ok=True)
     pl.screenshot(path=str(SHOTS / "player-page.png"), full_page=True)
+    # first aid from his page, on his side's turn: a wound on his man, bound from his card
+    gm.evaluate(f"() => {{ const a = actingChar(), b = S.chars.find(c => sideOf(c) === {foe!r} && c.wounds.length); a.wounds.push(structuredClone(b.wounds[0])); a.wounds.at(-1).fx.bleed = 2; renderChars() }}")
+    pl.wait_for_selector('#chars .char:not(.veiled) .treat button[data-act="bind"]', timeout=10000)
+    n = gm.evaluate(EVENTS)
+    pl.click('#chars .char:not(.veiled) .treat button[data-act="bind"]', force=True)
+    gm.wait_for_function(f"() => S.events.slice({n}).some(e => e.type === 'aid')", timeout=10000)
+    aid = gm.evaluate(f"() => S.events.slice({n}).find(e => e.type === 'aid')")
+    check(aid["data"]["how"] == "bind" and aid["vis"] == [f"side:{me}"], f"his Bind on his page gives first aid on the GM's page, logged for his side and the GM ({aid['data']['done']})")
+    if aid["data"]["done"]:
+        check(gm.evaluate("() => actingChar().wounds.at(-1).fx.bleed") < 2, "the bound wound bleeds less")
+    pl.wait_for_function("() => document.querySelector('#events').textContent.includes('wound')", timeout=10000)
     pl.click('#map-actions button[data-map="next"]')
     gm.wait_for_function(f"() => !actingChar() || sideOf(actingChar()) !== {me!r} || S.round > 1", timeout=10000)
     check(True, "his Next fighter ends his turn on the GM's page")
@@ -124,6 +136,11 @@ with sync_playwright() as p:
       return box.innerHTML }""")
     check("onerror" not in cleaned and "javascript" not in cleaned and "<script" not in cleaned and "onclick" not in cleaned and "<b>ok</b>" in cleaned and "<circle" in cleaned,
           "his page drops anything in a drawing that could run, and keeps the rest")
+    # out of his turn, his first aid is not his to give
+    n = gm.evaluate(EVENTS)
+    pl.evaluate(f"() => GUEST.send({{ t: 'treat', id: {gm.evaluate(f'() => S.chars.find(c => sideOf(c) === {me!r}).id')}, j: 0, how: 'bind' }})")
+    gm.wait_for_timeout(400)
+    check(not gm.evaluate(f"() => S.events.slice({n}).some(e => e.type === 'aid')") or gm.evaluate(f"() => sideOf(actingChar() || {{}}) === {me!r}"), "first aid sent out of his side's turn is ignored")
     # lost, and back: the same seat, a new link, his last screen kept meanwhile
     pl.evaluate("() => GUEST.peer.close()")               # his connection goes (a network gone, a laptop shut)
     gm.wait_for_function("() => ['closed', 'failed', 'disconnected'].includes(NETH.peers[0].state)", timeout=20000)
