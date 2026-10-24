@@ -7,7 +7,9 @@ the GM's. The GM adds a player for two named men; the player opens his link, the
 Then: his page shows his men, the force they are with, and the campaign's public news; nothing of
 the enemy's force, its named man, or the GM's own notes reaches it. The march moves on from the
 console and his page follows, by changes only. His page reloaded keeps his last screen and rejoins;
-the console reloaded remembers who plays whom and invites him again. His named man in a fight on the
+the console reloaded remembers who plays whom and invites him again. He proposes his force's orders;
+the GM accepts one (given as the console gives it) and declines another; one not his is ignored;
+the GM turns proposals off. His named man in a fight on the
 console's roller: the fight comes to his page on the same link, his side his to play, his Next
 ending his turn there, and the fight gone from his page when the roller leaves the frame. Needs Python's playwright with
 Chromium and a built site. Exits non-zero on any failure.
@@ -77,7 +79,7 @@ with sync_playwright() as p:
       const man = (name, f) => ({{ name, map: {MAP!r}, force: f.id, pid: 'pid-' + name, endurance: 50, str: 50, sex: 'm', fieldcraft: 40, leechcraft: 20, log: [], health: {{ cases: [], immune: {{}}, had: {{}}, dead: 0 }} }});
       localStorage.setItem('gravewounds-named', JSON.stringify({{ u1: man('Hal Ashby', a), u2: man('Wat Tyler', a), u3: man('Clifford Spy', foe) }}));
       localStorage.setItem('gravewounds-purses', JSON.stringify({{ 'pid-Hal Ashby': {{ name: 'Hal Ashby', start: 12, ledger: [] }} }})) }}""")
-    mine, enemy = gm.evaluate("() => { const fs = forcesHere(), a = fs[0]; return [a.name, fs.find(o => o.side !== a.side).name] }")
+    mine, enemy, mine_id, enemy_id = gm.evaluate("() => { const fs = forcesHere(), a = fs[0], b = fs.find(o => o.side !== a.side); return [a.name, b.name, a.id, b.id] }")
     gm.goto(BASE + "campaign.html")
     gm.wait_for_function("() => typeof REC === 'object' && REC", timeout=15000)
     gm.evaluate("() => { setPhase('march'); render() }")
@@ -117,6 +119,34 @@ with sync_playwright() as p:
     check(marched and not any(t[:40] in pl.inner_text("#p-news") for t in marched), f"the march's word on every force stays in the console's log, not his news ({marched[-1][:60] if marched else ''})")
     raw = "".join(pl.evaluate(GOT))
     check(enemy not in raw and "Clifford Spy" not in raw and "ambush" not in raw, "no message to his page names the enemy's force, its named man, or the GM's notes")
+    # his proposed orders: sent from his page, waiting for the GM, accepted or declined there
+    TRAVEL_FORCE = f"() => JSON.parse(localStorage.getItem('gravewounds-travel')).forces[{MAP!r}].find(f => f.id === {mine_id})"
+    OPEN = "() => REC.proposals.filter(x => x.state === 'open').length"
+    pl.wait_for_selector(f'#p-force .propose[data-force="{mine_id}"] select[data-pick="to"]', timeout=10000)
+    place = pl.evaluate(f"""() => {{ const s = document.querySelector('#p-force .propose[data-force="{mine_id}"] select[data-pick="to"]'); s.selectedIndex = s.options.length - 1; return [s.value, s.options[s.selectedIndex].text] }}""")
+    check(enemy not in pl.inner_text("#p-force"), "his order choices list places, not where the enemy is")
+    before = gm.evaluate(TRAVEL_FORCE)
+    pl.click(f'#p-force .propose[data-force="{mine_id}"] button[data-propose="to"]')
+    gm.wait_for_function(f"() => {OPEN[6:]} === 1", timeout=10000)
+    check(place[1] in gm.inner_text("#c-players") and "Scott proposes" in gm.inner_text("#c-notice"), f"his proposal ({place[1]}) waits on the console, and the GM is told")
+    check(gm.evaluate(TRAVEL_FORCE)["waypoints"] == before["waypoints"], "a proposal changes nothing until the GM accepts it")
+    pl.evaluate(f"() => {{ PG.send({{ t: 'propose', force: {enemy_id}, what: 'halt' }}); PG.send({{ t: 'propose', force: {mine_id}, what: 'to', arg: '0,0' }}); PG.send({{ t: 'propose', force: {mine_id}, what: 'burn' }}) }}")
+    gm.wait_for_timeout(600)
+    check(gm.evaluate("() => REC.proposals.length") == 1, "a proposal for a force not his, or not among its choices, is ignored")
+    gm.click('button[data-prop="yes"]')
+    gm.wait_for_function(f"() => {TRAVEL_FORCE[6:]}.waypoints.join() === {json.dumps(place[0])}", timeout=10000)
+    pl.wait_for_function("() => document.querySelector('#p-force').textContent.includes('accepted')", timeout=10000)
+    check("accepts" in pl.inner_text("#p-news"), "the GM accepts it: the force's route is set as the console sets it, and his page says so")
+    pl.click(f'#p-force .propose[data-force="{mine_id}"] button[data-propose="rest"]')
+    gm.wait_for_function(f"() => {OPEN[6:]} === 1", timeout=10000)
+    day_was = gm.evaluate(TRAVEL_FORCE)["day"]
+    gm.click('button[data-prop="no"]')
+    pl.wait_for_function("() => document.querySelector('#p-force').textContent.includes('declined')", timeout=10000)
+    check(gm.evaluate(TRAVEL_FORCE)["day"] == day_was, "the GM declines one: nothing changes, and his page says so")
+    gm.uncheck("#pl-propose")
+    pl.wait_for_function("() => !document.querySelector('#p-force .propose select')", timeout=10000)
+    check("giving the orders himself" in pl.inner_text("#p-force"), "the GM turns proposals off: the choices go from his page")
+    gm.check("#pl-propose")
     # his men changed by the GM: his page follows
     gm.uncheck('[data-pl-man][value="u2"]')
     pl.wait_for_function("() => !document.querySelector('#p-men').textContent.includes('Wat Tyler')", timeout=10000)
