@@ -2048,10 +2048,14 @@ def jobs_bundle(d, eid: str) -> dict | None:
 
 
 def campaign_bundle(d) -> dict:
-    """What the campaign page needs: the maps' and eras' names, to say where the campaign stands."""
+    """What the campaign page needs: the maps', eras', weather's and diseases' names, to say where the
+    campaign stands and what happened."""
     return {"generated": date.today().isoformat(),
             "maps": {mid: {"name": m.get("name") or mid, "start_date": m.get("start_date")} for mid, m in d.maps.items()},
-            "eras": {eid: e.get("name") or eid for eid, e in d.teams.items()}}
+            "eras": {eid: e.get("name") or eid for eid, e in d.teams.items()},
+            "weather": {k: c["name"] for k, c in d.weather["conditions"].items()},          # the day's weather, in the day's line
+            "diseases": {k: v["name"].split(" (")[0] for k, v in [*d.disease["diseases"].items(), *d.disease["wounds"].items(),
+                         ("scurvy", d.disease["scurvy"]), ("frostbite", d.disease.get("frostbite") or {})] if isinstance(v, dict) and v.get("name")}}
 
 
 def team_bundle(d) -> dict:

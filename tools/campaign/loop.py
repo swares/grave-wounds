@@ -144,6 +144,9 @@ with sync_playwright() as p:
     named = pg.evaluate("() => JSON.parse(localStorage.getItem('gravewounds-travel')).forces['towton-1461'][0].log.slice(0, 40).join(' | ')")
     check(day >= 3 and "Night of" in named, f"marching on, nights pass from the console: day {day} after {presses} presses ({said[:70]})")   # it arrives, or (the dice) is too spent to go on
     check("Day " + str(day) in pg.inner_text("#c-march"), "the march panel follows the clock")
+    pg.wait_for_timeout(3500)
+    ended = [e["data"]["text"] for e in pg.evaluate(LOG) if "ended on the map of" in e["data"]["text"]]
+    check(len(ended) >= 1 and "York" in ended[-1], f"the end of the days goes into the log by itself ({(ended or ['none'])[-1][:90]})")
     # back to where the forces met: the fight set up from the console
     pg.evaluate("(s) => localStorage.setItem('gravewounds-travel', s)", met_state)
     page_in_frame(pg).evaluate("() => location.reload()")
@@ -184,6 +187,10 @@ with sync_playwright() as p:
     pg.fill("#c-note", "Clifford's men will be back with more."); pg.check("#c-note-gm"); pg.click("#c-add-note")
     log = pg.evaluate("() => REC.log.map(e => [e.vis, e.data.text])")
     check(["public", "Hal took an arrow at the ford."] in log and [[], "Clifford's men will be back with more."] in log, "notes go in the log, public or for the GM")
+    # the end of a season in the team builder: noticed, logged, on to downtime
+    pg.evaluate("() => { const x = JSON.parse(localStorage.getItem('gravewounds-xp') || '{}'); x.p9 = { ticks: {}, served: 0, stamp: Date.now() }; localStorage.setItem('gravewounds-xp', JSON.stringify(x)) }")
+    pg.wait_for_function("() => REC.phase === 'downtime'", timeout=6000)
+    check("season has ended" in pg.inner_text(NOTICE) and any("season has ended" in e["data"]["text"] for e in pg.evaluate(LOG)), "the end of a season moves the console to downtime, and says so")
     # the whole game to a file; the narrator's key never in it
     pg.evaluate("() => localStorage.setItem('gravewounds-narrator', JSON.stringify({ key: 'sk-secret' }))")
     with pg.expect_download() as dl:
@@ -196,14 +203,14 @@ with sync_playwright() as p:
     pg.evaluate("() => { for (const k of Object.keys(localStorage)) if (k !== 'gravewounds-narrator') localStorage.removeItem(k) }"); pg.reload()
     check(pg.evaluate(PHASE) == "muster" and NO_TEAM in status_of(pg), "cleared, the console is back at a new campaign")
     pg.set_input_files("#c-load", str(save_path))
-    pg.wait_for_function("() => REC.phase === 'aftermath'", timeout=6000)
+    pg.wait_for_function("() => REC.phase === 'downtime'", timeout=6000)
     check(" men" in status_of(pg) and NO_TEAM not in status_of(pg) and "Loaded the saved game" in pg.inner_text("#c-log"), "loading the file brings back the team, the phase and the log")
     check(pg.evaluate("() => localStorage.getItem('gravewounds-narrator')") is not None, "loading a save leaves this browser's narrator settings alone: they are not part of a game")
     bad = ROOT / "tools" / "campaign" / ".cache"; bad.mkdir(exist_ok=True)
     (bad / "not-a-save.json").write_text('{"hello": 1}')
     pg.set_input_files("#c-load", str(bad / "not-a-save.json"))
     pg.wait_for_function("() => document.querySelector('#c-saved').textContent.includes('Could not load')", timeout=4000)
-    check(pg.evaluate(PHASE) == "aftermath", "a file that is not a save is refused and changes nothing")
+    check(pg.evaluate(PHASE) == "downtime", "a file that is not a save is refused and changes nothing")
     pg.screenshot(path=str(bad / "campaign.png"), full_page=False)
     pg.click("#c-new")
     pg.wait_for_timeout(3500)                                  # the console looks again: the old fight must not be news to the new campaign

@@ -9,9 +9,11 @@
    CAMPAIGN.suggest(phase, status, seen) -> {phase, why, mark} when the pages show the campaign has
      moved on (a fight sent from the travel map, a fight won or a battle's result sent back), else null.
      `seen` is the record of what was already noticed, so a thing is noticed once.
+   CAMPAIGN.notices(status, seen, CD, temp) -> {news, forget}: what is worth the log by itself, once each: a
+     named man's death, sickness breaking out in a force, the end of a day, the end of a season.
    CAMPAIGN.saveFile(raw) / CAMPAIGN.checkFile(obj): the whole game as one file (every entry as stored),
      and the check that a file read back is one: the entries to write back.
-   CD is the campaign page's data: the maps' and eras' names. build.py puts this file into the campaign
+   CD is the campaign page's data: the maps', eras', weather's and diseases' names. build.py puts this file into the campaign
    page at its CAMPAIGN_JS marker; in Node it is a module (tools/campaign/test.js). */
 const CAMPAIGN = (() => {
   const PREFIX = "gravewounds-";
@@ -47,17 +49,30 @@ const CAMPAIGN = (() => {
       lost: (tb.losses || []).length, prisoners: (tb.prisoners || []).length };
   }
   function namedStatus(snap){
-    const all = Object.values(obj(snap["gravewounds-named"]) || {});
+    const byUid = obj(snap["gravewounds-named"]) || {}, all = Object.values(byUid), purses = obj(snap["gravewounds-purses"]) || {};
+    const fallen = Object.entries(byUid).filter(([, n]) => n.dead).map(([uid, n]) => ({ uid, name: n.name || "?", died: n.died || null,
+      why: purses[n.pid]?.lost?.why || null, map: n.map || null, force: n.force ?? null }));
     return { men: all.length, withForce: all.filter(n => n.map && n.force !== undefined && n.force !== null).length,
-      dead: all.filter(n => n.dead).length, sick: all.filter(n => (n.health?.cases || []).length).length };
+      dead: fallen.length, sick: all.filter(n => (n.health?.cases || []).length).length, fallen };
   }
   function travelStatus(snap, CD){
     const t = obj(snap["gravewounds-travel"]);
     if (!t?.mapId) return null;
     const forces = t.forces?.[t.mapId] || [], clock = t.clock?.[t.mapId] || null;
     const m = CD.maps?.[t.mapId] || {};
+    const shown = f => (f.health?.cases || []).filter(c => c.inc === 0);
+    const bySide = {}, sick = [];
+    for (const f of forces){
+      const b = (bySide[f.side] ||= { forces: 0, men: 0, sick: 0 });
+      b.forces++; b.men += f.men || 0; b.sick += shown(f).length;
+      const by = {};
+      for (const c of shown(f)) if (c.d !== "wound") by[c.d] = (by[c.d] || 0) + 1;   // battle wounds are the fight's news, not sickness
+      for (const [d, n] of Object.entries(by)) sick.push({ force: f.id, name: f.name || "?", d, n });
+    }
+    const days = t.wx?.[t.mapId]?.days || {};
     return { mapId: t.mapId, mapName: m.name || t.mapId, start: m.start_date || null, day: clock ? clock.day : null,
-      forces: forces.length, sides: [...new Set(forces.map(f => f.side))], fought: (t.fought || []).length };
+      forces: forces.length, sides: [...new Set(forces.map(f => f.side))], fought: (t.fought || []).length,
+      names: Object.fromEntries(forces.map(f => [f.id, f.name])), bySide, sick, wx: days };
   }
   function fightStatus(snap){
     const r = obj(snap["gravewounds-chars"]), rh = obj(snap["gravewounds-handoff"]), fh = obj(snap["gravewounds-field-handoff"]);
@@ -75,9 +90,13 @@ const CAMPAIGN = (() => {
         lost: Object.values(result.forces || {}).reduce((a, x) => a + (x.lost || 0), 0) } : null,
     };
   }
+  function seasonStatus(snap){                       // the team builder's last End of season: the stamp it gives each man's experience
+    const stamps = Object.values(obj(snap["gravewounds-xp"]) || {}).map(x => x?.stamp).filter(Boolean);
+    return stamps.length ? { stamp: Math.max(...stamps), men: stamps.filter(x => x === Math.max(...stamps)).length } : null;
+  }
   function status(raw, CD = {}){
     const snap = parsed(raw);
-    return { team: teamStatus(snap, CD), named: namedStatus(snap), travel: travelStatus(snap, CD), fight: fightStatus(snap) };
+    return { team: teamStatus(snap, CD), named: namedStatus(snap), travel: travelStatus(snap, CD), fight: fightStatus(snap), season: seasonStatus(snap) };
   }
 
   // The campaign has moved on when the pages show it: noticed once each (seen holds what was noticed).
@@ -103,6 +122,49 @@ const CAMPAIGN = (() => {
     return null;
   }
 
+  // What happened that is worth the log by itself, once each (seen holds what was noticed): a named man's
+  // death, sickness breaking out in a force, the end of a day on the travel map, the end of a season.
+  // -> {news: [{mark, value, why, phase?}], forget: [marks]}: forget, the outbreaks that are over (a new
+  // one is news again).
+  const thousands = n => Number(n).toLocaleString("en-US");   // 25,000
+  function deathNews(st, seen, CD){
+    return st.named.fallen.filter(x => !seen["dead:" + x.uid]).map(x => {
+      const of = x.died ? " of " + (CD.diseases?.[x.died] || x.died).toLowerCase() : "";
+      const how = x.why && !of ? " (" + x.why + ")" : "";
+      const t = st.travel, force = t && x.map === t.mapId && t.names[x.force] ? ", with " + t.names[x.force] : "";
+      return { mark: "dead:" + x.uid, value: true, why: `${x.name} has died${of}${how}${force}.` };
+    });
+  }
+  function sickNews(st, seen, CD){
+    const t = st.travel, active = new Set(), news = [];
+    for (const x of t?.sick || []){
+      const mark = `sick:${t.mapId}:${x.force}:${x.d}`;
+      active.add(mark);
+      if (!seen[mark]) news.push({ mark, value: true, why: `${CD.diseases?.[x.d] || x.d} has broken out in ${x.name}: ${x.n} sick.` });
+    }
+    return { news, forget: Object.keys(seen).filter(k => k.startsWith("sick:") && !active.has(k)) };
+  }
+  function dayNews(st, seen, CD, temp){
+    const t = st.travel;
+    if (!t?.day) return [];
+    const mark = "day:" + t.mapId, last = seen[mark];
+    if (typeof last !== "number" || t.day <= last) return typeof last === "number" ? [] : [{ mark, value: t.day, why: null }];
+    const ended = t.day - 1 === last ? `Day ${last} has ended` : `Days ${last} to ${t.day - 1} have ended`;
+    const w = t.wx[t.day - 1]?.w, wx = w ? `: ${(CD.weather?.[w.cond] || w.cond).toLowerCase()}, ${temp(w.low)} to ${temp(w.high)}` : "";
+    const sides = Object.entries(t.bySide).map(([side, b]) => `${side} ${b.forces === 1 ? "1 force" : b.forces + " forces"}, ${thousands(b.men)} men${b.sick ? ", " + thousands(b.sick) + " sick" : ""}`);
+    return [{ mark, value: t.day, why: `${ended} on the map of ${t.mapName}${wx}. ${sides.join("; ")}.` }];
+  }
+  function seasonNews(st, seen){
+    const s = st.season;
+    if (!s || seen["season:" + s.stamp]) return [];
+    return [{ mark: "season:" + s.stamp, value: true, phase: "downtime",
+      why: `The season has ended in the team builder: experience, rank and age rolled for ${s.men === 1 ? "1 man" : s.men + " men"}.` }];
+  }
+  function notices(st, seen = {}, CD = {}, temp = c => c + " °C"){   // temp: a temperature in the reader's units
+    const sick = sickNews(st, seen, CD);
+    return { news: [...deathNews(st, seen, CD), ...sick.news, ...dayNews(st, seen, CD, temp), ...seasonNews(st, seen)], forget: sick.forget };
+  }
+
   function saveFile(raw, name = ""){
     const keys = Object.fromEntries(Object.entries(raw).filter(([k, v]) => k.startsWith(PREFIX) && !KEEP_OUT.has(k) && typeof v === "string"));
     return { format: FORMAT, version: 1, name, saved: new Date().toISOString(), keys };
@@ -119,7 +181,7 @@ const CAMPAIGN = (() => {
     return keys;
   }
 
-  return { read, status, suggest, saveFile, checkFile, PHASES, RECORD, PREFIX, KEEP_OUT };
+  return { read, status, suggest, notices, saveFile, checkFile, PHASES, RECORD, PREFIX, KEEP_OUT };
 })();
 
 if (typeof module !== "undefined") module.exports = CAMPAIGN;   // Node (the tests); the page has no `module`
