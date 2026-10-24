@@ -25,8 +25,12 @@ The console also follows the pages by itself, and says so at the top:
 It also notices, logs and shows at the top what happens by itself:
 
 - a named man's death, on the march, in camp, of wounds or sickness: what he died of and his force;
+- a man of the team taken prisoner;
 - sickness breaking out in a force: the first cases of a disease (battle wounds are the fight's news,
   not sickness; wound fever is); once the force is clear of it, a new outbreak is news again;
+- a force out of rations, water, medical stores or ammunition (news again once refilled and out
+  again);
+- a man's new rank (a rank first seen is only noted);
 - the end of a day on the travel map: one line for the day or days that ended, with the weather
   and each side's forces, men and sick;
 - the end of a season in the team builder (experience, rank and age rolled), which moves it to
@@ -101,15 +105,13 @@ they may hold a service key, and they belong to the browser, not the game.
 - It gives routes, orders and camps, runs the march's clock, sets up fights and takes a battle's
   result back; columns, the forces' own settings, adding forces and painting the map are on the
   travel map, and the fights are fought on the roller and the field map.
-- It notices fights sent and won, deaths, outbreaks, the end of a day and of a season; not yet a man
-  taken prisoner, a promotion, or a force's supplies running out.
-- The other pages do not link back to it; open it from the start page.
 - The pages' own state is still per page; a campaign's whole state exists only as a save file.
 
 ## Tests
 
 `node tools/campaign/test.js` checks the console's reading of the pages: the status, what it
-notices (fights, deaths, outbreaks over and back, the end of days and of a season), and save files. `python3 tools/campaign/loop.py` follows a campaign round the loop in a
+notices (fights, deaths, prisoners, outbreaks and supplies out over and back, ranks, the end of
+days and of a season), and save files. `python3 tools/campaign/loop.py` follows a campaign round the loop in a
 headless browser over the real pages, served by a local web server: the team rolled in the frame,
 a force's route given from the console, the clock run from it until the forces meet, a long
 march across nights, a fight set up from the console where the forces met,

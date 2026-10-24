@@ -10,7 +10,8 @@
      moved on (a fight sent from the travel map, a fight won or a battle's result sent back), else null.
      `seen` is the record of what was already noticed, so a thing is noticed once.
    CAMPAIGN.notices(status, seen, CD, temp) -> {news, forget}: what is worth the log by itself, once each: a
-     named man's death, sickness breaking out in a force, the end of a day, the end of a season.
+     named man's death or capture, sickness breaking out, a force out of supplies, a promotion, the end
+     of a day, the end of a season.
    CAMPAIGN.saveFile(raw) / CAMPAIGN.checkFile(obj): the whole game as one file (every entry as stored),
      and the check that a file read back is one: the entries to write back.
    CD is the campaign page's data: the maps', eras', weather's and diseases' names. build.py puts this file into the campaign
@@ -44,9 +45,12 @@ const CAMPAIGN = (() => {
   const obj = v => (v && typeof v === "object" ? v : null);
 
   function teamStatus(snap, CD){
-    const tb = obj(snap["gravewounds-team-builder"]) || {}, team = Array.isArray(tb.team) ? tb.team : [];
+    const tb = obj(snap["gravewounds-team-builder"]) || {}, team = Array.isArray(tb.team) ? tb.team : [], held = tb.prisoners || [];
+    const who = m => m.pid || m.name;
     return { era: tb.era || null, eraName: CD.eras?.[tb.era] || tb.era || null, men: team.map(m => m.name).filter(Boolean),
-      lost: (tb.losses || []).length, prisoners: (tb.prisoners || []).length };
+      lost: (tb.losses || []).length, prisoners: held.length,
+      held: held.map(m => ({ id: who(m), name: m.name || "?" })),
+      ranks: team.filter(m => m.rank).map(m => ({ id: who(m), name: m.name || "?", rank: m.rank })) };
   }
   function namedStatus(snap){
     const byUid = obj(snap["gravewounds-named"]) || {}, all = Object.values(byUid), purses = obj(snap["gravewounds-purses"]) || {};
@@ -69,10 +73,13 @@ const CAMPAIGN = (() => {
       for (const c of shown(f)) if (c.d !== "wound") by[c.d] = (by[c.d] || 0) + 1;   // battle wounds are the fight's news, not sickness
       for (const [d, n] of Object.entries(by)) sick.push({ force: f.id, name: f.name || "?", d, n });
     }
+    const short = forces.filter(f => f.sup && f.type !== "wagons").map(f => ({ force: f.id, name: f.name || "?",
+      out: [f.supHungry && "rations", f.thirsty && "water", (f.sup.med ?? 1) <= 0 && "medical stores", (f.sup.ammo ?? 1) <= 0 && "ammunition"].filter(Boolean) }))
+      .filter(x => x.out.length);
     const days = t.wx?.[t.mapId]?.days || {};
     return { mapId: t.mapId, mapName: m.name || t.mapId, start: m.start_date || null, day: clock ? clock.day : null,
       forces: forces.length, sides: [...new Set(forces.map(f => f.side))], fought: (t.fought || []).length,
-      names: Object.fromEntries(forces.map(f => [f.id, f.name])), bySide, sick, wx: days };
+      names: Object.fromEntries(forces.map(f => [f.id, f.name])), bySide, sick, short, wx: days };
   }
   function fightStatus(snap){
     const r = obj(snap["gravewounds-chars"]), rh = obj(snap["gravewounds-handoff"]), fh = obj(snap["gravewounds-field-handoff"]);
@@ -123,7 +130,8 @@ const CAMPAIGN = (() => {
   }
 
   // What happened that is worth the log by itself, once each (seen holds what was noticed): a named man's
-  // death, sickness breaking out in a force, the end of a day on the travel map, the end of a season.
+  // death, a man taken prisoner, sickness breaking out in a force, a force out of supplies, a man's new
+  // rank, the end of a day on the travel map, the end of a season.
   // -> {news: [{mark, value, why, phase?}], forget: [marks]}: forget, the outbreaks that are over (a new
   // one is news again).
   const thousands = n => Number(n).toLocaleString("en-US");   // 25,000
@@ -154,6 +162,23 @@ const CAMPAIGN = (() => {
     const sides = Object.entries(t.bySide).map(([side, b]) => `${side} ${b.forces === 1 ? "1 force" : b.forces + " forces"}, ${thousands(b.men)} men${b.sick ? ", " + thousands(b.sick) + " sick" : ""}`);
     return [{ mark, value: t.day, why: `${ended} on the map of ${t.mapName}${wx}. ${sides.join("; ")}.` }];
   }
+  function heldNews(st, seen){                       // a man of the team taken prisoner
+    return st.team.held.filter(m => !seen["held:" + m.id]).map(m => ({ mark: "held:" + m.id, value: true, why: `${m.name} has been taken prisoner.` }));
+  }
+  function rankNews(st, seen, CD){                   // a man's rank changed: first seen, only marked
+    const names = CD.ranks?.[st.team.era] || {};
+    return st.team.ranks.filter(m => seen["rank:" + m.id] !== m.rank).map(m => ({ mark: "rank:" + m.id, value: m.rank,
+      why: seen["rank:" + m.id] === undefined ? null : `${m.name} is now ${(names[m.rank] || m.rank).toLowerCase()}.` }));
+  }
+  function shortNews(st, seen){                      // a force out of rations, water, medical stores or ammunition; news again once refilled and out again
+    const t = st.travel, active = new Set(), news = [];
+    for (const x of t?.short || []) for (const what of x.out){
+      const mark = `out:${t.mapId}:${x.force}:${what}`;
+      active.add(mark);
+      if (!seen[mark]) news.push({ mark, value: true, why: `${x.name} is out of ${what}.` });
+    }
+    return { news, forget: Object.keys(seen).filter(k => k.startsWith("out:") && !active.has(k)) };
+  }
   function seasonNews(st, seen){
     const s = st.season;
     if (!s || seen["season:" + s.stamp]) return [];
@@ -161,8 +186,9 @@ const CAMPAIGN = (() => {
       why: `The season has ended in the team builder: experience, rank and age rolled for ${s.men === 1 ? "1 man" : s.men + " men"}.` }];
   }
   function notices(st, seen = {}, CD = {}, temp = c => c + " °C"){   // temp: a temperature in the reader's units
-    const sick = sickNews(st, seen, CD);
-    return { news: [...deathNews(st, seen, CD), ...sick.news, ...dayNews(st, seen, CD, temp), ...seasonNews(st, seen)], forget: sick.forget };
+    const sick = sickNews(st, seen, CD), out = shortNews(st, seen);
+    return { news: [...deathNews(st, seen, CD), ...heldNews(st, seen), ...sick.news, ...out.news, ...rankNews(st, seen, CD), ...dayNews(st, seen, CD, temp), ...seasonNews(st, seen)],
+      forget: [...sick.forget, ...out.forget] };
   }
 
   function saveFile(raw, name = ""){
