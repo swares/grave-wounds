@@ -125,6 +125,16 @@ with sync_playwright() as p:
     got = pl.evaluate("() => window.__got.join('')")
     enemy = gm.evaluate(f"() => S.chars.filter(c => sideOf(c) === {foe!r}).map(c => [c.name, c.blood, poolOf(c)])")
     check(len(got) > 10000, f"the player's page received its screens ({len(got)} characters in all)")
+    msgs = pl.evaluate("""() => { const whole = {}, out = [];   // the pieces put back into messages, in order
+      for (const x of window.__got){ const p = JSON.parse(x); (whole[p.id] ||= []).push(p);
+        if (whole[p.id].length === p.of){ const text = whole[p.id].sort((a, b) => a.k - b.k).map(q => q.part).join(""); out.push([!!JSON.parse(text).part, text.length]) } }
+      return out }""")
+    parts = [n for part, n in msgs if part]
+    check(msgs and not msgs[0][0] and parts and sum(parts) / len(parts) < msgs[0][1] / 2,
+          f"his first screen comes whole, then only what changed ({msgs[0][1] if msgs else 0} characters whole, {len(parts)} parts of {sum(parts) // max(1, len(parts))} on average)")
+    gm.wait_for_timeout(300)
+    same = pl.evaluate("() => GUEST.screen"), gm.evaluate(f"() => netSeatScreen('side:{me}')")
+    check(all(same[0].get(k) == same[1].get(k) for k in ("chars", "map", "bar", "log", "events", "result")), "the screen put together from the parts is the GM's page's screen for his side")
     kinds = gm.evaluate("() => [...new Set(S.events.map(e => e.type))]")
     check("initiative" in kinds and "Initiative:" in pl.evaluate("() => document.querySelector('#events').textContent"), f"initiative goes into the log, and his page shows it ({kinds})")
     check(any(b < pool for _, b, pool in enemy), f"the enemy was hurt, so the checks below mean something {enemy}")

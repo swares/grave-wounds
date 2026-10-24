@@ -332,10 +332,13 @@ count goes on from there.
     screen, says he is lost, and takes the new link pasted into **Rejoin** (or opened in that tab);
     reloaded, it shows that last screen at once while it rejoins. If the GM's page is reloaded,
     Play online remembers which sides had players (in that browser tab) and offers Invite again for
-    each. Every rejoin still passes a link and a reply by hand: no server. The GM's page sends whole
-    panels (tens of kB at each change), and the player's page shows only what it is sent.
-  - `node tools/net/test.mjs` tests the codes and the message pieces; `python3 tools/net/twopages.py`
+    each. Every rejoin still passes a link and a reply by hand: no server. The GM's page sends his
+    whole screen when he connects (tens of kB), then only the panels that changed, each as its
+    changed tags (a few hundred bytes for a wounded man's card; a map that lights every hex for his
+    turn still goes nearly whole); his page puts them over the last screen, and shows only what it is sent.
+  - `node tools/net/test.mjs` tests the codes, the message pieces and the changes; `python3 tools/net/twopages.py`
     connects a GM's page and a player's page in a headless browser, plays a turn from each, then
+    checks that after the first screen only changes go and that they add up to the GM's screen for his side,
     loses the player and brings him back (Invite again, Rejoin, a reload on either side)
     (in CI, with the other browser tests: `.github/workflows/browser.yml`).
   - The script's choices are design guesses, not calibrated against any record.
