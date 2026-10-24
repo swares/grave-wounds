@@ -1,7 +1,7 @@
 // The room Worker (worker/rooms.js), its own code with an in-memory Durable Object namespace
 // (tools/net/fakerooms.mjs) in place of Cloudflare's.
 //   node tools/net/roomscheck.mjs
-//   ROOMS_PORT=8787 node tools/net/roomscheck.mjs   the same against a Worker running on this computer
+//   ROOMS_LIVE=1 node tools/net/roomscheck.mjs   the same against the Worker run by wrangler dev (port 8787)
 //     (wrangler dev in worker/, Cloudflare's own local runtime); the alarm's check is skipped there
 import assert from "node:assert/strict";
 import worker from "../../worker/rooms.js";
@@ -12,8 +12,7 @@ async function check(name, fn){
   try { await fn(); passed++ } catch (e){ failed++; console.error(`FAIL ${name}\n  ${e.message.split("\n").slice(0, 6).join("\n  ")}`) }
 }
 const SITE = "https://swares.github.io";
-const PORT = Number.parseInt(process.env.ROOMS_PORT || "", 10);
-const LIVE = PORT > 0 && PORT < 65536 ? `http://127.0.0.1:${PORT}` : null;   // a Worker on this computer (wrangler dev), by its port only
+const LIVE = process.env.ROOMS_LIVE === "1" ? "http://127.0.0.1:8787" : null;   // the Worker on this computer (wrangler dev, its own port)
 function call(env, method, path, { body, key, origin = SITE } = {}){
   const headers = { Origin: origin };
   if (key) headers["X-Room-Key"] = key;
@@ -97,8 +96,8 @@ await check("a room is forgotten when its time is up, and its code can be made a
   assert.equal((await env.ROOMS.get(code).fetch(new Request("https://room/create", { method: "POST" }))).status, 201);
 });
 await check("two rooms never share a code", async () => {
-  const env = makeEnv(), seen = new Set();
-  for (let i = 0; i < 300; i++){ const { code } = await newRoom(env); assert.ok(!seen.has(code), code); seen.add(code) }
+  const env = makeEnv(), made = await Promise.all(Array.from({ length: 300 }, () => newRoom(env)));
+  assert.equal(new Set(made.map(r => r.code)).size, 300);
 });
 
 console.log(`${passed} passed, ${failed} failed`);

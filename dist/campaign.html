@@ -4736,7 +4736,7 @@ async function pgAnswer(R, code, inv, mine){          // one invitation from his
   try {
     const invite = await NET.unpackCode(inv.data);
     pgReady(invite);
-    const g = await pgPeer(invite, () => { if (mine()){ pgStatus("Lost the GM's console. Your last screen stays below; waiting to be invited again..."); void pgRoom() } });
+    const g = await pgPeer(invite, () => { if (mine()){ pgStatus("Lost the GM's console. Your last screen stays below; waiting to be invited again..."); pgRoom().catch(err => pgStatus(String(err.message || err))) } });
     await R.reply(code, inv.v, g.reply);
     pgStatus("Connecting to the GM's console...");
     return true;
@@ -4766,14 +4766,14 @@ async function pgRoom(){
 if (PLAYER_PAGE){
   pgLayout();
   $("#p-force").addEventListener("click", pgPropose);
-  const go = () => void (location.hash.startsWith("#room") ? pgRoom() : pgJoin());
+  const go = () => (location.hash.startsWith("#room") ? pgRoom() : pgJoin()).catch(e => pgStatus(String(e.message || e)));
   window.addEventListener("hashchange", () => { if (/^#(join=|room)/.test(location.hash)) go() });   // a new invitation or room opened in this tab
   go();
 } else {
   loadRecord();
   render();
   show(phaseOf(REC.phase).page);
-  if (roomServer()) for (const pl of players().filter(x => x.room)) void playerConnect(pl);   // through their rooms, his players are invited again by themselves
+  if (roomServer()) for (const pl of players().filter(x => x.room)) playerConnect(pl).catch(() => renderPlayers());   // through their rooms, his players are invited again by themselves
   IDB.all().then(x => { SLOTS = x; renderSlots() }).catch(() => { $("#c-slots").innerHTML = '<p class="muted" style="margin:0">This browser keeps no campaigns side by side (IndexedDB is off): save to a file instead.</p>' });
 }
 </script>

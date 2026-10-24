@@ -20,9 +20,13 @@ export function makeEnv(vars = {}){
   env.ROOMS = {
     idFromName: name => name,
     get(id){
-      if (!rooms.has(id)){ const state = { storage: new Storage() }; rooms.set(id, { state, obj: new Room(state, env) }) }
+      if (!rooms.has(id)){ const state = { storage: new Storage() }; rooms.set(id, { state, obj: new Room(state, env), queue: Promise.resolve() }) }
       const r = rooms.get(id);
-      return { fetch: req => r.obj.fetch(req) };
+      return { fetch: req => {                              // one request at a time, as a Durable Object takes them
+        const run = r.queue.then(() => r.obj.fetch(req));
+        r.queue = run.catch(() => null);
+        return run;
+      } };
     },
   };
   env.rooms = rooms;                                        // for the tests: run the alarms that are due
