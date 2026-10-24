@@ -140,6 +140,15 @@ check("the end of a season in the team builder is news once, and moves the campa
   assert.equal(C.notices(C.status(raw, CDN), { [n.mark]: true }, CDN).news.length, 0);
 });
 
+check("a skirmish still waiting on the roller does not hide a battle sent to the field map after it", () => {
+  const raw = { ...C.read(store(pages)), "gravewounds-handoff": J({ from: "travel", force: { name: "Will's lances" }, place: "Ferrybridge", foes: [] }),
+    "gravewounds-field-handoff": J({ battle: "towton-1461:2:3:1", place: "Towton", forces: [{ name: "York" }] }) };
+  const st = C.status(raw, CD), first = C.suggest("march", st, {});
+  assert.equal(first.page, "roller.html");
+  const second = C.suggest("fight", st, { [first.mark]: true });
+  assert.equal(second.page, "field.html");
+  assert.match(second.why, /battle at Towton/);
+});
 check("a man taken prisoner is news once", () => {
   const raw = { "gravewounds-team-builder": J({ era: "medieval", team: [{ name: "Will", pid: "p1" }], prisoners: [{ name: "Hal", pid: "p2" }] }) };
   const r = C.notices(C.status(raw, CDN), {}, CDN);

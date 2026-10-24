@@ -7665,6 +7665,49 @@ function render(){
   $("#handoff").hidden = !HANDOFF;
   $("#teamin").hidden = !TEAMIN;
   save();
+  consolePush();
+}
+/* ---------- the campaign console: this page in its frame, run from there ----------
+   The console sends {gw: "console", cmd} (status, setup, next, run, end, ai with k and v, send) by
+   postMessage; this page does it as its own buttons would and answers {gw: "field", status}. It
+   answers only its own site's page that holds it in a frame. */
+const fieldInConsole = () => window.parent !== window;
+const fieldSite = () => (location.origin === "null" ? "*" : location.origin);
+function fieldSideStatus(name, k){                  // one side as the console shows it
+  const us = S.units.filter(u => sideNo(u) === k);
+  return { name, ai: aiOf(k), units: us.length, standing: us.filter(u => !out_(u)).length,
+    men: us.reduce((t, u) => t + (out_(u) ? 0 : Math.max(0, u.men || 0)), 0), start: us.reduce((t, u) => t + (u.start || u.men || 0), 0) };
+}
+function fieldStatus(){                              // the battle as the GM's console shows it
+  let phase = "over";
+  if (S.phase === "setup") phase = "setup";
+  else if (S.phase === 0 || S.phase === 1) phase = "moving";
+  return { phase, exchange: S.exchange || 0, moving: moving(), msg: S.msg || "", running: !!RUN, both: bothAi(),
+    handoff: HANDOFF ? `${HANDOFF.place}, ${HANDOFF.day}` : null, fromTravel: !!S.from, sent: !!S.from?.sent,
+    sides: S.sides.map(fieldSideStatus), lines: (S.log || []).slice(0, 8).map(l => l.text) };
+}
+function consolePush(){                             // after each change, the console hears of it
+  if (!fieldInConsole()) return;
+  try { window.parent.postMessage({ gw: "field", status: fieldStatus() }, fieldSite()) } catch { /* the console has gone: nothing to tell */ }
+}
+function fieldSendResult(){                         // the result for the travel map, as Back to the travel map leaves it, without leaving this page
+  if (!S.from || S.from.sent || S.phase !== "over") return;
+  try { localStorage.setItem("gravewounds-field-result", JSON.stringify(travelResult())) }
+  catch { S.msg = "Could not save the result for the travel map (storage is off)."; return render() }
+  S.from.sent = true;
+  S.msg = "The result is sent to the travel map.";
+  render();
+}
+function consoleCommand(e){                         // a command from the console holding this page
+  if (!fieldInConsole() || e.source !== window.parent || e.data?.gw !== "console" || (fieldSite() !== "*" && e.origin !== location.origin)) return;
+  const d = e.data;
+  if (d.cmd === "setup" && HANDOFF){ fromTravel(HANDOFF); HANDOFF = null; dropHandoff(); fillChoices(); render() }   // as Set up the battle
+  else if (d.cmd === "next") $("#btn-next").click();  // as Start the battle / Next: the page's own button, so it does just what the button does
+  else if (d.cmd === "run" && bothAi()) runToggle();
+  else if (d.cmd === "end") endBattle();
+  else if (d.cmd === "ai" && (d.k === 0 || d.k === 1) && ["", "attack", "hold"].includes(d.v)) setAi(d.k, d.v);
+  else if (d.cmd === "send") fieldSendResult();
+  else consolePush();
 }
 function fillChoices(){
   const byBattle = {};
@@ -7867,6 +7910,7 @@ function readHandoff(){                           // a fight sent from the trave
   return h;
 }
 function init(){
+  window.addEventListener("message", consoleCommand);
   restore();
   S.calling = null;                                  // not mid-call after a reload
   S.placing = null;

@@ -4,7 +4,8 @@
 
 The pages' dice (the browser's crypto) are seeded, so a run can be repeated: seed 1 unless given
 (CI runs seed 1; other seeds play other games). It follows a campaign round the loop: the team made in the team builder (in the frame), the march on the
-travel map, a force's route given from the console, the clock run from it until the forces meet, the fight set up from it, a fight sent from it noticed and the console moved to it, the fight won on the roller, the
+travel map, a force's route given from the console, the clock run from it until the forces meet, the fight set up from it
+and run on the roller from it, a battle sent to the field map and run, ended and sent back from it, a fight sent from it noticed and the console moved to it, the fight won on the roller, the
 aftermath; then the whole game saved to a file, cleared, and loaded back. The pages' writes are made from
 inside the frame, as the pages make them. Needs Python's playwright with Chromium and a built site.
 Exits non-zero on any failure.
@@ -175,19 +176,53 @@ with sync_playwright() as p:
     pg.click("#c-fight button[data-fightcmd='start']")
     pg.wait_for_selector("#c-fight button[data-fightcmd='step']", timeout=6000)
     check(page_in_frame(pg).evaluate("() => gmOn()"), "Run the fight from the console turns on the roller's Run the fight")
-    for _ in range(6):
-        pg.click("#c-fight button[data-fightcmd='step']")
-        pg.wait_for_timeout(250)
+    ended = None                                                       # a person's turn met on the way: ended from the console, and the script plays on
+    for _ in range(12):
+        if page_in_frame(pg).evaluate("() => (S.events || []).some(e => e.type === 'turn')") and ended is not None:
+            break
+        if pg.locator("#c-fight button[data-fightcmd='next']").count():
+            before = page_in_frame(pg).evaluate("() => S.turn")
+            pg.click("#c-fight button[data-fightcmd='next']")
+            pg.wait_for_timeout(600)
+            ended = page_in_frame(pg).evaluate("() => S.turn") != before
+        else:
+            pg.click("#c-fight button[data-fightcmd='step']")
+            pg.wait_for_timeout(250)
     lines = pg.locator("#c-fight ol.log li").count()
-    check(lines >= 1 and page_in_frame(pg).evaluate("() => (S.events || []).length") >= 1, f"Step plays the script on the roller, and the console shows its events ({lines} lines)")
-    if pg.locator("#c-fight button[data-fightcmd='next']").count():     # a person's turn: ended from the console, and the script plays on
-        before = page_in_frame(pg).evaluate("() => S.turn")
-        pg.click("#c-fight button[data-fightcmd='next']")
-        pg.wait_for_timeout(600)
-        check(page_in_frame(pg).evaluate("() => S.turn") != before, "a player's turn ended from the console moves the roller to the next fighter")
+    check(lines >= 1 and page_in_frame(pg).evaluate("() => (S.events || []).some(e => e.type === 'turn')"), f"Step plays the script on the roller, and the console shows its events ({lines} lines)")
+    if ended is not None:
+        check(ended, "a player's turn ended from the console moves the roller to the next fighter")
     pg.click("#c-fight button[data-fightcmd='undo']")
     pg.wait_for_timeout(300)
     check(page_in_frame(pg).evaluate("() => (S.events || []).some(e => e.type === 'undo')"), "Undo from the console takes back the script's last step")
+    # a battle on the field map, run from the console: back to the march, the same meeting sent to the field map
+    pg.click('#c-phases button[data-phase="march"]')
+    pg.wait_for_selector(FIGHTS, timeout=10000)
+    first = pg.locator(FIGHTS).first
+    first.locator("select").select_option("field")
+    first.locator("button[data-fight]").first.click()
+    pg.wait_for_function("() => REC.phase === 'fight' && document.querySelector('#c-showing').textContent.includes('Field map')", timeout=15000)
+    pg.wait_for_selector("#c-fight button[data-battlecmd='setup']", timeout=15000)
+    pg.click("#c-fight button[data-battlecmd='setup']")
+    pg.wait_for_selector("#c-fight select[data-battleai='1']", timeout=10000)
+    names = pg.locator("#c-fight tbody tr").all_inner_texts()
+    check(len(names) == 2 and "units standing" in names[0], f"the console shows the field map's battle, set up from the travel map's handoff ({names[0][:60]})")
+    for k in (0, 1):
+        pg.select_option(f"#c-fight select[data-battleai='{k}']", "attack")
+        pg.wait_for_timeout(300)
+    pg.click("#c-fight button[data-battlecmd='next']")              # Start the battle
+    pg.wait_for_selector("#c-fight button[data-battlecmd='end']", timeout=10000)
+    for _ in range(4):
+        pg.click("#c-fight button[data-battlecmd='next']")
+        pg.wait_for_timeout(250)
+    ex = page_in_frame(pg).evaluate("() => S.exchange")
+    check(ex >= 2 and pg.locator("#c-fight ol.log li").count() >= 1, f"Start and Next from the console play the battle, the commander moving both sides (exchange {ex})")
+    pg.click("#c-fight button[data-battlecmd='end']")
+    pg.wait_for_selector("#c-fight button[data-battlecmd='send']", timeout=10000)
+    pg.click("#c-fight button[data-battlecmd='send']")
+    pg.wait_for_function("() => REC.phase === 'aftermath'", timeout=8000)
+    check(pg.evaluate("() => !!localStorage.getItem('gravewounds-field-result')") and "over" in pg.inner_text(NOTICE),
+          "ended and sent from the console, the battle's result waits for the travel map, and the console moves to the aftermath")
     # the travel map's state, then a fight sent from it, as Fight here writes it
     page_in_frame(pg).evaluate(f"""() => localStorage.setItem('gravewounds-travel', {J(J({"mapId": "towton-1461", "forces": {"towton-1461": [{"side": "York"}, {"side": "Lancaster"}]}, "clock": {"towton-1461": {"day": 3, "used": 4}}, "fought": []}))})""")
     page_in_frame(pg).evaluate(f"""() => localStorage.setItem('gravewounds-handoff', {J(J({"from": "travel", "force": {"name": "Will's lances", "side": "York"}, "place": "Ferrybridge", "foes": [{"name": "Clifford's flankers"}]}))})""")
