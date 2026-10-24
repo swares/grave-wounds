@@ -105,6 +105,17 @@ with sync_playwright() as p:
     check(True, "his page shows where the blow landed, not how badly")
     SHOTS.mkdir(parents=True, exist_ok=True)
     pl.screenshot(path=str(SHOTS / "player-page.png"), full_page=True)
+    # first aid from his page, on his side's turn: a wound on his man, bound from his card
+    gm.evaluate(f"() => {{ const a = actingChar(), b = S.chars.find(c => sideOf(c) === {foe!r} && c.wounds.length); a.wounds.push(structuredClone(b.wounds[0])); a.wounds.at(-1).fx.bleed = 2; renderChars() }}")
+    pl.wait_for_selector('#chars .char:not(.veiled) .treat button[data-act="bind"]', timeout=10000)
+    n = gm.evaluate("() => S.events.length")
+    pl.click('#chars .char:not(.veiled) .treat button[data-act="bind"]', force=True)
+    gm.wait_for_function(f"() => S.events.slice({n}).some(e => e.type === 'aid')", timeout=10000)
+    aid = gm.evaluate(f"() => S.events.slice({n}).find(e => e.type === 'aid')")
+    check(aid["data"]["how"] == "bind" and aid["vis"] == [f"side:{me}"], f"his Bind on his page gives first aid on the GM's page, logged for his side and the GM ({aid['data']['done']})")
+    if aid["data"]["done"]:
+        check(gm.evaluate("() => actingChar().wounds.at(-1).fx.bleed") < 2, "the bound wound bleeds less")
+    pl.wait_for_function("() => document.querySelector('#events').textContent.includes('wound')", timeout=10000)
     pl.click('#map-actions button[data-map="next"]')
     gm.wait_for_function(f"() => !actingChar() || sideOf(actingChar()) !== {me!r} || S.round > 1", timeout=10000)
     check(True, "his Next fighter ends his turn on the GM's page")
@@ -124,6 +135,11 @@ with sync_playwright() as p:
       return box.innerHTML }""")
     check("onerror" not in cleaned and "javascript" not in cleaned and "<script" not in cleaned and "onclick" not in cleaned and "<b>ok</b>" in cleaned and "<circle" in cleaned,
           "his page drops anything in a drawing that could run, and keeps the rest")
+    # out of his turn, his first aid is not his to give
+    n = gm.evaluate("() => S.events.length")
+    pl.evaluate(f"() => GUEST.send({{ t: 'treat', id: {gm.evaluate(f'() => S.chars.find(c => sideOf(c) === {me!r}).id')}, j: 0, how: 'bind' }})")
+    gm.wait_for_timeout(400)
+    check(not gm.evaluate(f"() => S.events.slice({n}).some(e => e.type === 'aid')") or gm.evaluate(f"() => sideOf(actingChar() || {{}}) === {me!r}"), "first aid sent out of his side's turn is ignored")
     # lost, and back: the same seat, a new link, his last screen kept meanwhile
     pl.evaluate("() => GUEST.peer.close()")               # his connection goes (a network gone, a laptop shut)
     gm.wait_for_function("() => ['closed', 'failed', 'disconnected'].includes(NETH.peers[0].state)", timeout=20000)
