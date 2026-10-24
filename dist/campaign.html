@@ -3404,13 +3404,55 @@ const NET = (() => {
     return Array.from(doc.body.childNodes);
   }
 
-  return { packCode, unpackCode, pieces, joiner, hostPeer, guestPeer, PIECE, edit, apply, screenPart, merge, clean };
+  // Room codes: the two connection codes passed through a room server (worker/rooms.js, a Cloudflare
+  // Worker) instead of by hand. rooms(server) -> {create, invite, invitation, reply, replied}; each a
+  // promise of the server's answer, null for "nothing yet", or an error with its status.
+  function rooms(server){
+    const base = String(server || "").replace(/\/+$/, "");
+    const at = (code, what) => `${base}/rooms/${encodeURIComponent(code)}/${what}`;
+    async function call(method, url, { body, key } = {}){
+      const headers = {};
+      if (key) headers["X-Room-Key"] = key;
+      if (body !== undefined) headers["Content-Type"] = "application/json";
+      const r = await fetch(url, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
+      if (r.status === 204) return null;
+      const out = await r.json().catch(() => ({}));
+      if (!r.ok) throw Object.assign(new Error(out.error || `The room server said ${r.status}.`), { status: r.status });
+      return out;
+    }
+    return {
+      create: () => call("POST", `${base}/rooms`),                                         // -> {code, key}
+      invite: (code, key, data) => call("PUT", at(code, "invite"), { key, body: { data } }),  // -> {v}
+      invitation: (code, after = 0) => call("GET", `${at(code, "invite")}?after=${after}`),   // -> {v, data} or null
+      reply: (code, v, data) => call("PUT", at(code, "reply"), { body: { v, data } }),
+      replied: (code, key, v) => call("GET", `${at(code, "reply")}?v=${v}`, { key }),         // -> {data} or null
+    };
+  }
+  // ask() again and again until it gives something, or stop() says to give up (-> null). A refusal
+  // (a 4xx: no such room, not the host, already answered) ends it with that error; the network or the
+  // server failing is tried again. It asks less often the longer it waits (a page left waiting must
+  // not use up the server's day): every 1.5 s for two minutes, every 5 s to ten, then every 20 s.
+  const pollEvery = waited => (waited < 120e3 ? 1500 : waited < 600e3 ? 5000 : 20000);
+  function poll(ask, { stop = () => false, every = pollEvery } = {}){
+    const from = Date.now();
+    return new Promise((done, fail) => {
+      const go = async () => {
+        if (stop()) return done(null);
+        try { const v = await ask(); if (v !== null && v !== undefined) return done(v) }
+        catch (e){ if (e.status >= 400 && e.status < 500) return fail(e) }
+        setTimeout(go, every(Date.now() - from));
+      };
+      go();
+    });
+  }
+
+  return { packCode, unpackCode, pieces, joiner, hostPeer, guestPeer, PIECE, edit, apply, screenPart, merge, clean, rooms, poll, pollEvery };
 })();
 
 if (typeof module !== "undefined") module.exports = NET;   // Node (the tests); the page has no `module`
 </script>
 <script>
-const CD = {"generated":"2026-10-24","maps":{"agincourt-1415":{"name":"Agincourt campaign, 1415 (Harfleur to Calais)","start_date":"1415-10-08"},"albuera-1811":{"name":"Albuera campaign, 1811 (Badajoz to Santa Marta)","start_date":"1811-05-13"},"aljubarrota-1385":{"name":"Aljubarrota, 1385 (Leiria to Alcoba\u00e7a)","start_date":"1385-08-13"},"anzio-1944":{"name":"Anzio, 1944 (the beachhead to Cisterna)","start_date":"1944-01-29"},"beaumont-hamel-1916":{"name":"Beaumont-Hamel, 1916 (Doullens to Bapaume)","start_date":"1916-06-30"},"bougainville-1944":{"name":"Bougainville, 1944 (the Torokina perimeter)","start_date":"1944-03-07"},"bull-run-1861":{"name":"First Bull Run campaign, 1861 (Fairfax to Gainesville)","start_date":"1861-07-18"},"cassino-1944":{"name":"Cassino, 1944 (Monte Cairo to the Liri valley)","start_date":"1944-02-15"},"chipyong-1951":{"name":"Chipyong-ni, 1951 (Yangpyong to Wonju)","start_date":"1951-02-13"},"chosin-1950":{"name":"Chosin Reservoir, 1950 (Yudam-ni to Hungnam)","start_date":"1950-11-27"},"cowpens-1781":{"name":"Cowpens campaign, 1781 (the Pacolet to the Broad)","start_date":"1781-01-14"},"crecy-1346":{"name":"Cr\u00e9cy, 1346 (the Somme to Cr\u00e9cy)","start_date":"1346-08-24"},"dakto-1967":{"name":"Dak To, 1967 (the base to Hill 875)","start_date":"1967-11-03"},"dornach-1499":{"name":"Dornach, 1499 (Basel to Liestal)","start_date":"1499-07-21"},"easting73-1991":{"name":"73 Easting, 1991 (the 2nd Armored Cavalry's last day)","start_date":"1991-02-26"},"fallujah-2004":{"name":"Fallujah, 2004 (Operation Phantom Fury)","start_date":"2004-11-07"},"generic-valley":{"name":"Generic river valley (test map)","start_date":"1415-10-20"},"goosegreen-1982":{"name":"Goose Green, 1982 (the Darwin isthmus)","start_date":"1982-05-27"},"grozny-1995":{"name":"Grozny, 1995 (the New Year's assault)","start_date":"1994-12-31"},"hamburger-1969":{"name":"Hamburger Hill, 1969 (the A Shau valley)","start_date":"1969-05-10"},"heartbreak-1951":{"name":"Heartbreak Ridge, 1951 (the Mundung-ni and Sat'ae-ri valleys)","start_date":"1951-09-13"},"hue-1968":{"name":"Hue, 1968 (the city and Phu Bai)","start_date":"1968-01-31"},"iadrang-1965":{"name":"Ia Drang, 1965 (X-Ray and Albany)","start_date":"1965-11-14"},"jacobsford-1179":{"name":"Jacob's Ford, 1179 (Tiberias to Banias)","start_date":"1179-08-25"},"kapyong-1951":{"name":"Kapyong, 1951 (the Kapyong valley)","start_date":"1951-04-22"},"keating-2009":{"name":"COP Keating, 2009 (the Kamdesh valley)","start_date":"2009-10-03"},"khesanh-1968":{"name":"Khe Sanh, 1968 (the base and its hills)","start_date":"1968-01-20"},"lundys-lane-1814":{"name":"Niagara campaign, 1814 (Fort Erie to Fort George)","start_date":"1814-07-24"},"lutzen-1632":{"name":"L\u00fctzen campaign, 1632 (Naumburg to Leipzig)","start_date":"1632-11-15"},"mogadishu-1993":{"name":"Mogadishu, 1993 (the airport to the stadium)","start_date":"1993-10-03"},"mons-1914":{"name":"Mons, 1914 (Cond\u00e9 to Binche)","start_date":"1914-08-22"},"osan-1950":{"name":"Osan, 1950 (Suwon to P'yongt'aek)","start_date":"1950-07-05"},"phil-kearny-1866":{"name":"Fort Phil Kearny, 1866 (Red Cloud's War)","start_date":"1866-12-20"},"porkchop-1953":{"name":"Pork Chop Hill, 1953 (the outpost line north of Yeoncheon)","start_date":"1953-04-16"},"serbia-1915":{"name":"Serbia, 1915 (the great retreat)","start_date":"1915-11-05"},"sevastopol-1855":{"name":"Siege of Sevastopol, 1855 (Kamiesh to the Chernaya)","start_date":"1855-09-07"},"sidon-1253":{"name":"Sidon, 1253 (Banias to the coast)","start_date":"1253-06-15"},"snipe-1942":{"name":"Snipe, 1942 (the coast to Miteiriya)","start_date":"1942-10-26"},"towton-1461":{"name":"Towton campaign, 1461 (Pontefract to York)","start_date":"1461-03-27"},"visby-1361":{"name":"Gotland, 1361 (the landing to Visby)","start_date":"1361-07-22"},"wanat-2008":{"name":"Wanat, 2008 (the Waygal valley)","start_date":"2008-07-13"}},"eras":{"civil_war":"Civil War and frontier (1861-1876)","crimea":"Crimean War (1854-1856)","horse_musket":"Horse and musket (1775-1815)","korea":"Korean War (1950-1953)","medieval":"Medieval (c.1250-1500)","modern":"The Falklands to Afghanistan (1982-2014)","plains_nations":"Plains nations (1860-1877)","thirty_years":"Thirty Years' War (1618-1648)","vietnam":"Vietnam War (1965-1973)","wwi":"First World War (1914-1918)","wwii":"Second World War (1939-1945)"},"weather":{"fair":"Fair","overcast":"Overcast","fog":"Fog","rain":"Rain","heavy_rain":"Heavy rain","storm":"Storm","snow":"Snow","heavy_snow":"Heavy snow","blizzard":"Blizzard","sandstorm":"Sandstorm"},"ranks":{"medieval":{"soldier":"Soldier","vintenar":"Vintenar","man_at_arms":"Man-at-arms","knight":"Knight"},"thirty_years":{"soldier":"Soldier","gefreiter":"Gefreiter","corporal":"Corporal","feldwebel":"Feldwebel","fahnrich":"Ensign"},"horse_musket":{"private":"Private","corporal":"Corporal","sergeant":"Sergeant","sergeant_major":"Sergeant-major","ensign":"Ensign","captain":"Captain"},"crimea":{"private":"Private","corporal":"Corporal","sergeant":"Sergeant","sergeant_major":"Sergeant-major","ensign":"Ensign"},"civil_war":{"private":"Private","corporal":"Corporal","sergeant":"Sergeant","first_sergeant":"First sergeant","lieutenant":"Lieutenant","captain":"Captain"},"plains_nations":{},"wwi":{"private":"Private","corporal":"Corporal","sergeant":"Sergeant","csm":"Company sergeant-major","lieutenant":"Second lieutenant","captain":"Captain"},"wwii":{"private":"Private","pfc":"Private first class","corporal":"Corporal","sergeant":"Sergeant","staff_sergeant":"Staff sergeant","lieutenant":"Second lieutenant"},"korea":{"private":"Private","corporal":"Corporal","sergeant":"Sergeant","sfc":"Sergeant first class","lieutenant":"Second lieutenant"},"vietnam":{"private":"Private","corporal":"Specialist or corporal","sergeant":"Sergeant","ssg":"Staff sergeant","lieutenant":"Second lieutenant"},"modern":{"private":"Private","pfc":"Private first class","specialist":"Specialist or lance corporal","sergeant":"Sergeant","ssg":"Staff sergeant","lieutenant":"Second lieutenant"}},"diseases":{"flux":"Bloody flux","typhus":"Camp fever","typhoid":"Typhoid","ague":"Ague","plague":"Plague","wound":"Wounds","fever":"Wound fever","scurvy":"Scurvy","frostbite":"Frostbite"}};
+const CD = {"generated":"2026-10-24","room_server":"","maps":{"agincourt-1415":{"name":"Agincourt campaign, 1415 (Harfleur to Calais)","start_date":"1415-10-08"},"albuera-1811":{"name":"Albuera campaign, 1811 (Badajoz to Santa Marta)","start_date":"1811-05-13"},"aljubarrota-1385":{"name":"Aljubarrota, 1385 (Leiria to Alcoba\u00e7a)","start_date":"1385-08-13"},"anzio-1944":{"name":"Anzio, 1944 (the beachhead to Cisterna)","start_date":"1944-01-29"},"beaumont-hamel-1916":{"name":"Beaumont-Hamel, 1916 (Doullens to Bapaume)","start_date":"1916-06-30"},"bougainville-1944":{"name":"Bougainville, 1944 (the Torokina perimeter)","start_date":"1944-03-07"},"bull-run-1861":{"name":"First Bull Run campaign, 1861 (Fairfax to Gainesville)","start_date":"1861-07-18"},"cassino-1944":{"name":"Cassino, 1944 (Monte Cairo to the Liri valley)","start_date":"1944-02-15"},"chipyong-1951":{"name":"Chipyong-ni, 1951 (Yangpyong to Wonju)","start_date":"1951-02-13"},"chosin-1950":{"name":"Chosin Reservoir, 1950 (Yudam-ni to Hungnam)","start_date":"1950-11-27"},"cowpens-1781":{"name":"Cowpens campaign, 1781 (the Pacolet to the Broad)","start_date":"1781-01-14"},"crecy-1346":{"name":"Cr\u00e9cy, 1346 (the Somme to Cr\u00e9cy)","start_date":"1346-08-24"},"dakto-1967":{"name":"Dak To, 1967 (the base to Hill 875)","start_date":"1967-11-03"},"dornach-1499":{"name":"Dornach, 1499 (Basel to Liestal)","start_date":"1499-07-21"},"easting73-1991":{"name":"73 Easting, 1991 (the 2nd Armored Cavalry's last day)","start_date":"1991-02-26"},"fallujah-2004":{"name":"Fallujah, 2004 (Operation Phantom Fury)","start_date":"2004-11-07"},"generic-valley":{"name":"Generic river valley (test map)","start_date":"1415-10-20"},"goosegreen-1982":{"name":"Goose Green, 1982 (the Darwin isthmus)","start_date":"1982-05-27"},"grozny-1995":{"name":"Grozny, 1995 (the New Year's assault)","start_date":"1994-12-31"},"hamburger-1969":{"name":"Hamburger Hill, 1969 (the A Shau valley)","start_date":"1969-05-10"},"heartbreak-1951":{"name":"Heartbreak Ridge, 1951 (the Mundung-ni and Sat'ae-ri valleys)","start_date":"1951-09-13"},"hue-1968":{"name":"Hue, 1968 (the city and Phu Bai)","start_date":"1968-01-31"},"iadrang-1965":{"name":"Ia Drang, 1965 (X-Ray and Albany)","start_date":"1965-11-14"},"jacobsford-1179":{"name":"Jacob's Ford, 1179 (Tiberias to Banias)","start_date":"1179-08-25"},"kapyong-1951":{"name":"Kapyong, 1951 (the Kapyong valley)","start_date":"1951-04-22"},"keating-2009":{"name":"COP Keating, 2009 (the Kamdesh valley)","start_date":"2009-10-03"},"khesanh-1968":{"name":"Khe Sanh, 1968 (the base and its hills)","start_date":"1968-01-20"},"lundys-lane-1814":{"name":"Niagara campaign, 1814 (Fort Erie to Fort George)","start_date":"1814-07-24"},"lutzen-1632":{"name":"L\u00fctzen campaign, 1632 (Naumburg to Leipzig)","start_date":"1632-11-15"},"mogadishu-1993":{"name":"Mogadishu, 1993 (the airport to the stadium)","start_date":"1993-10-03"},"mons-1914":{"name":"Mons, 1914 (Cond\u00e9 to Binche)","start_date":"1914-08-22"},"osan-1950":{"name":"Osan, 1950 (Suwon to P'yongt'aek)","start_date":"1950-07-05"},"phil-kearny-1866":{"name":"Fort Phil Kearny, 1866 (Red Cloud's War)","start_date":"1866-12-20"},"porkchop-1953":{"name":"Pork Chop Hill, 1953 (the outpost line north of Yeoncheon)","start_date":"1953-04-16"},"serbia-1915":{"name":"Serbia, 1915 (the great retreat)","start_date":"1915-11-05"},"sevastopol-1855":{"name":"Siege of Sevastopol, 1855 (Kamiesh to the Chernaya)","start_date":"1855-09-07"},"sidon-1253":{"name":"Sidon, 1253 (Banias to the coast)","start_date":"1253-06-15"},"snipe-1942":{"name":"Snipe, 1942 (the coast to Miteiriya)","start_date":"1942-10-26"},"towton-1461":{"name":"Towton campaign, 1461 (Pontefract to York)","start_date":"1461-03-27"},"visby-1361":{"name":"Gotland, 1361 (the landing to Visby)","start_date":"1361-07-22"},"wanat-2008":{"name":"Wanat, 2008 (the Waygal valley)","start_date":"2008-07-13"}},"eras":{"civil_war":"Civil War and frontier (1861-1876)","crimea":"Crimean War (1854-1856)","horse_musket":"Horse and musket (1775-1815)","korea":"Korean War (1950-1953)","medieval":"Medieval (c.1250-1500)","modern":"The Falklands to Afghanistan (1982-2014)","plains_nations":"Plains nations (1860-1877)","thirty_years":"Thirty Years' War (1618-1648)","vietnam":"Vietnam War (1965-1973)","wwi":"First World War (1914-1918)","wwii":"Second World War (1939-1945)"},"weather":{"fair":"Fair","overcast":"Overcast","fog":"Fog","rain":"Rain","heavy_rain":"Heavy rain","storm":"Storm","snow":"Snow","heavy_snow":"Heavy snow","blizzard":"Blizzard","sandstorm":"Sandstorm"},"ranks":{"medieval":{"soldier":"Soldier","vintenar":"Vintenar","man_at_arms":"Man-at-arms","knight":"Knight"},"thirty_years":{"soldier":"Soldier","gefreiter":"Gefreiter","corporal":"Corporal","feldwebel":"Feldwebel","fahnrich":"Ensign"},"horse_musket":{"private":"Private","corporal":"Corporal","sergeant":"Sergeant","sergeant_major":"Sergeant-major","ensign":"Ensign","captain":"Captain"},"crimea":{"private":"Private","corporal":"Corporal","sergeant":"Sergeant","sergeant_major":"Sergeant-major","ensign":"Ensign"},"civil_war":{"private":"Private","corporal":"Corporal","sergeant":"Sergeant","first_sergeant":"First sergeant","lieutenant":"Lieutenant","captain":"Captain"},"plains_nations":{},"wwi":{"private":"Private","corporal":"Corporal","sergeant":"Sergeant","csm":"Company sergeant-major","lieutenant":"Second lieutenant","captain":"Captain"},"wwii":{"private":"Private","pfc":"Private first class","corporal":"Corporal","sergeant":"Sergeant","staff_sergeant":"Staff sergeant","lieutenant":"Second lieutenant"},"korea":{"private":"Private","corporal":"Corporal","sergeant":"Sergeant","sfc":"Sergeant first class","lieutenant":"Second lieutenant"},"vietnam":{"private":"Private","corporal":"Specialist or corporal","sergeant":"Sergeant","ssg":"Staff sergeant","lieutenant":"Second lieutenant"},"modern":{"private":"Private","pfc":"Private first class","specialist":"Specialist or lance corporal","sergeant":"Sergeant","ssg":"Staff sergeant","lieutenant":"Second lieutenant"}},"diseases":{"flux":"Bloody flux","typhus":"Camp fever","typhoid":"Typhoid","ague":"Ague","plague":"Plague","wound":"Wounds","fever":"Wound fever","scurvy":"Scurvy","frostbite":"Frostbite"}};
 /* The event log: what happened in the fight, in order, and who may see it in full. The page appends
    an event for each thing the rules decided (a strike, a wound applied); nothing is changed or taken
    out after, so the log is the fight's record and its dice can be checked afterwards.
@@ -4115,7 +4157,7 @@ $("#c-add-note").addEventListener("click", () => {
 });
 $("#c-note").addEventListener("keydown", e => { if (e.key === "Enter") $("#c-add-note").click() });
 $("#c-frame").addEventListener("load", () => { showing(); FIGHT = null; FIELD = null; relayGone(); renderFight(); tellRoller("status"); tellField("status") });
-const PLAYER_PAGE = location.hash.startsWith("#join=");   // opened from a GM's invitation: the player's page, not the console
+const PLAYER_PAGE = /^#(join=|room)/.test(location.hash);   // opened from a GM's invitation (a link, or a room code)   // opened from a GM's invitation: the player's page, not the console
 if (!PLAYER_PAGE){
   window.addEventListener("storage", e => { if (!e.key || e.key.startsWith(CAMPAIGN.PREFIX)) render() });   // a page in the frame wrote: look again
   setInterval(render, 3000);                           // and now and then, in case a write was missed
@@ -4381,6 +4423,44 @@ function relayGone(){                                  // the roller left the fr
   for (const id of PL.fighting) if (PL.conn[id]?.state === "open") PL.conn[id].peer.send({ t: "nofight" });
   PL.fighting.clear();
 }
+/* Room codes: with a room server (worker/rooms.js; set in worker/rooms.json when built, or here),
+   his invitation goes to his room and his reply comes back from it: nothing to copy back, and when he
+   is lost (or this page reloads) he is invited again by itself, and his page answers by itself. His
+   room's code stays his for the session (kept with the campaign, and its host key with it). */
+const ROOM_KEY = "gw-room-server";                    // this browser's own choice (not part of any campaign)
+function roomServer(){
+  let s = "";
+  try { s = localStorage.getItem(ROOM_KEY) || "" } catch { s = "" }
+  return (s || CD.room_server || "").trim();
+}
+async function roomFor(pl, R, server){                 // his room: kept, or a new one
+  if (pl.room?.server === server && pl.room.code) return pl.room;
+  const r = await R.create();
+  pl.room = { server, code: r.code, key: r.key };
+  saveRecord();
+  return pl.room;
+}
+async function roomInvite(pl, c, peer){               // his invitation into his room, then his reply out of it
+  const server = roomServer(), R = NET.rooms(server);
+  let room = await roomFor(pl, R, server), sent;
+  try { sent = await R.invite(room.code, room.key, c.code) }
+  catch (e){                                          // the room was forgotten (hours unused): a new one, a new code
+    if (e.status !== 404 && e.status !== 403) throw e;
+    pl.room = null;
+    room = await roomFor(pl, R, server);
+    sent = await R.invite(room.code, room.key, c.code);
+  }
+  c.room = room.code;
+  c.state = "waiting for him to open his link";
+  renderPlayers();
+  const r = await NET.poll(() => R.replied(room.code, room.key, sent.v), { stop: () => c.peer !== peer || c.state === "open" });
+  if (r && c.peer === peer){ await peer.accept(r.data); c.state = "connecting"; renderPlayers() }
+}
+function roomAgain(pl, peer){                         // he was lost: with a room, he is invited again by itself
+  const c = PL.conn[pl.id];
+  if (!roomServer() || !pl.room) return;
+  setTimeout(() => { if (c && c.peer === peer && NET_LOST.has(c.state) && players().includes(pl)) playerConnect(pl) }, 2000);
+}
 async function playerConnect(pl){                     // an invitation for his seat: a first one, or again after he was lost or this page reloaded
   const c = (PL.conn[pl.id] ||= {});
   c.peer?.close();
@@ -4390,12 +4470,16 @@ async function playerConnect(pl){                     // an invitation for his s
     c.state = st;
     if (st === "open"){ c.last = null; playerSend(pl); tellRoller("resend", { id: pl.id }) }   // his screens, whole: first or again
     if (st !== "open") PL.fighting.delete(pl.id);
+    if (NET_LOST.has(st)) roomAgain(pl, peer);
     relayIn();
     renderPlayers();
   } });
   c.peer = peer;
   renderPlayers();
-  try { c.code = await peer.invite({ stun: PL.stun, name: pl.name }); c.state = "waiting for the reply" }
+  try {
+    c.code = await peer.invite({ stun: PL.stun, name: pl.name }); c.state = "waiting for the reply";
+    if (roomServer()) await roomInvite(pl, c, peer);
+  }
   catch (e){ c.state = "failed"; c.err = String(e.message || e) }
   renderPlayers();
 }
@@ -4408,6 +4492,10 @@ async function playerAccept(pl, reply){
   renderPlayers();
 }
 const playerLink = code => `${location.href.split("#")[0]}#join=${code}`;
+function roomLink(code){                               // his room's link: the code, and the server if it is not the site's own
+  const server = roomServer(), extra = server && server !== CD.room_server ? `&s=${encodeURIComponent(server)}` : "";
+  return `${location.href.split("#")[0]}#room=${code}${extra}`;
+}
 function menPicker(chosen, attrs){                     // a checkbox for each named man
   const men = namedMen();
   if (!men.length) return '<span class="muted">No named men yet (Send to the roller from the team builder).</span>';
@@ -4417,14 +4505,18 @@ function playerRow(pl){
   const c = PL.conn[pl.id] || { state: "not connected" };
   const st = { open: "connected", closed: "gone", failed: "could not connect", disconnected: "lost" }[c.state] || c.state;
   const waiting = c.code && c.state !== "open" && !NET_LOST.has(c.state);
-  const invite = waiting ? `<label class="muted">1. Send this link to ${esc(pl.name)}:
+  const room = c.room && c.state !== "open" ? `<span class="muted">His room: <b style="font-family:var(--mono);color:var(--ink)">${esc(c.room)}</b>. Send him this link (or the code, to type on the campaign page):</span>
+      <textarea readonly rows="1" data-pl-link="${esc(pl.id)}" style="width:100%">${esc(roomLink(c.room))}</textarea>
+      <span class="toolbar"><button type="button" class="small" data-pl="copyroom" data-id="${esc(pl.id)}">Copy the link</button></span>` : "";
+  const invite = room || (waiting && !roomServer() ? `<label class="muted">1. Send this link to ${esc(pl.name)}:
       <textarea readonly rows="2" data-pl-link="${esc(pl.id)}" style="width:100%">${esc(playerLink(c.code))}</textarea></label>
       <span class="toolbar"><button type="button" class="small" data-pl="copy" data-id="${esc(pl.id)}">Copy the link</button></span>
       <label class="muted">2. Paste the reply code his page gives him:
       <textarea rows="2" data-pl-reply="${esc(pl.id)}" style="width:100%"></textarea></label>
-      <span class="toolbar"><button type="button" class="small" data-pl="accept" data-id="${esc(pl.id)}">Connect</button></span>` : "";
-  const connect = c.state === "open" || waiting ? "" : `<button type="button" class="small primary" data-pl="invite" data-id="${esc(pl.id)}">${c.peer ? "Invite again" : "Invite"}</button>`;
-  return `<li><span class="toolbar"><b>${esc(pl.name)}</b> <span class="muted">${esc(st)}</span>${connect}
+      <span class="toolbar"><button type="button" class="small" data-pl="accept" data-id="${esc(pl.id)}">Connect</button></span>` : "");
+  const connect = c.state === "open" || waiting || (c.room && c.state !== "failed") ? "" : `<button type="button" class="small primary" data-pl="invite" data-id="${esc(pl.id)}">${c.peer ? "Invite again" : "Invite"}</button>`;
+  const code = c.room && c.state === "open" ? ` · room <span style="font-family:var(--mono)">${esc(c.room)}</span>` : "";
+  return `<li><span class="toolbar"><b>${esc(pl.name)}</b> <span class="muted">${esc(st)}${code}</span>${connect}
       <button type="button" class="small" data-pl="drop" data-id="${esc(pl.id)}">Remove</button></span>
     <span class="muted" style="font-size:.88rem">Plays: ${menPicker(pl.men, `data-pl-man="${esc(pl.id)}"`)}</span>
     ${invite}${c.err ? `<p class="bad">${esc(c.err)}</p>` : ""}</li>`;
@@ -4435,12 +4527,16 @@ function renderPlayers(){
   if (box.contains(document.activeElement) && ["TEXTAREA", "INPUT"].includes(document.activeElement.tagName) && document.activeElement.type !== "checkbox") return;   // not while the GM types
   const open = players().filter(pl => PL.conn[pl.id]?.state === "open").length;
   box.innerHTML = `<div class="toolbar" style="justify-content:space-between"><h2 id="h-players">Players online</h2><span class="muted">${open} connected</span></div>
-    <p class="muted" style="margin:0;font-size:.9rem">Each player gets his own link for the session and sees his men, the forces they are with and the campaign's news (not the GM's notes, nor the march's word on other forces), from his own computer. No server: the link and his reply are passed by hand.</p>
+    <p class="muted" style="margin:0;font-size:.9rem">Each player gets his own link for the session and sees his men, the forces they are with and the campaign's news (not the GM's notes, nor the march's word on other forces), from his own computer. ${roomServer() ? "Through the room server: he opens his link (or types his room's code), and nothing comes back by hand; if he is lost, or this page reloads, he is invited again by itself." : "No room server: the link and his reply are passed by hand."}</p>
     ${proposalsHtml()}
     ${players().length ? `<ul class="players">${players().map(playerRow).join("")}</ul>` : ""}
     <div class="toolbar"><label class="muted">Player <input type="text" id="pl-name" placeholder="His name" style="width:12em"></label>
       <button type="button" class="small" id="pl-add">Add a player</button>
       <label class="muted" style="display:inline-flex;gap:4px;align-items:center" title="Lets pages find each other across the internet; on one network it is not needed"><input type="checkbox" id="pl-stun"${PL.stun ? " checked" : ""}> Public STUN server</label></div>
+    <details><summary class="muted" style="font-size:.88rem">Room server${roomServer() ? ": " + esc(roomServer()) : ": none (copy and paste)"}</summary>
+      <span class="toolbar"><label class="muted" for="pl-room">Its address</label><input type="text" id="pl-room" value="${esc(roomServer())}" placeholder="https://grave-wounds-rooms.you.workers.dev" style="width:24em">
+        <button type="button" class="small" id="pl-room-set">Use it</button></span>
+      <p class="muted" style="margin:0;font-size:.85rem">A Cloudflare Worker that passes the connection codes (worker/README.md). This browser keeps the choice; blank means the site's own${CD.room_server ? " (" + esc(CD.room_server) + ")" : ", which is none"}.</p></details>
     <span class="muted" style="font-size:.88rem">His men: ${menPicker([], 'data-pl-new')}</span>`;
 }
 function proposalsHtml(){                             // the players' proposed orders waiting for the GM
@@ -4463,6 +4559,10 @@ function addPlayer(){
 }
 $("#c-players").addEventListener("click", e => {
   if (e.target.id === "pl-add") return addPlayer();
+  if (e.target.id === "pl-room-set"){
+    try { localStorage.setItem(ROOM_KEY, $("#pl-room").value.trim()) } catch { /* storage off: the site's own */ }
+    return renderPlayers();
+  }
   const prop = e.target.closest("button[data-prop]");
   if (prop) return answerProposal(+prop.dataset.n, prop.dataset.prop === "yes");
   const b = e.target.closest("button[data-pl]"); if (!b) return;
@@ -4470,6 +4570,7 @@ $("#c-players").addEventListener("click", e => {
   const what = b.dataset.pl;
   if (what === "invite") playerConnect(pl);
   else if (what === "copy") navigator.clipboard?.writeText(playerLink(PL.conn[pl.id].code)).catch(() => $(`[data-pl-link="${pl.id}"]`).select());
+  else if (what === "copyroom") navigator.clipboard?.writeText(roomLink(PL.conn[pl.id].room)).catch(() => $(`[data-pl-link="${pl.id}"]`).select());
   else if (what === "accept") playerAccept(pl, $(`[data-pl-reply="${pl.id}"]`).value);
   else if (what === "drop" && confirm(`Remove ${pl.name}? His page is cut off.`)){
     PL.conn[pl.id]?.peer?.close(); delete PL.conn[pl.id];
@@ -4555,48 +4656,101 @@ function pgLost(){                                    // the GM's console is gon
     else $("#p-status").textContent = "That is not an invitation link: it should have #join= in it.";
   };
 }
-async function pgJoin(){
-  const status = t => { $("#p-status").textContent = t };
-  let invite;
-  try { invite = await NET.unpackCode(location.hash) }
-  catch { return status("This link is not a working invitation. Ask the GM for a new one.") }
-  if (!String(invite.seat).startsWith("player:")) return status("This invitation is for a fight on the wound roller: open it there.");
+const pgStatus = t => { $("#p-status").textContent = t };
+function pgReady(invite){                             // his invitation read: his last screen, if this tab kept one -> was there one
+  if (!String(invite.seat).startsWith("player:")) throw new Error("This invitation is for a fight on the wound roller: open it there.");
   const kept = pgKept(invite.seat);
   if (kept){ pgShow(kept); PG.screen = kept }
-  status(`${kept ? "Rejoining" : "Joining"} the GM's campaign${invite.name ? " as " + invite.name : ""}...`);
+  pgStatus(`${kept ? "Rejoining" : "Joining"} the GM's campaign${invite.name ? " as " + invite.name : ""}...`);
+  return !!kept;
+}
+async function pgPeer(invite, onLost){                // his end of the connection: his screens shown as they come
   PG.peer?.close?.();
+  const g = await NET.guestPeer({ invite, stun: invite.stun !== false,
+    onMessage: m => {
+      if (m.t === "screen" || m.t === "nofight") return pgFight(m);
+      if (m.t !== "camp") return;
+      const whole = NET.merge(PG.screen, m);
+      PG.screen = whole;
+      $("#p-join").hidden = true;
+      pgStatus("Connected to the GM's console.");
+      pgShow(whole, m.part ? Object.keys(m) : null);
+      pgKeep(invite.seat, whole);
+    },
+    onState: st => { if (st !== "open" && PG.peer === g) onLost() } });
+  PG.peer = g; PG.send = g.send;
+  return g;
+}
+async function pgJoin(){                              // by a link and a reply passed by hand
+  let invite, kept;
+  try { invite = await NET.unpackCode(location.hash) }
+  catch { return pgStatus("This link is not a working invitation. Ask the GM for a new one.") }
   try {
-    const g = await NET.guestPeer({ invite, stun: invite.stun !== false,
-      onMessage: m => {
-        if (m.t === "screen" || m.t === "nofight") return pgFight(m);
-        if (m.t !== "camp") return;
-        const whole = NET.merge(PG.screen, m);
-        PG.screen = whole;
-        $("#p-join").hidden = true;
-        status("Connected to the GM's console.");
-        pgShow(whole, m.part ? Object.keys(m) : null);
-        pgKeep(invite.seat, whole);
-      },
-      onState: st => { if (st !== "open" && PG.peer === g) pgLost() } });
-    PG.peer = g; PG.send = g.send;
+    kept = pgReady(invite);
+    const g = await pgPeer(invite, pgLost);
     $("#p-join").hidden = false;
     $("#p-join").innerHTML = `<h2>Send this reply to the GM</h2><p class="muted" style="margin:0">The GM pastes it under your name in Players online. This page then shows your men and their force.</p>
       <textarea readonly rows="3" id="p-reply" style="width:100%">${esc(g.reply)}</textarea>
       <span class="toolbar"><button type="button" class="small" id="p-copy">Copy the reply</button></span>`;
     $("#p-copy").onclick = () => navigator.clipboard?.writeText(g.reply).catch(() => $("#p-reply").select());
-    status(kept ? "Rejoining: waiting for the GM to paste your reply. Your last screen is below." : "Waiting for the GM to paste your reply.");
-  } catch (e){ status(`Could not answer the invitation: ${e.message || e}`) }
+    pgStatus(kept ? "Rejoining: waiting for the GM to paste your reply. Your last screen is below." : "Waiting for the GM to paste your reply.");
+  } catch (e){ pgStatus(`Could not answer the invitation: ${e.message || e}`) }
+}
+/* By a room code: his invitation is fetched from his room and his reply put back there, by
+   themselves; lost, his page waits in the room for the GM's next invitation and answers it. */
+const PR = { code: "", server: "", after: 0, run: 0 };
+function pgRoomForm(said = ""){                        // a room code to type
+  $("#p-join").hidden = false;
+  $("#p-join").innerHTML = `<h2>Join with a room code</h2><p class="muted" style="margin:0">The GM gives you your room's code (like WOLF-OAK-42).</p>
+    <label for="p-code" style="position:absolute;left:-9999px">Your room's code</label><input type="text" id="p-code" placeholder="WOLF-OAK-42" style="width:14em;text-transform:uppercase">
+    <span class="toolbar"><button type="button" class="small primary" id="p-code-go">Join</button></span>`;
+  $("#p-code-go").onclick = () => { const v = $("#p-code").value.trim().toUpperCase(); if (v) location.hash = `#room=${v}${PR.server && PR.server !== CD.room_server ? "&s=" + encodeURIComponent(PR.server) : ""}` };
+  pgStatus(said || "Type your room's code.");
+}
+function pgRoomArgs(){                                // #room=CODE&s=SERVER -> {code, server}
+  const q = new URLSearchParams(location.hash.slice(1));
+  let local = "";
+  try { local = localStorage.getItem("gw-room-server") || "" } catch { local = "" }
+  return { code: (q.get("room") || "").trim().toUpperCase(), server: (q.get("s") || local || CD.room_server || "").trim() };
+}
+async function pgRoom(){
+  const { code, server } = pgRoomArgs(), run = ++PR.run;
+  Object.assign(PR, { code, server, after: code === PR.code ? PR.after : 0 });
+  if (!server) return pgStatus("This page knows no room server: ask the GM for his link.");
+  if (!code) return pgRoomForm();
+  const R = NET.rooms(server), mine = () => PR.run === run;
+  for (;;){                                           // each invitation the GM puts in his room, answered
+    pgStatus(PG.screen ? "Waiting for the GM's console to invite you again (it does so by itself)..." : `Room ${code}: waiting for the GM's invitation...`);
+    let inv;
+    try { inv = await NET.poll(() => R.invitation(code, PR.after), { stop: () => !mine() }) }
+    catch (e){ return pgRoomForm(e.status === 404 ? `There is no room ${code} (or it has been forgotten): check the code with the GM.` : String(e.message || e)) }
+    if (!inv) return;
+    PR.after = inv.v;
+    try {
+      const invite = await NET.unpackCode(inv.data);
+      pgReady(invite);
+      const g = await pgPeer(invite, () => { if (mine()){ pgStatus("Lost the GM's console. Your last screen stays below; waiting to be invited again..."); pgRoom() } });
+      await R.reply(code, inv.v, g.reply);
+      pgStatus("Connecting to the GM's console...");
+      return;
+    } catch (e){
+      if (e.status === 409) continue;                 // already answered (this tab before a reload): wait for the next one
+      return pgStatus(`Could not answer the invitation: ${e.message || e}`);
+    }
+  }
 }
 
 if (PLAYER_PAGE){
   pgLayout();
   $("#p-force").addEventListener("click", pgPropose);
-  window.addEventListener("hashchange", () => { if (location.hash.startsWith("#join=")) pgJoin() });
-  pgJoin();
+  const go = () => (location.hash.startsWith("#room") ? pgRoom() : pgJoin());
+  window.addEventListener("hashchange", () => { if (/^#(join=|room)/.test(location.hash)) go() });   // a new invitation or room opened in this tab
+  go();
 } else {
   loadRecord();
   render();
   show(phaseOf(REC.phase).page);
+  if (roomServer()) for (const pl of players().filter(x => x.room)) playerConnect(pl);   // through their rooms, his players are invited again by themselves
   IDB.all().then(x => { SLOTS = x; renderSlots() }).catch(() => { $("#c-slots").innerHTML = '<p class="muted" style="margin:0">This browser keeps no campaigns side by side (IndexedDB is off): save to a file instead.</p>' });
 }
 </script>

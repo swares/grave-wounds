@@ -1,0 +1,16 @@
+# The room-code Worker for Grave Wounds online play (see README.md beside this file).
+name = "grave-wounds-rooms"
+main = "rooms.js"
+compatibility_date = "2026-06-01"
+
+[vars]
+ALLOWED_ORIGINS = "https://swares.github.io"   # the site's pages; add others with commas (localhost is always allowed)
+ROOM_HOURS = "6"                                # a room is forgotten this long after it was last written
+
+[[durable_objects.bindings]]
+name = "ROOMS"
+class_name = "Room"
+
+[[migrations]]
+tag = "v1"
+new_sqlite_classes = ["Room"]                   # SQLite-backed: the kind the Workers Free plan allows

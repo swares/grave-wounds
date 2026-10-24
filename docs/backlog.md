@@ -37,8 +37,9 @@ When an item is done, delete it here and note it in the pull request that closes
   goes into the event log (strikes, wounds, initiative, bleeding, morale, first aid, pain stop
   checks, hazards, tongues, deeds, loot); the log is a record, not yet the save (the last 500 events); a strike's
   public part is fixed, not a GM setting; the field and travel pages have no log. Play online
-  (first cut): the GM's page is the host over WebRTC, codes passed by hand. Still left out: a
-  signalling service (room codes instead of copy and paste), a TURN relay for strict networks,
+  (first cut): the GM's page is the host over WebRTC; the campaign console's players can use
+  room codes through a small Cloudflare Worker (`worker/`, to be deployed), others pass codes by hand. Still left out: a
+  TURN relay for strict networks, room codes for the roller's own Play online,
   rejoining without passing a new link and reply by hand (a lost player is invited again to the
   same seat, his page keeping his last screen; a blinked connection mends itself), sending changes of the whole picture (the panels that changed go as their changed tags, but a turn that lights every hex still sends them all), a player's
   works and the other panels from his page (first aid he gives, on his side's turn), and the field

@@ -74,5 +74,14 @@ await check("a short panel, or one wholly redrawn, goes whole or cut, and still 
   assert.equal(NET.apply(undefined, now), now);
   assert.deepEqual(NET.apply(null, { acts: 1 }), { acts: 1 }, "an object that is not a change is itself");
 });
+await check("waiting in a room asks less often the longer it waits", async () => {
+  assert.deepEqual([0, 119e3, 121e3, 599e3, 601e3, 36e5].map(NET.pollEvery), [1500, 1500, 5000, 5000, 20000, 20000]);
+  let n = 0;
+  assert.equal(await NET.poll(async () => (++n === 3 ? "here" : null), { every: () => 1 }), "here");
+  assert.equal(await NET.poll(async () => null, { every: () => 1, stop: () => n++ > 5 }), null, "stopped");
+  await assert.rejects(NET.poll(async () => { throw Object.assign(new Error("no such room"), { status: 404 }) }, { every: () => 1 }), /no such room/);
+  let tries = 0;
+  assert.equal(await NET.poll(async () => { if (++tries < 3) throw Object.assign(new Error("down"), { status: 503 }); return "up" }, { every: () => 1 }), "up", "the server failing is tried again");
+});
 console.log(`${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

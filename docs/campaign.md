@@ -154,7 +154,17 @@ the GM only. The console takes only a proposal for a force one of his men is wit
 that force's own choices. Untick **Players may propose orders** and the choices go from his page
 while the GM gives the orders himself.
 
-Not yet: room codes in place of copy and paste, and the travel and field maps on his page.
+**Room codes.** With a room server (a small Cloudflare Worker, `worker/`; its address in
+`worker/rooms.json` when the site is built, or set by the GM under **Players online → Room server**),
+each player gets a room with a code to say aloud (like `WOLF-OAK-42`). The console puts his
+invitation in his room, and he opens his link or types his code on the campaign page
+(`campaign.html#room`); his page answers in the room and the console takes the answer from there:
+nothing is passed back by hand. If he is lost, or either page reloads, the console invites him again
+and his page answers, by themselves; his room stays his. Without a room server it is copy and paste,
+as before. See `worker/README.md` to deploy it, what it costs (nothing, on Cloudflare's free plan)
+and what it does not do.
+
+Not yet: a relay (TURN) for strict networks, and the travel and field maps on his page.
 
 ## The log
 
@@ -216,4 +226,7 @@ is taken in once. `python3 tools/net/console.py` (in CI, with the other browser 
 console and a player's page in browser profiles of their own: his men, his force and the public
 news shown and nothing of the enemy's or the GM's notes, the march followed by changes only, the
 men he plays changed, his proposals accepted, declined, ignored when not his and turned off, his page and the console each reloaded and joined again, and his fight on the
-console's roller played from his page on the same link.
+console's roller played from his page on the same link. `python3 tools/net/rooms.py` connects the
+console and two players through room codes (the room Worker's own code, run locally): one by his
+link, one by typing her code, a wrong code told, and a player's page and then the console reloaded,
+both coming back by themselves. `node tools/net/rooms.test.mjs` checks the Worker itself.

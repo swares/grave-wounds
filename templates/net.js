@@ -229,7 +229,49 @@ const NET = (() => {
     return Array.from(doc.body.childNodes);
   }
 
-  return { packCode, unpackCode, pieces, joiner, hostPeer, guestPeer, PIECE, edit, apply, screenPart, merge, clean };
+  // Room codes: the two connection codes passed through a room server (worker/rooms.js, a Cloudflare
+  // Worker) instead of by hand. rooms(server) -> {create, invite, invitation, reply, replied}; each a
+  // promise of the server's answer, null for "nothing yet", or an error with its status.
+  function rooms(server){
+    const base = String(server || "").replace(/\/+$/, "");
+    const at = (code, what) => `${base}/rooms/${encodeURIComponent(code)}/${what}`;
+    async function call(method, url, { body, key } = {}){
+      const headers = {};
+      if (key) headers["X-Room-Key"] = key;
+      if (body !== undefined) headers["Content-Type"] = "application/json";
+      const r = await fetch(url, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
+      if (r.status === 204) return null;
+      const out = await r.json().catch(() => ({}));
+      if (!r.ok) throw Object.assign(new Error(out.error || `The room server said ${r.status}.`), { status: r.status });
+      return out;
+    }
+    return {
+      create: () => call("POST", `${base}/rooms`),                                         // -> {code, key}
+      invite: (code, key, data) => call("PUT", at(code, "invite"), { key, body: { data } }),  // -> {v}
+      invitation: (code, after = 0) => call("GET", `${at(code, "invite")}?after=${after}`),   // -> {v, data} or null
+      reply: (code, v, data) => call("PUT", at(code, "reply"), { body: { v, data } }),
+      replied: (code, key, v) => call("GET", `${at(code, "reply")}?v=${v}`, { key }),         // -> {data} or null
+    };
+  }
+  // ask() again and again until it gives something, or stop() says to give up (-> null). A refusal
+  // (a 4xx: no such room, not the host, already answered) ends it with that error; the network or the
+  // server failing is tried again. It asks less often the longer it waits (a page left waiting must
+  // not use up the server's day): every 1.5 s for two minutes, every 5 s to ten, then every 20 s.
+  const pollEvery = waited => (waited < 120e3 ? 1500 : waited < 600e3 ? 5000 : 20000);
+  function poll(ask, { stop = () => false, every = pollEvery } = {}){
+    const from = Date.now();
+    return new Promise((done, fail) => {
+      const go = async () => {
+        if (stop()) return done(null);
+        try { const v = await ask(); if (v !== null && v !== undefined) return done(v) }
+        catch (e){ if (e.status >= 400 && e.status < 500) return fail(e) }
+        setTimeout(go, every(Date.now() - from));
+      };
+      go();
+    });
+  }
+
+  return { packCode, unpackCode, pieces, joiner, hostPeer, guestPeer, PIECE, edit, apply, screenPart, merge, clean, rooms, poll, pollEvery };
 })();
 
 if (typeof module !== "undefined") module.exports = NET;   // Node (the tests); the page has no `module`
