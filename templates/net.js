@@ -73,12 +73,23 @@ const NET = (() => {
     return msg => { if (ch.readyState === "open") pieces(msg).forEach(p => ch.send(p)) };
   }
 
+  // The connection's ups and downs: lost (disconnected, failed) is said; a connection that comes back by
+  // itself after a short drop (the network blinked) is said to be open again, while its channel is.
+  function watch(pc, onState, channelOpen){
+    let lost = false;
+    pc.onconnectionstatechange = () => {
+      const s = pc.connectionState;
+      if (s === "failed" || s === "disconnected"){ lost = true; onState(s) }
+      else if (s === "connected" && lost && channelOpen()){ lost = false; onState("open") }
+    };
+  }
+
   // The host's end of one player's connection: invite(seat) -> link code; accept(reply) connects.
   function hostPeer({ seat, stun = true, onMessage, onState }){
     const pc = new RTCPeerConnection({ iceServers: stun ? STUN : [] });
     const ch = pc.createDataChannel("gravewounds", { ordered: true });
     const send = wire(ch, onMessage, onState);
-    pc.onconnectionstatechange = () => { if (["failed", "disconnected"].includes(pc.connectionState)) onState(pc.connectionState) };
+    watch(pc, onState, () => ch.readyState === "open");
     return {
       seat, send, close: () => pc.close(),
       async invite(extra = {}){
@@ -97,9 +108,9 @@ const NET = (() => {
   async function guestPeer({ invite, stun = true, onMessage, onState }){
     if (invite.kind !== "invite") throw new Error("That is not an invitation.");
     const pc = new RTCPeerConnection({ iceServers: stun ? STUN : [] });
-    let send = () => {};
-    pc.ondatachannel = e => { send = wire(e.channel, onMessage, onState) };
-    pc.onconnectionstatechange = () => { if (["failed", "disconnected"].includes(pc.connectionState)) onState(pc.connectionState) };
+    let send = () => {}, chan = null;
+    pc.ondatachannel = e => { chan = e.channel; send = wire(chan, onMessage, onState) };
+    watch(pc, onState, () => chan?.readyState === "open");
     await pc.setRemoteDescription({ type: "offer", sdp: invite.sdp });
     await pc.setLocalDescription(await pc.createAnswer());
     const d = await gathered(pc);

@@ -319,10 +319,18 @@ count goes on from there.
   - **Use a public STUN server** (on by default) lets the pages find each other across the
     internet through stun.l.google.com; on one network it is not needed. There is no relay
     (TURN), so a few strict networks (some offices, some mobile networks) will not connect.
-  - A dropped player needs a new invitation (Drop, then Invite again). The GM's page sends whole
+  - A short drop (the network blinks) mends itself, and the player gets his screen again. A
+    player lost for good (his page closed, the network gone) shows as lost on the GM's page with
+    **Invite again**: a new link for the same side, in the same row; his side waits for him on its
+    turns meanwhile (or the GM plays it: Run the fight, GM by hand). His page keeps his side's last
+    screen, says he is lost, and takes the new link pasted into **Rejoin** (or opened in that tab);
+    reloaded, it shows that last screen at once while it rejoins. If the GM's page is reloaded,
+    Play online remembers which sides had players (in that browser tab) and offers Invite again for
+    each. Every rejoin still passes a link and a reply by hand: no server. The GM's page sends whole
     panels (tens of kB at each change), and the player's page shows only what it is sent.
   - `node tools/net/test.mjs` tests the codes and the message pieces; `python3 tools/net/twopages.py`
-    connects a GM's page and a player's page in a headless browser and plays a turn from each
+    connects a GM's page and a player's page in a headless browser, plays a turn from each, then
+    loses the player and brings him back (Invite again, Rejoin, a reload on either side)
     (in CI, with the other browser tests: `.github/workflows/browser.yml`).
   - The script's choices are design guesses, not calibrated against any record.
     `python3 tools/gm/selfplay.py` plays it against itself on a spread of tables and checks every

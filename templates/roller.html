@@ -1811,22 +1811,39 @@ function netCommand(p, m){                          // a player's choice: made o
   NET_COMMANDS[m.t]({ may: netSeatTurn(p.seat), m, side: p.seat.slice(5) });
   renderChars();
 }
-async function netInvite(side){                     // a new invitation for a side's player
-  const seat = sideSeat(side), p = { n: ++NETH.seq, seat, state: "inviting", code: "", err: "" };
+const NET_SEATS = "gravewounds-net-seats";          // the seats with a player, this tab only: after a reload the GM can invite them again
+function netKeepSeats(){
+  try { sessionStorage.setItem(NET_SEATS, JSON.stringify([...new Set(NETH.peers.map(p => p.seat))])) } catch { /* storage off: a reload forgets them */ }
+}
+function netRemembered(){                            // after the GM's page is reloaded: his players' seats, gone, to invite again
+  if (NETH.peers.length) return;
+  let seats = [];
+  try { seats = JSON.parse(sessionStorage.getItem(NET_SEATS) || "[]") } catch { seats = [] }
+  for (const seat of seats) if (sidesInOrder().includes(seat.slice(5))) NETH.peers.push({ n: ++NETH.seq, seat, state: "closed", code: "", err: "", peer: null });
+}
+async function netConnect(p){                       // an invitation for p's seat: a first one, or again after he was lost (the same seat, a new link)
+  const side = p.seat.slice(5);
   if (!gmOn()){ gmStart(); gmSoloScreen() }
   S.gm.sides[side] = { ...gmSide(side), ctl: "player" };      // a person plays this side now
   S.screen = null;                                   // the host's page is the GM's
-  NETH.peers.push(p);
-  const onState = st => {
+  p.peer?.close();
+  Object.assign(p, { state: "inviting", code: "", err: "" });
+  const peer = NET.hostPeer({ seat: p.seat, stun: NETH.stun, onMessage: m => netCommand(p, m), onState: st => {
+    if (p.peer !== peer) return;                     // an old connection of his, closing
     p.state = st;
-    if (st === "open") p.peer.send(netSeatScreen(seat));   // his first screen
+    if (st === "open") p.peer.send(netSeatScreen(p.seat));   // his screen, first or again
     renderNet();
-  };
-  p.peer = NET.hostPeer({ seat, stun: NETH.stun, onMessage: m => netCommand(p, m), onState });
-  renderNet();
-  try { p.code = await p.peer.invite({ stun: NETH.stun }); p.state = "waiting for the reply" }
+  } });
+  p.peer = peer;
+  netKeepSeats(); renderNet();
+  try { p.code = await peer.invite({ stun: NETH.stun }); p.state = "waiting for the reply" }
   catch (e){ p.state = "failed"; p.err = String(e.message || e) }
   renderNet(); renderChars();
+}
+function netInvite(side){                           // a new invitation for a side's player
+  const p = { n: ++NETH.seq, seat: sideSeat(side), state: "inviting", code: "", err: "", peer: null };
+  NETH.peers.push(p);
+  return netConnect(p);
 }
 async function netAccept(p, reply){
   p.err = "";
@@ -1835,16 +1852,20 @@ async function netAccept(p, reply){
   renderNet();
 }
 const netLink = code => `${location.href.split("#")[0]}#join=${code}`;
+const NET_LOST = new Set(["closed", "failed", "disconnected"]);
 function netPeerRow(p){
   const side = esc(p.seat.slice(5)), st = { open: "connected", closed: "gone", failed: "could not connect", disconnected: "lost" }[p.state] || p.state;
-  const invite = p.code && p.state !== "open" ? `<label class="muted" style="display:block">1. Send this link to the player for ${side}:
+  const invite = p.code && p.state !== "open" && !NET_LOST.has(p.state) ? `<label class="muted" style="display:block">1. Send this link to the player for ${side}:
       <textarea readonly rows="2" data-net-link="${p.n}" style="width:100%">${esc(netLink(p.code))}</textarea></label>
       <button type="button" class="small" data-net="copy" data-n="${p.n}">Copy the link</button>
       <label class="muted" style="display:block">2. Paste the reply code his page gives him:
       <textarea rows="2" data-net-reply="${p.n}" style="width:100%"></textarea></label>
       <button type="button" class="small" data-net="accept" data-n="${p.n}">Connect</button>` : "";
   const err = p.err ? `<p class="ev-bad" style="margin:0">${esc(p.err)}</p>` : "";
-  return `<li><b>${side}</b>: ${esc(st)} <button type="button" class="small" data-net="drop" data-n="${p.n}">Drop</button>${invite}${err}</li>`;
+  const lost = NET_LOST.has(p.state);
+  const again = lost ? ` <button type="button" class="small primary" data-net="again" data-n="${p.n}" title="A new link for the same side: his page keeps his last screen until he is back">Invite again</button>` : "";
+  const note = lost ? `<p class="muted" style="margin:0">His side waits for him on its turns: invite him again, or play it yourself (Run the fight: GM by hand).</p>` : "";
+  return `<li><b>${side}</b>: ${esc(st)}${again} <button type="button" class="small" data-net="drop" data-n="${p.n}">Drop</button>${invite}${note}${err}</li>`;
 }
 function netSides(){                               // the sides changed: Play online's invitations follow (not on every change: it would clear a reply being pasted)
   const k = sidesInOrder().join("|");
@@ -1853,6 +1874,7 @@ function netSides(){                               // the sides changed: Play on
 function renderNet(){
   const box = $("#net-bar"); if (!box) return;
   const sides = sidesInOrder();
+  netRemembered();
   if (sides.length < 2){ box.innerHTML = oneSideNote("Play online", "players on their own computers"); return }
   const invites = sides.map(sd => `<button type="button" class="small" data-net="invite" data-side="${attr(sd)}">Invite a player for ${esc(sd)}</button>`).join("");
   const rows = NETH.peers.length ? `<ul class="roundlog" style="max-height:none">${NETH.peers.map(netPeerRow).join("")}</ul>` : "";
@@ -1869,7 +1891,8 @@ $("#net-bar").addEventListener("click", e => {
   if (b.dataset.net === "invite") netInvite(b.dataset.side);
   else if (b.dataset.net === "copy" && p) navigator.clipboard?.writeText(netLink(p.code)).catch(() => { $(`[data-net-link="${p.n}"]`).select() });
   else if (b.dataset.net === "accept" && p) netAccept(p, $(`[data-net-reply="${p.n}"]`).value);
-  else if (b.dataset.net === "drop" && p){ p.peer.close(); NETH.peers = NETH.peers.filter(x => x !== p); renderNet() }
+  else if (b.dataset.net === "again" && p) netConnect(p);
+  else if (b.dataset.net === "drop" && p){ p.peer?.close(); NETH.peers = NETH.peers.filter(x => x !== p); netKeepSeats(); renderNet() }
 });
 
 /* ---------- the player's page: opened from an invitation link, it shows what the host sends ---------- */
@@ -1939,7 +1962,7 @@ function guestShow(m){                               // the host's drawing of th
   guestRollBar(m.mine);
   GUEST.mine = m.mine;
 }
-const GUEST = { send: () => {}, mine: {} };
+const GUEST = { send: () => {}, mine: {}, peer: null };
 function guestWire(){                                // the player's clicks, as choices sent to the host
   $("#map").addEventListener("click", e => {
     const tok = e.target.closest(".tok"), hx = e.target.closest(".hex");
@@ -1969,24 +1992,54 @@ function guestWire(){                                // the player's clicks, as 
     GUEST.send({ t: "roll", aim: v("aim")?.value || "", gap: !!v("gap")?.checked, blow: v("blow")?.value || "", rolls });
   });
 }
-async function guestMain(){
-  guestLayout(); guestWire();
+const GUEST_KEY = "gravewounds-guest-screen";      // this tab's last screen from the GM, by seat: kept while it rejoins (sessionStorage: this tab only)
+function guestKeep(seat, m){
+  try { sessionStorage.setItem(GUEST_KEY, JSON.stringify({ seat, m })) } catch { /* storage off: a rejoin starts blank */ }
+}
+function guestKept(seat){                            // the last screen kept for this seat, or null
+  try { const k = JSON.parse(sessionStorage.getItem(GUEST_KEY) || "null"); return k?.seat === seat ? k.m : null } catch { return null }
+}
+function guestLost(){                                // the GM's page is gone: his last screen stays, and a new invitation can be pasted here
+  GUEST.send = () => {};
+  $("#g-status").textContent = "Lost the GM's page. Your side's last screen stays below; ask the GM to invite you again.";
+  $("#g-join").style.display = "";
+  $("#g-join").innerHTML = `<h2>Rejoin</h2><p class="muted">The GM presses <b>Invite again</b> for your side and sends you a new link. Paste it here (or open it in this tab).</p>
+    <label for="g-relink" style="position:absolute;left:-9999px">The GM's new invitation link</label><input type="text" id="g-relink" style="width:100%" placeholder="The new invitation link">
+    <button type="button" class="small" id="g-rejoin">Rejoin</button>`;
+  $("#g-rejoin").onclick = () => {
+    const v = $("#g-relink").value.trim(), at = v.indexOf("#join=");
+    if (at >= 0) location.hash = v.slice(at);       // the page joins again on the new invitation (hashchange)
+    else $("#g-status").textContent = "That is not an invitation link: it should have #join= in it.";
+  };
+}
+async function guestJoin(){                           // join (or rejoin) the GM's fight on the invitation in the address
   const status = t => { $("#g-status").textContent = t };
   let invite;
   try { invite = await NET.unpackCode(location.hash) }
-  catch (e){ return status("This link is not a working invitation. Ask the GM for a new one.") }
-  const side = esc(invite.seat.slice(5));
-  status(`Joining the GM's fight as ${invite.seat.slice(5)}...`);
+  catch { return status("This link is not a working invitation. Ask the GM for a new one.") }
+  const side = esc(invite.seat.slice(5)), kept = guestKept(invite.seat);
+  if (kept) guestShow(kept);                         // rejoining: his last screen while the GM pastes the reply
+  status(`${kept ? "Rejoining" : "Joining"} the GM's fight as ${invite.seat.slice(5)}...`);
+  GUEST.peer?.close?.();
   try {
-    const g = await NET.guestPeer({ invite, stun: invite.stun !== false, onMessage: m => { if (m.t === "screen") { $("#g-join").style.display = "none"; guestShow(m) } },
-      onState: st => { if (st !== "open") status("Lost the GM's page. Ask the GM for a new invitation.") } });
-    GUEST.send = g.send;
+    const g = await NET.guestPeer({ invite, stun: invite.stun !== false,
+      onMessage: m => { if (m.t === "screen"){ $("#g-join").style.display = "none"; guestShow(m); guestKeep(invite.seat, m) } },
+      onState: st => {
+        if (st !== "open" && GUEST.peer === g) guestLost();
+      } });
+    GUEST.peer = g; GUEST.send = g.send;
+    $("#g-join").style.display = "";
     $("#g-join").innerHTML = `<h2>Send this reply to the GM</h2><p class="muted">The GM pastes it into Play online, under ${side}. This page then shows your side's view of the fight.</p>
       <textarea readonly rows="3" id="g-reply" style="width:100%">${esc(g.reply)}</textarea>
       <button type="button" class="small" id="g-copy">Copy the reply</button>`;
     $("#g-copy").onclick = () => navigator.clipboard?.writeText(g.reply).catch(() => $("#g-reply").select());
-    status("Waiting for the GM to paste your reply.");
+    status(kept ? "Rejoining: waiting for the GM to paste your reply. Your last screen is below." : "Waiting for the GM to paste your reply.");
   } catch (e){ status(`Could not answer the invitation: ${e.message || e}`) }
+}
+async function guestMain(){
+  guestLayout(); guestWire();
+  window.addEventListener("hashchange", () => { if (location.hash.startsWith("#join=")) guestJoin() });   // a new invitation opened in this tab
+  await guestJoin();
 }
 
 const FLAG_LABEL = { shock: "stop check" };   // the data's shock flag is the Grave Wounds stop check

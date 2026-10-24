@@ -16,6 +16,7 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parents[2]
 URL = Path(sys.argv[1] if len(sys.argv) > 1 else ROOT / "dist" / "roller.html").resolve().as_uri()
 SHOTS = Path(__file__).parent / ".cache"                    # the player's page, as a picture, for a look
+LINK, AGAIN = "textarea[data-net-link]", 'button[data-net="again"]'
 ENEMY_SECRETS = ["Blood <b>", "Bleeding", "Worst untreated", "Nerve", "lethal:", "stop check d100", "Serious", "Critical", "Light ", "critical ", "serious "]
 failures = []
 
@@ -43,8 +44,8 @@ with sync_playwright() as p:
     # the invitation, the reply, the connection
     gm.click("#net-bar summary"); gm.uncheck("#net-stun")
     gm.click(f'button[data-net="invite"][data-side="{me}"]')
-    gm.wait_for_selector("textarea[data-net-link]")
-    link = gm.input_value("textarea[data-net-link]")
+    gm.wait_for_selector(LINK)
+    link = gm.input_value(LINK)
     check("#join=" in link and len(link) < 6000, f"the invitation is a link ({len(link)} characters)")
     pl.add_init_script("""(() => { const real = window.RTCPeerConnection; window.__got = [];
       window.RTCPeerConnection = function(...a){ const pc = new real(...a);
@@ -123,6 +124,32 @@ with sync_playwright() as p:
       return box.innerHTML }""")
     check("onerror" not in cleaned and "javascript" not in cleaned and "<script" not in cleaned and "onclick" not in cleaned and "<b>ok</b>" in cleaned and "<circle" in cleaned,
           "his page drops anything in a drawing that could run, and keeps the rest")
+    # lost, and back: the same seat, a new link, his last screen kept meanwhile
+    pl.evaluate("() => GUEST.peer.close()")               # his connection goes (a network gone, a laptop shut)
+    gm.wait_for_function("() => ['closed', 'failed', 'disconnected'].includes(NETH.peers[0].state)", timeout=20000)
+    check(gm.locator(AGAIN).count() == 1, "the GM's page shows him lost, with Invite again")
+    pl.wait_for_selector("#g-relink", timeout=10000)
+    check(pl.locator("#chars").evaluate("e => e.children.length") > 0 and "Lost the GM's page" in pl.inner_text("#g-status"), "his page keeps his side's last screen and offers to rejoin")
+    gm.click(AGAIN)
+    gm.wait_for_function("() => NETH.peers[0].state === 'waiting for the reply'", timeout=20000)
+    link2 = gm.input_value(LINK)
+    check(link2 != link and gm.evaluate("() => NETH.peers.length") == 1, "Invite again makes a new link for the same seat, in the same row")
+    pl.fill("#g-relink", link2)
+    pl.click("#g-rejoin")
+    pl.wait_for_function("() => (document.querySelector('#g-reply') || {}).value", timeout=20000)
+    gm.fill("textarea[data-net-reply]", pl.input_value("#g-reply"))
+    gm.click('button[data-net="accept"]')
+    gm.wait_for_function("() => NETH.peers[0].state === 'open'", timeout=20000)
+    pl.wait_for_function("() => document.querySelector('#g-join').style.display === 'none'", timeout=20000)
+    check(gm.evaluate(f"() => gmSide({me!r}).ctl") == "player", "rejoined: he plays his side again, and his page shows the fight")
+    # his page reloaded: the last screen at once, from this tab, before anything is connected
+    pl.reload()
+    pl.wait_for_function("() => document.querySelector('#chars') && document.querySelector('#chars').children.length > 0", timeout=5000)
+    check("Rejoining" in pl.inner_text("#g-status"), "a reloaded player's page shows his last screen while it rejoins")
+    # the GM's page reloaded: his players' seats are remembered, to invite again
+    gm.reload()
+    gm.wait_for_selector(AGAIN, timeout=10000)   # Play online opens by itself, with the seat to invite again
+    check(gm.evaluate("() => NETH.peers.map(p => p.seat)") == [f"side:{me}"], "after the GM's page is reloaded, his player's seat waits to be invited again")
     check(not errors, f"no page errors {errors[:3]}")
     br.close()
 
