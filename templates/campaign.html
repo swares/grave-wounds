@@ -87,7 +87,8 @@ iframe{display:block;width:100%;height:82vh;border:0;background:var(--bg)}
     <section class="panel" aria-labelledby="h-phase">
       <div class="toolbar" style="justify-content:space-between">
         <h2 id="h-phase">The campaign</h2>
-        <label class="muted">Name <input type="text" id="c-name" placeholder="A name for this campaign" style="width:16em"></label>
+        <span class="toolbar"><label class="muted">Name <input type="text" id="c-name" placeholder="A name for this campaign" style="width:16em"></label>
+          <label class="muted">Map <select id="c-map" style="width:auto;max-width:22em" title="The travel map the campaign marches on (each map keeps its own forces and clock)"></select></label></span>
       </div>
       <ol class="phases" id="c-phases" aria-label="Phases"></ol>
       <p class="notice" id="c-notice" hidden aria-live="polite"></p>
@@ -200,7 +201,7 @@ function musterLines(st){
     "<b>Send to the roller</b>: that makes them named men, whom the travel map, the roller and the field map all know."];
 }
 function marchLines(st){
-  const map = st.travel ? "On the map of " + esc(st.travel.mapName) + bit(st.travel.day, ", day " + st.travel.day) + "." : "Choose the campaign's map on the travel map.";
+  const map = st.travel ? "On the map of " + esc(st.travel.mapName) + bit(st.travel.day, ", day " + st.travel.day) + "." : "Choose the campaign's map: <b>Map</b>, above (or on the travel map).";
   return [map,
     "Put the team's force on it (or use one of the map's own), and in the roller put each named man <b>With</b> it on his card.",
     "Give each force its route, orders and camps under <b>Orders</b> in <b>Run the march</b> (or on the travel map), and move the clock on: weather, food, the sick and the road's incidents come each day.",
@@ -270,6 +271,30 @@ function statusRows(st){
   if (st.fight.fieldResult) rows.push(["Battle result", (st.fight.fieldResult.place || "?") + ": " + st.fight.fieldResult.lost + " lost, waiting for the travel map"]);
   return rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("");
 }
+/* ---------- the campaign's map: chosen here as on the travel map ---------- */
+let MAP_KEY = "";                                     // the choices last drawn, and the map then chosen
+function renderMapChoice(){
+  const sel = $("#c-map");
+  if (document.activeElement === sel) return;         // not while the GM picks
+  let m;
+  try { m = newDay().mapChoices() } catch { return }
+  const key = JSON.stringify(m);
+  if (key === MAP_KEY) return;
+  MAP_KEY = key;
+  const opt = ([id, name]) => `<option value="${esc(id)}"${id === m.current ? " selected" : ""}>${esc(name)}</option>`;
+  sel.innerHTML = (m.current ? "" : '<option value="" selected>Choose a map</option>')
+    + m.groups.map(([per, ms]) => `<optgroup label="${esc(per)}">${ms.map(opt).join("")}</optgroup>`).join("");
+}
+$("#c-map").addEventListener("change", e => {
+  const name = e.target.value ? newDay().setMap(e.target.value) : null;
+  e.target.blur();
+  if (!name) return;
+  note(`The campaign marches on the map of ${name}`);
+  MARCH_SAID = "";
+  const f = $("#c-frame");                            // the page in the frame looks again (the travel map shows the new map)
+  try { f.contentWindow.location.reload() } catch { f.setAttribute("src", f.getAttribute("src")) }
+  render();
+});
 /* ---------- Run the march: the travel map's clock, moved from here ---------- */
 let MARCH_SAID = "";                                  // what the last move of the clock came to
 let ORDERS_FOR = null;                                 // the force whose orders are open
@@ -502,6 +527,7 @@ function render(){
   takeNews(st);
   if (REC.phase !== was) return render();           // the season ended: on to downtime
   if (document.activeElement !== $("#c-name")) $("#c-name").value = REC.name || "";   // not while the GM types it
+  renderMapChoice();
   $("#c-phases").innerHTML = CAMPAIGN.PHASES.map(p => `<li><button type="button" data-phase="${p.id}"${p.id === ph.id ? ' aria-current="step"' : ""}>${p.name}</button></li>`).join("");
   const items = GUIDE[ph.id](st).map(x => "<li>" + x + "</li>").join("");
   $("#c-guide").innerHTML = `<ul class="guide">${items}</ul>`;

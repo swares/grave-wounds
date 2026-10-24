@@ -87,7 +87,8 @@ iframe{display:block;width:100%;height:82vh;border:0;background:var(--bg)}
     <section class="panel" aria-labelledby="h-phase">
       <div class="toolbar" style="justify-content:space-between">
         <h2 id="h-phase">The campaign</h2>
-        <label class="muted">Name <input type="text" id="c-name" placeholder="A name for this campaign" style="width:16em"></label>
+        <span class="toolbar"><label class="muted">Name <input type="text" id="c-name" placeholder="A name for this campaign" style="width:16em"></label>
+          <label class="muted">Map <select id="c-map" style="width:auto;max-width:22em" title="The travel map the campaign marches on (each map keeps its own forces and clock)"></select></label></span>
       </div>
       <ol class="phases" id="c-phases" aria-label="Phases"></ol>
       <p class="notice" id="c-notice" hidden aria-live="polite"></p>
@@ -3068,6 +3069,27 @@ function makeTravelDay(DATA, RULES, env = {}){
       night: c.used >= dayEnd(c.day) - 1e-9, working: anyAtWork(c),
       forces: forcesHere().filter(f => Array.isArray(f.pos)).map(f => ({ id: f.id, name: f.name, side: f.side, men: f.men, fit: fitOf(f).fit, where: where(f.pos), order: orderText(f, c), fatigue: L[f.fatigue || 0].name })) };
   }
+  // For the campaign console: the maps to choose from, as the travel map lists them, and the choice.
+  function mapChoices(){                          // -> {current, groups: [[period, [[id, name], ...]], ...]}: periods in order, oldest map first
+    restore();
+    const maps = Object.values(DATA.maps), order = DATA.period_order || [];
+    const row = m => [m.id, m.name];
+    const byStart = (a, b) => String(a.start_date).localeCompare(String(b.start_date));
+    const groups = order.map(per => [per, maps.filter(m => m.period === per).sort(byStart).map(row)]).filter(([, ms]) => ms.length);
+    const rest = maps.filter(m => !order.includes(m.period)).map(row);
+    if (rest.length) groups.push(["Other", rest]);
+    let saved = null;                             // the map chosen and saved (none before the first choice)
+    try { saved = JSON.parse(localStorage.getItem(KEY) || "null")?.mapId || null } catch { saved = null }
+    return { current: saved && DATA.maps[saved] ? saved : null, groups };
+  }
+  function setMap(id){                            // the campaign's map, as choosing it on the travel map does -> its name, or null if there is no such map
+    restore();
+    if (!DATA.maps[id]) return null;
+    S.mapId = id;
+    forcesHere();                                 // a map chosen the first time: its own forces, as drawn
+    save();
+    return DATA.maps[id].name;
+  }
   // What one player sees of the map: his named men (uids) and the forces they are with, nothing of
   // anyone else's. -> {map, day, date, time, men: [{uid, name, dead, force, health, purse}], forces:
   // [{id, name, side, order, where, fit, men, fatigue, route, log}]}, or null with no map yet.
@@ -3166,7 +3188,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
   function byId(id){ return forcesHere().find(o => o.id === id) }
 
-  return { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, seatView, roll100 };
+  return { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, seatView, mapChoices, setMap, roll100 };
 }
 
 if (typeof module !== "undefined") module.exports = makeTravelDay;   // Node (the tests); the page has no `module`
@@ -3798,7 +3820,7 @@ function musterLines(st){
     "<b>Send to the roller</b>: that makes them named men, whom the travel map, the roller and the field map all know."];
 }
 function marchLines(st){
-  const map = st.travel ? "On the map of " + esc(st.travel.mapName) + bit(st.travel.day, ", day " + st.travel.day) + "." : "Choose the campaign's map on the travel map.";
+  const map = st.travel ? "On the map of " + esc(st.travel.mapName) + bit(st.travel.day, ", day " + st.travel.day) + "." : "Choose the campaign's map: <b>Map</b>, above (or on the travel map).";
   return [map,
     "Put the team's force on it (or use one of the map's own), and in the roller put each named man <b>With</b> it on his card.",
     "Give each force its route, orders and camps under <b>Orders</b> in <b>Run the march</b> (or on the travel map), and move the clock on: weather, food, the sick and the road's incidents come each day.",
@@ -3868,6 +3890,30 @@ function statusRows(st){
   if (st.fight.fieldResult) rows.push(["Battle result", (st.fight.fieldResult.place || "?") + ": " + st.fight.fieldResult.lost + " lost, waiting for the travel map"]);
   return rows.map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("");
 }
+/* ---------- the campaign's map: chosen here as on the travel map ---------- */
+let MAP_KEY = "";                                     // the choices last drawn, and the map then chosen
+function renderMapChoice(){
+  const sel = $("#c-map");
+  if (document.activeElement === sel) return;         // not while the GM picks
+  let m;
+  try { m = newDay().mapChoices() } catch { return }
+  const key = JSON.stringify(m);
+  if (key === MAP_KEY) return;
+  MAP_KEY = key;
+  const opt = ([id, name]) => `<option value="${esc(id)}"${id === m.current ? " selected" : ""}>${esc(name)}</option>`;
+  sel.innerHTML = (m.current ? "" : '<option value="" selected>Choose a map</option>')
+    + m.groups.map(([per, ms]) => `<optgroup label="${esc(per)}">${ms.map(opt).join("")}</optgroup>`).join("");
+}
+$("#c-map").addEventListener("change", e => {
+  const name = e.target.value ? newDay().setMap(e.target.value) : null;
+  e.target.blur();
+  if (!name) return;
+  note(`The campaign marches on the map of ${name}`);
+  MARCH_SAID = "";
+  const f = $("#c-frame");                            // the page in the frame looks again (the travel map shows the new map)
+  try { f.contentWindow.location.reload() } catch { f.setAttribute("src", f.getAttribute("src")) }
+  render();
+});
 /* ---------- Run the march: the travel map's clock, moved from here ---------- */
 let MARCH_SAID = "";                                  // what the last move of the clock came to
 let ORDERS_FOR = null;                                 // the force whose orders are open
@@ -4100,6 +4146,7 @@ function render(){
   takeNews(st);
   if (REC.phase !== was) return render();           // the season ended: on to downtime
   if (document.activeElement !== $("#c-name")) $("#c-name").value = REC.name || "";   // not while the GM types it
+  renderMapChoice();
   $("#c-phases").innerHTML = CAMPAIGN.PHASES.map(p => `<li><button type="button" data-phase="${p.id}"${p.id === ph.id ? ' aria-current="step"' : ""}>${p.name}</button></li>`).join("");
   const items = GUIDE[ph.id](st).map(x => "<li>" + x + "</li>").join("");
   $("#c-guide").innerHTML = `<ul class="guide">${items}</ul>`;
