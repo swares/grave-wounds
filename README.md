@@ -10,8 +10,8 @@ Players lead a small team rather than a lone hero. The game spans historical era
 the Crusades to the modern day, and speculative ones in the spirit of Aftermath!, The
 Morrow Project, Gamma World and Traveller.
 
-**Status: early design.** The rules are not written yet. The design proposal is in
-[docs/design.md](docs/design.md). It includes a comparison with Aftermath!, Rolemaster,
+**Status: early design.** The rule book is built: `dist/rules.html`, from the 14 chapters in
+`templates/rules/`. The design proposal is in [docs/design.md](docs/design.md). It includes a comparison with Aftermath!, Rolemaster,
 Gamma World, Traveller and The Morrow Project. The first playtest era is medieval.
 
 **First playable piece:** the roller now runs the Grave Wounds stop check, graze and team
@@ -85,7 +85,7 @@ player. `python3 tools/guide/check.py` (in CI) checks every control it names is 
 aid and recovery, battles of hundreds, the march and the camp, and weather and works,
 following one team from the road to Towton into camp; then the other eras, guns and fire
 support, vehicles, night and the air, with a rifle squad in Vietnam followed through one
-night. GM notes are set apart, and an index of its terms closes it. It prints cleanly from
+night; and money by era, each army's coin and price list. GM notes are set apart, and an index of its terms closes it. It prints cleanly from
 the browser, with page numbers in Chrome and Edge.
 
 **Team builder:** `dist/team.html` makes a team of four to six in a few rolls each, from the
@@ -170,12 +170,14 @@ python -m gravewounds selfplay --field wanat-2008   # the enemy commander on bot
 
 - `dist/guide.html`, how to play: `templates/guide.html`, copied as it is.
 - `dist/rules.html`, the rule book: chapters in `templates/rules/*.md`, every number filled
-  in from the data (`gravewounds/rulebook.py`, and `rulebook_later.py` for chapters 9-13);
+  in from the data (`gravewounds/rulebook.py`, and `rulebook_later.py` for chapters 9-13; chapter
+  14, money, from `rulebook.py`);
   the index is gathered from the terms set in bold (`rulebook.index_terms`)
 - `dist/roller.html`, `dist/travel.html` and `dist/field.html`
 - `dist/tables.pdf` and `dist/tables.md`
 - `dist/gravewounds-data.json`
 - `dist/team.html`, the team builder (character generation)
+- `dist/campaign.html`, the campaign console (the GM's console over the pages)
 - the start page `index.html`
 
 ## Next steps
