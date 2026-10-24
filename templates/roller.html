@@ -3259,14 +3259,36 @@ function applyFromMap(){                    // the Strike panel's Apply, with it
   S.mapMsg = $("#apply-msg").innerText.replaceAll("\n", " ");
   renderChars();
 }
-function forceChars(o, positions){            // up to 8 of a travel-map force's men, at these hexes if given
+// The named men with the forces in a fight from the travel map (as the roller's own fighters, with
+// their sheets, kit and wounds), by force: {by: Map(force id -> chars), missing: names}. A named man
+// with the force but not on the roller is missing: he has no fighter here to bring.
+function handoffNamed(h, forces){
+  const by = new Map(), missing = [];
+  const ids = new Set(forces.map(o => o.id).filter(x => x !== undefined && x !== null));
+  if (!h.mapId || !ids.size) return { by, missing };
+  for (const [uid, n] of Object.entries(readNamed())){
+    if (n.dead || n.map !== h.mapId || !ids.has(n.force)) continue;
+    const c = S.chars.find(ch => ch.uid === uid);
+    if (!c){ missing.push(n.name || "?"); continue }
+    if (!by.has(n.force)) by.set(n.force, []);
+    by.get(n.force).push(c);
+  }
+  return { by, missing };
+}
+const forceCount = (o, named) => Math.max(Math.min(o.men, 8), (named?.by.get(o.id) || []).length);   // its fighters here: up to 8, its named men always
+function forceChars(o, positions, named = null){  // up to 8 of a travel-map force's men, its named men first, at these hexes if given
   const out = [];
-  for (let i = 0; i < Math.min(o.men, 8); i++){
-    const c = newChar(`${o.name} ${i + 1}`, "none", null, {}, o.side);
-    c.fatigue = o.fatigue || 0;
-    if (positions && positions[i]) c.pos = positions[i];
+  for (const c of named?.by.get(o.id) || []){       // his own fighter, wounds and all, ready for a new fight
+    Object.assign(c, { side: o.side, state: null, init: null, rounds: 0, fatigue: o.fatigue || 0 });
+    delete c.pos;
     out.push(c);
   }
+  for (let i = out.length; i < forceCount(o, named); i++){
+    const c = newChar(`${o.name} ${i + 1 - (named?.by.get(o.id) || []).length}`, "none", null, {}, o.side);
+    c.fatigue = o.fatigue || 0;
+    out.push(c);
+  }
+  out.forEach((c, i) => { if (positions && positions[i]) c.pos = positions[i] });
   return out;
 }
 const menOf = o => { const n = Math.min(o.men, 8); return n < o.men ? `${n} of its ${o.men} men` : `its ${n} men` };
@@ -3320,12 +3342,13 @@ function setupHandoff(){                     // a camp or position sent from the
   // The defender and any friends who were there fill the camp from the middle out; any who
   // do not fit go to their side's edge. The enemy forces wait at the far edge (side 2's edge).
   const spots = campSpots(L, cols, rows, gate), defenders = [h.force, ...(h.allies || [])], foes = h.foes || [], foe = foes[0];
-  const overflow = defenders.reduce((t, o) => t + Math.min(o.men, 8), 0) > spots.length;
+  const named = handoffNamed(h, [...defenders, ...foes]);   // the named men with these forces come as themselves
+  const overflow = defenders.reduce((t, o) => t + forceCount(o, named), 0) > spots.length;
   S.chars = [];
-  for (const o of defenders) S.chars.push(...forceChars(o, spots.splice(0, Math.min(o.men, 8))));
+  for (const o of defenders) S.chars.push(...forceChars(o, spots.splice(0, forceCount(o, named)), named));
   const sp = h.surprise;
   if (sp && sp.surprised) S.chars.forEach(c => { c.state = { id: "surprised", rounds: 1 } });   // the defenders and their friends lose round 1
-  for (const o of foes) S.chars.push(...forceChars(o, o.from ? arrivalSpots(o.from, Math.min(o.men, 8)) : null));
+  for (const o of foes) S.chars.push(...forceChars(o, o.from ? arrivalSpots(o.from, forceCount(o, named)) : null, named));
   if (h.weather) S.weather = h.weather;
   S.hauled = !!h.hauled;
   S.round = 1; S.log = []; S.turn = null; S.tm = null; S.free = []; S.broken = {}; S.attacker = -1; S.active = 0; S.hit = null; newFightMarks();
@@ -3348,6 +3371,9 @@ function setupHandoff(){                     // a camp or position sent from the
   if (sp) S.pending.push(`${sp.text} Rolled ${sp.roll}: ${sp.surprised ? "caught unawares, they cannot act in round 1" : "not surprised"}`);
   for (const o of h.allies || []) S.pending.push(`With them: ${o.name}, ${o.men} men (${o.side})`);
   for (const o of foes) S.pending.push(`Facing them: ${o.name}, ${o.men} men (${o.side})`);
+  const came = [...named.by.values()].flat().map(c => c.name);
+  if (came.length) S.pending.push(`Named men with their forces: ${came.join(", ")}`);
+  if (named.missing.length) S.pending.push(`With these forces on the travel map but not on the roller, so not here: ${named.missing.join(", ")} (send the team to the roller and put each With his force to bring him)`);
   try{ localStorage.removeItem("gravewounds-handoff") }catch(e){}
   S.handoff = null;
   renderResult();
