@@ -370,6 +370,11 @@ forces sees. Each time the clock moves, each side remembers where it saw each en
 a player's map shows that, faded, once the force is out of sight. These numbers are in
 `data/terrain.yaml` (`sight`) and are **placeholders**, not yet calibrated from period sources.
 
+The GM's travel map shows everything; its **view** choice beside the map's scale (Everything, or
+As *side* sees it) draws it as one side sees it, as that side's players see it online: the side's
+own forces and routes, the enemy forces it sees now (ringed red), and, faded, where it last saw the
+others. The choice is the page's only, never saved, and changes nothing.
+
 ## Calendar and weather
 
 Days have real dates, and daylight sets each day's marching hours. The weather is rolled
