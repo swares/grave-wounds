@@ -8,10 +8,10 @@ name: strike
 
 on:
   pull_request:
-    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "templates/campaign.js", "templates/travelrules.js", "templates/travelday.js", "templates/ranks.js", "templates/purse.js", "templates/xp.js", "templates/events.js", "templates/camp.js", "templates/measure.js", "templates/lethality.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**", "tools/campaign/**", "tools/travel/**"]
+    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "templates/campaign.js", "templates/travelrules.js", "templates/travelday.js", "templates/ranks.js", "templates/purse.js", "templates/xp.js", "templates/events.js", "templates/camp.js", "templates/measure.js", "templates/lethality.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**", "tools/campaign/**", "tools/travel/**", "worker/**"]
   push:
     branches: [main]
-    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "templates/campaign.js", "templates/travelrules.js", "templates/travelday.js", "templates/ranks.js", "templates/purse.js", "templates/xp.js", "templates/events.js", "templates/camp.js", "templates/measure.js", "templates/lethality.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**", "tools/campaign/**", "tools/travel/**"]
+    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "templates/campaign.js", "templates/travelrules.js", "templates/travelday.js", "templates/ranks.js", "templates/purse.js", "templates/xp.js", "templates/events.js", "templates/camp.js", "templates/measure.js", "templates/lethality.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**", "tools/campaign/**", "tools/travel/**", "worker/**"]
   workflow_dispatch:
 
 permissions:
@@ -32,5 +32,6 @@ jobs:
       - run: python3 tools/strike/parity.py 5000 1
       - run: node tools/gm/test.js
       - run: node tools/net/test.mjs
+      - run: node tools/net/roomscheck.mjs
       - run: node tools/campaign/test.js
       - run: python3 tools/travel/parity.py 300 1

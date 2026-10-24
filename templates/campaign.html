@@ -563,7 +563,7 @@ $("#c-add-note").addEventListener("click", () => {
 });
 $("#c-note").addEventListener("keydown", e => { if (e.key === "Enter") $("#c-add-note").click() });
 $("#c-frame").addEventListener("load", () => { showing(); FIGHT = null; FIELD = null; relayGone(); renderFight(); tellRoller("status"); tellField("status") });
-const PLAYER_PAGE = location.hash.startsWith("#join=");   // opened from a GM's invitation: the player's page, not the console
+const PLAYER_PAGE = /^#(join=|room)/.test(location.hash);   // opened from a GM's invitation (a link, or a room code)   // opened from a GM's invitation: the player's page, not the console
 if (!PLAYER_PAGE){
   window.addEventListener("storage", e => { if (!e.key || e.key.startsWith(CAMPAIGN.PREFIX)) render() });   // a page in the frame wrote: look again
   setInterval(render, 3000);                           // and now and then, in case a write was missed
@@ -829,6 +829,44 @@ function relayGone(){                                  // the roller left the fr
   for (const id of PL.fighting) if (PL.conn[id]?.state === "open") PL.conn[id].peer.send({ t: "nofight" });
   PL.fighting.clear();
 }
+/* Room codes: with a room server (worker/rooms.js; set in worker/rooms.json when built, or here),
+   his invitation goes to his room and his reply comes back from it: nothing to copy back, and when he
+   is lost (or this page reloads) he is invited again by itself, and his page answers by itself. His
+   room's code stays his for the session (kept with the campaign, and its host key with it). */
+const ROOM_KEY = "gw-room-server";                    // this browser's own choice (not part of any campaign)
+function roomServer(){
+  let s = "";
+  try { s = localStorage.getItem(ROOM_KEY) || "" } catch { s = "" }
+  return (s || CD.room_server || "").trim();
+}
+async function roomFor(pl, R, server){                 // his room: kept, or a new one
+  if (pl.room?.server === server && pl.room.code) return pl.room;
+  const r = await R.create();
+  pl.room = { server, code: r.code, key: r.key };
+  saveRecord();
+  return pl.room;
+}
+async function roomInvite(pl, c, peer){               // his invitation into his room, then his reply out of it
+  const server = roomServer(), R = NET.rooms(server);
+  let room = await roomFor(pl, R, server), sent;
+  try { sent = await R.invite(room.code, room.key, c.code) }
+  catch (e){                                          // the room was forgotten (hours unused): a new one, a new code
+    if (e.status !== 404 && e.status !== 403) throw e;
+    pl.room = null;
+    room = await roomFor(pl, R, server);
+    sent = await R.invite(room.code, room.key, c.code);
+  }
+  c.room = room.code;
+  c.state = "waiting for him to open his link";
+  renderPlayers();
+  const r = await NET.poll(() => R.replied(room.code, room.key, sent.v), { stop: () => c.peer !== peer || c.state === "open" });
+  if (r && c.peer === peer){ await peer.accept(r.data); c.state = "connecting"; renderPlayers() }
+}
+function roomAgain(pl, peer){                         // he was lost: with a room, he is invited again by itself
+  const c = PL.conn[pl.id];
+  if (!roomServer() || !pl.room) return;
+  setTimeout(() => { if (c && c.peer === peer && NET_LOST.has(c.state) && players().includes(pl)) playerConnect(pl) }, 2000);
+}
 async function playerConnect(pl){                     // an invitation for his seat: a first one, or again after he was lost or this page reloaded
   const c = (PL.conn[pl.id] ||= {});
   c.peer?.close();
@@ -838,12 +876,16 @@ async function playerConnect(pl){                     // an invitation for his s
     c.state = st;
     if (st === "open"){ c.last = null; playerSend(pl); tellRoller("resend", { id: pl.id }) }   // his screens, whole: first or again
     if (st !== "open") PL.fighting.delete(pl.id);
+    if (NET_LOST.has(st)) roomAgain(pl, peer);
     relayIn();
     renderPlayers();
   } });
   c.peer = peer;
   renderPlayers();
-  try { c.code = await peer.invite({ stun: PL.stun, name: pl.name }); c.state = "waiting for the reply" }
+  try {
+    c.code = await peer.invite({ stun: PL.stun, name: pl.name }); c.state = "waiting for the reply";
+    if (roomServer()) await roomInvite(pl, c, peer);
+  }
   catch (e){ c.state = "failed"; c.err = String(e.message || e) }
   renderPlayers();
 }
@@ -856,26 +898,49 @@ async function playerAccept(pl, reply){
   renderPlayers();
 }
 const playerLink = code => `${location.href.split("#")[0]}#join=${code}`;
+function roomLink(code){                               // his room's link: the code, and the server if it is not the site's own
+  const server = roomServer(), extra = server && server !== CD.room_server ? `&s=${encodeURIComponent(server)}` : "";
+  return `${location.href.split("#")[0]}#room=${code}${extra}`;
+}
 function menPicker(chosen, attrs){                     // a checkbox for each named man
   const men = namedMen();
   if (!men.length) return '<span class="muted">No named men yet (Send to the roller from the team builder).</span>';
   return `<span class="men">${men.map(([u, n]) => `<label><input type="checkbox" ${attrs} value="${esc(u)}"${chosen.includes(u) ? " checked" : ""}>${esc(n.name || "?")}${n.dead ? " (dead)" : ""}</label>`).join("")}</span>`;
 }
-function playerRow(pl){
-  const c = PL.conn[pl.id] || { state: "not connected" };
-  const st = { open: "connected", closed: "gone", failed: "could not connect", disconnected: "lost" }[c.state] || c.state;
-  const waiting = c.code && c.state !== "open" && !NET_LOST.has(c.state);
-  const invite = waiting ? `<label class="muted">1. Send this link to ${esc(pl.name)}:
+function roomHtml(pl, c){                             // his room's code and link, while he is not connected
+  return `<span class="muted">His room: <b style="font-family:var(--mono);color:var(--ink)">${esc(c.room)}</b>. Send him this link (or the code, to type on the campaign page):</span>
+      <textarea readonly rows="1" data-pl-link="${esc(pl.id)}" style="width:100%">${esc(roomLink(c.room))}</textarea>
+      <span class="toolbar"><button type="button" class="small" data-pl="copyroom" data-id="${esc(pl.id)}">Copy the link</button></span>`;
+}
+function pasteHtml(pl, c){                            // his link, and a box for his reply, passed by hand
+  return `<label class="muted">1. Send this link to ${esc(pl.name)}:
       <textarea readonly rows="2" data-pl-link="${esc(pl.id)}" style="width:100%">${esc(playerLink(c.code))}</textarea></label>
       <span class="toolbar"><button type="button" class="small" data-pl="copy" data-id="${esc(pl.id)}">Copy the link</button></span>
       <label class="muted">2. Paste the reply code his page gives him:
       <textarea rows="2" data-pl-reply="${esc(pl.id)}" style="width:100%"></textarea></label>
-      <span class="toolbar"><button type="button" class="small" data-pl="accept" data-id="${esc(pl.id)}">Connect</button></span>` : "";
-  const connect = c.state === "open" || waiting ? "" : `<button type="button" class="small primary" data-pl="invite" data-id="${esc(pl.id)}">${c.peer ? "Invite again" : "Invite"}</button>`;
-  return `<li><span class="toolbar"><b>${esc(pl.name)}</b> <span class="muted">${esc(st)}</span>${connect}
+      <span class="toolbar"><button type="button" class="small" data-pl="accept" data-id="${esc(pl.id)}">Connect</button></span>`;
+}
+function inviteHtml(pl, c){                           // how he is being invited, if he is
+  const waiting = c.code && c.state !== "open" && !NET_LOST.has(c.state);
+  if (c.room && c.state !== "open") return roomHtml(pl, c);
+  if (waiting && !roomServer()) return pasteHtml(pl, c);
+  return "";
+}
+function connectButton(pl, c){                        // Invite, or Invite again, when he is neither connected nor being invited
+  const waiting = c.code && c.state !== "open" && !NET_LOST.has(c.state);
+  if (c.state === "open" || waiting || (c.room && c.state !== "failed")) return "";
+  const label = c.peer ? "Invite again" : "Invite";
+  return `<button type="button" class="small primary" data-pl="invite" data-id="${esc(pl.id)}">${label}</button>`;
+}
+function playerRow(pl){
+  const c = PL.conn[pl.id] || { state: "not connected" };
+  const st = { open: "connected", closed: "gone", failed: "could not connect", disconnected: "lost" }[c.state] || c.state;
+  const code = c.room && c.state === "open" ? ` · room <span style="font-family:var(--mono)">${esc(c.room)}</span>` : "";
+  const err = c.err ? `<p class="bad">${esc(c.err)}</p>` : "";
+  return `<li><span class="toolbar"><b>${esc(pl.name)}</b> <span class="muted">${esc(st)}${code}</span>${connectButton(pl, c)}
       <button type="button" class="small" data-pl="drop" data-id="${esc(pl.id)}">Remove</button></span>
     <span class="muted" style="font-size:.88rem">Plays: ${menPicker(pl.men, `data-pl-man="${esc(pl.id)}"`)}</span>
-    ${invite}${c.err ? `<p class="bad">${esc(c.err)}</p>` : ""}</li>`;
+    ${inviteHtml(pl, c)}${err}</li>`;
 }
 function renderPlayers(){
   const box = $("#c-players");
@@ -883,12 +948,16 @@ function renderPlayers(){
   if (box.contains(document.activeElement) && ["TEXTAREA", "INPUT"].includes(document.activeElement.tagName) && document.activeElement.type !== "checkbox") return;   // not while the GM types
   const open = players().filter(pl => PL.conn[pl.id]?.state === "open").length;
   box.innerHTML = `<div class="toolbar" style="justify-content:space-between"><h2 id="h-players">Players online</h2><span class="muted">${open} connected</span></div>
-    <p class="muted" style="margin:0;font-size:.9rem">Each player gets his own link for the session and sees his men, the forces they are with and the campaign's news (not the GM's notes, nor the march's word on other forces), from his own computer. No server: the link and his reply are passed by hand.</p>
+    <p class="muted" style="margin:0;font-size:.9rem">Each player gets his own link for the session and sees his men, the forces they are with and the campaign's news (not the GM's notes, nor the march's word on other forces), from his own computer. ${roomServer() ? "Through the room server: he opens his link (or types his room's code), and nothing comes back by hand; if he is lost, or this page reloads, he is invited again by itself." : "No room server: the link and his reply are passed by hand."}</p>
     ${proposalsHtml()}
     ${players().length ? `<ul class="players">${players().map(playerRow).join("")}</ul>` : ""}
     <div class="toolbar"><label class="muted">Player <input type="text" id="pl-name" placeholder="His name" style="width:12em"></label>
       <button type="button" class="small" id="pl-add">Add a player</button>
       <label class="muted" style="display:inline-flex;gap:4px;align-items:center" title="Lets pages find each other across the internet; on one network it is not needed"><input type="checkbox" id="pl-stun"${PL.stun ? " checked" : ""}> Public STUN server</label></div>
+    <details><summary class="muted" style="font-size:.88rem">Room server${roomServer() ? ": " + esc(roomServer()) : ": none (copy and paste)"}</summary>
+      <span class="toolbar"><label class="muted" for="pl-room">Its address</label><input type="text" id="pl-room" value="${esc(roomServer())}" placeholder="https://grave-wounds-rooms.you.workers.dev" style="width:24em">
+        <button type="button" class="small" id="pl-room-set">Use it</button></span>
+      <p class="muted" style="margin:0;font-size:.85rem">A Cloudflare Worker that passes the connection codes (worker/README.md). This browser keeps the choice; blank means the site's own${CD.room_server ? " (" + esc(CD.room_server) + ")" : ", which is none"}.</p></details>
     <span class="muted" style="font-size:.88rem">His men: ${menPicker([], 'data-pl-new')}</span>`;
 }
 function proposalsHtml(){                             // the players' proposed orders waiting for the GM
@@ -911,6 +980,10 @@ function addPlayer(){
 }
 $("#c-players").addEventListener("click", e => {
   if (e.target.id === "pl-add") return addPlayer();
+  if (e.target.id === "pl-room-set"){
+    try { localStorage.setItem(ROOM_KEY, $("#pl-room").value.trim()) } catch { /* storage off: the site's own */ }
+    return renderPlayers();
+  }
   const prop = e.target.closest("button[data-prop]");
   if (prop) return answerProposal(+prop.dataset.n, prop.dataset.prop === "yes");
   const b = e.target.closest("button[data-pl]"); if (!b) return;
@@ -918,6 +991,7 @@ $("#c-players").addEventListener("click", e => {
   const what = b.dataset.pl;
   if (what === "invite") playerConnect(pl);
   else if (what === "copy") navigator.clipboard?.writeText(playerLink(PL.conn[pl.id].code)).catch(() => $(`[data-pl-link="${pl.id}"]`).select());
+  else if (what === "copyroom") navigator.clipboard?.writeText(roomLink(PL.conn[pl.id].room)).catch(() => $(`[data-pl-link="${pl.id}"]`).select());
   else if (what === "accept") playerAccept(pl, $(`[data-pl-reply="${pl.id}"]`).value);
   else if (what === "drop" && confirm(`Remove ${pl.name}? His page is cut off.`)){
     PL.conn[pl.id]?.peer?.close(); delete PL.conn[pl.id];
@@ -1003,48 +1077,114 @@ function pgLost(){                                    // the GM's console is gon
     else $("#p-status").textContent = "That is not an invitation link: it should have #join= in it.";
   };
 }
-async function pgJoin(){
-  const status = t => { $("#p-status").textContent = t };
-  let invite;
-  try { invite = await NET.unpackCode(location.hash) }
-  catch { return status("This link is not a working invitation. Ask the GM for a new one.") }
-  if (!String(invite.seat).startsWith("player:")) return status("This invitation is for a fight on the wound roller: open it there.");
+const pgStatus = t => { $("#p-status").textContent = t };
+function pgReady(invite){                             // his invitation read: his last screen, if this tab kept one -> was there one
+  if (!String(invite.seat).startsWith("player:")) throw new Error("This invitation is for a fight on the wound roller: open it there.");
   const kept = pgKept(invite.seat);
   if (kept){ pgShow(kept); PG.screen = kept }
-  status(`${kept ? "Rejoining" : "Joining"} the GM's campaign${invite.name ? " as " + invite.name : ""}...`);
+  pgStatus(`${kept ? "Rejoining" : "Joining"} the GM's campaign${invite.name ? " as " + invite.name : ""}...`);
+  return !!kept;
+}
+async function pgPeer(invite, onLost){                // his end of the connection: his screens shown as they come
   PG.peer?.close?.();
+  const g = await NET.guestPeer({ invite, stun: invite.stun !== false,
+    onMessage: m => {
+      if (m.t === "screen" || m.t === "nofight") return pgFight(m);
+      if (m.t !== "camp") return;
+      const whole = NET.merge(PG.screen, m);
+      PG.screen = whole;
+      $("#p-join").hidden = true;
+      pgStatus("Connected to the GM's console.");
+      pgShow(whole, m.part ? Object.keys(m) : null);
+      pgKeep(invite.seat, whole);
+    },
+    onState: st => {
+      if (PG.peer !== g) return;                      // an old connection, closing
+      PG.state = st;
+      if (st === "open"){ pgStatus("Connected to the GM's console."); $("#p-join").hidden = true; PG.send = g.send }   // first, or back after a blink
+      else onLost(g);
+    } });
+  PG.peer = g; PG.send = g.send;
+  return g;
+}
+async function pgJoin(){                              // by a link and a reply passed by hand
+  let invite, kept;
+  try { invite = await NET.unpackCode(location.hash) }
+  catch { return pgStatus("This link is not a working invitation. Ask the GM for a new one.") }
   try {
-    const g = await NET.guestPeer({ invite, stun: invite.stun !== false,
-      onMessage: m => {
-        if (m.t === "screen" || m.t === "nofight") return pgFight(m);
-        if (m.t !== "camp") return;
-        const whole = NET.merge(PG.screen, m);
-        PG.screen = whole;
-        $("#p-join").hidden = true;
-        status("Connected to the GM's console.");
-        pgShow(whole, m.part ? Object.keys(m) : null);
-        pgKeep(invite.seat, whole);
-      },
-      onState: st => { if (st !== "open" && PG.peer === g) pgLost() } });
-    PG.peer = g; PG.send = g.send;
+    kept = pgReady(invite);
+    const g = await pgPeer(invite, pgLost);
     $("#p-join").hidden = false;
     $("#p-join").innerHTML = `<h2>Send this reply to the GM</h2><p class="muted" style="margin:0">The GM pastes it under your name in Players online. This page then shows your men and their force.</p>
       <textarea readonly rows="3" id="p-reply" style="width:100%">${esc(g.reply)}</textarea>
       <span class="toolbar"><button type="button" class="small" id="p-copy">Copy the reply</button></span>`;
     $("#p-copy").onclick = () => navigator.clipboard?.writeText(g.reply).catch(() => $("#p-reply").select());
-    status(kept ? "Rejoining: waiting for the GM to paste your reply. Your last screen is below." : "Waiting for the GM to paste your reply.");
-  } catch (e){ status(`Could not answer the invitation: ${e.message || e}`) }
+    pgStatus(kept ? "Rejoining: waiting for the GM to paste your reply. Your last screen is below." : "Waiting for the GM to paste your reply.");
+  } catch (e){ pgStatus(`Could not answer the invitation: ${e.message || e}`) }
+}
+/* By a room code: his invitation is fetched from his room and his reply put back there, by
+   themselves; lost, his page waits in the room for the GM's next invitation and answers it. */
+const PR = { code: "", server: "", after: 0, run: 0 };
+function pgRoomForm(said = ""){                        // a room code to type
+  $("#p-join").hidden = false;
+  $("#p-join").innerHTML = `<h2>Join with a room code</h2><p class="muted" style="margin:0">The GM gives you your room's code (like WOLF-OAK-42).</p>
+    <label for="p-code" style="position:absolute;left:-9999px">Your room's code</label><input type="text" id="p-code" placeholder="WOLF-OAK-42" style="width:14em;text-transform:uppercase">
+    <span class="toolbar"><button type="button" class="small primary" id="p-code-go">Join</button></span>`;
+  $("#p-code-go").onclick = () => { const v = $("#p-code").value.trim().toUpperCase(); if (v) location.hash = `#room=${v}${PR.server && PR.server !== CD.room_server ? "&s=" + encodeURIComponent(PR.server) : ""}` };
+  pgStatus(said || "Type your room's code.");
+}
+function pgRoomArgs(){                                // #room=CODE&s=SERVER -> {code, server}
+  const q = new URLSearchParams(location.hash.slice(1));
+  let local = "";
+  try { local = localStorage.getItem("gw-room-server") || "" } catch { local = "" }
+  return { code: (q.get("room") || "").trim().toUpperCase(), server: (q.get("s") || local || CD.room_server || "").trim() };
+}
+async function pgAnswer(R, code, inv, mine){          // one invitation from his room answered -> true, or false if it was already answered
+  try {
+    const invite = await NET.unpackCode(inv.data);
+    pgReady(invite);
+    const g = await pgPeer(invite, lost => setTimeout(() => {   // lost (not a blink that mends itself): wait in the room for the next invitation
+      if (!mine() || PG.peer !== lost || PG.state === "open") return;
+      pgStatus("Lost the GM's console. Your last screen stays below; waiting to be invited again...");
+      pgRoom().catch(err => pgStatus(String(err.message || err)));
+    }, 2000));
+    await R.reply(code, inv.v, g.reply);
+    pgStatus("Connecting to the GM's console...");
+    return true;
+  } catch (e){
+    if (e.status === 409) return false;               // already answered (this tab before a reload): wait for the next one
+    pgStatus(`Could not answer the invitation: ${e.message || e}`);
+    return true;
+  }
+}
+async function pgRoom(){
+  const { code, server } = pgRoomArgs(), run = ++PR.run;
+  Object.assign(PR, { code, server, after: code === PR.code ? PR.after : 0 });
+  if (!server) return pgStatus("This page knows no room server: ask the GM for his link.");
+  if (!code) return pgRoomForm();
+  const R = NET.rooms(server), mine = () => PR.run === run;
+  for (;;){                                           // each invitation the GM puts in his room, answered
+    pgStatus(PG.screen ? "Waiting for the GM's console to invite you again (it does so by itself)..." : `Room ${code}: waiting for the GM's invitation...`);
+    let inv;
+    try { inv = await NET.poll(() => R.invitation(code, PR.after), { stop: () => !mine() }) }
+    catch (e){ return pgRoomForm(e.status === 404 ? `There is no room ${code} (or it has been forgotten): check the code with the GM.` : String(e.message || e)) }
+    if (!inv) return;
+    PR.after = inv.v;
+    if (await pgAnswer(R, code, inv, mine)) return;
+  }
 }
 
 if (PLAYER_PAGE){
   pgLayout();
   $("#p-force").addEventListener("click", pgPropose);
-  window.addEventListener("hashchange", () => { if (location.hash.startsWith("#join=")) pgJoin() });
-  pgJoin();
+  const go = () => (location.hash.startsWith("#room") ? pgRoom() : pgJoin()).catch(e => pgStatus(String(e.message || e)));
+  window.addEventListener("hashchange", () => { if (/^#(join=|room)/.test(location.hash)) go() });   // a new invitation or room opened in this tab
+  go();
 } else {
   loadRecord();
   render();
   show(phaseOf(REC.phase).page);
+  if (roomServer()) for (const pl of players().filter(x => x.room)) playerConnect(pl);   // (it catches its own failures)   // through their rooms, his players are invited again by themselves
   IDB.all().then(x => { SLOTS = x; renderSlots() }).catch(() => { $("#c-slots").innerHTML = '<p class="muted" style="margin:0">This browser keeps no campaigns side by side (IndexedDB is off): save to a file instead.</p>' });
 }
 </script>

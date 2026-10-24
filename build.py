@@ -2050,7 +2050,8 @@ def jobs_bundle(d, eid: str) -> dict | None:
 def campaign_bundle(d) -> dict:
     """What the campaign page needs: the maps', eras', weather's and diseases' names, to say where the
     campaign stands and what happened."""
-    return {"generated": date.today().isoformat(),
+    rooms = json.loads((ROOT / "worker" / "rooms.json").read_text(encoding="utf-8"))      # the room-code server, once deployed (worker/README.md)
+    return {"generated": date.today().isoformat(), "room_server": rooms.get("server") or "",
             "maps": {mid: {"name": m.get("name") or mid, "start_date": m.get("start_date")} for mid, m in d.maps.items()},
             "eras": {eid: e.get("name") or eid for eid, e in d.teams.items()},
             "weather": {k: c["name"] for k, c in d.weather["conditions"].items()},          # the day's weather, in the day's line
