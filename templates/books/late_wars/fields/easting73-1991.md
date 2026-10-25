@@ -33,11 +33,13 @@ A TOW from Staff Sergeant David Lawrence's Bradley hit what turned out to be a T
 
 While the troop was still clearing the western positions, Lieutenant John Gifford, the executive officer, reported that it had reached the 70 Easting limit. McMaster ordered the attack on, judging that a halt would give the Iraqis time to recover. The tanks crested the next rise as the reserve was starting to move, and destroyed it at close range; McMaster has this from about 16:40. Stars and Stripes says the troop halted just short of the 74 Easting at 16:40. Gauthier put the main fight at 23 minutes. The IDA paper puts the main fight at about 90 minutes, with fighting going on for six hours.
 
-{{picture:easting73-wreck}}
+{{picture:easting73-map}}
 
 After dark the Iraqis sent a company of T-72s and BMPs at the ridge, which was destroyed at long range. To the north Ghost Troop beat off attacks in the wadi until about 21:00, its fire support team calling down 720 howitzer and rocket rounds. There a BMP-1's 73 mm round hit the turret of a Bradley whose TOW was out of action and whose cannon had jammed, and killed its gunner, Sergeant Nels A. Moller. The 1st Infantry Division passed through the regiment's lines just after 22:00.
 
 Eagle Troop had no casualties. Its medics treated and evacuated Iraqi wounded, and guards held the prisoners, several hundred by McMaster's count, through the night; some had expected to be shot. Wikipedia gives the regiment's losses in the whole battle as 6 killed and 19 wounded, and records an I Troop Bradley hit by a TOW from K Troop, which wounded all three crewmen.
+
+{{picture:easting73-wreck}}
 
 ### Where the accounts disagree
 - **Eagle Troop's tally.** McMaster, in both his accounts, gives about 50 T-72s, 25 armoured personnel carriers and 40 lorries. Wikipedia gives two figures: 28 tanks, 16 carriers and 30 lorries in 23 minutes, and elsewhere eight tanks in the first position and 18 at the 74 Easting. Stars and Stripes adds 13 more destroyed by a scout patrol.
@@ -49,13 +51,13 @@ Eagle Troop had no casualties. Its medics treated and evacuated Iraqi wounded, a
 - **Iraqi accounts.** No Iraqi account of this fight in English was found. McMaster's picture of the Iraqi plan is his own.
 
 !!! story "Tell them we can't stop"
-    At about 16:30 Eagle Troop had broken the first Iraqi position and was still clearing its
+    Eagle Troop had broken the first Iraqi position and was still clearing its
     trenches when Lieutenant John Gifford, the troop's executive officer, came on the radio. The troop
     had reached the 70 Easting, its limit of advance. McMaster judged that if he halted, the Iraqis
     behind the next ridge would have time to recover and fight. He told Gifford to tell the squadron
     that the troop could not stop, and added an apology. The nine tanks went on and crested the next
     rise as the Iraqi reserve was moving out. McMaster later wrote that the decision came from a
-    command climate that expected junior leaders to act on the spirit of their orders.
+    command climate that expected junior leaders to act on mission orders.
 
 ### Sources
 - F. N. Schubert and T. L. Kraus (eds), *The Whirlwind War: The United States Army in Operations Desert Shield and Desert Storm* (US Army Center of Military History, 1995), chapters 7 and 8: https://history.army.mil/books/www/www8.htm

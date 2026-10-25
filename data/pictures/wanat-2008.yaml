@@ -1,0 +1,21 @@
+# Pictures for the Wanat section of The Late Wars. Public domain as a US government work, checked on its
+# source. The file goes in images/books/late_wars/ under `file`; until it is there the book shows a
+# captioned slot with this credit and source.
+# wanat-kahler-map: LICENCE CONFIRMED AS A US GOVERNMENT WORK, NOT ON COMMONS. A map, not a photograph:
+# Figure 11, "COP Kahler, 13 July 2008", p. 99 of *Wanat: Combat Action in Afghanistan, 2008*, by "The Staff
+# of the US Army Combat Studies Institute" (CSI Press, Fort Leavenworth, 2010), an official Army publication
+# (its title verso says the CSI seal "authenticates this document as an official publication"). Works of the
+# US government made by its staff are public domain; the verso asks only that the CSI seal not be reused
+# without permission, which does not touch the map. The list of figures gives no outside credit for
+# Figure 11 (only Figure 1, by Maj. Darin Gaub, US Army, and the cover photograph, courtesy of Col. William
+# Ostlund, carry credits). The map itself was not seen from this session (the PDF's later pages could not be
+# read): check before print that it carries no "courtesy" line, and pick the page image from the PDF.
+# Not used: the photographs on the army.mil Pitts image archive (e.g. Topside's northern position, July
+# 2008) carry no credit line at all, so their licence is unknown; they look like soldiers' own pictures.
+- id: wanat-kahler-map
+  file: wanat-kahler-map.jpg
+  caption: "The patrol base at Wanat (COP Kahler) and Observation Post Topside on 13 July 2008: the Army's map from the Combat Studies Institute's study of the fight."
+  credit: "US Army Combat Studies Institute, Wanat: Combat Action in Afghanistan, 2008 (CSI Press, 2010), Figure 11"
+  licence: "Public domain (US government work)"
+  source: "https://www.armyupress.army.mil/Portals/7/combat-studies-institute/csi-books/Wanat.pdf"
+  alt: "A map of the small patrol base at Wanat, with the village, the bazaar and the observation post on the terraces east of it."

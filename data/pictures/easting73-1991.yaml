@@ -1,0 +1,29 @@
+# Pictures for the 73 Easting section of The Late Wars. Each is a US government work, checked on its
+# source page. The file goes in images/books/late_wars/ under `file`; until it is there the book shows
+# a captioned slot with this credit and source.
+# easting73-map: LICENCE CONFIRMED AS A US GOVERNMENT WORK, NOT ON COMMONS. Map 15, "Ground War Situation
+# 26 February 1991", is printed in the Center of Military History's The Whirlwind War (CMH, 1995), pp.
+# 190-191, on the CMH's own site (history.army.mil/books/www/www8.htm). A map drawn by the CMH for its own
+# official history is a work of the US government and public domain. The online page carries the caption
+# but the image file name could not be read, and Commons could not be reached from this session. Alt
+# text is written from the caption; the map was not viewed. Check before print.
+- id: easting73-map
+  file: easting73-map.jpg
+  caption: "The ground war on 26 February 1991, from the US Army's official history. VII Corps, with the 2nd Armored Cavalry Regiment at its head, swings east into the Republican Guard."
+  credit: "US Army Center of Military History, The Whirlwind War (1995), Map 15, \"Ground War Situation 26 February 1991\""
+  licence: "Public domain (US government work)"
+  source: "https://history.army.mil/books/www/www8.htm"
+  alt: "A map of southern Iraq and Kuwait showing the positions of the coalition and Iraqi divisions on 26 February 1991."
+# easting73-wreck: PROBABLY A US GOVERNMENT WORK; NOT FULLY CONFIRMED. The same CMH chapter (p. 201) prints
+# a photograph captioned "An Iraqi T-72 Tank, penetrated and destroyed by two 120-mm. sabot rounds". The
+# online page gives no photographer or credit line, and does not say where it was taken: it is NOT
+# known to be from 73 Easting, and the caption here says so. CMH photographs in its official histories
+# are normally US Army photographs, public domain, but check the printed book's photo credits before
+# print. Commons could not be reached from this session. Alt text from the caption; not viewed.
+- id: easting73-wreck
+  file: easting73-wreck.jpg
+  caption: "An Iraqi T-72 penetrated and destroyed by two 120 mm sabot rounds, the kind of round the M1A1s fired at 73 Easting. The photograph is from the US Army's official history; where it was taken is not recorded."
+  credit: "US Army, in US Army Center of Military History, The Whirlwind War (1995), p. 201"
+  licence: "Public domain (US government work)"
+  source: "https://history.army.mil/books/www/www8.htm"
+  alt: "A photograph of a wrecked Iraqi T-72 tank in the desert."
