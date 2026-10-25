@@ -1,0 +1,17 @@
+# Pictures for the Cassino town section (15 March 1944) of The World Wars. Each is public domain, checked on
+# its source page. The file goes in images/books/world_wars/ under `file`; until it is there the book shows
+# a captioned slot with this credit and source.
+# cassino-town-bombing: LICENCE CONFIRMED AS A US GOVERNMENT WORK. The National WWII Museum's page
+# (ww2online.org, accession 2007.048.224) reproduces the original caption: "15 March 44. MM-5-44-2369.
+# Cassino Area, Italy. In one of the war's most concentrated air bombings, the town of Cassino was
+# completely destroyed today ... Photo by Goebel. 163rd Signal Photo Co." and calls it a US Army Signal
+# Corps photograph. A photograph taken by a US soldier in the course of duty is public domain (17 U.S.C.
+# 105). The museum page itself gives no rights statement; no Commons copy was found (Commons could not be
+# reached from here), so the museum page is given as source.
+- id: cassino-town-bombing
+  file: cassino-town-bombing.jpg
+  caption: "The town of Cassino under the bombing of 15 March 1944, photographed by a US Army Signal Corps cameraman of the 163rd Signal Photo Company."
+  credit: "Goebel, 163rd Signal Photo Company, US Army Signal Corps, MM-5-44-2369; The National WWII Museum, 2007.048.224"
+  licence: "Public domain (US government work)"
+  source: "https://www.ww2online.org/node/86030"
+  alt: "A black-and-white photograph of the town of Cassino during the bombing of 15 March 1944."
