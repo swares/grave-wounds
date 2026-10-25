@@ -15,7 +15,7 @@ from . import rulebook as RB
 from .model import Data
 
 ERA = re.compile(r"\{\{era:([a-z_]+)\}\}")
-PICTURE = re.compile(r"\{\{picture:([a-z0-9-]+)\}\}")
+PICTURE = re.compile(r"\{\{picture:([a-z0-9_-]+)\}\}")
 SIDEBAR = re.compile(r"\{\{sidebar:([a-z0-9-]+)\}\}")
 HEADING = re.compile(r"^(#{1,3}) (.+?) \{#([^}]+)\}\s*$")
 RULES_FILE = "rules.html"
