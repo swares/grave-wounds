@@ -178,7 +178,7 @@ Hard for want of the tongue, and its billeting and talk go through him at his fi
 
 Who speaks what, by army (the shares are estimates, not muster counts):
 
-{{table:tongue_armies}}
+{{era:tongue_armies}}
 
 ## Age {#age}
 
@@ -233,7 +233,7 @@ American Officer Candidate School (22 in Korea, 23 in Vietnam, 12 today), Ranger
 Special Forces course. An army's course counts as service, and an officer's course makes him
 eligible for its rank at the next vacancy, whatever his rank and years:
 
-{{table:courses}}
+{{era:courses}}
 
 A skill used well is **ticked**: a job's check that succeeds (lawful or not; a
 failed or fumbled check, or a job with no check, teaches nothing), a hit, a parry or dodge that

@@ -137,9 +137,9 @@ def _air_values(d: Data) -> dict:
 
 # ---------- tables ----------
 
-def tables(d: Data) -> dict:
+def tables(d: Data, only: set | None = None) -> dict:
     """The tables chapters 9-13 show, as Markdown, by name."""
-    return {"eras": _eras(d), "women": _women(d), "indirect": _indirect(d), "smoke": _smoke(d), "assault": _assault(d),
+    return {"eras": _eras(d), "women": _women(d, only), "indirect": _indirect(d), "smoke": _smoke(d), "assault": _assault(d),
             "vehicles": _vehicles(d), "fire_control": _fire_control(d), "armour": _armour(d), "dark": _dark(d), "nvd": _nvd(d), "air": _air(d), "mines": _mines(d)}
 
 
@@ -178,9 +178,11 @@ def _woman_career(w: dict, careers: dict, c: str) -> str:
     return careers[c] + (f" ({', '.join(bits)})" if bits else "")
 
 
-def _women(d: Data) -> str:
+def _women(d: Data, only: set | None = None) -> str:
     rows = []
     for E in sorted(d.teams.values(), key=_era_start):
+        if only is not None and E["id"] not in only:
+            continue
         careers = {c["id"]: c["name"].lower() for c in E["careers"]}
         for r in E["regions"]:
             W = r.get("women")

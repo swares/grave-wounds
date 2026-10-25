@@ -171,7 +171,7 @@ losing his Standing and a rank, or worse at the GM's word; otherwise he gets cle
 change sides (each client follows, keeping his Standing, or stays and loses it) or go (sold out,
 disbanded, posted or rotated home: each client may take half his Standing to a new patron).
 
-{{table:patron_fate}}
+{{era:patron_fate}}
 
 Of Hastings' sixty-seven indentures only two paid a fee: the rest rested on his promise of good
 lordship. After Wallenstein's murder in 1634 seven generals who had signed for him were demoted
@@ -197,7 +197,7 @@ camp (3% a season or worse), where he also loses a point of Endurance. Released,
 escaped, he rejoins the team. A player character with a fate point left is spared a roll that would
 kill him, when taken or in captivity: he is held instead ([Lethality](#lethality)).
 
-{{table:prisoners}}
+{{era:prisoners}}
 
 **Ransom** (medieval, Thirty Years' War officers, Chechnya): about a year of his pay and his keep
 for a medieval man, a month's pay for each step of rank for an officer of the Thirty Years' War,
@@ -237,7 +237,7 @@ dawn. A night march of {{nt_min}} hours or more costs a step more fatigue.
 Each named man's **boots** wear with every day he marches, faster on wet or muddy ground, and his
 **clothing and blankets** with every day, twice as fast on a hard night. Lives in days:
 
-{{table:kit_life}}
+{{era:kit_life}}
 
 Worn boots raise his chance of blistered feet (half again; worn out, three times); worn clothing
 makes his nights a step colder and wetter (worn out, two), for his recovery and for frostbite.
@@ -252,7 +252,7 @@ nearly so; at Valley Forge 2,898 men were unfit for duty, "barefoot and otherwis
 A force carries what it needs between fights: **ammunition** (a share of its full loads),
 **rations** (days a man carries), **water** (litres a man) and **medical stores**:
 
-{{table:supplies}}
+{{era:supplies}}
 
 **Rations.** A day its army does not feed it, and it has not foraged or hunted its food, it eats a
 day's rations; with none left it goes hungry (desertion and straggling run higher, and its named

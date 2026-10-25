@@ -6445,7 +6445,10 @@
    }
   },
   "maps": {
-   "agincourt-1415": "french",
+   "agincourt-1415": [
+    "picard",
+    "french"
+   ],
    "aljubarrota-1385": "portuguese",
    "albuera-1811": "spanish",
    "anzio-1944": "italian",

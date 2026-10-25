@@ -1,4 +1,4 @@
-# Character generation for the medieval era (c.1250-1500): the team builder (dist/team.html,
+# Character generation for the medieval era (c.1180-1500): the team builder (dist/team.html,
 # python3 -m gravewounds team). A character is made in five steps:
 #   1. Characteristics: six, each 3d6 x 5 (15-90), or the fixed array placed by his first career.
 #   2. Origin: d100 on `origins`: a starting skill, a trait and a matching drawback.
@@ -14,7 +14,7 @@
 # All of it is written for this game: the tables, events and names are ours (names are common
 # period names, plain fact).
 id: medieval
-name: "Medieval (c.1250-1500)"
+name: "Medieval (c.1180-1500)"
 
 characteristics:
   - {id: str, name: Strength}

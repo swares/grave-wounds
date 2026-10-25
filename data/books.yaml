@@ -1,0 +1,21 @@
+# The books the rule book is split into. The Rules (dist/rules.html) hold the core chapters
+# (templates/rules) and, under Other periods, the figures of every era no book holds yet. Each
+# period book holds its eras (data/teams), its battlefields (data/fields, in the order given) and
+# its own page in dist/. A chapter's {{era:name}} table (rulebook.ERA_TABLES) shows each book's
+# own eras' rows; the Rules point to it. Built by gravewounds/books.py.
+books:
+  medieval:
+    title: "The Medieval Wars"
+    dates: "c.1180–1500"
+    file: book-medieval.html
+    eras: [medieval]
+    fields: [jacobsford-1179, sidon-1253, crecy-1346, visby-1361, aljubarrota-1385, agincourt-1415, towton-1461, dornach-1499]
+    intro: >-
+      Eight battles from the storm of a crusader castle in 1179 to the Swiss at Dornach in 1499:
+      a siege and a raid in the Latin East, the longbow battles of the Hundred Years' War and the
+      Wars of the Roses, Portugal against Castile, the Danes at the gate of Visby, and the
+      Confederates against the Landsknechte. Every rule is in the Rules; this book holds the
+      medieval armies' figures, the wound tables their battles roll on, and the battlefields.
+    switched_on: >-
+      No module: the core rules are written for blades, bows and armour. Wounds heal and fester as
+      the Rules' Recovery says, with no antibiotics and the camp's leech the only help.

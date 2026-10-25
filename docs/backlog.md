@@ -59,7 +59,11 @@ When an item is done, delete it here and note it in the pull request that closes
   killing wound or a death when found, never on a stop check; and the CLI and self-play use the
   default setting with no flag to change it.
 - **The rule book, still left out.** `dist/rules.html` covers the whole game in
-  fourteen chapters, with a medieval retinue and a Vietnam rifle squad followed through.
+  fourteen chapters, with a medieval retinue and a Vietnam rifle squad followed through. The split
+  into books has begun: the medieval era's figures and battlefields are in `dist/book-medieval.html`,
+  the other eras' figures in the Rules' Other periods. Still to come: the medieval book's researched
+  history, leaders, places and sidebars and its pictures; the other period books, each taking its
+  eras out of Other periods and its module chapters out of the Rules; and Sources and Methods.
   It summarises rather than repeats the docs: the travel map's battle set-up and the
   battlefields are covered in the docs and on the pages, not in the book. It ends with an index of the terms set in bold, each linked to its sections, and prints page numbers (in Chrome and Edge; other browsers may leave them off). The index has no page numbers of its own, only section names.
 - **The enemy commander, beyond the second cut.** A scripted commander moves one side on
@@ -467,7 +471,8 @@ When an item is done, delete it here and note it in the pull request that closes
   orders do not yet check a shared tongue between a leader and a mixed unit; and reading a foreign
   hand is left to Letters and the GM.
 - **Period money, first cut.** Every page shows money in the man's army's coin first, then Days;
-  the rule book's money chapter has each army's Day, pay by rank and every era's price list; 13 more
+  the rule book's money chapter gives the rules, and each era's Day, pay by rank and price list
+  are in its period book (or the Rules' Other periods); 13 more
   coins have a Day (project doc "coin-days-research"). Still left out: five coins have no Day and
   their prices stand in coin alone (buffalo robes, North Korean won, North Vietnamese đồng, the 1982
   Argentine peso, AMG lire); several Days are stand-ins (the French livre of 1434 for 1415, a
