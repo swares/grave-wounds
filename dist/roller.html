@@ -2232,16 +2232,14 @@ function reopenedOf(c){
   const at = Object.fromEntries(oldWounds(c).map(o => ["old:" + o.key, o.loc]));
   return ((n.health || {}).cases || []).filter(x => x.old && at[x.wid]).map(x => ({ loc: at[x.wid], step: DZR.steps[x.step] }));
 }
-function attachNamed(c, value){                   // put him with a travel force (value "map:id"), or take him off ("")
+const forceValue = n => (n?.map ? `${n.map}:${n.force}` : "");   // his travel-map force as the With choice has it ("": none)
+function attachNamed(c, value){                   // a named man, with a travel force (value "map:id") or with none (""): known to the campaign either way
   const all = readNamed();
   if (!c.uid) c.uid = Array.from(crypto.getRandomValues(new Uint32Array(2)), x => x.toString(36)).join("");
-  if (!value) delete all[c.uid];
-  else {
-    const [map, id] = [value.slice(0, value.lastIndexOf(":")), +value.slice(value.lastIndexOf(":") + 1)], was = all[c.uid] || {};
-    all[c.uid] = { health: { cases: [], immune: {}, had: {}, dead: 0 }, log: [], dead: false, ...was, name: c.name, endurance: enduranceOf(c), map, force: id, old: oldWounds(c), skills: namedSkills(c), pid: (c.sheet && c.sheet.pid) || null,
-      drill: (c.sheet && c.sheet.skill_by && c.weapon && c.sheet.skill_by[c.weapon]) || null,
-      str: statOf(c, "str"), nerve: statOf(c, "nerve"), agi: statOf(c, "agi"), end: statOf(c, "end"), ride: skillAt(c, "ride"), swim: (c.sheet && c.sheet.swim) || "basic", native: (c.sheet && c.sheet.native) || null, tongues: (c.sheet && c.sheet.tongues) || null, sex: (c.sheet && c.sheet.sex) || "m", kitLoad: kitLoad(c.kit), loadExtra: (c.sheet && c.sheet.load_extra) || 0, carry: (c.sheet && c.sheet.carry) || 0, animals: (c.sheet && c.sheet.animals) || [], era: loadEra(c) };   // his load on the march   // the skill drill ticks on the travel map
-  }
+  const [map, id] = value ? [value.slice(0, value.lastIndexOf(":")), +value.slice(value.lastIndexOf(":") + 1)] : [null, null], was = all[c.uid] || {};
+  all[c.uid] = { health: { cases: [], immune: {}, had: {}, dead: 0 }, log: [], dead: false, ...was, name: c.name, endurance: enduranceOf(c), map, force: id, old: oldWounds(c), skills: namedSkills(c), pid: (c.sheet && c.sheet.pid) || null,
+    drill: (c.sheet && c.sheet.skill_by && c.weapon && c.sheet.skill_by[c.weapon]) || null,
+    str: statOf(c, "str"), nerve: statOf(c, "nerve"), agi: statOf(c, "agi"), end: statOf(c, "end"), ride: skillAt(c, "ride"), swim: (c.sheet && c.sheet.swim) || "basic", native: (c.sheet && c.sheet.native) || null, tongues: (c.sheet && c.sheet.tongues) || null, sex: (c.sheet && c.sheet.sex) || "m", kitLoad: kitLoad(c.kit), loadExtra: (c.sheet && c.sheet.load_extra) || 0, carry: (c.sheet && c.sheet.carry) || 0, animals: (c.sheet && c.sheet.animals) || [], era: loadEra(c) };   // his load on the march   // the skill drill ticks on the travel map
   writeNamed(all);
   NAMED = all;
 }
@@ -2727,8 +2725,8 @@ function syncNamed(){
   if (tired) save();
 }
 function forceSelect(c){                         // the travel-map force he goes with
-  const n = c.uid ? NAMED[c.uid] : null, opts = travelForces(), cur = n ? `${n.map}:${n.force}` : "";
-  if (n && !opts.some(o => o.value === cur)) opts.unshift({ value: cur, label: `a force on ${n.map}` });
+  const n = c.uid ? NAMED[c.uid] : null, opts = travelForces(), cur = forceValue(n);
+  if (n?.map && !opts.some(o => o.value === cur)) opts.unshift({ value: cur, label: `a force on ${n.map}` });
   const opt = o => `<option value="${attr(o.value)}" ${o.value === cur ? "selected" : ""}>${attr(o.label)}</option>`;
   return `<select data-act="withforce" aria-label="Travel-map force ${attr(c.name)} goes with"><option value="">(no force)</option>${opts.map(opt).join("")}</select>`;
 }
@@ -4561,7 +4559,10 @@ function addTeam(){                             // the team from the team builde
     c.nerve = m.nerve; c.rating = Object.keys(RATINGS).find(r => RATINGS[r] === m.nerve) || "custom"; c.leader = !!m.leader;
     c.sheet = m.sheet;
     c.blood = poolOf(c);                           // his Endurance sets his Blood
+    const known = Object.entries(readNamed()).find(([u, n]) => n.pid && n.pid === m.sheet?.pid && !S.chars.some(x => x.uid === u));
+    if (known) c.uid = known[0];                   // a man the campaign already knows: the same named man (his player, his force)
     S.chars.push(c);
+    if (m.sheet) attachNamed(c, forceValue(known?.[1]));   // a named man from the start: the campaign can give him to a player
   }
   for (const f of t.followers || []){             // followers: a line each, no sheet
     const c = newChar(f.name, f.kit, f.weapon, f.look, t.side);
@@ -5836,7 +5837,7 @@ $("#chars").addEventListener("click", e => {
   else if (act === "up" || act === "down"){ if (moveChar(ci, act === "up" ? ci - 1 : ci + 1)) renderChars() }
   else if (act === "tocamp"){ toCamp(c); renderChars() }
   else if (act === "remove"){
-    if (c.uid && NAMED[c.uid]) attachNamed(c, "");   // he leaves his travel-map force too
+    if (c.uid && NAMED[c.uid]) attachNamed(c, "");   // he leaves his travel-map force too (still a named man of the campaign)
     S.chars.splice(ci, 1);
     if (S.attacker === ci) S.attacker = -1; else if (S.attacker > ci) S.attacker--;
     S.active = Math.max(0, Math.min(S.active > ci ? S.active - 1 : S.active, S.chars.length - 1));
@@ -5847,7 +5848,7 @@ $("#chars").addEventListener("click", e => {
 function namedChange(c, act, value){             // his Endurance, his force, or his nursing
   if (act === "endurance"){
     c.endurance = value === "" ? null : Math.max(1, Math.min(100, +value));
-    if (c.uid && NAMED[c.uid]) attachNamed(c, `${NAMED[c.uid].map}:${NAMED[c.uid].force}`);
+    if (c.uid && NAMED[c.uid]) attachNamed(c, forceValue(NAMED[c.uid]));
   }
   if (act === "withforce") attachNamed(c, value);
   if (act !== "nurse" || !c.uid) return;

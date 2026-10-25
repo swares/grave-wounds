@@ -84,6 +84,28 @@ with sync_playwright() as p:
     frame_of(pg).locator("#btn-roll").click()
     pg.wait_for_function("() => /\\d+ men/.test(document.querySelector('#c-status').textContent)", timeout=8000)
     check("Medieval" in pg.inner_text("#c-guide"), "the console sees the team the frame's page wrote, and its era")
+    # the team to the roller: Add the team makes each man a named man at once, for the campaign to give to a player
+    NAMED = "() => Object.values(JSON.parse(localStorage.getItem('gravewounds-named') || '{}'))"
+    frame_of(pg).locator("#btn-send").click()
+    page_in_frame(pg).wait_for_function("() => location.pathname.endsWith('roller.html') && !!document.querySelector('[data-map=\"addteam\"], #btn-addteam, button')", timeout=15000)
+    frame_of(pg).get_by_role("button", name="Add the team").first.click()
+    pg.wait_for_function(f"() => ({NAMED[6:]}).length > 0", timeout=10000)
+    named = pg.evaluate(NAMED)
+    men = len(json.loads(pg.evaluate("() => localStorage.getItem('gravewounds-team-builder')"))["team"])
+    check(len(named) == men and all(n["pid"] and n["map"] is None for n in named), f"Add the team makes each of the {men} men a named man at once, with no force yet")
+    pg.wait_for_function(f"() => document.querySelectorAll('[data-pl-new]').length === {men}", timeout=8000)
+    check(True, "and Players online offers them to give to a player")
+    uids = sorted(pg.evaluate("() => Object.keys(JSON.parse(localStorage.getItem('gravewounds-named')))"))
+    page_in_frame(pg).evaluate("() => { S.chars = S.chars.filter(c => !c.uid && !c.follower); save(); location.href = 'team.html' }")   # the fight cleared; the team sent again
+    page_in_frame(pg).wait_for_function("() => location.pathname.endsWith('team.html') && !!document.querySelector('#btn-send:not([disabled])')", timeout=15000)
+    frame_of(pg).locator("#btn-send").click()
+    page_in_frame(pg).wait_for_function("() => location.pathname.endsWith('roller.html')", timeout=15000)
+    frame_of(pg).get_by_role("button", name="Add the team").first.click()
+    page_in_frame(pg).wait_for_function("() => S.chars.filter(c => c.uid).length > 0", timeout=10000)
+    check(sorted(pg.evaluate("() => Object.keys(JSON.parse(localStorage.getItem('gravewounds-named')))")) == uids
+          and sorted(page_in_frame(pg).evaluate("() => S.chars.filter(c => c.uid).map(c => c.uid)")) == uids,
+          "the team added again is the same named men (a player keeps his men), not new ones")
+    page_in_frame(pg).evaluate("() => { S.chars = S.chars.filter(c => !c.uid && !c.follower); save(); renderChars() }")   # off the roller again: the fights below are the forces' own
     pg.click("#c-next")
     pg.wait_for_function("() => document.querySelector('#c-showing').textContent.includes('Travel map')", timeout=15000)
     check(phase_of(pg) == "march", "Done moves to the march, with the travel map in the frame")

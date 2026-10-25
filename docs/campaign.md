@@ -9,7 +9,7 @@ the others, as before, and each still works on its own. The console reads what t
 
 | Phase | Page | What happens |
 | --- | --- | --- |
-| Muster | Team builder | Make the team; **Send to the roller** makes them named men the other pages know. |
+| Muster | Team builder | Make the team; **Send to the roller**, then **Add the team** on the roller, makes them named men the other pages know (and the console can give to players). |
 | March | Travel map | The campaign's map, the team's force on it, each named man **With** it (on his roller card); route, march, camp; the day's weather, food, sickness and incidents. |
 | Fight | Roller or field map | **Fight here** on the travel map sends a skirmish to the roller or a battle to the field map. On the roller, **Run the fight** and **Play online** work as on their own. |
 | Aftermath | Roller and travel map | First aid, **After the fight** (deeds, loot, prisoners), **To camp**; the battle's result and the wounded reach the travel map's camp. |
@@ -123,7 +123,7 @@ moves, strikes, first aid and the rest are still made on the roller.
 
 **Players online** on the console gives each player one link for the session (copy and paste, as
 on the roller: no server yet). The GM adds a player, ticks the named men he plays (one or more; it
-can be changed at any time; the log says he is added), and sends him the link; his page (the campaign page, opened from the
+can be changed at any time; the log says he is added; only the GM decides who plays whom), and sends him the link; his page (the campaign page, opened from the
 link) gives a reply code the GM pastes back. When his page connects the log says he joins (and, after he was lost, that he rejoins). His page then shows:
 
 - **Your men**: each of his named men, how he is (well, sick, his wounds mending, dead), the force

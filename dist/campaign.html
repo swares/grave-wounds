@@ -3884,7 +3884,7 @@ function musterLines(st){
   const era = bit(st.team.eraName, " (" + esc(st.team.eraName) + ")");
   const team = st.team.men.length ? "The team: " + esc(st.team.men.join(", ")) + era + "." : "Make the team: choose the era and the region, then roll or pick four to six men.";
   return [team, "Kit them out and buy from their purses if you want to.",
-    "<b>Send to the roller</b>: that makes them named men, whom the travel map, the roller and the field map all know."];
+    "<b>Send to the roller</b>, then <b>Add the team</b> on the roller: that makes them named men, whom the travel map, the roller and the field map all know, and whom you can give to players under <b>Players online</b>."];
 }
 function marchLines(st){
   const map = st.travel ? "On the map of " + esc(st.travel.mapName) + bit(st.travel.day, ", day " + st.travel.day) + "." : "Choose the campaign's map: <b>Map</b>, above (or on the travel map).";
@@ -4630,7 +4630,7 @@ function roomLink(code){                               // his room's link: the c
 }
 function menPicker(chosen, attrs){                     // a checkbox for each named man
   const men = namedMen();
-  if (!men.length) return '<span class="muted">No named men yet (Send to the roller from the team builder).</span>';
+  if (!men.length) return '<span class="muted">No named men yet: Send to the roller from the team builder, then Add the team on the roller.</span>';
   return `<span class="men">${men.map(([u, n]) => `<label><input type="checkbox" ${attrs} value="${esc(u)}"${chosen.includes(u) ? " checked" : ""}>${esc(n.name || "?")}${n.dead ? " (dead)" : ""}</label>`).join("")}</span>`;
 }
 function roomHtml(pl, c){                             // his room's code and link, while he is not connected
