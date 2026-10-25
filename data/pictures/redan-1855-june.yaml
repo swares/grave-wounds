@@ -1,0 +1,24 @@
+# Pictures for the first Redan section (18 June 1855) of The Black-Powder Wars. Each is public domain or
+# openly licensed, checked on its source page. The file goes in images/books/black_powder/ under `file`;
+# until it is there the book shows a captioned slot with this credit and source.
+# redan-june-mamelon: LICENCE CONFIRMED. The Metropolitan Museum of Art's object page labels this print
+# "Public Domain" (Open Access). Roger Fenton died in 1869.
+- id: redan-june-mamelon
+  file: redan-june-mamelon.jpg
+  caption: "The Mamelon and the Malakoff from in front of the British mortar batteries, photographed by Roger Fenton in April 1855. The French took the Mamelon on 7 June and attacked the Malakoff on 18 June."
+  credit: "Roger Fenton, The Mamelon and Malakoff from front of Mortar Battery, April 1855, salted paper print, The Metropolitan Museum of Art, 2019.348.2"
+  licence: "Public domain"
+  source: "https://www.metmuseum.org/art/collection/search/831089"
+  alt: "A photograph looking across open ground towards the Mamelon and the Malakoff, the Russian works on their hills."
+# redan-june-campbell: LICENCE NOT YET CONFIRMED ON THE SOURCE PAGE. loc.gov refused this session's
+# requests, so the Library of Congress record (Fenton Crimean War Photographs, usually "No known
+# restrictions on publication") could not be read. The photograph is public domain by age: Fenton died
+# in 1869. The search listing and the National Portrait Gallery (NPG Ax24906, 1855) and George Eastman
+# Museum records confirm the title, photographer and date. Confirm on the LoC page before printing.
+- id: redan-june-campbell
+  file: redan-june-campbell.jpg
+  caption: "Sir John Campbell, seated, with his aide-de-camp Captain Hume, photographed by Roger Fenton in 1855. Campbell was killed leading the left column against the Redan on 18 June."
+  credit: "Roger Fenton, Lieutenant General Sir John Campbell & Captain Hume, his aide-de-camp, the general sitting, 1855, Library of Congress, Prints and Photographs Division, Fenton Crimean War Photographs"
+  licence: "Public domain (not yet confirmed on the source page)"
+  source: "https://www.loc.gov/item/2001696042"
+  alt: "A photograph of Sir John Campbell, seated, with his aide-de-camp Captain Hume beside him."

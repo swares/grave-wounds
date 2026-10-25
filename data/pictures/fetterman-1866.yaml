@@ -1,0 +1,15 @@
+# Pictures for the Fetterman Fight section of The Black-Powder Wars. Each is public domain or openly licensed,
+# checked on its source page. The file goes in images/books/black_powder/ under `file`; until it is there the
+# book shows a captioned slot with this credit and source.
+# Checked: World History Encyclopedia's copy (image 18500) credits Harper's Weekly v. 11 no. 534, 23 March 1867,
+# p. 180, from the Library of Congress, marked public domain. The LOC record itself (2001700334) could not be
+# opened from here, and no Commons file page was found. Published in the US in 1867: public domain, confirmed
+# by date of publication; the LOC rights statement is unconfirmed. The image itself was not viewed: check the
+# caption and alt text against it when the file is added.
+- id: fetterman-harpers
+  file: fetterman-harpers.jpg
+  caption: "The fight as Harper's Weekly pictured it three months later. No soldier who was there survived to describe it."
+  credit: "Unknown engraver, \"The Indian battle and massacre near Fort Philip Kearney, Dacotah Territory, December 21, 1866\", Harper's Weekly 11, no. 534 (23 March 1867), p. 180, Library of Congress"
+  licence: "Public domain"
+  source: "https://www.loc.gov/pictures/item/2001700334/"
+  alt: "A Harper's Weekly wood engraving of 1867 showing soldiers and warriors fighting near Fort Phil Kearny."

@@ -1,0 +1,15 @@
+# Pictures for the Lützen section of The Black-Powder Wars. Each is public domain or openly licensed, checked
+# on its source page. The file goes in images/books/black_powder/ under `file`; until it is there the book shows
+# a captioned slot with this credit and source.
+# Wikimedia Commons could not be fetched directly from this session. The file description was read on an
+# English Wikipedia mirror (c.enwp.org, File:Battle_of_Lutzen.jpg), which names the painter, date and
+# Nationalmuseum accession number but showed no licence field; the Nationalmuseum's own collection page
+# (item 18031) confirms painter, date and NM 1028. Public domain is confirmed by the painter's death in 1858,
+# more than 100 years ago; the Commons licence tag itself was not seen.
+- id: lutzen-wahlbom
+  file: lutzen-wahlbom.jpg
+  caption: "The death of Gustavus Adolphus at Lützen, painted by Carl Wahlbom in 1855, more than 200 years after the battle."
+  credit: "Carl Wahlbom (1810-1858), Gustav II Adolfs död i slaget vid Lützen, 1855, oil on canvas, Nationalmuseum, Stockholm, NM 1028"
+  licence: "Public domain"
+  source: "https://commons.wikimedia.org/wiki/File:Battle_of_Lutzen.jpg"
+  alt: "A 19th-century oil painting of the death of King Gustavus Adolphus of Sweden at the battle of Lützen."
