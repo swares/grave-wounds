@@ -11,7 +11,7 @@ the Crusades to the modern day, and speculative ones in the spirit of Aftermath!
 Morrow Project, Gamma World and Traveller.
 
 **Status: early design.** The rule book is built and is being split into books: the Rules
-(`dist/rules.html`, from the 14 chapters in `templates/rules/`) and a book for each period, the
+(`dist/rules.html`, from the 14 chapters in `templates/rules/` and the modules in `templates/rules/modules/`) and a book for each period, the
 so far *The Medieval Wars* (`dist/book-medieval.html`) and *The Black-Powder Wars* (`dist/book-black-powder.html`). The design proposal is in [docs/design.md](docs/design.md). It includes a comparison with Aftermath!, Rolemaster,
 Gamma World, Traveller and The Morrow Project. The first playtest era is medieval.
 

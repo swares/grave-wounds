@@ -177,7 +177,6 @@ figure.pic .slot-box{border:1px dashed var(--line);background:var(--panel);paddi
 </li>
 <li><a href="#fire">Guns and fire support</a><ul>
 <li><a href="#modern-infantry">Modern infantry</a></li>
-<li><a href="#guns">Guns of the black-powder wars</a></li>
 <li><a href="#support">Fire support</a></li>
 <li><a href="#bunkers">Trenches and bunkers</a></li>
 </ul>
@@ -204,6 +203,13 @@ figure.pic .slot-box{border:1px dashed var(--line);background:var(--panel);paddi
 <li><a href="#money-days">The Day in each army's coin</a></li>
 <li><a href="#money-pay">Pay by rank</a></li>
 <li><a href="#money-prices">Prices</a></li>
+</ul>
+</li>
+<li><a href="#modules">Modules</a></li>
+<li><a href="#mod-black-powder">Black-powder guns</a><ul>
+<li><a href="#guns">Guns of the black-powder wars</a></li>
+<li><a href="#misfire">Misfires</a></li>
+<li><a href="#storming">Storming works</a></li>
 </ul>
 </li>
 <li><a href="#other-periods">Other periods</a><ul>
@@ -2044,16 +2050,11 @@ takes cover, shoots from range or charges with the odds its quality wants (count
 steady friends touching it, who go in with it), and green units sometimes hesitate. With no enemy in sight, a unit holds; attacking with no objective, it goes forward along its facing to find one. A unit with no room to move facing its goal (or a turn too dear) moves facing as near its goal as it can. A unit on the ground turns to face its target where it lies, and stays down.</p>
 <ul>
 <li>
-<p><strong>Storming works.</strong> Attacking, infantry with muskets, rifle-muskets, breech-loaders, or
-  modern rifles and sub-machine guns do not stop to trade fire with an enemy behind works (a
-  parapet, trench or bank), dug in, or in buildings or rubble: they close without seeking
-  cover, firing as they go, and charge it, with the same odds. Flintlock riflemen, archers
-  and machine guns still fight by fire. Modern infantry storm in bounds: a unit fired on in
-  the last exchange (whether or not anyone fell) goes to ground and fires this move, and goes
-  on once a bound draws no fire, its target is pinned, or it can charge home. From the Second
-  World War on, every advance goes this way, not only against works. A wall or
-  palisade that blocks hand-to-hand fighting stops them at its foot, unless they carry
-  ladders: then they go up it (see <a href="#works">works</a>). Breaching it is the GM's order.</p>
+<p><strong>Storming works.</strong> Attacking infantry close on an enemy behind works (a parapet, trench or
+  bank), dug in, or in buildings or rubble, as the module for their weapons says: with
+  muskets, rifle-muskets and breech-loaders, <a href="#storming">Black-powder guns</a>; with modern rifles
+  and sub-machine guns, <a href="#modern-storming">Modern infantry</a>. Archers, flintlock riflemen and
+  machine guns fight by fire.</p>
 </li>
 <li>
 <p><strong>Routes.</strong> A battlefield can send a unit on a route round a flank, as its account tells:
@@ -3579,43 +3580,8 @@ every hex. Heavy rain or a storm floods the fords for 2 days, counting that day.
 <p>Shooting <strong>with</strong> the wind lengthens the range bands of bows, crossbows, slings and thrown
 weapons; shooting <strong>into</strong> it shortens them, and rain or snow in a shooter's face halves how
 far he can see to aim. Into a strong wind they also lose 10%, into a gale
-20%. In the wet, a firearm can <strong>misfire</strong>, losing the shot:</p>
-<table>
-<thead>
-<tr>
-<th>Ignition</th>
-<th>Rain or snow</th>
-<th>Heavy rain, storm, blizzard</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Match</td>
-<td>30%</td>
-<td>60%</td>
-</tr>
-<tr>
-<td>Wheel</td>
-<td>15%</td>
-<td>30%</td>
-</tr>
-<tr>
-<td>Flint</td>
-<td>15%</td>
-<td>30%</td>
-</tr>
-<tr>
-<td>Percussion</td>
-<td>5%</td>
-<td>10%</td>
-</tr>
-<tr>
-<td>Cartridge</td>
-<td>—</td>
-<td>—</td>
-</tr>
-</tbody>
-</table>
+20%. In the wet, a muzzle-loader can <strong>misfire</strong>, losing the shot
+(<a href="#misfire">Misfires</a>, in Black-powder guns).</p>
 <p><strong>Cold.</strong> In hard frost (5 °F, -15 °C, or colder) machine guns, submachine
 guns and assault rifles misfire 10% more, as oil thickens and actions freeze; in
 bitter cold (-13 °F, -25 °C) 25% more, and every hex costs
@@ -3988,6 +3954,11 @@ is the weight of fire, and how men live under it.</p>
 <li><strong>Modern fire puts men down.</strong> Against breech-loaders and later weapons, shell and
   grenades, every serious or critical wound puts a man down, and a light one calls for the
   stop check (<a href="#exchange">An exchange</a>).</li>
+<li><span id="modern-storming"></span><strong>Storming in bounds.</strong> Attacking, modern rifles and sub-machine guns
+  storm works as black-powder infantry do (<a href="#storming">Storming works</a>), but in bounds: a unit
+  fired on in the last exchange (whether or not anyone fell) goes to ground and fires this
+  move, and goes on once a bound draws no fire, its target is pinned, or it can charge home.
+  From the Second World War on, every advance goes this way, not only against works.</li>
 <li><strong>Going to ground.</strong> On its own move a unit can <strong>go to ground</strong> in the folds of the
   ground. Shots at it lose 15% on top of its cover. It cannot move until it gets
   up, but it still shoots and fights hand to hand.</li>
@@ -4010,31 +3981,6 @@ is the weight of fire, and how men live under it.</p>
   too), checks at the end of the exchange: d100 against its Nerve, +10 if gone
   to ground. On a failure it is <strong>pinned</strong> for the next exchange: it cannot move, and it
   shoots at half its rate.</li>
-</ul>
-<h2 id="guns">Guns of the black-powder wars</h2>
-<p>A <strong>battery</strong> is a unit in battery order, 20 men to a hex. Its men are the crews,
-10 to a gun, so as crews fall fewer guns are served.</p>
-<ul>
-<li><strong>Its fire.</strong> Each served gun fires a round an exchange at the nearest enemy in front of it,
-  in sight and with a clear line of fire, out to 1,094 yards (1,000 m) (1,750 yards (1,600 m) for rifled guns).
-  The GM can name another target, split the guns into sections, or choose the shot.</li>
-<li><strong>Canister.</strong> Within 328 yards (300 m) the guns fire canister: 8 chances a round,
-  each likely to hit at short range and less so beyond.</li>
-<li><strong>Round shot.</strong> Beyond that range the guns fire round shot. A ball that strikes a unit
-  ploughs through its ranks, and each man in its path is hit at 40%, so a deep
-  column suffers far more than a line. On firm ground the ball bounds on, and it can strike
-  another unit up to 328 yards (300 m) beyond.</li>
-<li><strong>Shell.</strong> Howitzers fire shell over anything in the way. Its fuse may burst it early, in
-  the air over the men, on the ground, or not at all. Gunners who have found the range cut
-  their fuses better.</li>
-<li><strong>Wounds.</strong> Every man struck by a gun rolls a wound at 80%, with no parry.</li>
-<li><strong>Rounds.</strong> Each gun carries 50 rounds into action. <strong>Resupply</strong> takes an
-  exchange.</li>
-<li><strong>Limbering.</strong> Changing between limbered and unlimbered takes an exchange. Unlimbered,
-  the guns can only be pushed 2 hexes.</li>
-<li><strong>Losing the guns.</strong> A battery that breaks loses its guns for good.</li>
-<li><strong>Canister at the charge.</strong> Charged in front, a battery gives the first charger one
-  round of canister at point-blank range before the melee.</li>
 </ul>
 <h2 id="support">Fire support</h2>
 <p>From the First World War on, a side can have <strong>batteries</strong> off the map: mortars, field
@@ -4773,6 +4719,92 @@ stoppages take, as the rank rules say):</p>
 <h2 id="money-prices">Prices</h2>
 <p>Each era's price list, in its coin, with the Days each price comes to:</p>
 <p><em>Prices: each period's figures are in its book: <a href="book-medieval.html#era-prices">The Medieval Wars</a>, <a href="book-black-powder.html#era-prices">The Black-Powder Wars</a>, <a href="#other-prices">Other periods</a> (until their books are written).</em></p>
+<h1 id="modules">Modules</h1>
+<p>The core rules are written for blades, bows and armour, and they hold for every period. A
+<strong>module</strong> adds what a period's weapons bring onto the field. Each period book says which modules
+it switches on; leave the others out.</p>
+<ul>
+<li><strong>Black-powder guns</strong> (below): batteries, canister and round shot, misfires in the wet, and
+  storming works with the bayonet. Switched on by <a href="book-black-powder.html">The Black-Powder Wars</a>.</li>
+<li><strong>Modern fire</strong>, <strong>Armour and mines</strong>, and <strong>Air and night devices</strong>: for now still in the
+  chapters <a href="#fire">Guns and fire support</a>, <a href="#vehicles">Vehicles</a> and <a href="#night-air">Night and the air</a>.
+  They move here with the World Wars book.</li>
+</ul>
+<h1 id="mod-black-powder">Black-powder guns</h1>
+<p>For the wars from the Thirty Years' War to the 1870s: guns that fire round shot, canister and
+shell, muzzle-loaders that fail in the wet, and infantry that carry works with the bayonet.</p>
+<h2 id="guns">Guns of the black-powder wars</h2>
+<p>A <strong>battery</strong> is a unit in battery order, 20 men to a hex. Its men are the crews,
+10 to a gun, so as crews fall fewer guns are served.</p>
+<ul>
+<li><strong>Its fire.</strong> Each served gun fires a round an exchange at the nearest enemy in front of it,
+  in sight and with a clear line of fire, out to 1,094 yards (1,000 m) (1,750 yards (1,600 m) for rifled guns).
+  The GM can name another target, split the guns into sections, or choose the shot.</li>
+<li><strong>Canister.</strong> Within 328 yards (300 m) the guns fire canister: 8 chances a round,
+  each likely to hit at short range and less so beyond.</li>
+<li><strong>Round shot.</strong> Beyond that range the guns fire round shot. A ball that strikes a unit
+  ploughs through its ranks, and each man in its path is hit at 40%, so a deep
+  column suffers far more than a line. On firm ground the ball bounds on, and it can strike
+  another unit up to 328 yards (300 m) beyond.</li>
+<li><strong>Shell.</strong> Howitzers fire shell over anything in the way. Its fuse may burst it early, in
+  the air over the men, on the ground, or not at all. Gunners who have found the range cut
+  their fuses better.</li>
+<li><strong>Wounds.</strong> Every man struck by a gun rolls a wound at 80%, with no parry.</li>
+<li><strong>Rounds.</strong> Each gun carries 50 rounds into action. <strong>Resupply</strong> takes an
+  exchange.</li>
+<li><strong>Limbering.</strong> Changing between limbered and unlimbered takes an exchange. Unlimbered,
+  the guns can only be pushed 2 hexes.</li>
+<li><strong>Losing the guns.</strong> A battery that breaks loses its guns for good.</li>
+<li><strong>Canister at the charge.</strong> Charged in front, a battery gives the first charger one
+  round of canister at point-blank range before the melee.</li>
+</ul>
+<h2 id="misfire">Misfires</h2>
+<p>In the wet, a muzzle-loader can <strong>misfire</strong>, losing the shot. The chance depends on how it
+fires its charge: a slow match, a wheel-lock, a flint, or a percussion cap. A breech-loader's
+cartridge does not misfire in the rain.</p>
+<table>
+<thead>
+<tr>
+<th>Ignition</th>
+<th>Rain or snow</th>
+<th>Heavy rain, storm, blizzard</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Match</td>
+<td>30%</td>
+<td>60%</td>
+</tr>
+<tr>
+<td>Wheel</td>
+<td>15%</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>Flint</td>
+<td>15%</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>Percussion</td>
+<td>5%</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Cartridge</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="storming">Storming works</h2>
+<p>Attacking, infantry with muskets, rifle-muskets or breech-loaders do not stop to trade fire with
+an enemy behind works (a parapet, trench or bank), dug in, or in buildings or rubble. They close
+without seeking cover, firing as they go, and charge it, with the same odds. Flintlock riflemen,
+archers and machine guns still fight by fire. A wall or palisade that blocks hand-to-hand
+fighting stops them at its foot, unless they carry ladders: then they go up it (see
+<a href="#works">works</a>). Breaching it is the GM's order.</p>
 <h1 id="other-periods">Other periods</h1>
 <p>Until each period has its own book, its figures are here: First World War (1914-1918), Second World War (1939-1945), Korean War (1950-1953), Vietnam War (1965-1973), The Falklands to Afghanistan (1982-2014). Each section belongs to the rule it is linked to.</p>
 <h2 id="other-tongue_armies">Each army's tongues</h2>
@@ -8217,12 +8249,14 @@ stoppages take, as the rank rules say):</p>
 <p class="ix"><b>Agility</b>: <a href="#characteristics">Characteristics and skills</a></p>
 <p class="ix"><b>Aim</b>: <a href="#turn">A fighter's turn</a></p>
 <p class="ix"><b>Aimed</b>: <a href="#turn">A fighter's turn</a>, <a href="#aim">Aiming</a></p>
+<p class="ix"><b>Air and night devices</b>: <a href="#modules">Modules</a></p>
 <p class="ix"><b>Air controllers</b>: <a href="#aircraft">Aircraft</a></p>
 <p class="ix"><b>Air drop</b>: <a href="#ammunition">Ammunition</a></p>
 <p class="ix"><b>Ammunition</b>: <a href="#supplies">Supplies</a></p>
 <p class="ix"><b>Anti-aircraft guns</b>: <a href="#aircraft">Aircraft</a></p>
 <p class="ix"><b>Anti-tank guns</b>: <a href="#at-guns">Anti-tank guns</a></p>
 <p class="ix"><b>Armour</b>: <a href="#turn">A fighter's turn</a>, <a href="#era-changes">What changes</a>, <a href="#vehicles">Vehicles</a></p>
+<p class="ix"><b>Armour and mines</b>: <a href="#modules">Modules</a></p>
 <p class="ix"><b>Asking a favour</b>: <a href="#patrons">Patrons</a></p>
 <p class="ix"><b>Assigned</b>: <a href="#five-steps">The five steps</a></p>
 <p class="ix"><b>Attack</b>: <a href="#characteristics">Characteristics and skills</a>, <a href="#turn">A fighter's turn</a></p>
@@ -8233,6 +8267,7 @@ stoppages take, as the rank rules say):</p>
 <p class="ix"><b>Beaten zone</b>: <a href="#modern-infantry">Modern infantry</a></p>
 <p class="ix"><b>Billets</b>: <a href="#march-skills">Skills on the march</a></p>
 <p class="ix"><b>Bind</b>: <a href="#first-aid">First aid</a></p>
+<p class="ix"><b>Black-powder guns</b>: <a href="#modules">Modules</a></p>
 <p class="ix"><b>Bleeding</b>: <a href="#round-end">The end of the round</a>, <a href="#wounds">Wounds</a></p>
 <p class="ix"><b>Blood</b>: <a href="#blood">Blood</a></p>
 <p class="ix"><b>Blood lost</b>: <a href="#penalties">Penalties</a></p>
@@ -8409,9 +8444,10 @@ stoppages take, as the rank rules say):</p>
 <p class="ix"><b>Mend kit</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Mending</b>: <a href="#camp">Into camp</a></p>
 <p class="ix"><b>Minefields</b>: <a href="#commander">The enemy commander</a></p>
-<p class="ix"><b>Misfire</b>: <a href="#weather-fight">Weather in a fight</a></p>
-<p class="ix"><b>Modern fire</b>: <a href="#exchange">An exchange</a></p>
+<p class="ix"><b>Misfire</b>: <a href="#weather-fight">Weather in a fight</a>, <a href="#misfire">Misfires</a></p>
+<p class="ix"><b>Modern fire</b>: <a href="#exchange">An exchange</a>, <a href="#modules">Modules</a></p>
 <p class="ix"><b>Modern fire puts men down</b>: <a href="#modern-infantry">Modern infantry</a></p>
+<p class="ix"><b>Module</b>: <a href="#modules">Modules</a></p>
 <p class="ix"><b>Money</b>: <a href="#five-steps">The five steps</a></p>
 <p class="ix"><b>Morale</b>: <a href="#round-end">The end of the round</a>, <a href="#exchange">An exchange</a>, <a href="#knocking-out">Knocking them out</a></p>
 <p class="ix"><b>Mount</b>: <a href="#riders">Riders</a></p>
@@ -8484,7 +8520,7 @@ stoppages take, as the rank rules say):</p>
 <p class="ix"><b>Risk</b>: <a href="#work">Finding work</a></p>
 <p class="ix"><b>Rolled</b>: <a href="#five-steps">The five steps</a></p>
 <p class="ix"><b>Round shot</b>: <a href="#guns">Guns of the black-powder wars</a></p>
-<p class="ix"><b>Rounds</b>: <a href="#fight">The fight</a>, <a href="#guns">Guns of the black-powder wars</a>, <a href="#at-guns">Anti-tank guns</a></p>
+<p class="ix"><b>Rounds</b>: <a href="#fight">The fight</a>, <a href="#at-guns">Anti-tank guns</a>, <a href="#guns">Guns of the black-powder wars</a></p>
 <p class="ix"><b>Routes</b>: <a href="#commander">The enemy commander</a></p>
 <p class="ix"><b>Run</b>: <a href="#turn">A fighter's turn</a>, <a href="#commander">The enemy commander</a></p>
 <p class="ix"><b>Running low</b>: <a href="#ammunition">Ammunition</a></p>
@@ -8523,6 +8559,7 @@ stoppages take, as the rank rules say):</p>
 <p class="ix"><b>Steal</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Stop</b>: <a href="#commander">The enemy commander</a></p>
 <p class="ix"><b>Stop check</b>: <a href="#turn">A fighter's turn</a></p>
+<p class="ix"><b>Storming in bounds</b>: <a href="#modern-infantry">Modern infantry</a></p>
 <p class="ix"><b>Storming works</b>: <a href="#commander">The enemy commander</a></p>
 <p class="ix"><b>Storms</b>: <a href="#bunkers">Trenches and bunkers</a></p>
 <p class="ix"><b>Strafing and napalm</b>: <a href="#aircraft">Aircraft</a></p>

@@ -179,16 +179,11 @@ nearest, better ones for an enemy that is hurt, shaken or dangerous to them. It 
 takes cover, shoots from range or charges with the odds its quality wants (counting the
 steady friends touching it, who go in with it), and green units sometimes hesitate. With no enemy in sight, a unit holds; attacking with no objective, it goes forward along its facing to find one. A unit with no room to move facing its goal (or a turn too dear) moves facing as near its goal as it can. A unit on the ground turns to face its target where it lies, and stays down.
 
-- **Storming works.** Attacking, infantry with muskets, rifle-muskets, breech-loaders, or
-  modern rifles and sub-machine guns do not stop to trade fire with an enemy behind works (a
-  parapet, trench or bank), dug in, or in buildings or rubble: they close without seeking
-  cover, firing as they go, and charge it, with the same odds. Flintlock riflemen, archers
-  and machine guns still fight by fire. Modern infantry storm in bounds: a unit fired on in
-  the last exchange (whether or not anyone fell) goes to ground and fires this move, and goes
-  on once a bound draws no fire, its target is pinned, or it can charge home. From the Second
-  World War on, every advance goes this way, not only against works. A wall or
-  palisade that blocks hand-to-hand fighting stops them at its foot, unless they carry
-  ladders: then they go up it (see [works](#works)). Breaching it is the GM's order.
+- **Storming works.** Attacking infantry close on an enemy behind works (a parapet, trench or
+  bank), dug in, or in buildings or rubble, as the module for their weapons says: with
+  muskets, rifle-muskets and breech-loaders, [Black-powder guns](#storming); with modern rifles
+  and sub-machine guns, [Modern infantry](#modern-storming). Archers, flintlock riflemen and
+  machine guns fight by fire.
 
 - **Routes.** A battlefield can send a unit on a route round a flank, as its account tells:
   the commander moves it from waypoint to waypoint, turning aside only for an enemy in contact

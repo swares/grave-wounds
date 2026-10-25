@@ -1,5 +1,5 @@
 """The rule book split into books (data/books.yaml): the Rules, from the chapters in
-templates/rules, and a period book for each era group, built from the data. A chapter's
+templates/rules and its modules (templates/rules/modules), and a period book for each era group, built from the data. A chapter's
 {{era:name}} table (rulebook.ERA_TABLES) is each era's: the Rules point to it, each period book
 shows its own eras' rows, and the Rules' Other periods shows the rows of the eras no book holds
 yet. Every number comes from the data, as in the Rules."""
@@ -63,6 +63,13 @@ def render_all(d: Data, root: Path) -> dict:
 
 # ---------- the Rules ----------
 
+def chapters(root: Path) -> list:
+    """The Rules' chapter files in order: the core (templates/rules), then the modules
+    (templates/rules/modules)."""
+    R = root / "templates" / "rules"
+    return sorted(R.glob("*.md")) + sorted((R / "modules").glob("*.md"))
+
+
 def _era_spots(text: str) -> list:
     """[(table, heading anchor, heading)] for each {{era:...}} in a chapter, with the section it sits in."""
     spots, anchor, title = [], None, None
@@ -115,7 +122,7 @@ def render_rules(d: Data, root: Path, books: dict) -> str:
     others = other_eras(d, books)
     otabs = RB.tables(d, set(others))
     spots, parts = [], []
-    for p in sorted((root / "templates" / "rules").glob("*.md")):
+    for p in chapters(root):
         text = p.read_text(encoding="utf-8")
         spots += [(n, a, t) for n, a, t in _era_spots(text)]
         text = ERA.sub(lambda m: _pointer(m.group(1), books, others), text)
@@ -148,7 +155,7 @@ def render_book(d: Data, root: Path, books: dict, bid: str) -> str:
     B = books[bid]
     tabs = RB.tables(d, set(B["eras"]))
     spots = []
-    for p in sorted((root / "templates" / "rules").glob("*.md")):
+    for p in chapters(root):
         spots += _era_spots(p.read_text(encoding="utf-8"))
     fields = B.get("fields", [])
     used = _book_tables(d, B)

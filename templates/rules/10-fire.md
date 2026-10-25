@@ -14,6 +14,11 @@ is the weight of fire, and how men live under it.
 - **Modern fire puts men down.** Against breech-loaders and later weapons, shell and
   grenades, every serious or critical wound puts a man down, and a light one calls for the
   stop check ([An exchange](#exchange)).
+- <span id="modern-storming"></span>**Storming in bounds.** Attacking, modern rifles and sub-machine guns
+  storm works as black-powder infantry do ([Storming works](#storming)), but in bounds: a unit
+  fired on in the last exchange (whether or not anyone fell) goes to ground and fires this
+  move, and goes on once a bound draws no fire, its target is pinned, or it can charge home.
+  From the Second World War on, every advance goes this way, not only against works.
 - **Going to ground.** On its own move a unit can **go to ground** in the folds of the
   ground. Shots at it lose {{x_ground}}% on top of its cover. It cannot move until it gets
   up, but it still shoots and fights hand to hand.
@@ -36,32 +41,6 @@ is the weight of fire, and how men live under it.
   too), checks at the end of the exchange: d100 against its Nerve, +{{x_sup_prone}} if gone
   to ground. On a failure it is **pinned** for the next exchange: it cannot move, and it
   shoots at half its rate.
-
-## Guns of the black-powder wars {#guns}
-
-A **battery** is a unit in battery order, {{g_per_hex}} men to a hex. Its men are the crews,
-{{g_crew}} to a gun, so as crews fall fewer guns are served.
-
-- **Its fire.** Each served gun fires a round an exchange at the nearest enemy in front of it,
-  in sight and with a clear line of fire, out to {{g_range}} ({{g_rifled}} for rifled guns).
-  The GM can name another target, split the guns into sections, or choose the shot.
-- **Canister.** Within {{g_canister}} the guns fire canister: {{g_balls}} chances a round,
-  each likely to hit at short range and less so beyond.
-- **Round shot.** Beyond that range the guns fire round shot. A ball that strikes a unit
-  ploughs through its ranks, and each man in its path is hit at {{g_file}}%, so a deep
-  column suffers far more than a line. On firm ground the ball bounds on, and it can strike
-  another unit up to {{g_ricochet}} beyond.
-- **Shell.** Howitzers fire shell over anything in the way. Its fuse may burst it early, in
-  the air over the men, on the ground, or not at all. Gunners who have found the range cut
-  their fuses better.
-- **Wounds.** Every man struck by a gun rolls a wound at {{g_attack}}%, with no parry.
-- **Rounds.** Each gun carries {{g_ammo}} rounds into action. **Resupply** takes an
-  exchange.
-- **Limbering.** Changing between limbered and unlimbered takes an exchange. Unlimbered,
-  the guns can only be pushed {{g_pushed}} hexes.
-- **Losing the guns.** A battery that breaks loses its guns for good.
-- **Canister at the charge.** Charged in front, a battery gives the first charger one
-  round of canister at point-blank range before the melee.
 
 ## Fire support {#support}
 
