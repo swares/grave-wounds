@@ -49,6 +49,7 @@ const units = [
   at("3/187 Infantry (up the north-west spur)", US, 200, SKY, 14, [TOP[0] - 22, TOP[1] - 22], 5),
   at("1/506 Infantry (up the south spur)", US, 200, SKY, 14, [TOP[0] + 2, TOP[1] + 30], N),
   at("ARVN 2nd Battalion, 3rd Regiment (from the east)", US, 200, ARVN, 14, [TOP[0] + 32, TOP[1]], 3),
+  at("2/501 Infantry (from the north-east)", US, 200, SKY, 14, [TOP[0] + 24, TOP[1] - 26], S),   // landed about 1,200 m north-east on 19 May (Traas)
   at("29th Regiment on the summit", NV, 120, PAVN, 10, [TOP[0], TOP[1] - 2], 2),
   at("29th Regiment in the north-west bunkers", NV, 60, PAVN, 8, [TOP[0] - 10, TOP[1] - 10], 2),
   at("29th Regiment in the south bunkers", NV, 60, PAVN, 8, [TOP[0] + 2, TOP[1] + 14], 4),
@@ -80,7 +81,8 @@ writeField({
     "",
     "What happened, briefly: on the morning of 20 May 1969, after ten days of attacks, the 3rd",
     "Battalion, 187th Infantry went up from the north-west, the 1st Battalion, 506th Infantry from",
-    "the south and an ARVN battalion from the east. The North Vietnamese held their bunkers to the",
+    "the south, the 2nd Battalion, 501st from the north-east and an ARVN battalion from the east.",
+    "The North Vietnamese held their bunkers to the",
     "last or slipped away towards Laos, and the summit was taken about noon.",
   ],
 });

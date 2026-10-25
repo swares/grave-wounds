@@ -50,7 +50,7 @@ At 22:00 on 24 April the Chinese turned on 2 PPCLI. Private Wayne Mitchell, woun
 - **The airdrop.** Mossman says C-119s from Japan dropped supplies about six hours after Stone asked. Wikipedia says no resupply reached the battalion. A veteran told Veterans Affairs Canada that some supplies were dropped.
 - **The order of the withdrawal.** Wikipedia has C Company go first at 16:30, then A Company. The Memorial's anniversary blog says B Company left first, up Hill 504 and down the ridge.
 - **When 3 RAR got clear.** The Anzac Portal has it inside the Middlesex lines at 19:30; Mossman shortly after dark; Wikipedia says 23:30.
-- **Who flanked the headquarters.** The Anzac Portal has the 354th's third battalion go round the Australian left. Our game brings it round the east of the hill.
+- **Who flanked the headquarters.** The Anzac Portal has the 354th's third battalion go round the Australian left, the west of the hill, and the game follows it.
 - **O'Dowd's rank.** The Memorial's exhibition calls him Major; its anniversary blog, Captain.
 
 !!! story "The signaller from Cronulla"

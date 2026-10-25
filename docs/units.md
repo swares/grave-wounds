@@ -2872,9 +2872,9 @@ field is 220 × 160 hexes, about 2,410 by 1,520 yards (2,200 by 1,390 m), north 
 - United Nations: 3 RAR's A Company (north spur), D (summit), B (the knoll), C (reserve),
   machine guns and headquarters; a platoon of Shermans (**vehicles**) on dry ground by the
   road.
-- Chinese (veteran): battalions down the valley, onto the north spur and round the east of the
-  hill, with machine guns. The battalion round the east has a route down the east of the hill
-  and round its south to battalion headquarters at Chuktun-ni (where the phase note has the
+- Chinese (veteran): battalions down the valley, onto the north spur and round the west of the
+  hill, with machine guns. The battalion round the west has a route down the west of the hill
+  and down the valley to battalion headquarters at Chuktun-ni (where the phase note has the
   Chinese at about 22:00; the way is our reading).
 - Fire support: the New Zealand 25-pounders and 3 RAR's mortars; Chinese mortars.
 

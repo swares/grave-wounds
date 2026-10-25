@@ -30,10 +30,11 @@ ends: 871
 # then come on where they are drawn, or at their side's entry edge if that is taken.
 phases:
   - {name: "The valley outpost is hit", at: 1, note: "21:30: the Chinese strike the forward tank platoon and probe A Company."}
-  - {name: "Round the flank", at: 31, note: "About 22:00, mixed in with retreating South Koreans, the Chinese reach battalion headquarters at Chuktun-ni.", arrive: ["Chinese battalion round the east of the hill"]}
+  - {name: "Round the flank", at: 31, note: "About 22:00, mixed in with retreating South Koreans, the Chinese reach battalion headquarters at Chuktun-ni.", arrive: ["Chinese battalion round the west of the hill"]}
   - {name: "The main assaults", at: 201, note: "00:50: the main assault on B Company's 4 Platoon; A Company's 1 Platoon is pulled back at 01:00."}
   - {name: "Headquarters pulls out", at: 451, note: "05:00 to 06:00: battalion headquarters withdraws down the valley, the Shermans escorting it."}
   - {name: "B Company called up the hill", at: 586, note: "07:15: after the last assault on it at 04:45, B Company is ordered up onto the hill."}
+  - {name: "B Company back on its knoll", at: 721, note: "09:30: B Company goes back, and Lieutenant Montgomerie's 4 Platoon retakes the knoll with the bayonet (Anzac Portal)."}
 ground: |
   FFhhFhhhhFhhhFFFhFhhhhhhhFhFhhhhFhhFhFFhhFhFhh.mmmmm..mmmmm.mmmmmmmmmmmm.mmm.mm..mm..m.m..m.mmmmmmmmm.mmm.mmmmmmmm.m..mmmm.mFhFFhhFhhhhFhhFhhhFhhhhhhhhhhhhhhFhFFhFhhhFFhhhhhhFhhFhhhhFFhhFhhFhhFhhhhhhhhhFFhhhFFhFhhFFhhhhh
   FFhhhhFhhhhhhhhhhhhhhFhFhhhhhhhhFhhFhFFhFhhhhhm.mmmmmmmmmm.m.mm.m.mmmmm..mmmmmm.mmm.m.mmm.mmmmmmm.mm.mmmmmm.mmmmm..m..mm.mmmhhhFFhFhFFhhFFhhFFhhhhFhFhhhFhhFFFhhhFFhhFhFhFhhhhhhFFFhhhFhhFhhhhhhFFhhhhhFhhhhhFhhhFFhhhFhhhhF
@@ -210,5 +211,5 @@ units:
   - {name: "Platoon of Shermans (72nd Heavy Tank Battalion)", side: 0, men: 20, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 5, pos: [89, 56], facing: 1, vehicle: tank, size: platoon}
   - {name: "Chinese battalion down the valley", side: 1, men: 600, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [89, 10], facing: 4, size: battalion}
   - {name: "Chinese battalion onto the north spur", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [150, 12], facing: 4, size: battalion}
-  - {name: "Chinese battalion round the east of the hill", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [200, 30], facing: 3, via: [[214, 96], [150, 128], [100, 126]], size: battalion}
+  - {name: "Chinese battalion round the west of the hill", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [60, 20], facing: 3, via: [[66, 90], [88, 126], [100, 126]], size: battalion}
   - {name: "Chinese machine guns", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [110, 20], facing: 4, size: section}
