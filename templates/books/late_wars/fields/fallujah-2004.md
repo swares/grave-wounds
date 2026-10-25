@@ -49,7 +49,7 @@ The sources read say little of the battalion aid stations; the companies carried
 - **The insurgents.** Matthews puts them at about 2,000 in April; McWilliams at 3,000 to 4,500 in October, with about 1,000 more nearby; Wikipedia's table at 3,700 to 4,000. A senior US official in September put Zarqawi's forces at about 5,000, mostly not Iraqis.
 - **The losses.** Wikipedia gives 54 Americans killed and 425 wounded from 7 to 16 November, and 95 killed and 560 wounded by 23 December, with 8 Iraqi soldiers killed. It gives the insurgent dead as about 1,200 by the Defense Department's count, 1,500 by *Asia Times*, and more than 2,000 by some estimates, with about 1,500 captured.
 - **The civilian dead.** The Red Cross was reported on 17 November 2004 as fearing about 800 civilians dead; Iraq Body Count records 581 to 670 from bodies recovered in nine of the city's 27 neighbourhoods; and Mike Marqusee in the *Guardian* (November 2005), as Wikipedia gives him, quoted Iraqi aid groups and medical workers estimating 4,000 to 6,000 dead, mostly civilians.
-- **Who led the Jolan attack.** The game has the Marines coming in behind the Army armour. McWilliams has 3/5 attacking along the river from 19:26 on the 8th, some hours before the armour crossed; it was 3/1 that followed the 2-7 Cavalry.
+- **Who led the Jolan attack.** The game has 3/1 coming in behind the Army armour and its own Marine tanks, as McWilliams has it. He also has 3/5 attacking along the river from 19:26 on the 8th, some hours before the armour crossed; it was 3/1 that followed the 2-7 Cavalry.
 
 !!! story "The last strongpoint"
     On 10 November Private First Class Christopher Adlesperger of Company K, 3rd Battalion, 5th
