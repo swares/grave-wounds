@@ -1,0 +1,10 @@
+# Pictures for the Crécy section of The Medieval Wars. Each is public domain or openly licensed, checked
+# on its source page. The file goes in images/books/medieval/ under `file`; until it is there the book shows
+# a captioned slot with this credit and source.
+- id: crecy-froissart
+  file: crecy-froissart.jpg
+  caption: "The battle of Crécy, from a manuscript of Froissart's Chronicles made in the 15th century, more than 100 years after the battle. The English are on the right."
+  credit: "Unknown illuminator, Jean Froissart, Chroniques, Bibliothèque nationale de France, Français 2643, f. 165v"
+  licence: "Public domain"
+  source: "https://commons.wikimedia.org/wiki/File:Battle_of_crecy_froissart.jpg"
+  alt: "A 15th-century manuscript painting of the English and French armies in battle at Crécy, the English on the right."
