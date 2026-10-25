@@ -1,7 +1,9 @@
-# Guns and fire support {#fire}
+# Modern fire {#fire}
 
-The [field map](#field-map) uses the same exchange for every era. What changes after 1865
-is the weight of fire, and how men live under it.
+For the wars of machine guns, quick-firing artillery and breech-loaders. The [field map](#field-map)
+uses the same exchange for every era; what this module changes is the weight of fire, and how
+men live under it. A period book may switch on only part of it, as the black-powder book does
+for its breech-loaders.
 
 ## Modern infantry {#modern-infantry}
 
@@ -11,9 +13,10 @@ is the weight of fire, and how men live under it.
   assault rifle {{x_assault}}, and a submachine gun or pistol {{x_smg}}. They are rolled as
   aimed shots at the same rate as a musket's: most rounds are fired at the enemy's line,
   not at a man.
-- **Modern fire puts men down.** Against breech-loaders and later weapons, shell and
+- <span id="modern-down"></span>**Modern fire puts men down.** Against breech-loaders and later weapons, shell and
   grenades, every serious or critical wound puts a man down, and a light one calls for the
-  stop check ([An exchange](#exchange)).
+  stop check ([An exchange](#exchange)): the casualty returns from 1914 on count nearly every man
+  hit as out of the line.
 - <span id="modern-storming"></span>**Storming in bounds.** Attacking, modern rifles and sub-machine guns
   storm works as black-powder infantry do ([Storming works](#storming)), but in bounds: a unit
   fired on in the last exchange (whether or not anyone fell) goes to ground and fires this
@@ -67,7 +70,7 @@ guns, heavy howitzers, and tanks or autocannon firing over open sights. Each is 
 {{table:smoke}}
 
 - **Illumination** lights the ground round its aim as by day (see
-  [Night and the air](#night-air)). It needs no one to see the hex.
+  [Night](#night-air)). It needs no one to see the hex.
 - **A fire plan.** A creeping barrage lifts its aim 1 to {{i_creep}} hexes after 1 to
   {{i_each}} exchanges on each line, ahead of an advance kept to the same timetable. A
   plan can have up to eight legs, each going on the same way or turning.
@@ -105,3 +108,29 @@ are killed outright. A knocked-out bunker is a hex like any other.
     close order are cut down. Spread out and gone to ground, they are hard to hit but are
     pinned half the time. Let the players find a way to move: smoke, a fire plan, a covered
     approach, or the dark.
+
+## Fixed lines {#fixed-lines}
+
+Before dark a machine gun can be laid on a fixed line. In the dark, with
+no target it can see, it fires blind down the line at an enemy within {{n_fixed_width}}
+hex of it, at −{{n_fixed}}%. The enemy commander, holding, lays its machine guns' lines by
+day or at dusk on the nearest enemy it knows of in reach, or else ahead toward one (or
+straight ahead) as far as it can reach and see, shifting such a line once onto an enemy
+that comes into reach off it.
+
+## The enemy commander {#fire-commander}
+
+With this module, the [enemy commander](#commander) also:
+
+- **Digging in.** Its foot units with modern weapons dig in where they stand when it is
+  safe (not under fire, no enemy it knows of in their range): at the objective, holding
+  with no objective, and in reserve while they wait.
+- **Shellfire.** It calls its off-map batteries on what it sees, closer to its own men first.
+  Attacking, one battery lays a creeping barrage ahead of a unit closing on the enemy, and
+  first has one battery smoke an enemy that is shooting at men who cannot reply (not in the
+  dark, or in a gale). Its batteries under counter-battery fire displace (a placed one moves
+  its place {{c_displace_shift}} hexes along its map edge, away from the battery firing). In
+  the dark it first has one battery fire illumination over the enemy it has lost sight of
+  nearest its men, where it was last seen. Then one battery fires counter-battery on a located
+  enemy battery it can reach: the one with the best counter % on the one with the most guns
+  still served.

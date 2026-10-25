@@ -1,5 +1,6 @@
-"""The rule book's third part (templates/rules/09-13): the other eras, modern fire and the guns,
-vehicles, night and the air, and a worked example from a later war. Values and tables are
+"""The rule book's third part: the other eras, night and a worked example from a later war
+(templates/rules/09, 12, 13), and the modules (templates/rules/modules): black-powder guns,
+modern fire, armour and mines, air and night devices. Values and tables are
 filled from the data, as in rulebook.py; the running example of that war is worked out here
 with the game's own rules and chosen dice (each die is given in the text)."""
 from __future__ import annotations

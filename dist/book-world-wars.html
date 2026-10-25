@@ -1,0 +1,5009 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grave Wounds: The World Wars</title>
+<meta name="description" content="Grave Wounds: The World Wars, 1914–1945. Nine battles from the canal at Mons in 1914 to the Poles on Monte Cassino in 1944.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%238e1b2c'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='15' font-weight='700' fill='white' text-anchor='middle'%3Ed%25%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700&family=Alegreya+Sans:wght@400;500;700&family=Alegreya:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* The field-ledger palette of the other pages */
+:root{
+  --bg:#e9ecee; --panel:#f6f7f8; --ink:#1b2127; --muted:#5b6670; --line:#c5ccd2;
+  --steel:#3f4f5d; --blood:#8e1b2c; --blood-soft:#f1d9dc; --gm:#e6ebe0; --gm-edge:#5d6e4b;
+  --display:"Alegreya SC",Georgia,serif; --body:"Alegreya Sans","Gill Sans","Segoe UI",sans-serif;
+  --serif:"Alegreya",Georgia,serif; --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
+  --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --gm:#1f2a1c; --gm-edge:#8fa678; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
+  --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --gm:#1f2a1c; --gm-edge:#8fa678; color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.6 var(--serif)}
+a{color:var(--blood)}
+header{border-bottom:2px solid var(--ink);padding:20px 16px 14px;max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:end;justify-content:space-between}
+header h1{font:700 clamp(1.8rem,5vw,2.6rem)/1.05 var(--display);margin:0}
+header .eyebrow{display:block;font:500 .72rem var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+header nav{display:flex;flex-wrap:wrap;gap:4px 16px;font:500 .95rem var(--body)}
+.layout{max-width:1180px;margin:0 auto;padding:24px 16px 64px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:40px}
+@media (max-width:860px){.layout{grid-template-columns:minmax(0,1fr)}}
+.toc{font:400 .92rem/1.4 var(--body)}
+@media (min-width:861px){.toc{position:sticky;top:16px;align-self:start;max-height:calc(100vh - 32px);overflow:auto}}
+.toc .ttl{font:700 .78rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.toc ul{list-style:none;margin:0;padding:0}
+.toc > div > ul > li{margin:0 0 10px}
+.toc > div > ul > li > a{font-weight:700;color:var(--ink)}
+.toc ul ul{padding-left:12px;margin-top:3px;border-left:1px solid var(--line)}
+.toc ul ul a{color:var(--muted);text-decoration:none}
+.toc a:hover{color:var(--blood)}
+main{max-width:72ch;min-width:0}
+main h1{font:700 2rem/1.15 var(--display);margin:48px 0 12px;padding-top:12px;border-top:1px solid var(--line);color:var(--ink)}
+main h1:first-child{margin-top:0;border-top:0;padding-top:0}
+main h2{font:700 1.3rem/1.25 var(--display);margin:30px 0 8px;color:var(--steel)}
+main p,main li{hyphens:auto}
+main strong{font-weight:700}
+main ul,main ol{padding-left:1.3em}
+main li{margin:3px 0}
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;font:400 .9rem/1.4 var(--body);min-width:100%}
+th,td{border-bottom:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{font-weight:700;border-bottom:2px solid var(--ink);white-space:nowrap}
+tbody tr:nth-child(even){background:var(--panel)}
+.admonition{margin:18px 0;padding:12px 16px;border-radius:4px;border:1px solid var(--line);background:var(--panel);font:400 .98rem/1.55 var(--body)}
+.admonition p{margin:6px 0}
+.admonition-title{font:700 .78rem var(--mono)!important;letter-spacing:.08em;text-transform:uppercase;margin:0 0 4px!important;color:var(--muted)}
+.admonition.example{border-left:4px solid var(--blood);background:var(--blood-soft)}
+.admonition.example .admonition-title{color:var(--blood)}
+.admonition.gm{border-left:4px solid var(--gm-edge);background:var(--gm)}
+.admonition.gm .admonition-title{color:var(--gm-edge)}
+.admonition.story{border-left:4px solid var(--muted);font-style:normal}
+.admonition.story .admonition-title{color:var(--muted)}
+figure.pic{margin:20px 0;page-break-inside:avoid}
+figure.pic img{display:block;max-width:100%;height:auto;border:1px solid var(--line)}
+figure.pic figcaption{font:400 .86rem/1.45 var(--body);color:var(--muted);margin-top:6px}
+figure.pic .credit{display:block;font-size:.8rem}
+figure.pic .slot-box{border:1px dashed var(--line);background:var(--panel);padding:28px 12px;text-align:center;font:500 .85rem var(--body);color:var(--muted)}
+.note{font:400 .85rem var(--body);color:var(--muted);margin-top:40px;border-top:1px solid var(--line);padding-top:12px}
+.index{columns:2 16rem;column-gap:28px}
+.ix{margin:0 0 4px;font-size:.9rem;break-inside:avoid}
+.ix-letter{font:700 .9rem var(--mono);color:var(--blood);margin:14px 0 4px;break-after:avoid}
+@page{margin:16mm 14mm 18mm;@bottom-center{content:counter(page);font:9pt sans-serif}}
+@media print{
+  body{background:#fff;color:#000;font-size:11pt}
+  header nav,.toc .noprint{display:none}
+  header{border-color:#000}
+  .layout{display:block;padding:0}
+  .toc{page-break-after:always}
+  main{max-width:none}
+  main h1{page-break-before:always;border:0}
+  main h1:first-child{page-break-before:avoid}
+  main h2,.admonition,table{page-break-inside:avoid}
+  a{color:inherit;text-decoration:none}
+  .admonition{background:none!important}
+}
+</style>
+</head>
+<body>
+<header>
+  <div><span class="eyebrow">Grave Wounds · blood, bivouac and weather · playtest rules</span><h1>The World Wars</h1></div>
+  <nav><a href="rules.html">Rules</a><a href="book-medieval.html">The Medieval Wars</a><a href="book-black-powder.html">The Black-Powder Wars</a><a href="guide.html">How to play</a><a href="campaign.html">Campaign</a><a href="roller.html">Wound roller</a><a href="team.html">Team builder</a><a href="travel.html">Travel map</a><a href="field.html">Field map</a><a href="tables.pdf">Printed tables</a><a href="../index.html">Start page</a></nav>
+</header>
+<div class="layout">
+  <aside class="toc" aria-label="Contents"><p class="ttl">Contents</p><div class="toc">
+<ul>
+<li><a href="#world_wars">The World Wars, 1914–1945</a><ul>
+<li><a href="#switched-on">What is switched on</a></li>
+</ul>
+</li>
+<li><a href="#world_wars-armies">The armies</a><ul>
+<li><a href="#era-careers">Careers</a></li>
+<li><a href="#era-followers">Followers</a></li>
+<li><a href="#era-ranks">Ranks</a></li>
+<li><a href="#era-jobs">Work between fights</a></li>
+<li><a href="#era-job_trouble">Trouble at work</a></li>
+<li><a href="#era-skill_uses">What each skill is for</a></li>
+<li><a href="#era-tongue_armies">Each army's tongues</a></li>
+<li><a href="#era-courses">Training courses</a></li>
+<li><a href="#era-patron_fate">What becomes of a patron</a></li>
+<li><a href="#era-prisoners">Prisoners: what captors did</a></li>
+<li><a href="#era-kit_life">How long boots and clothing last</a></li>
+<li><a href="#era-supplies">Rations and water carried</a></li>
+<li><a href="#era-women">Women under arms</a></li>
+<li><a href="#era-money_days">The Day in each army's coin</a></li>
+<li><a href="#era-rank_pay">Pay by rank</a></li>
+<li><a href="#era-prices">Prices</a></li>
+</ul>
+</li>
+<li><a href="#world_wars-tables">Wound tables</a><ul>
+<li><a href="#table-wwi-1914-18-wounds">WWI 1914-18 - penetrating wounds</a></li>
+<li><a href="#table-wwii-italy-1944-killed">WWII Italy 1944 - killed in action</a></li>
+<li><a href="#table-bougainville-1944-wounded">Bougainville 1944 - wounded</a></li>
+<li><a href="#table-bougainville-1944-killed">Bougainville 1944 - killed</a></li>
+<li><a href="#table-bougainville-1944-all-hits">Bougainville 1944 - all hits</a></li>
+<li><a href="#table-owens-wwii">WWII 1941-45 - hospitalized (Owens comparison set)</a></li>
+</ul>
+</li>
+<li><a href="#world_wars-fields">Battlefields</a><ul>
+<li><a href="#field-mons-1914">Mons, 23 August 1914 (the Nimy salient)</a></li>
+<li><a href="#field-babuna-1915">The Babuna pass, November 1915</a></li>
+<li><a href="#field-beaumont-hamel-1916">Beaumont-Hamel, 1 July 1916 (the Newfoundland Park)</a></li>
+<li><a href="#field-snipe-1942">Snipe, 27 October 1942 (El Alamein)</a></li>
+<li><a href="#field-cisterna-1944">The Rangers at Cisterna, 30 January 1944</a></li>
+<li><a href="#field-cassino-monastery-1944">Snakeshead Ridge and the abbey, 17-18 February 1944</a></li>
+<li><a href="#field-bougainville-1944">Hill 700, Bougainville, 8-12 March 1944</a></li>
+<li><a href="#field-cassino-town-1944">Cassino town and Castle Hill, 15 March 1944</a></li>
+<li><a href="#field-cassino-poles-1944">The Poles at Point 593 and Phantom Ridge, 12 May 1944</a></li>
+</ul>
+</li>
+<li><a href="#index">Index</a></li>
+</ul>
+</div>
+</aside>
+  <main>
+<h1 id="world_wars">The World Wars, 1914–1945</h1>
+<p>Nine battles from the canal at Mons in 1914 to the Poles on Monte Cassino in 1944: the first British battle of the Great War, the Serbian stand at the Babuna pass, the Newfoundlanders on the first day of the Somme, the anti-tank guns at Snipe in the desert, the Rangers at Cisterna, three battles for Cassino and the Japanese counter-offensive on Bougainville. Every rule is in the Rules; this book holds the armies' figures for both wars, the wound tables their battles roll on, and the battlefields.</p>
+<p>The battlefields: <a href="#field-mons-1914">Mons 1914</a>, <a href="#field-babuna-1915">The Babuna pass 1915</a>, <a href="#field-beaumont-hamel-1916">Beaumont-Hamel 1916</a>, <a href="#field-snipe-1942">Snipe 1942</a>, <a href="#field-cisterna-1944">The Rangers at Cisterna 1944</a>, <a href="#field-cassino-monastery-1944">Snakeshead Ridge and the abbey 1944</a>, <a href="#field-bougainville-1944">Hill 700 1944</a>, <a href="#field-cassino-town-1944">Cassino town and Castle Hill 1944</a>, <a href="#field-cassino-poles-1944">The Poles at Point 593 and Phantom Ridge 1944</a>.</p>
+<h2 id="switched-on">What is switched on</h2>
+<p><a href="rules.html#fire">Modern fire</a>, in full: machine guns, barrages, trenches, digging in, and more men put down. <a href="rules.html#vehicles">Armour and mines</a>, for the tanks, carriers and anti-tank guns at Snipe and the minefields of the desert. <a href="rules.html#air">Air and night devices</a> for aircraft from 1944 (the page leaves the date to the GM); night vision and landing by air belong to later wars. The wounded go back by motor ambulance, as the Rules' After the battle says. Wounds heal and fester as the Rules' Recovery says: it does not yet count the sulpha drugs of the Second World War or the penicillin of 1944.</p>
+<table>
+<thead>
+<tr>
+<th>Era</th>
+<th>Armies</th>
+<th>A career term</th>
+<th>Fighting skills</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>First World War (1914-1918)</td>
+<td>The British Empire, Newfoundland, France, Germany, The United States (1917-1918), Russian, Serbian, Austro-Hungarian, Bulgarian</td>
+<td>1 year, from age 18</td>
+<td>Rifle, Pistol, Machine gun, Bombing, Gunnery, Bayonet, Trench weapons, Brawl, Parry, Dodge</td>
+</tr>
+<tr>
+<td>Second World War (1939-1945)</td>
+<td>The United States in Europe, US Marines and Army in the Pacific, The British Commonwealth, Germany, Italian, The Soviet Union, Japan</td>
+<td>1 year, from age 18</td>
+<td>Rifle, SMG and pistol, Machine gun, Grenade, Gunnery, Bayonet, Close combat, Brawl, Parry, Dodge</td>
+</tr>
+</tbody>
+</table>
+<h1 id="world_wars-armies">The armies</h1>
+<h2 id="era-careers">Careers</h2>
+<h3 id="era-careers-wwi">First World War (1914-1918)</h3>
+<table>
+<thead>
+<tr>
+<th>Career</th>
+<th>Main skill</th>
+<th>Second skill</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rifleman</td>
+<td>Rifle</td>
+<td>Bayonet</td>
+</tr>
+<tr>
+<td>Machine gunner</td>
+<td>Machine gun</td>
+<td>Craft</td>
+</tr>
+<tr>
+<td>Bomber</td>
+<td>Bombing</td>
+<td>Trench weapons</td>
+</tr>
+<tr>
+<td>Sniper or observer</td>
+<td>Rifle</td>
+<td>Stealth</td>
+</tr>
+<tr>
+<td>Sapper or tunneller</td>
+<td>Craft</td>
+<td>Bombing</td>
+</tr>
+<tr>
+<td>Stretcher-bearer or orderly</td>
+<td>Leechcraft</td>
+<td>Fieldcraft</td>
+</tr>
+<tr>
+<td>Signaller or runner</td>
+<td>Signals</td>
+<td>Fieldcraft</td>
+</tr>
+<tr>
+<td>Corporal or sergeant</td>
+<td>Command</td>
+<td>Rifle</td>
+</tr>
+<tr>
+<td>Junior officer</td>
+<td>Command</td>
+<td>Pistol</td>
+</tr>
+<tr>
+<td>Gunner or trench mortarman</td>
+<td>Gunnery</td>
+<td>Craft</td>
+</tr>
+<tr>
+<td>Military nurse</td>
+<td>Leechcraft</td>
+<td>Letters</td>
+</tr>
+<tr>
+<td>Army auxiliary</td>
+<td>Craft</td>
+<td>Signals</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-careers-wwii">Second World War (1939-1945)</h3>
+<table>
+<thead>
+<tr>
+<th>Career</th>
+<th>Main skill</th>
+<th>Second skill</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rifleman</td>
+<td>Rifle</td>
+<td>Grenade</td>
+</tr>
+<tr>
+<td>Machine gunner</td>
+<td>Machine gun</td>
+<td>Craft</td>
+</tr>
+<tr>
+<td>Grenadier or anti-tank man</td>
+<td>Grenade</td>
+<td>Rifle</td>
+</tr>
+<tr>
+<td>Sniper or scout</td>
+<td>Rifle</td>
+<td>Stealth</td>
+</tr>
+<tr>
+<td>Combat engineer or sapper</td>
+<td>Craft</td>
+<td>Grenade</td>
+</tr>
+<tr>
+<td>Medic or stretcher-bearer</td>
+<td>Leechcraft</td>
+<td>Fieldcraft</td>
+</tr>
+<tr>
+<td>Radio operator or signaller</td>
+<td>Signals</td>
+<td>Fieldcraft</td>
+</tr>
+<tr>
+<td>Corporal or sergeant</td>
+<td>Command</td>
+<td>SMG and pistol</td>
+</tr>
+<tr>
+<td>Junior officer</td>
+<td>Command</td>
+<td>SMG and pistol</td>
+</tr>
+<tr>
+<td>Paratrooper or commando</td>
+<td>SMG and pistol</td>
+<td>Stealth</td>
+</tr>
+<tr>
+<td>Tank crewman</td>
+<td>Gunnery</td>
+<td>Drive</td>
+</tr>
+<tr>
+<td>Army nurse</td>
+<td>Leechcraft</td>
+<td>Letters</td>
+</tr>
+<tr>
+<td>Army auxiliary</td>
+<td>Signals</td>
+<td>Gunnery</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-followers">Followers</h2>
+<h3 id="era-fq-wwi">First World War (1914-1918)</h3>
+<table>
+<thead>
+<tr>
+<th>Quality table</th>
+<th>Green</th>
+<th>Regular</th>
+<th>Veteran</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>01–30</td>
+<td>31–80</td>
+<td>81–00</td>
+</tr>
+<tr>
+<td>Hardened</td>
+<td>01–15</td>
+<td>16–60</td>
+<td>61–00</td>
+</tr>
+<tr>
+<td>Raw</td>
+<td>01–55</td>
+<td>56–90</td>
+<td>91–00</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-fq-wwii">Second World War (1939-1945)</h3>
+<table>
+<thead>
+<tr>
+<th>Quality table</th>
+<th>Green</th>
+<th>Regular</th>
+<th>Veteran</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>01–30</td>
+<td>31–80</td>
+<td>81–00</td>
+</tr>
+<tr>
+<td>Hardened</td>
+<td>01–15</td>
+<td>16–60</td>
+<td>61–00</td>
+</tr>
+<tr>
+<td>Raw</td>
+<td>01–55</td>
+<td>56–90</td>
+<td>91–00</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-ranks">Ranks</h2>
+<h3 id="era-ranks-wwi">First World War (1914-1918)</h3>
+<table>
+<thead>
+<tr>
+<th>Rank</th>
+<th>Pay (× a soldier's)</th>
+<th>Least years in the rank below</th>
+<th>Command check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Private</td>
+<td>1</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Corporal</td>
+<td>1.67</td>
+<td>1</td>
+<td>Ordinary</td>
+</tr>
+<tr>
+<td>Sergeant</td>
+<td>2.33</td>
+<td>1</td>
+<td>Ordinary</td>
+</tr>
+<tr>
+<td>Company sergeant-major</td>
+<td>4</td>
+<td>2</td>
+<td>Hard</td>
+</tr>
+<tr>
+<td>Second lieutenant</td>
+<td>7.5</td>
+<td>1</td>
+<td>Hard</td>
+</tr>
+<tr>
+<td>Captain</td>
+<td>12.5</td>
+<td>1</td>
+<td>Ordinary</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-ranks-wwii">Second World War (1939-1945)</h3>
+<table>
+<thead>
+<tr>
+<th>Rank</th>
+<th>Pay (× a soldier's)</th>
+<th>Least years in the rank below</th>
+<th>Command check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Private</td>
+<td>1</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Private first class</td>
+<td>1.08</td>
+<td>0.5</td>
+<td>Easy</td>
+</tr>
+<tr>
+<td>Corporal</td>
+<td>1.32</td>
+<td>1</td>
+<td>Ordinary</td>
+</tr>
+<tr>
+<td>Sergeant</td>
+<td>1.56</td>
+<td>1</td>
+<td>Ordinary</td>
+</tr>
+<tr>
+<td>Staff sergeant</td>
+<td>1.92</td>
+<td>1</td>
+<td>Ordinary</td>
+</tr>
+<tr>
+<td>Second lieutenant</td>
+<td>3</td>
+<td>1</td>
+<td>Hard</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-jobs">Work between fights</h2>
+<h3 id="era-jobs-wwi">First World War (1914-1918)</h3>
+<table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Skill</th>
+<th>Pay</th>
+<th>Term</th>
+<th>Where</th>
+<th>Who</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hindenburg Programme worker</td>
+<td>Craft 30</td>
+<td>12 Days a day</td>
+<td>a week</td>
+<td>city</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Tunneller (clay-kicker) (fed)</td>
+<td>Trench weapons 50</td>
+<td>6 Days a day</td>
+<td>90-365 days</td>
+<td>frontier</td>
+<td>sapper or tunneller, rifleman</td>
+<td>35%</td>
+</tr>
+<tr>
+<td>Shipyard mechanic</td>
+<td>Craft 35</td>
+<td>5¾ Days a day</td>
+<td>a week</td>
+<td>city</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Chinese Labour Corps interpreter (fed)</td>
+<td>Letters 40</td>
+<td>4 Days a day</td>
+<td>30-180 days</td>
+<td>camp</td>
+<td>corporal or sergeant, junior officer</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Munitions hand</td>
+<td>Craft 0</td>
+<td>4 Days a day</td>
+<td>a week</td>
+<td>town, city</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>VAD nurse overseas (fed)</td>
+<td>Leechcraft 30</td>
+<td>4 Days a day</td>
+<td>180 days</td>
+<td>town, camp</td>
+<td>stretcher-bearer or orderly</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Hired farm hand (fed)</td>
+<td>Fieldcraft 0</td>
+<td>2¼ Days a day</td>
+<td>a month</td>
+<td>village</td>
+<td>anyone</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Correspondent's guide</td>
+<td>Fieldcraft 50</td>
+<td>2 Days a day</td>
+<td>a week</td>
+<td>road, frontier</td>
+<td>corporal or sergeant, junior officer</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Battlefield salvager</td>
+<td>Fieldcraft 0</td>
+<td>1½ Days a day</td>
+<td>a day</td>
+<td>frontier, road</td>
+<td>anyone</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>Trench-art maker</td>
+<td>Craft 30</td>
+<td>1½ Days a day</td>
+<td>a week</td>
+<td>camp, town</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Docks labourer (fed)</td>
+<td>none</td>
+<td>1 Day a day</td>
+<td>a week</td>
+<td>town, sea</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Estaminet help</td>
+<td>Persuade 0</td>
+<td>1 Day a day</td>
+<td>a week</td>
+<td>village, town</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Labour Corps private (fed)</td>
+<td>none</td>
+<td>1 Day a day</td>
+<td>90-365 days</td>
+<td>camp, road</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Spare-time harvest hand (fed)</td>
+<td>Fieldcraft 0</td>
+<td>1 Day a day</td>
+<td>a day</td>
+<td>village</td>
+<td>anyone</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Legionnaire (fed)</td>
+<td>Rifle 40</td>
+<td>¼ Day a day</td>
+<td>180-730 days</td>
+<td>camp, frontier</td>
+<td>anyone</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>Volunteer ambulance driver (fed)</td>
+<td>none</td>
+<td>unpaid</td>
+<td>180 days</td>
+<td>road, frontier</td>
+<td>anyone</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>Deserter gang †</td>
+<td>Brawl 40</td>
+<td>3 Days a day</td>
+<td>a week</td>
+<td>frontier, road</td>
+<td>anyone</td>
+<td>40%</td>
+</tr>
+<tr>
+<td>Rations racketeer †</td>
+<td>Persuade 40</td>
+<td>3 Days a day</td>
+<td>a week</td>
+<td>town, camp</td>
+<td>anyone</td>
+<td>25%</td>
+</tr>
+<tr>
+<td>Agent in occupied Belgium †</td>
+<td>Stealth 50</td>
+<td>2 Days a day</td>
+<td>a month</td>
+<td>town, road</td>
+<td>anyone</td>
+<td>40%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-jobs-wwii">Second World War (1939-1945)</h3>
+<table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Skill</th>
+<th>Pay</th>
+<th>Term</th>
+<th>Where</th>
+<th>Who</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Flying Tiger pilot (fed)</td>
+<td>Gunnery 60</td>
+<td>12 Days a day</td>
+<td>365 days</td>
+<td>frontier</td>
+<td>junior officer</td>
+<td>40%</td>
+</tr>
+<tr>
+<td>Arms factory worker</td>
+<td>Craft 30</td>
+<td>7 Days a day</td>
+<td>a week</td>
+<td>city</td>
+<td>anyone</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>Island base contractor (fed)</td>
+<td>Craft 30</td>
+<td>6 Days a day</td>
+<td>270-365 days</td>
+<td>frontier, sea</td>
+<td>anyone</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Liberty-ship yard worker</td>
+<td>Craft 30</td>
+<td>6 Days a day</td>
+<td>a week</td>
+<td>city</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Flying Tiger ground crew (fed)</td>
+<td>Craft 40</td>
+<td>5 Days a day</td>
+<td>365 days</td>
+<td>camp, frontier</td>
+<td>combat engineer or sapper, tank crewman, radio operator or signaller</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Merchant seaman (fed)</td>
+<td>none</td>
+<td>4 Days a day</td>
+<td>21-90 days</td>
+<td>sea</td>
+<td>anyone</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>Salvage diver (fed)</td>
+<td>Craft 50</td>
+<td>4 Days a day</td>
+<td>30-60 days</td>
+<td>sea</td>
+<td>combat engineer or sapper</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>Dock and ship-repair labourer</td>
+<td>none</td>
+<td>3¾ Days a day</td>
+<td>a week</td>
+<td>city, sea</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Ammunition loader</td>
+<td>none</td>
+<td>3½ Days a day</td>
+<td>a week</td>
+<td>town</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>War-plant riveter</td>
+<td>Craft 0</td>
+<td>3 Days a day</td>
+<td>a week</td>
+<td>city</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Military government interpreter (fed)</td>
+<td>Letters 50</td>
+<td>2 Days a day</td>
+<td>a month</td>
+<td>town, city</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Bomb disposal volunteer (fed)</td>
+<td>Close combat 50</td>
+<td>1½ Days a day</td>
+<td>90 days</td>
+<td>city, town</td>
+<td>combat engineer or sapper</td>
+<td>35%</td>
+</tr>
+<tr>
+<td>Free French or Polish volunteer (fed)</td>
+<td>Rifle 40</td>
+<td>1 Day a day</td>
+<td>180-730 days</td>
+<td>camp</td>
+<td>anyone</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>CCC enrollee (before the war) (fed)</td>
+<td>Fieldcraft 0</td>
+<td>½ Day a day</td>
+<td>a month</td>
+<td>camp, frontier</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Tiergarten black-marketeer †</td>
+<td>Persuade 30</td>
+<td>15 Days a day</td>
+<td>a week</td>
+<td>city</td>
+<td>anyone</td>
+<td>25%</td>
+</tr>
+<tr>
+<td>Naples fixer †</td>
+<td>Persuade 40</td>
+<td>8 Days a day</td>
+<td>a week</td>
+<td>city, sea</td>
+<td>anyone</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>Smuggler †</td>
+<td>Stealth 40</td>
+<td>6 Days a day</td>
+<td>7-14 days</td>
+<td>frontier, sea, road</td>
+<td>anyone</td>
+<td>35%</td>
+</tr>
+<tr>
+<td>Escape-line guide †</td>
+<td>Fieldcraft 50</td>
+<td>3 Days a day</td>
+<td>2-4 days</td>
+<td>frontier</td>
+<td>anyone</td>
+<td>45%</td>
+</tr>
+<tr>
+<td>Barracks card sharp †</td>
+<td>Persuade 40</td>
+<td>2 Days a day</td>
+<td>a week</td>
+<td>camp</td>
+<td>anyone</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>Resistance courier †</td>
+<td>Stealth 40</td>
+<td>½ Day a day</td>
+<td>a week</td>
+<td>town, village, road</td>
+<td>anyone</td>
+<td>35%</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-job_trouble">Trouble at work</h2>
+<h3 id="era-job_trouble-wwi">First World War (1914-1918)</h3>
+<table>
+<thead>
+<tr>
+<th>d10</th>
+<th>Trouble</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>An accident: hurt, and 1d6 days of work and pay lost.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Shellfire or a raid hits the workplace: a Dodge check, or a wound.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>The Military Police check passes, and his papers must hold up.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Pay is stopped or docked for 'deductions'.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Gas, TNT or fumes: a Leechcraft check, or a week ill.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>A comrade is caught pilfering and names him.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Recalled to the unit early: the term is cut short.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>A quarrel with the locals over a woman, a debt or a fight.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Influenza sweeps the camp.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Suspected of spying: held and questioned for 1d3 days.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-job_trouble-wwii">Second World War (1939-1945)</h3>
+<table>
+<thead>
+<tr>
+<th>d10</th>
+<th>Trouble</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>An industrial accident: 1d6 days of work lost.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>An air raid or a torpedo: a Dodge check, or a wound.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Military police, Feldgendarmerie or Kempeitai check papers.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>A black-market sting: the stake is lost, or he is arrested.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>A strike or a layoff: the term ends on half pay.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>An informer sells his name.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Recalled or drafted early.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>A fight with a rival gang, crew or shift.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Illness (malaria, typhus, VD): a Leechcraft check.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>The ship is sunk, the cell blown or the warehouse raided: a fight.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-skill_uses">What each skill is for</h2>
+<h3 id="era-skill_uses-wwi">First World War (1914-1918)</h3>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Use</th>
+<th>Usually</th>
+<th>Against</th>
+<th>Success</th>
+<th>Failure</th>
+<th>Fumble</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Persuade</td>
+<td><strong>Haggle</strong>: Beat down a price.</td>
+<td>Ordinary</td>
+<td>the seller (Persuade)</td>
+<td>A tenth off (a quarter on a critical).</td>
+<td>The list price.</td>
+<td>No sale today.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Find a billet</strong>: Talk a village or a householder into a bed and a meal.</td>
+<td>Ordinary</td>
+<td>the householder or headman (Presence)</td>
+<td>Fed and bedded tonight: no keep to pay.</td>
+<td>He pays his keep, or sleeps rough.</td>
+<td>The village turns against the party: trouble.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Talk past a guard</strong>: Get by a sentry, a gate or the provost without the right papers.</td>
+<td>Hard</td>
+<td>the sentry or provost (Wits)</td>
+<td>Through.</td>
+<td>Turned back.</td>
+<td>Held as a deserter or a spy.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Question a prisoner</strong>: Get a prisoner or a local to talk.</td>
+<td>Ordinary</td>
+<td>the prisoner (Nerve)</td>
+<td>He tells what he knows (the GM decides how much is true).</td>
+<td>Nothing.</td>
+<td>He lies, and is believed.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><strong>Drive a hard task</strong>: Get men to do something hard and tiring: dig all night, march on after dark, cross a river.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Done.</td>
+<td>Done slowly, or only half.</td>
+<td>They refuse.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><strong>Keep order</strong>: Stop plunder, drinking or a mutinous mood.</td>
+<td>Hard</td>
+<td>—</td>
+<td>They obey.</td>
+<td>Some slip away to it.</td>
+<td>They turn on him.</td>
+</tr>
+<tr>
+<td>Letters</td>
+<td><strong>Read or write</strong>: Read an order, a letter or a map's names; write a report.</td>
+<td>Easy</td>
+<td>—</td>
+<td>Read or written.</td>
+<td>Slowly, or with mistakes.</td>
+<td>He gets it wrong and does not know it.</td>
+</tr>
+<tr>
+<td>Letters</td>
+<td><strong>Forge a pass</strong>: Make a pass, an order or a billeting ticket that will be believed.</td>
+<td>Hard</td>
+<td>whoever checks it (Watch)</td>
+<td>It passes.</td>
+<td>Doubted: Talk past a guard instead.</td>
+<td>Seen through: held as a deserter or a spy.</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td><strong>Mend kit</strong>: Mend a weapon, harness, boots, a cart or a radio set; a day's work.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Mended.</td>
+<td>Not yet: another day.</td>
+<td>Ruined.</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td><strong>Make something</strong>: Make ladders, a raft, a shelter, snowshoes or a litter from what is to hand.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Made.</td>
+<td>Takes twice as long.</td>
+<td>It fails when it is used.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Track</strong>: Follow men or animals.</td>
+<td>Ordinary</td>
+<td>the men being followed (Stealth)</td>
+<td>On their trail.</td>
+<td>Lost it.</td>
+<td>On the wrong trail.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Find the way</strong>: Cross country without roads or a guide; at night, hard.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>On the way.</td>
+<td>Half a day lost.</td>
+<td>Lost: a day, or into the enemy.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Hunt or gather</strong>: Find food or water for himself in the country.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Fed today: no keep to pay.</td>
+<td>Nothing found.</td>
+<td>Something that makes him ill.</td>
+</tr>
+<tr>
+<td>Watch</td>
+<td><strong>Spot</strong>: See an ambush, a man hiding, a trap or a thing out of place.</td>
+<td>Ordinary</td>
+<td>whoever is hiding (Stealth)</td>
+<td>Seen.</td>
+<td>Missed.</td>
+<td>Sure there is nothing there.</td>
+</tr>
+<tr>
+<td>Watch</td>
+<td><strong>Search</strong>: Search a house, a body or a baggage wagon.</td>
+<td>Easy</td>
+<td>—</td>
+<td>Found what there is.</td>
+<td>Missed it.</td>
+<td>Missed it and left traces.</td>
+</tr>
+<tr>
+<td>Stealth</td>
+<td><strong>Sneak</strong>: Get past sentries, into a camp or away from one.</td>
+<td>Ordinary</td>
+<td>the sentries (Watch)</td>
+<td>Unseen.</td>
+<td>Seen, but not yet caught.</td>
+<td>Walks into them.</td>
+</tr>
+<tr>
+<td>Stealth</td>
+<td><strong>Steal</strong>: Lift a purse, a horse or rations unseen.</td>
+<td>Hard</td>
+<td>the owner or the guard (Watch)</td>
+<td>Taken.</td>
+<td>Not taken.</td>
+<td>Caught in the act: the provost.</td>
+</tr>
+<tr>
+<td>Leechcraft</td>
+<td><strong>Diagnose</strong>: Tell what a sick man has, and whether it will spread.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Named: the GM tells which sickness.</td>
+<td>Unsure.</td>
+<td>Wrong.</td>
+</tr>
+<tr>
+<td>Signals</td>
+<td><strong>Get through</strong>: Raise another station, mend a line or a set, or send a message in code.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Through.</td>
+<td>Not yet: try again next hour.</td>
+<td>The set or line is out until mended.</td>
+</tr>
+<tr>
+<td>Strength</td>
+<td><strong>Force or carry</strong>: Force a door, lift a beam, carry a wounded man.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Done.</td>
+<td>Not alone.</td>
+<td>Strained: a step of fatigue.</td>
+</tr>
+<tr>
+<td>Agility</td>
+<td><strong>Climb or jump</strong>: Climb a wall, jump a ditch, keep his feet on ice.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Over.</td>
+<td>Not this way.</td>
+<td>Falls: roll a fall as a wound.</td>
+</tr>
+<tr>
+<td>Endurance</td>
+<td><strong>Endure</strong>: Keep going: swim, go without sleep, hold out in the cold.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Holds out.</td>
+<td>A step of fatigue.</td>
+<td>Collapses, or goes under.</td>
+</tr>
+<tr>
+<td>Wits</td>
+<td><strong>Notice or remember</strong>: Recall a face, a road or a password; work something out.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Yes.</td>
+<td>No.</td>
+<td>Remembers it wrong.</td>
+</tr>
+<tr>
+<td>Nerve</td>
+<td><strong>Keep his head</strong>: Stay calm out of a fight: under shelling in a dugout, at a hanging, before an officer.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Steady.</td>
+<td>Shaken: −10 to his next check.</td>
+<td>Breaks: runs, freezes or lashes out.</td>
+</tr>
+<tr>
+<td>Presence</td>
+<td><strong>Impress</strong>: Stare a man down, make a first impression, be remembered.</td>
+<td>Ordinary</td>
+<td>the other man (Presence)</td>
+<td>He gives way.</td>
+<td>No effect.</td>
+<td>Made an enemy.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-skill_uses-wwii">Second World War (1939-1945)</h3>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Use</th>
+<th>Usually</th>
+<th>Against</th>
+<th>Success</th>
+<th>Failure</th>
+<th>Fumble</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Persuade</td>
+<td><strong>Haggle</strong>: Beat down a price.</td>
+<td>Ordinary</td>
+<td>the seller (Persuade)</td>
+<td>A tenth off (a quarter on a critical).</td>
+<td>The list price.</td>
+<td>No sale today.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Find a billet</strong>: Talk a village or a householder into a bed and a meal.</td>
+<td>Ordinary</td>
+<td>the householder or headman (Presence)</td>
+<td>Fed and bedded tonight: no keep to pay.</td>
+<td>He pays his keep, or sleeps rough.</td>
+<td>The village turns against the party: trouble.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Talk past a guard</strong>: Get by a sentry, a gate or the provost without the right papers.</td>
+<td>Hard</td>
+<td>the sentry or provost (Wits)</td>
+<td>Through.</td>
+<td>Turned back.</td>
+<td>Held as a deserter or a spy.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Question a prisoner</strong>: Get a prisoner or a local to talk.</td>
+<td>Ordinary</td>
+<td>the prisoner (Nerve)</td>
+<td>He tells what he knows (the GM decides how much is true).</td>
+<td>Nothing.</td>
+<td>He lies, and is believed.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><strong>Drive a hard task</strong>: Get men to do something hard and tiring: dig all night, march on after dark, cross a river.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Done.</td>
+<td>Done slowly, or only half.</td>
+<td>They refuse.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><strong>Keep order</strong>: Stop plunder, drinking or a mutinous mood.</td>
+<td>Hard</td>
+<td>—</td>
+<td>They obey.</td>
+<td>Some slip away to it.</td>
+<td>They turn on him.</td>
+</tr>
+<tr>
+<td>Letters</td>
+<td><strong>Read or write</strong>: Read an order, a letter or a map's names; write a report.</td>
+<td>Easy</td>
+<td>—</td>
+<td>Read or written.</td>
+<td>Slowly, or with mistakes.</td>
+<td>He gets it wrong and does not know it.</td>
+</tr>
+<tr>
+<td>Letters</td>
+<td><strong>Forge a pass</strong>: Make a pass, an order or a billeting ticket that will be believed.</td>
+<td>Hard</td>
+<td>whoever checks it (Watch)</td>
+<td>It passes.</td>
+<td>Doubted: Talk past a guard instead.</td>
+<td>Seen through: held as a deserter or a spy.</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td><strong>Mend kit</strong>: Mend a weapon, harness, boots, a cart or a radio set; a day's work.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Mended.</td>
+<td>Not yet: another day.</td>
+<td>Ruined.</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td><strong>Make something</strong>: Make ladders, a raft, a shelter, snowshoes or a litter from what is to hand.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Made.</td>
+<td>Takes twice as long.</td>
+<td>It fails when it is used.</td>
+</tr>
+<tr>
+<td>Drive</td>
+<td><strong>Drive under pressure</strong>: Drive off the road, at night without lights, or under fire.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Through.</td>
+<td>Slowed or lost.</td>
+<td>Ditched or overturned.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Track</strong>: Follow men or animals.</td>
+<td>Ordinary</td>
+<td>the men being followed (Stealth)</td>
+<td>On their trail.</td>
+<td>Lost it.</td>
+<td>On the wrong trail.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Find the way</strong>: Cross country without roads or a guide; at night, hard.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>On the way.</td>
+<td>Half a day lost.</td>
+<td>Lost: a day, or into the enemy.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Hunt or gather</strong>: Find food or water for himself in the country.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Fed today: no keep to pay.</td>
+<td>Nothing found.</td>
+<td>Something that makes him ill.</td>
+</tr>
+<tr>
+<td>Watch</td>
+<td><strong>Spot</strong>: See an ambush, a man hiding, a trap or a thing out of place.</td>
+<td>Ordinary</td>
+<td>whoever is hiding (Stealth)</td>
+<td>Seen.</td>
+<td>Missed.</td>
+<td>Sure there is nothing there.</td>
+</tr>
+<tr>
+<td>Watch</td>
+<td><strong>Search</strong>: Search a house, a body or a baggage wagon.</td>
+<td>Easy</td>
+<td>—</td>
+<td>Found what there is.</td>
+<td>Missed it.</td>
+<td>Missed it and left traces.</td>
+</tr>
+<tr>
+<td>Stealth</td>
+<td><strong>Sneak</strong>: Get past sentries, into a camp or away from one.</td>
+<td>Ordinary</td>
+<td>the sentries (Watch)</td>
+<td>Unseen.</td>
+<td>Seen, but not yet caught.</td>
+<td>Walks into them.</td>
+</tr>
+<tr>
+<td>Stealth</td>
+<td><strong>Steal</strong>: Lift a purse, a horse or rations unseen.</td>
+<td>Hard</td>
+<td>the owner or the guard (Watch)</td>
+<td>Taken.</td>
+<td>Not taken.</td>
+<td>Caught in the act: the provost.</td>
+</tr>
+<tr>
+<td>Leechcraft</td>
+<td><strong>Diagnose</strong>: Tell what a sick man has, and whether it will spread.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Named: the GM tells which sickness.</td>
+<td>Unsure.</td>
+<td>Wrong.</td>
+</tr>
+<tr>
+<td>Signals</td>
+<td><strong>Get through</strong>: Raise another station, mend a line or a set, or send a message in code.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Through.</td>
+<td>Not yet: try again next hour.</td>
+<td>The set or line is out until mended.</td>
+</tr>
+<tr>
+<td>Strength</td>
+<td><strong>Force or carry</strong>: Force a door, lift a beam, carry a wounded man.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Done.</td>
+<td>Not alone.</td>
+<td>Strained: a step of fatigue.</td>
+</tr>
+<tr>
+<td>Agility</td>
+<td><strong>Climb or jump</strong>: Climb a wall, jump a ditch, keep his feet on ice.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Over.</td>
+<td>Not this way.</td>
+<td>Falls: roll a fall as a wound.</td>
+</tr>
+<tr>
+<td>Endurance</td>
+<td><strong>Endure</strong>: Keep going: swim, go without sleep, hold out in the cold.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Holds out.</td>
+<td>A step of fatigue.</td>
+<td>Collapses, or goes under.</td>
+</tr>
+<tr>
+<td>Wits</td>
+<td><strong>Notice or remember</strong>: Recall a face, a road or a password; work something out.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Yes.</td>
+<td>No.</td>
+<td>Remembers it wrong.</td>
+</tr>
+<tr>
+<td>Nerve</td>
+<td><strong>Keep his head</strong>: Stay calm out of a fight: under shelling in a dugout, at a hanging, before an officer.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Steady.</td>
+<td>Shaken: −10 to his next check.</td>
+<td>Breaks: runs, freezes or lashes out.</td>
+</tr>
+<tr>
+<td>Presence</td>
+<td><strong>Impress</strong>: Stare a man down, make a first impression, be remembered.</td>
+<td>Ordinary</td>
+<td>the other man (Presence)</td>
+<td>He gives way.</td>
+<td>No effect.</td>
+<td>Made an enemy.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-tongue_armies">Each army's tongues</h2>
+<p>For the Rules' <a href="rules.html#tongues">Tongues</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Army</th>
+<th>His own tongue (d100)</th>
+<th>Others he may have: chance (figure)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The British Empire</td>
+<td>English 90%, Hindustani 5%, French 3%, Welsh 2%</td>
+<td>English 60% (20-60), French 25% (5-30), German 2% (10-50)</td>
+</tr>
+<tr>
+<td>Newfoundland (1914-1918)</td>
+<td>English 100%</td>
+<td>English 60% (20-60), French 25% (5-30), German 2% (10-50)</td>
+</tr>
+<tr>
+<td>France</td>
+<td>French 90%, Arabic 5%, Breton 5%</td>
+<td>French 60% (20-60), German 5% (10-50)</td>
+</tr>
+<tr>
+<td>Imperial Russia (1914-1917)</td>
+<td>Russian 55%, Ukrainian 20%, Polish 7%, Belarusian 6%, Yiddish 5%, Crimean Tatar 4%, German 2%, Finnish 1%</td>
+<td>Russian 70% (20-60), German 5% (10-40)</td>
+</tr>
+<tr>
+<td>Austria-Hungary (1914-1918)</td>
+<td>German 27%, Hungarian 22%, Czech 14%, Polish 9%, Ukrainian 8%, Croatian 7%, Romanian 6%, Slovak 4%, Slovene 2%, Italian 1%</td>
+<td>German 40% (10-40), Hungarian 10% (10-40)</td>
+</tr>
+<tr>
+<td>Bulgaria (1915-1918)</td>
+<td>Bulgarian 90%, Turkish 10%</td>
+<td>Turkish 10% (10-40), Russian 5% (5-25), German 5% (5-25)</td>
+</tr>
+<tr>
+<td>Serbia (1914-1918)</td>
+<td>Serbian 100%</td>
+<td>French 10% (5-30), German 10% (10-40), Bulgarian 5% (10-40), Russian 5% (5-25), Albanian 3% (10-40)</td>
+</tr>
+<tr>
+<td>Germany</td>
+<td>German 90%, Polish 7%, French 3%</td>
+<td>German 60% (20-60), French 10% (5-40), English 5% (5-40)</td>
+</tr>
+<tr>
+<td>The United States (1917-1918)</td>
+<td>English 85%, German 7%, Italian 5%, Polish 3%</td>
+<td>English 60% (20-60), French 10% (5-25)</td>
+</tr>
+<tr>
+<td>The United States in Europe</td>
+<td>English 88%, German 4%, Italian 4%, Spanish 4%</td>
+<td>English 70% (30-70), French 5% (5-40)</td>
+</tr>
+<tr>
+<td>US Marines and Army in the Pacific</td>
+<td>English 95%, Spanish 4%, Japanese 1%</td>
+<td>English 70% (30-70), Japanese 1% (20-60)</td>
+</tr>
+<tr>
+<td>The British Commonwealth</td>
+<td>English 90%, French 5%, Hindustani 5%</td>
+<td>English 60% (20-60), French 5% (5-40)</td>
+</tr>
+<tr>
+<td>Germany</td>
+<td>German 95%, Polish 5%</td>
+<td>German 60% (20-60), French 15% (5-40), English 10% (5-40), Russian 5% (5-30)</td>
+</tr>
+<tr>
+<td>Italy (1940-1943)</td>
+<td>Italian 100%</td>
+<td>German 10% (5-40), English 5% (5-30), Arabic 5% (5-30), French 5% (10-40)</td>
+</tr>
+<tr>
+<td>The Soviet Union</td>
+<td>Russian 75%, Ukrainian 15%, Uzbek 10%</td>
+<td>Russian 60% (10-50), German 10% (5-30)</td>
+</tr>
+<tr>
+<td>Japan</td>
+<td>Japanese 100%</td>
+<td>English 10% (5-40), Chinese 10% (5-30)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-courses">Training courses</h2>
+<p>For the Rules' <a href="rules.html#experience">Experience</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Course</th>
+<th>Eras</th>
+<th>Away</th>
+<th>Gains</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>An officer cadet battalion (4½ months, from 1916)</td>
+<td>First World War</td>
+<td>19 weeks</td>
+<td>command +10, letters +3, signals +2; opens lieutenant</td>
+</tr>
+<tr>
+<td>Officer Candidate School (17 weeks)</td>
+<td>Second World War</td>
+<td>17 weeks</td>
+<td>command +10, letters +3, signals +2; opens lieutenant</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-patron_fate">What becomes of a patron</h2>
+<p>For the Rules' <a href="rules.html#patrons">Patrons</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Era</th>
+<th>d100</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>First World War (1914-1918)</td>
+<td>6% dies, 2% is sent home (stellenbosched), 10% is posted away</td>
+</tr>
+<tr>
+<td>Second World War (1939-1945)</td>
+<td>4% dies, 2% is relieved, 10% is posted away</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-prisoners">Prisoners: what captors did</h2>
+<p>For the Rules' <a href="rules.html#prisoners">Prisoners</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Era</th>
+<th>Captors</th>
+<th>Killed at or under</th>
+<th>Stripped at or under</th>
+<th>Released a season</th>
+<th>Dies a season</th>
+<th>Also</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1914-18</td>
+<td>In German hands</td>
+<td>8</td>
+<td>40</td>
+<td>3%</td>
+<td>0.5%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>1914-18</td>
+<td>Romanians in German, Italians in Austro-Hungarian hands</td>
+<td>8</td>
+<td>40</td>
+<td>2%</td>
+<td>3%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>1914-18</td>
+<td>Russians in German or Austro-Hungarian hands</td>
+<td>8</td>
+<td>40</td>
+<td>2%</td>
+<td>1%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>1914-18</td>
+<td>Serbs in Austro-Hungarian, Bulgarian or German hands</td>
+<td>8</td>
+<td>40</td>
+<td>1%</td>
+<td>3%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>1914-18</td>
+<td>Germans or Austro-Hungarians in Russian hands</td>
+<td>8</td>
+<td>40</td>
+<td>1%</td>
+<td>2%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>1914-18</td>
+<td>Austro-Hungarians in Italian hands</td>
+<td>8</td>
+<td>40</td>
+<td>2%</td>
+<td>1%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>1914-18</td>
+<td>Romanians in Bulgarian hands</td>
+<td>8</td>
+<td>40</td>
+<td>1%</td>
+<td>2%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>1914-18</td>
+<td>Austro-Hungarians in Serbian hands (the typhus, the retreat)</td>
+<td>8</td>
+<td>40</td>
+<td>1%</td>
+<td>6%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>1939-45</td>
+<td>Western Allies and Germans, either way</td>
+<td>5</td>
+<td>40</td>
+<td>2%</td>
+<td>0.4%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>1939-45</td>
+<td>An officers' camp or Colditz</td>
+<td>5</td>
+<td>40</td>
+<td>2%</td>
+<td>0.3%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>1939-45</td>
+<td>Soviet prisoners of the Germans, 1941-42</td>
+<td>25</td>
+<td>75</td>
+<td>0%</td>
+<td>30%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>1939-45</td>
+<td>The Eastern Front, 1942-45, either way</td>
+<td>25</td>
+<td>75</td>
+<td>0%</td>
+<td>5%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>1939-45</td>
+<td>Allied prisoners of the Japanese</td>
+<td>25</td>
+<td>70</td>
+<td>0%</td>
+<td>2.2%</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-kit_life">How long boots and clothing last</h2>
+<p>For the Rules' <a href="rules.html#kit">Boots and clothing</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Era</th>
+<th>Boots (marching days)</th>
+<th>Clothing (days)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>First World War</td>
+<td>51</td>
+<td>79</td>
+</tr>
+<tr>
+<td>Second World War</td>
+<td>105</td>
+<td>90</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-supplies">Rations and water carried</h2>
+<p>For the Rules' <a href="rules.html#supplies">Supplies</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Era</th>
+<th>Rations carried (days)</th>
+<th>Water carried (L a man)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>First World War</td>
+<td>2</td>
+<td>1.1</td>
+</tr>
+<tr>
+<td>Second World War</td>
+<td>2</td>
+<td>0.95</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-women">Women under arms</h2>
+<p>For the Rules' <a href="rules.html#women">Women under arms</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Army</th>
+<th>Share</th>
+<th>Careers open to women</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>First World War: The British Empire</td>
+<td>chosen, never rolled</td>
+<td>military nurse (100%), army auxiliary (100%)</td>
+</tr>
+<tr>
+<td>First World War: Newfoundland</td>
+<td>chosen, never rolled</td>
+<td>military nurse (100%)</td>
+</tr>
+<tr>
+<td>First World War: The United States (1917-1918)</td>
+<td>chosen, never rolled</td>
+<td>military nurse (100%)</td>
+</tr>
+<tr>
+<td>First World War: Russian</td>
+<td>chosen, never rolled</td>
+<td>rifleman, machine gunner, signaller or runner, corporal or sergeant, junior officer, military nurse (100%)</td>
+</tr>
+<tr>
+<td>First World War: Serbian</td>
+<td>chosen, never rolled</td>
+<td>rifleman, bomber, corporal or sergeant, military nurse (100%)</td>
+</tr>
+<tr>
+<td>First World War: Austro-Hungarian</td>
+<td>chosen, never rolled</td>
+<td>rifleman (disguised as a man), corporal or sergeant (disguised as a man), junior officer, military nurse (100%), army auxiliary (100%)</td>
+</tr>
+<tr>
+<td>First World War: Bulgarian</td>
+<td>chosen, never rolled</td>
+<td>military nurse (100%)</td>
+</tr>
+<tr>
+<td>Second World War: The United States in Europe</td>
+<td>chosen, never rolled</td>
+<td>army nurse (100%), army auxiliary (100%)</td>
+</tr>
+<tr>
+<td>Second World War: The British Commonwealth</td>
+<td>chosen, never rolled</td>
+<td>army nurse (100%), army auxiliary (100%)</td>
+</tr>
+<tr>
+<td>Second World War: The Soviet Union</td>
+<td>3%</td>
+<td>rifleman, machine gunner, sniper or scout, medic or stretcher-bearer, radio operator or signaller, corporal or sergeant, junior officer, tank crewman</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-money_days">The Day in each army's coin</h2>
+<p>For the Rules' <a href="rules.html#money-days">The Day in each army's coin</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Era</th>
+<th>Army</th>
+<th>Coin</th>
+<th>A Day</th>
+<th>From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>First World War (1914-1918)</td>
+<td>The British Empire</td>
+<td>Pounds, shillings and pence (10s and £1 Treasury notes from 1914)</td>
+<td>1s</td>
+<td>a British private's 1s a day (1914)</td>
+</tr>
+<tr>
+<td>First World War (1914-1918)</td>
+<td>Newfoundland (1914-1918)</td>
+<td>Newfoundland dollars and cents</td>
+<td>$1</td>
+<td>a Newfoundland Regiment private's $1.00 a day and his rations (The Rooms), about four times a British private's 1s</td>
+</tr>
+<tr>
+<td>First World War (1914-1918)</td>
+<td>France</td>
+<td>Francs (100 centimes)</td>
+<td>25 c.</td>
+<td>a poilu's 5 sous a day (the usual figure; raised with a combat allowance in 1917) (an estimate)</td>
+</tr>
+<tr>
+<td>First World War (1914-1918)</td>
+<td>Germany</td>
+<td>Marks (100 pfennigs)</td>
+<td>50 Pf</td>
+<td>about 50 pfennigs a day: an estimate, no source found</td>
+</tr>
+<tr>
+<td>First World War (1914-1918)</td>
+<td>The United States (1917-1918)</td>
+<td>Dollars and cents</td>
+<td>$1</td>
+<td>a US private's $30 a month (1917-18)</td>
+</tr>
+<tr>
+<td>First World War (1914-1918)</td>
+<td>Imperial Russia (1914-1917)</td>
+<td>Roubles (100 kopecks)</td>
+<td>1¾ kop.</td>
+<td>a Russian private's 6 roubles a year, about 1¾ kopecks a day (Podpryatov and Poperechnaya 2019); a farm labourer earned about 75 kopecks a day (1910). In quarter-kopecks (polushki)</td>
+</tr>
+<tr>
+<td>First World War (1914-1918)</td>
+<td>Serbia (1914-1918)</td>
+<td>Dinars (100 para)</td>
+<td>25 para</td>
+<td>no Serbian private's pay found: the French poilu's 5 sous, the dinar at par with the franc; an unskilled worker earned about 1.2 dinars a day (1910) (an estimate)</td>
+</tr>
+<tr>
+<td>First World War (1914-1918)</td>
+<td>Austria-Hungary (1914-1918)</td>
+<td>Kronen (100 Heller)</td>
+<td>36 h</td>
+<td>a private's 36 Heller a day in wartime (Hautmann 2008, a secondary source); an unskilled builder in Vienna earned 3.50 K a day in 1914</td>
+</tr>
+<tr>
+<td>First World War (1914-1918)</td>
+<td>Bulgaria (1915-1918)</td>
+<td>Leva (100 stotinki)</td>
+<td>25 st.</td>
+<td>no Bulgarian private's pay found: the French poilu's 5 sous, the lev at par with the franc before the war (an estimate) (an estimate)</td>
+</tr>
+<tr>
+<td>Second World War (1939-1945)</td>
+<td>The United States in Europe</td>
+<td>Dollars and cents</td>
+<td>$1.67</td>
+<td>a US private's $50 a month (from June 1942)</td>
+</tr>
+<tr>
+<td>Second World War (1939-1945)</td>
+<td>US Marines and Army in the Pacific</td>
+<td>Dollars and cents</td>
+<td>$1.67</td>
+<td>a US private's $50 a month (from June 1942)</td>
+</tr>
+<tr>
+<td>Second World War (1939-1945)</td>
+<td>The British Commonwealth</td>
+<td>Pounds, shillings and pence ($4.03 to the pound)</td>
+<td>3s</td>
+<td>a British private's 3s a day (May 1944)</td>
+</tr>
+<tr>
+<td>Second World War (1939-1945)</td>
+<td>Germany</td>
+<td>Reichsmarks (100 pfennigs)</td>
+<td>1 RM</td>
+<td>a German Soldat's 30 RM a month (Wehrsold)</td>
+</tr>
+<tr>
+<td>Second World War (1939-1945)</td>
+<td>Italy (1940-1943)</td>
+<td>Lire (100 centesimi)</td>
+<td>96 cent.</td>
+<td>an Italian private's $1.51 a month (US Intelligence Bulletin, December 1942) at 5.26 US cents to the lira: about 0.96 lira a day, our arithmetic; any war or overseas supplement not found (an estimate)</td>
+</tr>
+<tr>
+<td>Second World War (1939-1945)</td>
+<td>The Soviet Union</td>
+<td>Rubles (100 kopecks)</td>
+<td>57 kop.</td>
+<td>a Red Army private's 17 rubles a month in wartime (about a ruble a day with allowances)</td>
+</tr>
+<tr>
+<td>Second World War (1939-1945)</td>
+<td>Japan</td>
+<td>Yen (100 sen)</td>
+<td>25 sen</td>
+<td>a Japanese private's 6-9 yen a month</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-rank_pay">Pay by rank</h2>
+<p>For the Rules' <a href="rules.html#money-pay">Pay by rank</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Army</th>
+<th>A day's pay by rank, before stoppages</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The British Empire</td>
+<td>Private 1s · Corporal 1s 8d · Sergeant 2s 4d · Company sergeant-major 4s · Second lieutenant 7s 6d · Captain 12s 6d</td>
+</tr>
+<tr>
+<td>Newfoundland (1914-1918)</td>
+<td>Private $1 · Corporal $1.67 · Sergeant $2.33 · Company sergeant-major $4 · Second lieutenant $7.50 · Captain $12.50</td>
+</tr>
+<tr>
+<td>France</td>
+<td>Private 25 c. · Corporal 42 c. · Sergeant 58 c. · Company sergeant-major 1 fr · Second lieutenant 1.88 fr · Captain 3.13 fr</td>
+</tr>
+<tr>
+<td>Germany</td>
+<td>Private 50 Pf · Corporal 84 Pf · Sergeant 1.17 M · Company sergeant-major 2 M · Second lieutenant 3.75 M · Captain 6.25 M</td>
+</tr>
+<tr>
+<td>The United States (1917-1918)</td>
+<td>Private $1 · Corporal $1.67 · Sergeant $2.33 · Company sergeant-major $4 · Second lieutenant $7.50 · Captain $12.50</td>
+</tr>
+<tr>
+<td>Imperial Russia (1914-1917)</td>
+<td>Private 1¾ kop. · Corporal 7 kop. · Sergeant 14 kop. · Company sergeant-major 21 kop. · Second lieutenant 2 rub. 45 kop. · Captain 5 rub. 7½ kop.</td>
+</tr>
+<tr>
+<td>Serbia (1914-1918)</td>
+<td>Private 25 para · Corporal 42 para · Sergeant 58 para · Company sergeant-major 1 din. · Second lieutenant 1.88 din. · Captain 3.13 din.</td>
+</tr>
+<tr>
+<td>Austria-Hungary (1914-1918)</td>
+<td>Private 36 h · Corporal 60 h · Sergeant 84 h · Company sergeant-major 1.44 K · Second lieutenant 2.70 K · Captain 4.50 K</td>
+</tr>
+<tr>
+<td>Bulgaria (1915-1918)</td>
+<td>Private 25 st. · Corporal 42 st. · Sergeant 58 st. · Company sergeant-major 1 lv · Second lieutenant 1.88 lv · Captain 3.13 lv</td>
+</tr>
+<tr>
+<td>The United States in Europe</td>
+<td>Private $1.67 · Private first class $1.80 · Corporal $2.20 · Sergeant $2.61 · Staff sergeant $3.21 · Second lieutenant $5.01</td>
+</tr>
+<tr>
+<td>US Marines and Army in the Pacific</td>
+<td>Private $1.67 · Private first class $1.80 · Corporal $2.20 · Sergeant $2.61 · Staff sergeant $3.21 · Second lieutenant $5.01</td>
+</tr>
+<tr>
+<td>The British Commonwealth</td>
+<td>Private 3s · Private first class 4s 9½d · Corporal 6s · Sergeant 9s · Staff sergeant 12s · Second lieutenant 19s 6d</td>
+</tr>
+<tr>
+<td>Germany</td>
+<td>Private 1 RM · Private first class 1.53 RM · Corporal 1.80 RM · Sergeant 2.07 RM · Staff sergeant 3.73 RM · Second lieutenant 6 RM</td>
+</tr>
+<tr>
+<td>Italy (1940-1943)</td>
+<td>Private 96 cent. · Private first class 1.04 lire · Corporal 1.27 lire · Sergeant 1.50 lire · Staff sergeant 1.84 lire · Second lieutenant 2.88 lire</td>
+</tr>
+<tr>
+<td>The Soviet Union</td>
+<td>Private 57 kop. · Private first class 62 kop. · Corporal 75 kop. · Sergeant 89 kop. · Staff sergeant 1.09 rub. · Second lieutenant 1.71 rub.</td>
+</tr>
+<tr>
+<td>Japan</td>
+<td>Private 25 sen · Private first class 27 sen · Corporal 33 sen · Sergeant 39 sen · Staff sergeant 48 sen · Second lieutenant 75 sen</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-prices">Prices</h2>
+<p>For the Rules' <a href="rules.html#money-prices">Prices</a>.</p>
+<h3 id="era-prices-wwi">First World War (1914-1918)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>When</th>
+<th>Price</th>
+<th>About</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ford Model T, touring car</td>
+<td>1914</td>
+<td>$490</td>
+<td>490 Days</td>
+</tr>
+<tr>
+<td>Black bread, a funt, Moscow</td>
+<td>August 1914 (12 kopecks by August 1917)</td>
+<td>2½ kop.</td>
+<td>1½ Days</td>
+</tr>
+<tr>
+<td>Meat, a funt</td>
+<td>1914</td>
+<td>19 kop.</td>
+<td>10¾ Days</td>
+</tr>
+<tr>
+<td>Men's shoes, a pair, Moscow</td>
+<td>1914 (144 roubles by 1917)</td>
+<td>12 rub.</td>
+<td>685¾ Days</td>
+</tr>
+<tr>
+<td>Men's suit of clothes, Moscow</td>
+<td>1914 (400-455 roubles by 1917)</td>
+<td>40 rub.</td>
+<td>2,285¾ Days</td>
+</tr>
+<tr>
+<td>Army horse, bought by the Zemstvo Union</td>
+<td>1915-16</td>
+<td>163 rub.–289 rub.</td>
+<td>12,914¼ Days</td>
+</tr>
+<tr>
+<td>Bread, a kilo, Vienna</td>
+<td>1914 (56 h rationed in 1918; prices rose sixteenfold over the war)</td>
+<td>40 h</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Meat, a kilo, Vienna</td>
+<td>1914 (845 h in 1917)</td>
+<td>2.22 K</td>
+<td>6¼ Days</td>
+</tr>
+<tr>
+<td>Wine, a litre, Vienna</td>
+<td>1914 (900 h in 1918)</td>
+<td>1.24 K</td>
+<td>3½ Days</td>
+</tr>
+<tr>
+<td>Beer, a litre, Vienna</td>
+<td>1914 (230 h in 1918)</td>
+<td>37 h–38 h</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Ford Model T ambulance, equipped and shipped</td>
+<td>1917</td>
+<td>$660.39</td>
+<td>660½ Days</td>
+</tr>
+<tr>
+<td>Army remount horse, bought and delivered</td>
+<td>1914-20</td>
+<td>£57</td>
+<td>1,140 Days</td>
+</tr>
+<tr>
+<td>Motorcycle</td>
+<td></td>
+<td>£40–£70</td>
+<td>1,100 Days</td>
+</tr>
+<tr>
+<td>Bicycle</td>
+<td></td>
+<td>£5–£8</td>
+<td>130 Days</td>
+</tr>
+<tr>
+<td>SMLE rifle (to the War Office)</td>
+<td></td>
+<td>£3 15s</td>
+<td>75 Days</td>
+</tr>
+<tr>
+<td>Webley revolver (contract)</td>
+<td>1887</td>
+<td>£3 1s 1d</td>
+<td>61 Days</td>
+</tr>
+<tr>
+<td>Gewehr 98 rifle</td>
+<td></td>
+<td>40 M–60 M</td>
+<td>100 Days</td>
+</tr>
+<tr>
+<td>Sword bayonet and scabbard</td>
+<td>1919</td>
+<td>£1 1s 3d</td>
+<td>21¼ Days</td>
+</tr>
+<tr>
+<td>100 rounds of .303</td>
+<td></td>
+<td>10s</td>
+<td>10 Days</td>
+</tr>
+<tr>
+<td>Mills bomb</td>
+<td></td>
+<td>1s–1s 6d</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>Brodie steel helmet</td>
+<td></td>
+<td>3s–5s</td>
+<td>4 Days</td>
+</tr>
+<tr>
+<td>Pipe tobacco (lb)</td>
+<td></td>
+<td>6s 5d–8s 2d</td>
+<td>7¼ Days</td>
+</tr>
+<tr>
+<td>Hotel night, provincial</td>
+<td></td>
+<td>3s–5s</td>
+<td>4 Days</td>
+</tr>
+<tr>
+<td>Butter (lb)</td>
+<td>1914</td>
+<td>1s 6d</td>
+<td>1½ Days</td>
+</tr>
+<tr>
+<td>Bacon (lb)</td>
+<td>1914</td>
+<td>1s 2d</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>Egg and chips in an estaminet</td>
+<td></td>
+<td>1 fr</td>
+<td>4 Days</td>
+</tr>
+<tr>
+<td>4-lb loaf</td>
+<td>1914-18</td>
+<td>5½d–9d</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Short rail trip</td>
+<td>1917</td>
+<td>6d–9d</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>Communal kitchen meal</td>
+<td>1918</td>
+<td>6d</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Pint of beer</td>
+<td></td>
+<td>2d–5d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Five Woodbine cigarettes</td>
+<td></td>
+<td>1d</td>
+<td>0 Days</td>
+</tr>
+<tr>
+<td>Electric torch (British)</td>
+<td></td>
+<td>2s–5s</td>
+<td>3½ Days</td>
+</tr>
+<tr>
+<td>Three-cell flashlight</td>
+<td>1917</td>
+<td>$1.05</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Two-cell flashlight</td>
+<td>1917</td>
+<td>74¢</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>Candle</td>
+<td></td>
+<td>1d</td>
+<td>0 Days</td>
+</tr>
+<tr>
+<td>Officer's waterproof sleeping valise</td>
+<td></td>
+<td>£2 10s</td>
+<td>50 Days</td>
+</tr>
+<tr>
+<td>Army poncho</td>
+<td>1917</td>
+<td>$5.50</td>
+<td>5½ Days</td>
+</tr>
+<tr>
+<td>Rubber-sheet poncho</td>
+<td>1917</td>
+<td>$2.40</td>
+<td>2½ Days</td>
+</tr>
+<tr>
+<td>Blanket</td>
+<td></td>
+<td>5s</td>
+<td>5 Days</td>
+</tr>
+<tr>
+<td>Groundsheet (British)</td>
+<td></td>
+<td>4s</td>
+<td>4 Days</td>
+</tr>
+<tr>
+<td>Field binoculars</td>
+<td></td>
+<td>£3–£8</td>
+<td>110 Days</td>
+</tr>
+<tr>
+<td>Wristwatch with hunter lid (Harrods)</td>
+<td>1917</td>
+<td>£3</td>
+<td>60 Days</td>
+</tr>
+<tr>
+<td>Officer's wristwatch</td>
+<td></td>
+<td>£1–£3</td>
+<td>40 Days</td>
+</tr>
+<tr>
+<td>Prismatic compass</td>
+<td></td>
+<td>£2–£4</td>
+<td>60 Days</td>
+</tr>
+<tr>
+<td>Wristwatch, nickel to gold-filled</td>
+<td>1917</td>
+<td>$2.68–$13.50</td>
+<td>8 Days</td>
+</tr>
+<tr>
+<td>Jewelled pocket compass</td>
+<td>1917</td>
+<td>$1.08</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Tommy's Cooker refill</td>
+<td>1916</td>
+<td>2s</td>
+<td>2 Days</td>
+</tr>
+<tr>
+<td>Tommy's Cooker</td>
+<td>1916</td>
+<td>1s</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Waterproof match box</td>
+<td>1917</td>
+<td>46¢</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Tinned Heat stove</td>
+<td>1916</td>
+<td>10½d</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Three boxes of matches</td>
+<td>1916</td>
+<td>2d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Rope (fathom)</td>
+<td></td>
+<td>3d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>First field dressing</td>
+<td></td>
+<td>6d</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Iodine ampoule</td>
+<td></td>
+<td>2d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Officer's kit, jacket to greatcoat</td>
+<td>1914</td>
+<td>£14 7s 6d</td>
+<td>287½ Days</td>
+</tr>
+<tr>
+<td>Officer's trench coat</td>
+<td>1914</td>
+<td>£6 6s</td>
+<td>126 Days</td>
+</tr>
+<tr>
+<td>Officer's tailored jacket</td>
+<td></td>
+<td>£2 10s–£3 10s</td>
+<td>60 Days</td>
+</tr>
+<tr>
+<td>Greatcoat (British)</td>
+<td></td>
+<td>£1</td>
+<td>20 Days</td>
+</tr>
+<tr>
+<td>Ammunition boots</td>
+<td></td>
+<td>12s–16s</td>
+<td>14 Days</td>
+</tr>
+<tr>
+<td>Service trousers</td>
+<td>1918</td>
+<td>10s 3d</td>
+<td>10¼ Days</td>
+</tr>
+<tr>
+<td>Woollen vest</td>
+<td>1918</td>
+<td>5s 8d</td>
+<td>5¾ Days</td>
+</tr>
+<tr>
+<td>US enlisted coat and trousers</td>
+<td>1917</td>
+<td>$8.50</td>
+<td>8½ Days</td>
+</tr>
+<tr>
+<td>US army shoes</td>
+<td>1917</td>
+<td>$6.75</td>
+<td>6¾ Days</td>
+</tr>
+<tr>
+<td>Flannel shirt</td>
+<td>1917</td>
+<td>$3.35</td>
+<td>3¼ Days</td>
+</tr>
+<tr>
+<td>Wool drawers</td>
+<td>1917</td>
+<td>$2.65</td>
+<td>2¾ Days</td>
+</tr>
+<tr>
+<td>Campaign hat</td>
+<td>1917</td>
+<td>$2.50</td>
+<td>2½ Days</td>
+</tr>
+<tr>
+<td>Puttees, canvas</td>
+<td>1917</td>
+<td>$1.25</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>A day's meals at a soldiers' club (breakfast, lunch, dinner)</td>
+<td>1916</td>
+<td>2s 4d</td>
+<td>2¼ Days</td>
+</tr>
+<tr>
+<td>A bed at a soldiers' club</td>
+<td>1916</td>
+<td>8d</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>A day's food on leave</td>
+<td>1918</td>
+<td>$1–$1.50</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>A cheap bed on leave</td>
+<td>1918</td>
+<td>50¢</td>
+<td>½ Day</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-prices-wwii">Second World War (1939-1945)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>When</th>
+<th>Price</th>
+<th>About</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Jeep (to the Army)</td>
+<td></td>
+<td>$650–$740</td>
+<td>416¼ Days</td>
+</tr>
+<tr>
+<td>Army remount stallion, two years old (Iwate)</td>
+<td>1935</td>
+<td>¥253</td>
+<td>1,012 Days</td>
+</tr>
+<tr>
+<td>Harley-Davidson WLA motorcycle</td>
+<td></td>
+<td>$400</td>
+<td>239½ Days</td>
+</tr>
+<tr>
+<td>BAR automatic rifle</td>
+<td>1945</td>
+<td>$319</td>
+<td>191 Days</td>
+</tr>
+<tr>
+<td>MG42 machine gun</td>
+<td></td>
+<td>250 RM</td>
+<td>250 Days</td>
+</tr>
+<tr>
+<td>M1 Garand rifle</td>
+<td></td>
+<td>$85</td>
+<td>51 Days</td>
+</tr>
+<tr>
+<td>Thompson submachine gun</td>
+<td>1942-44</td>
+<td>$45–$70</td>
+<td>34½ Days</td>
+</tr>
+<tr>
+<td>M1 carbine</td>
+<td></td>
+<td>$45</td>
+<td>27 Days</td>
+</tr>
+<tr>
+<td>Lee-Enfield No. 4 rifle</td>
+<td>1943</td>
+<td>£7 15s</td>
+<td>51¾ Days</td>
+</tr>
+<tr>
+<td>Kar98k rifle</td>
+<td></td>
+<td>70 RM</td>
+<td>70 Days</td>
+</tr>
+<tr>
+<td>MP40 submachine gun</td>
+<td></td>
+<td>60 RM</td>
+<td>60 Days</td>
+</tr>
+<tr>
+<td>M1911 pistol</td>
+<td></td>
+<td>$26.38</td>
+<td>15¾ Days</td>
+</tr>
+<tr>
+<td>M3 grease gun</td>
+<td></td>
+<td>$20</td>
+<td>12 Days</td>
+</tr>
+<tr>
+<td>Sten gun</td>
+<td>1942</td>
+<td>£2 6s</td>
+<td>15¼ Days</td>
+</tr>
+<tr>
+<td>100 rounds of .30-06</td>
+<td></td>
+<td>$4.50</td>
+<td>2¾ Days</td>
+</tr>
+<tr>
+<td>Hand grenade</td>
+<td></td>
+<td>75¢</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>M-1 helmet with liner</td>
+<td>1944</td>
+<td>$2.68</td>
+<td>1½ Days</td>
+</tr>
+<tr>
+<td>Pack of cigarettes, Berlin black market</td>
+<td>1945</td>
+<td>300 RM</td>
+<td>300 Days</td>
+</tr>
+<tr>
+<td>Hotel night (US)</td>
+<td></td>
+<td>$2.50</td>
+<td>1½ Days</td>
+</tr>
+<tr>
+<td>Rail fare, about 100 miles (US)</td>
+<td></td>
+<td>$2.50</td>
+<td>1½ Days</td>
+</tr>
+<tr>
+<td>Trattoria meal, Italy</td>
+<td></td>
+<td>50 lire–100 lire</td>
+<td>—</td>
+</tr>
+<tr>
+<td>A day's K-ration</td>
+<td></td>
+<td>75¢</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Diner meal (US)</td>
+<td></td>
+<td>50¢</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Pint of mild, Britain</td>
+<td>1943-45</td>
+<td>11d–1s</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Pack of cigarettes (PX)</td>
+<td></td>
+<td>5¢</td>
+<td>0 Days</td>
+</tr>
+<tr>
+<td>GI life insurance, $10,000, a month</td>
+<td>1942</td>
+<td>$6.50</td>
+<td>4 Days</td>
+</tr>
+<tr>
+<td>Wrist flashlight with batteries</td>
+<td>1942</td>
+<td>98¢</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>TL-122 flashlight (Signal Corps)</td>
+<td></td>
+<td>$1</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Squad tent, M1942</td>
+<td>1944</td>
+<td>$173.28</td>
+<td>103¾ Days</td>
+</tr>
+<tr>
+<td>Pyramidal tent, khaki</td>
+<td>1944</td>
+<td>$51.87</td>
+<td>31 Days</td>
+</tr>
+<tr>
+<td>Sleeping bag, arctic</td>
+<td>1944</td>
+<td>$36.87</td>
+<td>22 Days</td>
+</tr>
+<tr>
+<td>Two-man mountain tent, with pins and poles</td>
+<td>1944</td>
+<td>$29.56</td>
+<td>17¾ Days</td>
+</tr>
+<tr>
+<td>Sleeping bag, mountain</td>
+<td>1944</td>
+<td>$25.25</td>
+<td>15 Days</td>
+</tr>
+<tr>
+<td>Jungle hammock, complete</td>
+<td>1944</td>
+<td>$17.04</td>
+<td>10¼ Days</td>
+</tr>
+<tr>
+<td>Waterproof bedding roll, M1935</td>
+<td>1944</td>
+<td>$11.58</td>
+<td>7 Days</td>
+</tr>
+<tr>
+<td>Sleeping bag, wool</td>
+<td>1944</td>
+<td>$10.89</td>
+<td>6½ Days</td>
+</tr>
+<tr>
+<td>Poncho, lightweight</td>
+<td>1944</td>
+<td>$9.18</td>
+<td>5½ Days</td>
+</tr>
+<tr>
+<td>Wool blanket, M1934</td>
+<td>1944</td>
+<td>$8.10</td>
+<td>4¾ Days</td>
+</tr>
+<tr>
+<td>Poncho, resin-coated</td>
+<td>1944</td>
+<td>$6.26</td>
+<td>3¾ Days</td>
+</tr>
+<tr>
+<td>Mosquito bar</td>
+<td>1944</td>
+<td>$5.94</td>
+<td>3½ Days</td>
+</tr>
+<tr>
+<td>Wool blanket, lightweight</td>
+<td>1944</td>
+<td>$4.06</td>
+<td>2½ Days</td>
+</tr>
+<tr>
+<td>Shelter half</td>
+<td>1944</td>
+<td>$3.48</td>
+<td>2 Days</td>
+</tr>
+<tr>
+<td>Insulating sleeping pad</td>
+<td>1944</td>
+<td>$2.26</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>Mosquito headnet</td>
+<td>1944</td>
+<td>40¢</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Hamilton pocket watch</td>
+<td>1942</td>
+<td>$172</td>
+<td>103 Days</td>
+</tr>
+<tr>
+<td>Zeiss binoculars</td>
+<td>1942</td>
+<td>$104</td>
+<td>62¼ Days</td>
+</tr>
+<tr>
+<td>Binoculars, 6x30</td>
+<td></td>
+<td>$50</td>
+<td>30 Days</td>
+</tr>
+<tr>
+<td>Map case, roll type</td>
+<td>1944</td>
+<td>$5.45</td>
+<td>3¼ Days</td>
+</tr>
+<tr>
+<td>Lensatic compass (Engineers)</td>
+<td></td>
+<td>$3</td>
+<td>1¾ Days</td>
+</tr>
+<tr>
+<td>Wristwatch (PX grade)</td>
+<td></td>
+<td>$20</td>
+<td>12 Days</td>
+</tr>
+<tr>
+<td>Waterproof match box with compass</td>
+<td>1944</td>
+<td>56¢</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Zippo lighter (forces only, 1942-45)</td>
+<td>1933 on</td>
+<td>$1.95</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>Waterproof match box</td>
+<td>1944</td>
+<td>11¢</td>
+<td>0 Days</td>
+</tr>
+<tr>
+<td>Box of 50 matches</td>
+<td>1944</td>
+<td>1½d</td>
+<td>0 Days</td>
+</tr>
+<tr>
+<td>Nylon climbing rope, 7/16 in, 120 ft</td>
+<td>1944</td>
+<td>$19.04</td>
+<td>11½ Days</td>
+</tr>
+<tr>
+<td>Manila climbing rope, ½ in, 200 ft</td>
+<td>1944</td>
+<td>$2.23</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>Parachutist's let-down rope, 30 ft</td>
+<td>1944</td>
+<td>$1.35</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>Toggle rope (British)</td>
+<td></td>
+<td>2s</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>Drag rope with shoulder strap</td>
+<td>1944</td>
+<td>91¢</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Tent line, 10 ft</td>
+<td>1944</td>
+<td>19¢</td>
+<td>0 Days</td>
+</tr>
+<tr>
+<td>Parachutist's medical pouch</td>
+<td>1944</td>
+<td>$11.52</td>
+<td>7 Days</td>
+</tr>
+<tr>
+<td>Carlisle dressing with sulfa tablets</td>
+<td></td>
+<td>25¢</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Morphine syrette</td>
+<td></td>
+<td>25¢</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>First-aid packet pouch</td>
+<td>1944</td>
+<td>19¢</td>
+<td>0 Days</td>
+</tr>
+<tr>
+<td>Wool overcoat, melton</td>
+<td>1944</td>
+<td>$15.85</td>
+<td>9½ Days</td>
+</tr>
+<tr>
+<td>Rucksack</td>
+<td>1944</td>
+<td>$12.57</td>
+<td>7½ Days</td>
+</tr>
+<tr>
+<td>Pile field jacket</td>
+<td>1944</td>
+<td>$12.53</td>
+<td>7½ Days</td>
+</tr>
+<tr>
+<td>Field jacket, M1943</td>
+<td>1944</td>
+<td>$10.50</td>
+<td>6¼ Days</td>
+</tr>
+<tr>
+<td>Cotton field parka</td>
+<td>1944</td>
+<td>$8.66</td>
+<td>5¼ Days</td>
+</tr>
+<tr>
+<td>Combat service boots, composition sole</td>
+<td>1944</td>
+<td>$6.74</td>
+<td>4 Days</td>
+</tr>
+<tr>
+<td>Shoepacs, 12-inch M1944</td>
+<td>1944</td>
+<td>$6.36</td>
+<td>3¾ Days</td>
+</tr>
+<tr>
+<td>Wool field trousers, 18-oz</td>
+<td>1944</td>
+<td>$4.85</td>
+<td>3 Days</td>
+</tr>
+<tr>
+<td>Cotton field trousers</td>
+<td>1944</td>
+<td>$4.75</td>
+<td>2¾ Days</td>
+</tr>
+<tr>
+<td>Field pack</td>
+<td>1944</td>
+<td>$4.58</td>
+<td>2¾ Days</td>
+</tr>
+<tr>
+<td>Raincoat, rubberized</td>
+<td>1944</td>
+<td>$4.51</td>
+<td>2¾ Days</td>
+</tr>
+<tr>
+<td>Flannel shirt</td>
+<td>1944</td>
+<td>$4.35</td>
+<td>2½ Days</td>
+</tr>
+<tr>
+<td>Jungle boots</td>
+<td>1944</td>
+<td>$3.20</td>
+<td>2 Days</td>
+</tr>
+<tr>
+<td>HBT jacket</td>
+<td>1944</td>
+<td>$2.25</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>HBT trousers</td>
+<td>1944</td>
+<td>$2.25</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>Cartridge belt</td>
+<td>1944</td>
+<td>$2.12</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>Intrenching shovel, M1943</td>
+<td>1944</td>
+<td>$1.02</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Leggings, canvas</td>
+<td>1944</td>
+<td>95¢</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Wool gloves</td>
+<td>1944</td>
+<td>94¢</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Machete, 18-inch</td>
+<td>1944</td>
+<td>94¢</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Cotton undershirt</td>
+<td>1944</td>
+<td>65¢</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Wool socks, cushion sole</td>
+<td>1944</td>
+<td>60¢</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Canteen</td>
+<td>1944</td>
+<td>50¢</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Wool knit cap, M1941</td>
+<td>1944</td>
+<td>47¢</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Cotton drawers</td>
+<td>1944</td>
+<td>43¢</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Bath towel</td>
+<td>1944</td>
+<td>43¢</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Canteen cup</td>
+<td>1944</td>
+<td>29¢</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>A soldier's whole clothing issue</td>
+<td>1941</td>
+<td>$157.71</td>
+<td>94½ Days</td>
+</tr>
+<tr>
+<td>Officer's overcoat</td>
+<td>1942</td>
+<td>$65</td>
+<td>39 Days</td>
+</tr>
+<tr>
+<td>Civilian suit</td>
+<td>1942</td>
+<td>$50–$60</td>
+<td>33 Days</td>
+</tr>
+<tr>
+<td>Civilian oxford shoes</td>
+<td>1942</td>
+<td>$10</td>
+<td>6 Days</td>
+</tr>
+<tr>
+<td>British demob outfit, to the government</td>
+<td>1945</td>
+<td>£12</td>
+<td>80 Days</td>
+</tr>
+<tr>
+<td>British officer's peaked cap</td>
+<td>1942</td>
+<td>£2 2s</td>
+<td>14 Days</td>
+</tr>
+<tr>
+<td>Sam Browne belt</td>
+<td>1942</td>
+<td>£1 15s</td>
+<td>11¾ Days</td>
+</tr>
+<tr>
+<td>A day's food on pass</td>
+<td>1943</td>
+<td>$1.25–$1.50</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>A bed at a service men's center</td>
+<td>1944</td>
+<td>50¢</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>A British Restaurant meal</td>
+<td>1943</td>
+<td>9d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>A cheap bed in Britain</td>
+<td>1940s</td>
+<td>1s–1s 6d</td>
+<td>½ Day</td>
+</tr>
+</tbody>
+</table>
+<h1 id="world_wars-tables">Wound tables</h1>
+<p>Each battle rolls its wounds on a table built from the record of that war, and these are the notes on where each one comes from. The tables themselves are in the <a href="tables.pdf">printed tables</a> and the <a href="roller.html">wound roller</a>. A <em>gameplay-adjusted</em> table is re-weighted from bone evidence to stand for every blow that landed, not only the ones that marked bone; an <em>evidence</em> table is the record itself.</p>
+<h2 id="table-wwi-1914-18-wounds">WWI 1914-18 - penetrating wounds</h2>
+<p>Primary penetrating wounds in WWI casualties.</p>
+<p><em>How sure:</em> taken directly from a source. Region totals are from the source. The split inside each region uses body exposure (design estimate). Extremities are split 40% arms / 60% legs, the average of the WWII, Korea and Vietnam hospital figures in Neel (1973) Table 7 (design estimate).</p>
+<p><em>Rolled by:</em> the battlefields of <a href="#field-mons-1914">Mons 1914</a>, <a href="#field-babuna-1915">The Babuna pass 1915</a>, <a href="#field-beaumont-hamel-1916">Beaumont-Hamel 1916</a>; the armies of The British Empire, Newfoundland, France, Germany, The United States (1917-1918), Russian, Serbian, Austro-Hungarian, Bulgarian.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Borden Institute, Weapons Effects and War Wounds, ch. 1, Table 1-2: anatomical distribution of primary penetrating wounds (%): head/neck/face 17, thorax 4, abdomen 2, extremity 70, other 7.</li>
+</ul>
+<h2 id="table-wwii-italy-1944-killed">WWII Italy 1944 - killed in action</h2>
+<p>Wounds on 983 American soldiers killed by missiles (bullets and shell fragments), examined in Italian military cemeteries, 1944. 7,006 wounds.</p>
+<p><em>How sure:</em> taken directly from a source. Region totals are from the source. The split inside each region uses body exposure (design estimate).</p>
+<p><em>Rolled by:</em> no battle here: it is the evidence the others are built from.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>US Army Medical Department, Wound Ballistics in World War II, ch. 6, Table 118: lower extremities 29.7%, thorax 25.7%, upper extremities 20.8%, head 8.8%, abdomen 6.4%, buttocks 4.9%, neck 3.7%, genitalia 0.3%.</li>
+</ul>
+<h2 id="table-bougainville-1944-wounded">Bougainville 1944 - wounded</h2>
+<p>US soldiers wounded by Japanese rifle, machine-gun, mortar, grenade and artillery fire, Bougainville, 1944 (1,162 single-region wounds).</p>
+<p><em>How sure:</em> taken directly from a source. Region counts are from the source. The split inside each region uses body exposure (design estimate).</p>
+<p><em>Rolled by:</em> no battle here: it is the evidence the others are built from.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Oughterson et al., Wound Ballistics study of the Bougainville campaign (US Army Medical Department, 1944; NLM scan nlmuid-46921110R): living wounded by region - head, face, neck 240; chest 144; abdomen 66; upper extremities 319; lower extremities 393. Excludes 332 multi-region wounds and 547 minor wounds returned to duty.</li>
+</ul>
+<h2 id="table-bougainville-1944-killed">Bougainville 1944 - killed</h2>
+<p>US soldiers killed by single-region missile wounds, Bougainville, 1944 (294 men).</p>
+<p><em>How sure:</em> taken directly from a source. Region counts are from the source. The split inside each region uses body exposure (design estimate).</p>
+<p><em>Rolled by:</em> no battle here: it is the evidence the others are built from.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Oughterson et al., Bougainville wound ballistics study (1944): killed by region - head, face, neck 144; chest 87; abdomen 48; upper extremities 1; lower extremities 14.</li>
+</ul>
+<h2 id="table-bougainville-1944-all-hits">Bougainville 1944 - all hits</h2>
+<p>Every single-region missile hit in the study, wounded and killed together (1,456 hits).</p>
+<p><em>How sure:</em> taken directly from a source. Region counts are from the source (wounded + killed). The split inside each region uses body exposure (design estimate).</p>
+<p><em>Rolled by:</em> the battlefields of <a href="#field-bougainville-1944">Hill 700 1944</a>; the armies of US Marines and Army in the Pacific, Japan.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Oughterson et al., Bougainville wound ballistics study (1944): totals by region - head, face, neck 384; chest 231; abdomen 114; upper extremities 320; lower extremities 407 (20.2% killed overall).</li>
+</ul>
+<h2 id="table-owens-wwii">WWII 1941-45 - hospitalized (Owens comparison set)</h2>
+<p>US casualties hospitalized in WWII.</p>
+<p><em>How sure:</em> taken directly from a source. Region totals are from the source. Extremities split 40% arms / 60% legs, the average of the WWII, Korea and Vietnam hospital figures in Neel (1973) Table 7 (design estimate), the same rule for every table in this set. The split inside each region uses body exposure (design estimate).</p>
+<p><em>Rolled by:</em> the battlefields of <a href="#field-snipe-1942">Snipe 1942</a>, <a href="#field-cisterna-1944">The Rangers at Cisterna 1944</a>, <a href="#field-cassino-monastery-1944">Snakeshead Ridge and the abbey 1944</a>, <a href="#field-cassino-town-1944">Cassino town and Castle Hill 1944</a>, <a href="#field-cassino-poles-1944">The Poles at Point 593 and Phantom Ridge 1944</a>; the armies of The United States in Europe, The British Commonwealth, Germany, Italian, The Soviet Union.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Owens BD et al., 'Combat wounds in Operation Iraqi Freedom and Operation Enduring Freedom', J Trauma 2008, comparison table (reproduced in National Academies, Review of DoD Test Protocols for Combat Helmets, 2014, Table 3-2): head and neck 21, thorax 14, abdomen 8, extremities 58.</li>
+</ul>
+<h1 id="world_wars-fields">Battlefields</h1>
+<p>Each battlefield lays out on the <a href="field.html">field map</a> under <em>Battlefield</em>. What follows is what the field and its phases hold, and, briefly, what happened there.</p>
+<h2 id="field-mons-1914">Mons, 23 August 1914 (the Nimy salient)</h2>
+<ul>
+<li><em>The armies:</em> British and Germans.</li>
+<li><em>Fought for:</em> the railway bridge at Nimy, attacked by the Germans.</li>
+<li><em>The field:</em> 150 by 120 hexes of 10 m, about 1,500 by 1,040 m, north at the top.</li>
+<li><em>The weather:</em> Overcast, calm or light air from the south-west.</li>
+<li><em>Wounds:</em> <a href="#table-wwi-1914-18-wounds">WWI 1914-18 - penetrating wounds</a>.</li>
+<li><em>On the travel map:</em> Mons, 1914 (Condé to Binche), at Nimy bridges.</li>
+</ul>
+<h3 id="what-happened">What happened</h3>
+<p>The Royal Fusiliers held the bridges at the tip of the salient, with their two machine guns at the railway bridge. German infantry came over the open ground in close order and through the woods, and the British rifle and machine-gun fire cut them down in numbers; the Fusiliers' machine-gun officer and one of his gunners kept the guns firing after the rest of the crews were hit. German guns pounded the salient, the attackers worked round its flanks, and by afternoon the battalion fell back through Nimy. The Germans crossed, and that night the BEF began its long retreat.</p>
+<h3 id="how-the-field-is-drawn">How the field is drawn</h3>
+<p>The canal salient at Nimy, north of Mons, 23 August 1914, at 10 m a hex: 150 x 120 hexes, about 1500 m east to west and 1040 m north to south, north at the top: the canal loop across the middle, its two bridges near the tip, Nimy on the south bank, open fields and woods to the north. The canal, the village, the woods and the bridges are drawn by hand to the shape the accounts give, not traced from any map; the deployment is mid-morning, in our own words, with round numbers for play. Water (the canal) can be crossed only at the bridges.</p>
+<h3 id="the-armies-as-drawn-up">The armies as drawn up</h3>
+<p><strong>The British</strong> (1,180 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4th Royal Fusiliers (C Coy, the railway bridge)</td>
+<td>180</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Royal Fusiliers machine guns (railway bridge)</td>
+<td>10</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>4th Royal Fusiliers (B Coy, the road bridge)</td>
+<td>180</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>4th Royal Fusiliers (A and D Coys, Nimy)</td>
+<td>400</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>4th Middlesex (canal east)</td>
+<td>400</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Middlesex machine guns</td>
+<td>10</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Germans</strong> (3,630 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IR 84, I Battalion</td>
+<td>900</td>
+<td>regular</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>IR 84, II Battalion</td>
+<td>900</td>
+<td>regular</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>IR 86, I Battalion (from the woods)</td>
+<td>900</td>
+<td>regular</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>A renewed attack</td>
+</tr>
+<tr>
+<td>IR 84 machine-gun company</td>
+<td>30</td>
+<td>regular</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>IR 84, III Battalion (in support)</td>
+<td>900</td>
+<td>regular</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Extended order</td>
+<td>The attack in force</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>The first assault</td>
+<td>09:00: IR 84 comes at the bridges of the salient in close order.</td>
+</tr>
+<tr>
+<td>31</td>
+<td>A renewed attack</td>
+<td>Half an hour after the first is beaten off, a wider attack comes in through the woods (which battalion is our reading).</td>
+</tr>
+<tr>
+<td>121</td>
+<td>The attack in force</td>
+<td>11:00: the Germans attack in force (that the supporting battalion went in then is our reading).</td>
+</tr>
+<tr>
+<td>251</td>
+<td>Withdrawal</td>
+<td>13:10: the Fusiliers are ordered back; they go at 13:40.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-babuna-1915">The Babuna pass, November 1915</h2>
+<ul>
+<li><em>The armies:</em> Serbians and Bulgarians.</li>
+<li><em>Fought for:</em> the saddle of the Babuna pass, attacked by the Bulgarians.</li>
+<li><em>The field:</em> 130 by 110 hexes of 10 m, about 1,300 by 950 m, north at the top.</li>
+<li><em>The weather:</em> Overcast, breeze from the north.</li>
+<li><em>Wounds:</em> <a href="#table-wwi-1914-18-wounds">WWI 1914-18 - penetrating wounds</a>.</li>
+<li><em>On the travel map:</em> Serbia, 1915 (the great retreat), at Babuna pass.</li>
+<li><em>The record:</em> the fight lasted about 931 exchanges (a minute each).</li>
+</ul>
+<h3 id="what-happened_1">What happened</h3>
+<p>With Skopje and Veles lost, two Serbian regiments, about 5,000 men with a few old guns and no reserves, held the Babuna heights across the road to Prilep. They drove the first Bulgarian division back to Izvor in the first days of November; reinforced from the Veles front, the Bulgarians pushed them back to the crest, which they held for a week and more. Flora Sandes, with the 2nd Regiment's ambulance, saw the wounded walk down from the position. At ten one night the retreat was ordered; Prilep fell on 17 November, and the regiments went back by Bitola into Albania.</p>
+<h3 id="how-the-field-is-drawn_1">How the field is drawn</h3>
+<p>The Babuna pass on the road from Veles to Prilep, mid-November 1915, at 10 m a hex: 130 x 110 hexes, about 1300 m east to west and 950 m north to south, north at the top: the road climbs in hairpins from Izvor to the saddle in the middle, between two spurs that push north; the Serbian trenches run along the crest; the road goes on down towards Prilep at the bottom. The saddle, the spurs, the hairpins and the woods are drawn by hand to the shape the accounts give, not traced from any map; the day, the companies and the Bulgarian battalions are our reading, with round numbers for play. Machine guns and the Bulgarian divisions engaged are not in the sources found.</p>
+<h3 id="the-armies-as-drawn-up_1">The armies as drawn up</h3>
+<p><strong>The Serbians</strong> (890 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2nd Regiment, a company on the west spur</td>
+<td>220</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>2nd Regiment, a company astride the road</td>
+<td>220</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>2nd Regiment, a company on the east spur</td>
+<td>220</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>2nd Regiment machine guns (the saddle)</td>
+<td>10</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>2nd Regiment, a company behind the saddle</td>
+<td>220</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Bulgarians</strong> (3,620 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bulgarian battalion up the road</td>
+<td>900</td>
+<td>regular</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Bulgarian battalion onto the west spur</td>
+<td>900</td>
+<td>regular</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Bulgarian machine guns</td>
+<td>20</td>
+<td>regular</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Bulgarian battalion onto the east spur</td>
+<td>900</td>
+<td>regular</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Extended order</td>
+<td>The flank pressed</td>
+</tr>
+<tr>
+<td>Bulgarian battalion from the Veles front</td>
+<td>900</td>
+<td>regular</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Extended order</td>
+<td>Reinforcements from Veles</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases_1">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>The bombardment and the first attack</td>
+<td>Dawn, about 06:30: the Bulgarian guns open on the crest and a battalion comes up the road from Izvor.</td>
+</tr>
+<tr>
+<td>61</td>
+<td>Up the spurs</td>
+<td>About 07:30: a second battalion climbs the west spur into the fire from the trenches.</td>
+</tr>
+<tr>
+<td>391</td>
+<td>The flank pressed</td>
+<td>About 13:00: the Bulgarians press the east spur (which flank is our reading).</td>
+</tr>
+<tr>
+<td>571</td>
+<td>Reinforcements from Veles</td>
+<td>About 16:00: a fresh battalion comes up from the Veles front.</td>
+</tr>
+<tr>
+<td>631</td>
+<td>Dusk</td>
+<td>About 17:00: the light goes; the Serbs hang on along the crest.</td>
+</tr>
+<tr>
+<td>661</td>
+<td>Night</td>
+<td>Dark: the fight dies down to sniping along the crest.</td>
+</tr>
+<tr>
+<td>931</td>
+<td>The retreat</td>
+<td>22:00: the order comes to retreat, and the regiments go down the road to Prilep.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-beaumont-hamel-1916">Beaumont-Hamel, 1 July 1916 (the Newfoundland Park)</h2>
+<ul>
+<li><em>The armies:</em> British and Germans.</li>
+<li><em>Fought for:</em> the German front line at Y Ravine, attacked by the British.</li>
+<li><em>The field:</em> 80 by 116 hexes of 10 m, about 800 by 1,000 m, east at the top.</li>
+<li><em>The weather:</em> Fair, calm or light air from the west.</li>
+<li><em>Wounds:</em> <a href="#table-wwi-1914-18-wounds">WWI 1914-18 - penetrating wounds</a>.</li>
+<li><em>On the travel map:</em> Beaumont-Hamel, 1916 (Doullens to Bapaume), at Newfoundland Park (the battlefield).</li>
+<li><em>The record:</em> the fight lasted about 181 exchanges (a minute each).</li>
+</ul>
+<h3 id="what-happened_2">What happened</h3>
+<p>After a week's bombardment the 29th Division attacked at 07:30 against RIR 119, who had come up from their dugouts when the Hawthorn Ridge mine went up ten minutes early. The 87th Brigade's waves were cut down in no man's land and at the German wire; only parts of the Inniskillings got in. German white rockets were taken for British success signals, and at 09:15 the 1st Newfoundland Regiment went over from St John's Road, alone and in full view. Within twenty minutes most were down, few beyond the Danger Tree. Of 780, 684 to 710 were killed or wounded, and 68 answered the roll call the next day; RIR 119 lost 292 men all day.</p>
+<h3 id="how-the-field-is-drawn_2">How the field is drawn</h3>
+<p>Beaumont-Hamel, 1 July 1916, at 10 m a hex: 80 x 116 hexes, about 800 m north to south and 1000 m east to west, east at the top: St John's Road across the bottom, the British front line on the crest, the British wire and its few lanes, no man's land falling to the German wire and the German front system across the middle, Y Ravine running up from it on the left (north), the Danger Tree halfway across. The lines, the slope and the ravine are drawn to the distances the sources give, not traced from a trench map; the narrowing of no man's land to the north-west is off this board. RIR 119's companies and machine guns here are not known: those, and the British battalions' strengths (but the Inniskillings' 952 and the Newfoundlanders' 780), are ours, with round numbers. The British barrage lifted at zero and is not on call; the German field guns are. The Germans wear no steel helmets (whether RIR 119 had them on 1 July is not known); the British wear the Brodie. The German ammunition is in the dugouts (supply dumps); no man's land plays as open ground, falling only in the account (a slope hex would hide the forward slope from the German line).</p>
+<h3 id="the-armies-as-drawn-up_2">The armies as drawn up</h3>
+<p><strong>The British</strong> (4,190 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2nd South Wales Borderers (first wave, on Y Ravine)</td>
+<td>700</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>1st Royal Inniskilling Fusiliers (first wave, the right)</td>
+<td>950</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>1st Border (second wave)</td>
+<td>700</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>The second wave</td>
+</tr>
+<tr>
+<td>1st King's Own Scottish Borderers (second wave)</td>
+<td>700</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>The second wave</td>
+</tr>
+<tr>
+<td>1st Newfoundland Regiment, A and B Companies</td>
+<td>390</td>
+<td>regular</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>The Newfoundlanders go over</td>
+</tr>
+<tr>
+<td>1st Newfoundland Regiment, C and D Companies</td>
+<td>390</td>
+<td>regular</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>The Newfoundlanders go over</td>
+</tr>
+<tr>
+<td>1st Essex, two leading companies</td>
+<td>360</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>The Essex</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Germans</strong> (690 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RIR 119, front-line company (Y Ravine)</td>
+<td>150</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>RIR 119 machine guns at the head of Y Ravine</td>
+<td>10</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>RIR 119, front-line company (the south)</td>
+<td>150</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>RIR 119 machine guns in the front trench</td>
+<td>10</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>RIR 119 machine guns behind, on the right</td>
+<td>10</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>RIR 119 machine guns on the right (enfilade)</td>
+<td>10</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>RIR 119, the company in Y Ravine</td>
+<td>200</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>RIR 119, the support company (third trench)</td>
+<td>150</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases_2">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Zero</td>
+<td>07:30: the barrage lifts off the German front line and walks back 100 yards every two minutes; the 2nd SWB and 1st Inniskillings go over. Ten minutes ago the Hawthorn Ridge mine went up to the north, and the Germans are up from their dugouts.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>The second wave</td>
+<td>07:35: the 1st KOSB and 1st Border leave the assembly trenches into the machine-gun fire.</td>
+</tr>
+<tr>
+<td>31</td>
+<td>White rockets</td>
+<td>About 08:00: German white signal rockets are taken for British success flares; the 88th Brigade is told to go forward.</td>
+</tr>
+<tr>
+<td>76</td>
+<td>The order</td>
+<td>08:45: 'the 1st Essex and 1st Newfoundland Regiment will advance as soon as possible', to take the German first trench and clear to Station Road.</td>
+</tr>
+<tr>
+<td>106</td>
+<td>The Newfoundlanders go over</td>
+<td>09:15: from St John's Road, over the open, alone and without the Essex or artillery, the sun 40 degrees up ahead of them; men fall in heaps at the gaps in their own wire.</td>
+</tr>
+<tr>
+<td>136</td>
+<td>Hadow reports</td>
+<td>09:45: the commanding officer reports that the attack has failed.</td>
+</tr>
+<tr>
+<td>146</td>
+<td>The Essex</td>
+<td>09:55 by the Museum (10:50 by Veterans Affairs): the Essex's two leading companies go forward on the right, after a halt order that never reached them.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-snipe-1942">Snipe, 27 October 1942 (El Alamein)</h2>
+<ul>
+<li><em>The armies:</em> British and Germans and Italians.</li>
+<li><em>Fought for:</em> Snipe, attacked by the Germans and Italians.</li>
+<li><em>The field:</em> 200 by 160 hexes of 10 m, about 2,000 by 1,390 m, north at the top.</li>
+<li><em>The weather:</em> Fair, calm or light air from the north-west, dusk.</li>
+<li><em>Wounds:</em> <a href="#table-owens-wwii">WWII 1941-45 - hospitalized (Owens comparison set)</a>.</li>
+<li><em>On the travel map:</em> Snipe, 1942 (the coast to Miteiriya), at Snipe (the battlefield).</li>
+<li><em>The record:</em> the fight lasted about 806 exchanges (a minute each).</li>
+</ul>
+<h3 id="what-happened_3">What happened</h3>
+<p>The 2nd Rifle Brigade went out from the Kidney feature on the night of 26/27 October with 239 Battery's six-pounders and dug in at Snipe, short of the intended spot, between the leaguers of 15th Panzer and the Littorio. From first light the Axis tanks crossed in front of them and were shot up; 24th Armoured Brigade came up and went back; Italian and German attacks came in through the day, and Rommel's counter-stroke in the evening was stopped short. About 32 tanks and 5 self-propelled guns were left burnt out round the hollow (the committee's count, a month later), for 72 men killed and wounded of under 300. The battalion came out on foot that night with one gun.</p>
+<h3 id="how-the-field-is-drawn_3">How the field is drawn</h3>
+<p>Snipe, 27 October 1942, at 10 m a hex: 200 x 160 hexes, about 2000 m west to east and 1390 m north to south, north at the top: the oval hollow of Snipe in the middle (open ground, ringed by the objective), the low ridges to the west and east, flat desert with camelthorn all round. The hollow is drawn to the accounts' size; its depth, the ridges and the guns' places inside their company sectors are ours. The Axis attacks the accounts number are drawn at those numbers; the rest, and where each came from, are ours, with round numbers. A tank unit is four men to a tank. Panzers play as heavy armour, the Italian M13s, M14s and Semoventi as light. The British artillery is not on call (the observer was lost at 04:00), and the friendly fire is not played. Clock: GMT+3. The camelthorn is not drawn: the rules' scrub would keep tanks out of it, and it stopped none here.</p>
+<h3 id="the-armies-as-drawn-up_3">The armies as drawn up</h3>
+<p><strong>The British</strong> (459 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>239 Battery's six-pounders (north and north-east)</td>
+<td>30</td>
+<td>veteran</td>
+<td>AT gun</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Anti-tank guns</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>A Company's six-pounders (north-west and north)</td>
+<td>20</td>
+<td>veteran</td>
+<td>AT gun</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Anti-tank guns</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>C Company's six-pounders (south-west)</td>
+<td>20</td>
+<td>veteran</td>
+<td>AT gun</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Anti-tank guns</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>B Company's six-pounders (south-east)</td>
+<td>25</td>
+<td>veteran</td>
+<td>AT gun</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Anti-tank guns</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>A Company's riflemen</td>
+<td>30</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>C Company's riflemen</td>
+<td>30</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>B Company's riflemen</td>
+<td>30</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>The carriers (scout and carrier platoons)</td>
+<td>66</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Armour</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>7th Field Squadron's sappers</td>
+<td>16</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>47th RTR (Shermans and Crusaders)</td>
+<td>96</td>
+<td>regular</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Armour</td>
+<td>24th Armoured Brigade</td>
+</tr>
+<tr>
+<td>41st RTR</td>
+<td>96</td>
+<td>regular</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Armour</td>
+<td>24th Armoured Brigade</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Germans and Italians</strong> (764 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>15th Panzer's tanks, passing north at dawn</td>
+<td>60</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Armour</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Littorio's tanks and Semoventi, passing south at dawn (Stiffelmayer)</td>
+<td>68</td>
+<td>regular</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Armour</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Long-gunned Panzers from the south</td>
+<td>100</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Armour</td>
+<td>24th Armoured Brigade</td>
+</tr>
+<tr>
+<td>Bersaglieri of the Littorio</td>
+<td>200</td>
+<td>regular</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>Italian infantry</td>
+</tr>
+<tr>
+<td>A dozen Italian tanks from the west</td>
+<td>48</td>
+<td>regular</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Armour</td>
+<td>A dozen Italian tanks</td>
+</tr>
+<tr>
+<td>German tanks on the Italians' right</td>
+<td>32</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Armour</td>
+<td>A dozen Italian tanks</td>
+</tr>
+<tr>
+<td>Italian tanks over the western ridge (Capitano Preve)</td>
+<td>36</td>
+<td>regular</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Armour</td>
+<td>Over the western ridge</td>
+</tr>
+<tr>
+<td>Panzer IIIs against the north-west</td>
+<td>60</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Armour</td>
+<td>Rommel's counter-stroke</td>
+</tr>
+<tr>
+<td>German tanks of the evening attack, from the south-west</td>
+<td>120</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Armour</td>
+<td>Rommel's counter-stroke</td>
+</tr>
+<tr>
+<td>Italian tanks of the evening attack</td>
+<td>40</td>
+<td>regular</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Armour</td>
+<td>Rommel's counter-stroke</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases_3">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>First light</td>
+<td>06:15: the German and Italian tank groups leave their leaguers and pass across the front; the guns engage them broadside at about 800 yards.</td>
+</tr>
+<tr>
+<td>36</td>
+<td>Civil dawn</td>
+<td>06:50: light enough to lay a gun at 800 yards (the rules' dusk allows no aimed fire beyond 20 hexes; the guns were firing at the passing columns by then).</td>
+</tr>
+<tr>
+<td>61</td>
+<td>Sunrise</td>
+<td>07:15.</td>
+</tr>
+<tr>
+<td>76</td>
+<td>24th Armoured Brigade</td>
+<td>07:30: 47th and 41st RTR come over the ridge to the east (and fire on Snipe by mistake); long-gunned Panzers come up from the south to meet them.</td>
+</tr>
+<tr>
+<td>166</td>
+<td>The brigade pulls back</td>
+<td>09:00: 47th RTR, down to five Shermans and six Crusaders, and 41st RTR go back behind the ridge.</td>
+</tr>
+<tr>
+<td>226</td>
+<td>Italian infantry</td>
+<td>About 10:00: Bersaglieri mass to the west; the carriers go out at them.</td>
+</tr>
+<tr>
+<td>256</td>
+<td>A dozen Italian tanks</td>
+<td>About 10:30: Italian tanks from the west, with Germans on their right.</td>
+</tr>
+<tr>
+<td>406</td>
+<td>Over the western ridge</td>
+<td>About 13:00: eight Italian tanks and a Semovente come over the ridge at the south-west sector; Turner loads Sergeant Calistan's gun.</td>
+</tr>
+<tr>
+<td>646</td>
+<td>Rommel's counter-stroke</td>
+<td>About 17:00: after Stukas and a five-minute bombardment, German and Italian tanks come on; fifteen Panzer IIIs turn on the north-west, where two guns are left working.</td>
+</tr>
+<tr>
+<td>727</td>
+<td>Sunset</td>
+<td>18:21: the attackers fall back to 800 yards and fire until dark.</td>
+</tr>
+<tr>
+<td>780</td>
+<td>Dark</td>
+<td>19:14: the moon does not rise until about 20:55.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-cisterna-1944">The Rangers at Cisterna, 30 January 1944</h2>
+<ul>
+<li><em>The armies:</em> Americans and Germans.</li>
+<li><em>Fought for:</em> the edge of Cisterna, attacked by the Americans.</li>
+<li><em>The field:</em> 150 by 120 hexes of 10 m, about 1,500 by 1,040 m, north at the top.</li>
+<li><em>The weather:</em> Fair, calm or light air from the north.</li>
+<li><em>Wounds:</em> <a href="#table-owens-wwii">WWII 1941-45 - hospitalized (Owens comparison set)</a>.</li>
+<li><em>On the travel map:</em> Anzio, 1944 (the beachhead to Cisterna), at Cisterna.</li>
+</ul>
+<h3 id="what-happened_4">What happened</h3>
+<p>The Rangers had come four miles up the ditch in the dark, past German posts, and were short of the town at dawn; the 3rd Reconnaissance Troop platoon following them up the road had been caught on a German road block before dawn, and one man got back. Three self-propelled guns opened on the Rangers at first light; the Rangers knocked them out, but machine guns, mortars and snipers pinned them in the open, and the Germans closed in from all sides. A few reached the buildings by the station. Around noon tanks drove through them and split them into small groups; the last radio message came at 12:30. Of 767 Rangers six got back; most of the rest were taken prisoner.</p>
+<h3 id="how-the-field-is-drawn_4">How the field is drawn</h3>
+<p>The Rangers short of Cisterna at first light, 30 January 1944, at 10 m a hex: 150 x 120 hexes, about 1500 m east to west and 1040 m north to south, north at the top: the southern edge of Cisterna along the top, the railroad station top left, the Conca road coming up from the bottom left, the Pantano ditch from the bottom right, and open, treeless fields with farmhouses and haystacks. The fields, the ditch, the road, the farmhouses and the town's edge are drawn by hand to the shape the account gives, not traced from any map; the deployment is first light, in our own words, with round numbers for play. A cold, still January dawn; the reclaimed ground soft. There are no vehicle rules: the self-propelled guns and tanks are on call as direct fire (Fire support), and the Rangers' bazookas and sticky grenades are left to the GM. The Germans in houses, haystacks and dugouts start gone to ground; houses are buildings (cover).</p>
+<h3 id="the-armies-as-drawn-up_4">The armies as drawn up</h3>
+<p><strong>The Americans</strong> (760 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1st Ranger Battalion (at the road crossing)</td>
+<td>380</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>3rd Ranger Battalion (along the ditch)</td>
+<td>380</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Germans</strong> (850 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hermann Göring Division infantry (the town's edge)</td>
+<td>400</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Machine guns in the farmhouses (west)</td>
+<td>10</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Machine guns in the farmhouses (east)</td>
+<td>10</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Machine guns in the farmhouses (far east)</td>
+<td>10</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Riflemen in haystacks and dugouts (west)</td>
+<td>150</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Riflemen in haystacks and dugouts (east)</td>
+<td>150</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Paratroops by the station</td>
+<td>120</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases_4">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Caught at first light</td>
+<td>About 06:10, short of the town: three self-propelled guns open on the column.</td>
+</tr>
+<tr>
+<td>61</td>
+<td>A hasty defence</td>
+<td>By about 07:10 the battalions are in a crescent-shaped hasty defence; at 07:30 the 1st Battalion breaks radio silence.</td>
+</tr>
+<tr>
+<td>351</td>
+<td>The tanks</td>
+<td>About noon tanks come down from Highway 7 and drive through the Rangers.</td>
+</tr>
+<tr>
+<td>366</td>
+<td>The last message</td>
+<td>12:15 to 12:30: the last radio messages; the line is rolled up.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-cassino-monastery-1944">Snakeshead Ridge and the abbey, 17-18 February 1944</h2>
+<ul>
+<li><em>The armies:</em> Allies and Germans.</li>
+<li><em>Fought for:</em> Point 593, attacked by the Allies.</li>
+<li><em>The field:</em> 200 by 150 hexes of 10 m, about 2,000 by 1,300 m, north at the top.</li>
+<li><em>The weather:</em> Fair, breeze from the north, night.</li>
+<li><em>Wounds:</em> <a href="#table-owens-wwii">WWII 1941-45 - hospitalized (Owens comparison set)</a>.</li>
+<li><em>On the travel map:</em> Cassino, 1944 (Monte Cairo to the Liri valley), at Point 593 (Monte Calvario).</li>
+<li><em>The record:</em> the fight lasted about 418 exchanges (a minute each).</li>
+</ul>
+<h3 id="what-happened_5">What happened</h3>
+<p>After the abbey was bombed on 15 February, the 4th Indian Division attacked along the narrow ridge from the north. The Royal Sussex had already failed against Point 593 on the two nights before; at midnight on the 17th the Rajputana Rifles, with three Sussex companies, went for it, and two hours later the Gurkhas down the slopes for the abbey (by Point 445, says The Tiger Triumphs; Point 444 in other accounts), into minefields, thorn scrub and machine-gun fire from the paratroops on the tops. By dawn on the 18th the attack had failed with heavy loss, and it was called off.</p>
+<h3 id="how-the-field-is-drawn_5">How the field is drawn</h3>
+<p>Snakeshead Ridge, Point 593 and the abbey of Monte Cassino on the night of 17-18 February 1944, at 10 m a hex: 200 x 150 hexes, about 2000 m east to west and 1300 m north to south, north at the top: Point 593 at the upper left, Snakeshead Ridge running down to the south-east past Point 444 to the abbey's ruins at the lower right, Phantom Ridge off to the west, steep scrubby slopes and gullies. Light cover (scrub, key o): the thorn scrub on the steep slopes among the broken rock. edit them and re-run it rather than this file. The ground is drawn by hand to the shape the accounts give, not traced from any map; the deployment is the attack going in, in our own words, with round numbers for play. A dark night on the mountain: no one sees beyond 55 yards (50 m) without illumination. The abbey is rubble.</p>
+<h3 id="the-armies-as-drawn-up_5">The armies as drawn up</h3>
+<p><strong>The Allies</strong> (1,650 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4/6th Rajputana Rifles (along Snakeshead Ridge)</td>
+<td>450</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>1st Royal Sussex (three companies, with the Rajputanas)</td>
+<td>300</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>1/9th Gurkha Rifles (across the slopes for Point 444)</td>
+<td>450</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>The Gurkhas go in</td>
+</tr>
+<tr>
+<td>1/2nd Gurkha Rifles (down for the abbey's hill)</td>
+<td>450</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>The Gurkhas go in</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Germans</strong> (445 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>German paratroops on Point 593</td>
+<td>120</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>German paratroops on Point 444</td>
+<td>100</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Germans in the abbey's ruins</td>
+<td>200</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>German machine guns (Point 593)</td>
+<td>10</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>German machine guns (the abbey)</td>
+<td>15</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases_5">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>For Point 593</td>
+<td>Midnight: the Rajputana Rifles and three Sussex companies go for Point 593.</td>
+</tr>
+<tr>
+<td>121</td>
+<td>The Gurkhas go in</td>
+<td>Two hours later, as planned: the 1/2nd and 1/9th Gurkhas go down the slopes for the abbey (the plan's time).</td>
+</tr>
+<tr>
+<td>211</td>
+<td>A standstill</td>
+<td>By 03:30 the attack is at a standstill.</td>
+</tr>
+<tr>
+<td>271</td>
+<td>A fourth company</td>
+<td>04:30: a fourth Rajputana company is thrown in and fails to regain the summit; before dawn a Gurkha company gets a lodgement on Point 445.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-bougainville-1944">Hill 700, Bougainville, 8-12 March 1944</h2>
+<ul>
+<li><em>The armies:</em> Americans and Japanese.</li>
+<li><em>Fought for:</em> the saddle in the line, attacked by the Japanese.</li>
+<li><em>The field:</em> 120 by 100 hexes of 10 m, about 1,200 by 870 m, north at the top.</li>
+<li><em>The weather:</em> Rain, calm or light air from the south-east.</li>
+<li><em>Wounds:</em> <a href="#table-bougainville-1944-all-hits">Bougainville 1944 - all hits</a>.</li>
+<li><em>On the travel map:</em> Bougainville, 1944 (the Torokina perimeter), at Hill 700.</li>
+<li><em>The record:</em> the fight lasted about 4171 exchanges (a minute each).</li>
+</ul>
+<h3 id="what-happened_6">What happened</h3>
+<p>On 8 March the Japanese 23rd Infantry came up through the jungle under its own guns and mortars. Shortly after midnight two companies probed the line at the saddle; at about 02:30 on 9 March the regiment came again in column of battalions, the 2nd leading, and seized several pillboxes. American artillery and mortars fired close in front of the line all night, and the 1st Battalion, 145th, was released from division reserve that day. Over the next days the 145th Infantry, with engineers and later tanks and flamethrowers, cleared the pillboxes one by one, and by 12 March the line was whole again. The Japanese dead lay thick on the slopes. The weather was hot and wet.</p>
+<h3 id="how-the-field-is-drawn_6">How the field is drawn</h3>
+<p>Hill 700 on the Torokina perimeter, Bougainville, March 1944, at 10 m a hex: 120 x 100 hexes, about 1200 m east to west and 870 m north to south, north at the top: the ridge across the middle with a saddle between two knobs, the American pillbox line on its forward crest, wire and a cleared belt below it, and jungle beyond. The ridge, the saddle, the clearing and the line are drawn by hand to the shape the accounts give, not traced from any map; the deployment is the start of the attack, in our own words, with round numbers for play. Pillboxes are bunkers (cover 50%); the wire is slow to cross.</p>
+<h3 id="the-armies-as-drawn-up_6">The armies as drawn up</h3>
+<p><strong>The Americans</strong> (1,384 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>145th Infantry, 2nd Battalion (west knob)</td>
+<td>330</td>
+<td>regular</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>145th Infantry, 2nd Battalion (east knob)</td>
+<td>330</td>
+<td>regular</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Machine guns covering the saddle (west)</td>
+<td>12</td>
+<td>regular</td>
+<td>MG</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Machine guns covering the saddle (east)</td>
+<td>12</td>
+<td>regular</td>
+<td>MG</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>145th Infantry, 1st Battalion (reserve)</td>
+<td>700</td>
+<td>regular</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>The reserve counter-attacks</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Japanese</strong> (1,630 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>23rd Infantry, II Battalion (on the saddle)</td>
+<td>800</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>23rd Infantry, III Battalion (east slope)</td>
+<td>800</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Extended order</td>
+<td>The 3rd Battalion follows</td>
+</tr>
+<tr>
+<td>23rd Infantry machine-gun company</td>
+<td>30</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases_6">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>The saddle is seized</td>
+<td>About 02:30 on 9 March the 23rd Infantry's 2nd Battalion blows the wire and takes the saddle.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>The 3rd Battalion follows</td>
+<td>The 3rd Battalion follows in the same column and is caught by American artillery (est. minutes).</td>
+</tr>
+<tr>
+<td>571</td>
+<td>The reserve counter-attacks</td>
+<td>About noon on 9 March, C Company of the 1st Battalion, 145th, starts up Hill 700 against the saddle.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-cassino-town-1944">Cassino town and Castle Hill, 15 March 1944</h2>
+<ul>
+<li><em>The armies:</em> Allies and Germans.</li>
+<li><em>Fought for:</em> Castle Hill, attacked by the Allies.</li>
+<li><em>The field:</em> 140 by 120 hexes of 10 m, about 1,400 by 1,040 m, north at the top.</li>
+<li><em>The weather:</em> Overcast, breeze from the south.</li>
+<li><em>Wounds:</em> <a href="#table-owens-wwii">WWII 1941-45 - hospitalized (Owens comparison set)</a>.</li>
+<li><em>On the travel map:</em> Cassino, 1944 (Monte Cairo to the Liri valley), at Cassino.</li>
+<li><em>The record:</em> the fight lasted about 10801 exchanges (a minute each).</li>
+</ul>
+<h3 id="what-happened_7">What happened</h3>
+<p>On the morning of 15 March 1944 some 500 bombers and 900 guns reduced the town to rubble. The 25th New Zealand Battalion went in from the north with tanks of the 19th Armoured Regiment, which the rubble and craters stopped short; D Company took Castle Hill. German paratroops came up out of the cellars and held the south of the town and the Continental Hotel. The fighting went on in the ruins for eight days, Gurkhas holding Hangman's Hill below the abbey, until the attack was called off on 23 March.</p>
+<h3 id="how-the-field-is-drawn_7">How the field is drawn</h3>
+<p>The town of Cassino and Castle Hill on 15 March 1944, at 10 m a hex: 140 x 120 hexes, about 1400 m east to west and 1040 m north to south, north at the top: the bombed town in the middle, Castle Hill and its ruined castle at the upper left, the massif's foot rising to the abbey along the left edge, the road from Caira coming in from the north, Route 6 and the station to the south, the Rapido along the right. The ruins, craters, castle and roads are drawn by hand, not traced from any map or photograph; the deployment is the attack going in, in our own words, with round numbers for play. The town is rubble (rubble) with flooded craters (marsh): tanks can keep only to the open road and the fields, and the paratroops' cellars are bunkers. Overcast, the ground already wet; that evening the rain came down.</p>
+<h3 id="the-armies-as-drawn-up_7">The armies as drawn up</h3>
+<p><strong>The Allies</strong> (1,032 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>25th New Zealand Battalion (into the town from the north)</td>
+<td>500</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>D Company, 25th Battalion (for Castle Hill)</td>
+<td>100</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>26th New Zealand Battalion (following up)</td>
+<td>400</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>The 26th Battalion committed</td>
+</tr>
+<tr>
+<td>19th Armoured Regiment (Shermans north of the town)</td>
+<td>32</td>
+<td>regular</td>
+<td>MG</td>
+<td>Unarmoured</td>
+<td>Armour</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Germans</strong> (325 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>German paratroops in the cellars (the north of the town)</td>
+<td>80</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>German paratroops in the ruins (the middle of the town)</td>
+<td>100</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>German paratroops at the Continental Hotel</td>
+<td>60</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>German paratroops by the station</td>
+<td>60</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>German machine guns (the town)</td>
+<td>15</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>German machine guns (below the abbey)</td>
+<td>10</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases_7">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Into the rubble</td>
+<td>Noon on 15 March: the bombing stops, the guns open and the 25th Battalion goes in from the north.</td>
+</tr>
+<tr>
+<td>241</td>
+<td>Castle Hill taken</td>
+<td>About 16:00, four hours later: D Company of the 25th takes Castle Hill (Point 193).</td>
+</tr>
+<tr>
+<td>301</td>
+<td>The 26th Battalion committed</td>
+<td>Late afternoon (est.): the 26th Battalion is committed and takes three hours in the dark to reach Route 6.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-cassino-poles-1944">The Poles at Point 593 and Phantom Ridge, 12 May 1944</h2>
+<ul>
+<li><em>The armies:</em> Allies and Germans.</li>
+<li><em>Fought for:</em> Point 593, attacked by the Allies.</li>
+<li><em>The field:</em> 200 by 150 hexes of 10 m, about 2,000 by 1,300 m, north at the top.</li>
+<li><em>The weather:</em> Fair, calm or light air, night.</li>
+<li><em>Wounds:</em> <a href="#table-owens-wwii">WWII 1941-45 - hospitalized (Owens comparison set)</a>.</li>
+<li><em>On the travel map:</em> Cassino, 1944 (Monte Cairo to the Liri valley), at Phantom Ridge.</li>
+</ul>
+<h3 id="what-happened_8">What happened</h3>
+<p>In the fourth battle the 2nd Polish Corps (General Wladyslaw Anders) attacked the massif from the north at 01:00 on 12 May after an enormous bombardment. The 1st Carpathian Rifle Brigade made the attack: its 2nd Battalion took Point 593 about 02:00 and was thrown off it in the morning, its 1st went for Albaneta; the last men left 593 at 19:30. The Kresowa Division fought on Phantom Ridge. Losses were very heavy on both sides. With the French and British through the Gustav Line in the valleys, the paratroops gave up the massif on the 17th, and a Polish patrol raised the flag over the abbey on the morning of the 18th.</p>
+<h3 id="how-the-field-is-drawn_8">How the field is drawn</h3>
+<p>Point 593, Phantom Ridge and the abbey of Monte Cassino on the night of 11-12 May 1944, at 10 m a hex: 200 x 150 hexes, about 2000 m east to west and 1300 m north to south, north at the top: Point 593 at the upper left, Phantom Ridge to the west, Snakeshead Ridge running down past Point 444 to the abbey's ruins at the lower right. Light cover (scrub, key o): the thorn scrub on the steep slopes among the broken rock. them and re-run it rather than this file. The ground is drawn by hand to the shape the accounts give, not traced from any map; the deployment is the attack going in, in our own words, with round numbers for play. Dark: the attack went in at 01:00.</p>
+<h3 id="the-armies-as-drawn-up_8">The armies as drawn up</h3>
+<p><strong>The Allies</strong> (2,500 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1st Carpathian Rifle Brigade, 2nd Battalion, company 1 (for Point 593)</td>
+<td>225</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>For Point 593</td>
+</tr>
+<tr>
+<td>1st Carpathian Rifle Brigade, 2nd Battalion, company 2 (for Point 593)</td>
+<td>225</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>For Point 593</td>
+</tr>
+<tr>
+<td>1st Carpathian Rifle Brigade, 2nd Battalion, company 3 (for Point 593)</td>
+<td>225</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>For Point 593</td>
+</tr>
+<tr>
+<td>1st Carpathian Rifle Brigade, 2nd Battalion, company 4 (for Point 593)</td>
+<td>225</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>For Point 593</td>
+</tr>
+<tr>
+<td>1st Carpathian Rifle Brigade, 1st Battalion, company 1 (along Snakeshead, for Albaneta)</td>
+<td>175</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>1st Carpathian Rifle Brigade, 1st Battalion, company 2 (along Snakeshead, for Albaneta)</td>
+<td>175</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>1st Carpathian Rifle Brigade, 1st Battalion, company 3 (along Snakeshead, for Albaneta)</td>
+<td>175</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>1st Carpathian Rifle Brigade, 1st Battalion, company 4 (along Snakeshead, for Albaneta)</td>
+<td>175</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>5th Kresowa Division, company 1 (for Phantom Ridge)</td>
+<td>225</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>5th Kresowa Division, company 2 (for Phantom Ridge)</td>
+<td>225</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>5th Kresowa Division, company 3 (for Phantom Ridge)</td>
+<td>225</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>5th Kresowa Division, company 4 (for Phantom Ridge)</td>
+<td>225</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Germans</strong> (625 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>German paratroops on Point 593</td>
+<td>150</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>German paratroops on Phantom Ridge</td>
+<td>150</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>German paratroops on Point 444</td>
+<td>100</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Germans in the abbey's ruins</td>
+<td>200</td>
+<td>veteran</td>
+<td>Rifle</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Extended order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>German machine guns (Point 593)</td>
+<td>15</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>German machine guns (Phantom Ridge)</td>
+<td>10</td>
+<td>veteran</td>
+<td>MG</td>
+<td>Steel helmet only (1915-1950s rifleman)</td>
+<td>Machine-gun team</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases_8">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>The advance</td>
+<td>01:00 on 12 May, after the bombardment: the 1st Battalion goes for Albaneta and the Kresowa for Phantom Ridge.</td>
+</tr>
+<tr>
+<td>31</td>
+<td>For Point 593</td>
+<td>01:30: the 2nd Battalion sets off for Point 593.</td>
+</tr>
+<tr>
+<td>61</td>
+<td>Point 593 taken</td>
+<td>About 02:00 to 02:30: Point 593 is taken, then held against counter-attack after counter-attack.</td>
+</tr>
+<tr>
+<td>461</td>
+<td>Forced off 593</td>
+<td>About 08:40 the Poles are forced off 593 by the fifth German attack (one source).</td>
+</tr>
+<tr>
+<td>721</td>
+<td>Abandon 593</td>
+<td>After 13:00 the decision is taken to abandon 593; at 15:00 the 1st Battalion is ordered back.</td>
+</tr>
+<tr>
+<td>1111</td>
+<td>The last men leave</td>
+<td>19:30: the last men of 4th Company leave 593.</td>
+</tr>
+</tbody>
+</table>
+<h1 id="index">Index</h1>
+<div class="index">
+<h3 class="ix-letter">A</h3>
+<p class="ix"><b>Allies</b>: <a href="#field-cassino-monastery-1944">Snakeshead Ridge and the abbey, 17-18 February 1944</a>, <a href="#field-cassino-town-1944">Cassino town and Castle Hill, 15 March 1944</a>, <a href="#field-cassino-poles-1944">The Poles at Point 593 and Phantom Ridge, 12 May 1944</a></p>
+<p class="ix"><b>Americans</b>: <a href="#field-cisterna-1944">The Rangers at Cisterna, 30 January 1944</a>, <a href="#field-bougainville-1944">Hill 700, Bougainville, 8-12 March 1944</a></p>
+<h3 class="ix-letter">B</h3>
+<p class="ix"><b>British</b>: <a href="#field-mons-1914">Mons, 23 August 1914 (the Nimy salient)</a>, <a href="#field-beaumont-hamel-1916">Beaumont-Hamel, 1 July 1916 (the Newfoundland Park)</a>, <a href="#field-snipe-1942">Snipe, 27 October 1942 (El Alamein)</a></p>
+<p class="ix"><b>Bulgarians</b>: <a href="#field-babuna-1915">The Babuna pass, November 1915</a></p>
+<h3 class="ix-letter">C</h3>
+<p class="ix"><b>Climb or jump</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">D</h3>
+<p class="ix"><b>Diagnose</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Drive a hard task</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Drive under pressure</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">E</h3>
+<p class="ix"><b>Endure</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">F</h3>
+<p class="ix"><b>Find a billet</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Find the way</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Force or carry</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Forge a pass</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">G</h3>
+<p class="ix"><b>Germans</b>: <a href="#field-mons-1914">Mons, 23 August 1914 (the Nimy salient)</a>, <a href="#field-beaumont-hamel-1916">Beaumont-Hamel, 1 July 1916 (the Newfoundland Park)</a>, <a href="#field-cisterna-1944">The Rangers at Cisterna, 30 January 1944</a>, <a href="#field-cassino-monastery-1944">Snakeshead Ridge and the abbey, 17-18 February 1944</a>, <a href="#field-cassino-town-1944">Cassino town and Castle Hill, 15 March 1944</a>, <a href="#field-cassino-poles-1944">The Poles at Point 593 and Phantom Ridge, 12 May 1944</a></p>
+<p class="ix"><b>Germans and Italians</b>: <a href="#field-snipe-1942">Snipe, 27 October 1942 (El Alamein)</a></p>
+<p class="ix"><b>Get through</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">H</h3>
+<p class="ix"><b>Haggle</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Hunt or gather</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">I</h3>
+<p class="ix"><b>Impress</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">J</h3>
+<p class="ix"><b>Japanese</b>: <a href="#field-bougainville-1944">Hill 700, Bougainville, 8-12 March 1944</a></p>
+<h3 class="ix-letter">K</h3>
+<p class="ix"><b>Keep his head</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Keep order</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">M</h3>
+<p class="ix"><b>Make something</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Mend kit</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">N</h3>
+<p class="ix"><b>Notice or remember</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">Q</h3>
+<p class="ix"><b>Question a prisoner</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">R</h3>
+<p class="ix"><b>Read or write</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">S</h3>
+<p class="ix"><b>Search</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Serbians</b>: <a href="#field-babuna-1915">The Babuna pass, November 1915</a></p>
+<p class="ix"><b>Sneak</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Spot</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Steal</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">T</h3>
+<p class="ix"><b>Talk past a guard</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Track</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+</div>
+
+<p class="note">Every number in this book is filled in from the game's data when it is built, so it says what the pages do. The repository's docs go into more detail on each part, and the printed tables hold every table. Print this book from the browser for a paper copy.</p>
+<p class="note">© 2026 Scott Wares. All rights reserved.</p>
+  </main>
+</div>
+<script>
+// tables scroll sideways on a phone rather than widening the page
+for (const t of document.querySelectorAll("main table")){ const w = document.createElement("div"); w.className = "tw"; t.replaceWith(w); w.appendChild(t) }
+</script>
+</body>
+</html>

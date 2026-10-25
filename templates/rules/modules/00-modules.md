@@ -4,8 +4,9 @@ The core rules are written for blades, bows and armour, and they hold for every 
 **module** adds what a period's weapons bring onto the field. Each period book says which modules
 it switches on; leave the others out.
 
-- **Black-powder guns** (below): batteries, canister and round shot, misfires in the wet, and
-  storming works with the bayonet. Switched on by [The Black-Powder Wars](book-black-powder.html).
-- **Modern fire**, **Armour and mines**, and **Air and night devices**: for now still in the
-  chapters [Guns and fire support](#fire), [Vehicles](#vehicles) and [Night and the air](#night-air).
-  They move here with the World Wars book.
+| Module | What it brings | Switched on by |
+|---|---|---|
+| [Black-powder guns](#mod-black-powder) | Batteries, canister and round shot; misfires in the wet; storming works with the bayonet | [The Black-Powder Wars](book-black-powder.html) |
+| [Modern fire](#fire) | Extended order, rifles, machine guns, going to ground, digging in; fire support and barrages; trenches and bunkers; fixed lines; more men put down | [The World Wars](book-world-wars.html) and the later wars; [The Black-Powder Wars](book-black-powder.html) for its breech-loaders only |
+| [Armour and mines](#vehicles) | Tanks, carriers and lorries; anti-tank guns; minefields and sappers; riders | [The World Wars](book-world-wars.html) and the later wars |
+| [Air and night devices](#air) | Night vision; aircraft and air controllers; landing by air | [The World Wars](book-world-wars.html) for aircraft from 1944; the later wars |
