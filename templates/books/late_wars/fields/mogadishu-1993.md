@@ -36,7 +36,7 @@ At about 16:20 Super 61, flown by Chief Warrant Officer Clifton Wolcott, was hit
 
 At about 16:40 Super 64, Durant's aircraft, was hit in the tail rotor and came down less than a mile to the south. No ground force could reach it soon. Gordon and Shughart asked three times to be put down there, and were landed from Super 62, which was then hit by a grenade and crash-landed. Their Medal of Honor citations say they pulled the four badly hurt crew from the wreck, held a perimeter until their ammunition ran out, and were killed; Gordon gave the pilot a rifle with its last rounds. The citations say they saved Durant's life. The site was overrun at about 17:40, and Durant was taken prisoner.
 
-{{picture:mogadishu-crash}}
+{{picture:mogadishu-pararescue}}
 
 The force round crash site 1 held a block of houses through the night, with Little Birds firing for them in pairs. The pararescuemen set up a casualty collection point by the tail of the wreck and lined it with the Kevlar floor panels torn from the aircraft. Technical Sergeant Timothy Wilkinson freed the surviving crewmen from the wreck. At about 17:30 he crossed an open crossroads three times to treat about a dozen men, and Master Sergeant Scott Fales, shot through the leg, worked beside him. Corporal James Smith, a Ranger, was hit in the thigh; the bullet cut his femoral artery. The men round him could not get him out, and he bled to death, his father said, over about three hours. At 19:08 Super 66 brought in water, ammunition and medical supplies and was badly damaged.
 

@@ -11,11 +11,11 @@
 # Ostlund, carry credits). The map itself was not seen from this session (the PDF's later pages could not be
 # read): check before print that it carries no "courtesy" line, and pick the page image from the PDF.
 # Not used: the photographs on the army.mil Pitts image archive (e.g. Topside's northern position, July
-# 2008) carry no credit line at all, so their licence is unknown; they look like soldiers' own pictures.
+# 2008) carry no credit line at all, so their licence is unknown; they may be soldiers' own pictures.
 - id: wanat-kahler-map
   file: wanat-kahler-map.jpg
-  caption: "The patrol base at Wanat (COP Kahler) and Observation Post Topside on 13 July 2008: the Army's map from the Combat Studies Institute's study of the fight."
+  caption: "The patrol base at Wanat (COP Kahler) on 13 July 2008: the Army's map from the Combat Studies Institute's study of the fight."
   credit: "US Army Combat Studies Institute, Wanat: Combat Action in Afghanistan, 2008 (CSI Press, 2010), Figure 11"
   licence: "Public domain (US government work)"
   source: "https://www.armyupress.army.mil/Portals/7/combat-studies-institute/csi-books/Wanat.pdf"
-  alt: "A map of the small patrol base at Wanat, with the village, the bazaar and the observation post on the terraces east of it."
+  alt: "A map of the small patrol base at Wanat and the ground round it."
