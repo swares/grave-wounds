@@ -316,6 +316,10 @@ armies:
               others: [[english, 70, [40, 80]], [arabic, 3, [10, 30]], [pashto, 3, [10, 30]]]}
     insurgent: {own: [[arabic, 50], [pashto, 40], [dari, 10]], enemy: english,
                 others: [[arabic, 20, [20, 60]], [urdu, 10, [10, 50]], [dari, 20, [20, 60]], [english, 10, [5, 30]]]}
+    iraq_2003: {own: [[arabic, 95], [kurdish, 3], [turkish, 2]], enemy: kurdish,   # estimates (Iraq 75-80% Arab, 15-20% Kurdish: CIA, 2003); Turkmen as Turkish
+                others: [[kurdish, 5, [10, 40]], [english, 3, [5, 30]], [russian, 1, [5, 30]]]}
+    peshmerga_2003: {own: [[kurdish, 100]], enemy: arabic,   # Sorani and Kurmanji as one tongue; the Arabic share an estimate (men schooled before 1991)
+                     others: [[arabic, 40, [20, 60]], [english, 3, [5, 30]], [turkish, 3, [10, 40]]]}
 
 maps:                          # the tongue (or tongues, main first) of the people where each map lies, where no place names its own (none: no locals)
   agincourt-1415: [picard, french]   # Picardy, Artois and the Boulonnais spoke Picard in 1415 as in 1346; the map's Norman towns name French
@@ -332,6 +336,7 @@ maps:                          # the tongue (or tongues, main first) of the peop
   crecy-1346: [picard, french]
   dornach-1499: german
   dakto-1967: montagnard
+  debecka-2003: [kurdish, arabic]   # Makhmur district, Kurds and Arabs (an estimate: no shares found)
   easting73-1991: arabic
   fallujah-2004: arabic
   goosegreen-1982: english
@@ -356,5 +361,6 @@ maps:                          # the tongue (or tongues, main first) of the peop
   sidon-1253: arabic
   snipe-1942: arabic          # the Bedouin of the coast; the desert by Snipe was empty of villages
   towton-1461: english
+  tumbledown-1982: english
   visby-1361: gutnish
   wanat-2008: nuristani

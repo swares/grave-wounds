@@ -129,6 +129,14 @@ dakto-1967:
     - "174th Regiment on the crest"
     - "174th Regiment in the lower trenches"
     - "North Vietnamese machine guns"
+debecka-2003:
+  source: "https://arsof-history.org/articles/v1n1_debecka_crossroads_page_1.html"
+  hold:
+    - "ODA 391's gun trucks (the Alamo, west of the road)"
+    - "ODA 391's Javelin teams"
+    - "ODA 392's gun trucks (the Alamo, east of the road)"
+    - "ODA 392's Javelin teams"
+    - "The combat controllers and the intelligence men"
 dornach-1499:
   source: "https://scholarsarchive.byu.edu/cgi/viewcontent.cgi?article=1863&context=sahs_review"
   hold:
@@ -275,6 +283,16 @@ wagon-box-1867:
   hold:
     - "27th Infantry, Company C (Powell and Jenness)"
     - "Woodcutters and teamsters (civilians, repeating rifles)"
+tumbledown-1982:
+  source: "https://www.argentina.gob.ar/node/504778"
+  hold:
+    - "4th Platoon, N Company, BIM 5 (Vázquez, the summit)"   # refused leave to surrender; his last trench fell about 08:10 (his account)
+    - "RI 4 platoon (Silva, beside the 4th Platoon)"   # Silva, wounded, fought on and was found dead (Diario de Cuyo)
+  withdraw:
+    - {unit: "Marine heavy machine guns and snipers (the summit crags)", at: 526, to: E}   # the order to fall back to Sapper Hill, 8:15 Argentine time (Ministerio de Defensa)
+    - {unit: "5th (engineers) Platoon (Miño, behind, facing north)", at: 526, to: E}   # the same order
+    - {unit: "3rd Platoon, N Company (Lucero, the northern slopes)", at: 526, to: E}   # the same order
+    - {unit: "RI 12 platoons (Mosteirín and Dorigón, the eastern end)", at: 526, to: E}   # the same order
 wanat-2008:
   source: "https://www.dvidshub.net/news/printable/136800"
   hold:

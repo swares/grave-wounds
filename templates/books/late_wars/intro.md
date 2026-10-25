@@ -75,8 +75,12 @@ missile ever launched in combat from one; its crew sat in Virginia.
 
 Some of these wars were **short wars of manoeuvre**. The Falklands war lasted 74 days, from the
 Argentine landing on 2 April 1982 to the surrender on 14 June. It cost 255 British and 649 Argentine
-lives. The Gulf war of 1991 was a 43-day air campaign followed by a ground war of 100 hours, in which
+lives, and it ended with night attacks on the mountains round Stanley, as at Tumbledown. The Gulf war of 1991 was a 43-day air campaign followed by a ground war of 100 hours, in which
 American and British armour drove across open desert, as at 73 Easting.
+
+In the north of Iraq in 2003 a few American Special Forces teams fought beside the Kurdish
+Peshmerga against the Iraqi army, with air support and anti-tank missiles in place of tanks, as at
+the Debecka crossroads.
 
 Others were **city fights**. In Mogadishu on 3 October 1993 a raid by Task Force Ranger turned into a
 night-long fight for two crashed helicopters; 18 Americans died. In Grozny the Russian columns drove

@@ -164,6 +164,27 @@ regions:
     names: [Ahmad, Mohammad, Abdul, Ali, Hassan, Omar, Mahmud, Karim, Nasir, Rahim, Zahir, Gul, Yusuf, Khalid, Hamid, Wali]
     bynames: [Khan, Rahman, Jan, Hussain, Ahmadzai, Noori, Shah, Mohammadi, Hakimi, Saeed, Jabbar, Kareem]
     no_women: "These tables have no record of women in these careers."
+  - id: iraq_2003
+    name: "Iraqi Regular Army, 2003"
+    short: "Iraq 2003"
+    table: oif-oef-2001-wounds
+    colours: ["#6b6a48", "#7a7450", "#5b5a3a", "#e6e0d2"]
+    names: [Ali, Mohammed, Ahmed, Hussein, Hassan, Omar, Abbas, Karim, Jassim, Kadhim, Haider, Khalid, Mahmoud, Adnan, Saad, Abdul Hussein]
+    bynames: [al-Jubouri, al-Dulaimi, al-Tamimi, al-Obeidi, al-Shammari, al-Rubaie, al-Zubaidi, al-Saadi, al-Khafaji, al-Azzawi, al-Ani, al-Hashimi]
+    women:
+      share: 1
+      careers: [medic]
+      names: [Fatima, Zainab, Maryam, Huda, Suad, Iman, Nadia, Layla, Amal, Rana, Sana, Wafa]
+      closed: "Women were not conscripted; under a 1977 law they could be commissioned only with a health-related degree, and none fought in the ground forces."
+      source: "Library of Congress, Iraq: A Country Study (1988); Newsweek (2006), an Iraqi woman officer: under Saddam women in the army could only be doctors. The 1% is our estimate: no share was found (the project's debecka-research)."
+  - id: peshmerga_2003
+    name: "KDP Peshmerga, 2003"
+    short: "Peshmerga 2003"
+    table: oif-oef-2001-wounds
+    colours: ["#7a6a52", "#8a7a5a", "#5b5a3a", "#e6e0d2"]
+    names: [Azad, Karwan, Rebwar, Dilshad, Sherzad, Hawar, Shwan, Kawa, Hoshyar, Bakhtiyar, Sarbast, Hemin, Diyar, Rizgar, Kamaran, Mustafa]
+    bynames: [Barzani, Zebari, Doski, Surchi, Herki, Berwari, Rekani, Mergasori, Khoshnaw, Dizayee, Balaki, Mohammed]
+    no_women: "The KDP's Peshmerga of 2003 kept women from the front; the PUK's women's battalion fought in the north that spring, on another front (AFOSI, 2008)."
 
 origins:
   - {name: "Small-town kid", gain: fieldcraft, trait: {text: "Strong back", str: 10}, drawback: {text: "Never been far from home", persuade: -15}}
@@ -197,7 +218,7 @@ careers:
     prefers: [end, agi, nerve, str, wits, pres]
     wound: 25
     wound_weapon: rifle_assault
-    kit: &kit {default: ww2_rifleman, us_1991: pasgt, us_1993: ranger_1993, chechen: none, us_2005: interceptor, uk_2005: interceptor, insurgent: none}
+    kit: &kit {default: ww2_rifleman, us_1991: pasgt, us_1993: ranger_1993, chechen: none, us_2005: interceptor, uk_2005: interceptor, insurgent: none, peshmerga_2003: none}
     weapon: {default: rifle_assault}
     terms:
       - {to: 20, skill: watch, text: "Stood sentry on a wall through a long night."}

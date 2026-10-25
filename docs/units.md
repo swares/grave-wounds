@@ -2986,6 +2986,28 @@ is 140 × 140 hexes, about 1,530 by 1,330 yards (1,400 by 1,210 m), north at the
 - Fire support: three 105 mm light guns and 81 mm mortars; Argentine pack howitzers and
   120 mm mortars.
 
+**Mount Tumbledown, 13-14 June 1982** (`data/fields/tumbledown-1982.yaml`). The field is
+220 × 120 hexes, about 2,410 by 1,140 yards (2,200 by 1,040 m), north at the top.
+- The long rocky ridge runs across the middle: its western end on the left, the summit
+  **crags** (rough ground and high ground) in the middle, the eastern end on the right. Steep
+  **slopes** fall to Moody Brook along the top and to peat and bog along the bottom.
+- The Argentine **trenches** run along the crest east of the summit and under the platoons
+  that held it, with **bunkers** in the summit crags under the 4th Platoon, its machine guns
+  and the RI 4 platoon.
+- **Night** and falling snow, with snow and mud on the ground (`light: night`; the moon rose at
+  22:45, behind cloud).
+- British (regular): G Company on the empty western end, Left Flank among the crags (pinned, gone
+  to ground), the battalion's machine guns, and Right Flank, which comes on at the phase
+  *Bayonets* to go round.
+- Argentines: the marines of N Company, BIM 5 (regular, dug in): the 4th Platoon at the summit,
+  its heavy machine guns and snipers with **night sights** (`nv: starlight`; the kind is not
+  recorded), the engineers' platoon and the 3rd Platoon on the north; army platoons of RI 4 and
+  RI 12 (green), and RI 6's counter-attack platoon, which comes on at about 02:00.
+- Fire support: British 105 mm light guns, a frigate's 4.5-inch gun and 81 mm mortars; the
+  marines' 60 and 81 mm mortars and pack howitzers.
+- Orders (`data/orders.yaml`): the 4th Platoon and the RI 4 platoon hold; the rest fall back
+  east at exchange 526 (07:15), when BIM 5 was ordered back to Sapper Hill.
+
 **73 Easting: Eagle Troop crests the rise, 26 February 1991** (`data/fields/easting73-1991.yaml`).
 The field is 200 × 120 hexes, about 2,190 by 1,310 yards (2,000 by 1,200 m), north at the top,
 from about 72.2 to 74.2 Easting on the military grid.
@@ -3023,6 +3045,26 @@ is 140 × 110 hexes, about 1,530 by 1,040 yards (1,400 by 950 m), north at the t
 - Chechens (veteran, in cover): **RPG** teams in the buildings on three sides of the square
   that can knock out the armour, fighters to the north and south, and machine guns.
 - Fire support: Russian artillery and mortars; Chechen mortars.
+
+**The Debecka crossroads, 6 April 2003** (`data/fields/debecka-2003.yaml`). The field is
+150 × 290 hexes, about 1,640 by 2,740 yards (1,500 by 2,500 m), north at the top.
+- Press Hill, the second ridge, at the top; the low ridge the teams called **the Alamo** just
+  below it; the crossroads, with an earth berm along Highway 2, 900 m south of it; the edge of
+  Debecka (**buildings**) south-east of the crossroads; open plain to the south edge.
+- Overcast and hazy (the accounts' low cloud and haze), by day.
+- The objective is the Iraqis': the field is their counter-attack on the Alamo. They come on at
+  the south edge, about 2 km off, as the accounts have them first seen 2 km away.
+- Americans and Kurds: ODAs 391 and 392's gun trucks (**lorries** with heavy machine guns), their
+  **Javelin** teams (`atgm`, with thermal sights), the combat controllers (`fac`) and the
+  intelligence men, all veteran, in Interceptor vests; the Peshmerga with the teams and those
+  with the command vehicles at Press Hill (regular, unarmoured). A **supply dump** behind Press
+  Hill for the "War Pigs" that brought ammunition forward.
+- Iraqis: the official history's force: five **T-55s**, four **MT-LBs**, troop trucks and
+  command vehicles, and motorised infantry (green).
+- Fire support: the teams' 60 mm mortars and Navy fighter-bombers; two Iraqi 120 mm mortars.
+- The friendly-fire bomb on Press Hill is a phase note, not a rule: the GM takes its losses
+  from the account.
+- Orders: the two teams hold the Alamo.
 
 **Fallujah: into the Jolan, 9 November 2004** (`data/fields/fallujah-2004.yaml`). The field is
 140 × 120 hexes, about 1,530 by 1,140 yards (1,400 by 1,040 m), north at the top.

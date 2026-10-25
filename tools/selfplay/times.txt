@@ -35,3 +35,5 @@ cassino-town-1944 9455.5
 mogadishu-1993 35380
 sidon-1253 59095
 bougainville-1944 20943.5
+tumbledown-1982 4950.5
+debecka-2003 4255.5

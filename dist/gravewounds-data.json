@@ -545,6 +545,32 @@
      "day": 5800,
      "day_note": "an Iraqi army recruit's about $120 a month (2004-05), at 1,450 dinars to the dollar"
     },
+    "iqd_saddam": {
+     "name": "Saddam dinars (about 2,000 to the dollar, April 2003)",
+     "coin": "iqd_saddam",
+     "base": "dinar",
+     "units": [
+      {
+       "sym": " dinars",
+       "of": 1
+      }
+     ],
+     "day": 130,
+     "day_note": "an Iraqi conscript's about $2 a month (Human Rights Watch, April 2003), at about 2,000 dinars to the dollar",
+     "day_approx": true
+    },
+    "iqd_swiss": {
+     "name": "Swiss dinars of Iraqi Kurdistan (about 8 to the dollar, April 2003)",
+     "coin": "iqd_swiss",
+     "base": "dinar",
+     "units": [
+      {
+       "sym": " Swiss dinars",
+       "of": 1
+      }
+     ],
+     "day_note": "no Peshmerga pay found"
+    },
     "pkr": {
      "name": "Pakistani rupees",
      "coin": "pkr",
@@ -568,7 +594,9 @@
     "russia_1995": "rub_1995",
     "chechen": "rub_1995",
     "uk_2005": "gbp_2005",
-    "insurgent": "usd_fighter"
+    "insurgent": "usd_fighter",
+    "iraq_2003": "iqd_saddam",
+    "peshmerga_2003": "iqd_swiss"
    }
   },
   "plains_nations": {
@@ -6441,6 +6469,84 @@
        ]
       ]
      ]
+    },
+    "iraq_2003": {
+     "own": [
+      [
+       "arabic",
+       95
+      ],
+      [
+       "kurdish",
+       3
+      ],
+      [
+       "turkish",
+       2
+      ]
+     ],
+     "enemy": "kurdish",
+     "others": [
+      [
+       "kurdish",
+       5,
+       [
+        10,
+        40
+       ]
+      ],
+      [
+       "english",
+       3,
+       [
+        5,
+        30
+       ]
+      ],
+      [
+       "russian",
+       1,
+       [
+        5,
+        30
+       ]
+      ]
+     ]
+    },
+    "peshmerga_2003": {
+     "own": [
+      [
+       "kurdish",
+       100
+      ]
+     ],
+     "enemy": "arabic",
+     "others": [
+      [
+       "arabic",
+       40,
+       [
+        20,
+        60
+       ]
+      ],
+      [
+       "english",
+       3,
+       [
+        5,
+        30
+       ]
+      ],
+      [
+       "turkish",
+       3,
+       [
+        10,
+        40
+       ]
+      ]
+     ]
     }
    }
   },
@@ -6468,6 +6574,10 @@
    ],
    "dornach-1499": "german",
    "dakto-1967": "montagnard",
+   "debecka-2003": [
+    "kurdish",
+    "arabic"
+   ],
    "easting73-1991": "arabic",
    "fallujah-2004": "arabic",
    "goosegreen-1982": "english",
@@ -6503,6 +6613,7 @@
    "sidon-1253": "arabic",
    "snipe-1942": "arabic",
    "towton-1461": "english",
+   "tumbledown-1982": "english",
    "visby-1361": "gutnish",
    "wanat-2008": "nuristani"
   }
