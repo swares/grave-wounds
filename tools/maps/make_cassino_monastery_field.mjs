@@ -21,7 +21,7 @@ const MG = { quality: "veteran", weapon: "machine_gun", kit: "ww2_rifleman", for
 const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("4/6th Rajputana Rifles (along Snakeshead Ridge)", AL, 450, SEPOY, 15, [P593[0] + 2, 12], S),
-  at("1st Royal Sussex (three companies, with the Rajputanas)", AL, 300, SEPOY, 15, [P593[0] - 22, 6], S),
+  at("1st Royal Sussex (three companies, with the Rajputanas)", AL, 150, SEPOY, 15, [P593[0] - 22, 6], S),
   at("1/9th Gurkha Rifles (across the slopes for Point 444)", AL, 450, SEPOY, 20, [P444[0] - 4, 40], S),
   at("1/2nd Gurkha Rifles (down for the abbey's hill)", AL, 450, SEPOY, 20, [ABBEY[0] - 10, 68], S),
   at("German paratroops on Point 593", DE, 120, PARA, 10, [P593[0], P593[1] + 2], N),
@@ -64,8 +64,9 @@ writeField({
     "on the mountain: no one sees beyond 55 yards (50 m) without illumination. The abbey is rubble.",
     "",
     "What happened, briefly: after the abbey was bombed on 15 February, the 4th Indian Division",
-    "attacked along the narrow ridge from the north. The Royal Sussex had already failed against",
-    "Point 593 on the two nights before; at midnight on the 17th the Rajputana Rifles, with three",
+    "attacked along the narrow ridge from the north. The Royal Sussex had already attacked Point 593",
+    "on the two nights before, taking its ruined fort on the second and giving it up before dawn, at a",
+    "cost of 162 of their 313 men (Holmes, The Tiger Triumphs); at midnight on the 17th the Rajputana Rifles, with three",
     "Sussex companies, went for it, and two hours later the Gurkhas down the slopes for the abbey",
     "(by Point 445, says The Tiger Triumphs; Point 444 in other accounts), into minefields, thorn scrub and",
     "machine-gun fire from the paratroops on the tops. By dawn on the 18th the attack had failed",

@@ -38,7 +38,7 @@ markers: {labels: ids}
 phases:
   - {name: "The stormers go over", at: 1, note: "On the French signal from the Malakhov, the covering party, the ladders and the stormers leave the advanced trench."}
   - {name: "The supports come forward", at: 10, note: "The supports follow up piecemeal and crowd into the salient behind the stormers.", arrive: ["Supports (7th, 23rd, 33rd, 34th and 77th)"]}
-  - {name: "The Russian counter-attack", at: 80, note: "After about an hour and a half the Russian reserves come up from the Karabelnaya and drive the British back over the parapet.", arrive: ["Kamchatski and Iakutski regiments (reserve)"]}
+  - {name: "The Russian counter-attack", at: 80, note: "After about an hour and a half the Russian reserves come up from the Karabelnaya and drive the British back over the parapet.", arrive: ["Iakutski and Selenginski regiments (reserve)"]}
 ground: |
   ........xTxxxTTTxTxxxxxxxTxTxxxxTxxTxTTxxTxTxxxxxTxxTxxxTTTxxTTTTTxxxxTxTxxTTxTxxTxTxxTxxxxxxxxTTTxx
   .......xxxxxxxxxxxxxxTxTxxxxxxxxTxxTxTTxTxxxxxTxxxxxTxxxxxTTTTxxTxxTxxTTxTTTxxxxxxTxxxxxTTTTxTxTxxxT
@@ -138,4 +138,4 @@ units:
   - {name: "Guns on the right face", side: 1, men: 40, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 3, pos: [63, 35], facing: 4, size: battery}
   - {name: "Vladimirski Regiment, behind the breastwork", side: 1, men: 1400, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 26, pos: [50, 24], facing: 4, size: regiment}
   - {name: "Riflemen on the line to the west", side: 1, men: 300, quality: regular, weapon: rifle_musket, kit: none, formation: open, width: 20, pos: [22, 34], facing: 4, size: company}
-  - {name: "Kamchatski and Iakutski regiments (reserve)", side: 1, men: 2000, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 40, pos: [50, 12], facing: 4, size: brigade}
+  - {name: "Iakutski and Selenginski regiments (reserve)", side: 1, men: 2000, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 40, pos: [50, 12], facing: 4, size: brigade}

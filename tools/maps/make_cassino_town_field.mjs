@@ -4,7 +4,7 @@
 //
 // Sources, all public domain or plain fact, and the drawing is ours: the plain facts of the
 // battle as the official histories give them and as they are summarised publicly. On the
-// morning of 15 March bombers and some 900 guns reduced the town to rubble and craters; the 25th
+// morning of 15 March about 435 bombers and some 750 guns (Blumenson) reduced the town to rubble and craters; the 25th
 // New Zealand Battalion went in from the north down the road from Caira, with tanks of the 19th
 // Armoured Regiment that the rubble and craters stopped, and took Castle Hill; German paratroops
 // of the 1st Parachute Division came up out of the cellars and held the south of the town, the
@@ -95,7 +95,7 @@ writeField({
     "fields, and the paratroops' cellars are bunkers. Overcast, the ground already wet; that evening",
     "the rain came down.",
     "",
-    "What happened, briefly: on the morning of 15 March 1944 some 500 bombers and 900 guns reduced",
+    "What happened, briefly: on the morning of 15 March 1944 about 435 bombers and some 750 guns reduced",
     "the town to rubble. The 25th New Zealand Battalion went in from the north with tanks of the",
     "19th Armoured Regiment, which the rubble and craters stopped short; D Company took Castle Hill.",
     "German paratroops came up out of the cellars and held the south of the town and the Continental",

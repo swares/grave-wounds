@@ -174,7 +174,7 @@ support:
 units:
   - {name: "2nd South Wales Borderers (first wave, on Y Ravine)", side: 0, men: 700, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 36, pos: [21, 84], facing: 1, size: battalion}
   - {name: "1st Royal Inniskilling Fusiliers (first wave, the right)", side: 0, men: 950, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 38, pos: [59, 84], facing: 1, size: battalion}
-  - {name: "1st Border (second wave)", side: 0, men: 700, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 36, pos: [21, 95], facing: 1, size: battalion}
+  - {name: "1st Border (second wave)", side: 0, men: 832, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 36, pos: [21, 95], facing: 1, size: battalion}
   - {name: "1st King's Own Scottish Borderers (second wave)", side: 0, men: 700, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 38, pos: [59, 95], facing: 1, size: battalion}
   - {name: "1st Newfoundland Regiment, A and B Companies", side: 0, men: 390, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 44, pos: [27, 104], facing: 1, size: company}
   - {name: "1st Newfoundland Regiment, C and D Companies", side: 0, men: 390, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 44, pos: [27, 111], facing: 1, size: company}

@@ -27,9 +27,9 @@ const { grid, hexWorks, edgeWorks } = redan({ rows: ROWS, trenchRow: 92, holes: 
 // A column: covering riflemen, the ladder and wool-bag party, the storming party and its supports.
 const column = (label, col0) => [
   unit(`${label}: covering riflemen (Rifle Brigade)`, BRITISH, 100, { ...RIFLE, formation: "open", size: "company" }, [10, col0, 89]),
-  unit(`${label}: ladders and wool-bags (sailors and soldiers)`, BRITISH, 120, { ...RIFLE, ladders: true, size: "company" }, [6, col0 + 2, 91]),
+  unit(`${label}: ladders and wool-bags (sailors and soldiers)`, BRITISH, 170, { ...RIFLE, ladders: true, size: "company" }, [6, col0 + 2, 91]),
   unit(`${label}: storming party`, BRITISH, 400, { ...RIFLE, size: "battalion" }, [10, col0, 94]),
-  unit(`${label}: supports`, BRITISH, 600, { ...RIFLE, quality: "green", size: "battalion" }, [12, col0 - 1, 98]),
+  unit(`${label}: supports`, BRITISH, 800, { ...RIFLE, quality: "green", size: "battalion" }, [12, col0 - 1, 98]),
 ];
 const units = [
   ...column("Right column (Yea)", 25),

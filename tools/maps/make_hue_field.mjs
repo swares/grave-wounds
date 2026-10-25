@@ -51,7 +51,7 @@ const units = [
   at("F Company, 2/5 Marines (by the university)", US, 140, MARINE, 12, [UNIVERSITY[0] + 7, 24], 0),
   at("H Company, 2/5 Marines (for the Treasury)", US, 140, MARINE, 12, [74, 36], 0),
   at("G Company, 2/5 Marines (the south blocks)", US, 120, MARINE, 12, [70, 62], 0),
-  at("A Company, 1/1 Marines and the MACV compound", US, 160, MARINE, 10, [MACV[0], MACV[1] + 5], 0),
+  at("A Company, 1/1 Marines and the MACV compound", US, 147, MARINE, 10, [MACV[0], MACV[1] + 5], 0),
   at("Marine machine guns", US, 12, MG, 2, [UNIVERSITY[0], UNIVERSITY[1] + 3], 0),
   at("Marine M48 tanks (Highway 1)", US, 8, TANK, 2, [HIGHWAY, 46], N),           // the 2 gun tanks the accounts name in the assaults (2 M67 flame tanks came too)
   at("Marine Ontos (with H Company)", US, 6, ONTOS, 2, [56, 46], N),               // 2, which came in with H/2/5 on 2 February

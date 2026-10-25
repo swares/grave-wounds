@@ -58,7 +58,7 @@ writeField({
     { name: "The push for the cut-off platoon", at: 131, note: "15:45: A and B Companies push toward the cut-off platoon and are stopped; they try again at 16:20." },
     { name: "Reinforcement at dusk", at: 211, note: "17:05: B Company of the 2nd Battalion flies in; at 17:40 A and B pull back to the edge of the landing zone.", arrive: ["B Company, 2nd Battalion, 7th Cavalry (flown in at dusk)"] },
   ],
-  ends: { at: 1346, why: "the cut-off platoon reached the next afternoon: 12:00 from 13:35" },
+  ends: { at: 1556, why: "the cut-off platoon reached the next afternoon, about 15:30 (Carland; 26 hours by Savage's citation), from 13:35" },
   objective: { at: LZ, side: 1, name: "the landing zone", radius: 6 },
   id: "xray-1965", name: "Landing zone X-Ray, 14 November 1965", sides: ["United States", "North Vietnamese"], table: "vietnam-1965-70-hospitalized",
   travel: { map: "iadrang-1965", place: "Landing zone X-Ray", within: 2, sides: ["United States", "North Vietnamese"] },

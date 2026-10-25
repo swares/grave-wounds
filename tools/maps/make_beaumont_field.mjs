@@ -70,7 +70,7 @@ const RESERVE = { quality: "veteran", weapon: "rifle_service", kit: "none", form
 const units = [
   unit("2nd South Wales Borderers (first wave, on Y Ravine)", BR, 700, WAVE, [36, 4, BRIT - 1]),
   unit("1st Royal Inniskilling Fusiliers (first wave, the right)", BR, 950, WAVE, [38, 41, BRIT - 1]),
-  unit("1st Border (second wave)", BR, 700, WAVE, [36, 4, BRIT + 10]),
+  unit("1st Border (second wave)", BR, 832, WAVE, [36, 4, BRIT + 10]),
   unit("1st King's Own Scottish Borderers (second wave)", BR, 700, WAVE, [38, 41, BRIT + 10]),
   unit("1st Newfoundland Regiment, A and B Companies", BR, 390, NFLD, [44, 6, 104]),
   unit("1st Newfoundland Regiment, C and D Companies", BR, 390, NFLD, [44, 6, 111]),

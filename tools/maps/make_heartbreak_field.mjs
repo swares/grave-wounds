@@ -54,7 +54,7 @@ const units = [
 
 writeField({
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
-    { name: "Touchdown: the night attack", at: 1, note: "21:00 on 5 October: the 2nd Battalion moves up the crest in the dark, without artillery preparation, the 3rd behind it." },
+    { name: "Touchdown: the night attack", at: 1, note: "21:00 on 5 October: the 2nd Battalion moves up the crest in the dark after an afternoon of artillery and Marine air strikes, the 3rd behind it." },
     { name: "The southern half of 931", at: 361, note: "By 03:00 the 2nd and 3rd Battalions hold the southern half of Hill 931 and beat off a counter-attack." },
     { name: "The French from the north", at: 541, note: "With daylight (est. 06:00) the French close in from the north as the battalions press on to meet them; 931 is taken before noon.", arrive: ["French Battalion (from the north)"] },
   ],

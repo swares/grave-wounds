@@ -9,7 +9,7 @@
 //   24th Regiment through the jungle hills south and west of Dak To; the fighting climbed Hills
 //   724, 823 and 1338 and ended on Hill 875, south-west of the Ben Het camp, where the 2nd and 4th
 //   Battalions of the 503rd Infantry fought from 19 to 23 November; the North Vietnamese shelled
-//   the Dak To base and blew up its ammunition dump on 12 November;
+//   the Dak To base and blew up its ammunition dump on 15 November;
 // - Dak To, Tan Canh, Ben Het and the hills placed after the accounts and approximate; the river,
 //   the roads and the high ground drawn by hand. They are approximate.
 import { buildCampaign } from "./campaign_lib.mjs";
@@ -33,7 +33,7 @@ const NAMES = {
   h1338: "Hill 1338", h724: "Hill 724",
 };
 const notes = {
-  base: "The brigades' base and airstrip; its ammunition dump blew up under shellfire on 12 November 1967 (approximate)",
+  base: "The brigades' base and airstrip; its ammunition dump blew up under shellfire on 15 November 1967",
   h875: "The 2nd and 4th Battalions, 503rd Infantry fought up it from 19 to 23 November 1967 (approximate)",
   h1338: "Taken by the 4th Infantry Division's 3rd Battalion, 12th Infantry in early November (approximate)",
   benhet: "A Special Forces and CIDG camp near the border, and a fire base for the guns (approximate)",
@@ -52,7 +52,7 @@ const map = buildCampaign({
     "What happened, briefly: in November 1967 the North Vietnamese 1st Division and 24th Regiment",
     "fought the 4th Infantry Division, the 173rd Airborne Brigade and ARVN battalions through the",
     "hills round Dak To. The Americans climbed Hills 724, 823 and 1338; the North Vietnamese blew up",
-    "the base's ammunition dump on 12 November; and the battle ended on Hill 875, taken on 23",
+    "the base's ammunition dump on 15 November; and the battle ended on Hill 875, taken on 23",
     "November after five days. Numbers below are round figures for play.",
   ],
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: [], streams: STREAMS, bridges: [], fords: [],
