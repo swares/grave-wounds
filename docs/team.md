@@ -270,6 +270,7 @@ A woman takes the women's name lists, has no beard, rolls on the shared origins 
 | Horse and musket: the French in Spain | 100% | vivandière or blanchisseuse | The arrêté of 26 July 1800: four a battalion, two a squadron |
 | Crimean War: the British | 100% | nurse | The National Archives: 38 nurses reached Scutari on 4 November 1854 |
 | Civil War: the Union, the Confederacy | 0.02%, 0.03% (the Union's nurses and vivandières 100%) | infantryman, sharpshooter, trooper, artilleryman, scout, teamster: enlisted disguised as men, under men's names; the Union's army nurse and vivandière openly | DeAnne Blanton, *Prologue* (National Archives, 1993): roughly 750 women, as many as 250 Confederates; the share is our arithmetic. Over 3,000 nurses under Dorothea Dix |
+| Plains nations: the Lakota; the Cheyenne and Arapaho | chosen, never rolled | warrior with bow and shield, warrior with a gun | Buffalo Calf Road Woman at the Rosebud and the Little Bighorn; Moving Robe Woman, One Who Walks With the Stars and Minnie Hollow Wood at the Little Bighorn (Wikipedia; TheCollector) |
 | Second World War: the Soviet Union | 3% | rifleman, machine gunner, sniper, medic, radio operator, sergeant, officer, tank crewman | Over 800,000 women, over 3% of the forces (Air University Review, 1982); 2,484 women snipers |
 | First World War: the British Empire | 100% | nurse, army auxiliary | QAIMNS over 10,000 by 1918; QMAAC about 50,000, 81 killed (National Army Museum) |
 | First World War: the United States | 100% | nurse | Army Nurse Corps: 21,460 in 1917-18 |
@@ -629,5 +630,4 @@ stay as rolled. The new sheet goes into the store with a stamp, and the roller s
 it next looks (focus, or the store changing); the travel map's copy of his skills is updated at
 once. The Python rules and the page give the same result from the same dice.
 
-Not yet done (see the backlog): the Latin East, Gotland and the Plains nations have no women
-blocks yet, and there are no careers for women as anti-aircraft gunners or pilots.
+Not yet done (see the backlog): the Latin East and Gotland have no women blocks yet, and there are no careers for women as anti-aircraft gunners or pilots.
