@@ -11,7 +11,7 @@
 // The hill, the slopes, the bunkers and the trenches are drawn by hand to that shape, not traced
 // from any map, and are approximate; the deployment is the attack going up, in our own words, with
 // round numbers for play.
-import { N, S, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
 
 const COLS = 120, ROWS = 140;                 // 1200 m east to west, about 1210 m north to south
 const TOP = [60, 74];
@@ -41,7 +41,6 @@ const US = { side: 0, facing: S }, NV = { side: 1, facing: N };
 const SKY = { quality: "veteran", weapon: "rifle_assault", kit: "vietnam_army", formation: "extended", mounted: false };
 const MG = { quality: "veteran", weapon: "machine_gun", kit: "vietnam_army", formation: "mg", mounted: false };
 const PAVN = { quality: "veteran", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false, prone: true };
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("C Company, 2/503 Infantry (up the slope)", US, 100, SKY, 12, [TOP[0] - 6, TOP[1] - 26], S),
   at("D Company, 2/503 Infantry (up the slope)", US, 100, SKY, 12, [TOP[0] + 8, TOP[1] - 26], S),

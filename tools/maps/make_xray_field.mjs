@@ -13,7 +13,7 @@
 // and south-west. The clearing, the creek bed, the knoll and the slopes are drawn by hand to that
 // shape, not traced from any map, and are approximate; the deployment is mid-afternoon of the
 // 14th, as D Company was coming in, in our own words, with round numbers for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
 
 const COLS = 160, ROWS = 130;                 // 1600 m east to west, about 1130 m north to south
 const LZ = [104, 66];                         // the middle of the clearing
@@ -35,7 +35,6 @@ const US = { side: 0, facing: N }, VN = { side: 1, facing: S };
 const CAV = { quality: "regular", weapon: "rifle_assault", kit: "ww2_rifleman", formation: "extended", mounted: false };
 const MG = { quality: "regular", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false };
 const PAVN = { quality: "veteran", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false };
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const flying = u => ({ ...u, lands: 0 });     // comes in by air at the landing zone
 const units = [
   at("B Company, 1st Battalion, 7th Cavalry (across the creek bed)", US, 90, { ...CAV, prone: true }, 20, [creek(50) - 4, 50], 3),

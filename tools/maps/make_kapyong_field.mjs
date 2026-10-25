@@ -11,7 +11,7 @@
 // knoll and attacking A and D Companies on the hill until dawn. The hill, the spurs, the river,
 // the road and the hamlet are drawn by hand to that shape, not traced from any map, and are
 // approximate; the deployment is the night attack, in our own words, with round numbers for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
 
 const COLS = 220, ROWS = 160;                 // 2200 m east to west, about 1390 m north to south
 const RIVER = r => 92 + Math.round(wobble(r / 10, 0.7, 1.9) * 2);        // the Kapyong river, north to south
@@ -42,7 +42,6 @@ const DIGGER = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman
 const MG = { quality: "veteran", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false, prone: true };
 const PVA = { quality: "veteran", weapon: "rifle_service", kit: "none", formation: "extended", mounted: false };
 const TANK = { quality: "regular", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank" };
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("A Company, 3 RAR (the north spur)", UN, 120, DIGGER, 14, [150, 40], N),
   at("D Company, 3 RAR (the summit)", UN, 120, DIGGER, 14, [SUMMIT[0], SUMMIT[1] - 8], N),

@@ -10,7 +10,7 @@
 // on the 18th a Polish patrol raised the flag over the abbey. The ground (cassino_massif.mjs) is
 // drawn by hand, not traced from any map, and approximate; the deployment is the attack going in,
 // in our own words, with round numbers for play.
-import { N, S, unit, writeField } from "./field_lib.mjs";
+import { N, S, unit, writeField, at } from "./field_lib.mjs";
 import { COLS, ROWS, P593, P444, ABBEY, PHANTOM, massif, MASSIF_NOTES } from "./cassino_massif.mjs";
 
 const grid = massif();
@@ -18,7 +18,6 @@ const PL = { side: 0, facing: S }, DE = { side: 1, facing: N };
 const POLE = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false };
 const PARA = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true };
 const MG = { quality: "veteran", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false, prone: true };
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 // A battalion as companies (company 1, 2, ...) side by side across its front, a hex apart, centred on col at row: men each, the
 // battalion's men per hex of front kept (width: the companies' width)
 const companies = (name, where, army, kind, [men, width], [col, row], facing) => men.map((m, k) => ({ ...at(`${name}, company ${k + 1} (${where})`, army, m, kind, width, [Math.round(col + (k - (men.length - 1) / 2) * (width + 1)), row], facing), size: "company" }));

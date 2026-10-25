@@ -14,7 +14,7 @@
 // slopes. The flat, the buildings, the river, the stream, the village and the slopes are drawn by
 // hand to that shape, not traced from any map or photograph, and are approximate; the deployment
 // is the attack at dawn, in our own words, with round numbers for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
 
 const COLS = 120, ROWS = 110;                 // 1200 m east to west, about 950 m north to south
 const RIVER = r => 24 + Math.round(wobble(r / 7, 0.9, 1.4) * 0.8);       // the Landay-Sin, north to south down the west
@@ -54,7 +54,6 @@ const ANA = { quality: "green", weapon: "rifle_assault", kit: "pasgt", formation
 const FIGHTER = { quality: "regular", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false, prone: true };
 const RPG = { ...FIGHTER, weapon: "rpg" };
 const PKM = { quality: "regular", weapon: "machine_gun", kit: "none", formation: "mg", mounted: false, prone: true };
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("B Troop, 3-61 Cavalry (the barracks and command post)", US, 30, { ...TROOPER, fac: true }, 6, [COP[0] - 3, COP[1] - 4], N),
   at("B Troop (the guard posts and trucks)", US, 15, TROOPER, 4, [COP[0] + 7, COP[1] - 2], 0),

@@ -12,7 +12,7 @@
 // The ruins, the craters, the castle and the roads are drawn by hand, not traced from any map or
 // photograph, and are approximate; the deployment is the attack going in, in our own words, with
 // round numbers for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
 
 const COLS = 140, ROWS = 120;                 // 1400 m east to west, about 1040 m north to south
 const NORTH_ROAD = 84;                          // the road from Caira, straight down into the town from the north
@@ -44,7 +44,6 @@ const NZ = { side: 0, facing: S }, DE = { side: 1, facing: N };
 const KIWI = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false };
 const PARA = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true };
 const MG = { quality: "veteran", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false, prone: true };
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("25th New Zealand Battalion (into the town from the north)", NZ, 500, KIWI, 30, [70, 40], S),
   at("D Company, 25th Battalion (for Castle Hill)", NZ, 100, KIWI, 10, [CASTLE[0] + 6, 18], S),

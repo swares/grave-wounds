@@ -12,7 +12,7 @@
 // reached it over the mountains on 2 December. The hill, the road, the rocks and the slopes are
 // drawn by hand to that shape, not traced from any map, and approximate; the deployment is the
 // first night's attack, in our own words, with round numbers for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
 
 const COLS = 150, ROWS = 120;                 // 1500 m east to west, about 1040 m north to south
 const HILL = [75, 54];                        // the crest Fox Company held
@@ -31,7 +31,6 @@ const US = { side: 0, facing: N }, CH = { side: 1, facing: S };
 const MARINE = { quality: "regular", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true };   // in holes hacked in the frozen ground
 const MG = { quality: "regular", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false, prone: true };
 const PVA = { quality: "veteran", weapon: "rifle_service", kit: "none", formation: "extended", mounted: false };
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("Fox Company, 3rd Platoon (the crest, facing north)", US, 60, MARINE, 14, [HILL[0] - 2, HILL[1] - 8], N),
   at("Fox Company, 1st Platoon (the east shoulder)", US, 55, MARINE, 10, [HILL[0] + 13, HILL[1] - 2], 0),

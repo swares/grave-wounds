@@ -13,7 +13,7 @@
 // streets and one-storey stone houses behind walls, the hotel and a few blocks of several
 // storeys, the market's crowded stalls. The deployment is nightfall, in our own words, with
 // round numbers for play.
-import { N, S, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
 
 const COLS = 110, ROWS = 110;                 // 1100 m east to west, about 950 m north to south
 const TARGET = [45, 40], HOTEL = [44, 48], CRASH1 = [63, 21], CRASH2 = [64, 91];
@@ -40,7 +40,6 @@ const US = { side: 0, facing: N }, SNA = { side: 1, facing: S };
 const RANGER = { quality: "veteran", weapon: "rifle_assault", kit: "ranger_1993", formation: "extended", mounted: false, nv: "none" };
 const SAW = { quality: "veteran", weapon: "machine_gun", kit: "ranger_1993", formation: "mg", mounted: false, nv: "none" };
 const MILITIA = { quality: "green", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false };
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("Rangers and Delta in the houses north of the crash", US, 30, { ...RANGER, fac: true }, 6, [CRASH1[0] - 2, CRASH1[1] - 3], N),
   at("Rangers and Delta in the houses south of the crash", US, 30, RANGER, 6, [CRASH1[0] + 1, CRASH1[1] + 4], S),

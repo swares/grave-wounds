@@ -10,7 +10,7 @@
 // bombed two days before. The ground (cassino_massif.mjs) is drawn by hand, not traced from any
 // map, and approximate; the deployment is the attack going in, in our own words, with round
 // numbers for play.
-import { N, S, unit, writeField } from "./field_lib.mjs";
+import { N, S, unit, writeField, at } from "./field_lib.mjs";
 import { COLS, ROWS, P593, P444, ABBEY, massif, MASSIF_NOTES } from "./cassino_massif.mjs";
 
 const grid = massif();
@@ -18,7 +18,6 @@ const AL = { side: 0, facing: S }, DE = { side: 1, facing: N };
 const SEPOY = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false };
 const PARA = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true };
 const MG = { quality: "veteran", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false, prone: true };
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("4/6th Rajputana Rifles (along Snakeshead Ridge)", AL, 450, SEPOY, 15, [P593[0] + 2, 12], S),
   at("1st Royal Sussex (three companies, with the Rajputanas)", AL, 150, SEPOY, 15, [P593[0] - 22, 6], S),

@@ -9,7 +9,7 @@
 // mortars, while tanks drove up the Mundung-ni valley to the west. The ridge, the spurs, the
 // valley and the bunkers are drawn by hand to that shape, not traced from any map, and are
 // approximate; the deployment is the October attack, in our own words, with round numbers for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
 
 const COLS = 170, ROWS = 260;                 // 1700 m east to west, about 2250 m north to south
 const CREST = r => 96 + Math.round(wobble(r / 12, 0.4, 1.7) * 2);       // the ridge's crest, north to south
@@ -39,7 +39,6 @@ const GI = { quality: "regular", weapon: "rifle_service", kit: "ww2_rifleman", f
 const KPA = { quality: "veteran", weapon: "rifle_service", kit: "none", formation: "extended", mounted: false, prone: true };
 const MG = { quality: "veteran", weapon: "machine_gun", kit: "none", formation: "mg", mounted: false, prone: true };
 const TANK = { quality: "regular", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank" };
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("2nd Battalion, 23rd Infantry (along the crest from 894)", UN, 600, GI, 12, [CREST(180), 180], N),
   at("French Battalion (from the north)", { side: 0, facing: S }, 600, { ...GI, quality: "veteran" }, 20, [CREST(20), 20], S),
