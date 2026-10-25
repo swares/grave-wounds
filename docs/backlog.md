@@ -62,8 +62,7 @@ When an item is done, delete it here and note it in the pull request that closes
   fourteen chapters, with a medieval retinue and a Vietnam rifle squad followed through. The split
   into books has begun: the medieval era's figures and battlefields are in `dist/book-medieval.html`,
   the black-powder eras' in `dist/book-black-powder.html`, the other eras' figures in the Rules'
-  Other periods. Still to come: the pictures' files; the black-powder book's researched histories;
-  the other period books, each taking its
+  Other periods. Still to come: the pictures' files; the other period books, each taking its
   eras out of Other periods and its module chapters out of the Rules; and Sources and Methods.
   It summarises rather than repeats the docs: the travel map's battle set-up and the
   battlefields are covered in the docs and on the pages, not in the book. It ends with an index of the terms set in bold, each linked to its sections, and prints page numbers (in Chrome and Edge; other browsers may leave them off). The index has no page numbers of its own, only section names.
