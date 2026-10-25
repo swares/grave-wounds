@@ -1,0 +1,16 @@
+# Pictures for the Albuera section of The Black-Powder Wars. Each is public domain or openly licensed, checked
+# on its source page. The file goes in images/books/black_powder/ under `file`; until it is there the book shows
+# a captioned slot with this credit and source.
+# Checked: Commons itself was not reachable; the file page was read through the c.enwp.org mirror of
+# Commons, which gives the inscription "W Heath delt. T. Sutherland sculp", the source (David Brass Rare
+# Books, from Martial Achievements of Great Britain and Her Allies), and the Public Domain Mark 1.0. Heath
+# died in 1840 and Sutherland about 1838, so the print is public domain by age: confirmed. Commons marks this
+# file as superseded by "El mariscal Beresford desarmando a un oficial polaco en La Albuera.jpg" (same print,
+# not checked: the mirror page was refused).
+- id: albuera-beresford
+  file: albuera-beresford.jpg
+  caption: "Marshal Beresford disarms a Polish lancer at Albuera, from a print in Martial Achievements of Great Britain and Her Allies (dated 1815; the plate is inscribed as published in 1831). Oman says Beresford parried a lance-thrust and threw the man from his horse."
+  credit: "William Heath (drawing) and Thomas Sutherland (engraving), Martial Achievements of Great Britain and Her Allies from 1799 to 1815"
+  licence: "Public domain"
+  source: "https://commons.wikimedia.org/wiki/File:Marshal_Beresford_disarming_a_Polish_officer_at_La_Albuera.jpg"
+  alt: "A period print of Marshal Beresford, on horseback in the battle, disarming a Polish lancer."

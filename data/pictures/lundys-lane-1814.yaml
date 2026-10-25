@@ -1,0 +1,16 @@
+# Pictures for the Lundy's Lane section of The Black-Powder Wars. Each is public domain or openly licensed, checked
+# on its source page. The file goes in images/books/black_powder/ under `file`; until it is there the book shows
+# a captioned slot with this credit and source.
+# Checked: Commons itself was not reachable. World History Encyclopedia's page for the image (worldhistory.org/image/19917)
+# credits Alonzo Chappel, gives the New York State Military Museum as source, states "This item is in the public
+# domain", and links this Commons file. Chappel died in 1887 (life dates 1828-1887 confirmed on a Library of
+# Congress record for another of his battle engravings), so the work is public domain by age: confirmed. A
+# painting of the same title at the RiverBrink Art Museum, Queenston, is listed only as "attributed" to Chappel,
+# with a copyright notice on the museum's photograph; that photograph is not the one used here.
+- id: lundys-lane-chappel
+  file: lundys-lane-chappel.jpg
+  caption: "The battle of Lundy's Lane, by the American artist Alonzo Chappel, made decades after the battle (Chappel was born in 1828)."
+  credit: "Alonzo Chappel (1828-1887), Battle of Lundy's Lane, New York State Military Museum"
+  licence: "Public domain"
+  source: "https://commons.wikimedia.org/wiki/File:Battle_of_Lundys_Lane.jpg"
+  alt: "A 19th-century painting of the battle of Lundy's Lane between the American and British armies."
