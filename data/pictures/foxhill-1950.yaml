@@ -1,0 +1,34 @@
+# Pictures for the Fox Hill (Toktong Pass, November-December 1950) section of Korea and Vietnam. Each is
+# public domain, checked on its source page. The file goes in images/books/korea_vietnam/ under `file`;
+# until it is there the book shows a captioned slot with this credit and source.
+# foxhill-7thmarines: LICENCE CONFIRMED ON A MIRROR OF THE COMMONS FILE PAGE, NOT ON COMMONS ITSELF.
+# Commons could not be reached from this session. The OsmAnd mirror of File:127-N-A4524.jpg
+# (https://download.osmand.net/wiki/File:127-N-A4524.jpg) gives the description "Seventh Marine Regiment,
+# wearing and carrying cold weather equipment, presses into Communist territory of Chosin Reservoir",
+# dated 1 November 1950, credited "National Archives 5891326 official USMC photo 127-N-A4524", with the
+# source https://catalog.archives.gov/id/5891326, and marks it public domain as a work of a US Government
+# employee in the course of official duties (Public Domain Mark 1.0). The photograph was taken during the
+# advance, nearly four weeks before Fox Hill, and does not show Fox Company. Check the Commons page and
+# the NARA record before print.
+- id: foxhill-7thmarines
+  file: foxhill-7thmarines.jpg
+  caption: "Men of the 7th Marines in cold-weather clothing on the advance towards the Chosin Reservoir, 1 November 1950, four weeks before Fox Hill."
+  credit: "Official US Marine Corps photograph 127-N-A4524, National Archives (NAID 5891326)"
+  licence: "Public domain (US government work)"
+  source: "https://commons.wikimedia.org/wiki/File:127-N-A4524.jpg"
+  alt: "US Marines in winter clothing advancing in Korea, November 1950."
+# foxhill-2-7: LICENCE CONFIRMED AS A US GOVERNMENT WORK FROM ITS CREDIT LINE; NO LICENCE STATEMENT ON THE
+# PAGE. The Naval History and Heritage Command's Online Library page for NH 97023 (HyperWar mirror) credits
+# it "Official U.S. Marine Corps Photograph, from the 'All Hands' collection at the Naval Historical
+# Center", with the original Marine Corps caption released on 22 December 1950: Weapons Company and
+# Headquarters and Service Company, 2nd Battalion, 7th Marines, trying to reach the cut-off Fox Company,
+# dated 27 November 1950 (Fox Company was not cut off until 28 November; the date is probably wrong). An
+# official USMC photograph is a US government work and public domain. Commons not checked (blocked); no
+# Commons copy was found by web search. The NHHC's own site was not checked.
+- id: foxhill-2-7
+  file: foxhill-2-7.jpg
+  caption: "Weapons Company and Headquarters and Service Company, 2nd Battalion, 7th Marines, trying to get through to the cut-off Fox Company near Yudam-ni. The Marine Corps caption dates it 27 November 1950."
+  credit: "Official US Marine Corps photograph, Naval History and Heritage Command, NH 97023 ('All Hands' collection)"
+  licence: "Public domain (US government work)"
+  source: "https://ibiblio.org/hyperwar/OnlineLibrary/photos/images/h97000/h97023c.htm"
+  alt: "US Marines of the 2nd Battalion, 7th Marines near Yudam-ni, November 1950."
