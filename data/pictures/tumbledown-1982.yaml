@@ -1,0 +1,24 @@
+# Pictures for the Mount Tumbledown section of The Late Wars. Openly licensed, checked on its source page.
+# The file goes in images/books/late_wars/ under `file`; until it is there the book shows a captioned
+# slot with this credit and source.
+# No British photograph is used: photographs by British service photographers in 1982 are still Crown
+# Copyright (it runs 50 years from 1982), and press photographs are never free. That includes the
+# well-known photograph of 7 Platoon on the summit.
+# tumbledown-argentine-account: LICENCE CONFIRMED AS CC BY 4.0 BY THE SITE'S TERMS; THE PICTURE ITSELF NOT
+# CHECKED. The Ministerio de Defensa's page "Malvinas 44 años: últimos combates por Malvinas" on
+# argentina.gob.ar (13 June 2026) has two images in its Tumbledown section, m44_-_13jun_-_8.jpg (after the
+# paragraph on the Scots Guards' attack on Nácar) and m44_-_13jun_-_9.jpg (after the fall of the eastern
+# part), with no caption, credit or alt text. The site's Términos y condiciones license all its contents
+# under Creative Commons Atribución 4.0 Internacional "excepto cuando se declare lo contrario"; nothing to
+# the contrary is stated on the page. The images were not viewed: whether either is a 1982 photograph, and
+# who holds its copyright, are not checked. The caption is written from the page's text, not the image.
+# Choose one of the two and check it before print.
+# Not used: the photographs in Clack and Pollard's archaeological survey (2024) and their book 1982
+# Uncovered (2023), CC BY-NC-ND 4.0, usable only unaltered and not commercially.
+- id: tumbledown-argentine-account
+  file: tumbledown-argentine-account.jpg
+  caption: "From the Argentine Ministry of Defence's account of the last battles, at the point where the Scots Guards attack N Company on Tumbledown."
+  credit: "Ministerio de Defensa, \"Malvinas 44 años: últimos combates por Malvinas\", argentina.gob.ar"
+  licence: "CC BY 4.0 (Creative Commons Attribution 4.0 International)"
+  source: "https://www.argentina.gob.ar/node/504778"
+  alt: "A picture from the Argentine Ministry of Defence's account of the battle for Tumbledown."

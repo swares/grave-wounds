@@ -1,0 +1,18 @@
+# Pictures for the Debecka section of The Late Wars. The file goes in images/books/late_wars/ under `file`;
+# until it is there the book shows a captioned slot with this credit and source.
+# No photograph of the battle itself was found under a free licence: the pictures of the burning convoy
+# are press or BBC footage.
+# debecka-javelin: LICENCE TAKEN AS A US GOVERNMENT WORK, NOT FULLY CONFIRMED. defense.gov shows "A Marine
+# fires an FGM-148 Javelin", 2 May 2003, credited "Marine Corps photo by Sgt. Mauricio Campino", VIRIN
+# 030502-M-ZZ999-001. Alt text written from the caption; the image was not viewed. A photograph by a serving Marine on duty is public domain, but the page itself states
+# no licence; Commons could not be reached to check a copy. It is not at Debecka: it shows the weapon only.
+# Other candidates not used: the CIA map "Iraqi Kurdistan" (January 2003, public domain as stated on a
+# Commons mirror), better for the travel map; a 173rd Airborne picture on the way to the Bashur jump
+# (mcchord.af.mil, labelled public domain), for Operation Northern Delay.
+- id: debecka-javelin
+  file: debecka-javelin.jpg
+  caption: "A Marine fires a Javelin, May 2003: the missile the Special Forces teams fired at Debecka, every shot at 2,200 m or more."
+  credit: "US Marine Corps photograph by Sgt. Mauricio Campino (defense.gov)"
+  licence: "Public domain (US government work)"
+  source: "https://www.defense.gov/Multimedia/Photos/igphoto/2001676885"
+  alt: "A Marine firing a Javelin missile."

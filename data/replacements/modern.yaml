@@ -51,6 +51,34 @@ assigned:
   source:
     url: https://www.hrw.org/legacy/reports/2000/russia_chechnya3/Chech006-06.htm
     note: kontraktniki in Chechnya
+- id: conscript_draft
+  name: A conscript from the next draft
+  regions:
+  - iraq_2003
+  careers: any
+  terms: 1
+  wait:
+  - 14
+  - 60
+  what: Conscripts went forward in drafts; on the northern front in 2003 deserters spoke of months without pay and orders to hold their positions.
+  approx: true
+  source:
+    url: https://www.hrw.org/news/2003/04/03/iraq-soldiers-describe-mistreatment-commanders
+    note: the northern front, April 2003; the wait in days is an estimate
+- id: district_volunteer
+  name: A volunteer from his district
+  regions:
+  - peshmerga_2003
+  careers: any
+  terms: 1
+  wait:
+  - 3
+  - 21
+  what: The party's fighters came from the same districts and tribes; on the eve of the war all were on duty.
+  approx: true
+  source:
+    url: https://www.globalsecurity.org/military/world/para/peshmerga.htm
+    note: KDP Peshmerga; the wait in days is an estimate
 hire:
 - id: contractor
   name: A security contractor
@@ -127,4 +155,12 @@ effects:
     russia_1995:
       practice: heirs
       what: His effects went home, when they did.
+      approx: true
+    iraq_2003:
+      practice: heirs
+      what: His effects went home, when they did.
+      approx: true
+    peshmerga_2003:
+      practice: heirs
+      what: His effects went to his family.
       approx: true
