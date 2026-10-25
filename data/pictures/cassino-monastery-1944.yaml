@@ -1,0 +1,17 @@
+# Pictures for the Snakeshead Ridge and abbey section (17-18 February 1944) of The World Wars. Each is
+# openly licensed, checked on a copy of its source page. The file goes in images/books/world_wars/ under
+# `file`; until it is there the book shows a captioned slot with this credit and source.
+# cassino-monastery-ruins: LICENCE CONFIRMED ON MIRRORS, NOT ON COMMONS ITSELF (Commons could not be reached
+# from here). The Wikipedia for Schools copy of the Commons file page (classicistranieri.com, image 160207)
+# gives the file name "Bundesarchiv Bild 146-2005-0004, Italien, Monte Cassino.jpg", date February 1944,
+# photographer Wittke, the Bundesarchiv's original caption "Monte Cassino-ein Trümmerfeld" (the abbey after
+# the Anglo-American bombing of 15 February), and the licence CC BY-SA 3.0 DE with the attribution line used
+# below. Newcastle University's research site credits the same image the same way. A German wartime
+# propaganda photograph: the original caption may be biased, as the Bundesarchiv itself warns.
+- id: cassino-monastery-ruins
+  file: cassino-monastery-ruins.jpg
+  caption: "The ruins of the abbey of Monte Cassino after the bombing of 15 February 1944, photographed for the German army in February 1944."
+  credit: "Bundesarchiv, Bild 146-2005-0004 / Wittke / CC-BY-SA"
+  licence: "CC BY-SA 3.0 DE (Creative Commons Attribution-Share Alike 3.0 Germany)"
+  source: "https://commons.wikimedia.org/wiki/File:Bundesarchiv_Bild_146-2005-0004,_Italien,_Monte_Cassino.jpg"
+  alt: "A black-and-white photograph of the ruins of the bombed abbey of Monte Cassino."

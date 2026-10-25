@@ -1,0 +1,23 @@
+# Pictures for the Cisterna section of The World Wars. Each is public domain, checked on its source page.
+# The file goes in images/books/world_wars/ under `file`; until it is there the book shows a captioned
+# slot with this credit and source.
+# Both come from Anzio Beachhead (Historical Division, War Department; foreword letter dated 1 October
+# 1947), a US Army publication; its foreword says the photographs were selected by Capt. Robert L. Bedell
+# of the Historical Division and the maps drafted by the Division. Works of the US government are public
+# domain. Checked on the HyperWar transcription (ibiblio.org), which reproduces the pictures with the
+# book's captions; no Commons copy was found, and Commons could not be reached from here. The book does
+# not credit each photograph, so the photographer is not known. Licence confirmed as a US government work.
+- id: cisterna-isola-bella
+  file: cisterna-isola-bella.jpg
+  caption: "Isola Bella and Cisterna, from the US Army's Anzio Beachhead (1947). The Conca–Cisterna road joins them across flat, open fields; the 1st and 3rd Rangers came up the Pantano ditch, and the 4th Rangers attacked towards Isola Bella."
+  credit: "US Army photograph, in Historical Division, War Department, Anzio Beachhead (1947), p. 29"
+  licence: "Public domain (US government work)"
+  source: "https://www.ibiblio.org/hyperwar/USA/USA-A-Anzio/img/USA-A-Anzio-22.jpg"
+  alt: "A black-and-white photograph of the flat country between Isola Bella and Cisterna, crossed by the road between them."
+- id: cisterna-map
+  file: cisterna-map.jpg
+  caption: "Map No. 6 of Anzio Beachhead (1947), 'Expanding the Beachhead, 30 January 1944', showing the attacks of that day, Cisterna among them."
+  credit: "Historical Division, War Department, Anzio Beachhead (1947), Map No. 6"
+  licence: "Public domain (US government work)"
+  source: "https://www.ibiblio.org/hyperwar/USA/USA-A-Anzio/maps/USA-A-Anzio-6.jpg"
+  alt: "A US Army map of the Anzio beachhead on 30 January 1944, with the front line and the attacks of that day."

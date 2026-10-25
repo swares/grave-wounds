@@ -63,7 +63,7 @@ When an item is done, delete it here and note it in the pull request that closes
   through. The split into books has begun: the medieval, black-powder and world-war eras' figures
   and battlefields are in their books (`dist/book-medieval.html`, `dist/book-black-powder.html`,
   `dist/book-world-wars.html`), the other eras' figures in the Rules' Other periods. Still to come:
-  the pictures' files; the World Wars book's researched histories; the Korea and Vietnam book (with
+  the pictures' files; the Korea and Vietnam book (with
   the Vietnam squad's worked example) and the late wars' book; and Sources and Methods.
   It summarises rather than repeats the docs: the travel map's battle set-up and the
   battlefields are covered in the docs and on the pages, not in the book. It ends with an index of the terms set in bold, each linked to its sections, and prints page numbers (in Chrome and Edge; other browsers may leave them off). The index has no page numbers of its own, only section names.

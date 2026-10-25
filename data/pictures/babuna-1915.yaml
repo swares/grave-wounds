@@ -1,0 +1,26 @@
+# Pictures for the Babuna pass section of The World Wars. Each is public domain or openly licensed, checked
+# on its source page. The file goes in images/books/world_wars/ under `file`; until it is there the book shows
+# a captioned slot with this credit and source.
+# Both are photographs printed in Flora Sandes, An English Woman-Sergeant in the Serbian Army (Hodder and
+# Stoughton, 1916). Checked: the Project Gutenberg edition (#71442, scanned from the Internet Archive's Canadian
+# Libraries copy) was read; it gives the captions below and the page numbers, and the book carries no
+# photographer's credit. Gutenberg treats the book as public domain in the US, and a book published in 1916 is
+# public domain there. In the UK an anonymous photograph published in 1916 is out of copyright (70 years from
+# publication). CAUTION, NOT FULLY CONFIRMED: if Sandes took them herself, UK copyright runs 70 years from her
+# death (24 November 1956), to the end of 2026; they are then public domain in the UK from 1 January 2027.
+# Commons was not reachable, so whether it holds these scans, and under what template, was not checked.
+# The images themselves were not seen; the alt text follows the captions only.
+- id: babuna-sandes-ambulance
+  file: babuna-sandes-ambulance.jpg
+  caption: "The ambulance of the Serbian 2nd Regiment, with the ox wagons that had just brought in wounded. Flora Sandes joined it near the Babuna pass."
+  credit: "Photographer not named, in Flora Sandes, An English Woman-Sergeant in the Serbian Army (Hodder and Stoughton, 1916), facing p. 15"
+  licence: "Public domain (published 1916, photographer not named; see the note above on UK term)"
+  source: "https://www.gutenberg.org/ebooks/71442"
+  alt: "A photograph of a Serbian army field ambulance with the ox wagons that brought the wounded down from the pass."
+- id: babuna-sandes-militch
+  file: babuna-sandes-militch.jpg
+  caption: "Colonel Militch, commandant of the Serbian 2nd Regiment (on the left), with his chief of staff and the regimental flag."
+  credit: "Photographer not named, frontispiece to Flora Sandes, An English Woman-Sergeant in the Serbian Army (Hodder and Stoughton, 1916)"
+  licence: "Public domain (published 1916, photographer not named; see the note above on UK term)"
+  source: "https://www.gutenberg.org/ebooks/71442"
+  alt: "A photograph of two Serbian officers standing with a regimental flag."

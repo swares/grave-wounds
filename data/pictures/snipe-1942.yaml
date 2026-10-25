@@ -1,0 +1,19 @@
+# Pictures for the Snipe section of The World Wars. Each is public domain or openly licensed, checked
+# on its source page. The file goes in images/books/world_wars/ under `file`; until it is there the book
+# shows a captioned slot with this credit and source.
+# snipe-sixpounder: LICENCE CONFIRMED ON A MIRROR, NOT ON COMMONS ITSELF. Commons, the Wikipedia file page
+# and the IWM search refused this session's requests. A web search lists the Commons file page under the
+# name below. The PICRYL copy of the same file ("The British Army in North Africa 1942 E18802", from the
+# Imperial War Museums, tagged No. 1 Army Film and Photographic Unit) gives the IWM description "A 6-pdr
+# anti-tank gun in action in the Western Desert, 29 October 1942" and marks it Public Domain (Public
+# Domain Mark 1.0). A British Army photograph taken before 1957 is Crown Copyright expired; the IWM's own
+# site marks such images "IWM Non Commercial Licence", while Commons holds them as public domain. The
+# Wikipedia article on Snipe uses it with the caption "29 October 1942 (E18802)". The photograph was taken
+# two days after Snipe and is not of the 2nd Rifle Brigade. Check the Commons page before print.
+- id: snipe-sixpounder
+  file: snipe-sixpounder.jpg
+  caption: "A six-pounder anti-tank gun in action in the Western Desert, 29 October 1942, two days after Snipe, photographed by No. 1 Army Film and Photographic Unit. Snipe was held with 19 guns like it."
+  credit: "No. 1 Army Film and Photographic Unit, Imperial War Museum, E 18802"
+  licence: "Public domain (UK Crown Copyright expired, photograph taken before 1957)"
+  source: "https://commons.wikimedia.org/wiki/File:The_British_Army_in_North_Africa_1942_E18802.jpg"
+  alt: "A black-and-white photograph of a British six-pounder anti-tank gun in action in the desert."
