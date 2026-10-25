@@ -19,7 +19,7 @@ On the morning of 15 February the bombers came. Blumenson has the first of about
 
 ### The leaders
 - **Bernard Freyberg** (Allies, New Zealand Corps): asked for the bombing and called it, in Blumenson's report, "his considered opinion that it is a military necessity".
-- **Francis Tuker** (Allies, 4th Indian Division): fell ill on 4 February but argued from his bed that the abbey must be destroyed first.
+- **Francis Tuker** (Allies, 4th Indian Division): had decided that the abbey must be destroyed before his men attacked; he gave up command through illness on 4 February.
 - **Harry Dimoline** (Allies, 4th Indian Division): commanded the division in Tuker's place.
 - **O. de T. Lovett** (Allies, 7th Indian Brigade): his brigade, the Royal Sussex, Punjabis and 1/2nd Gurkhas, held the ridge.
 - **Lieutenant Colonel Showers** (Allies, 1/2nd Gurkha Rifles): badly wounded in the copse.
@@ -34,7 +34,7 @@ The next attack was a divisional one. At midnight on 17 February the 4/6th Rajpu
 
 At 04:30 a fourth Rajputana company was thrown in and failed to take the summit, and the Germans won back part of the crest. To move by day would have been suicide, and the Gurkhas came back from Point 445 after dark. Wikipedia gives the Rajputanas' loss as 196, the 1/9th's as 149 and the 1/2nd's as 96. In the valley the Maori had taken the station, but no bridge could be built behind them, and German tanks drove them out on the afternoon of the 18th. Dimoline and Freyberg called the attack off that day.
 
-The wounded had to be brought back along the ridge under fire. In the copse Naik Bir Bahadur Thapa, hit in about a dozen places, held on beyond the scrub with a few survivors.
+In the copse Naik Bir Bahadur Thapa, hit in about a dozen places, got through to the far side with a few survivors and held on there. Only a handful came back at dawn. *The Tiger Triumphs* says nothing of the aid posts; it names the stretcher-bearers who went back into the scrub for the wounded.
 
 {{picture:cassino-monastery-ruins}}
 
