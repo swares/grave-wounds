@@ -1,0 +1,16 @@
+# Pictures for the Poles at Point 593 section (12 May 1944) of The World Wars. Each is public domain, checked
+# on its source page. The file goes in images/books/world_wars/ under `file`; until it is there the book
+# shows a captioned slot with this credit and source.
+# cassino-poles-abbey: LICENCE CONFIRMED. The Australian War Memorial's collection page for SUK12242 says
+# "Copyright expired - public domain" and carries the Public Domain Mark 1.0. Its description: "Italy. C.
+# 1944-05. A view of the Abbey on Monastery Hill at Cassino after its capture by Allied troops, taken from
+# the air from a Piper Cub aircraft by an official RAF photographer." A British service photograph taken
+# before 1957, so Crown Copyright has expired. A companion view is SUK12241 (C276548), also public domain.
+# No Commons copy was looked for (Commons could not be reached from here).
+- id: cassino-poles-abbey
+  file: cassino-poles-abbey.jpg
+  caption: "The ruins of the abbey on Monastery Hill from the air, from a Piper Cub, about May 1944, after the Poles had taken it on 18 May."
+  credit: "Official RAF photographer, Australian War Memorial, SUK12242"
+  licence: "Public domain (Crown Copyright expired)"
+  source: "https://www.awm.gov.au/collection/C276564"
+  alt: "An aerial black-and-white photograph of the ruined abbey on Monastery Hill."

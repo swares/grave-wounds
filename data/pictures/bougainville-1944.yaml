@@ -1,0 +1,28 @@
+# Pictures for the Hill 700 (Bougainville, March 1944) section of The World Wars. Each is public domain,
+# checked on its source page. The file goes in images/books/world_wars/ under `file`; until it is there
+# the book shows a captioned slot with this credit and source.
+# bougainville-tanks: LICENCE CONFIRMED AS A US GOVERNMENT WORK. The photograph is printed in Miller's
+# CARTWHEEL (CMH, 1959), chap. XVII, whose list of illustrations states "Photographs are from the
+# Department of Defense files"; a US Army photograph taken in official duty is public domain. Wikimedia
+# Commons was not reachable from this session, so no Commons file page was found; the source is the
+# HyperWar transcription of the official history (full-size image at
+# https://www.ibiblio.org/hyperwar/USA/USA-P-Rabaul/img/USA-P-Rabaul-p363.jpg). The original Signal Corps
+# negative number was not found.
+- id: bougainville-tanks
+  file: bougainville-tanks.jpg
+  caption: "Two M3 light tanks of the 754th Tank Battalion going up Hill 700 on the afternoon of 9 March 1944. The slope was too steep, and they could not climb it."
+  credit: "US Army photograph (Department of Defense files), printed in J. Miller Jr., CARTWHEEL: The Reduction of Rabaul (Office of the Chief of Military History, 1959), chap. XVII"
+  licence: "Public domain (US government work)"
+  source: "https://www.ibiblio.org/hyperwar/USA/USA-P-Rabaul/USA-P-Rabaul-17.html"
+  alt: "Two light tanks on the steep slope of Hill 700."
+# bougainville-water: LICENCE CONFIRMED AS A US GOVERNMENT WORK, on the same grounds as above (Miller,
+# chap. XVII, "Photographs are from the Department of Defense files"). Miller's caption gives no date, so
+# the photograph may have been taken before or after the battle. Full-size image at
+# https://www.ibiblio.org/hyperwar/USA/USA-P-Rabaul/img/USA-P-Rabaul-p360.jpg. Commons not checked (blocked).
+- id: bougainville-water
+  file: bougainville-water.jpg
+  caption: "Men of the 37th Division carrying 5-gallon cans of water up the steep slope of Hill 700. In front, from left: Pfc. Howard K. Stoneburner, Sgt. Brant A. Johnson and Pfc. Thomas J. Householder; behind, Pfc. Gerald C. Menken, Pfc. Taylor Maggard and S/Sgt. Robert G. Dove. The photograph is undated."
+  credit: "US Army photograph (Department of Defense files), printed in J. Miller Jr., CARTWHEEL: The Reduction of Rabaul (Office of the Chief of Military History, 1959), chap. XVII"
+  licence: "Public domain (US government work)"
+  source: "https://www.ibiblio.org/hyperwar/USA/USA-P-Rabaul/USA-P-Rabaul-17.html"
+  alt: "Soldiers carrying water cans up a steep slope."
