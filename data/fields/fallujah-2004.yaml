@@ -8,9 +8,10 @@
 # for play. The houses are buildings, the blocks and mosques tall buildings; armour keeps to the
 # lanes and the main street. Overcast after the night's rain.
 #
-# What happened, briefly: on 9 November 2004 RCT-1's Marines came south across the railway into
-# the Jolan behind the tanks and Bradleys of the 2nd Battalion, 7th Cavalry, which fired into the
-# houses as they went. The Marines cleared the houses room by room; the insurgents fought from the
+# What happened, briefly: the 3rd Battalion, 5th Marines attacked along the river from the evening
+# of 8 November; on 9 November 2004 the 3rd Battalion, 1st Marines came south across the railway
+# into the Jolan behind the tanks and Bradleys of the 2nd Battalion, 7th Cavalry and its own
+# attached Marine tanks, which fired into the houses as they went (McWilliams). The Marines cleared the houses room by room; the insurgents fought from the
 # houses and mosques with rockets, machine guns and snipers and fell back south. By 13 November
 # the Jolan was taken, though the clearing went on for weeks.
 id: fallujah-2004
@@ -157,6 +158,7 @@ units:
   - {name: "Marine company (west of the main street)", side: 0, men: 150, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 16, pos: [44, 14], facing: 4, fac: true, size: company}
   - {name: "Marine company (east of the main street)", side: 0, men: 150, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 16, pos: [104, 14], facing: 4, fac: true, size: company}
   - {name: "Marine machine guns", side: 0, men: 12, quality: veteran, weapon: machine_gun, kit: interceptor, formation: mg, width: 2, pos: [60, 6], facing: 4, size: section}
+  - {name: "Marine M1A1 tanks (2nd Tank Battalion, with 3/1)", side: 0, men: 8, quality: veteran, weapon: machine_gun, kit: none, formation: armour, width: 1, pos: [72, 10], facing: 4, vehicle: tank, nv: thermal, armour: composite, size: section}
   - {name: "Insurgents in the houses (north-west)", side: 1, men: 80, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [40, 32], facing: 1, prone: true, size: company}
   - {name: "Insurgents in the houses (north-east)", side: 1, men: 80, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [110, 30], facing: 1, prone: true, size: company}
   - {name: "Insurgent RPG teams (by the main street)", side: 1, men: 20, quality: regular, weapon: rpg, kit: none, formation: extended, width: 3, pos: [70, 34], facing: 1, prone: true, size: platoon}

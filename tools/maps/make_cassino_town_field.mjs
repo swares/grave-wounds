@@ -65,7 +65,7 @@ writeField({
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
     { name: "Into the rubble", at: 1, note: "Noon on 15 March: the bombing stops, the guns open and the 25th Battalion goes in from the north." },
     { name: "Castle Hill taken", at: 241, note: "About 16:00, four hours later: D Company of the 25th takes Castle Hill (Point 193)." },
-    { name: "The 26th Battalion committed", at: 301, note: "Late afternoon (est.): the 26th Battalion is committed and takes three hours in the dark to reach Route 6.", arrive: ["26th New Zealand Battalion (following up)"] },
+    { name: "The 26th Battalion committed", at: 301, note: "Late afternoon (est.): the 26th Battalion is committed and works forward in the dark; it could not reach Route 6 (Blumenson).", arrive: ["26th New Zealand Battalion (following up)"] },
   ],
   ends: { at: 10801, why: "called off on 23 March: midnight from noon on the 15th" },
   objective: { at: CASTLE, side: 0, name: "Castle Hill", radius: 3 },

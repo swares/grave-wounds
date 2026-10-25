@@ -41,7 +41,7 @@ The 88th Brigade's diary put most losses down to machine guns; at the Danger Tre
 ### Where the accounts disagree
 - **How many went forward.** Veterans Affairs Canada, after Nicholson, gives 22 officers and 758 other ranks, about 780; elsewhere it says about 800. The National Archives blog says about 720. All agree that 68 answered the roll call.
 - **The losses.** The war diary of 7 July gives 684: 14 officers and 296 men killed, died of wounds or missing, and 12 officers and 362 men wounded. The Rooms gives 710: 233 dead, 91 missing and 386 wounded, as does *The Canadian Encyclopedia* (324 dead or missing, 386 wounded). Nicholson has all the officers and just under 658 men hit. The Commonwealth War Graves Commission records 243 deaths on 1 July (National Archives blog). Wikipedia puts the loss second only to the 10th West Yorkshires' 733 at Fricourt.
-- **When the Essex went.** The Essex war diary, Veterans Affairs and the Basildon Heritage Society say 10:50. Some accounts, and the game, use 09:55; we have not found that time in the sources read for this page.
+- **When the Essex went.** The Essex war diary, Veterans Affairs and the Basildon Heritage Society say 10:50. The Royal Newfoundland Regiment Museum gives 09:55; the game follows the war diary.
 - **Why the Essex were late.** Veterans Affairs says they were in view from Thiepval and had to use the trenches. The Rooms says their commanding officer chose the trenches to spare his men.
 - **When Hadow reported.** The war diary and most accounts say 09:45. Turco gives 10:00.
 - **The Inniskillings.** Veterans Affairs says parts of the battalion got into the German first to third lines. Their war diary says they could not pass the German wire.

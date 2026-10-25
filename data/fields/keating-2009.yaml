@@ -25,8 +25,8 @@ size: [120, 110]
 weather: {cond: fair, wind: calm, light: dusk, ground: {mud: 0, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [50, 56], side: 1, name: "the outpost", radius: 8}
-# How long the fight went on, in exchanges from the first, by the account (the outpost retaken by the afternoon: 12:00 from 06:00): self-play runs at least this long (never past commander.self_play.most).
-ends: 361
+# How long the fight went on, in exchanges from the first, by the account (the last fighters cleared from the outpost about 17:10, from 06:00 (the Army gives 10 to 13 hours of fighting)): self-play runs at least this long (never past commander.self_play.most).
+ends: 671
 ground: |
   hhFFhFFFFhFFFhhhFhFFFFFFwwwwwrrrorroroorrororrrrrorrorrrooorrooooorrrrorhFFhhFhFFhFhFFhFFFFFFFFhhhFFhFFFFhhhFFhFhhFFFFhh
   hhFFFFhFFFFFFFFFFFFFFhFhwwwwwrrrorroroororrrrrorrrrrorrrrroooorrorrorrooFhhhFFFFFFhFFFFFhhhhFhFhFFFhhFFhFhhhFFhFFFhhhFFF
@@ -143,7 +143,7 @@ works:
     - {type: wire, at: [[58, 43], [41, 44], [59, 44], [40, 45], [59, 45], [40, 46], [60, 46], [39, 47], [60, 47], [61, 48], [61, 49], [38, 50], [62, 50], [37, 51], [62, 51], [37, 52], [63, 52], [36, 53], [63, 53], [64, 54], [64, 55], [35, 56], [65, 56], [35, 57], [64, 57], [36, 58], [64, 58], [36, 59], [63, 59], [37, 60], [37, 61], [38, 62], [62, 62], [38, 63], [61, 63], [39, 64], [61, 64], [39, 65], [60, 65], [40, 66], [40, 67], [41, 68], [59, 68], [41, 69], [58, 69]]}
 # Batteries on call (off the map): loading the field fills the Fire support panel.
 support:
-  - {name: "The outpost's 120 mm and 60 mm mortars", side: 0, kind: mortar, tubes: 2}
+  - {name: "120 mm mortars at Observation Post Fritsche (the outpost's own pit was knocked out early)", side: 0, kind: mortar, tubes: 2}
   - {name: "Apaches (AH-64)", side: 0, kind: gunship, tubes: 2}
   - {name: "A-10s, F-15Es and a B-1B (later in the morning)", side: 0, kind: fighter_bomber, tubes: 3}
   - {name: "Insurgent mortars and recoilless rifles", side: 1, kind: mortar, tubes: 4}

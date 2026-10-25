@@ -68,7 +68,7 @@ const units = [
 ];
 
 writeField({
-  ends: { at: 361, why: "the outpost retaken by the afternoon: 12:00 from 06:00" },
+  ends: { at: 671, why: "the last fighters cleared from the outpost about 17:10, from 06:00 (the Army gives 10 to 13 hours of fighting)" },
   objective: { at: COP, side: 1, name: "the outpost", radius: 8 },
   id: "keating-2009", name: "Combat Outpost Keating, 3 October 2009", sides: ["Coalition", "Insurgents"], table: "oif-oef-2001-wounds",
   travel: { map: "keating-2009", place: "Combat Outpost Keating", within: 1, sides: ["Coalition", "Insurgents"] },
@@ -76,7 +76,7 @@ writeField({
   grid, units,
   hexWorks: { wire: WIRE },
   support: [
-    { name: "The outpost's 120 mm and 60 mm mortars", side: 0, kind: "mortar", tubes: 2 },
+    { name: "120 mm mortars at Observation Post Fritsche (the outpost's own pit was knocked out early)", side: 0, kind: "mortar", tubes: 2 },
     { name: "Apaches (AH-64)", side: 0, kind: "gunship", tubes: 2 },
     { name: "A-10s, F-15Es and a B-1B (later in the morning)", side: 0, kind: "fighter_bomber", tubes: 3 },
     { name: "Insurgent mortars and recoilless rifles", side: 1, kind: "mortar", tubes: 4 },

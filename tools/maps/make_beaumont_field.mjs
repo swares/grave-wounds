@@ -14,7 +14,8 @@
 // the German front line and running east, its dugouts housing a battalion. The 87th Brigade went at
 // 07:30 (2nd SWB and 1st Inniskillings, then 1st KOSB and 1st Border at 07:35); the Newfoundlanders
 // left St John's Road at 09:15, alone, A and B Companies in front and C and D 100 yards behind; the
-// 1st Essex came up on their right at 09:55 (the Museum; 10:50 by Veterans Affairs). No source gives
+// 1st Essex came up on their right at 10:50 (the Essex war diary and Veterans Affairs; 09:55 by the
+// Museum). No source gives
 // RIR 119's companies or its machine guns here: those, the British battalions' strengths but the
 // Inniskillings' and the Newfoundlanders', and where each stood are ours, with round numbers. The
 // lines, the slope and the ravine are drawn to those distances, not traced from a trench map.
@@ -93,9 +94,9 @@ writeField({
     { name: "The order", at: 76, note: "08:45: 'the 1st Essex and 1st Newfoundland Regiment will advance as soon as possible', to take the German first trench and clear to Station Road." },
     { name: "The Newfoundlanders go over", at: 106, note: "09:15: from St John's Road, over the open, alone and without the Essex or artillery, the sun 40 degrees up ahead of them; men fall in heaps at the gaps in their own wire.", arrive: ["1st Newfoundland Regiment, A and B Companies", "1st Newfoundland Regiment, C and D Companies"] },
     { name: "Hadow reports", at: 136, note: "09:45: the commanding officer reports that the attack has failed." },
-    { name: "The Essex", at: 146, note: "09:55 by the Museum (10:50 by Veterans Affairs): the Essex's two leading companies go forward on the right, after a halt order that never reached them.", arrive: ["1st Essex, two leading companies"] },
+    { name: "The Essex", at: 201, note: "10:50, by the Essex war diary and Veterans Affairs (09:55 by the Museum): the Essex's two leading companies go forward on the right, after a halt order that never reached them.", arrive: ["1st Essex, two leading companies"] },
   ],
-  ends: { at: 181, why: "from zero at 07:30 to the Essex's attack and its end, about 10:30 (our cut: the line was quiet by afternoon, the 88th Brigade taking it over at 14:00)" },
+  ends: { at: 221, why: "from zero at 07:30 to the Essex's attack at 10:50 and its halt by about 11:10 (our cut: the line was quiet by afternoon, the 88th Brigade taking it over at 14:00)" },
   objective: { at: [30, GER], side: 0, name: "the German front line at Y Ravine", radius: 10 },
   id: "beaumont-hamel-1916", name: "Beaumont-Hamel, 1 July 1916 (the Newfoundland Park)", sides: ["British", "Germans"], table: "wwi-1914-18-wounds",
   travel: { map: "beaumont-hamel-1916", place: "Newfoundland Park (the battlefield)", within: 1, sides: ["British", "Germans"] },
