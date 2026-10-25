@@ -318,7 +318,7 @@ armies:
                 others: [[arabic, 20, [20, 60]], [urdu, 10, [10, 50]], [dari, 20, [20, 60]], [english, 10, [5, 30]]]}
 
 maps:                          # the tongue (or tongues, main first) of the people where each map lies, where no place names its own (none: no locals)
-  agincourt-1415: french
+  agincourt-1415: [picard, french]   # Picardy, Artois and the Boulonnais spoke Picard in 1415 as in 1346; the map's Norman towns name French
   aljubarrota-1385: portuguese
   albuera-1811: spanish
   anzio-1944: italian

@@ -71,14 +71,14 @@ terrain: |
     wwwffffffffffffff~fffffffffffffffffffffffffffffff
     wffffffffffffffff~fffffffffffffffffffffffffffffff
 places:
-  - {name: "Harfleur", kind: camp, hex: [3, 41], depot: ["England"], note: "The English landed nearby in mid-August and took the town on 22 September, after a five-week siege"}
-  - {name: "Montivilliers", kind: village, hex: [3, 40]}
-  - {name: "Fécamp", kind: town, hex: [6, 35]}
-  - {name: "Saint-Valery-en-Caux", kind: village, hex: [11, 32]}
-  - {name: "Dieppe", kind: town, hex: [16, 30]}
-  - {name: "Arques", kind: village, hex: [16, 31]}
-  - {name: "Eu", kind: town, hex: [20, 27]}
-  - {name: "Le Tréport", kind: village, hex: [20, 27]}
+  - {name: "Harfleur", kind: camp, hex: [3, 41], depot: ["England"], tongues: [french], note: "The English landed nearby in mid-August and took the town on 22 September, after a five-week siege"}
+  - {name: "Montivilliers", kind: village, hex: [3, 40], tongues: [french]}
+  - {name: "Fécamp", kind: town, hex: [6, 35], tongues: [french]}
+  - {name: "Saint-Valery-en-Caux", kind: village, hex: [11, 32], tongues: [french]}
+  - {name: "Dieppe", kind: town, hex: [16, 30], tongues: [french]}
+  - {name: "Arques", kind: village, hex: [16, 31], tongues: [french]}
+  - {name: "Eu", kind: town, hex: [20, 27], tongues: [french]}
+  - {name: "Le Tréport", kind: village, hex: [20, 27], tongues: [french]}
   - {name: "Saint-Valery-sur-Somme", kind: town, hex: [24, 24]}
   - {name: "Le Crotoy", kind: village, hex: [23, 23]}
   - {name: "Blanchetaque ford", kind: landmark, hex: [25, 25], note: "Edward III's crossing in 1346; held against the English on 13 October 1415"}
@@ -111,11 +111,11 @@ places:
   - {name: "Calais", kind: objective, hex: [27, 4], depot: ["England"], tongues: [english, flemish, french], note: "English since 1347: the army's goal"}
   - {name: "Ardres", kind: village, hex: [29, 6]}
   - {name: "Fruges", kind: village, hex: [31, 15]}
-  - {name: "Rouen", kind: town, hex: [16, 43], depot: ["France"], note: "Where the French main army mustered; the King and the Dauphin stayed here"}
-  - {name: "Caudebec", kind: village, hex: [11, 40]}
-  - {name: "Tancarville", kind: village, hex: [7, 42]}
-  - {name: "Aumale", kind: village, hex: [26, 34]}
-  - {name: "Neufchâtel", kind: village, hex: [21, 35]}
+  - {name: "Rouen", kind: town, hex: [16, 43], depot: ["France"], tongues: [french], note: "Where the French main army mustered; the King and the Dauphin stayed here"}
+  - {name: "Caudebec", kind: village, hex: [11, 40], tongues: [french]}
+  - {name: "Tancarville", kind: village, hex: [7, 42], tongues: [french]}
+  - {name: "Aumale", kind: village, hex: [26, 34], tongues: [french]}
+  - {name: "Neufchâtel", kind: village, hex: [21, 35], tongues: [french]}
   - {name: "Gravelines", kind: town, hex: [31, 3]}
   - {name: "Saint-Omer", kind: town, hex: [32, 9]}
   - {name: "Arras", kind: town, hex: [40, 21]}

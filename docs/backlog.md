@@ -58,11 +58,10 @@ When an item is done, delete it here and note it in the pull request that closes
   just applied (not on old wounds or a pain check); the field map's heroes spend it only on a
   killing wound or a death when found, never on a stop check; and the CLI and self-play use the
   default setting with no flag to change it.
-- **The rule book, beyond the third part.** `dist/rules.html` covers the whole game in
+- **The rule book, still left out.** `dist/rules.html` covers the whole game in
   fourteen chapters, with a medieval retinue and a Vietnam rifle squad followed through.
-  It summarises rather than repeats the docs: the black-powder guns' fire (sections, fuses,
-  ricochet), the travel map's battle set-up and the battlefields are covered in the docs and
-  on the pages, not in the book. It ends with an index of the terms set in bold, each linked to its sections, and prints page numbers (in Chrome and Edge; other browsers may leave them off). The index has no page numbers of its own, only section names.
+  It summarises rather than repeats the docs: the travel map's battle set-up and the
+  battlefields are covered in the docs and on the pages, not in the book. It ends with an index of the terms set in bold, each linked to its sections, and prints page numbers (in Chrome and Edge; other browsers may leave them off). The index has no page numbers of its own, only section names.
 - **The enemy commander, beyond the second cut.** A scripted commander moves one side on
   the field map. It attacks or holds by its units' quality, knows only what its units see
   (remembering last sightings for a few exchanges), picks targets by threat and weakness,
@@ -97,8 +96,6 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Indirect fire, simplified.** A battery placed off the map stands straight out from the
   edge nearest where it was placed, not anywhere behind it. Counter-battery fire does not need to see a placed battery: it
   finds it by flash and sound once located, wherever it stands within range.
-- **The travel clock, simplified.** Meetings are only between the forces' hexes: no
-  scouting reach, and no seeing a dust cloud or campfires from further off.
 - **Campaign and battle maps for the other campaigns.** Sidon (1253), Visby (1361),
   Jacob's Ford (1179), Crécy (1346), Aljubarrota (1385), Agincourt (1415), Towton (1461), Dornach (1499), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
   Lane (1814), Sevastopol (1855, two battlefields), First Bull Run (1861), Fort Phil Kearny (1866-67, with two battlefields), Mons
@@ -145,8 +142,8 @@ When an item is done, delete it here and note it in the pull request that closes
   downed, a wreck placed on the zone), and they bring supplies in and lift units out. Still
   left out: helicopters on the map as units (they are only ever landing or away), a downed
   crew to rescue, door gunners firing as they come in, landing zones that move or are cut by
-  the GM mid-battle other than by hand, and battlefields setting their own helicopter
-  numbers (all use the defaults, which are X-Ray's).
+  the GM mid-battle other than by hand, and helicopter numbers of each battlefield's own (a
+  field can set them, `field.helos`, but none does: all use the defaults, which are X-Ray's).
 - **Medevac, first cut.** A side's wounded get better after-the-battle figures from its war's
   ambulance wagons, motor ambulances or helicopters (helicopters needing a landing zone and a
   helicopter left), unless the GM unticks it. Still left out: medevac flights during the
@@ -192,28 +189,44 @@ When an item is done, delete it here and note it in the pull request that closes
   regenerated passages. The GM can pick the voice for a battle (the war's by default); passages already written are
   not retold in a new voice.
 - **Self-play against the battles as fought, first review** (`docs/selfplay-review.md`). Every
-  battlefield was played with the commander on both sides and set against what happened; the
-  commander now searches forward when it knows of no enemy, tanks no longer go to ground,
-  modern infantry storm works, battlefields can give their stances, and self-play runs past the
-  last phase and does not end on units still to come or an objective held from the start; a
-  unit with no room to face its goal moves facing as near it as it can (Kapyong, Cassino). To
-  do, from the review: 73 Easting's fight at the crest (tanks now placed by their main gun and standing off, but the T-72s are in dead ground until the crest); the morale check a unit in contact takes when it loses more than it deals, however few are touching (it breaks blocks of thousands after a handful of losses: Agincourt, see the review); men in rubble harder to shift (Cassino town: measured, see the review; shellfire decides it, and batteries' rate and ammunition are already within published figures; a sourced lethality figure scaled to 40% was measured and not applied); the Chechen
-  ambush at Grozny (the night now fought as it was, the dark at 17:05; the breakout 25 hours on is beyond a run); an envelopment plan (Cowpens); the American
-  rush on the guns at Lundy's Lane (dark now, but the guns still hold); the German counter-attacks on Point 593 (no sourced figures yet) and why small
-  units take 593 so easily in February. Measured and not built: a holding commander that
-  withdraws (no trigger tells the defences that held from those that went). Done: self-play runs to 1,200 exchanges, so every battlefield's phases come (101 of 148 runs, from 100), and its scripts are in tools/selfplay. Done: a run as long as the battlefield's own account says (ends, thirteen battlefields; 98 of 148, from 101). Measured and not built: a quarter-down unit checking morale only when it loses men, and a failed rally leaving it shaken (96 and 97 of 148, from 98), and only while an enemy is within a charge (96); see the review. Measured and not built: morale checked only on events (docs/morale-redesign.md: 87 and 90 of 148, from 98; it misses the sourced targets, because the battles rarely produce the flanks and broken neighbours the sources say break units). Done: the commander pursues broken units (101 of 148, from 98; Lützen 0 to 3 of 4). To do: units breaking at lower losses (T1), which the rout's share (T3) waits on. Done: a formed unit that the ground keeps from closing narrows its front, to half at least (313 of 444 from 307; Agincourt 1 to 8 of 12). Done: quick-play blows, a GM's option, off by default, with an era chart in the tables and a sheet for the field (285 of 444 with it on, within the runs' own spread: the same rules on seeds 13 to 24 match 290 against 313; changes are judged from here on 24 runs pooled, 603 of 888, and the morale targets; see the review). Done: a unit of the holding side holding a position counts its losses only in an exchange it lost men (642 of 888 from 628; Keating 12 to 20, Pork Chop 10 to 16, X-Ray 7 to 9). Done: a unit gone to ground in ground that gives cover (woods, scrub) holds a position too, and a helicopter lift for a unit that has broken turns back (652 of 888 from 642; X-Ray 9 to 18). Measured and not built: the losing check counting only losses hand to hand (645; the June Redan 2 to 13, but Agincourt 8 to 3 and Hue 1 to 0). Measured and not built: modern infantry storming only a pinned, shaken or broken garrison (666 of 888 from 652; Hue 1 to 4, but the town fights stall and the rout's share falls to 0), and with it heavy direct fire and fire kept up pinning with no roll (659; Mons 23 to 16); branch suppress-first, see the review. Done: HE inside buildings: a main gun's round or a rocket bursting in a building hex strikes each man there at 50% (1944 street-fighting trials), and rockets and recoilless rifles at men burst on the hex (652 of 888, as before; Keating 20 to 23, Mogadishu 19 to 21, Wanat 23 to 19, Hue 1 to 0); the hidden figures for small arms stand (the research does not contradict them). Done: a broken unit cornered with an enemy touching it surrenders (the war's quarter % taken prisoner, the rest killed), except sides the accounts show fighting to the end (orders.yaml fight_on); the self-play tools count prisoners (658 of 912 from 657; Visby 23 to 24, Mogadishu 21 to 19). Done: a unit fired on, hit or not, has drawn fire; from WWII on every attacking modern foot unit fired on goes to ground and fires (commander.bounds_all); small arms count in range only where the weather lets them see; attacking vehicle units leave immobilised vehicles (700 of 936 from 692; Hue 0 to 6). To do: Goose Green (bounds still go in before the guns are pinned), 73 Easting (tanks closing inside the Iraqis' sight in the sandstorm), Keating (traced: not the bounds; see the next entry) and Wanat (no single fix; within the runs' spread). Done: an attacking unit at the objective goes on attacking while its target is on it too, and a unit on the ground turns to its target and stays down (705 of 984 from 704; Dornach 3 to 8, Goose Green 1 to 5, Wanat 15 to 19, Lützen 20 to 17, within the runs' spread: 76 to 82 of 96 on seeds 1 to 96; Keating 19 to 17: its contested stalemates had scored as held). Researched and not built: the Americans retaking Keating's outpost (no clock times in the sources; the project's keating-retake-research notes). Done: a unit holding a position is not flanked for morale (766 of 1,056 from 763 after #309; Keating 18 to 19, Chipyong-ni 21 to 23, Mogadishu 17 to 18, Goose Green 5 to 3); to look at: Mogadishu's Somali losses falling from 27% to 13% with it. Done: a unit holding a position has lost the exchange only by its hand-to-hand losses, not by fire it cannot answer (671 of 912 from 658; the June Redan 2 to 14). To do: a sourced rate for how often a cut-off unit surrenders (none found; every cornered unit of a side that gives up does); Hue's Marine rockets (3.5-inch, LAW, 106: no sourced counts); Agincourt and the June Redan under the losing check. Measured and not built: a check when a neighbour within 2 hexes broke (no effect). Done: a unit that cannot turn toward its target still goes to ground under fire (628 of 888 from 620 on main; X-Ray 1 to 7, still to trace further). Measured and not built: a failed rally leaving the unit shaken (613 of 888 from 620). Self-play measurements run on GitHub Actions (selfplay and selfplay-compare workflows). Done: Hue's two tanks and two Ontos (a new vehicle kind); vehicles with a main gun never held in reserve; a shooter counts a target in range only with a clear line from the hex (641 of 888 from 620; Cassino town 0 to 22, Pork Chop 7 to 16; but X-Ray 15 to 1 and 73 Easting 19 to 12, to trace; Hue only 0 to 1; 106s on mules, launchers and gas have no counts; see the review). Measured and not built: the quarter-down morale check only in an exchange the unit lost men, with Phantom Ridge holding (614 of 888 from 620; Pork Chop 7 to 17, Grozny 2 to 9, Keating 16 to 21, but Cowpens 23 to 15, 73 Easting 19 to 12, Mons 23 to 18; the Cassino battlefields unchanged; see the review). Done: modern infantry storm works in bounds, going to ground after a bound that drew fire (628 of 888 from 620; Hamburger Hill 18 to 23 of 24; Goose Green still 0: its bounds still go into machine guns nothing has pinned). Measured and not built: the losing check called only by a share of the unit's men (610 of 888 from 620; before 1914 units broke at a median 27% down, from 15%, Towton 23 to 3; the June Redan 2 to 24). Done: the defenders' orders from the accounts (data/orders.yaml): units the sources say held fight where they stand, and units that withdrew on orders go at the accounts' minute (620 of 888 from 603; 73 Easting 7 to 19 of 24, Lützen 9 to 17; see the review). Measured and not built: the losing check and rout strike counted by the men in contact (101 of 148 from 102; units broke later, T1 28%); a second line feeding men into the first (Agincourt's vanguard was never in contact to be fed). Done: a battle fought to a draw in which the attacker took the objective matches a run with the attacker holding it; holding the objective ends a run only once every phase has begun; works laid under the units their accounts put in them (Cassino town, Bougainville, Goose Green, 73 Easting, Hue: Goose Green 3 to 0 of 12); Hue runs its account's length; the June Redan's centre column, which never went out, is off the map (0 to 2). Measured and not built: black-powder bayonet charges (any target 288 of 444, batteries only 304, from 307). To do, from the traces: the losing check breaking a whole battalion over one man (the June Redan); holding units pulled off their ground to the attackers' objective (Cassino town; measured and not built: units dug in, gone to ground or in a bunker holding their own ground, 285 of 444 from 307, Mons 12 to 0 and Osan 12 to 5, where the defenders gave way); Hue's missing tanks, recoilless rifles, Ontos and gas; the German fire and counter-attacks on Point 593; Grozny's strengths (one witness); see the review, The battlefields that never matched. Measured and not built: fire from a flank counting as flanked for morale (299 of 444, from 307; T1 nearer the sources, the Monastery 5 to 1 of 12), and the commander sending spare units round an open flank, with the odds against the men it would strike (302 of 444; Lützen 6 to 3); before 1914 the open flanks are seldom in reach and wide blocks cannot wheel onto them (see the review, Flanking; branch flank-prototypes). Measured, held: an elite quality for selected formations (304 of 444, from 303; branch elite-tier). Measured and not built: routes for the Monastery's Gurkhas and its Germans on 444 and the abbey holding their ground (5 of 12 runs, 4, 1; see the review). To do: why Point 593's paratroops alone lose to the Rajputana; defenders that break in the longer runs where the accounts say they held (the constant morale drain, which the short decisive battles depend on) (Keating, X-Ray and Pork Chop each lose a run; see the review); Mogadishu's American losses falling to 25% once the relief comes; the September Redan, 4 of 4 to 3 since the shooters give way. Done: the commander's shooters give way to their own formed men behind them, and a stalled attack commits a reserve (100 of 148 runs, from 96; see the review); measured and not built: the losing check, flank check and rout strike counted by the men touching rather than the whole unit; measured and not built: a formed unit held up behind another coming up beside it or relieving it (no change), and a formed unit narrowing its front to fit the ground (Agincourt's funnel; 98 of 148, from 100); see the review. Done: units tire by the toil rule, from hand-to-hand fighting and deep going (Agincourt, 0 of 4 to 1 of 4; see the review); the Poles at
-  Cassino as companies (February stays as battalions; see the review); phases that change the
-  light, and Lundy's Lane's sunset and moonlit night; tanks by fire control, composite armour,
-  thermal sights in a sandstorm and vehicle morale by vehicles lost (73 Easting still does not match); routes round a flank from the accounts
-  (Osan, Lundy's Lane, Kapyong, the Poles; no winner changed, see the review). Done since: faster exchanges (sight lines, the ground and
-  step costs remembered, the same battles about five times faster on the page).
+  battlefield was played with the commander on both sides and set against what happened; what has
+  been changed since, and what was measured and not built, is in the review. To do, from the
+  review and its traces:
+  - 73 Easting: the fight at the crest (the T-72s are in dead ground until the crest), and tanks
+    closing inside the Iraqis' sight in the sandstorm;
+  - the morale check a unit in contact takes when it loses more than it deals, however few are
+    touching (it breaks blocks of thousands after a handful of losses: Agincourt), Agincourt and
+    the June Redan under the losing check, and the losing check breaking a whole battalion over
+    one man (the June Redan);
+  - units breaking at lower losses (T1), which the rout's share (T3) waits on, and defenders that
+    break in the longer runs where the accounts say they held (the constant morale drain, which
+    the short decisive battles depend on: Keating, X-Ray and Pork Chop each lose a run);
+  - Cassino town: men in rubble harder to shift, and holding units pulled off their ground to the
+    attackers' objective;
+  - Grozny: the Chechen ambush (the breakout 25 hours on is beyond a run) and its strengths (one
+    witness);
+  - an envelopment plan (Cowpens), and the American rush on the guns at Lundy's Lane (the guns
+    still hold);
+  - Point 593: the German fire and counter-attacks (no sourced figures yet), why small units take
+    it so easily in February, and why its paratroops alone lose to the Rajputana;
+  - Goose Green (bounds still go in before the guns are pinned), Keating (traced: not the bounds;
+    and the Americans retaking the outpost, researched but with no clock times in the sources) and
+    Wanat (no single fix; within the runs' spread);
+  - Hue: the Marines' rockets (3.5-inch, LAW, 106), recoilless rifles and gas (no sourced counts);
+  - Mogadishu: the Somali losses falling from 27% to 13% once a unit holding a position was no
+    longer flanked for morale, and the American losses falling to 25% once the relief comes;
+  - the September Redan, 4 of 4 to 3 since the shooters give way;
+  - a sourced rate for how often a cut-off unit surrenders (none found; every cornered unit of a
+    side that gives up does).
 - **The enemy commander against itself, first cut.** Each side has its own commander choice;
-  with both, Run plays on until Stop, a side with nothing left standing, an attacking side
-  holding the objective 5 exchanges running, or 60 exchanges, then ends the battle; Python
-  plays the same (`python -m gravewounds selfplay`), the turn now shared in the rules. Still
-  left out: a search plan when no enemy is in sight and no objective is marked (both sides
-  stand until the limit), many-battle statistics beyond running `-n` battles, and a narrated
-  summary (see the narrator).
+  with both, Run plays on until Stop, a side with nothing left standing and none still to come,
+  an attacking side holding the objective 5 exchanges running once every phase has begun (taken
+  from the other side, with no standing enemy within 10 hexes of it), or the exchange limit, then ends the battle. The limit is 60
+  exchanges, or for a battlefield with phases 30 past its last phase's start, or its account's
+  length if longer, but never more than 1,200 (units.yaml `commander.self_play`). Python plays
+  the same (`python -m gravewounds selfplay`), the turn now shared in the rules. Still left
+  out: many-battle statistics beyond running `-n` battles, and a model-written summary
+  (`selfplay --story` prints each battle's turning points; see the narrator).
 - **Cold, first cut.** Frostbite is a sickness on the force's track (and a named man's), not a
   wound on a body part, and cold-weather clothing, warming tents and fires are only the camp's
   shelter. In battle, only automatic weapons jam; mortars, grenades and vehicles do not freeze.
@@ -229,10 +242,11 @@ When an item is done, delete it here and note it in the pull request that closes
   hand move is a destination, not a route). No battlefield has minefields yet:
   to be laid only where the accounts name them. Crews who bail out simply leave the fight.
 - **Fire at hidden men, first cut.** Men gone to ground, in bunkers or in buildings are now hit
-  at 10% of aimed shots (machine guns 5%), and dug-in men hold better. Osan, left alone, lasts
-  about an hour where the real fight took two and a half; the rest of that time went in the
-  North Koreans moving round the flanks, which the static test does not play. Worth a second
-  look once Osan has been played through by hand.
+  at 10% of aimed shots (machine guns 5%), and dug-in men hold better. A dug-in line left alone
+  is tuned to hold for an hour and a half to two against five times its numbers (Osan) where
+  the real fight took two and a half; the rest of that time went in the North Koreans moving
+  round the flanks, which the static test does not play. Worth a second look once Osan has
+  been played through by hand.
 - **Siege warfare tables, first cut.** The Crimean War now has a wounded table for the siege
   of Sevastopol (British rank and file, April 1855 to the end of the war, from the 1858
   official medical history) and an all-hits blend, with the earlier period beside it in the
@@ -259,6 +273,15 @@ When an item is done, delete it here and note it in the pull request that closes
   Strength, Presence), and Leechcraft, Fieldcraft, Watch and Stealth work outside a fight.
   Followers have one-line stat blocks, and the gunpowder eras (1618-1876) and the world wars
   (1914-18, 1939-45), Korea, Vietnam and the later wars (1982-2014) have their own tables.
+- **Presence and followers (to do).** How many followers a team has comes from its template
+  (`followers` in data/teams/*.yaml, such as a medieval retinue's 8 archers, 4 spearmen and 2
+  servants), changed by hand on the page; a leader's Presence touches only his men's morale
+  (`fight_line` in gravewounds/team.py). So a leader with Presence 30 keeps as many men as one
+  with 80, though the design (design.md, item 12, from Gamma World's Charisma) has Presence set
+  how many followers he can keep as well as their morale. One way to fix it: a cap on followers
+  by Presence band (a design table, as no period source gives one), checked on the team builder
+  when followers are added and at End of season, with men over the cap drifting away (deserting
+  or leaving at the term's end) rather than vanishing at once.
 - **Rank, pay and loot, first cut.** Ranks, promotion by vacancy, pay by rank, loot, prize money,
   ransom and the Plains nations' honours are on the team builder. Still left out:
   - the field map now counts a hero's hits and downs (a deed at two) and a Plains hero's
@@ -283,8 +306,8 @@ When an item is done, delete it here and note it in the pull request that closes
     Mend kit (boots and clothing that wear out) work on the travel map (data/uses.yaml,
     data/kit.yaml; project doc "kit-wear-research"); but the night march's extra fatigue and the
     boot and clothing lives for the medieval, Thirty Years', Crimean, Civil War and later eras are
-    estimates, a night march is no harder for the enemy to see (meetings are by hex), only the
-    named men's kit wears (a force's men are not shod or clothed), weapons, harness and radios do
+    estimates, a night march gives no concealment of its own (the dark cuts every side's sight
+    alike, marching or not), only the named men's kit wears (a force's men are not shod or clothed), weapons, harness and radios do
     not wear, and Mend kit is rolled only on a day the force does not march;
   - the roller and the travel map have no checks panel of their own (only their built-in rolls:
     first aid, foraging, surprise);
@@ -421,10 +444,13 @@ When an item is done, delete it here and note it in the pull request that closes
   villages by Sevastopol, Sidon's Franks, Visby's Low German, Grozny (Russian and Chechen), Tan Canh
   and Khe Sanh village (Vietnamese), Pashto in the Pech and Kamdesh valleys, Picard round Mons and
   Walloon at Binche, Chinese at Gia Hoi, and the Lakota, Cheyenne and Arapaho with the Plains sign
-  language at Fort Phil Kearny. Still left out: the Crow (towards the Bighorn, off the map), the
+  language at Fort Phil Kearny. The map defaults: Picard and French at Crécy, Agincourt (its
+  Norman towns French, standing in for Norman), Beaumont-Hamel and Mons, Portuguese at
+  Aljubarrota, German at Dornach, Arabic at Jacob's Ford and Snipe (the coast's Bedouin), and
+  Albanian on the Serbia map where no town names its own. Still left out: the Crow (towards the Bighorn, off the map), the
   Mohawk (the Grand River, off the Lundy's Lane map), German among the Niagara Mennonites (no source
-  it was still spoken), Gujari in Kamdesh's herders' hamlets (none named on the map), Picard in 1415
-  Artois (then simply the north's French); the Picard and Walloon line at Binche is our reading,
+  it was still spoken), Gujari in Kamdesh's herders' hamlets (none named on the map), Norman in the Caux and on the
+  Seine (French stands in); the Picard and Walloon line at Binche is our reading,
   and Gia Hoi's Chinese in 1968 has no source for its size; Grozny's districts and Visby's German share are not sourced, nor Vietnamese in
   the highland district towns (inference); the Kosovo and Macedonian shares are from before the
   killings and flight of 1912-13, which made the towns more Serbian and Slavic by 1915 by an
@@ -531,7 +557,7 @@ When an item is done, delete it here and note it in the pull request that closes
   wartime Landsturm ages (the 50-55 often given is the war-labour law's) and the 1912 Wehrgesetz's
   terms unconfirmed; the Bulgarian army's tongues (Bulgarian, Turkish; Pomaks and Macedonians as
   Bulgarian) and its name for shell shock are estimates; Bulgarians in Entente hands have no
-  death rate; an Austro-Hungarian's first name, surname and tongue are rolled apart, so a Polish name may come with a Hungarian tongue (no nationality is rolled first); and the Ottoman and German armies of the eastern fronts are not armies here.
+  death rate; an Austro-Hungarian's first name, surname and tongue are rolled apart, so a Polish name may come with a Hungarian tongue (no nationality is rolled first); and the Ottoman army is not an army here.
 - **Russia and Serbia in the First World War, first cut.** Both armies are on the team builder
   (and so the roller, travel and field pages): names, careers, women, money, pay, prices,
   prisoners, tongues, enlistment ages and replacements (project doc "eastern-armies-research").
@@ -545,8 +571,7 @@ When an item is done, delete it here and note it in the pull request that closes
   those taken (Austro-Hungarians in Serbian hands); the Russian army's tongues are the 1897
   census's (no muster counts); Serbia's boys of 1915 and old men of the third ban use the era's
   under- and over-age shares, not their own; the Russian and Serbian names for shell shock are not
-  shown (the era's are British); no Russian or Serbian campaign map or battlefield; and the
-  Austro-Hungarian and Bulgarian enemies are not armies of their own.
+  shown (the era's are British); and no Russian campaign map or battlefield.
 - **Women under arms, first cut.** Women serve as cantinières with the French in the Crimea, in the
   Civil War (disguised in the ranks, openly as nurses and vivandières), the Soviet Union of
   1941-45, Vietnam (the ARVN, the North and the Viet Cong) and the later wars (the US, Britain and
