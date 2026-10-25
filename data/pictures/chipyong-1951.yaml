@@ -1,0 +1,18 @@
+# Pictures for the Chipyong-ni section of Korea and Vietnam. Each is public domain or openly licensed,
+# checked on its source page. The file goes in images/books/korea_vietnam/ under `file`; until it is there
+# the book shows a captioned slot with this credit and source.
+# chipyong-stretcher: LICENCE CONFIRMED ON THE HOLDER'S OWN PAGE (Australian War Memorial, HOBJ2087,
+# collection page C281616). The Memorial gives the maker as Phillip Oliver Hobson, the date as c. 27 February
+# 1951, the place as Chipyong-ni (Hill 614), and the copyright status as "Copyright expired - public domain",
+# with the Creative Commons Public Domain Mark 1.0. No Commons copy was found, so the source is the AWM page.
+# NOT A PICTURE OF THE BATTLE: it shows a 3 RAR stretcher party near Chipyong-ni during Operation Killer,
+# about two weeks after the siege. No US Army or other free photograph of the 23rd Infantry at Chipyong-ni
+# itself was found in this session (Commons and history.army.mil were not reachable); a NARA Signal Corps
+# photograph of the battle would be better if one can be found before print.
+- id: chipyong-stretcher
+  file: chipyong-stretcher.jpg
+  caption: "Men of the 3rd Battalion, Royal Australian Regiment, carry a casualty through knee-deep snow near Chipyong-ni (Hill 614) in late February 1951, about two weeks after the siege, photographed by Phillip Hobson. The 23rd's wounded lay in the same snow until the road opened on 16 February."
+  credit: "Phillip Oliver Hobson, c. 27 February 1951, Australian War Memorial, HOBJ2087"
+  licence: "Public domain (copyright expired; marked Public Domain Mark 1.0 by the Australian War Memorial)"
+  source: "https://www.awm.gov.au/collection/C281616"
+  alt: "A photograph of Australian soldiers carrying a casualty on a stretcher through knee-deep snow."

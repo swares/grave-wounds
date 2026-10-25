@@ -1,0 +1,20 @@
+# Pictures for the Osan (Task Force Smith, July 1950) section of Korea and Vietnam. Each is public domain,
+# checked on its source page. The file goes in images/books/korea_vietnam/ under `file`; until it is there
+# the book shows a captioned slot with this credit and source.
+# osan-taejon: LICENCE CONFIRMED AS A US GOVERNMENT WORK ON TWO MIRRORS, NOT ON COMMONS. The photograph is
+# printed in Appleman's official history (Office of the Chief of Military History, 1961), chap. VI, p. 63,
+# with the caption "AMERICAN COMBAT TROOPS arriving at Taejon, 2 July. These were 21st Infantry men of Task
+# Force Smith." (Korean War Online transcription and The Clio, which credits Appleman p. 63). Bevin
+# Alexander's photo page prints the same scene, "Task Force Smith arrives at the Taejon rail station",
+# credited "Defense Department photo" (image at https://www.bevinalexander.com/korea/photos/korea-003.jpg).
+# A Defense Department photograph taken in official duty is public domain. Wikimedia Commons could not be
+# searched from this session, so no Commons file page or NARA / Signal Corps number was found; the
+# transcription of Appleman's front matter read here does not state where its photographs came from.
+# Check the Commons page and the negative number before print.
+- id: osan-taejon
+  file: osan-taejon.jpg
+  caption: "Men of the 21st Infantry, Task Force Smith, arriving at Taejon by train on 2 July 1950, three days before Osan."
+  credit: "US Army / Department of Defense photograph, printed in R. E. Appleman, South to the Naktong, North to the Yalu (Office of the Chief of Military History, 1961), p. 63"
+  licence: "Public domain (US government work)"
+  source: "https://www.koreanwaronline.com/history/Appleman/Chapter6.htm"
+  alt: "American soldiers arriving at a railway station in Korea, July 1950."

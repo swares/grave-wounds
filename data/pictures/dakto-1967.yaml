@@ -1,0 +1,31 @@
+# Pictures for the Hill 875 (Dak To) section of Korea and Vietnam. Each is public domain, checked on its
+# source page. The file goes in images/books/korea_vietnam/ under `file`; until it is there the book shows
+# a captioned slot with this credit and source.
+# dakto-bomb-crater: LICENCE CONFIRMED ON THE NATIONAL ARCHIVES' DOCSTEACH PAGE, NOT ON COMMONS. NARA
+# 111-CC-44246, Record Group 111 (Office of the Chief Signal Officer), series "Color Photographs of Signal
+# Corps Activity, 1944-1981", dated 23 November 1967, marked "Public Domain, Free of Known Copyright
+# Restrictions" (Public Domain Mark 1.0). The Signal Corps caption reads "Assault on Hill 875 - Members of
+# the 4th BN, 173 ABN Bde, pinned down in a bombcrater on the side of the hill by mortar fire"; the
+# battalion was the 4th Battalion, 503rd Infantry, of the 173rd Airborne Brigade. No Commons copy checked.
+- id: dakto-bomb-crater
+  file: dakto-bomb-crater.jpg
+  caption: "Paratroopers of the 4th Battalion, 503rd Infantry, 173rd Airborne Brigade, pinned down by mortar fire in a bomb crater on the side of Hill 875, 23 November 1967, the day the crest was taken."
+  credit: "US Army Signal Corps photograph, National Archives, 111-CC-44246"
+  licence: "Public domain (US government work)"
+  source: "https://www.docsteach.org/documents/document/soldiers-pinned-down-mortar-fire"
+  alt: "Soldiers lying in a bomb crater on the side of Hill 875."
+# dakto-bunkers: LICENCE CONFIRMED ON A MIRROR, NOT ON COMMONS ITSELF. A mirror of the Commons file
+# "Hill_875_Vietnam.jpg" (xn--h1ajim.xn--p1ai, a Russian wiki that imports from Commons) gives the original
+# description "Destroying enemy bunkers after assault on Hill 875", 1967, source the US Army Heritage and
+# Education Center online archive (ahecwebdds.carlisle.army.mil), and the licence Public domain. The US
+# Vietnam War Commemoration's "Battle of Dak To" page uses the same picture, credited "U.S. Army Heritage and
+# Education Center", captioned "Troops from the 173d Airborne Division [sic] destroy enemy bunkers after the
+# assault on Hill 875". The Commons description also has "2nd Battalion, 173rd Airborne Brigade", meaning
+# the 2nd Battalion, 503rd Infantry; which battalion is not certain. Check the Commons page before print.
+- id: dakto-bunkers
+  file: dakto-bunkers.jpg
+  caption: "Paratroopers of the 173rd Airborne Brigade destroy North Vietnamese bunkers on Hill 875 after the assault, November 1967."
+  credit: "US Army, US Army Heritage and Education Center"
+  licence: "Public domain (US government work)"
+  source: "https://commons.wikimedia.org/wiki/File:Hill_875_Vietnam.jpg"
+  alt: "Soldiers among destroyed bunkers on Hill 875."
