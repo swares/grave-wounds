@@ -42,7 +42,9 @@ word; the novice who left the cloister knows his herbs and faints at the sight o
 - d100 on the career's table gives an event and the skill it taught (+15). An event he has
   already had moves to the next row down.
 
-He is 16, plus 4 a term. Nobody dies in generation. There are twelve careers:
+He enlists at 16, raised to his army's least age for service where it had one, and is 4 years
+older a term; a roll can make him a boy under age or an older recruit (see *Age*). Nobody dies
+in generation. There are thirteen careers:
 
 | Career | Main | Second |
 | --- | --- | --- |
@@ -58,6 +60,7 @@ He is 16, plus 4 a term. Nobody dies in generation. There are twelve careers:
 | Forester or huntsman | Fieldcraft | Stealth |
 | Servant or groom | Ride | Watch |
 | Merchant | Persuade | Letters |
+| Townswoman or castle household at a siege | Craft | Watch |
 
 The steps are set so a fighter's attack with his own weapon comes out about where the
 field map's unit qualities sit. One term gives about a green soldier's 40%, two a
@@ -192,16 +195,16 @@ region takes its war's wound table, for old wounds and for the roller.
 
 | Era | Regions (wound table) | Fighting skills | Careers |
 | --- | --- | --- | --- |
-| Thirty Years' War (1618-1648) | the Swedish army; the Imperial army and the Catholic League (Thirty Years' War) | Musket, Pistol, Blade, Pike | musketeer, pikeman, cuirassier, harquebusier, dragoon, sergeant, field surgeon, sutler, chaplain |
-| Horse and musket (1775-1815) | the Continental Army and the British in America (Revolution); the British and the French in the Peninsula (Peninsular War); the United States (1812) | Musket, Rifle, Pistol, Blade, Bayonet, Gunnery | line infantryman, rifleman, dragoon or hussar, artilleryman, sergeant, officer, surgeon's mate, scout, sailor or marine, sutler |
-| Crimean War (1854-1856) | the British, the French Army of the East, the Russians at Sevastopol (all the Crimean all-hits table) | Musket, Pistol, Blade, Bayonet, Gunnery | line infantryman, rifleman (chasseur or Zouave), light cavalryman, artilleryman, sailor serving guns ashore, sapper or miner, sergeant, officer, surgeon or orderly, cantinière or canteen-keeper |
-| Civil War and frontier (1861-1876) | the Union, the Confederacy, the US Army on the frontier (all the Civil War table) | Rifle, Pistol, Blade, Bayonet, Gunnery | infantryman, sharpshooter, cavalry trooper, artilleryman, sergeant, officer, surgeon or hospital steward, scout, teamster |
+| Thirty Years' War (1618-1648) | the Swedish army; the Imperial army and the Catholic League (Thirty Years' War) | Musket, Pistol, Blade, Pike | musketeer, pikeman, cuirassier, harquebusier, dragoon, sergeant, field surgeon, sutler, chaplain, woman of the baggage train |
+| Horse and musket (1775-1815) | the Continental Army and the British in America (Revolution); the British and the French in the Peninsula (Peninsular War); the United States (1812) | Musket, Rifle, Pistol, Blade, Bayonet, Gunnery | line infantryman, rifleman, dragoon or hussar, artilleryman, sergeant, officer, surgeon's mate, scout, sailor or marine, sutler, vivandière or blanchisseuse, soldier's wife on the strength |
+| Crimean War (1854-1856) | the British, the French Army of the East, the Russians at Sevastopol (all the Crimean all-hits table) | Musket, Pistol, Blade, Bayonet, Gunnery | line infantryman, rifleman (chasseur or Zouave), light cavalryman, artilleryman, sailor serving guns ashore, sapper or miner, sergeant, officer, surgeon or orderly, cantinière or canteen-keeper, nurse at Scutari or Balaklava |
+| Civil War and frontier (1861-1876) | the Union, the Confederacy, the US Army on the frontier (all the Civil War table) | Rifle, Pistol, Blade, Bayonet, Gunnery | infantryman, sharpshooter, cavalry trooper, artilleryman, sergeant, officer, surgeon or hospital steward, scout, teamster, army nurse, vivandière or daughter of the regiment |
 | Plains nations (1860-1877) | the Lakota; the Cheyenne and Arapaho (the Army surgeons' arrow report, with Civil War gunshots) | Bow, Lance, Club and knife, Gun | warrior with bow and shield, warrior with lance and shield, warrior with a gun, scout, leader of war parties, healer, herder of the camp's horses |
-| First World War (1914-1918) | the British Empire, Newfoundland, France, Germany, the United States (1917-18), Imperial Russia (1914-17), Serbia, Austria-Hungary, Bulgaria (1915-18) (all the First World War table: no Russian or Serbian table by region was found that counts the dead as well as the hospitals' wounded) | Rifle, Pistol, Machine gun, Bombing, Gunnery, Bayonet, Trench weapons | rifleman, machine gunner, bomber, sniper or observer, sapper or tunneller, stretcher-bearer or orderly, signaller or runner, corporal or sergeant, junior officer, gunner or trench mortarman |
-| Second World War (1939-1945) | the United States in Europe, the British Commonwealth, Germany, Italy (1940-43), the Soviet Union (the Owens WWII table); US Marines and Army in the Pacific, Japan (the Bougainville table) | Rifle, SMG and pistol, Machine gun, Grenade, Gunnery, Bayonet, Close combat | rifleman, machine gunner, grenadier or anti-tank man, sniper or scout, combat engineer, medic, radio operator, corporal or sergeant, junior officer, paratrooper or commando, tank crewman |
-| Korean War (1950-1953) | US Army and Marines 1950-51, the US Army on the outpost line 1952-53, the Commonwealth, the Republic of Korea Army, the Chinese People's Volunteers, the Korean People's Army (all the Korean War hospital table) | Rifle, SMG and pistol, Machine gun, Grenade, Gunnery, Bayonet, Close combat | rifleman, machine gunner or BAR man, rocket or recoilless gunner, mortarman, sniper or scout, combat engineer, aidman or corpsman, radio operator or wireman, squad leader, platoon leader, tank crewman |
-| Vietnam War (1965-1973) | the US Army, the US Marines, Australians and New Zealanders, the ARVN, the North Vietnamese army, the Viet Cong (all the Vietnam hospital table) | Rifle, SMG and pistol, Machine gun, Grenade and rocket, Gunnery, Bayonet, Close combat | rifleman, machine gunner, grenadier or RPG gunner, point man or scout, combat engineer or sapper, tunnel rat or tunnel fighter, mortarman, medic or corpsman, radio operator, squad leader, platoon leader |
-| The Falklands to Afghanistan (1982-2014) | the British and Argentines in the Falklands (Falklands table), US forces in the Gulf 1991 (Gulf War table), the Rangers in Mogadishu 1993 (Somalia table), the Russians and Chechens 1994-96 (Chechnya table), the US, the British and the insurgents in Iraq and Afghanistan (OIF/OEF table) | Rifle, Pistol, Machine gun, Grenade and rocket, Gunnery, Bayonet, Close combat | rifleman, machine gunner, grenadier or anti-tank gunner, marksman or sniper, combat engineer or bomb searcher, combat medic, signaller, military police or convoy gunner, armoured vehicle crewman, section leader, platoon leader |
+| First World War (1914-1918) | the British Empire, Newfoundland, France, Germany, the United States (1917-18), Imperial Russia (1914-17), Serbia, Austria-Hungary, Bulgaria (1915-18) (all the First World War table: no Russian or Serbian table by region was found that counts the dead as well as the hospitals' wounded) | Rifle, Pistol, Machine gun, Bombing, Gunnery, Bayonet, Trench weapons | rifleman, machine gunner, bomber, sniper or observer, sapper or tunneller, stretcher-bearer or orderly, signaller or runner, corporal or sergeant, junior officer, gunner or trench mortarman, military nurse, army auxiliary |
+| Second World War (1939-1945) | the United States in Europe, the British Commonwealth, Germany, Italy (1940-43), the Soviet Union (the Owens WWII table); US Marines and Army in the Pacific, Japan (the Bougainville table) | Rifle, SMG and pistol, Machine gun, Grenade, Gunnery, Bayonet, Close combat | rifleman, machine gunner, grenadier or anti-tank man, sniper or scout, combat engineer, medic, radio operator, corporal or sergeant, junior officer, paratrooper or commando, tank crewman, army nurse, army auxiliary |
+| Korean War (1950-1953) | US Army and Marines 1950-51, the US Army on the outpost line 1952-53, the Commonwealth, the Republic of Korea Army, the Chinese People's Volunteers, the Korean People's Army (all the Korean War hospital table) | Rifle, SMG and pistol, Machine gun, Grenade, Gunnery, Bayonet, Close combat | rifleman, machine gunner or BAR man, rocket or recoilless gunner, mortarman, sniper or scout, combat engineer, aidman or corpsman, radio operator or wireman, squad leader, platoon leader, tank crewman, army nurse |
+| Vietnam War (1965-1973) | the US Army, the US Marines, Australians and New Zealanders, the ARVN, the North Vietnamese army, the Viet Cong (all the Vietnam hospital table) | Rifle, SMG and pistol, Machine gun, Grenade and rocket, Gunnery, Bayonet, Close combat | rifleman, machine gunner, grenadier or RPG gunner, point man or scout, combat engineer or sapper, tunnel rat or tunnel fighter, mortarman, medic or corpsman, radio operator, squad leader, platoon leader, army nurse |
+| The Falklands to Afghanistan (1982-2014) | the British and Argentines in the Falklands (Falklands table), US forces in the Gulf 1991 (Gulf War table), the Rangers in Mogadishu 1993 (Somalia table), the Russians and Chechens 1994-96 (Chechnya table), the US, the British and the insurgents in Iraq and Afghanistan (OIF/OEF table) | Rifle, Pistol, Machine gun, Grenade and rocket, Gunnery, Bayonet, Close combat | rifleman, machine gunner, grenadier or anti-tank gunner, marksman or sniper, combat engineer or bomb searcher, combat medic, signaller, military police or convoy gunner, armoured vehicle crewman, section leader, platoon leader, Female Engagement Team or Lioness |
 
 Brawl, Parry, Dodge and the skills outside a fight (Leechcraft, Fieldcraft, Watch, Stealth
 and the rest) carry over; Bow, Crossbow, Axe and Sling stay medieval. Gunnery is the
@@ -229,8 +232,9 @@ Everyone wears the steel helmet (in general use from 1915-16). Signals (telephon
 runner and radio) and, in the Second World War, Drive (trucks and tanks) are new skills
 outside a fight; a raid's clubs, knives and entrenching tools are fought with Trench weapons
 (Close combat in 1939-45). The Second World War's regions roll on their theatre's table:
-Europe and Russia on the Owens WWII table, the Pacific on Bougainville. There are no vehicle
-rules yet, so a tank crew fights as men on foot with pistols and submachine guns. The names
+Europe and Russia on the Owens WWII table, the Pacific on Bougainville. The field map has
+vehicles, but the team builder still sends a tank crew to the roller as men on foot with
+pistols and submachine guns. The names
 are common period names; the events are ours, written from plain fact about trench and
 field service.
 
@@ -247,8 +251,8 @@ Chinese, Korean and Vietnamese names are written family name first. A term is a 
 ## Women under arms
 
 A region's `women` block opens careers to women where the records show they served under
-arms; elsewhere `no_women` says why not (nurses and auxiliaries served, but not in these
-careers). On the page, **Women** rolls each member of a template team (and each follower) at
+arms; elsewhere `no_women` says why not. A career may have its own share (`shares`): the nurses,
+auxiliaries, camp women and soldiers' wives at 100, so a roll for one is always a woman. On the page, **Women** rolls each member of a template team (and each follower) at
 the army's share; in **Your own team** each member is a man, a woman or a roll, and a career
 closed to women in that army is greyed out with the reason. A roll is d10000 at or under the
 share x 100 (shares are given to two places), taken before the characteristics, and only for a
@@ -259,17 +263,29 @@ A woman takes the women's name lists, has no beard, rolls on the shared origins 
 | Era and army | Share | Careers open | Source |
 | --- | --- | --- | --- |
 | Crimean War: the French | not known: chosen, never rolled | cantinière (with her regiment, openly as a woman) | Vivandière (Military Wiki): Napoleon III doubled the cantinières in 1854; they served with their regiments in every campaign of the Second Empire, the Crimea included |
-| Civil War: the Union, the Confederacy | 0.02%, 0.03% | infantryman, sharpshooter, trooper, artilleryman, scout, teamster: enlisted disguised as men, under men's names | DeAnne Blanton, *Prologue* (National Archives, 1993): roughly 750 women, as many as 250 Confederates; the share is our arithmetic |
+| Medieval: England, France, Portugal, Castile, the Swiss, the Swabian League, the Ayyubids | 100% | townswoman or castle household at a siege | Siege of Toulouse, 1218 (an engine worked by women); Agnes Randolph at Dunbar, 1338; Fernão Lopes on the siege of Lisbon, 1384. No count of women at sieges |
+| Thirty Years' War: the Swedes, the Imperial army | camp women 100%; sutler chosen | woman of the baggage train, sutler | Tross (Wikipedia): a regiment of 1,000 might bring 500 women and 300 children |
+| Horse and musket: the Continental Army | soldiers' wives 100%; line and guns chosen, never rolled | soldier's wife, line infantryman, artilleryman | Camp Followers (Encyclopedia.com): women about 3% of its strength; Margaret Corbin at Fort Washington, Deborah Sampson |
+| Horse and musket: the British in America and in the Peninsula | 100% | soldier's wife on the strength | Up to six women a company in America; six wives in a hundred men overseas, by lot |
+| Horse and musket: the French in Spain | 100% | vivandière or blanchisseuse | The arrêté of 26 July 1800: four a battalion, two a squadron |
+| Crimean War: the British | 100% | nurse | The National Archives: 38 nurses reached Scutari on 4 November 1854 |
+| Civil War: the Union, the Confederacy | 0.02%, 0.03% (the Union's nurses and vivandières 100%) | infantryman, sharpshooter, trooper, artilleryman, scout, teamster: enlisted disguised as men, under men's names; the Union's army nurse and vivandière openly | DeAnne Blanton, *Prologue* (National Archives, 1993): roughly 750 women, as many as 250 Confederates; the share is our arithmetic. Over 3,000 nurses under Dorothea Dix |
+| Plains nations: the Lakota; the Cheyenne and Arapaho | chosen, never rolled | warrior with bow and shield, warrior with a gun | Buffalo Calf Road Woman at the Rosebud and the Little Bighorn; Moving Robe Woman, One Who Walks With the Stars and Minnie Hollow Wood at the Little Bighorn (Wikipedia; TheCollector) |
 | Second World War: the Soviet Union | 3% | rifleman, machine gunner, sniper, medic, radio operator, sergeant, officer, tank crewman | Over 800,000 women, over 3% of the forces (Air University Review, 1982); 2,484 women snipers |
+| First World War: the British Empire | 100% | nurse, army auxiliary | QAIMNS over 10,000 by 1918; QMAAC about 50,000, 81 killed (National Army Museum) |
+| First World War: the United States | 100% | nurse | Army Nurse Corps: 21,460 in 1917-18 |
 | First World War: Imperial Russia | chosen, never rolled (nurses rolled at their career's share) | rifleman, machine gunner, signaller, NCO, officer (the women's battalions of 1917), nurse | Stoff, 1914-1918-online: about 5,000 women in the units of 1917; Bochkareva's battalion at Smorgon, 9 July 1917; over 31,000 Sisters of Mercy |
 | First World War: Serbia | chosen, never rolled (nurses rolled at their career's share) | rifleman, bomber, NCO (Milunka Savić, Sofija Jovanović, Flora Sandes), nurse | Mladenović, 1914-1918-online: five women on the Salonika front; 1,500 nurses of the Circle of Serbian Sisters |
 | First World War: Austria-Hungary | chosen, never rolled (nurses and auxiliaries rolled at their career's share) | rifleman and NCO (disguised as men), officer (Olena Stepaniv, Sich Riflemen), nurse, army auxiliary | Scharf and Helping hands, habsburger.net: combatants impossible to count; 36,000-50,000 auxiliaries from March 1917 |
 | First World War: Bulgaria | nurses rolled at their career's share | nurse | Mladenović, 1914-1918-online: volunteer nurses; no women in the fighting careers found |
 | First World War: Newfoundland | nurses rolled at their career's share | nurse | Library and Archives Canada, Newfoundland at war: VAD nurses overseas; their number not found |
+| Second World War: the United States in Europe, the Commonwealth | 100% | nurse, army auxiliary | US: over 59,000 nurses, over 150,000 in the WAC; ATS over 190,000 by VE Day |
+| Korea: the US Army and Marines, 1950-51 and 1952-53 | 100% | nurse | National Archives: 540 Army nurses served |
+| Vietnam: the US Army | 100% | nurse | History.com: about 5,000 Army nurses, 1962-73 |
 | Vietnam: the ARVN, the North's army, the Viet Cong | not known: chosen, never rolled | ARVN medic; the North's rifleman, scout, sapper, medic; the Viet Cong's rifleman, scout, sapper, medic, radio operator, squad leader, platoon leader | Women in the Vietnam War (Wikipedia, with its sources) |
 | US forces in the Gulf, 1991 | 7% | medic, signaller, military police | GAO NSIAD-93-93: about 41,000 women, some 7% of those deployed |
 | Russian forces in Chechnya | 10% | medic | Smirnov (2002): almost 10% of the Russian forces by 1999 |
-| US forces in Iraq and Afghanistan | 11.4% | medic, signaller, military police, section leader, platoon leader | CRS R42075: 11.4% of those deployed in February 2013 |
+| US forces in Iraq and Afghanistan | 11.4% (Female Engagement Teams 100%) | medic, signaller, military police, section leader, platoon leader, Female Engagement Team or Lioness | CRS R42075: 11.4% of those deployed in February 2013 |
 | British forces in Iraq and Afghanistan | 8.3% | the same | MoD manning report, 1 October 2012: 8.3% of the Army |
 
 The share is the women among that army's soldiers, not among those in the career, so a roll is
@@ -378,7 +394,7 @@ Days only. The rule book's "Money by era" chapter is built from the same data.
 
 ## Rank, pay and loot
 
-`data/ranks.yaml` (rules in `gravewounds/ranks.py`, repeated in `templates/team.js` as `rkStart`,
+`data/ranks.yaml` (rules in `gravewounds/ranks.py`, repeated in `templates/ranks.js` as `rkStart`,
 `rkPay`, `rkWage`, `rkPromote`, `rkLoot`, `rkStanding`, `rkWealth`). Figures and their sources
 are in the project doc "promotion-loot-research"; `approx: true` marks estimates.
 
@@ -418,7 +434,7 @@ are in the project doc "promotion-loot-research"; `approx: true` marks estimates
 
 ## Skill checks
 
-`data/checks.yaml` (rules in `gravewounds/checks.py`, repeated in `templates/team.js`:
+`data/checks.yaml` (rules in `gravewounds/checks.py`, repeated in `templates/ranks.js`:
 `skillCheck`, `opposedCheck`, `haggle`, `checkUses`). The one roll gets a **difficulty** (Easy
 +20, Ordinary, Hard −20, Very hard −40), a **critical** at 10% of the chance and a **fumble**
 on a failed 96+ (the fight's and the jobs' figures). **Opposed**: both roll, the resisting side
@@ -522,7 +538,8 @@ day camped out of it, rest) and the team builder's **Strain** panel (the GM's so
 day; treatment with the unit, forward from 1916, in the rear, sent home or on furlough before
 1914, each with return-to-duty odds by state; rotation home for Korea, Vietnam and later;
 homecoming for the Plains nations; a lasting-effect note once the Toll reaches his Nerve or he has
-broken down). In the roller, shaken and strained cost attack and Nerve (for stop and morale
+broken down). When the team's leader is lost as killed, each man takes +3, or +6 if the leader had
+`leader_command` (60) Command or more: a trusted leader. In the roller, shaken and strained cost attack and Nerve (for stop and morale
 checks) and a breakdown takes him out of the fight. Calibrated by simulation: Nerve 50, 30 days in
 the line and 3 out, breaks down at a median 81 days (Appel: 88); 12 in and 4 out, twice as long.
 
@@ -533,6 +550,19 @@ with his armour and any **extra** kg the GM writes there (what he has bought or 
 goes with him to the roller and the travel map), and the band each puts him in for his body weight
 and Strength (see
 [travel.md](travel.md), *Loads*).
+
+## Boots and clothing
+
+`data/kit.yaml` (rules in `gravewounds/kit.py`, repeated in `templates/ranks.js`; research in the
+project doc "kit-wear-research"). Each named man's boots and clothing wear from 0 (new) to 1 (worn
+out), and are worn from a half. The travel map wears them: boots each day he marches 2 hours or
+more (half as much again on wet ground), over the era's life in marching days (51 in 1918, 105 in
+1944); clothing every day, twice on a hard night. Worn boots raise his chance of blisters (x1.5,
+worn out x3); worn clothing makes each night a step harder for him (worn out, two). Each sheet
+shows them under the Loads line (`kitLine` in `templates/team.html`): "Boots worn (62% worn),
+clothing good (20% worn)." Buying a price-list row that replaces them (`renew`: boots or shoes; a
+coat, blanket or uniform) makes them new. On the travel map, Mend kit (Craft, a day off the march)
+takes a half off, and a force its army feeds is issued new at its depot.
 
 ## Age
 
@@ -551,6 +581,16 @@ by the term's years ÷ 4; from 40, End under 30 or any of Str/Agi/End under 25 a
 man's row offers **Discharge him** (lost: sent home) or **Keep him on**. Tuned by simulation: a
 line private serving from 16 is worn out by 40 about half the time, by 44 three times in four.
 A man made before ageing starts from his age then (`aged_to`).
+
+**Enlistment age** (`ageing.yaml` `enlist`; `enlist`, `found_out`, `still_lying`, repeated as
+`agEnlist`, `agFoundOut`, `agStillLying`). Each army has a least and a most age for service (a
+region's own where it had them). A new man enlists at his era's start age, raised to the least;
+then d100: a low roll makes him a boy under age (the least less 1 to 3 years), a high one an older
+recruit, from 38 up to 6 years past the most (shares by era: a tenth under age in the Civil War). A boy
+under the least, or a man over the most, has lied, and his sheet says so. At End of season each
+liar is found out at 10% and sent home (lost); a boy's lie ends when he reaches the least, an
+older man's after his first term. A recruit of 38 or more takes twice the Wear for each step of
+service. The Plains nations have no limits and roll none.
 
 ## Experience
 
@@ -583,17 +623,11 @@ estimates.
 The team builder's **Experience** panel lists each member's ticks and days toward a term.
 **End of season** (the GM calls it; about 91 days) rolls d100 for each ticked skill in the
 era's skill order: over the skill, it rises 1d3 (to the cap). The days served are then added to
-his count, and each term of days (the era's `age.per_term` years of 365 days: 1,460 in most
-eras, 365 for Korea) gives `term_main` to his career's main skill, `term_second` to its second,
+his count, and each term of days (the era's `age.per_term` years of 365 days: 1,460 in the six
+eras before 1914, 365 from 1914 on) gives `term_main` to his career's main skill, `term_second` to its second,
 and the years of age; the sheet shows "(+1 served)". His `terms`, and so his starting purse,
 stay as rolled. The new sheet goes into the store with a stamp, and the roller swaps it in when
 it next looks (focus, or the store changing); the travel map's copy of his skills is updated at
 once. The Python rules and the page give the same result from the same dice.
 
-Not ticked yet: the field map's battles (its heroes come back to the roller, which does not
-count their fight), and a term served does not roll the career's event table or its wound
-chance.
-
-Not yet done (see the backlog): women in the earlier eras (the medieval, gunpowder and First
-World War tables have no women blocks yet), and careers for women outside the fighting units
-(nurses, auxiliaries, anti-aircraft gunners, pilots).
+Not yet done (see the backlog): the Latin East and Gotland have no women blocks yet, and there are no careers for women as anti-aircraft gunners or pilots.
