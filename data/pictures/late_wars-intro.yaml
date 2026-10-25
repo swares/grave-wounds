@@ -1,0 +1,30 @@
+# Pictures for "The period's fighting", the opening chapter of The Late Wars. Each is a US
+# government work, checked on a source page. The file goes in images/books/late_wars/ under `file`;
+# until it is there the book shows a captioned slot with this credit and source.
+# late_wars-medevac-2007: CONFIRMED. The DVIDS page for image 36536 (VIRIN 070215-A-2013C-005),
+# "Medevac Saves Life", image 4 of 6, dated 15 February 2007, by Spc. Micah Clare, 4th Brigade Combat
+# Team, 82nd Airborne Division Public Affairs, marks it "PUBLIC DOMAIN". The caption says it is a
+# training exercise at Forward Operating Base Salerno; the unit is given as the page gives it.
+# Alt text is written from the caption; the image was not viewed.
+- id: late_wars-medevac-2007
+  file: late_wars-medevac-2007.jpg
+  caption: "A flight medic of Company C, 3rd Battalion, 82nd Airborne Division Combat Aviation Brigade, readies a casualty in a rescue sled to be hoisted into a Black Hawk, in a training exercise at Forward Operating Base Salerno, Afghanistan, 15 February 2007. US Army photograph by Spc. Micah Clare."
+  credit: "US Army, Spc. Micah Clare, 4th Brigade Combat Team, 82nd Airborne Division Public Affairs (DVIDS 36536)"
+  licence: "Public domain (US government work)"
+  source: "https://dvidshub.net/image/36536/medevac-saves-life"
+  alt: "A photograph of an Army flight medic strapping a casualty into a rescue sled beneath a hovering Black Hawk helicopter in Afghanistan."
+# late_wars-hester-2005: CONFIRMED AS A US ARMY PHOTOGRAPH; NO LICENCE LINE ON THE PAGE. The Kentucky
+# National Guard's page (ky.ng.mil, igphoto 2003182570, VIRIN 050615-A-A4608-203) captions it as
+# Sgt. Leigh Ann Hester, vehicle commander, 617th Military Police Company, Richmond, Ky., at parade
+# rest after receiving the Silver Star at Camp Liberty, Iraq, 16 June 2005, "U.S. Army photo by Spc.
+# Jeremy D. Crisp". A photograph taken by a soldier on duty is a US government work and public
+# domain, but the page gives no licence statement, its metadata line names a different photographer
+# (Scott Sturkol, probably the uploader) and the VIRIN suggests 15 June. Check the DVIDS copy or the
+# Commons file page before print. Alt text written from the caption; the image was not viewed.
+- id: late_wars-hester-2005
+  file: late_wars-hester-2005.jpg
+  caption: "Sergeant Leigh Ann Hester of the 617th Military Police Company, Kentucky Army National Guard, after receiving the Silver Star at Camp Liberty, Iraq, 16 June 2005. US Army photograph by Spc. Jeremy D. Crisp."
+  credit: "US Army, Spc. Jeremy D. Crisp (Kentucky National Guard, VIRIN 050615-A-A4608-203)"
+  licence: "Public domain (US government work)"
+  source: "https://ky.ng.mil/News/Photos/igphoto/2003182570/"
+  alt: "A photograph of a woman soldier in desert uniform standing at parade rest after an awards ceremony in Iraq."
