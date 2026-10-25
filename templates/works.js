@@ -5,7 +5,7 @@
    hkey, edgeKey, neighbours(h, cols, rows) and hexDistance.
    works = {edges: {edgeKey: [item]}, hexes: {hexKey: item}}. */
 const specOf = (kind, item) => (kind === "edge" ? WK.edge_works : WK.hex_works)[item.type];
-function intact(kind, item){ const b = specOf(kind, item).breach; return !item.out && !(b && (item.progress || 0) >= b) }   // out: a bunker knocked out
+function intact(kind, item){ const s = specOf(kind, item), b = s.breach || s.charge; return !item.out && !(b && (item.progress || 0) >= b) }   // out: a bunker knocked out or a wall opened by shellfire; charge: a wall blown open
 function edgeItems(works, a, b){
   if (!works) return [];
   return (works.edges?.[edgeKey(a, b)] || []).filter(it => intact("edge", it) && !(specOf("edge", it).gate && it.open));

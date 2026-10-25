@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import heapq
 import math
+import re
 import random
 from contextlib import contextmanager
 
@@ -1517,12 +1518,16 @@ def battlefield(d: Data, fid: str) -> dict:
     """A battlefield from data/fields as a field: the ground from its rows of letters (units.yaml
     ground keys), its works laid on the hexes and hex sides, its weather and size, its landing
     zones, supply dumps (each with its side's name, as the battle's units have), fire support and
-    objective (the hex the battle was fought for) if any."""
+    objective (the hex the battle was fought for) if any, and its year (`year`, else the year in
+    its id: the napalm limit)."""
     f, keys = d.fields[fid], {g["key"]: k for k, g in d.units["ground"].items()}
     ground = {f"{c},{r}": keys[ch] for r, row in enumerate(f["rows"]) for c, ch in enumerate(row.strip()) if keys[ch] != "open"}
     works = _field_works(d, f.get("works") or {})
     wx = f.get("weather") or {"cond": "fair", "wind": "calm", "ground": {"mud": 0, "snow": 0}}
     out = {"ground": ground, "works": works, "weather": wx, "size": list(f["size"]), "up": f.get("up", "N")}
+    year = f.get("year") or next((int(y) for y in re.findall(r"(?<!\d)(1\d{3}|20\d{2})(?!\d)", fid)), None)
+    if year:
+        out["year"] = year
     if f.get("lz"):
         out["lz"] = [list(h) for h in f["lz"]]
     if f.get("dumps"):
@@ -2490,6 +2495,8 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     log += _shoot_all(d, us, table, rng, acc, field, under)
     log += _indirect_all(d, us, table, rng, acc, field, under)
     log += _assault_all(d, us, table, rng, acc, field)
+    if field is not None:
+        field["blast"] = blast_weapon(d, table) is not None   # demolition charges on this table (walls)
     log += _breach_all(d, us, field)
     occ = occupancy(d, us)
     before = [u["men"] for u in us]
@@ -3789,15 +3796,23 @@ def _burns(struck: int, dead: int, rng) -> dict:
 
 
 def _knock_bunkers(d: Data, field: dict, k: int, b: dict, bursts: list, rng) -> list:
-    """Each shell bursting on an intact bunker's hex knocks it out at the kind's `knock` %."""
+    """Each shell bursting on an intact bunker's hex knocks it out at the kind's `knock` %, and
+    opens each intact work that shells open (`shelled`: a stone wall) on that hex's sides at the
+    same %."""
     knock, log = d.units["indirect"]["kinds"][b["kind"]].get("knock", 0), []
     if not knock:
         return log
+    works = _works(field)
     for at in bursts:
         it = bunker_at(d, field, at)
         if it and rng.randint(1, 100) <= knock:
             it["out"] = True
             log.append({"kind": "knocked", "sup": k, "name": b["name"], "side": b["side"], "at": at})
+        for dirn in range(6):
+            for w in C._edge_items(d, works, at, step(at, dirn)):
+                if C._spec(d, "edge", w).get("shelled") and rng.randint(1, 100) <= knock:
+                    w["out"] = True
+                    log.append({"kind": "knocked", "sup": k, "name": b["name"], "side": b["side"], "at": at, "work": w["type"]})
     return log
 
 
@@ -4150,17 +4165,24 @@ def breaching(d: Data, field: dict | None, u: dict) -> set:
 
 
 def _breachable(d: Data, field: dict, u: dict, h):
-    """(edge or hex, its key, the item): the first work hex h's front rank can hack at."""
+    """(edge or hex, its key, the item): the first work hex h's front rank can hack at, or blow
+    open with demolition charges (`charge`, on a table with the blast weapon: field["blast"])."""
     works = _works(field)
     for dirn in (u["facing"], u["facing"] + 1):
         x = step(h, dirn)
         for it in C._edge_items(d, works, h, x):
-            if C._spec(d, "edge", it).get("breach"):
+            if _can_open(d, field, "edge", it):
                 return "edge", C.edge_key(h, x), it
         it = C._hex_item(d, works, x)
-        if it and C._spec(d, "hex", it).get("breach"):
+        if it and _can_open(d, field, "hex", it):
             return "hex", C.hkey(x), it
     return None
+
+
+def _can_open(d: Data, field: dict, kind: str, it: dict) -> bool:
+    """Men can open this work: by hand (`breach`), or with charges (`charge`) where the table has them."""
+    s = C._spec(d, kind, it)
+    return bool(s.get("breach") or (s.get("charge") and field.get("blast")))
 
 
 def _copy_unit(u: dict) -> dict:

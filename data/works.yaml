@@ -69,14 +69,19 @@ camps:
 #   height      - % off a close-combat attack made from the low side at a man on the high side
 #   blocks_melee - true: only weapons with reach 2 or more strike across it
 #   breach      - man-rounds of axe or fire work to open a gap (null: cannot be breached)
+#   charge      - man-rounds of work with demolition charges to open a gap, for a work no axe opens
+#                 (breach null): only on a table with the blast weapon (grenades or charges, from
+#                 1914); before that, men go over it with ladders (escalade) or not at all
+#   shelled     - true: a shell or bomb bursting in a hex beside it opens a gap at the firing
+#                 kind's `knock` % (as it knocks out a bunker: heavy howitzers, tanks, bombs)
 #   gate        - true: can be opened (crossed freely) or barred (as a palisade)
 edge_works:
   ditch:    {name: "Ditch",         per_metre: 2.5,  cross: 2,    cover: 0,  height: 10, breach: null}
   bank:     {name: "Earth bank",    per_metre: 1.0,  cross: 1,    cover: 20, cover_side: high, height: 10, breach: null}
   palisade: {name: "Palisade",      per_metre: 1.5,  haul: 1.0,   cross: null, cover: 40, cover_side: both, blocks_melee: true, breach: 12}
   gate:     {name: "Gate",          each: 6,         cross: 0,    cover: 40, cover_side: both, blocks_melee: true, breach: 20, gate: true}
-  wall:     {name: "Stone wall",    per_metre: null, cross: null, cover: 50, cover_side: both, height: 20, blocks_melee: true, breach: null,
-             note: "Town and castle walls: already there, not built in the field."}
+  wall:     {name: "Stone wall",    per_metre: null, cross: null, cover: 50, cover_side: both, height: 20, blocks_melee: true, breach: null, charge: 6, shelled: true,
+             note: "Town and castle walls: already there, not built in the field. No axe opens them: demolition charges or heavy shells do, and before those only ladders get men over."}
 
 # hex works:
 #   each        - man-hours to build one hex of it (`haul`: extra if no woods near)
