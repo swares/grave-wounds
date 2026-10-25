@@ -1,0 +1,19 @@
+# Pictures for the Heartbreak Ridge section of Korea and Vietnam. Each is public domain or openly licensed,
+# checked as far as this session could. The file goes in images/books/korea_vietnam/ under `file`; until it
+# is there the book shows a captioned slot with this credit and source.
+# heartbreak-from-north: LICENCE NOT OPENED ON COMMONS; INFERRED FROM THE NARA NUMBER. A web search restricted
+# to commons.wikimedia.org lists this file page by the title below, but Commons refused this session's
+# requests for the page itself, so its description, date and licence tag were not read. The title gives the
+# National Archives number 111-SC-382926: Record Group 111 is the Records of the Office of the Chief Signal
+# Officer, and "SC" photographs are US Army Signal Corps photographs, works of the US government and so in
+# the public domain. The date of the photograph is not known to us (it may be after the battle), and the
+# caption says only what the title says. Check the Commons page and the NARA catalogue entry before print.
+# A fallback: Hermes, Truce Tent and Fighting Front (CMH, 1966), prints a photograph captioned "Heartbreak
+# Ridge" in chap. V (p. 87 by the Korean War Project's transcription), from the Army's own files.
+- id: heartbreak-from-north
+  file: heartbreak-from-north.jpg
+  caption: "Heartbreak Ridge seen from the north, a US Army Signal Corps photograph. The date is not recorded in the title we have; the peaks were Hill 851, Hill 931 and Hill 894, north to south."
+  credit: "US Army Signal Corps, National Archives and Records Administration, 111-SC-382926"
+  licence: "Public domain (US government work, US Army Signal Corps)"
+  source: "https://commons.wikimedia.org/wiki/File:KOREA.KOREAN_CONFLICT-_Heartbreak_Ridge_in_Korea_as_seen_from_the_north.-NARA_FILE--_111-SC-382926.jpg"
+  alt: "A black-and-white photograph of a long, steep mountain ridge in Korea, seen from the north."

@@ -63,8 +63,7 @@ When an item is done, delete it here and note it in the pull request that closes
   books hold their eras' figures and battlefields (`dist/book-medieval.html`,
   `dist/book-black-powder.html`, `dist/book-world-wars.html`, `dist/book-korea-vietnam.html`,
   the last with the Vietnam squad's worked example); the late wars' figures are in the Rules'
-  Other periods. Still to come: the pictures' files; the Korea and Vietnam book's researched
-  histories; the late wars' book; and Sources and Methods.
+  Other periods. Still to come: the pictures' files; the late wars' book; and Sources and Methods.
   It summarises rather than repeats the docs: the travel map's battle set-up and the
   battlefields are covered in the docs and on the pages, not in the book. It ends with an index of the terms set in bold, each linked to its sections, and prints page numbers (in Chrome and Edge; other browsers may leave them off). The index has no page numbers of its own, only section names.
 - **The enemy commander, beyond the second cut.** A scripted commander moves one side on

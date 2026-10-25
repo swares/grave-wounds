@@ -1,0 +1,31 @@
+# Pictures for "The period's fighting", the opening chapter of Korea and Vietnam. Each is public
+# domain, checked on a source page. The file goes in images/books/korea_vietnam/ under `file`; until it
+# is there the book shows a captioned slot with this credit and source.
+# korea_vietnam-helicopter-1951: CONFIRMED ON A MIRROR. Commons and the Naval History and Heritage
+# Command's own page could not be reached from here (robots refused). The ibiblio HyperWar mirror of
+# the old Naval Historical Center Online Library page given as the source lists NH 97198
+# with the caption "Navy corpsmen prepare three Marines wounded at Kari San Mountain for evacuation by
+# helicopter to a rear area hospital," 23 May 1951, a Marine Corps Sikorsky HO3S, and the credit
+# "Official U.S. Navy Photograph, from the 'All Hands' collection at the Naval Historical Center". An
+# official US Navy photograph is a US government work and public domain. Check the NHHC page for
+# NH 97198 before print. Alt texts here are written from the captions; the images were not viewed.
+- id: korea_vietnam-helicopter-1951
+  file: korea_vietnam-helicopter-1951.jpg
+  caption: "Navy corpsmen prepare three Marines wounded at Kari San Mountain to be flown by helicopter to a hospital in the rear, Korea, 23 May 1951. The helicopter is a Marine Corps Sikorsky HO3S. Official US Navy photograph."
+  credit: "U.S. Navy, Naval History and Heritage Command, NH 97198 (All Hands collection)"
+  licence: "Public domain (US government work)"
+  source: "https://ibiblio.org/hyperwar/OnlineLibrary/photos/events/kowar/log-sup/kor51md.htm"
+  alt: "A black-and-white photograph of Navy corpsmen preparing wounded Marines for evacuation by helicopter in Korea."
+# korea_vietnam-medevac-1969: CONFIRMED. The National Archives' DocsTeach page for NAID 530627 (Record
+# Group 111, Records of the Office of the Chief Signal Officer, Color Photographs of Signal Corps
+# Activity, 1944-1981) dates it 16 October 1969, gives the original caption "South Vietnam. A UH-1D
+# Medevac helicopter takes off to pick up an injured member of the 101st Airborn [sic] Division", near
+# the demilitarised zone, and marks it "Public Domain, Free of Known Copyright Restrictions". A US Army
+# Signal Corps photograph, a US government work.
+- id: korea_vietnam-medevac-1969
+  file: korea_vietnam-medevac-1969.jpg
+  caption: "A UH-1D medevac helicopter takes off to pick up a wounded man of the 101st Airborne Division near the demilitarised zone, South Vietnam, 16 October 1969. US Army Signal Corps photograph."
+  credit: "US National Archives, 111 (NAID 530627), Records of the Office of the Chief Signal Officer"
+  licence: "Public domain (US government work)"
+  source: "https://docsteach.org/documents/document/medevac-helicopter"
+  alt: "A colour photograph of a Huey medevac helicopter taking off in South Vietnam."

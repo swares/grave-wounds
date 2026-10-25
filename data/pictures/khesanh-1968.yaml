@@ -1,0 +1,15 @@
+# Pictures for the Hill 861A (Khe Sanh, February 1968) section of Korea and Vietnam. Each is public domain,
+# checked on its source page. The file goes in images/books/korea_vietnam/ under `file`; until it is there
+# the book shows a captioned slot with this credit and source.
+# khesanh-airstrike: LICENCE CONFIRMED AS A US GOVERNMENT WORK on the National Museum of the US Air Force
+# page, which marks it "public domain", a US Air Force photograph cleared for release (DoD visual
+# information rules on identifiable people and endorsement still apply). The photographer is not named.
+# It was taken on 15 March 1968, six weeks after the fight on 861A, at the main base, not on the hill.
+# Wikimedia Commons was not reachable from this session, so no Commons file page was found.
+- id: khesanh-airstrike
+  file: khesanh-airstrike.jpg
+  caption: "A Marine photographer films a US Air Force F-100 dropping its bombs just outside the wire at Khe Sanh, 15 March 1968, during Operation Niagara, the air campaign round the base."
+  credit: "US Air Force photograph, National Museum of the United States Air Force"
+  licence: "Public domain (US government work)"
+  source: "https://www.nationalmuseum.af.mil/Upcoming/Photos/igphoto/2000043498/"
+  alt: "A Marine with a camera in the foreground as bombs burst just beyond the perimeter wire of the base."

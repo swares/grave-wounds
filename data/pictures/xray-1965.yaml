@@ -1,0 +1,18 @@
+# Pictures for the Landing zone X-Ray section of Korea and Vietnam. Each is public domain, checked on its
+# source page. The file goes in images/books/korea_vietnam/ under `file`; until it is there the book shows
+# a captioned slot with this credit and source.
+# xray-medevac: LICENCE CONFIRMED AS A US GOVERNMENT WORK, NOT ON COMMONS. The army.mil gallery "The American
+# Soldier at LZ X-Ray" (26 February 2007) credits every one of its 16 photographs "U.S. Army"; this one,
+# "Medevac at LZ X-Ray", is captioned there as a still "extracted from US Army motion picture footage" of
+# soldiers of the 1st Battalion, 7th Cavalry carrying a wounded comrade to a waiting UH-1 of the 229th
+# Assault Helicopter Battalion. Footage shot by Army cameramen on duty is public domain; the lzxray.com site
+# also states that US Army combat camera footage and stills from it are public domain. Commons was not
+# reachable from this session and no Commons file page was found; the direct image URL was not recorded.
+# The army.mil caption gives no date beyond the battle (14-16 November 1965). Check before print.
+- id: xray-medevac
+  file: xray-medevac.jpg
+  caption: "Men of the 1st Battalion, 7th Cavalry carry a wounded soldier to a UH-1 helicopter of the 229th Assault Helicopter Battalion at landing zone X-Ray, November 1965. A still from US Army film."
+  credit: "US Army, still from US Army motion picture footage (army.mil, \"The American Soldier at LZ X-Ray\")"
+  licence: "Public domain (US government work)"
+  source: "https://www.army.mil/article/1965/the_american_soldier_at_lz_x_ray"
+  alt: "Soldiers carrying a wounded man to a Huey helicopter."

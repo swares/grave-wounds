@@ -1,0 +1,18 @@
+# Pictures for the Hue (the new city, February 1968) section of Korea and Vietnam. Each is public domain,
+# checked on its source page. The file goes in images/books/korea_vietnam/ under `file`; until it is there
+# the book shows a captioned slot with this credit and source.
+# hue-corpsman: LICENCE CONFIRMED AS A US GOVERNMENT WORK on the National Archives' DocsTeach page, which
+# gives NAID 532484, local identifier 127-N-A371948, Record Group 127 (Records of the US Marine Corps),
+# General Photograph File of the US Marine Corps, 1927-1981, dated 6 February 1968, and marks it "Public
+# Domain, Free of Known Copyright Restrictions" (Public Domain Mark 1.0). The photographer is not named.
+# The NARA catalogue page (https://catalog.archives.gov/id/532484) and Wikimedia Commons were not
+# reachable from this session, so no Commons file page was found. The original caption calls Howe a
+# "Twentieth Century 'Angel of Mercy'" without giving his rank or service; he was presumably a Navy
+# corpsman, but the caption below does not say so.
+- id: hue-corpsman
+  file: hue-corpsman.jpg
+  caption: "Hue, 6 February 1968: D. R. Howe treats the wounds of Private First Class D. A. Crum of H Company, 2nd Battalion, 5th Marines, during Operation Hue City. H Company took the provincial headquarters that day."
+  credit: "US Marine Corps photograph, National Archives, 127-N-A371948"
+  licence: "Public domain (US government work)"
+  source: "https://www.docsteach.org/documents/document/soldiers-at-hue-city"
+  alt: "A man dressing the wounds of a Marine during the fighting in Hue."
