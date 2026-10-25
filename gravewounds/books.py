@@ -15,6 +15,8 @@ from . import rulebook as RB
 from .model import Data
 
 ERA = re.compile(r"\{\{era:([a-z_]+)\}\}")
+PICTURE = re.compile(r"\{\{picture:([a-z0-9-]+)\}\}")
+SIDEBAR = re.compile(r"\{\{sidebar:([a-z0-9-]+)\}\}")
 HEADING = re.compile(r"^(#{1,3}) (.+?) \{#([^}]+)\}\s*$")
 RULES_FILE = "rules.html"
 RULES_DESC = ("The Grave Wounds rules: how to play, making a team, the fight, wounds and recovery, battles of hundreds, "
@@ -117,6 +119,8 @@ def render_rules(d: Data, root: Path, books: dict) -> str:
         text = p.read_text(encoding="utf-8")
         spots += [(n, a, t) for n, a, t in _era_spots(text)]
         text = ERA.sub(lambda m: _pointer(m.group(1), books, others), text)
+        text = SIDEBAR.sub(lambda m: _sidebar(root, m.group(1)), text)
+        text = PICTURE.sub(lambda m: _picture(root, m.group(1)), text)
         parts.append(RB._fill(text, vals, tabs, p.name))
     if others:
         parts.append(_other_periods(d, otabs, others, spots))
@@ -152,6 +156,7 @@ def render_book(d: Data, root: Path, books: dict, bid: str) -> str:
           B["intro"],
           f"The battlefields: {', '.join(f'[{_short(d.fields[f])}](#field-{f})' for f in fields)}."
           if fields else "",
+          _content(root, bid, "intro.md"),
           "## What is switched on {#switched-on}",
           B["switched_on"],
           _switched_on(d, B),
@@ -163,7 +168,7 @@ def render_book(d: Data, root: Path, books: dict, bid: str) -> str:
           f"# Battlefields {{#{bid}-fields}}",
           "Each battlefield lays out on the [field map](field.html) under *Battlefield*. What follows is what "
           "the field and its phases hold, and, briefly, what happened there.",
-          *[_field_section(d, f) for f in fields]]
+          *[_field_section(d, f, root, bid) for f in fields]]
     title = f"{B['title']}, {B['dates']}"
     desc = f"Grave Wounds: {title}. " + B["intro"].split(":")[0] + "."
     return _page(root, "\n\n".join(x for x in md if x), books, B["file"], f"Grave Wounds: {B['title']}", desc, B["title"])
@@ -282,7 +287,7 @@ def _cell(x) -> str:
     return str(x).replace("|", "/")
 
 
-def _field_section(d: Data, fid: str) -> str:
+def _field_section(d: Data, fid: str, root: Path | None = None, bid: str | None = None) -> str:
     F, U = d.fields[fid], d.units
     sides = F["sides"]
     W = F.get("weather") or {}
@@ -310,7 +315,10 @@ def _field_section(d: Data, fid: str) -> str:
         facts.append(f"*The record:* the fight lasted about {F['ends']} exchanges (a minute each).")
     what, drawn = _story(fid)
     out = [f"## {F['name']} {{#field-{fid}}}", "\n".join(f"- {x}" for x in facts)]
-    if what:
+    history = _content(root, bid, f"fields/{fid}.md") if root and bid else ""
+    if history:                                   # the book's researched history (templates/books/<book>/fields)
+        out.append(history)
+    elif what:                                    # else the battlefield file's own short account
         out += ["### What happened", what]
     if drawn:
         out += ["### How the field is drawn", drawn]
@@ -343,6 +351,59 @@ def _order_of_battle(d: Data, F: dict) -> list:
         men = sum(u["men"] for u in F.get("units", []) if u.get("side") == s)
         out += [f"**The {side}** ({men:,} men):", RB._md(["Unit", "Men", "Quality", "Weapon", "Armour", "Formation", "Comes on"], rows)]
     return out
+
+
+# ---------- the book's own prose, sidebars and pictures ----------
+
+def _content(root: Path, bid: str, name: str) -> str:
+    """templates/books/<book>/<name> (a period book's own prose), its pictures filled; "" if there is none."""
+    path = root / "templates" / "books" / bid / name
+    if not path.exists():
+        return ""
+    return PICTURE.sub(lambda m: _picture(root, m.group(1)), path.read_text(encoding="utf-8")).strip()
+
+
+def _sidebar(root: Path, name: str) -> str:
+    """templates/books/rules-sidebars/<name>.md: a story set beside a rule in the Rules."""
+    path = root / "templates" / "books" / "rules-sidebars" / f"{name}.md"
+    if not path.exists():
+        raise ValueError(f"no sidebar {name} (templates/books/rules-sidebars/{name}.md)")
+    return path.read_text(encoding="utf-8").strip()
+
+
+def load_pictures(root: Path) -> dict:
+    """{id: picture}: data/pictures/*.yaml. A picture's file lives in images/books/<folder>/, the folder
+    being the YAML file's book: 'rules' for rules.yaml, else 'medieval' (each period book's battlefields)."""
+    out = {}
+    for path in sorted((root / "data" / "pictures").glob("*.yaml")):
+        folder = "rules" if path.stem == "rules" else "medieval"
+        for P in yaml.safe_load(path.read_text(encoding="utf-8")) or []:
+            for k in ("id", "file", "caption", "credit", "licence", "source"):
+                if not P.get(k):
+                    raise ValueError(f"{path.name}: picture {P.get('id', '?')} has no {k}")
+            if P["id"] in out:
+                raise ValueError(f"{path.name}: picture {P['id']} is defined twice")
+            out[P["id"]] = {**P, "path": f"images/books/{folder}/{P['file']}"}
+    return out
+
+
+def _esc(x: str) -> str:
+    return str(x).replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;")
+
+
+def _picture(root: Path, pid: str) -> str:
+    """A picture as a captioned figure, credited; a captioned slot until its file is in images/."""
+    P = load_pictures(root).get(pid)
+    if P is None:
+        raise ValueError(f"no picture {pid} in data/pictures")
+    credit = (f'<span class="credit">{_esc(P["credit"])}. {_esc(P["licence"])}. '
+              f'<a href="{_esc(P["source"])}">Source</a>.</span>')
+    cap = f"<figcaption>{_esc(P['caption'])} {credit}</figcaption>"
+    if (root / P["path"]).exists():
+        img = f'<img src="{_esc(P["path"])}" alt="{_esc(P.get("alt") or P["caption"])}" loading="lazy">'
+        return f'\n<figure class="pic">{img}{cap}</figure>\n'
+    return (f'\n<figure class="pic slot"><div class="slot-box" role="img" aria-label="{_esc(P.get("alt") or P["caption"])}">'
+            f'Picture to come<br><code>{_esc(P["path"])}</code></div>{cap}</figure>\n')
 
 
 # ---------- the page ----------
