@@ -21,8 +21,8 @@ HEADING = re.compile(r"^(#{1,3}) (.+?) \{#([^}]+)\}\s*$")
 RULES_FILE = "rules.html"
 RULES_DESC = ("The Grave Wounds rules: how to play, making a team, the fight, wounds and recovery, battles of hundreds, "
               "the march and the camp, weather and works, the other eras, night, money by era, and the modules for "
-              "black-powder guns, modern fire, armour and mines, and air and night devices, with a medieval retinue and "
-              "a Vietnam rifle squad followed through.")
+              "black-powder guns, modern fire, armour and mines, and air and night devices, with a medieval retinue "
+              "followed through.")
 
 
 def load_books(d: Data, root: Path) -> dict:
@@ -176,7 +176,8 @@ def render_book(d: Data, root: Path, books: dict, bid: str) -> str:
           f"# Battlefields {{#{bid}-fields}}",
           "Each battlefield lays out on the [field map](field.html) under *Battlefield*. What follows is what "
           "the field and its phases hold, and, briefly, what happened there.",
-          *[_field_section(d, f, root, bid) for f in fields]]
+          *[_field_section(d, f, root, bid) for f in fields],
+          _content(root, bid, "example.md", (RB.values(d), tabs))]   # its worked example, if it has one
     title = f"{B['title']}, {B['dates']}"
     desc = f"Grave Wounds: {title}. " + B["intro"].split(":")[0] + "."
     return _page(root, "\n\n".join(x for x in md if x), books, B["file"], f"Grave Wounds: {B['title']}", desc, B["title"])
@@ -378,12 +379,16 @@ def _order_of_battle(d: Data, F: dict) -> list:
 
 # ---------- the book's own prose, sidebars and pictures ----------
 
-def _content(root: Path, bid: str, name: str) -> str:
-    """templates/books/<book>/<name> (a period book's own prose), its pictures filled; "" if there is none."""
+def _content(root: Path, bid: str, name: str, fill: tuple | None = None) -> str:
+    """templates/books/<book>/<name> (a period book's own prose), its pictures filled, and, given
+    fill=(values, tables), its {{value}} and {{table:name}} placeholders as in the Rules; "" if there is none."""
     path = root / "templates" / "books" / bid / name
     if not path.exists():
         return ""
-    return PICTURE.sub(lambda m: _picture(root, m.group(1)), path.read_text(encoding="utf-8")).strip()
+    text = PICTURE.sub(lambda m: _picture(root, m.group(1)), path.read_text(encoding="utf-8"))
+    if fill:
+        text = RB._fill(text, fill[0], fill[1], f"templates/books/{bid}/{name}")
+    return text.strip()
 
 
 def _sidebar(root: Path, name: str) -> str:
