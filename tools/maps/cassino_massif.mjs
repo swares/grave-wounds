@@ -21,3 +21,9 @@ function kind(c, r){
   return speckle(c, r, 3) ? "o" : "r";                                                                                 // steep slopes: scrub, broken rock
 }
 export const massif = () => groundGrid(COLS, ROWS, kind);
+// The header lines the massif's battlefields share: the scrub, and how the ground and the deployment are drawn.
+export const MASSIF_NOTES = [
+  "Light cover (scrub, key o): the thorn scrub on the steep slopes among the broken rock.",
+  "The ground is drawn by hand to the shape the accounts give, not traced from any map; the",
+  "deployment is the attack going in, in our own words, with round numbers for play.",
+];
