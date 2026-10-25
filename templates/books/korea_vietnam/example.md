@@ -1,8 +1,8 @@
-# A later war: the squad {#later}
+# A worked example: the squad {#example}
 
-The medieval chapters followed one retinue. This chapter follows a US Army rifle squad
-in Vietnam through one night, with the same rules and, where dice are rolled, the dice
-given. The [team builder](team.html) made the squad.
+The Rules follow one medieval retinue. This chapter follows a US Army rifle squad in Vietnam
+through one night, with the same rules and the modules this book switches on and, where dice
+are rolled, the dice given. The [team builder](team.html) made the squad.
 
 !!! example "The squad"
     The team builder rolls {{lx.squad}}. **{{lx.lead}}** leads it: {{lx.lead_terms}} terms,
@@ -12,7 +12,7 @@ given. The [team builder](team.html) made the squad.
     **{{lx.gren}}**, and its medic is **{{lx.medic}}**, Leechcraft {{lx.medic_skill}}.
     {{lx.followers}} riflemen follow them. Their kit: {{lx.kit}}.
 
-## On the field map {#later-field}
+## On the field map {#example-field}
 
 !!! example "The squad: an ambush in the dark"
     The squad lies in extended order beside a trail on a dark night, gone to ground. No
@@ -24,9 +24,9 @@ given. The [team builder](team.html) made the squad.
     sergeant calls the company's mortars for illumination. It lands this exchange and
     lights the trail as by day for {{n_lasts}} exchanges, so his riflemen can aim.
 
-## In the roller {#later-roller}
+## In the roller {#example-roller}
 
-The heroes' wounds are rolled in full, as in [the fight](#fight).
+The heroes' wounds are rolled in full, as in [the fight](rules.html#fight).
 
 !!! example "The squad: the gun"
     An enemy rifleman, a regular, fires his AK at {{lx.mg_first}} at {{lx.k_attack}}% and
@@ -40,7 +40,7 @@ The heroes' wounds are rolled in full, as in [the fight](#fight).
     **{{lx.k_target}}**. He rolls {{lx.k_sroll}} and {{lx.k_passed}}: he fights on.
 
     But the {{lx.k_weapon}} takes both hands. With an arm hurt he cannot fire it, as in
-    [Wounds](#penalties), so he can only defend. At {{lx.k_per}} Blood a round, his
+    [Wounds](rules.html#penalties), so he can only defend. At {{lx.k_per}} Blood a round, his
     {{lx.k_blood}} Blood lasts {{lx.k_rounds}} rounds.
 
 !!! example "The squad: the grenade"
@@ -57,7 +57,7 @@ The heroes' wounds are rolled in full, as in [the fight](#fight).
     (−{{lx.m_impair}}% to his attack with it), so another man takes the gun.
 
     At dawn the squad carries him back. His wound goes onto the track as in
-    [Recovery](#recovery).
+    [Recovery](rules.html#recovery).
 
 !!! gm "For the GM"
     In a later war the heroes are the few men whose names the players know in a fight of

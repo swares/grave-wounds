@@ -60,4 +60,25 @@ books:
       belong to later wars. The wounded go back by motor ambulance, as the Rules' After the battle
       says. Wounds heal and fester as the Rules' Recovery says: it does not yet count the sulpha
       drugs of the Second World War or the penicillin of 1944.
+  korea_vietnam:
+    title: "Korea and Vietnam"
+    dates: "1950–1973"
+    file: book-korea-vietnam.html
+    eras: [korea, vietnam]
+    fields: [osan-1950, foxhill-1950, chipyong-1951, kapyong-1951, heartbreak-1951, porkchop-1953, xray-1965, dakto-1967, khesanh-1968, hue-1968, hamburger-1969]
+    intro: >-
+      Eleven battles from Task Force Smith at Osan in 1950 to Hamburger Hill in 1969: the first
+      American fight in Korea, the Marines at Fox Hill, the perimeter at Chipyong-ni, the
+      Commonwealth brigade at Kapyong, the hills of Heartbreak Ridge and Pork Chop, the landing
+      zone at X-Ray, Hill 875 at Dak To, Hill 861A at Khe Sanh, the street fighting in Hue and the
+      A Shau valley. Every rule is in the Rules; this book holds the armies' figures for both wars,
+      the wound tables their battles roll on, the battlefields, and a rifle squad in Vietnam
+      followed through one night.
+    switched_on: >-
+      All four modules but the first: [Modern fire](rules.html#fire), [Armour and
+      mines](rules.html#vehicles), and [Air and night devices](rules.html#air), with helicopters
+      and landing by air from Vietnam on, and night vision (infrared searchlights) in Vietnam.
+      The wounded go out by helicopter where a landing zone and a helicopter are left, as the
+      Rules' After the battle says; else by motor ambulance. Wounds heal and fester as the Rules'
+      Recovery says: it does not yet count the antibiotics of these wars.
 
