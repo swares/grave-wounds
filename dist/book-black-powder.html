@@ -1,0 +1,6901 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grave Wounds: The Black-Powder Wars</title>
+<meta name="description" content="Grave Wounds: The Black-Powder Wars, 1618–1877. Nine battles from Gustavus Adolphus at Lützen in 1632 to the Wagon Box Fight in 1867.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%238e1b2c'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='15' font-weight='700' fill='white' text-anchor='middle'%3Ed%25%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700&family=Alegreya+Sans:wght@400;500;700&family=Alegreya:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* The field-ledger palette of the other pages */
+:root{
+  --bg:#e9ecee; --panel:#f6f7f8; --ink:#1b2127; --muted:#5b6670; --line:#c5ccd2;
+  --steel:#3f4f5d; --blood:#8e1b2c; --blood-soft:#f1d9dc; --gm:#e6ebe0; --gm-edge:#5d6e4b;
+  --display:"Alegreya SC",Georgia,serif; --body:"Alegreya Sans","Gill Sans","Segoe UI",sans-serif;
+  --serif:"Alegreya",Georgia,serif; --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
+  --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --gm:#1f2a1c; --gm-edge:#8fa678; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
+  --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --gm:#1f2a1c; --gm-edge:#8fa678; color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.6 var(--serif)}
+a{color:var(--blood)}
+header{border-bottom:2px solid var(--ink);padding:20px 16px 14px;max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:end;justify-content:space-between}
+header h1{font:700 clamp(1.8rem,5vw,2.6rem)/1.05 var(--display);margin:0}
+header .eyebrow{display:block;font:500 .72rem var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+header nav{display:flex;flex-wrap:wrap;gap:4px 16px;font:500 .95rem var(--body)}
+.layout{max-width:1180px;margin:0 auto;padding:24px 16px 64px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:40px}
+@media (max-width:860px){.layout{grid-template-columns:minmax(0,1fr)}}
+.toc{font:400 .92rem/1.4 var(--body)}
+@media (min-width:861px){.toc{position:sticky;top:16px;align-self:start;max-height:calc(100vh - 32px);overflow:auto}}
+.toc .ttl{font:700 .78rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.toc ul{list-style:none;margin:0;padding:0}
+.toc > div > ul > li{margin:0 0 10px}
+.toc > div > ul > li > a{font-weight:700;color:var(--ink)}
+.toc ul ul{padding-left:12px;margin-top:3px;border-left:1px solid var(--line)}
+.toc ul ul a{color:var(--muted);text-decoration:none}
+.toc a:hover{color:var(--blood)}
+main{max-width:72ch;min-width:0}
+main h1{font:700 2rem/1.15 var(--display);margin:48px 0 12px;padding-top:12px;border-top:1px solid var(--line);color:var(--ink)}
+main h1:first-child{margin-top:0;border-top:0;padding-top:0}
+main h2{font:700 1.3rem/1.25 var(--display);margin:30px 0 8px;color:var(--steel)}
+main p,main li{hyphens:auto}
+main strong{font-weight:700}
+main ul,main ol{padding-left:1.3em}
+main li{margin:3px 0}
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;font:400 .9rem/1.4 var(--body);min-width:100%}
+th,td{border-bottom:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{font-weight:700;border-bottom:2px solid var(--ink);white-space:nowrap}
+tbody tr:nth-child(even){background:var(--panel)}
+.admonition{margin:18px 0;padding:12px 16px;border-radius:4px;border:1px solid var(--line);background:var(--panel);font:400 .98rem/1.55 var(--body)}
+.admonition p{margin:6px 0}
+.admonition-title{font:700 .78rem var(--mono)!important;letter-spacing:.08em;text-transform:uppercase;margin:0 0 4px!important;color:var(--muted)}
+.admonition.example{border-left:4px solid var(--blood);background:var(--blood-soft)}
+.admonition.example .admonition-title{color:var(--blood)}
+.admonition.gm{border-left:4px solid var(--gm-edge);background:var(--gm)}
+.admonition.gm .admonition-title{color:var(--gm-edge)}
+.admonition.story{border-left:4px solid var(--muted);font-style:normal}
+.admonition.story .admonition-title{color:var(--muted)}
+figure.pic{margin:20px 0;page-break-inside:avoid}
+figure.pic img{display:block;max-width:100%;height:auto;border:1px solid var(--line)}
+figure.pic figcaption{font:400 .86rem/1.45 var(--body);color:var(--muted);margin-top:6px}
+figure.pic .credit{display:block;font-size:.8rem}
+figure.pic .slot-box{border:1px dashed var(--line);background:var(--panel);padding:28px 12px;text-align:center;font:500 .85rem var(--body);color:var(--muted)}
+.note{font:400 .85rem var(--body);color:var(--muted);margin-top:40px;border-top:1px solid var(--line);padding-top:12px}
+.index{columns:2 16rem;column-gap:28px}
+.ix{margin:0 0 4px;font-size:.9rem;break-inside:avoid}
+.ix-letter{font:700 .9rem var(--mono);color:var(--blood);margin:14px 0 4px;break-after:avoid}
+@page{margin:16mm 14mm 18mm;@bottom-center{content:counter(page);font:9pt sans-serif}}
+@media print{
+  body{background:#fff;color:#000;font-size:11pt}
+  header nav,.toc .noprint{display:none}
+  header{border-color:#000}
+  .layout{display:block;padding:0}
+  .toc{page-break-after:always}
+  main{max-width:none}
+  main h1{page-break-before:always;border:0}
+  main h1:first-child{page-break-before:avoid}
+  main h2,.admonition,table{page-break-inside:avoid}
+  a{color:inherit;text-decoration:none}
+  .admonition{background:none!important}
+}
+</style>
+</head>
+<body>
+<header>
+  <div><span class="eyebrow">Grave Wounds · blood, bivouac and weather · playtest rules</span><h1>The Black-Powder Wars</h1></div>
+  <nav><a href="rules.html">Rules</a><a href="book-medieval.html">The Medieval Wars</a><a href="guide.html">How to play</a><a href="campaign.html">Campaign</a><a href="roller.html">Wound roller</a><a href="team.html">Team builder</a><a href="travel.html">Travel map</a><a href="field.html">Field map</a><a href="tables.pdf">Printed tables</a><a href="../index.html">Start page</a></nav>
+</header>
+<div class="layout">
+  <aside class="toc" aria-label="Contents"><p class="ttl">Contents</p><div class="toc">
+<ul>
+<li><a href="#black_powder">The Black-Powder Wars, 1618–1877</a><ul>
+<li><a href="#switched-on">What is switched on</a></li>
+</ul>
+</li>
+<li><a href="#black_powder-armies">The armies</a><ul>
+<li><a href="#era-careers">Careers</a></li>
+<li><a href="#era-followers">Followers</a></li>
+<li><a href="#era-ranks">Ranks</a></li>
+<li><a href="#era-jobs">Work between fights</a></li>
+<li><a href="#era-job_trouble">Trouble at work</a></li>
+<li><a href="#era-skill_uses">What each skill is for</a></li>
+<li><a href="#era-tongue_armies">Each army's tongues</a></li>
+<li><a href="#era-courses">Training courses</a></li>
+<li><a href="#era-patron_fate">What becomes of a patron</a></li>
+<li><a href="#era-prisoners">Prisoners: what captors did</a></li>
+<li><a href="#era-kit_life">How long boots and clothing last</a></li>
+<li><a href="#era-supplies">Rations and water carried</a></li>
+<li><a href="#era-women">Women under arms</a></li>
+<li><a href="#era-money_days">The Day in each army's coin</a></li>
+<li><a href="#era-rank_pay">Pay by rank</a></li>
+<li><a href="#era-prices">Prices</a></li>
+</ul>
+</li>
+<li><a href="#black_powder-tables">Wound tables</a><ul>
+<li><a href="#table-lutzen-1632-mass-grave">Lützen 1632 - mass grave (bone evidence)</a></li>
+<li><a href="#table-thirty-years-war-all-hits">Thirty Years' War - all hits (gameplay)</a></li>
+<li><a href="#table-revolution-1775-83-pensioners">American Revolution 1775-83 - disabled veterans' wounds</a></li>
+<li><a href="#table-revolution-1775-83-all-hits">American Revolution 1775-83 - all hits (gameplay)</a></li>
+<li><a href="#table-peninsular-1808-14-officers">Peninsular War 1808-14 - French officers' wounds</a></li>
+<li><a href="#table-peninsular-1808-14-all-hits">Napoleonic era - all hits (gameplay)</a></li>
+<li><a href="#table-war-1812-all-hits">War of 1812 - all hits (gameplay, borrowed records)</a></li>
+<li><a href="#table-crimea-1855-56-siege">Crimean War 1855-56 - siege of Sevastopol, wounded (surgeons' returns)</a></li>
+<li><a href="#table-crimea-1854-56-all-hits">Crimean War 1854-56 - all hits (gameplay)</a></li>
+<li><a href="#table-acw-1861-wounded">Civil War 1861-65 - wounded (surgeon's records)</a></li>
+<li><a href="#table-acw-1861-killed">Civil War 1861-65 - killed in action</a></li>
+<li><a href="#table-acw-1861-all-hits">Civil War 1861-65 - all hits (gameplay)</a></li>
+<li><a href="#table-indian-wars-1865-71-arrows">Indian Wars 1865-71 - arrow wounds (US Army surgeons)</a></li>
+</ul>
+</li>
+<li><a href="#black_powder-fields">Battlefields</a><ul>
+<li><a href="#field-lutzen-1632">Lützen, 16 November 1632</a></li>
+<li><a href="#field-cowpens-1781">Cowpens, 17 January 1781</a></li>
+<li><a href="#field-albuera-1811">Albuera, 16 May 1811</a></li>
+<li><a href="#field-lundys-lane-1814">Lundy's Lane, 25 July 1814</a></li>
+<li><a href="#field-redan-1855-june">The Great Redan, 18 June 1855</a></li>
+<li><a href="#field-redan-1855">The Great Redan, 8 September 1855</a></li>
+<li><a href="#field-bull-run-1861">First Bull Run, 21 July 1861</a></li>
+<li><a href="#field-fetterman-1866">The Fetterman Fight, 21 December 1866</a></li>
+<li><a href="#field-wagon-box-1867">The Wagon Box Fight, 2 August 1867</a></li>
+</ul>
+</li>
+<li><a href="#index">Index</a></li>
+</ul>
+</div>
+</aside>
+  <main>
+<h1 id="black_powder">The Black-Powder Wars, 1618–1877</h1>
+<p>Nine battles from Gustavus Adolphus at Lützen in 1632 to the Wagon Box Fight in 1867: the Thirty Years' War, the American Revolution, the Peninsula and the War of 1812, the storming of the Great Redan before Sevastopol, the first battle of the American Civil War, and two fights on the Bozeman Trail against the Lakota, Cheyenne and Arapaho. Every rule is in the Rules; this book holds the armies' figures for five eras, the wound tables their battles roll on, and the battlefields.</p>
+<p>The battlefields: <a href="#field-lutzen-1632">Lützen 1632</a>, <a href="#field-cowpens-1781">Cowpens 1781</a>, <a href="#field-albuera-1811">Albuera 1811</a>, <a href="#field-lundys-lane-1814">Lundy's Lane 1814</a>, <a href="#field-redan-1855-june">The Great Redan, 18 June 1855</a>, <a href="#field-redan-1855">The Great Redan, 8 September 1855</a>, <a href="#field-bull-run-1861">First Bull Run 1861</a>, <a href="#field-fetterman-1866">The Fetterman Fight 1866</a>, <a href="#field-wagon-box-1867">The Wagon Box Fight 1867</a>.</p>
+<h2 id="switched-on">What is switched on</h2>
+<p>The <a href="rules.html#guns">guns of the black-powder wars</a>, for every battery in the book. From the Rules' <a href="rules.html#modern-infantry">Modern infantry</a>, only the rule that modern fire puts men down, and only for the breech-loaders: the soldiers' Springfields at the Wagon Box, and the carbines of Fetterman's cavalry and the civilians' repeating rifles. Muskets and rifle-muskets fight as the core rules say. Wounds heal and fester as the Rules' Recovery says, with no antibiotics.</p>
+<table>
+<thead>
+<tr>
+<th>Era</th>
+<th>Armies</th>
+<th>A career term</th>
+<th>Fighting skills</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Thirty Years' War (1618-1648)</td>
+<td>The Swedish army (Swedes, Finns, Scots and Germans), The Imperial army and the Catholic League</td>
+<td>4 years, from age 16</td>
+<td>Musket, Pistol, Blade, Pike, Brawl, Parry, Dodge</td>
+</tr>
+<tr>
+<td>Horse and musket (1775-1815)</td>
+<td>The Continental Army (1775-1783), The British Army in America (1775-1783), The British in the Peninsula (1808-1814), The French Empire in Spain (1808-1814), The United States (1812-1815)</td>
+<td>4 years, from age 16</td>
+<td>Musket, Rifle, Pistol, Blade, Bayonet, Gunnery, Brawl, Parry, Dodge</td>
+</tr>
+<tr>
+<td>Crimean War (1854-1856)</td>
+<td>British, French, Russian</td>
+<td>4 years, from age 16</td>
+<td>Musket, Pistol, Blade, Bayonet, Gunnery, Brawl, Parry, Dodge</td>
+</tr>
+<tr>
+<td>Civil War and frontier (1861-1876)</td>
+<td>The Union (1861-1865), The Confederacy (1861-1865), The US Army on the frontier (1866-1876)</td>
+<td>4 years, from age 16</td>
+<td>Rifle, Pistol, Blade, Bayonet, Gunnery, Brawl, Parry, Dodge</td>
+</tr>
+<tr>
+<td>Plains nations (1860-1877)</td>
+<td>The Lakota (Oglala, Minneconjou and other bands), The Cheyenne and Arapaho</td>
+<td>4 years, from age 15</td>
+<td>Bow, Lance, Club and knife, Gun, Brawl, Parry, Dodge</td>
+</tr>
+</tbody>
+</table>
+<h1 id="black_powder-armies">The armies</h1>
+<h2 id="era-careers">Careers</h2>
+<h3 id="era-careers-thirty_years">Thirty Years' War (1618-1648)</h3>
+<table>
+<thead>
+<tr>
+<th>Career</th>
+<th>Main skill</th>
+<th>Second skill</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Musketeer</td>
+<td>Musket</td>
+<td>Dodge</td>
+</tr>
+<tr>
+<td>Pikeman</td>
+<td>Pike</td>
+<td>Blade</td>
+</tr>
+<tr>
+<td>Cuirassier</td>
+<td>Pistol</td>
+<td>Ride</td>
+</tr>
+<tr>
+<td>Harquebusier or light horseman</td>
+<td>Pistol</td>
+<td>Ride</td>
+</tr>
+<tr>
+<td>Dragoon</td>
+<td>Musket</td>
+<td>Ride</td>
+</tr>
+<tr>
+<td>Sergeant or corporal</td>
+<td>Command</td>
+<td>Blade</td>
+</tr>
+<tr>
+<td>Field surgeon (feldscher)</td>
+<td>Leechcraft</td>
+<td>Craft</td>
+</tr>
+<tr>
+<td>Sutler or camp follower</td>
+<td>Persuade</td>
+<td>Watch</td>
+</tr>
+<tr>
+<td>Chaplain or clerk</td>
+<td>Letters</td>
+<td>Persuade</td>
+</tr>
+<tr>
+<td>Woman of the baggage train (Tross)</td>
+<td>Craft</td>
+<td>Fieldcraft</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-careers-horse_musket">Horse and musket (1775-1815)</h3>
+<table>
+<thead>
+<tr>
+<th>Career</th>
+<th>Main skill</th>
+<th>Second skill</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Line infantryman</td>
+<td>Musket</td>
+<td>Bayonet</td>
+</tr>
+<tr>
+<td>Rifleman or light infantryman</td>
+<td>Rifle</td>
+<td>Dodge</td>
+</tr>
+<tr>
+<td>Dragoon or hussar</td>
+<td>Blade</td>
+<td>Ride</td>
+</tr>
+<tr>
+<td>Artilleryman</td>
+<td>Gunnery</td>
+<td>Craft</td>
+</tr>
+<tr>
+<td>Sergeant or corporal</td>
+<td>Command</td>
+<td>Musket</td>
+</tr>
+<tr>
+<td>Officer</td>
+<td>Blade</td>
+<td>Command</td>
+</tr>
+<tr>
+<td>Surgeon's mate</td>
+<td>Leechcraft</td>
+<td>Craft</td>
+</tr>
+<tr>
+<td>Scout or ranger</td>
+<td>Fieldcraft</td>
+<td>Rifle</td>
+</tr>
+<tr>
+<td>Sailor or marine</td>
+<td>Seamanship</td>
+<td>Musket</td>
+</tr>
+<tr>
+<td>Sutler or camp follower</td>
+<td>Persuade</td>
+<td>Watch</td>
+</tr>
+<tr>
+<td>Vivandière or blanchisseuse</td>
+<td>Persuade</td>
+<td>Leechcraft</td>
+</tr>
+<tr>
+<td>Soldier's wife on the strength</td>
+<td>Craft</td>
+<td>Leechcraft</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-careers-crimea">Crimean War (1854-1856)</h3>
+<table>
+<thead>
+<tr>
+<th>Career</th>
+<th>Main skill</th>
+<th>Second skill</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Line infantryman</td>
+<td>Musket</td>
+<td>Bayonet</td>
+</tr>
+<tr>
+<td>Rifleman, chasseur or Zouave</td>
+<td>Musket</td>
+<td>Stealth</td>
+</tr>
+<tr>
+<td>Light cavalryman (hussar, lancer, Cossack)</td>
+<td>Blade</td>
+<td>Ride</td>
+</tr>
+<tr>
+<td>Artilleryman</td>
+<td>Gunnery</td>
+<td>Craft</td>
+</tr>
+<tr>
+<td>Sailor serving guns ashore</td>
+<td>Gunnery</td>
+<td>Seamanship</td>
+</tr>
+<tr>
+<td>Sapper or miner</td>
+<td>Craft</td>
+<td>Musket</td>
+</tr>
+<tr>
+<td>Sergeant or corporal</td>
+<td>Command</td>
+<td>Musket</td>
+</tr>
+<tr>
+<td>Officer</td>
+<td>Command</td>
+<td>Pistol</td>
+</tr>
+<tr>
+<td>Surgeon or orderly</td>
+<td>Leechcraft</td>
+<td>Craft</td>
+</tr>
+<tr>
+<td>Cantinière or canteen-keeper</td>
+<td>Persuade</td>
+<td>Leechcraft</td>
+</tr>
+<tr>
+<td>Nurse at Scutari or Balaklava</td>
+<td>Leechcraft</td>
+<td>Letters</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-careers-civil_war">Civil War and frontier (1861-1876)</h3>
+<table>
+<thead>
+<tr>
+<th>Career</th>
+<th>Main skill</th>
+<th>Second skill</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Infantryman</td>
+<td>Rifle</td>
+<td>Bayonet</td>
+</tr>
+<tr>
+<td>Sharpshooter or skirmisher</td>
+<td>Rifle</td>
+<td>Stealth</td>
+</tr>
+<tr>
+<td>Cavalry trooper</td>
+<td>Pistol</td>
+<td>Ride</td>
+</tr>
+<tr>
+<td>Artilleryman</td>
+<td>Gunnery</td>
+<td>Craft</td>
+</tr>
+<tr>
+<td>Sergeant or corporal</td>
+<td>Command</td>
+<td>Rifle</td>
+</tr>
+<tr>
+<td>Officer</td>
+<td>Command</td>
+<td>Pistol</td>
+</tr>
+<tr>
+<td>Surgeon or hospital steward</td>
+<td>Leechcraft</td>
+<td>Craft</td>
+</tr>
+<tr>
+<td>Scout</td>
+<td>Fieldcraft</td>
+<td>Rifle</td>
+</tr>
+<tr>
+<td>Teamster or packer</td>
+<td>Ride</td>
+<td>Craft</td>
+</tr>
+<tr>
+<td>Army nurse</td>
+<td>Leechcraft</td>
+<td>Letters</td>
+</tr>
+<tr>
+<td>Vivandière or daughter of the regiment</td>
+<td>Leechcraft</td>
+<td>Persuade</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-careers-plains_nations">Plains nations (1860-1877)</h3>
+<table>
+<thead>
+<tr>
+<th>Career</th>
+<th>Main skill</th>
+<th>Second skill</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Warrior with bow and shield</td>
+<td>Bow</td>
+<td>Ride</td>
+</tr>
+<tr>
+<td>Warrior with lance and shield</td>
+<td>Lance</td>
+<td>Ride</td>
+</tr>
+<tr>
+<td>Warrior with a gun</td>
+<td>Gun</td>
+<td>Stealth</td>
+</tr>
+<tr>
+<td>Scout (a wolf, sent ahead of the camp)</td>
+<td>Watch</td>
+<td>Stealth</td>
+</tr>
+<tr>
+<td>Leader of war parties</td>
+<td>Command</td>
+<td>Lance</td>
+</tr>
+<tr>
+<td>Healer, who knows plants and medicines</td>
+<td>Leechcraft</td>
+<td>Persuade</td>
+</tr>
+<tr>
+<td>Herder of the camp's horses</td>
+<td>Ride</td>
+<td>Watch</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-followers">Followers</h2>
+<h3 id="era-fq-thirty_years">Thirty Years' War (1618-1648)</h3>
+<table>
+<thead>
+<tr>
+<th>Quality table</th>
+<th>Green</th>
+<th>Regular</th>
+<th>Veteran</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>01–30</td>
+<td>31–80</td>
+<td>81–00</td>
+</tr>
+<tr>
+<td>Hardened</td>
+<td>01–15</td>
+<td>16–60</td>
+<td>61–00</td>
+</tr>
+<tr>
+<td>Raw</td>
+<td>01–55</td>
+<td>56–90</td>
+<td>91–00</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-fq-horse_musket">Horse and musket (1775-1815)</h3>
+<table>
+<thead>
+<tr>
+<th>Quality table</th>
+<th>Green</th>
+<th>Regular</th>
+<th>Veteran</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>01–30</td>
+<td>31–80</td>
+<td>81–00</td>
+</tr>
+<tr>
+<td>Hardened</td>
+<td>01–15</td>
+<td>16–60</td>
+<td>61–00</td>
+</tr>
+<tr>
+<td>Raw</td>
+<td>01–55</td>
+<td>56–90</td>
+<td>91–00</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-fq-crimea">Crimean War (1854-1856)</h3>
+<table>
+<thead>
+<tr>
+<th>Quality table</th>
+<th>Green</th>
+<th>Regular</th>
+<th>Veteran</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>01–30</td>
+<td>31–80</td>
+<td>81–00</td>
+</tr>
+<tr>
+<td>Hardened</td>
+<td>01–15</td>
+<td>16–60</td>
+<td>61–00</td>
+</tr>
+<tr>
+<td>Raw</td>
+<td>01–55</td>
+<td>56–90</td>
+<td>91–00</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-fq-civil_war">Civil War and frontier (1861-1876)</h3>
+<table>
+<thead>
+<tr>
+<th>Quality table</th>
+<th>Green</th>
+<th>Regular</th>
+<th>Veteran</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>01–30</td>
+<td>31–80</td>
+<td>81–00</td>
+</tr>
+<tr>
+<td>Hardened</td>
+<td>01–15</td>
+<td>16–60</td>
+<td>61–00</td>
+</tr>
+<tr>
+<td>Raw</td>
+<td>01–55</td>
+<td>56–90</td>
+<td>91–00</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-fq-plains_nations">Plains nations (1860-1877)</h3>
+<table>
+<thead>
+<tr>
+<th>Quality table</th>
+<th>Green</th>
+<th>Regular</th>
+<th>Veteran</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>01–30</td>
+<td>31–80</td>
+<td>81–00</td>
+</tr>
+<tr>
+<td>Hardened</td>
+<td>01–15</td>
+<td>16–60</td>
+<td>61–00</td>
+</tr>
+<tr>
+<td>Raw</td>
+<td>01–55</td>
+<td>56–90</td>
+<td>91–00</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-ranks">Ranks</h2>
+<h3 id="era-ranks-thirty_years">Thirty Years' War (1618-1648)</h3>
+<table>
+<thead>
+<tr>
+<th>Rank</th>
+<th>Pay (× a soldier's)</th>
+<th>Least years in the rank below</th>
+<th>Command check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Soldier</td>
+<td>1</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Gefreiter</td>
+<td>1.25</td>
+<td>1</td>
+<td>Ordinary</td>
+</tr>
+<tr>
+<td>Corporal</td>
+<td>1.5</td>
+<td>2</td>
+<td>Ordinary</td>
+</tr>
+<tr>
+<td>Feldwebel</td>
+<td>3</td>
+<td>3</td>
+<td>Hard</td>
+</tr>
+<tr>
+<td>Ensign</td>
+<td>6</td>
+<td>4</td>
+<td>Very hard</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-ranks-horse_musket">Horse and musket (1775-1815)</h3>
+<table>
+<thead>
+<tr>
+<th>Rank</th>
+<th>Pay (× a soldier's)</th>
+<th>Least years in the rank below</th>
+<th>Command check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Private</td>
+<td>1</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Corporal</td>
+<td>1.19</td>
+<td>2</td>
+<td>Ordinary</td>
+</tr>
+<tr>
+<td>Sergeant</td>
+<td>1.56</td>
+<td>2</td>
+<td>Ordinary</td>
+</tr>
+<tr>
+<td>Sergeant-major</td>
+<td>2.06</td>
+<td>4</td>
+<td>Hard</td>
+</tr>
+<tr>
+<td>Ensign</td>
+<td>6.7</td>
+<td>4</td>
+<td>Very hard</td>
+</tr>
+<tr>
+<td>Captain</td>
+<td>12.5</td>
+<td>6</td>
+<td>Hard</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-ranks-crimea">Crimean War (1854-1856)</h3>
+<table>
+<thead>
+<tr>
+<th>Rank</th>
+<th>Pay (× a soldier's)</th>
+<th>Least years in the rank below</th>
+<th>Command check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Private</td>
+<td>1</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Corporal</td>
+<td>1.19</td>
+<td>2</td>
+<td>Ordinary</td>
+</tr>
+<tr>
+<td>Sergeant</td>
+<td>1.56</td>
+<td>2</td>
+<td>Ordinary</td>
+</tr>
+<tr>
+<td>Sergeant-major</td>
+<td>2.06</td>
+<td>4</td>
+<td>Hard</td>
+</tr>
+<tr>
+<td>Ensign</td>
+<td>6.7</td>
+<td>4</td>
+<td>Very hard</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-ranks-civil_war">Civil War and frontier (1861-1876)</h3>
+<table>
+<thead>
+<tr>
+<th>Rank</th>
+<th>Pay (× a soldier's)</th>
+<th>Least years in the rank below</th>
+<th>Command check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Private</td>
+<td>1</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Corporal</td>
+<td>1</td>
+<td>0.5</td>
+<td>Ordinary</td>
+</tr>
+<tr>
+<td>Sergeant</td>
+<td>1.31</td>
+<td>1</td>
+<td>Ordinary</td>
+</tr>
+<tr>
+<td>First sergeant</td>
+<td>1.54</td>
+<td>1</td>
+<td>Hard</td>
+</tr>
+<tr>
+<td>Lieutenant</td>
+<td>8.1</td>
+<td>1</td>
+<td>Hard</td>
+</tr>
+<tr>
+<td>Captain</td>
+<td>8.9</td>
+<td>1</td>
+<td>Ordinary</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-jobs">Work between fights</h2>
+<h3 id="era-jobs-thirty_years">Thirty Years' War (1618-1648)</h3>
+<table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Skill</th>
+<th>Pay</th>
+<th>Term</th>
+<th>Where</th>
+<th>Who</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sack of a town (fed)</td>
+<td>Blade 40</td>
+<td>90 Days for the job</td>
+<td>1-3 days</td>
+<td>town, city</td>
+<td>anyone</td>
+<td>40%</td>
+</tr>
+<tr>
+<td>Take the Laufgeld (fed)</td>
+<td>none</td>
+<td>7½ Days for the job</td>
+<td>3-10 days</td>
+<td>town, village, road</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Regimental preacher (fed)</td>
+<td>Letters 50</td>
+<td>4 Days a day</td>
+<td>a month</td>
+<td>camp</td>
+<td>chaplain or clerk</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Feldwebel's post (fed)</td>
+<td>Command 55</td>
+<td>3½ Days a day</td>
+<td>a month</td>
+<td>camp, town</td>
+<td>sergeant or corporal</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Plague gravedigging</td>
+<td>none</td>
+<td>3 Days a day</td>
+<td>a week</td>
+<td>town, city</td>
+<td>anyone</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>Company Feldscher (fed)</td>
+<td>Leechcraft 50</td>
+<td>2¾ Days a day</td>
+<td>a month</td>
+<td>camp, town</td>
+<td>field surgeon (feldscher)</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Hire as a trooper (fed)</td>
+<td>Ride 45</td>
+<td>2½ Days a day</td>
+<td>a month</td>
+<td>camp, town</td>
+<td>cuirassier, harquebusier or light horseman, dragoon</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Contribution collecting (fed)</td>
+<td>Command 40</td>
+<td>2 Days a day</td>
+<td>a week</td>
+<td>town, village</td>
+<td>sergeant or corporal, cuirassier, harquebusier or light horseman, dragoon</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Courier</td>
+<td>Ride 40</td>
+<td>2 Days a day</td>
+<td>a day</td>
+<td>road, frontier</td>
+<td>dragoon, harquebusier or light horseman, cuirassier</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>Salvaguardia (fed)</td>
+<td>Command 40</td>
+<td>2 Days a day</td>
+<td>a week</td>
+<td>village</td>
+<td>anyone</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Sutling</td>
+<td>Persuade 30</td>
+<td>2 Days a day</td>
+<td>a week</td>
+<td>camp</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Journeyman's trade</td>
+<td>Craft 35</td>
+<td>1¾ Days a day</td>
+<td>a day</td>
+<td>town, city, camp</td>
+<td>anyone</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Company scribe</td>
+<td>Letters 45</td>
+<td>1½ Days a day</td>
+<td>a month</td>
+<td>camp, town</td>
+<td>anyone</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Foraging party (fed)</td>
+<td>Fieldcraft 30</td>
+<td>1½ Days a day</td>
+<td>a day</td>
+<td>village, frontier</td>
+<td>anyone</td>
+<td>25%</td>
+</tr>
+<tr>
+<td>Carting for the train (fed)</td>
+<td>Ride 30</td>
+<td>1¼ Days a day</td>
+<td>a week</td>
+<td>road, camp</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Garrison duty (fed)</td>
+<td>Watch 40</td>
+<td>1 Day a day</td>
+<td>a month</td>
+<td>town, city</td>
+<td>musketeer, pikeman, sergeant or corporal</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Harvest and hay work</td>
+<td>none</td>
+<td>1 Day a day</td>
+<td>a day</td>
+<td>village</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Nursing the regiment's sick</td>
+<td>Leechcraft 0</td>
+<td>¾ Day a day</td>
+<td>a week</td>
+<td>camp, town</td>
+<td>anyone</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Ransoming peasants †</td>
+<td>Stealth 40</td>
+<td>10 Days a raid</td>
+<td>2-4 days</td>
+<td>village, frontier</td>
+<td>anyone</td>
+<td>35%</td>
+</tr>
+<tr>
+<td>Desert and re-enlist † (fed)</td>
+<td>Stealth 30</td>
+<td>7½ Days a signing</td>
+<td>3-7 days</td>
+<td>camp, road, town</td>
+<td>anyone</td>
+<td>35%</td>
+</tr>
+<tr>
+<td>Smuggling across the lines †</td>
+<td>Stealth 40</td>
+<td>4 Days a day</td>
+<td>a week</td>
+<td>frontier, road</td>
+<td>anyone</td>
+<td>30%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-jobs-horse_musket">Horse and musket (1775-1815)</h3>
+<table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Skill</th>
+<th>Pay</th>
+<th>Term</th>
+<th>Where</th>
+<th>Who</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Militia substitute (fed)</td>
+<td>none</td>
+<td>400 Days for the job</td>
+<td>1 day</td>
+<td>town, village</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Privateer cruise (fed)</td>
+<td>Seamanship 30</td>
+<td>60 Days a cruise</td>
+<td>60-90 days</td>
+<td>sea</td>
+<td>anyone</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>US enlistment bounty (fed)</td>
+<td>none</td>
+<td>59 Days for the job</td>
+<td>1 day</td>
+<td>town, village, frontier</td>
+<td>anyone</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Take the King's shilling (fed)</td>
+<td>none</td>
+<td>42 Days for the job</td>
+<td>1 day</td>
+<td>town, city, village</td>
+<td>anyone</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Clerk</td>
+<td>Letters 50</td>
+<td>5½ Days a day</td>
+<td>a month</td>
+<td>city, town</td>
+<td>anyone</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Journeyman carpenter</td>
+<td>Craft 35</td>
+<td>3½ Days a day</td>
+<td>a day</td>
+<td>town, city</td>
+<td>anyone</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Mail coach guard</td>
+<td>Musket 45</td>
+<td>3 Days a day</td>
+<td>a week</td>
+<td>road</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Sutling</td>
+<td>Persuade 30</td>
+<td>3 Days a day</td>
+<td>a week</td>
+<td>camp</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Coal-heaving</td>
+<td>Brawl 0</td>
+<td>2 Days a day</td>
+<td>a day</td>
+<td>city, sea</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Guide for the army</td>
+<td>Fieldcraft 45</td>
+<td>2 Days a day</td>
+<td>a day</td>
+<td>frontier, road, village</td>
+<td>scout or ranger, rifleman or light infantryman, dragoon or hussar</td>
+<td>25%</td>
+</tr>
+<tr>
+<td>Press-gang hand</td>
+<td>Brawl 40</td>
+<td>2 Days a day</td>
+<td>a week</td>
+<td>town, city, sea</td>
+<td>anyone</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>Teamster (fed)</td>
+<td>Ride 30</td>
+<td>2 Days a day</td>
+<td>a month</td>
+<td>road, camp, frontier</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Harvest hand (fed)</td>
+<td>none</td>
+<td>1¾ Days a day</td>
+<td>a day</td>
+<td>village, frontier</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Militia tour</td>
+<td>Musket 0</td>
+<td>1¾ Days a day</td>
+<td>30-90 days</td>
+<td>frontier, village</td>
+<td>anyone</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Day labour</td>
+<td>none</td>
+<td>1½ Days a day</td>
+<td>a day</td>
+<td>town, village</td>
+<td>anyone</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Ship's crew (Royal Navy) (fed)</td>
+<td>Seamanship 0</td>
+<td>1 Day a day</td>
+<td>a month</td>
+<td>sea</td>
+<td>anyone</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>Servant or batman (fed)</td>
+<td>Craft 30</td>
+<td>½ Day a day</td>
+<td>a month</td>
+<td>town, city, camp</td>
+<td>anyone</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Hospital nurse or laundress (fed)</td>
+<td>Leechcraft 0</td>
+<td>¼ Day a day</td>
+<td>a month</td>
+<td>camp, town</td>
+<td>anyone</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Prize fight †</td>
+<td>Brawl 50</td>
+<td>100 Days a bout</td>
+<td>1 day</td>
+<td>town, city, village</td>
+<td>anyone</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>Resurrection work †</td>
+<td>Stealth 0</td>
+<td>42 Days a body</td>
+<td>1-3 days</td>
+<td>city, town</td>
+<td>anyone</td>
+<td>25%</td>
+</tr>
+<tr>
+<td>Smuggling run †</td>
+<td>Stealth 0</td>
+<td>10 Days a run</td>
+<td>1 day</td>
+<td>sea, village</td>
+<td>anyone</td>
+<td>30%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-jobs-crimea">Crimean War (1854-1856)</h3>
+<table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Skill</th>
+<th>Pay</th>
+<th>Term</th>
+<th>Where</th>
+<th>Who</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Overseer of hired labourers</td>
+<td>Command 50</td>
+<td>10 Days a day</td>
+<td>a day</td>
+<td>camp, road</td>
+<td>sergeant or corporal, officer, sapper or miner</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Artificer and hut builder</td>
+<td>Craft 35</td>
+<td>7½ Days a day</td>
+<td>a day</td>
+<td>camp, town</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Army Works Corps ganger (fed)</td>
+<td>Command 40</td>
+<td>6¾ Days a day</td>
+<td>a week</td>
+<td>camp, road</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Railway navvy (fed)</td>
+<td>Craft 0</td>
+<td>5 Days a day</td>
+<td>a day</td>
+<td>camp, road</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Interpreter to a labour gang (fed)</td>
+<td>Letters 50</td>
+<td>4½ Days a day</td>
+<td>a day</td>
+<td>camp, road</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Correspondent's fixer</td>
+<td>Persuade 40</td>
+<td>3 Days a day</td>
+<td>a week</td>
+<td>camp, town</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Hospital nurse (fed)</td>
+<td>Leechcraft 30</td>
+<td>3 Days a day</td>
+<td>a week</td>
+<td>city, camp</td>
+<td>anyone</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Sutling and hawking</td>
+<td>Persuade 30</td>
+<td>3 Days a day</td>
+<td>a week</td>
+<td>camp, town</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Money-lender</td>
+<td>Letters 30</td>
+<td>2 Days a day</td>
+<td>a month</td>
+<td>camp</td>
+<td>anyone</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Tatar guide</td>
+<td>Fieldcraft 50</td>
+<td>2 Days a day</td>
+<td>a day</td>
+<td>frontier, village</td>
+<td>rifleman, chasseur or zouave, light cavalryman (hussar, lancer, cossack), officer</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>Hospital sergeant (fed)</td>
+<td>Leechcraft 40</td>
+<td>1¾ Days a day</td>
+<td>a day</td>
+<td>camp, city</td>
+<td>sergeant or corporal</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>British Hotel hand (fed)</td>
+<td>Craft 0</td>
+<td>1½ Days a day</td>
+<td>a week</td>
+<td>camp</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Dock labourer, Constantinople</td>
+<td>none</td>
+<td>1½ Days a day</td>
+<td>a day</td>
+<td>city, sea</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Land Transport Corps driver (fed)</td>
+<td>Ride 30</td>
+<td>1½ Days a day</td>
+<td>a month</td>
+<td>road, camp</td>
+<td>anyone</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Stores carrier</td>
+<td>none</td>
+<td>1 Day a day</td>
+<td>a day</td>
+<td>road</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Plundering Kerch †</td>
+<td>Stealth 0</td>
+<td>10 Days for the job</td>
+<td>3-7 days</td>
+<td>town</td>
+<td>anyone</td>
+<td>30%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-jobs-civil_war">Civil War and frontier (1861-1876)</h3>
+<table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Skill</th>
+<th>Pay</th>
+<th>Term</th>
+<th>Where</th>
+<th>Who</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Substitute or bounty volunteer (fed)</td>
+<td>none</td>
+<td>698 Days for the job</td>
+<td>365-1095 days</td>
+<td>town, city</td>
+<td>anyone</td>
+<td>40%</td>
+</tr>
+<tr>
+<td>Embalmer</td>
+<td>Leechcraft 50</td>
+<td>233 Days a body</td>
+<td>1 day</td>
+<td>camp, town</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Contract buffalo hunter</td>
+<td>Rifle 60</td>
+<td>38¾ Days a day</td>
+<td>a month</td>
+<td>frontier</td>
+<td>scout, sharpshooter or skirmisher</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>Chief guide</td>
+<td>Fieldcraft 60</td>
+<td>23¼ Days a day</td>
+<td>a day</td>
+<td>frontier</td>
+<td>scout</td>
+<td>25%</td>
+</tr>
+<tr>
+<td>Union Pacific labourer</td>
+<td>none</td>
+<td>8 Days a day</td>
+<td>a day</td>
+<td>frontier, camp</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Wagon master (fed)</td>
+<td>Command 50</td>
+<td>5¾ Days a day</td>
+<td>a month</td>
+<td>road, camp</td>
+<td>teamster or packer, sergeant or corporal</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Bullwhacker or mule-skinner (fed)</td>
+<td>Ride 30</td>
+<td>5 Days a day</td>
+<td>a month</td>
+<td>road, frontier</td>
+<td>anyone</td>
+<td>25%</td>
+</tr>
+<tr>
+<td>Placer miner, Montana</td>
+<td>Craft 0</td>
+<td>4¾ Days a day</td>
+<td>a day</td>
+<td>frontier, town</td>
+<td>anyone</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Military telegraph lineman (fed)</td>
+<td>Craft 30</td>
+<td>3 Days a day</td>
+<td>a month</td>
+<td>road, camp</td>
+<td>anyone</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>Trail drive hand (fed)</td>
+<td>Ride 30</td>
+<td>2¼ Days a day</td>
+<td>60-90 days</td>
+<td>frontier, road</td>
+<td>anyone</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Army teamster (fed)</td>
+<td>Ride 30</td>
+<td>2 Days a day</td>
+<td>a month</td>
+<td>road, camp</td>
+<td>anyone</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Photographer's assistant</td>
+<td>Craft 30</td>
+<td>2 Days a day</td>
+<td>a month</td>
+<td>camp, road</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Steamboat deckhand (fed)</td>
+<td>none</td>
+<td>2 Days a day</td>
+<td>7-21 days</td>
+<td>sea, town</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Sutler's clerk</td>
+<td>Letters 30</td>
+<td>2 Days a day</td>
+<td>a month</td>
+<td>camp</td>
+<td>anyone</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Army nurse (fed)</td>
+<td>Leechcraft 30</td>
+<td>1½ Days a day</td>
+<td>a month</td>
+<td>city, camp</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Extra-duty man (fed)</td>
+<td>Craft 0</td>
+<td>¾ Day a day</td>
+<td>a day</td>
+<td>camp</td>
+<td>infantryman, cavalry trooper, artilleryman</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Bounty jumper †</td>
+<td>Stealth 30</td>
+<td>2,326 Days a jump</td>
+<td>7 days</td>
+<td>town, city</td>
+<td>anyone</td>
+<td>40%</td>
+</tr>
+<tr>
+<td>Blockade runner seaman † (fed)</td>
+<td>none</td>
+<td>581 Days a round trip</td>
+<td>14-21 days</td>
+<td>sea</td>
+<td>anyone</td>
+<td>35%</td>
+</tr>
+<tr>
+<td>Contraband cotton trader †</td>
+<td>Persuade 40</td>
+<td>20 Days a run</td>
+<td>7-21 days</td>
+<td>town, road</td>
+<td>anyone</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>Horse thief †</td>
+<td>Stealth 40</td>
+<td>15 Days a horse</td>
+<td>1-3 days</td>
+<td>frontier, road</td>
+<td>anyone</td>
+<td>40%</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-jobs-plains_nations">Plains nations (1860-1877)</h3>
+<table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Skill</th>
+<th>Pay</th>
+<th>Term</th>
+<th>Where</th>
+<th>Who</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Horse raid</td>
+<td>Stealth 40</td>
+<td>56 Days a horse</td>
+<td>14-42 days</td>
+<td>frontier, village</td>
+<td>warrior with bow and shield, scout (a wolf, sent ahead of the camp), leader of war parties</td>
+<td>35%</td>
+</tr>
+<tr>
+<td>Horse holder</td>
+<td>Watch 0</td>
+<td>10 Days a raid</td>
+<td>14-42 days</td>
+<td>frontier</td>
+<td>herder of the camp's horses, warrior with bow and shield</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>Doctoring</td>
+<td>Leechcraft 50</td>
+<td>7 Days a cure</td>
+<td>1-7 days</td>
+<td>village</td>
+<td>healer, who knows plants and medicines</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Robe dressing</td>
+<td>Craft 30</td>
+<td>7 Days a robe</td>
+<td>7-10 days</td>
+<td>village</td>
+<td>anyone</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Trading at a post</td>
+<td>Persuade 30</td>
+<td>7 Days a robe well traded</td>
+<td>1 day</td>
+<td>frontier, town</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Hunter for a wagon train</td>
+<td>Gun 40</td>
+<td>3 Days a day</td>
+<td>a day</td>
+<td>frontier, road</td>
+<td>scout (a wolf, sent ahead of the camp), warrior with a gun</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Trader's escort</td>
+<td>Watch 40</td>
+<td>3 Days a day</td>
+<td>7-21 days</td>
+<td>frontier, road</td>
+<td>warrior with bow and shield, warrior with a gun</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>Winter robe hunt</td>
+<td>Ride 40</td>
+<td>3 Days a hide</td>
+<td>7-21 days</td>
+<td>frontier</td>
+<td>warrior with bow and shield, warrior with lance and shield, warrior with a gun, scout (a wolf, sent ahead of the camp)</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Agency interpreter</td>
+<td>Persuade 50</td>
+<td>2½ Days a day</td>
+<td>a month</td>
+<td>village, frontier</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Enlisted army scout</td>
+<td>Fieldcraft 50</td>
+<td>2¼ Days a day</td>
+<td>a month</td>
+<td>frontier, camp</td>
+<td>scout (a wolf, sent ahead of the camp), warrior with bow and shield</td>
+<td>25%</td>
+</tr>
+<tr>
+<td>Horse breaking and trading</td>
+<td>Ride 40</td>
+<td>2 Days a day</td>
+<td>a day</td>
+<td>village, frontier</td>
+<td>herder of the camp's horses, warrior with bow and shield</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Herd keeping</td>
+<td>Watch 0</td>
+<td>1 Day a day</td>
+<td>a day</td>
+<td>village, frontier</td>
+<td>herder of the camp's horses</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Moccasin and hide work</td>
+<td>Craft 30</td>
+<td>1 Day a day</td>
+<td>a day</td>
+<td>village</td>
+<td>anyone</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Akicita (camp police)</td>
+<td>Command 50</td>
+<td>unpaid</td>
+<td>90-180 days</td>
+<td>village</td>
+<td>warrior with bow and shield, leader of war parties</td>
+<td>10%</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-job_trouble">Trouble at work</h2>
+<h3 id="era-job_trouble-thirty_years">Thirty Years' War (1618-1648)</h3>
+<table>
+<thead>
+<tr>
+<th>d10</th>
+<th>Trouble</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Pay in arrears: no coin this term, only the paymaster's note.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>The provost asks questions: prove you are not a deserter.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Peasants ambush the party: roll a wound.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Camp fever or plague: the term is lost to sickness.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Taken by the enemy and pressed into their regiment.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Robbed by comrades: half the term's take is gone.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>A wife or comrade is taken by the enemy: ransom or rescue.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Debased coin: the pay is worth half.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>An officer takes the booty as his share.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>To be hanged as an example, unless someone speaks for him.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-job_trouble-horse_musket">Horse and musket (1775-1815)</h3>
+<table>
+<thead>
+<tr>
+<th>d10</th>
+<th>Trouble</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>A press gang or crimp seizes him: argue or fight.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Taken up by the excise or a constable: fine, gaol or transportation.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Paid in bad paper or a ticket, worth 60% at best.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Fever or flux: the term is lost.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Robbed on the road or by a crimp.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>A mob turns on him: roll a wound.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>The employer goes bankrupt or flees, owing him.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>A recruiting sergeant gets him drunk, and he wakes up enlisted.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Taken at sea: a prison hulk or Dartmoor.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>An old crime comes to light: the assizes or a court-martial.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-job_trouble-crimea">Crimean War (1854-1856)</h3>
+<table>
+<thead>
+<tr>
+<th>d10</th>
+<th>Trouble</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Cholera: the term is lost, and a recovery check.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>Pay stopped: a clerk has lost his name, and he must argue it back.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>A shell or a stray shot falls on the works.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Theft: his kit or his earnings are gone.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>A drunken brawl with navvies or Zouaves.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Accused of selling army stores.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Recalled to his regiment at once.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Frostbite or exposure on the col.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>A Cossack patrol near the outposts.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>An officer wants him as a servant, unpaid.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-job_trouble-civil_war">Civil War and frontier (1861-1876)</h3>
+<table>
+<thead>
+<tr>
+<th>d10</th>
+<th>Trouble</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Guerrillas raid the train or the store.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>The provost guard asks for his papers.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Fever or dysentery.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>The employer skips town owing wages.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>A stampede or a wagon wreck.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Swindled at cards.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Mistaken for a deserter.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>A war party on the trail.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>A brawl with soldiers.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>Conscripted on the spot.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-job_trouble-plains_nations">Plains nations (1860-1877)</h3>
+<table>
+<thead>
+<tr>
+<th>d10</th>
+<th>Trouble</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>An enemy war party finds the trail.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>An army column or patrol.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>A fall or a goring on the hunt.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>The trader cheats, or brings whiskey.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>A blizzard: horses lost.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>The akicita punish a broken rule.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Smallpox or measles in camp.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Agency rations are held back.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>A quarrel over horses or a woman.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>A rival claims his coup.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-skill_uses">What each skill is for</h2>
+<h3 id="era-skill_uses-thirty_years">Thirty Years' War (1618-1648)</h3>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Use</th>
+<th>Usually</th>
+<th>Against</th>
+<th>Success</th>
+<th>Failure</th>
+<th>Fumble</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Persuade</td>
+<td><strong>Haggle</strong>: Beat down a price.</td>
+<td>Ordinary</td>
+<td>the seller (Persuade)</td>
+<td>A tenth off (a quarter on a critical).</td>
+<td>The list price.</td>
+<td>No sale today.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Find a billet</strong>: Talk a village or a householder into a bed and a meal.</td>
+<td>Ordinary</td>
+<td>the householder or headman (Presence)</td>
+<td>Fed and bedded tonight: no keep to pay.</td>
+<td>He pays his keep, or sleeps rough.</td>
+<td>The village turns against the party: trouble.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Talk past a guard</strong>: Get by a sentry, a gate or the provost without the right papers.</td>
+<td>Hard</td>
+<td>the sentry or provost (Wits)</td>
+<td>Through.</td>
+<td>Turned back.</td>
+<td>Held as a deserter or a spy.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Question a prisoner</strong>: Get a prisoner or a local to talk.</td>
+<td>Ordinary</td>
+<td>the prisoner (Nerve)</td>
+<td>He tells what he knows (the GM decides how much is true).</td>
+<td>Nothing.</td>
+<td>He lies, and is believed.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><strong>Drive a hard task</strong>: Get men to do something hard and tiring: dig all night, march on after dark, cross a river.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Done.</td>
+<td>Done slowly, or only half.</td>
+<td>They refuse.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><strong>Keep order</strong>: Stop plunder, drinking or a mutinous mood.</td>
+<td>Hard</td>
+<td>—</td>
+<td>They obey.</td>
+<td>Some slip away to it.</td>
+<td>They turn on him.</td>
+</tr>
+<tr>
+<td>Letters</td>
+<td><strong>Read or write</strong>: Read an order, a letter or a map's names; write a report.</td>
+<td>Easy</td>
+<td>—</td>
+<td>Read or written.</td>
+<td>Slowly, or with mistakes.</td>
+<td>He gets it wrong and does not know it.</td>
+</tr>
+<tr>
+<td>Letters</td>
+<td><strong>Forge a pass</strong>: Make a pass, an order or a billeting ticket that will be believed.</td>
+<td>Hard</td>
+<td>whoever checks it (Watch)</td>
+<td>It passes.</td>
+<td>Doubted: Talk past a guard instead.</td>
+<td>Seen through: held as a deserter or a spy.</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td><strong>Mend kit</strong>: Mend a weapon, harness, boots, a cart or a radio set; a day's work.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Mended.</td>
+<td>Not yet: another day.</td>
+<td>Ruined.</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td><strong>Make something</strong>: Make ladders, a raft, a shelter, snowshoes or a litter from what is to hand.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Made.</td>
+<td>Takes twice as long.</td>
+<td>It fails when it is used.</td>
+</tr>
+<tr>
+<td>Ride</td>
+<td><strong>Ride hard</strong>: Outride a pursuer, or catch a man who rides away.</td>
+<td>Ordinary</td>
+<td>the pursuer or the pursued (Ride)</td>
+<td>Away, or caught.</td>
+<td>Still close.</td>
+<td>Thrown: roll a fall as a wound.</td>
+</tr>
+<tr>
+<td>Ride</td>
+<td><strong>Swim a horse</strong>: Cross a deep ford or swim a river mounted.</td>
+<td>Hard</td>
+<td>—</td>
+<td>Across.</td>
+<td>Turned back.</td>
+<td>Swept away: Endurance check or drowned.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Track</strong>: Follow men or animals.</td>
+<td>Ordinary</td>
+<td>the men being followed (Stealth)</td>
+<td>On their trail.</td>
+<td>Lost it.</td>
+<td>On the wrong trail.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Find the way</strong>: Cross country without roads or a guide; at night, hard.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>On the way.</td>
+<td>Half a day lost.</td>
+<td>Lost: a day, or into the enemy.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Hunt or gather</strong>: Find food or water for himself in the country.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Fed today: no keep to pay.</td>
+<td>Nothing found.</td>
+<td>Something that makes him ill.</td>
+</tr>
+<tr>
+<td>Watch</td>
+<td><strong>Spot</strong>: See an ambush, a man hiding, a trap or a thing out of place.</td>
+<td>Ordinary</td>
+<td>whoever is hiding (Stealth)</td>
+<td>Seen.</td>
+<td>Missed.</td>
+<td>Sure there is nothing there.</td>
+</tr>
+<tr>
+<td>Watch</td>
+<td><strong>Search</strong>: Search a house, a body or a baggage wagon.</td>
+<td>Easy</td>
+<td>—</td>
+<td>Found what there is.</td>
+<td>Missed it.</td>
+<td>Missed it and left traces.</td>
+</tr>
+<tr>
+<td>Stealth</td>
+<td><strong>Sneak</strong>: Get past sentries, into a camp or away from one.</td>
+<td>Ordinary</td>
+<td>the sentries (Watch)</td>
+<td>Unseen.</td>
+<td>Seen, but not yet caught.</td>
+<td>Walks into them.</td>
+</tr>
+<tr>
+<td>Stealth</td>
+<td><strong>Steal</strong>: Lift a purse, a horse or rations unseen.</td>
+<td>Hard</td>
+<td>the owner or the guard (Watch)</td>
+<td>Taken.</td>
+<td>Not taken.</td>
+<td>Caught in the act: the provost.</td>
+</tr>
+<tr>
+<td>Leechcraft</td>
+<td><strong>Diagnose</strong>: Tell what a sick man has, and whether it will spread.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Named: the GM tells which sickness.</td>
+<td>Unsure.</td>
+<td>Wrong.</td>
+</tr>
+<tr>
+<td>Strength</td>
+<td><strong>Force or carry</strong>: Force a door, lift a beam, carry a wounded man.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Done.</td>
+<td>Not alone.</td>
+<td>Strained: a step of fatigue.</td>
+</tr>
+<tr>
+<td>Agility</td>
+<td><strong>Climb or jump</strong>: Climb a wall, jump a ditch, keep his feet on ice.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Over.</td>
+<td>Not this way.</td>
+<td>Falls: roll a fall as a wound.</td>
+</tr>
+<tr>
+<td>Endurance</td>
+<td><strong>Endure</strong>: Keep going: swim, go without sleep, hold out in the cold.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Holds out.</td>
+<td>A step of fatigue.</td>
+<td>Collapses, or goes under.</td>
+</tr>
+<tr>
+<td>Wits</td>
+<td><strong>Notice or remember</strong>: Recall a face, a road or a password; work something out.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Yes.</td>
+<td>No.</td>
+<td>Remembers it wrong.</td>
+</tr>
+<tr>
+<td>Nerve</td>
+<td><strong>Keep his head</strong>: Stay calm out of a fight: under shelling in a dugout, at a hanging, before an officer.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Steady.</td>
+<td>Shaken: −10 to his next check.</td>
+<td>Breaks: runs, freezes or lashes out.</td>
+</tr>
+<tr>
+<td>Presence</td>
+<td><strong>Impress</strong>: Stare a man down, make a first impression, be remembered.</td>
+<td>Ordinary</td>
+<td>the other man (Presence)</td>
+<td>He gives way.</td>
+<td>No effect.</td>
+<td>Made an enemy.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-skill_uses-horse_musket">Horse and musket (1775-1815)</h3>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Use</th>
+<th>Usually</th>
+<th>Against</th>
+<th>Success</th>
+<th>Failure</th>
+<th>Fumble</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Persuade</td>
+<td><strong>Haggle</strong>: Beat down a price.</td>
+<td>Ordinary</td>
+<td>the seller (Persuade)</td>
+<td>A tenth off (a quarter on a critical).</td>
+<td>The list price.</td>
+<td>No sale today.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Find a billet</strong>: Talk a village or a householder into a bed and a meal.</td>
+<td>Ordinary</td>
+<td>the householder or headman (Presence)</td>
+<td>Fed and bedded tonight: no keep to pay.</td>
+<td>He pays his keep, or sleeps rough.</td>
+<td>The village turns against the party: trouble.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Talk past a guard</strong>: Get by a sentry, a gate or the provost without the right papers.</td>
+<td>Hard</td>
+<td>the sentry or provost (Wits)</td>
+<td>Through.</td>
+<td>Turned back.</td>
+<td>Held as a deserter or a spy.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Question a prisoner</strong>: Get a prisoner or a local to talk.</td>
+<td>Ordinary</td>
+<td>the prisoner (Nerve)</td>
+<td>He tells what he knows (the GM decides how much is true).</td>
+<td>Nothing.</td>
+<td>He lies, and is believed.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><strong>Drive a hard task</strong>: Get men to do something hard and tiring: dig all night, march on after dark, cross a river.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Done.</td>
+<td>Done slowly, or only half.</td>
+<td>They refuse.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><strong>Keep order</strong>: Stop plunder, drinking or a mutinous mood.</td>
+<td>Hard</td>
+<td>—</td>
+<td>They obey.</td>
+<td>Some slip away to it.</td>
+<td>They turn on him.</td>
+</tr>
+<tr>
+<td>Letters</td>
+<td><strong>Read or write</strong>: Read an order, a letter or a map's names; write a report.</td>
+<td>Easy</td>
+<td>—</td>
+<td>Read or written.</td>
+<td>Slowly, or with mistakes.</td>
+<td>He gets it wrong and does not know it.</td>
+</tr>
+<tr>
+<td>Letters</td>
+<td><strong>Forge a pass</strong>: Make a pass, an order or a billeting ticket that will be believed.</td>
+<td>Hard</td>
+<td>whoever checks it (Watch)</td>
+<td>It passes.</td>
+<td>Doubted: Talk past a guard instead.</td>
+<td>Seen through: held as a deserter or a spy.</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td><strong>Mend kit</strong>: Mend a weapon, harness, boots, a cart or a radio set; a day's work.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Mended.</td>
+<td>Not yet: another day.</td>
+<td>Ruined.</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td><strong>Make something</strong>: Make ladders, a raft, a shelter, snowshoes or a litter from what is to hand.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Made.</td>
+<td>Takes twice as long.</td>
+<td>It fails when it is used.</td>
+</tr>
+<tr>
+<td>Ride</td>
+<td><strong>Ride hard</strong>: Outride a pursuer, or catch a man who rides away.</td>
+<td>Ordinary</td>
+<td>the pursuer or the pursued (Ride)</td>
+<td>Away, or caught.</td>
+<td>Still close.</td>
+<td>Thrown: roll a fall as a wound.</td>
+</tr>
+<tr>
+<td>Ride</td>
+<td><strong>Swim a horse</strong>: Cross a deep ford or swim a river mounted.</td>
+<td>Hard</td>
+<td>—</td>
+<td>Across.</td>
+<td>Turned back.</td>
+<td>Swept away: Endurance check or drowned.</td>
+</tr>
+<tr>
+<td>Seamanship</td>
+<td><strong>Handle a boat</strong>: Take a boat across a river or along a coast; in rough water, hard.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Across.</td>
+<td>Driven back.</td>
+<td>Swamped: Endurance check or drowned.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Track</strong>: Follow men or animals.</td>
+<td>Ordinary</td>
+<td>the men being followed (Stealth)</td>
+<td>On their trail.</td>
+<td>Lost it.</td>
+<td>On the wrong trail.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Find the way</strong>: Cross country without roads or a guide; at night, hard.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>On the way.</td>
+<td>Half a day lost.</td>
+<td>Lost: a day, or into the enemy.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Hunt or gather</strong>: Find food or water for himself in the country.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Fed today: no keep to pay.</td>
+<td>Nothing found.</td>
+<td>Something that makes him ill.</td>
+</tr>
+<tr>
+<td>Watch</td>
+<td><strong>Spot</strong>: See an ambush, a man hiding, a trap or a thing out of place.</td>
+<td>Ordinary</td>
+<td>whoever is hiding (Stealth)</td>
+<td>Seen.</td>
+<td>Missed.</td>
+<td>Sure there is nothing there.</td>
+</tr>
+<tr>
+<td>Watch</td>
+<td><strong>Search</strong>: Search a house, a body or a baggage wagon.</td>
+<td>Easy</td>
+<td>—</td>
+<td>Found what there is.</td>
+<td>Missed it.</td>
+<td>Missed it and left traces.</td>
+</tr>
+<tr>
+<td>Stealth</td>
+<td><strong>Sneak</strong>: Get past sentries, into a camp or away from one.</td>
+<td>Ordinary</td>
+<td>the sentries (Watch)</td>
+<td>Unseen.</td>
+<td>Seen, but not yet caught.</td>
+<td>Walks into them.</td>
+</tr>
+<tr>
+<td>Stealth</td>
+<td><strong>Steal</strong>: Lift a purse, a horse or rations unseen.</td>
+<td>Hard</td>
+<td>the owner or the guard (Watch)</td>
+<td>Taken.</td>
+<td>Not taken.</td>
+<td>Caught in the act: the provost.</td>
+</tr>
+<tr>
+<td>Leechcraft</td>
+<td><strong>Diagnose</strong>: Tell what a sick man has, and whether it will spread.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Named: the GM tells which sickness.</td>
+<td>Unsure.</td>
+<td>Wrong.</td>
+</tr>
+<tr>
+<td>Strength</td>
+<td><strong>Force or carry</strong>: Force a door, lift a beam, carry a wounded man.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Done.</td>
+<td>Not alone.</td>
+<td>Strained: a step of fatigue.</td>
+</tr>
+<tr>
+<td>Agility</td>
+<td><strong>Climb or jump</strong>: Climb a wall, jump a ditch, keep his feet on ice.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Over.</td>
+<td>Not this way.</td>
+<td>Falls: roll a fall as a wound.</td>
+</tr>
+<tr>
+<td>Endurance</td>
+<td><strong>Endure</strong>: Keep going: swim, go without sleep, hold out in the cold.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Holds out.</td>
+<td>A step of fatigue.</td>
+<td>Collapses, or goes under.</td>
+</tr>
+<tr>
+<td>Wits</td>
+<td><strong>Notice or remember</strong>: Recall a face, a road or a password; work something out.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Yes.</td>
+<td>No.</td>
+<td>Remembers it wrong.</td>
+</tr>
+<tr>
+<td>Nerve</td>
+<td><strong>Keep his head</strong>: Stay calm out of a fight: under shelling in a dugout, at a hanging, before an officer.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Steady.</td>
+<td>Shaken: −10 to his next check.</td>
+<td>Breaks: runs, freezes or lashes out.</td>
+</tr>
+<tr>
+<td>Presence</td>
+<td><strong>Impress</strong>: Stare a man down, make a first impression, be remembered.</td>
+<td>Ordinary</td>
+<td>the other man (Presence)</td>
+<td>He gives way.</td>
+<td>No effect.</td>
+<td>Made an enemy.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-skill_uses-crimea">Crimean War (1854-1856)</h3>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Use</th>
+<th>Usually</th>
+<th>Against</th>
+<th>Success</th>
+<th>Failure</th>
+<th>Fumble</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Persuade</td>
+<td><strong>Haggle</strong>: Beat down a price.</td>
+<td>Ordinary</td>
+<td>the seller (Persuade)</td>
+<td>A tenth off (a quarter on a critical).</td>
+<td>The list price.</td>
+<td>No sale today.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Find a billet</strong>: Talk a village or a householder into a bed and a meal.</td>
+<td>Ordinary</td>
+<td>the householder or headman (Presence)</td>
+<td>Fed and bedded tonight: no keep to pay.</td>
+<td>He pays his keep, or sleeps rough.</td>
+<td>The village turns against the party: trouble.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Talk past a guard</strong>: Get by a sentry, a gate or the provost without the right papers.</td>
+<td>Hard</td>
+<td>the sentry or provost (Wits)</td>
+<td>Through.</td>
+<td>Turned back.</td>
+<td>Held as a deserter or a spy.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Question a prisoner</strong>: Get a prisoner or a local to talk.</td>
+<td>Ordinary</td>
+<td>the prisoner (Nerve)</td>
+<td>He tells what he knows (the GM decides how much is true).</td>
+<td>Nothing.</td>
+<td>He lies, and is believed.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><strong>Drive a hard task</strong>: Get men to do something hard and tiring: dig all night, march on after dark, cross a river.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Done.</td>
+<td>Done slowly, or only half.</td>
+<td>They refuse.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><strong>Keep order</strong>: Stop plunder, drinking or a mutinous mood.</td>
+<td>Hard</td>
+<td>—</td>
+<td>They obey.</td>
+<td>Some slip away to it.</td>
+<td>They turn on him.</td>
+</tr>
+<tr>
+<td>Letters</td>
+<td><strong>Read or write</strong>: Read an order, a letter or a map's names; write a report.</td>
+<td>Easy</td>
+<td>—</td>
+<td>Read or written.</td>
+<td>Slowly, or with mistakes.</td>
+<td>He gets it wrong and does not know it.</td>
+</tr>
+<tr>
+<td>Letters</td>
+<td><strong>Forge a pass</strong>: Make a pass, an order or a billeting ticket that will be believed.</td>
+<td>Hard</td>
+<td>whoever checks it (Watch)</td>
+<td>It passes.</td>
+<td>Doubted: Talk past a guard instead.</td>
+<td>Seen through: held as a deserter or a spy.</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td><strong>Mend kit</strong>: Mend a weapon, harness, boots, a cart or a radio set; a day's work.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Mended.</td>
+<td>Not yet: another day.</td>
+<td>Ruined.</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td><strong>Make something</strong>: Make ladders, a raft, a shelter, snowshoes or a litter from what is to hand.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Made.</td>
+<td>Takes twice as long.</td>
+<td>It fails when it is used.</td>
+</tr>
+<tr>
+<td>Ride</td>
+<td><strong>Ride hard</strong>: Outride a pursuer, or catch a man who rides away.</td>
+<td>Ordinary</td>
+<td>the pursuer or the pursued (Ride)</td>
+<td>Away, or caught.</td>
+<td>Still close.</td>
+<td>Thrown: roll a fall as a wound.</td>
+</tr>
+<tr>
+<td>Ride</td>
+<td><strong>Swim a horse</strong>: Cross a deep ford or swim a river mounted.</td>
+<td>Hard</td>
+<td>—</td>
+<td>Across.</td>
+<td>Turned back.</td>
+<td>Swept away: Endurance check or drowned.</td>
+</tr>
+<tr>
+<td>Seamanship</td>
+<td><strong>Handle a boat</strong>: Take a boat across a river or along a coast; in rough water, hard.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Across.</td>
+<td>Driven back.</td>
+<td>Swamped: Endurance check or drowned.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Track</strong>: Follow men or animals.</td>
+<td>Ordinary</td>
+<td>the men being followed (Stealth)</td>
+<td>On their trail.</td>
+<td>Lost it.</td>
+<td>On the wrong trail.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Find the way</strong>: Cross country without roads or a guide; at night, hard.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>On the way.</td>
+<td>Half a day lost.</td>
+<td>Lost: a day, or into the enemy.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Hunt or gather</strong>: Find food or water for himself in the country.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Fed today: no keep to pay.</td>
+<td>Nothing found.</td>
+<td>Something that makes him ill.</td>
+</tr>
+<tr>
+<td>Watch</td>
+<td><strong>Spot</strong>: See an ambush, a man hiding, a trap or a thing out of place.</td>
+<td>Ordinary</td>
+<td>whoever is hiding (Stealth)</td>
+<td>Seen.</td>
+<td>Missed.</td>
+<td>Sure there is nothing there.</td>
+</tr>
+<tr>
+<td>Watch</td>
+<td><strong>Search</strong>: Search a house, a body or a baggage wagon.</td>
+<td>Easy</td>
+<td>—</td>
+<td>Found what there is.</td>
+<td>Missed it.</td>
+<td>Missed it and left traces.</td>
+</tr>
+<tr>
+<td>Stealth</td>
+<td><strong>Sneak</strong>: Get past sentries, into a camp or away from one.</td>
+<td>Ordinary</td>
+<td>the sentries (Watch)</td>
+<td>Unseen.</td>
+<td>Seen, but not yet caught.</td>
+<td>Walks into them.</td>
+</tr>
+<tr>
+<td>Stealth</td>
+<td><strong>Steal</strong>: Lift a purse, a horse or rations unseen.</td>
+<td>Hard</td>
+<td>the owner or the guard (Watch)</td>
+<td>Taken.</td>
+<td>Not taken.</td>
+<td>Caught in the act: the provost.</td>
+</tr>
+<tr>
+<td>Leechcraft</td>
+<td><strong>Diagnose</strong>: Tell what a sick man has, and whether it will spread.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Named: the GM tells which sickness.</td>
+<td>Unsure.</td>
+<td>Wrong.</td>
+</tr>
+<tr>
+<td>Strength</td>
+<td><strong>Force or carry</strong>: Force a door, lift a beam, carry a wounded man.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Done.</td>
+<td>Not alone.</td>
+<td>Strained: a step of fatigue.</td>
+</tr>
+<tr>
+<td>Agility</td>
+<td><strong>Climb or jump</strong>: Climb a wall, jump a ditch, keep his feet on ice.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Over.</td>
+<td>Not this way.</td>
+<td>Falls: roll a fall as a wound.</td>
+</tr>
+<tr>
+<td>Endurance</td>
+<td><strong>Endure</strong>: Keep going: swim, go without sleep, hold out in the cold.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Holds out.</td>
+<td>A step of fatigue.</td>
+<td>Collapses, or goes under.</td>
+</tr>
+<tr>
+<td>Wits</td>
+<td><strong>Notice or remember</strong>: Recall a face, a road or a password; work something out.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Yes.</td>
+<td>No.</td>
+<td>Remembers it wrong.</td>
+</tr>
+<tr>
+<td>Nerve</td>
+<td><strong>Keep his head</strong>: Stay calm out of a fight: under shelling in a dugout, at a hanging, before an officer.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Steady.</td>
+<td>Shaken: −10 to his next check.</td>
+<td>Breaks: runs, freezes or lashes out.</td>
+</tr>
+<tr>
+<td>Presence</td>
+<td><strong>Impress</strong>: Stare a man down, make a first impression, be remembered.</td>
+<td>Ordinary</td>
+<td>the other man (Presence)</td>
+<td>He gives way.</td>
+<td>No effect.</td>
+<td>Made an enemy.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-skill_uses-civil_war">Civil War and frontier (1861-1876)</h3>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Use</th>
+<th>Usually</th>
+<th>Against</th>
+<th>Success</th>
+<th>Failure</th>
+<th>Fumble</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Persuade</td>
+<td><strong>Haggle</strong>: Beat down a price.</td>
+<td>Ordinary</td>
+<td>the seller (Persuade)</td>
+<td>A tenth off (a quarter on a critical).</td>
+<td>The list price.</td>
+<td>No sale today.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Find a billet</strong>: Talk a village or a householder into a bed and a meal.</td>
+<td>Ordinary</td>
+<td>the householder or headman (Presence)</td>
+<td>Fed and bedded tonight: no keep to pay.</td>
+<td>He pays his keep, or sleeps rough.</td>
+<td>The village turns against the party: trouble.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Talk past a guard</strong>: Get by a sentry, a gate or the provost without the right papers.</td>
+<td>Hard</td>
+<td>the sentry or provost (Wits)</td>
+<td>Through.</td>
+<td>Turned back.</td>
+<td>Held as a deserter or a spy.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Question a prisoner</strong>: Get a prisoner or a local to talk.</td>
+<td>Ordinary</td>
+<td>the prisoner (Nerve)</td>
+<td>He tells what he knows (the GM decides how much is true).</td>
+<td>Nothing.</td>
+<td>He lies, and is believed.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><strong>Drive a hard task</strong>: Get men to do something hard and tiring: dig all night, march on after dark, cross a river.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Done.</td>
+<td>Done slowly, or only half.</td>
+<td>They refuse.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><strong>Keep order</strong>: Stop plunder, drinking or a mutinous mood.</td>
+<td>Hard</td>
+<td>—</td>
+<td>They obey.</td>
+<td>Some slip away to it.</td>
+<td>They turn on him.</td>
+</tr>
+<tr>
+<td>Letters</td>
+<td><strong>Read or write</strong>: Read an order, a letter or a map's names; write a report.</td>
+<td>Easy</td>
+<td>—</td>
+<td>Read or written.</td>
+<td>Slowly, or with mistakes.</td>
+<td>He gets it wrong and does not know it.</td>
+</tr>
+<tr>
+<td>Letters</td>
+<td><strong>Forge a pass</strong>: Make a pass, an order or a billeting ticket that will be believed.</td>
+<td>Hard</td>
+<td>whoever checks it (Watch)</td>
+<td>It passes.</td>
+<td>Doubted: Talk past a guard instead.</td>
+<td>Seen through: held as a deserter or a spy.</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td><strong>Mend kit</strong>: Mend a weapon, harness, boots, a cart or a radio set; a day's work.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Mended.</td>
+<td>Not yet: another day.</td>
+<td>Ruined.</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td><strong>Make something</strong>: Make ladders, a raft, a shelter, snowshoes or a litter from what is to hand.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Made.</td>
+<td>Takes twice as long.</td>
+<td>It fails when it is used.</td>
+</tr>
+<tr>
+<td>Ride</td>
+<td><strong>Ride hard</strong>: Outride a pursuer, or catch a man who rides away.</td>
+<td>Ordinary</td>
+<td>the pursuer or the pursued (Ride)</td>
+<td>Away, or caught.</td>
+<td>Still close.</td>
+<td>Thrown: roll a fall as a wound.</td>
+</tr>
+<tr>
+<td>Ride</td>
+<td><strong>Swim a horse</strong>: Cross a deep ford or swim a river mounted.</td>
+<td>Hard</td>
+<td>—</td>
+<td>Across.</td>
+<td>Turned back.</td>
+<td>Swept away: Endurance check or drowned.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Track</strong>: Follow men or animals.</td>
+<td>Ordinary</td>
+<td>the men being followed (Stealth)</td>
+<td>On their trail.</td>
+<td>Lost it.</td>
+<td>On the wrong trail.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Find the way</strong>: Cross country without roads or a guide; at night, hard.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>On the way.</td>
+<td>Half a day lost.</td>
+<td>Lost: a day, or into the enemy.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Hunt or gather</strong>: Find food or water for himself in the country.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Fed today: no keep to pay.</td>
+<td>Nothing found.</td>
+<td>Something that makes him ill.</td>
+</tr>
+<tr>
+<td>Watch</td>
+<td><strong>Spot</strong>: See an ambush, a man hiding, a trap or a thing out of place.</td>
+<td>Ordinary</td>
+<td>whoever is hiding (Stealth)</td>
+<td>Seen.</td>
+<td>Missed.</td>
+<td>Sure there is nothing there.</td>
+</tr>
+<tr>
+<td>Watch</td>
+<td><strong>Search</strong>: Search a house, a body or a baggage wagon.</td>
+<td>Easy</td>
+<td>—</td>
+<td>Found what there is.</td>
+<td>Missed it.</td>
+<td>Missed it and left traces.</td>
+</tr>
+<tr>
+<td>Stealth</td>
+<td><strong>Sneak</strong>: Get past sentries, into a camp or away from one.</td>
+<td>Ordinary</td>
+<td>the sentries (Watch)</td>
+<td>Unseen.</td>
+<td>Seen, but not yet caught.</td>
+<td>Walks into them.</td>
+</tr>
+<tr>
+<td>Stealth</td>
+<td><strong>Steal</strong>: Lift a purse, a horse or rations unseen.</td>
+<td>Hard</td>
+<td>the owner or the guard (Watch)</td>
+<td>Taken.</td>
+<td>Not taken.</td>
+<td>Caught in the act: the provost.</td>
+</tr>
+<tr>
+<td>Leechcraft</td>
+<td><strong>Diagnose</strong>: Tell what a sick man has, and whether it will spread.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Named: the GM tells which sickness.</td>
+<td>Unsure.</td>
+<td>Wrong.</td>
+</tr>
+<tr>
+<td>Strength</td>
+<td><strong>Force or carry</strong>: Force a door, lift a beam, carry a wounded man.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Done.</td>
+<td>Not alone.</td>
+<td>Strained: a step of fatigue.</td>
+</tr>
+<tr>
+<td>Agility</td>
+<td><strong>Climb or jump</strong>: Climb a wall, jump a ditch, keep his feet on ice.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Over.</td>
+<td>Not this way.</td>
+<td>Falls: roll a fall as a wound.</td>
+</tr>
+<tr>
+<td>Endurance</td>
+<td><strong>Endure</strong>: Keep going: swim, go without sleep, hold out in the cold.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Holds out.</td>
+<td>A step of fatigue.</td>
+<td>Collapses, or goes under.</td>
+</tr>
+<tr>
+<td>Wits</td>
+<td><strong>Notice or remember</strong>: Recall a face, a road or a password; work something out.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Yes.</td>
+<td>No.</td>
+<td>Remembers it wrong.</td>
+</tr>
+<tr>
+<td>Nerve</td>
+<td><strong>Keep his head</strong>: Stay calm out of a fight: under shelling in a dugout, at a hanging, before an officer.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Steady.</td>
+<td>Shaken: −10 to his next check.</td>
+<td>Breaks: runs, freezes or lashes out.</td>
+</tr>
+<tr>
+<td>Presence</td>
+<td><strong>Impress</strong>: Stare a man down, make a first impression, be remembered.</td>
+<td>Ordinary</td>
+<td>the other man (Presence)</td>
+<td>He gives way.</td>
+<td>No effect.</td>
+<td>Made an enemy.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-skill_uses-plains_nations">Plains nations (1860-1877)</h3>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Use</th>
+<th>Usually</th>
+<th>Against</th>
+<th>Success</th>
+<th>Failure</th>
+<th>Fumble</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Persuade</td>
+<td><strong>Haggle</strong>: Beat down a price.</td>
+<td>Ordinary</td>
+<td>the seller (Persuade)</td>
+<td>A tenth off (a quarter on a critical).</td>
+<td>The list price.</td>
+<td>No sale today.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Find a billet</strong>: Talk a village or a householder into a bed and a meal.</td>
+<td>Ordinary</td>
+<td>the householder or headman (Presence)</td>
+<td>Fed and bedded tonight: no keep to pay.</td>
+<td>He pays his keep, or sleeps rough.</td>
+<td>The village turns against the party: trouble.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Talk past a guard</strong>: Get by a sentry, a gate or the provost without the right papers.</td>
+<td>Hard</td>
+<td>the sentry or provost (Wits)</td>
+<td>Through.</td>
+<td>Turned back.</td>
+<td>Held as a deserter or a spy.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Question a prisoner</strong>: Get a prisoner or a local to talk.</td>
+<td>Ordinary</td>
+<td>the prisoner (Nerve)</td>
+<td>He tells what he knows (the GM decides how much is true).</td>
+<td>Nothing.</td>
+<td>He lies, and is believed.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><strong>Drive a hard task</strong>: Get men to do something hard and tiring: dig all night, march on after dark, cross a river.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Done.</td>
+<td>Done slowly, or only half.</td>
+<td>They refuse.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><strong>Keep order</strong>: Stop plunder, drinking or a mutinous mood.</td>
+<td>Hard</td>
+<td>—</td>
+<td>They obey.</td>
+<td>Some slip away to it.</td>
+<td>They turn on him.</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td><strong>Mend kit</strong>: Mend a weapon, harness, boots, a cart or a radio set; a day's work.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Mended.</td>
+<td>Not yet: another day.</td>
+<td>Ruined.</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td><strong>Make something</strong>: Make ladders, a raft, a shelter, snowshoes or a litter from what is to hand.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Made.</td>
+<td>Takes twice as long.</td>
+<td>It fails when it is used.</td>
+</tr>
+<tr>
+<td>Ride</td>
+<td><strong>Ride hard</strong>: Outride a pursuer, or catch a man who rides away.</td>
+<td>Ordinary</td>
+<td>the pursuer or the pursued (Ride)</td>
+<td>Away, or caught.</td>
+<td>Still close.</td>
+<td>Thrown: roll a fall as a wound.</td>
+</tr>
+<tr>
+<td>Ride</td>
+<td><strong>Swim a horse</strong>: Cross a deep ford or swim a river mounted.</td>
+<td>Hard</td>
+<td>—</td>
+<td>Across.</td>
+<td>Turned back.</td>
+<td>Swept away: Endurance check or drowned.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Track</strong>: Follow men or animals.</td>
+<td>Ordinary</td>
+<td>the men being followed (Stealth)</td>
+<td>On their trail.</td>
+<td>Lost it.</td>
+<td>On the wrong trail.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Find the way</strong>: Cross country without roads or a guide; at night, hard.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>On the way.</td>
+<td>Half a day lost.</td>
+<td>Lost: a day, or into the enemy.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Hunt or gather</strong>: Find food or water for himself in the country.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Fed today: no keep to pay.</td>
+<td>Nothing found.</td>
+<td>Something that makes him ill.</td>
+</tr>
+<tr>
+<td>Watch</td>
+<td><strong>Spot</strong>: See an ambush, a man hiding, a trap or a thing out of place.</td>
+<td>Ordinary</td>
+<td>whoever is hiding (Stealth)</td>
+<td>Seen.</td>
+<td>Missed.</td>
+<td>Sure there is nothing there.</td>
+</tr>
+<tr>
+<td>Watch</td>
+<td><strong>Search</strong>: Search a house, a body or a baggage wagon.</td>
+<td>Easy</td>
+<td>—</td>
+<td>Found what there is.</td>
+<td>Missed it.</td>
+<td>Missed it and left traces.</td>
+</tr>
+<tr>
+<td>Stealth</td>
+<td><strong>Sneak</strong>: Get past sentries, into a camp or away from one.</td>
+<td>Ordinary</td>
+<td>the sentries (Watch)</td>
+<td>Unseen.</td>
+<td>Seen, but not yet caught.</td>
+<td>Walks into them.</td>
+</tr>
+<tr>
+<td>Stealth</td>
+<td><strong>Steal</strong>: Lift a purse, a horse or rations unseen.</td>
+<td>Hard</td>
+<td>the owner or the guard (Watch)</td>
+<td>Taken.</td>
+<td>Not taken.</td>
+<td>Caught in the act: the provost.</td>
+</tr>
+<tr>
+<td>Leechcraft</td>
+<td><strong>Diagnose</strong>: Tell what a sick man has, and whether it will spread.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Named: the GM tells which sickness.</td>
+<td>Unsure.</td>
+<td>Wrong.</td>
+</tr>
+<tr>
+<td>Strength</td>
+<td><strong>Force or carry</strong>: Force a door, lift a beam, carry a wounded man.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Done.</td>
+<td>Not alone.</td>
+<td>Strained: a step of fatigue.</td>
+</tr>
+<tr>
+<td>Agility</td>
+<td><strong>Climb or jump</strong>: Climb a wall, jump a ditch, keep his feet on ice.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Over.</td>
+<td>Not this way.</td>
+<td>Falls: roll a fall as a wound.</td>
+</tr>
+<tr>
+<td>Endurance</td>
+<td><strong>Endure</strong>: Keep going: swim, go without sleep, hold out in the cold.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Holds out.</td>
+<td>A step of fatigue.</td>
+<td>Collapses, or goes under.</td>
+</tr>
+<tr>
+<td>Wits</td>
+<td><strong>Notice or remember</strong>: Recall a face, a road or a password; work something out.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Yes.</td>
+<td>No.</td>
+<td>Remembers it wrong.</td>
+</tr>
+<tr>
+<td>Nerve</td>
+<td><strong>Keep his head</strong>: Stay calm out of a fight: under shelling in a dugout, at a hanging, before an officer.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Steady.</td>
+<td>Shaken: −10 to his next check.</td>
+<td>Breaks: runs, freezes or lashes out.</td>
+</tr>
+<tr>
+<td>Presence</td>
+<td><strong>Impress</strong>: Stare a man down, make a first impression, be remembered.</td>
+<td>Ordinary</td>
+<td>the other man (Presence)</td>
+<td>He gives way.</td>
+<td>No effect.</td>
+<td>Made an enemy.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-tongue_armies">Each army's tongues</h2>
+<p>For the Rules' <a href="rules.html#tongues">Tongues</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Army</th>
+<th>His own tongue (d100)</th>
+<th>Others he may have: chance (figure)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The Swedish army (Swedes, Finns, Scots and Germans)</td>
+<td>German 40%, Swedish 30%, Scots 15%, Finnish 15%</td>
+<td>German 50% (20-60), Swedish 10% (10-40)</td>
+</tr>
+<tr>
+<td>The Imperial army and the Catholic League</td>
+<td>German 70%, Croatian 10%, Italian 10%, Czech 5%, Spanish 5%</td>
+<td>German 40% (20-60), Italian 5% (10-40)</td>
+</tr>
+<tr>
+<td>The Continental Army (1775-1783)</td>
+<td>English 85%, German 10%, French 5%</td>
+<td>English 60% (20-60), French 5% (10-40), German 5% (10-40)</td>
+</tr>
+<tr>
+<td>The British Army in America (1775-1783)</td>
+<td>English 70%, German 25%, Irish 5%</td>
+<td>English 40% (10-40)</td>
+</tr>
+<tr>
+<td>The British in the Peninsula (1808-1814)</td>
+<td>English 75%, Irish 15%, German 10%</td>
+<td>English 50% (10-50), Spanish 20% (5-35), Portuguese 10% (5-35), French 5% (10-50)</td>
+</tr>
+<tr>
+<td>The French Empire in Spain (1808-1814)</td>
+<td>French 85%, German 8%, Italian 4%, Polish 3%</td>
+<td>French 60% (20-60), Spanish 20% (5-35)</td>
+</tr>
+<tr>
+<td>The United States (1812-1815)</td>
+<td>English 90%, German 5%, French 5%</td>
+<td>English 60% (20-60), French 5% (10-40)</td>
+</tr>
+<tr>
+<td>The British Army in the Crimea</td>
+<td>English 90%, Irish 10%</td>
+<td>English 60% (20-60), French 5% (10-50), Turkish 5% (5-25)</td>
+</tr>
+<tr>
+<td>The French Army of the East</td>
+<td>French 95%, Arabic 5%</td>
+<td>French 60% (20-60), Arabic 5% (10-40)</td>
+</tr>
+<tr>
+<td>The Russian Army at Sevastopol</td>
+<td>Russian 80%, Ukrainian 15%, Polish 5%</td>
+<td>Russian 60% (20-60), Crimean Tatar 5% (10-40), French 3% (20-60)</td>
+</tr>
+<tr>
+<td>The Union (1861-1865)</td>
+<td>English 85%, German 12%, French 3%</td>
+<td>English 60% (20-60), German 10% (10-40)</td>
+</tr>
+<tr>
+<td>The Confederacy (1861-1865)</td>
+<td>English 95%, French 5%</td>
+<td>English 70% (30-70), French 3% (10-40)</td>
+</tr>
+<tr>
+<td>The US Army on the frontier (1866-1876)</td>
+<td>English 80%, German 15%, Irish 5%</td>
+<td>English 60% (20-60), Plains sign language 10% (10-30), Lakota 5% (5-30)</td>
+</tr>
+<tr>
+<td>The Lakota (Oglala, Minneconjou and other bands)</td>
+<td>Lakota 100%</td>
+<td>Plains sign language 80% (25-60), Cheyenne 10% (10-40), English 5% (5-25)</td>
+</tr>
+<tr>
+<td>The Cheyenne and Arapaho</td>
+<td>Cheyenne 85%, Arapaho 15%</td>
+<td>Plains sign language 80% (25-60), Lakota 15% (10-40), Arapaho 10% (10-40), English 5% (5-25)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-courses">Training courses</h2>
+<p>For the Rules' <a href="rules.html#experience">Experience</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Course</th>
+<th>Eras</th>
+<th>Away</th>
+<th>Gains</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A year as an apprentice</td>
+<td>Medieval, Thirty Years' War, Horse and musket, Crimean War, Civil War and frontier</td>
+<td>52 weeks</td>
+<td>craft +10, letters +2</td>
+</tr>
+<tr>
+<td>Royal Military College, Sandhurst (about 18 months)</td>
+<td>Horse and musket, Crimean War</td>
+<td>78 weeks</td>
+<td>command +10, letters +5, gunnery +3; opens ensign</td>
+</tr>
+<tr>
+<td>A camp of instruction (about two weeks of drill)</td>
+<td>Civil War and frontier</td>
+<td>2 weeks</td>
+<td>rifle +5, bayonet +3</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-patron_fate">What becomes of a patron</h2>
+<p>For the Rules' <a href="rules.html#patrons">Patrons</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Era</th>
+<th>d100</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Thirty Years' War (1618-1648)</td>
+<td>4% dies, 2% falls from favour, 3% changes sides, 4% disbands his regiment</td>
+</tr>
+<tr>
+<td>Horse and musket (1775-1815)</td>
+<td>3% dies, 1% falls from favour, 4% sells out or is posted</td>
+</tr>
+<tr>
+<td>Crimean War (1854-1856)</td>
+<td>5% dies, 1% falls from favour, 3% sells out or goes home</td>
+</tr>
+<tr>
+<td>Civil War and frontier (1861-1876)</td>
+<td>4% dies, 6% is dismissed by the examining board or resigns, 4% is promoted away</td>
+</tr>
+<tr>
+<td>Plains nations (1860-1877)</td>
+<td>3% dies, 3% loses his following</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-prisoners">Prisoners: what captors did</h2>
+<p>For the Rules' <a href="rules.html#prisoners">Prisoners</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Era</th>
+<th>Captors</th>
+<th>Killed at or under</th>
+<th>Stripped at or under</th>
+<th>Released a season</th>
+<th>Dies a season</th>
+<th>Also</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Thirty Years' War</td>
+<td>Taken in the field</td>
+<td>20</td>
+<td>70</td>
+<td>5%</td>
+<td>3%</td>
+<td>ransom, service</td>
+</tr>
+<tr>
+<td>1700-1815</td>
+<td>With a cartel in force (before 1793)</td>
+<td>5</td>
+<td>45</td>
+<td>50%</td>
+<td>1%</td>
+<td>parole</td>
+</tr>
+<tr>
+<td>1700-1815</td>
+<td>Anglo-French war, 1793-1814: depots and hulks</td>
+<td>5</td>
+<td>45</td>
+<td>2%</td>
+<td>1%</td>
+<td>parole, service</td>
+</tr>
+<tr>
+<td>1700-1815</td>
+<td>Cabrera (French prisoners, 1809-14)</td>
+<td>5</td>
+<td>45</td>
+<td>2%</td>
+<td>4%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Crimea</td>
+<td>Taken in the field</td>
+<td>5</td>
+<td>35</td>
+<td>5%</td>
+<td>1%</td>
+<td>parole</td>
+</tr>
+<tr>
+<td>Civil War</td>
+<td>Dix-Hill cartel in force (July 1862 - May 1863)</td>
+<td>5</td>
+<td>50</td>
+<td>90%</td>
+<td>1%</td>
+<td>parole</td>
+</tr>
+<tr>
+<td>Civil War</td>
+<td>No exchanges (mid-1863 to 1864)</td>
+<td>5</td>
+<td>50</td>
+<td>5%</td>
+<td>4%</td>
+<td>parole</td>
+</tr>
+<tr>
+<td>Civil War</td>
+<td>Andersonville or Elmira (1864)</td>
+<td>5</td>
+<td>50</td>
+<td>5%</td>
+<td>15%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Civil War</td>
+<td>Black troops and their officers, 1863-65</td>
+<td>40</td>
+<td>80</td>
+<td>0%</td>
+<td>6%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Civil War</td>
+<td>Exchanges resumed (1865)</td>
+<td>5</td>
+<td>50</td>
+<td>70%</td>
+<td>4%</td>
+<td>parole</td>
+</tr>
+<tr>
+<td>Plains</td>
+<td>Taken by the US Army (held as a hostage or detained)</td>
+<td>10</td>
+<td>30</td>
+<td>10%</td>
+<td>4%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Plains</td>
+<td>A US soldier taken by the Lakota or Cheyenne</td>
+<td>75</td>
+<td>75</td>
+<td>10%</td>
+<td>3%</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-kit_life">How long boots and clothing last</h2>
+<p>For the Rules' <a href="rules.html#kit">Boots and clothing</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Era</th>
+<th>Boots (marching days)</th>
+<th>Clothing (days)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Civil War and frontier</td>
+<td>45</td>
+<td>120</td>
+</tr>
+<tr>
+<td>Crimean War</td>
+<td>60</td>
+<td>180</td>
+</tr>
+<tr>
+<td>Horse and musket</td>
+<td>60</td>
+<td>365</td>
+</tr>
+<tr>
+<td>Plains nations</td>
+<td>4</td>
+<td>90</td>
+</tr>
+<tr>
+<td>Thirty Years' War</td>
+<td>60</td>
+<td>180</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-supplies">Rations and water carried</h2>
+<p>For the Rules' <a href="rules.html#supplies">Supplies</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Era</th>
+<th>Rations carried (days)</th>
+<th>Water carried (L a man)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Civil War and frontier</td>
+<td>3</td>
+<td>1.4</td>
+</tr>
+<tr>
+<td>Crimean War</td>
+<td>3</td>
+<td>1.1</td>
+</tr>
+<tr>
+<td>Horse and musket</td>
+<td>4</td>
+<td>1.4</td>
+</tr>
+<tr>
+<td>Plains nations</td>
+<td>3</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Thirty Years' War</td>
+<td>3</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-women">Women under arms</h2>
+<p>For the Rules' <a href="rules.html#women">Women under arms</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Army</th>
+<th>Share</th>
+<th>Careers open to women</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Thirty Years' War: The Swedish army (Swedes, Finns, Scots and Germans)</td>
+<td>chosen, never rolled</td>
+<td>woman of the baggage train (tross) (100%), sutler or camp follower</td>
+</tr>
+<tr>
+<td>Thirty Years' War: The Imperial army and the Catholic League</td>
+<td>chosen, never rolled</td>
+<td>woman of the baggage train (tross) (100%), sutler or camp follower</td>
+</tr>
+<tr>
+<td>Horse and musket: The Continental Army (1775-1783)</td>
+<td>chosen, never rolled</td>
+<td>soldier's wife on the strength (100%), line infantryman, artilleryman</td>
+</tr>
+<tr>
+<td>Horse and musket: The British Army in America (1775-1783)</td>
+<td>chosen, never rolled</td>
+<td>soldier's wife on the strength (100%)</td>
+</tr>
+<tr>
+<td>Horse and musket: The British in the Peninsula (1808-1814)</td>
+<td>chosen, never rolled</td>
+<td>soldier's wife on the strength (100%)</td>
+</tr>
+<tr>
+<td>Horse and musket: The French Empire in Spain (1808-1814)</td>
+<td>chosen, never rolled</td>
+<td>vivandière or blanchisseuse (100%)</td>
+</tr>
+<tr>
+<td>Crimean War: British</td>
+<td>chosen, never rolled</td>
+<td>nurse at scutari or balaklava (100%)</td>
+</tr>
+<tr>
+<td>Crimean War: French</td>
+<td>chosen, never rolled</td>
+<td>cantinière or canteen-keeper</td>
+</tr>
+<tr>
+<td>Plains nations: The Lakota (Oglala, Minneconjou and other bands)</td>
+<td>chosen, never rolled</td>
+<td>warrior with bow and shield, warrior with a gun</td>
+</tr>
+<tr>
+<td>Plains nations: The Cheyenne and Arapaho</td>
+<td>chosen, never rolled</td>
+<td>warrior with bow and shield, warrior with a gun</td>
+</tr>
+<tr>
+<td>Civil War and frontier: The Union (1861-1865)</td>
+<td>0.02%</td>
+<td>infantryman (disguised as a man), sharpshooter or skirmisher (disguised as a man), cavalry trooper (disguised as a man), artilleryman (disguised as a man), scout (disguised as a man), teamster or packer (disguised as a man), army nurse (100%), vivandière or daughter of the regiment (100%)</td>
+</tr>
+<tr>
+<td>Civil War and frontier: The Confederacy (1861-1865)</td>
+<td>0.03%</td>
+<td>infantryman (disguised as a man), sharpshooter or skirmisher (disguised as a man), cavalry trooper (disguised as a man), artilleryman (disguised as a man), scout (disguised as a man), teamster or packer (disguised as a man)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-money_days">The Day in each army's coin</h2>
+<p>For the Rules' <a href="rules.html#money-days">The Day in each army's coin</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Era</th>
+<th>Army</th>
+<th>Coin</th>
+<th>A Day</th>
+<th>From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Civil War and frontier (1861-1876)</td>
+<td>The Union (1861-1865)</td>
+<td>Dollars and cents (greenbacks)</td>
+<td>43¢</td>
+<td>a Union private's $13 a month (1861-64)</td>
+</tr>
+<tr>
+<td>Civil War and frontier (1861-1876)</td>
+<td>The Confederacy (1861-1865)</td>
+<td>Confederate dollars</td>
+<td>37¢ CS</td>
+<td>a Confederate private's $11 a month (1861; $18 from June 1864), worth a cent a day in gold by 1865</td>
+</tr>
+<tr>
+<td>Civil War and frontier (1861-1876)</td>
+<td>The US Army on the frontier (1866-1876)</td>
+<td>Dollars and cents (greenbacks)</td>
+<td>43¢</td>
+<td>a Union private's $13 a month (1861-64)</td>
+</tr>
+<tr>
+<td>Crimean War (1854-1856)</td>
+<td>The British Army in the Crimea</td>
+<td>Pounds, shillings and pence (sovereign £1)</td>
+<td>1s</td>
+<td>a British private's 1s a day before stoppages</td>
+</tr>
+<tr>
+<td>Crimean War (1854-1856)</td>
+<td>The French Army of the East</td>
+<td>Francs (100 centimes, 20 sous)</td>
+<td>36 c.</td>
+<td>a French private's 3½d a day in English money (c.1857)</td>
+</tr>
+<tr>
+<td>Crimean War (1854-1856)</td>
+<td>The Russian Army at Sevastopol</td>
+<td>Silver rubles (100 kopecks)</td>
+<td>1 kop.</td>
+<td>a Russian private's 2 rubles 85 kopecks a year (1850s); he was fed and clothed in kind</td>
+</tr>
+<tr>
+<td>Horse and musket (1775-1815)</td>
+<td>The Continental Army (1775-1783)</td>
+<td>Dollars in hard money (Continental paper fell to 100 for 1 by 1780)</td>
+<td>20¢</td>
+<td>a Continental private's $6 a month (1776)</td>
+</tr>
+<tr>
+<td>Horse and musket (1775-1815)</td>
+<td>The British Army in America (1775-1783)</td>
+<td>Pounds, shillings and pence (guinea 21s)</td>
+<td>1s</td>
+<td>a British private's 1s a day (1812-15)</td>
+</tr>
+<tr>
+<td>Horse and musket (1775-1815)</td>
+<td>The British in the Peninsula (1808-1814)</td>
+<td>Pounds, shillings and pence (guinea 21s)</td>
+<td>1s</td>
+<td>a British private's 1s a day (1812-15)</td>
+</tr>
+<tr>
+<td>Horse and musket (1775-1815)</td>
+<td>The French Empire in Spain (1808-1814)</td>
+<td>Francs (100 centimes); livres before 1795</td>
+<td>37 c.</td>
+<td>a French private's 3½d a day in English money (reported 1857); no Napoleonic scale confirmed (an estimate)</td>
+</tr>
+<tr>
+<td>Horse and musket (1775-1815)</td>
+<td>The United States (1812-1815)</td>
+<td>Dollars and cents</td>
+<td>27¢</td>
+<td>a US private's $8 a month (1812)</td>
+</tr>
+<tr>
+<td>Plains nations (1860-1877)</td>
+<td>The Lakota (Oglala, Minneconjou and other bands)</td>
+<td>Buffalo robes (a prime robe was worth $3 in goods at the post)</td>
+<td>no Day</td>
+<td>no Day: the Plains nations drew no pay; dressing one robe took a woman about 10 days</td>
+</tr>
+<tr>
+<td>Plains nations (1860-1877)</td>
+<td>The Cheyenne and Arapaho</td>
+<td>Buffalo robes (a prime robe was worth $3 in goods at the post)</td>
+<td>no Day</td>
+<td>no Day: the Plains nations drew no pay; dressing one robe took a woman about 10 days</td>
+</tr>
+<tr>
+<td>Thirty Years' War (1618-1648)</td>
+<td>The Swedish army (Swedes, Finns, Scots and Germans)</td>
+<td>Reichstaler (1½ gulden, 90 kreuzer); the Swedish riksdaler is about the same</td>
+<td>12 kr</td>
+<td>a foot soldier's 4 thalers a month</td>
+</tr>
+<tr>
+<td>Thirty Years' War (1618-1648)</td>
+<td>The Imperial army and the Catholic League</td>
+<td>Reichstaler (1½ gulden, 90 kreuzer); the Swedish riksdaler is about the same</td>
+<td>12 kr</td>
+<td>a foot soldier's 4 thalers a month</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-rank_pay">Pay by rank</h2>
+<p>For the Rules' <a href="rules.html#money-pay">Pay by rank</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Army</th>
+<th>A day's pay by rank, before stoppages</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The Union (1861-1865)</td>
+<td>Private 43¢ · Corporal 43¢ · Sergeant 56¢ · First sergeant 66¢ · Lieutenant $3.48 · Captain $3.83</td>
+</tr>
+<tr>
+<td>The Confederacy (1861-1865)</td>
+<td>Private 37¢ CS · Corporal 44¢ CS · Sergeant 57¢ CS · First sergeant 67¢ CS · Lieutenant $2.70 CS · Captain $4.37 CS</td>
+</tr>
+<tr>
+<td>The US Army on the frontier (1866-1876)</td>
+<td>Private 43¢ · Corporal 43¢ · Sergeant 56¢ · First sergeant 66¢ · Lieutenant $3.48 · Captain $3.83</td>
+</tr>
+<tr>
+<td>The British Army in the Crimea</td>
+<td>Private 1s · Corporal 1s 2¼d · Sergeant 1s 6¾d · Sergeant-major 2s ¾d · Ensign 6s 8½d</td>
+</tr>
+<tr>
+<td>The French Army of the East</td>
+<td>Private 36 c. · Corporal 43 c. · Sergeant 56 c. · Sergeant-major 74 c. · Ensign 2.41 fr</td>
+</tr>
+<tr>
+<td>The Russian Army at Sevastopol</td>
+<td>Private 1 kop. · Corporal 1 kop. · Sergeant 2 kop. · Sergeant-major 2 kop. · Ensign 7 kop.</td>
+</tr>
+<tr>
+<td>The Continental Army (1775-1783)</td>
+<td>Private 20¢ · Corporal 24¢ · Sergeant 31¢ · Sergeant-major 41¢ · Ensign $1.34 · Captain $2.50</td>
+</tr>
+<tr>
+<td>The British Army in America (1775-1783)</td>
+<td>Private 1s · Corporal 1s 2¼d · Sergeant 1s 6¾d · Sergeant-major 2s ¾d · Ensign 6s 8½d · Captain 12s 6d</td>
+</tr>
+<tr>
+<td>The British in the Peninsula (1808-1814)</td>
+<td>Private 1s · Corporal 1s 2¼d · Sergeant 1s 6¾d · Sergeant-major 2s ¾d · Ensign 6s 8½d · Captain 12s 6d</td>
+</tr>
+<tr>
+<td>The French Empire in Spain (1808-1814)</td>
+<td>Private 37 c. · Corporal 44 c. · Sergeant 58 c. · Sergeant-major 76 c. · Ensign 2.48 fr · Captain 4.63 fr</td>
+</tr>
+<tr>
+<td>The United States (1812-1815)</td>
+<td>Private 27¢ · Corporal 32¢ · Sergeant 42¢ · Sergeant-major 56¢ · Ensign $1.81 · Captain $3.38</td>
+</tr>
+<tr>
+<td>The Swedish army (Swedes, Finns, Scots and Germans)</td>
+<td>Soldier 12 kr · Gefreiter 15 kr · Corporal 18 kr · Feldwebel 36 kr · Ensign 72 kr</td>
+</tr>
+<tr>
+<td>The Imperial army and the Catholic League</td>
+<td>Soldier 12 kr · Gefreiter 15 kr · Corporal 18 kr · Feldwebel 36 kr · Ensign 72 kr</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-prices">Prices</h2>
+<p>For the Rules' <a href="rules.html#money-prices">Prices</a>.</p>
+<h3 id="era-prices-thirty_years">Thirty Years' War (1618-1648)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>When</th>
+<th>Price</th>
+<th>About</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cuirassier's armour</td>
+<td>1629</td>
+<td>20 Rt</td>
+<td>150 Days</td>
+</tr>
+<tr>
+<td>Pikeman's corslet</td>
+<td>1590s</td>
+<td>6 Rt 60 kr</td>
+<td>50 Days</td>
+</tr>
+<tr>
+<td>Harquebusier's armour</td>
+<td>1629</td>
+<td>5 Rt 70 kr</td>
+<td>43¼ Days</td>
+</tr>
+<tr>
+<td>Pair of wheellock pistols</td>
+<td></td>
+<td>10 Rt–20 Rt</td>
+<td>112½ Days</td>
+</tr>
+<tr>
+<td>Matchlock musket</td>
+<td></td>
+<td>4 Rt</td>
+<td>30 Days</td>
+</tr>
+<tr>
+<td>Sword</td>
+<td>1590s</td>
+<td>1 Rt 30 kr</td>
+<td>10 Days</td>
+</tr>
+<tr>
+<td>Pike</td>
+<td>1590s</td>
+<td>40 kr</td>
+<td>3¼ Days</td>
+</tr>
+<tr>
+<td>Gunpowder (lb)</td>
+<td>1590s</td>
+<td>20 kr</td>
+<td>1¾ Days</td>
+</tr>
+<tr>
+<td>Farm</td>
+<td>1636</td>
+<td>466 Rt 60 kr</td>
+<td>3,500 Days</td>
+</tr>
+<tr>
+<td>Cavalry horse</td>
+<td></td>
+<td>30 Rt–80 Rt</td>
+<td>412½ Days</td>
+</tr>
+<tr>
+<td>Company flag</td>
+<td>1625</td>
+<td>20 Rt</td>
+<td>150 Days</td>
+</tr>
+<tr>
+<td>Wheat, famine price (Mütt)</td>
+<td>1637</td>
+<td>8 Rt</td>
+<td>60 Days</td>
+</tr>
+<tr>
+<td>Soldier's coat, sold second-hand</td>
+<td>c.1625</td>
+<td>3 Rt</td>
+<td>22½ Days</td>
+</tr>
+<tr>
+<td>Buying off one billeted soldier</td>
+<td>1629</td>
+<td>45 kr</td>
+<td>3¾ Days</td>
+</tr>
+<tr>
+<td>Billet money for wood, salt and light, a day</td>
+<td>1639</td>
+<td>4 kr</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Soldier's tent</td>
+<td></td>
+<td>2 Rt</td>
+<td>15 Days</td>
+</tr>
+<tr>
+<td>Blanket</td>
+<td></td>
+<td>45 kr</td>
+<td>3¾ Days</td>
+</tr>
+<tr>
+<td>Horn or tin lantern</td>
+<td></td>
+<td>10 kr</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>Pocket sundial-compass</td>
+<td></td>
+<td>1 Rt</td>
+<td>7½ Days</td>
+</tr>
+<tr>
+<td>Local guide, a day</td>
+<td></td>
+<td>15 kr</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>Flint, steel and tinderbox</td>
+<td></td>
+<td>3 kr</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Rope (fathom)</td>
+<td></td>
+<td>2 kr</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Regimental surgeon's medicine chest</td>
+<td>1627</td>
+<td>44 Rt</td>
+<td>330 Days</td>
+</tr>
+<tr>
+<td>Apothecary's medicines and care for two sick men</td>
+<td>1620</td>
+<td>36 Rt 36 kr</td>
+<td>273 Days</td>
+</tr>
+<tr>
+<td>Barber-surgeon's pay, a month (Swedish)</td>
+<td>1630</td>
+<td>4 Rt</td>
+<td>30 Days</td>
+</tr>
+<tr>
+<td>Workman's wool coat</td>
+<td>mid-1600s</td>
+<td>2 Rt 60 kr–5 Rt 30 kr</td>
+<td>30 Days</td>
+</tr>
+<tr>
+<td>Leather shoes</td>
+<td>mid-1600s</td>
+<td>1 Rt 30 kr–2 Rt</td>
+<td>12½ Days</td>
+</tr>
+<tr>
+<td>Linen shirt</td>
+<td>mid-1600s</td>
+<td>60 kr–1 Rt 30 kr</td>
+<td>7½ Days</td>
+</tr>
+<tr>
+<td>A day's plain food, bought</td>
+<td>1629-1645</td>
+<td>6 kr–9 kr</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>A night at an inn, a man</td>
+<td>1629-1630</td>
+<td>3 kr–4 kr</td>
+<td>¼ Day</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-prices-horse_musket">Horse and musket (1775-1815)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>When</th>
+<th>Price</th>
+<th>About</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rifle bought by the British Army</td>
+<td>1776</td>
+<td>£3 3s</td>
+<td>63 Days</td>
+</tr>
+<tr>
+<td>Pennsylvania rifle</td>
+<td></td>
+<td>£3–£5</td>
+<td>80 Days</td>
+</tr>
+<tr>
+<td>Baker rifle</td>
+<td>1800</td>
+<td>£1 16s</td>
+<td>36 Days</td>
+</tr>
+<tr>
+<td>Brown Bess musket</td>
+<td>1795-1815</td>
+<td>18s 5d</td>
+<td>18½ Days</td>
+</tr>
+<tr>
+<td>US musket</td>
+<td>1796</td>
+<td>$12.33</td>
+<td>45¾ Days</td>
+</tr>
+<tr>
+<td>Charleville musket</td>
+<td></td>
+<td>15 fr–20 fr</td>
+<td>47¼ Days</td>
+</tr>
+<tr>
+<td>Flintlock pistol</td>
+<td></td>
+<td>£1–£2</td>
+<td>30 Days</td>
+</tr>
+<tr>
+<td>Cavalry saber</td>
+<td></td>
+<td>15s–£1 10s</td>
+<td>22½ Days</td>
+</tr>
+<tr>
+<td>Cartridge box and belt</td>
+<td>1796</td>
+<td>$1.33</td>
+<td>5 Days</td>
+</tr>
+<tr>
+<td>Bayonet and scabbard</td>
+<td>1796</td>
+<td>$1</td>
+<td>3¾ Days</td>
+</tr>
+<tr>
+<td>Gun sling</td>
+<td>1796</td>
+<td>26¢</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Cavalry horse, hard money</td>
+<td>1780</td>
+<td>$100</td>
+<td>500 Days</td>
+</tr>
+<tr>
+<td>Stagecoach inside, London-Glasgow (404 miles)</td>
+<td>1812</td>
+<td>£10 8s</td>
+<td>208 Days</td>
+</tr>
+<tr>
+<td>Stagecoach outside, London-Glasgow</td>
+<td>1812</td>
+<td>£6 5s</td>
+<td>125 Days</td>
+</tr>
+<tr>
+<td>Waterman's fare across London</td>
+<td></td>
+<td>6d</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Unfurnished room, a week</td>
+<td></td>
+<td>1s 4d</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>4-lb loaf</td>
+<td>c.1800</td>
+<td>5d–10d</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>Ordinary (meal of meat, broth and beer)</td>
+<td></td>
+<td>3d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Shared bed in a lodging house</td>
+<td></td>
+<td>2d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Half-pint of gin</td>
+<td></td>
+<td>2d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Quart of beer</td>
+<td></td>
+<td>1d</td>
+<td>0 Days</td>
+</tr>
+<tr>
+<td>Cup of coffee</td>
+<td></td>
+<td>1d</td>
+<td>0 Days</td>
+</tr>
+<tr>
+<td>Tin lantern</td>
+<td>1803</td>
+<td>$1</td>
+<td>3¾ Days</td>
+</tr>
+<tr>
+<td>Tin lamp</td>
+<td>1803</td>
+<td>25¢</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Box of candles</td>
+<td>1769</td>
+<td>11d</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Making a tent of brown linen</td>
+<td>1803</td>
+<td>$2</td>
+<td>7½ Days</td>
+</tr>
+<tr>
+<td>Oiled linen (oilcloth) (square yard)</td>
+<td>1803</td>
+<td>2s 6d</td>
+<td>2½ Days</td>
+</tr>
+<tr>
+<td>Tent linen (yard)</td>
+<td>1803</td>
+<td>1s 6d</td>
+<td>1½ Days</td>
+</tr>
+<tr>
+<td>Blanket (army contract)</td>
+<td>1791</td>
+<td>$1.33</td>
+<td>5 Days</td>
+</tr>
+<tr>
+<td>Silver-plated pocket compass</td>
+<td>1803</td>
+<td>$5</td>
+<td>18½ Days</td>
+</tr>
+<tr>
+<td>Brass pocket compass</td>
+<td>1803</td>
+<td>$2.50</td>
+<td>9¼ Days</td>
+</tr>
+<tr>
+<td>Flint, steel and tinderbox</td>
+<td></td>
+<td>6d</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Halter</td>
+<td></td>
+<td>1s</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Rope (fathom)</td>
+<td></td>
+<td>2d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Small set of surgical instruments</td>
+<td>1803</td>
+<td>$9.50</td>
+<td>35¼ Days</td>
+</tr>
+<tr>
+<td>Walnut medicine chest</td>
+<td>1803</td>
+<td>$4.50</td>
+<td>16¾ Days</td>
+</tr>
+<tr>
+<td>Tourniquet</td>
+<td>1803</td>
+<td>$3.50</td>
+<td>13 Days</td>
+</tr>
+<tr>
+<td>Three lancets</td>
+<td>1803</td>
+<td>$2.40</td>
+<td>9 Days</td>
+</tr>
+<tr>
+<td>Peruvian bark (for fever) (lb)</td>
+<td>1803</td>
+<td>$2</td>
+<td>7½ Days</td>
+</tr>
+<tr>
+<td>Laudanum, 4 oz</td>
+<td>1803</td>
+<td>50¢</td>
+<td>1¾ Days</td>
+</tr>
+<tr>
+<td>Lint, 2 oz</td>
+<td>1803</td>
+<td>25¢</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Man's suit</td>
+<td></td>
+<td>£8</td>
+<td>160 Days</td>
+</tr>
+<tr>
+<td>British coat, waistcoat, breeches and shoes</td>
+<td>1808</td>
+<td>£1 13s 9d</td>
+<td>33¾ Days</td>
+</tr>
+<tr>
+<td>US uniform coat, new pattern</td>
+<td>1800</td>
+<td>$8.50</td>
+<td>31½ Days</td>
+</tr>
+<tr>
+<td>US uniform coat, old pattern</td>
+<td>1800</td>
+<td>$4.50</td>
+<td>16¾ Days</td>
+</tr>
+<tr>
+<td>British greatcoat</td>
+<td>1803</td>
+<td>16s 6d</td>
+<td>16½ Days</td>
+</tr>
+<tr>
+<td>Soldier's shirt</td>
+<td>1813</td>
+<td>5s</td>
+<td>5 Days</td>
+</tr>
+<tr>
+<td>Wool overalls</td>
+<td>1791</td>
+<td>$1.50</td>
+<td>5½ Days</td>
+</tr>
+<tr>
+<td>Waistcoat (vest)</td>
+<td>1791</td>
+<td>$1.25</td>
+<td>4¾ Days</td>
+</tr>
+<tr>
+<td>Shirt</td>
+<td>1791</td>
+<td>90¢</td>
+<td>3¼ Days</td>
+</tr>
+<tr>
+<td>Shoes</td>
+<td>1791</td>
+<td>80¢</td>
+<td>3 Days</td>
+</tr>
+<tr>
+<td>Hat</td>
+<td>1791</td>
+<td>60¢</td>
+<td>2¼ Days</td>
+</tr>
+<tr>
+<td>A soldier's food and small beer at an inn, a day</td>
+<td>1765</td>
+<td>4d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Board, a day (at $1.25 a week)</td>
+<td>1815</td>
+<td>18¢</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>A night's lodging at a tavern</td>
+<td>1801</td>
+<td>12¢–20¢</td>
+<td>½ Day</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-prices-crimea">Crimean War (1854-1856)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>When</th>
+<th>Price</th>
+<th>About</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Officer's charger</td>
+<td></td>
+<td>£40–£80</td>
+<td>1,200 Days</td>
+</tr>
+<tr>
+<td>Spanish mule, bought for the army</td>
+<td>1855</td>
+<td>£15–£30</td>
+<td>450 Days</td>
+</tr>
+<tr>
+<td>Saddle and bridle, Balaklava</td>
+<td>1855</td>
+<td>£15</td>
+<td>300 Days</td>
+</tr>
+<tr>
+<td>Enfield rifle-musket</td>
+<td></td>
+<td>£3–£4</td>
+<td>70 Days</td>
+</tr>
+<tr>
+<td>Gold-embroidered fez, Constantinople (asked)</td>
+<td>1855</td>
+<td>£2</td>
+<td>40 Days</td>
+</tr>
+<tr>
+<td>Bottle of wine (Mary Seacole's cost)</td>
+<td>1856</td>
+<td>4s</td>
+<td>4 Days</td>
+</tr>
+<tr>
+<td>Bottle of sherry (Crimean Fund)</td>
+<td>1855</td>
+<td>2s</td>
+<td>2 Days</td>
+</tr>
+<tr>
+<td>Sutler's loaf, Balaklava</td>
+<td>1855</td>
+<td>2s</td>
+<td>2 Days</td>
+</tr>
+<tr>
+<td>Cheese (Mary Seacole's cost) (lb)</td>
+<td>1856</td>
+<td>10d</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>A day's ration, real cost</td>
+<td>1854</td>
+<td>7d</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Laundry, per piece</td>
+<td>1855</td>
+<td>6d</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>French officers' mess, a month</td>
+<td>c.1857</td>
+<td>50 fr–75 fr</td>
+<td>173½ Days</td>
+</tr>
+<tr>
+<td>Fuel cakes for a camp stove (lb)</td>
+<td>1855</td>
+<td>8d</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>Candles (lb)</td>
+<td></td>
+<td>7d</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Bell tent</td>
+<td></td>
+<td>£3</td>
+<td>60 Days</td>
+</tr>
+<tr>
+<td>Blanket</td>
+<td></td>
+<td>6s</td>
+<td>6 Days</td>
+</tr>
+<tr>
+<td>Pocket compass</td>
+<td></td>
+<td>5s</td>
+<td>5 Days</td>
+</tr>
+<tr>
+<td>Box of lucifer matches</td>
+<td>1850</td>
+<td>½d–1d</td>
+<td>0 Days</td>
+</tr>
+<tr>
+<td>Halter</td>
+<td></td>
+<td>1s</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Rope (fathom)</td>
+<td></td>
+<td>2d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Surgeon's pocket case</td>
+<td></td>
+<td>£1</td>
+<td>20 Days</td>
+</tr>
+<tr>
+<td>British infantry suit and cap</td>
+<td>1833-55</td>
+<td>£1 12s 10d</td>
+<td>32¾ Days</td>
+</tr>
+<tr>
+<td>Boots</td>
+<td>1848</td>
+<td>12s</td>
+<td>12 Days</td>
+</tr>
+<tr>
+<td>Jacket, as charged to the man</td>
+<td>1849</td>
+<td>8s</td>
+<td>8 Days</td>
+</tr>
+<tr>
+<td>Trousers, as charged to the man</td>
+<td>1849</td>
+<td>8s</td>
+<td>8 Days</td>
+</tr>
+<tr>
+<td>Two flannel waistcoats</td>
+<td>1848</td>
+<td>6s 8d</td>
+<td>6¾ Days</td>
+</tr>
+<tr>
+<td>Two pairs of drawers</td>
+<td>1848</td>
+<td>5s 6d</td>
+<td>5½ Days</td>
+</tr>
+<tr>
+<td>Fur cap</td>
+<td>1848</td>
+<td>5s</td>
+<td>5 Days</td>
+</tr>
+<tr>
+<td>A day's food bought from sutlers and shops</td>
+<td>1855</td>
+<td>1s–1s 6d</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>A cheap bed, Constantinople</td>
+<td>1856</td>
+<td>3d–6d</td>
+<td>½ Day</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-prices-civil_war">Civil War and frontier (1861-1876)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>When</th>
+<th>Price</th>
+<th>About</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Henry rifle, bought privately</td>
+<td>c.1863</td>
+<td>$65</td>
+<td>151¼ Days</td>
+</tr>
+<tr>
+<td>Spencer rifle</td>
+<td>1861</td>
+<td>$40</td>
+<td>93 Days</td>
+</tr>
+<tr>
+<td>Sharps carbine</td>
+<td>1861-66</td>
+<td>$27</td>
+<td>62¾ Days</td>
+</tr>
+<tr>
+<td>Colt revolver</td>
+<td>1861</td>
+<td>$25</td>
+<td>58¼ Days</td>
+</tr>
+<tr>
+<td>Spencer carbine</td>
+<td>1863</td>
+<td>$25</td>
+<td>58¼ Days</td>
+</tr>
+<tr>
+<td>Enfield rifle-musket</td>
+<td>1861</td>
+<td>$20</td>
+<td>46½ Days</td>
+</tr>
+<tr>
+<td>Remington revolver</td>
+<td>1861</td>
+<td>$15</td>
+<td>35 Days</td>
+</tr>
+<tr>
+<td>Springfield 1861 rifle-musket (to make)</td>
+<td>1861</td>
+<td>$14.93</td>
+<td>34¾ Days</td>
+</tr>
+<tr>
+<td>Stagecoach, Tipton to San Francisco</td>
+<td></td>
+<td>$200</td>
+<td>465 Days</td>
+</tr>
+<tr>
+<td>Cavalry horse</td>
+<td>1861-65</td>
+<td>$119–$190</td>
+<td>359¼ Days</td>
+</tr>
+<tr>
+<td>Mule, as the Union army bought them</td>
+<td>1864-65</td>
+<td>$170–$195</td>
+<td>424½ Days</td>
+</tr>
+<tr>
+<td>Mule, as a Confederate quartermaster bought one</td>
+<td>1863</td>
+<td>$350 CS</td>
+<td>946 Days</td>
+</tr>
+<tr>
+<td>Six-mule wagon team</td>
+<td>1859</td>
+<td>$600</td>
+<td>1,395¼ Days</td>
+</tr>
+<tr>
+<td>Team of eight oxen, for a wagon</td>
+<td>1859</td>
+<td>$200</td>
+<td>465 Days</td>
+</tr>
+<tr>
+<td>Stagecoach, per mile</td>
+<td></td>
+<td>10¢–15¢</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Writing paper, 20-25 sheets, sutler</td>
+<td>1864</td>
+<td>$5</td>
+<td>11¾ Days</td>
+</tr>
+<tr>
+<td>Butter, sutler (lb)</td>
+<td>1864</td>
+<td>75¢</td>
+<td>1¾ Days</td>
+</tr>
+<tr>
+<td>Cheese, sutler (lb)</td>
+<td>1864</td>
+<td>50¢</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>Molasses, sutler (pint)</td>
+<td>1864</td>
+<td>50¢</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>Apple, sutler</td>
+<td>1864</td>
+<td>8¢</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Kerosene (frontier sutler) (gallon)</td>
+<td>1873</td>
+<td>$3.50</td>
+<td>8¼ Days</td>
+</tr>
+<tr>
+<td>Brass candlesticks, pair</td>
+<td>1845</td>
+<td>$1</td>
+<td>2¼ Days</td>
+</tr>
+<tr>
+<td>Candles (lb)</td>
+<td>1845</td>
+<td>45¢</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Sibley tent</td>
+<td>1864</td>
+<td>$63.71</td>
+<td>148¼ Days</td>
+</tr>
+<tr>
+<td>Wall tent</td>
+<td>1864</td>
+<td>$62.88</td>
+<td>146¼ Days</td>
+</tr>
+<tr>
+<td>Common (wedge) tent</td>
+<td>1864</td>
+<td>$21.62</td>
+<td>50¼ Days</td>
+</tr>
+<tr>
+<td>Shelter tent (two halves)</td>
+<td>1863-64</td>
+<td>$3.25–$5.48</td>
+<td>10¼ Days</td>
+</tr>
+<tr>
+<td>Rubber poncho</td>
+<td>1864</td>
+<td>$3.10</td>
+<td>7¼ Days</td>
+</tr>
+<tr>
+<td>Wool blanket</td>
+<td>1864</td>
+<td>$3</td>
+<td>7 Days</td>
+</tr>
+<tr>
+<td>Rubber blanket</td>
+<td>1864</td>
+<td>$2.50</td>
+<td>5¾ Days</td>
+</tr>
+<tr>
+<td>Pocket compass</td>
+<td></td>
+<td>$1</td>
+<td>2¼ Days</td>
+</tr>
+<tr>
+<td>County map</td>
+<td></td>
+<td>50¢</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>Package of matches (frontier sutler)</td>
+<td>1873</td>
+<td>75¢</td>
+<td>1¾ Days</td>
+</tr>
+<tr>
+<td>Lariat</td>
+<td></td>
+<td>$1.50</td>
+<td>3½ Days</td>
+</tr>
+<tr>
+<td>Surgeon's pocket case</td>
+<td></td>
+<td>$15</td>
+<td>35 Days</td>
+</tr>
+<tr>
+<td>Greatcoat</td>
+<td>1864</td>
+<td>$8.50</td>
+<td>19¾ Days</td>
+</tr>
+<tr>
+<td>Sack coat, lined</td>
+<td>1864</td>
+<td>$3.25</td>
+<td>7½ Days</td>
+</tr>
+<tr>
+<td>Trousers</td>
+<td>1864</td>
+<td>$3.10</td>
+<td>7¼ Days</td>
+</tr>
+<tr>
+<td>Bootees (shoes)</td>
+<td>1864</td>
+<td>$2.20</td>
+<td>5 Days</td>
+</tr>
+<tr>
+<td>Knapsack</td>
+<td>1864</td>
+<td>$2.15</td>
+<td>5 Days</td>
+</tr>
+<tr>
+<td>Uniform hat</td>
+<td>1864</td>
+<td>$1.80</td>
+<td>4¼ Days</td>
+</tr>
+<tr>
+<td>Flannel shirt</td>
+<td>1864</td>
+<td>$1.59</td>
+<td>3¾ Days</td>
+</tr>
+<tr>
+<td>Flannel drawers</td>
+<td>1864</td>
+<td>$1</td>
+<td>2¼ Days</td>
+</tr>
+<tr>
+<td>Forage cap</td>
+<td>1864</td>
+<td>65¢</td>
+<td>1½ Days</td>
+</tr>
+<tr>
+<td>Haversack</td>
+<td>1864</td>
+<td>40¢–67¢</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>Canteen</td>
+<td>1864</td>
+<td>45¢</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Stockings, a pair</td>
+<td>1864</td>
+<td>30¢</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>Percussion rifle at a trading post</td>
+<td>from 1840</td>
+<td>$11</td>
+<td>25½ Days</td>
+</tr>
+<tr>
+<td>Suit of clothes</td>
+<td>1865</td>
+<td>$2,700 CS</td>
+<td>7,297¼ Days</td>
+</tr>
+<tr>
+<td>Ham</td>
+<td>1864</td>
+<td>$300 CS</td>
+<td>810¾ Days</td>
+</tr>
+<tr>
+<td>Turkey</td>
+<td>1864</td>
+<td>$155 CS</td>
+<td>419 Days</td>
+</tr>
+<tr>
+<td>Trousers (Confederate issue)</td>
+<td>1863</td>
+<td>$10 CS</td>
+<td>27 Days</td>
+</tr>
+<tr>
+<td>Shoes (Confederate issue)</td>
+<td>1863</td>
+<td>$6 CS–$8.75 CS</td>
+<td>20 Days</td>
+</tr>
+<tr>
+<td>Shirt (Confederate issue)</td>
+<td>1863</td>
+<td>$2.25 CS</td>
+<td>6 Days</td>
+</tr>
+<tr>
+<td>Board, a day (at $2 a week)</td>
+<td>1863</td>
+<td>29¢</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>A cheap bed in a city lodging house</td>
+<td>1860s</td>
+<td>25¢</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Board in a frontier town, a day (at $8 a week)</td>
+<td>1856</td>
+<td>$1.14</td>
+<td>2¾ Days</td>
+</tr>
+<tr>
+<td>A bed in a frontier town</td>
+<td>1856</td>
+<td>50¢–$1</td>
+<td>1¾ Days</td>
+</tr>
+</tbody>
+</table>
+<h3 id="era-prices-plains_nations">Plains nations (1860-1877)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>When</th>
+<th>Price</th>
+<th>About</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Horse, in trade</td>
+<td></td>
+<td>10 robes–15 robes</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Horse, bought for cash at Bent's Fort</td>
+<td>1846-47</td>
+<td>$50</td>
+<td>116¼ Days</td>
+</tr>
+<tr>
+<td>Good Navajo blanket</td>
+<td>1850s</td>
+<td>10 robes</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Trade gun</td>
+<td>1851</td>
+<td>6 robes–10 robes</td>
+<td>—</td>
+</tr>
+<tr>
+<td>A prime robe, in goods at the trading post</td>
+<td>1850s</td>
+<td>$3</td>
+<td>7 Days</td>
+</tr>
+<tr>
+<td>Trade gun, trader's cost</td>
+<td>1851</td>
+<td>$3–$4.50</td>
+<td>8¾ Days</td>
+</tr>
+<tr>
+<td>Percussion rifle at a trading post</td>
+<td>from 1840</td>
+<td>$11</td>
+<td>25½ Days</td>
+</tr>
+</tbody>
+</table>
+<h1 id="black_powder-tables">Wound tables</h1>
+<p>Each battle rolls its wounds on a table built from the record of that war, and these are the notes on where each one comes from. The tables themselves are in the <a href="tables.pdf">printed tables</a> and the <a href="roller.html">wound roller</a>. A <em>gameplay-adjusted</em> table is re-weighted from bone evidence to stand for every blow that landed, not only the ones that marked bone; an <em>evidence</em> table is the record itself.</p>
+<h2 id="table-lutzen-1632-mass-grave">Lützen 1632 - mass grave (bone evidence)</h2>
+<p>Battle injuries on 47 men buried in one grave at Lützen, most likely infantry of the Swedish Blue Brigade cut down by imperial cavalry. Killed only.</p>
+<p><em>How sure:</em> taken directly from a source. Counted from the study's tables of reliable battle injuries (69: 32 projectile, 21 blunt, 16 sharp), each weapon rolling on its own mechanism's injuries. Sides are as recorded; injuries the authors only call probable are left out. Where a bone could belong to more than one location (vertebra, ribcage, cranial base), it is shared by body exposure.</p>
+<p><em>Rolled by:</em> no battle here: it is the evidence the others are built from.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Nicklisch N., Ramsthaler F., Meller H., Friederich S., Alt K.W., 'The face of war: Trauma analysis of a mass grave from the Battle of Lützen (1632)', PLoS ONE 12(5): e0178252 (2017), open access (PMC5439951): Tables 1, 3 and 4.</li>
+<li>Same study: lead balls in the grave were mostly from carbines (12-14), then muskets (5) and pistols (1-3); 21 men had gunshot wounds to the head; the attack came mainly from the front and side.</li>
+<li>Injury tally: data/sources/lutzen-1632-mass-grave.csv.</li>
+</ul>
+<h2 id="table-thirty-years-war-all-hits">Thirty Years' War - all hits (gameplay)</h2>
+<p>Where shot and blows land on a man in the open, before death and burial sort the evidence. For pike-and-shot battles of the 1600s.</p>
+<p><em>How sure:</em> a design estimate from analogous evidence. Blend of the Lützen dead and a stand-in for the wounded; the mix is from casualty totals of a later war.</p>
+<p><em>Rolled by:</em> the battlefields of <a href="#field-lutzen-1632">Lützen 1632</a>; the armies of The Swedish army (Swedes, Finns, Scots and Germans), The Imperial army and the Catholic League.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Derived (tools/blend_tables.py): 74.5% peninsular-1808-14-officers (wounded) + 25.5% lutzen-1632-mass-grave (killed), location by location.</li>
+<li>No wounded records survive for the Thirty Years' War; the Peninsular War officers' wounds (same smoothbore lead balls and swords, 180 years later) stand in. Killed share as for the Napoleonic blend (about 1 killed to 3 wounded).</li>
+</ul>
+<h2 id="table-revolution-1775-83-pensioners">American Revolution 1775-83 - disabled veterans' wounds</h2>
+<p>Where Continental soldiers, militiamen and seamen were wounded, from the federal invalid pension lists of 1792-95. Men disabled for life who survived.</p>
+<p><em>How sure:</em> taken directly from a source. Counted wound by wound from 344 men's entries (379 wounds whose site is named; 32 more not located). Sides are recorded for about half and were close to even (85 left, 99 right), so left and right are pooled and split by body exposure (design estimate). 'Arm' without more detail is shared between upper arm and forearm.</p>
+<p><em>Rolled by:</em> no battle here: it is the evidence the others are built from.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Federal Revolutionary War Invalid Pension Claims, 1792-1795 (573 veterans), Magazine of Early American Datasets, University of Pennsylvania, 2021; from the Secretary of War's lists printed in American State Papers, Claims, vol. 1.</li>
+<li>Wound-by-wound tally: data/sources/revolution-invalid-pensions-1792-95.csv. The weapon mix counts the 251 wounds whose cause is stated.</li>
+</ul>
+<h2 id="table-revolution-1775-83-all-hits">American Revolution 1775-83 - all hits (gameplay)</h2>
+<p>Where musket balls and shot land on a man in the open, before survival sorts the records.</p>
+<p><em>How sure:</em> a design estimate from analogous evidence. Blend of a historical wounded table and a stand-in killed table; the mix is from casualty totals.</p>
+<p><em>Rolled by:</em> the battlefields of <a href="#field-cowpens-1781">Cowpens 1781</a>; the armies of The Continental Army (1775-1783), The British Army in America (1775-1783).</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Derived (tools/blend_tables.py): 53.5% revolution-1775-83-pensioners + 46.5% acw-1861-killed, location by location.</li>
+<li>Killed share: Peckham, The Toll of Independence (1974), 7,174 Americans killed and 8,241 wounded in 1,331 land and 218 naval engagements (via Journal of the American Revolution, 'The 25 Deadliest Battles of the Revolutionary War', 2014).</li>
+</ul>
+<h2 id="table-peninsular-1808-14-officers">Peninsular War 1808-14 - French officers' wounds</h2>
+<p>Where French officers were hit in Spain and Portugal, 1808-1814, by musket, sabre, bayonet, lance and cannon. Mostly men who survived.</p>
+<p><em>How sure:</em> taken directly from a source. Location counts are from the source (3,995 wound events). Each weapon rolls on its own recorded distribution (musket 2,848, sword 284, bayonet 97, lance 43, ordnance 209 wounds). Left and right are not recorded and are split evenly; 'arm' (bras) is put on the upper arm because wrist and forearm are listed apart. Rifles and pistols use the musket data.</p>
+<p><em>Rolled by:</em> no battle here: it is the evidence the others are built from.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Planas Campos J. and Grajal de Blas A., 'Wounds &amp; Weapons in the Napoleonic War: a database of the Peninsular War', British Journal for Military History 7(3), Nov 2021, pp. 117-127: Table 1 (weapons, 4,359 entries), Table 2 (locations, 3,995 events), Tables 6-8 (location by firearm, edged weapon and ordnance). Source registers: French Army officer files, SHD 2Yb.</li>
+<li>Same article, Table 11: 491 rank and file of the 100e de ligne - arms 22%, legs 40%, chest 6%, head 24%, abdomen 1%, shoulder 7% (officers: 26/44/4/14/3/9).</li>
+<li>Comparison quoted there: Austrian officers wounded at Austerlitz (Guiga 2021) - upper limbs 26%, lower limbs 45%, head 6%, upper body 9%, back 4%.</li>
+</ul>
+<h2 id="table-peninsular-1808-14-all-hits">Napoleonic era - all hits (gameplay)</h2>
+<p>Where musket balls and shot land on a man in the open, before survival sorts the records. Use for the Peninsula and Waterloo; the War of 1812 has its own table, built from the same records.</p>
+<p><em>How sure:</em> a design estimate from analogous evidence. Blend of a historical wounded table and a stand-in killed table; the mix is from casualty totals.</p>
+<p><em>Rolled by:</em> the battlefields of <a href="#field-albuera-1811">Albuera 1811</a>; the armies of The British in the Peninsula (1808-1814), The French Empire in Spain (1808-1814).</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Derived (tools/blend_tables.py): 74.5% peninsular-1808-14-officers + 25.5% acw-1861-killed, location by location.</li>
+<li>Killed share: about one killed for every three wounded in the Anglo-allied army at Waterloo (about 3,500 killed and 10,200 wounded; approximate, commonly cited totals).</li>
+</ul>
+<h2 id="table-war-1812-all-hits">War of 1812 - all hits (gameplay, borrowed records)</h2>
+<p>Where musket balls, rifle balls and shot land on a man in the open or in the woods, before survival sorts the records. No wound count survives for this war; the table is built from the Peninsular War records.</p>
+<p><em>How sure:</em> a design estimate from analogous evidence. Borrowed: the Peninsular War wounded table blended with a stand-in killed table, at this war's own killed share.</p>
+<p><em>Rolled by:</em> the battlefields of <a href="#field-lundys-lane-1814">Lundy's Lane 1814</a>; the armies of The United States (1812-1815).</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Derived (tools/blend_tables.py): 66.6% peninsular-1808-14-officers + 33.4% acw-1861-killed, location by location.</li>
+<li>Killed share: US forces lost about 2,260 killed in action and 4,505 wounded (commonly cited totals; British and Canadian losses are usually given only combined).</li>
+<li>Peninsular War records: Planas Campos and Grajal de Blas, British Journal for Military History 7(3), 2021.</li>
+</ul>
+<h2 id="table-crimea-1855-56-siege">Crimean War 1855-56 - siege of Sevastopol, wounded (surgeons' returns)</h2>
+<p>British rank and file treated for wounds received in action from 1 April 1855 to the end of the war: almost all of it the siege of Sevastopol (the trenches, the Mamelon, the Redan). Men who reached a surgeon alive.</p>
+<p><em>How sure:</em> taken directly from a source. Region totals are from the source: 6,984 gunshot wounds of known region (with 167 sword, bayonet and miscellaneous wounds left out). The split inside each region uses body exposure (design estimate). The 155 wounds of the larger arteries, nerves and joints of the limbs are shared between arms and legs as the other limb wounds are.</p>
+<p><em>Rolled by:</em> no battle here: it is the evidence the others are built from.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Medical and Surgical History of the British Army which served in Turkey and the Crimea during the war against Russia in the years 1854-55-56 (London, 1858), vol. 2, Part II, Return No. 3 (p. 258) and the returns by region, Section II (pp. 286-339): non-commissioned officers and privates, 1 April 1855 to the end of the war - gunshot wounds of the head 851, face 533, neck 128, chest 420, abdomen (with gunshot fractures of the pelvis) 235, perineum and genito-urinary organs 55, back and spine 326, extremities 4,436 (upper 2,083, lower 2,198, with direct injury of the larger arteries 12 and nerves 22, and penetration of the larger joints 121 by difference); sword, lance and bayonet wounds 41 and miscellaneous wounds 126; 7,161 treated in all.</li>
+<li>Same work, Return No. 1 (p. 257), for comparison: 14 Sep 1854 - 31 Mar 1855 (the Alma, Balaklava, Inkerman and the first winter's siege), head 206, face 125, neck 64, chest 158, abdomen 100, perineum 15, back and spine 84, extremities 1,763 of 2,515 gunshot wounds of known region (1,815 more unrecorded). Against this period the siege period has 1.5 times the share of head and of face wounds, 1.4 times the back, and fewer limb wounds (63.5% against 70.1%).</li>
+</ul>
+<h2 id="table-crimea-1854-56-all-hits">Crimean War 1854-56 - all hits (gameplay)</h2>
+<p>Where Minié bullets, musket balls and shell land on a man in the trenches and works before Sevastopol, before survival sorts the records. Built from the British surgeons' siege returns and a stand-in table for the killed.</p>
+<p><em>How sure:</em> a design estimate from analogous evidence. Blend of the historical siege wounded table and a stand-in killed table; the mix is from the war's killed and wounded totals.</p>
+<p><em>Rolled by:</em> the battlefields of <a href="#field-redan-1855-june">The Great Redan, 18 June 1855</a>, <a href="#field-redan-1855">The Great Redan, 8 September 1855</a>; the armies of British, French, Russian.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Derived (tools/blend_tables.py): 81.7% crimea-1855-56-siege + 18.3% acw-1861-killed, location by location.</li>
+<li>Killed share: 2,598 British rank and file killed in action in the whole war (Medical and Surgical History of the British Army ... in the Crimea, 1858, vol. 2, Concluding Observations) against 11,595 treated for wounds received in action (Returns Nos. 1 and 3: 4,434 and 7,161).</li>
+</ul>
+<h2 id="table-acw-1861-wounded">Civil War 1861-65 - wounded (surgeon's records)</h2>
+<p>Union soldiers treated for gunshot and shell wounds. Men who reached a surgeon alive.</p>
+<p><em>How sure:</em> taken directly from a source. Region totals are from the source. The split inside each region uses body exposure (design estimate).</p>
+<p><em>Rolled by:</em> no battle here: it is the evidence the others are built from.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Medical and Surgical History of the War of the Rebellion (1870-88), vol. 3, p. 392: head and neck 11%, chest and abdomen 18%, arms and hands 36%, legs and feet 35% of wounds (via Encyclopedia.com, 'Battlefield Wounds').</li>
+<li>Same work: 35.6% upper extremities, 35.2% lower extremities (via Civil War Monitor, 'Wounded Warriors: Civil War Amputation').</li>
+</ul>
+<h2 id="table-acw-1861-killed">Civil War 1861-65 - killed in action</h2>
+<p>Seat of the fatal wound in Union soldiers killed in action (n = 1,173).</p>
+<p><em>How sure:</em> taken directly from a source. Region totals are from the source. The split inside each region uses body exposure (design estimate).</p>
+<p><em>Rolled by:</em> no battle here: it is the evidence the others are built from.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Medical and Surgical History of the War of the Rebellion (1883): seat of injury in 1,173 killed - head and neck 487 (41.6%), trunk 603 (51.4%), upper extremities 30 (2.6%), lower extremities 53 (4.5%) (via US Army, Wound Ballistics in WWII, ch. 6).</li>
+</ul>
+<h2 id="table-acw-1861-all-hits">Civil War 1861-65 - all hits (gameplay)</h2>
+<p>Where shots land on a man in the open, before survival sorts the records.</p>
+<p><em>How sure:</em> a design estimate from analogous evidence. Blend of the two historical tables.</p>
+<p><em>Rolled by:</em> the battlefields of <a href="#field-bull-run-1861">First Bull Run 1861</a>; the armies of The Union (1861-1865), The Confederacy (1861-1865), The US Army on the frontier (1866-1876).</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Derived: 80% wounded table + 20% killed table, roughly one man killed outright for every four wounded in Union totals (approximate).</li>
+</ul>
+<h2 id="table-indian-wars-1865-71-arrows">Indian Wars 1865-71 - arrow wounds (US Army surgeons)</h2>
+<p>Soldiers, scouts and civilians hit by arrows on the Plains and in the Southwest, mostly 1866-70. Killed and wounded together.</p>
+<p><em>How sure:</em> taken directly from a source. Counts are tallied wound by wound from the report's 83 cases (122 arrow wounds whose site is given; 12 more are not located). Left and right are pooled because the sample is small, then split by body exposure (design estimate).</p>
+<p><em>Rolled by:</em> the battlefields of <a href="#field-fetterman-1866">The Fetterman Fight 1866</a>, <a href="#field-wagon-box-1867">The Wagon Box Fight 1867</a>; the armies of The Lakota (Oglala, Minneconjou and other bands), The Cheyenne and Arapaho.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>US Surgeon General's Office, Circular No. 3: A Report of Surgical Cases Treated in the Army of the United States from 1865 to 1871 (Washington, 1871), 'Arrow-Wounds', pp. 144-161, cases 451-487. Full text: archive.org item reportofsurgical00unituoft.</li>
+<li>Same report, p. 161: of 83 cases, 26 'proved fatal', including nearly all that entered the skull, chest or abdomen; 7 of 9 penetrating abdominal wounds were fatal.</li>
+<li>Wound-by-wound tally: data/sources/indian-wars-arrows-1865-71.csv.</li>
+</ul>
+<h1 id="black_powder-fields">Battlefields</h1>
+<p>Each battlefield lays out on the <a href="field.html">field map</a> under <em>Battlefield</em>. What follows is what the field and its phases hold, and, briefly, what happened there.</p>
+<h2 id="field-lutzen-1632">Lützen, 16 November 1632</h2>
+<ul>
+<li><em>The armies:</em> Swedes and Imperialists.</li>
+<li><em>Fought for:</em> the windmill battery, attacked by the Swedes.</li>
+<li><em>The field:</em> 220 by 120 hexes of 10 m, about 2,200 by 1,040 m, north at the top.</li>
+<li><em>The weather:</em> Fog, calm or light air.</li>
+<li><em>Wounds:</em> <a href="#table-thirty-years-war-all-hits">Thirty Years' War - all hits (gameplay)</a>.</li>
+<li><em>On the travel map:</em> Lützen campaign, 1632 (Naumburg to Leipzig), at Lützen.</li>
+<li><em>The record:</em> the fight lasted about 541 exchanges (a minute each).</li>
+</ul>
+<h3 id="what-happened">What happened</h3>
+<p>The Swedes crossed the Floßgraben in the early morning and drew up facing the Imperial line behind the high road. Fog delayed the attack until late morning and came and went all day. The Swedish right drove the Imperial left back across the road; in the centre the Swedish foot took the ditches and lost them again. Gustavus Adolphus, riding to help his foot, was killed in the fog. Pappenheim's horse came up on the Imperial left at midday and checked the Swedish right; Pappenheim was mortally wounded. Late in the day Bernhard of Saxe-Weimar's men stormed the windmill hill and its battery, and in the night Wallenstein withdrew. The guns: 7 on the windmill hill and 14 in the Imperial centre, 20 heavy Swedish guns in front of their foot (round figures; the regimental guns are left out).</p>
+<h3 id="how-the-field-is-drawn">How the field is drawn</h3>
+<p>The field of Lützen, 16 November 1632 (Gregorian), at 10 m a hex: 220 x 120 hexes, about 2200 m east to west and 1040 m north to south, north at the top. The town, the windmill hill, the road and its ditches and the Floßgraben are drawn by hand to the shape the accounts give, not traced from any map; the deployment is the outline most modern accounts share, in our own words, with round numbers for play.</p>
+<h3 id="the-armies-as-drawn-up">The armies as drawn up</h3>
+<p><strong>The Swedes</strong> (15,700 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Swedish musketeers, first line</td>
+<td>3,000</td>
+<td>veteran</td>
+<td>Matchlock</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Swedish pike, first line</td>
+<td>3,000</td>
+<td>veteran</td>
+<td>Pike</td>
+<td>Pikeman: morion and corslet</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Swedish second line</td>
+<td>4,000</td>
+<td>regular</td>
+<td>Pike</td>
+<td>Pikeman: morion and corslet</td>
+<td>Close order</td>
+<td>The King is killed; the second line goes in</td>
+</tr>
+<tr>
+<td>Swedish horse, right (the King)</td>
+<td>3,000</td>
+<td>veteran</td>
+<td>Sword</td>
+<td>Harquebusier: buff coat, breastplate, pot helmet</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Swedish horse, left (Bernhard)</td>
+<td>2,500</td>
+<td>veteran</td>
+<td>Sword</td>
+<td>Harquebusier: buff coat, breastplate, pot helmet</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Swedish heavy guns</td>
+<td>200</td>
+<td>regular</td>
+<td>Artillery</td>
+<td>Unarmoured</td>
+<td>Battery</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Imperialists</strong> (19,610 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Musketeers in the road ditch</td>
+<td>1,600</td>
+<td>regular</td>
+<td>Matchlock</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Imperial musketeers, centre</td>
+<td>4,000</td>
+<td>regular</td>
+<td>Matchlock</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Imperial pike, centre</td>
+<td>4,000</td>
+<td>regular</td>
+<td>Pike</td>
+<td>Pikeman: morion and corslet</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Musketeers at the windmill battery</td>
+<td>800</td>
+<td>regular</td>
+<td>Matchlock</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Windmill battery</td>
+<td>70</td>
+<td>regular</td>
+<td>Artillery</td>
+<td>Unarmoured</td>
+<td>Battery</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Imperial centre battery</td>
+<td>140</td>
+<td>regular</td>
+<td>Artillery</td>
+<td>Unarmoured</td>
+<td>Battery</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Imperial horse, right</td>
+<td>1,500</td>
+<td>veteran</td>
+<td>Sword</td>
+<td>Harquebusier: buff coat, breastplate, pot helmet</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Imperial cuirassiers, left</td>
+<td>2,000</td>
+<td>veteran</td>
+<td>Sword</td>
+<td>Cuirassier, three-quarter armour (1630s)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Pappenheim's horse (coming up)</td>
+<td>2,500</td>
+<td>veteran</td>
+<td>Sword</td>
+<td>Cuirassier, three-quarter armour (1630s)</td>
+<td>Close order</td>
+<td>Pappenheim strikes the Swedish right</td>
+</tr>
+<tr>
+<td>Pappenheim's foot (coming up, too late)</td>
+<td>3,000</td>
+<td>regular</td>
+<td>Pike</td>
+<td>Pikeman: morion and corslet</td>
+<td>Close order</td>
+<td>Pappenheim's foot arrive</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>The Swedes advance on the ditches</td>
+<td>About 11:00 the King's lines begin their final advance across the road ditches.</td>
+</tr>
+<tr>
+<td>76</td>
+<td>Pappenheim strikes the Swedish right</td>
+<td>Between 12:00 and 12:30 Pappenheim's horse arrive on the Imperial left and check the Swedish right.</td>
+</tr>
+<tr>
+<td>151</td>
+<td>The King is killed; the second line goes in</td>
+<td>After 13:00, in the fog: Gustavus Adolphus is killed and Knyphausen holds the line with the second line (the time is our estimate).</td>
+</tr>
+<tr>
+<td>241</td>
+<td>Lull</td>
+<td>By 15:00 Bernhard's attack has failed; a lull of about half an hour.</td>
+</tr>
+<tr>
+<td>271</td>
+<td>The final assault on the windmill hill</td>
+<td>15:30 to 17:00: as the light fades Bernhard's men take the windmill battery.</td>
+</tr>
+<tr>
+<td>421</td>
+<td>Pappenheim's foot arrive</td>
+<td>18:00: Pappenheim's foot come up, too late; at 20:00 Wallenstein withdraws.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-cowpens-1781">Cowpens, 17 January 1781</h2>
+<ul>
+<li><em>The armies:</em> Americans and British.</li>
+<li><em>Fought for:</em> no one place the map can mark.</li>
+<li><em>The field:</em> 120 by 100 hexes of 10 m, about 1,200 by 870 m, north at the top.</li>
+<li><em>The weather:</em> Fair, calm or light air from the north-west.</li>
+<li><em>Wounds:</em> <a href="#table-revolution-1775-83-all-hits">American Revolution 1775-83 - all hits (gameplay)</a>.</li>
+<li><em>On the travel map:</em> Cowpens campaign, 1781 (the Pacolet to the Broad), at Hannah's Cowpens.</li>
+</ul>
+<h3 id="what-happened_1">What happened</h3>
+<p>Morgan drew up his riflemen in front, the militia behind them, and his Continentals on the crest, with Washington's horse out of sight behind the rise. He asked the riflemen and militia for two volleys each before falling back. Tarleton attacked at once after his night march. The skirmishers and militia fired and fell back round the Continentals' left. When an order to turn the right flank was taken as an order to retreat, the Continentals faced about, halted, turned and fired into the British coming on in disorder, and charged with the bayonet. Washington's horse came in from behind the rise and the militia came back round the other flank; the British line and the 71st were caught between them and surrendered. Tarleton escaped with most of his reserve horse. The morning was cold and clear.</p>
+<h3 id="how-the-field-is-drawn_1">How the field is drawn</h3>
+<p>The field of Cowpens, 17 January 1781, at 10 m a hex: 120 x 100 hexes, about 1200 m east to west and 870 m north to south, north at the top, the British coming up from the south. The pasture, the two rises, the wet ravines and the woods are drawn by hand to the shape the accounts give, not traced from any map; the deployment is Morgan's three lines as most modern accounts give them, in our own words, with round numbers for play.</p>
+<h3 id="the-armies-as-drawn-up_1">The armies as drawn up</h3>
+<p><strong>The Americans</strong> (1,750 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Riflemen skirmishing (McDowell, Cunningham)</td>
+<td>150</td>
+<td>regular</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Militia line (Pickens)</td>
+<td>900</td>
+<td>green</td>
+<td>Rifle</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Continentals and Virginia men (Howard)</td>
+<td>550</td>
+<td>veteran</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Washington's horse</td>
+<td>150</td>
+<td>veteran</td>
+<td>Sabre</td>
+<td>Dragoon or light dragoon helmet</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The British</strong> (1,170 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Legion infantry</td>
+<td>250</td>
+<td>regular</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>7th Fusiliers</td>
+<td>200</td>
+<td>green</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Light infantry</td>
+<td>200</td>
+<td>regular</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Grasshopper guns</td>
+<td>20</td>
+<td>regular</td>
+<td>Artillery</td>
+<td>Unarmoured</td>
+<td>Battery</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>71st Highlanders (reserve)</td>
+<td>250</td>
+<td>veteran</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Legion dragoons, right</td>
+<td>50</td>
+<td>regular</td>
+<td>Sabre</td>
+<td>Dragoon or light dragoon helmet</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Legion dragoons, left</td>
+<td>50</td>
+<td>regular</td>
+<td>Sabre</td>
+<td>Dragoon or light dragoon helmet</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Legion dragoons (reserve)</td>
+<td>150</td>
+<td>regular</td>
+<td>Sabre</td>
+<td>Dragoon or light dragoon helmet</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases_1">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>The British attack</td>
+<td>About sunrise (about 07:00): Tarleton attacks at once after his night march.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>In musket range</td>
+<td>In under three minutes the British are within musket range of the militia.</td>
+</tr>
+<tr>
+<td>13</td>
+<td>The militia fall back</td>
+<td>After 8 to 12 minutes of fire (est.) the militia fall back round the Continentals' left.</td>
+</tr>
+<tr>
+<td>46</td>
+<td>About-face and bayonets</td>
+<td>07:45: the Continentals face about, halt, fire and charge with the bayonet; Washington's horse come in.</td>
+</tr>
+<tr>
+<td>61</td>
+<td>Over</td>
+<td>By 08:00 the battle is over.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-albuera-1811">Albuera, 16 May 1811</h2>
+<ul>
+<li><em>The armies:</em> Allies and French.</li>
+<li><em>Fought for:</em> the heights south of the allied line, attacked by the French.</li>
+<li><em>The field:</em> 150 by 230 hexes of 10 m, about 1,500 by 1,990 m, north at the top.</li>
+<li><em>The weather:</em> Overcast, breeze.</li>
+<li><em>Wounds:</em> <a href="#table-peninsular-1808-14-all-hits">Napoleonic era - all hits (gameplay)</a>.</li>
+<li><em>On the travel map:</em> Albuera campaign, 1811 (Badajoz to Santa Marta), at La Albuera.</li>
+</ul>
+<h3 id="what-happened_2">What happened</h3>
+<p>Godinot's brigade made a show against the village while Girard's and Gazan's divisions, screened by the olive woods, crossed the brooks and came up onto the heights in heavy columns. Zayas's Spaniards turned to face them and held. Colborne's brigade came up on their right and was caught in line by the Polish lancers and hussars in a sudden hailstorm and nearly destroyed. Hoghton's and Abercrombie's brigades took the Spaniards' place and stood exchanging volleys at short range until most of their men were down; Cole's division, coming up on the right, drove the French off the heights. The hailstorm is not set: the GM can bring it in (storm) for the lancers' charge. The guns: 20 French with the columns and 12 allied on the heights (round figures).</p>
+<h3 id="how-the-field-is-drawn_2">How the field is drawn</h3>
+<p>The field of Albuera, 16 May 1811 (Gregorian), at 10 m a hex: 150 x 230 hexes, about 1500 m east to west and 2000 m north to south, north at the top: from the village south over the heights where the battle was decided. The allied line north of the village is off the map. The village, the stream, the woods and the heights are drawn by hand to the shape the accounts give, not traced from any map; the deployment is the moment of Soult's flank attack, in our own words, with round numbers for play.</p>
+<h3 id="the-armies-as-drawn-up_2">The armies as drawn up</h3>
+<p><strong>The Allies</strong> (22,220 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Zayas's Spanish</td>
+<td>4,000</td>
+<td>regular</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Colborne's brigade</td>
+<td>1,600</td>
+<td>veteran</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Hoghton's and Abercrombie's brigades</td>
+<td>3,500</td>
+<td>veteran</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Allied cavalry (Lumley)</td>
+<td>2,000</td>
+<td>regular</td>
+<td>Sabre</td>
+<td>Dragoon or light dragoon helmet</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Cole's division (coming up)</td>
+<td>5,000</td>
+<td>regular</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Hamilton's Portuguese (reserve)</td>
+<td>5,000</td>
+<td>regular</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Alten's Germans in the village</td>
+<td>1,000</td>
+<td>veteran</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Allied guns on the heights</td>
+<td>120</td>
+<td>regular</td>
+<td>Artillery</td>
+<td>Unarmoured</td>
+<td>Battery</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The French</strong> (19,200 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Girard's division, in column</td>
+<td>4,500</td>
+<td>veteran</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Gazan's division, in column</td>
+<td>4,000</td>
+<td>regular</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Werlé's brigade (reserve)</td>
+<td>3,500</td>
+<td>regular</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Polish lancers and hussars</td>
+<td>1,500</td>
+<td>veteran</td>
+<td>Lance</td>
+<td>Dragoon or light dragoon helmet</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Latour-Maubourg's dragoons</td>
+<td>2,000</td>
+<td>regular</td>
+<td>Sabre</td>
+<td>Dragoon or light dragoon helmet</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>French guns with the columns</td>
+<td>200</td>
+<td>regular</td>
+<td>Artillery</td>
+<td>Unarmoured</td>
+<td>Battery</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Godinot's brigade (feint at the village)</td>
+<td>3,500</td>
+<td>regular</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-lundys-lane-1814">Lundy's Lane, 25 July 1814</h2>
+<ul>
+<li><em>The armies:</em> Americans and British.</li>
+<li><em>Fought for:</em> the British guns on the crest by the churchyard, attacked by the Americans.</li>
+<li><em>The field:</em> 130 by 110 hexes of 10 m, about 1,300 by 950 m, north at the top.</li>
+<li><em>The weather:</em> Fair, calm or light air from the south-west.</li>
+<li><em>Wounds:</em> <a href="#table-war-1812-all-hits">War of 1812 - all hits (gameplay, borrowed records)</a>.</li>
+<li><em>On the travel map:</em> Niagara campaign, 1814 (Fort Erie to Fort George), at Lundy's Lane.</li>
+<li><em>The record:</em> the fight lasted about 271 exchanges (a minute each).</li>
+</ul>
+<h3 id="what-happened_3">What happened</h3>
+<p>Scott's brigade came up the Portage road at about seven in the evening and found Riall's men on the hill with their guns at the churchyard. Scott attacked rather than wait, and his brigade was shot to pieces in front of the guns over the next two hours, though Jesup's 25th worked round the British left in the dusk and took Riall prisoner. Brown brought up Ripley's brigade; in the dark Colonel Miller's 21st Infantry rushed the guns and took them, and the Americans held the crest. Drummond's reinforced line counter-attacked three times until near midnight. Both sides were exhausted; the Americans fell back to Chippawa without the guns. Most of it was fought at night: the phases bring dusk at sunset (about 19:30) and a moonlit night from about 20:00 (a moon about eight days old, more than half lit: sunset and moon are worked out for the place and the day, not from the accounts, which speak of darkness and thick smoke).</p>
+<h3 id="how-the-field-is-drawn_3">How the field is drawn</h3>
+<p>The field of Lundy's Lane, 25 July 1814, at 10 m a hex: 130 x 110 hexes, about 1300 m east to west and 950 m north to south, north at the top; the Portage road and the Niagara are off the map to the east. The hill, the churchyard, the woods and the fields are drawn by hand to the shape the accounts give, not traced from any map; the deployment is the evening's opening, in our own words, with round numbers for play.</p>
+<h3 id="the-armies-as-drawn-up_3">The armies as drawn up</h3>
+<p><strong>The Americans</strong> (2,560 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Scott's brigade (9th, 11th, 22nd)</td>
+<td>800</td>
+<td>veteran</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>25th Infantry (Jesup)</td>
+<td>300</td>
+<td>veteran</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Towson's battery</td>
+<td>60</td>
+<td>regular</td>
+<td>Artillery</td>
+<td>Unarmoured</td>
+<td>Battery</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Ripley's brigade (21st, 23rd, coming up)</td>
+<td>900</td>
+<td>regular</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>Ripley and Drummond come up</td>
+</tr>
+<tr>
+<td>Porter's volunteers (coming up)</td>
+<td>500</td>
+<td>green</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>Ripley and Drummond come up</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The British</strong> (2,600 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>British guns on the crest</td>
+<td>50</td>
+<td>regular</td>
+<td>Artillery</td>
+<td>Unarmoured</td>
+<td>Battery</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>89th Foot</td>
+<td>400</td>
+<td>veteran</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Incorporated Militia</td>
+<td>300</td>
+<td>green</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Glengarry Light Infantry</td>
+<td>300</td>
+<td>regular</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>8th and 41st Foot (on the lane)</td>
+<td>400</td>
+<td>regular</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>19th Light Dragoons</td>
+<td>150</td>
+<td>regular</td>
+<td>Sabre</td>
+<td>Dragoon or light dragoon helmet</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Drummond's column (coming up)</td>
+<td>1,000</td>
+<td>regular</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>Ripley and Drummond come up</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases_2">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Scott attacks the hill</td>
+<td>About seven in the evening: Scott's brigade attacks the guns on the hill rather than wait, while Jesup's 25th works round the British left.</td>
+</tr>
+<tr>
+<td>31</td>
+<td>Sunset</td>
+<td>About half past seven the sun sets (worked out for the place and day): dusk.</td>
+</tr>
+<tr>
+<td>61</td>
+<td>Dark, by moonlight</td>
+<td>By about eight it is dark; a moon some eight days old, more than half lit, is up until after midnight.</td>
+</tr>
+<tr>
+<td>120</td>
+<td>Ripley and Drummond come up</td>
+<td>About nine, in the dark: Brown brings up Ripley's brigade and Porter's volunteers, and Drummond's column reaches the British line.</td>
+</tr>
+<tr>
+<td>150</td>
+<td>Drummond's counter-attacks</td>
+<td>Drummond's reinforced line counter-attacks three times to win back the guns, until near midnight.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-redan-1855-june">The Great Redan, 18 June 1855</h2>
+<ul>
+<li><em>The armies:</em> British and Russians.</li>
+<li><em>Fought for:</em> the Redan's salient, attacked by the British.</li>
+<li><em>The field:</em> 100 by 105 hexes of 10 m, about 1,000 by 910 m, north at the top.</li>
+<li><em>The weather:</em> Fair, calm or light air.</li>
+<li><em>Wounds:</em> <a href="#table-crimea-1854-56-all-hits">Crimean War 1854-56 - all hits (gameplay)</a>.</li>
+<li><em>On the travel map:</em> Siege of Sevastopol, 1855 (Kamiesh to the Chernaya), at the Great Redan.</li>
+</ul>
+<h3 id="what-happened_4">What happened</h3>
+<p>The French and British were to storm the Malakhov and the Redan together after a bombardment, but the Russians had repaired their works in the night and saw the French forming. The French went in early and piecemeal and were thrown back. At daybreak Lord Raglan sent the two flank columns out of the trenches (the centre column, meant to follow, never left them, and is not on the map): riflemen in front, sailors with the ladders, soldiers with wool-bags, then the storming parties. Grape and musketry from the Redan and the batteries either side swept the open ground, and the abatis in front of the work was still whole. The leading men fell within yards of the trenches; Colonel Yea and Sir John Campbell were killed, and the attack was called off. Some 1,400 British were killed, wounded or missing.</p>
+<h3 id="how-the-field-is-drawn_4">How the field is drawn</h3>
+<p>The first British assault on the Great Redan, Sevastopol, 18 June 1855, at dawn, at 10 m a hex: 100 x 105 hexes, about 1000 m east to west and 910 m north to south, north at the top: the Redan's point toward the British trench at the bottom, about 400 m away, the Karabelnaya suburb behind it. The work and the ground are drawn by hand to the shape the accounts give, not traced from any map (the point is cut off square, 120 m across, so that units in line can reach it); the deployment is our own reading, in our own words, with round numbers for play. The ladder parties are marked as carrying ladders; on this earthwork (a ditch and a bank, not a wall) the rules give them nothing to do.</p>
+<h3 id="the-armies-as-drawn-up_4">The armies as drawn up</h3>
+<p><strong>The British</strong> (2,440 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Right column (Yea): covering riflemen (Rifle Brigade)</td>
+<td>100</td>
+<td>regular</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Right column (Yea): ladders and wool-bags (sailors and soldiers)</td>
+<td>120</td>
+<td>regular</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Right column (Yea): storming party</td>
+<td>400</td>
+<td>regular</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Right column (Yea): supports</td>
+<td>600</td>
+<td>green</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>The supports follow</td>
+</tr>
+<tr>
+<td>Left column (Campbell): covering riflemen (Rifle Brigade)</td>
+<td>100</td>
+<td>regular</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Left column (Campbell): ladders and wool-bags (sailors and soldiers)</td>
+<td>120</td>
+<td>regular</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Left column (Campbell): storming party</td>
+<td>400</td>
+<td>regular</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Left column (Campbell): supports</td>
+<td>600</td>
+<td>green</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>The supports follow</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Russians</strong> (4,800 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Russian infantry at the salient</td>
+<td>600</td>
+<td>regular</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Guns on the left face</td>
+<td>40</td>
+<td>regular</td>
+<td>Artillery</td>
+<td>Unarmoured</td>
+<td>Battery</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Guns on the right face</td>
+<td>40</td>
+<td>regular</td>
+<td>Artillery</td>
+<td>Unarmoured</td>
+<td>Battery</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Battery on the line to the west</td>
+<td>60</td>
+<td>regular</td>
+<td>Artillery</td>
+<td>Unarmoured</td>
+<td>Battery</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Battery on the line to the east</td>
+<td>60</td>
+<td>regular</td>
+<td>Artillery</td>
+<td>Unarmoured</td>
+<td>Battery</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Russian infantry behind the breastwork</td>
+<td>1,600</td>
+<td>regular</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Riflemen on the line to the west</td>
+<td>200</td>
+<td>regular</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Riflemen on the line to the east</td>
+<td>200</td>
+<td>regular</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Russian reserve in the Karabelnaya</td>
+<td>2,000</td>
+<td>regular</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>The Russian reserve comes up</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases_3">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>The columns go out</td>
+<td>At daybreak the riflemen, the ladder and wool-bag parties and the storming parties leave the trenches under grape and musketry.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>The supports follow</td>
+<td>The supports come out behind the storming parties.</td>
+</tr>
+<tr>
+<td>15</td>
+<td>The Russian reserve comes up</td>
+<td>The reserve in the Karabelnaya comes up to the line; by now the attack is failing and is soon called off.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-redan-1855">The Great Redan, 8 September 1855</h2>
+<ul>
+<li><em>The armies:</em> British and Russians.</li>
+<li><em>Fought for:</em> the Redan's salient, attacked by the British.</li>
+<li><em>The field:</em> 100 by 80 hexes of 10 m, about 1,000 by 690 m, north at the top.</li>
+<li><em>The weather:</em> Fair, strong wind from the north.</li>
+<li><em>Wounds:</em> <a href="#table-crimea-1854-56-all-hits">Crimean War 1854-56 - all hits (gameplay)</a>.</li>
+<li><em>On the travel map:</em> Siege of Sevastopol, 1855 (Kamiesh to the Chernaya), at the Great Redan.</li>
+</ul>
+<h3 id="what-happened_5">What happened</h3>
+<p>After three days' bombardment the French stormed the Malakhov, east of the Redan, at noon and held it. On their signal the British went over from the advanced trench, about 200 yards out: a covering party of riflemen, the ladder party, then the stormers of the Light and 2nd Divisions. Many fell crossing the open ground; the ladders were too few and some too short, but men got down into the ditch and up onto the salient. There they stopped and fired from the parapet instead of pressing on, while the Russians fired back from behind their breastwork and traverses and their reserves came up. The supports came forward piecemeal and crowded into the salient. After about an hour and a half a Russian counter-attack drove them back over the parapet and the ditch. That night the Russians blew up their works and left the south side of the town. It was a cold day, with a strong wind and dust.</p>
+<h3 id="how-the-field-is-drawn_5">How the field is drawn</h3>
+<p>The British assault on the Great Redan, Sevastopol, 8 September 1855, at 10 m a hex: 100 x 80 hexes, about 1000 m east to west and 690 m north to south, north at the top: the Redan's point toward the British trench at the bottom, the Karabelnaya suburb behind it at the top. The work, its ditch, the line either side, the breastwork, the trench, the ravines and the shell holes are drawn by hand to the shape the accounts give, not traced from any map (the point is cut off square, 120 m across, so that units in line can reach it); the deployment is just after noon, in our own words, with round numbers for play. The ladder party is marked as carrying ladders; on this earthwork (a ditch and a bank, not a wall) the rules give it nothing to do.</p>
+<h3 id="the-armies-as-drawn-up_5">The armies as drawn up</h3>
+<p><strong>The British</strong> (3,780 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Covering party (2nd Rifle Brigade and the Buffs)</td>
+<td>200</td>
+<td>regular</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Ladder party (the Buffs and the 97th)</td>
+<td>320</td>
+<td>regular</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Light Division stormers (90th and 97th)</td>
+<td>1,000</td>
+<td>regular</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>2nd Division stormers (the Buffs, 41st and 62nd)</td>
+<td>760</td>
+<td>green</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Supports (7th, 23rd, 33rd, 34th and 77th)</td>
+<td>1,500</td>
+<td>green</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>The supports come forward</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Russians</strong> (4,180 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vladimirski Regiment, at the salient</td>
+<td>400</td>
+<td>regular</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Guns on the left face</td>
+<td>40</td>
+<td>regular</td>
+<td>Artillery</td>
+<td>Unarmoured</td>
+<td>Battery</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Guns on the right face</td>
+<td>40</td>
+<td>regular</td>
+<td>Artillery</td>
+<td>Unarmoured</td>
+<td>Battery</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Vladimirski Regiment, behind the breastwork</td>
+<td>1,400</td>
+<td>regular</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Riflemen on the line to the west</td>
+<td>300</td>
+<td>regular</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Kamchatski and Iakutski regiments (reserve)</td>
+<td>2,000</td>
+<td>regular</td>
+<td>Musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>The Russian counter-attack</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases_4">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>The stormers go over</td>
+<td>On the French signal from the Malakhov, the covering party, the ladders and the stormers leave the advanced trench.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>The supports come forward</td>
+<td>The supports follow up piecemeal and crowd into the salient behind the stormers.</td>
+</tr>
+<tr>
+<td>80</td>
+<td>The Russian counter-attack</td>
+<td>After about an hour and a half the Russian reserves come up from the Karabelnaya and drive the British back over the parapet.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-bull-run-1861">First Bull Run, 21 July 1861</h2>
+<ul>
+<li><em>The armies:</em> Confederates and Union.</li>
+<li><em>Fought for:</em> the top of Henry Hill, attacked by the Union.</li>
+<li><em>The field:</em> 140 by 130 hexes of 10 m, about 1,400 by 1,130 m, north at the top.</li>
+<li><em>The weather:</em> Fair, calm or light air from the south-west.</li>
+<li><em>Wounds:</em> <a href="#table-acw-1861-all-hits">Civil War 1861-65 - all hits (gameplay)</a>.</li>
+<li><em>On the travel map:</em> First Bull Run campaign, 1861 (Fairfax to Gainesville), at Henry Hill.</li>
+</ul>
+<h3 id="what-happened_6">What happened</h3>
+<p>By noon the Union flank march had driven the Confederates off Matthews Hill and over the turnpike. Jackson's Virginians formed on the far edge of Henry Hill with their guns, and the broken brigades rallied behind them. McDowell pushed two regular batteries, Ricketts's and Griffin's, onto the hill near the Henry house with the Fire Zouaves and the Marines in support. The 33rd Virginia, in blue, came out of the woods by the Sudley road and shot down the gunners, and Stuart's horse rode into the Zouaves. The guns changed hands several times through the afternoon. Late in the day fresh Confederate brigades came up on Chinn Ridge to the west, and the Union line broke and streamed back over Bull Run. The day was very hot. Most men on both sides were in their first battle.</p>
+<h3 id="how-the-field-is-drawn_6">How the field is drawn</h3>
+<p>Henry Hill at First Bull Run, 21 July 1861, at 10 m a hex: 140 x 130 hexes, about 1400 m east to west and 1130 m north to south, north at the top: the turnpike and Young's Branch along the north, the Sudley road down the west side, Chinn Ridge beyond it. The hill, the branch, the woods and the ridge are drawn by hand to the shape the accounts give, not traced from any map; the deployment is the early afternoon, in our own words, with round numbers for play.</p>
+<h3 id="the-armies-as-drawn-up_6">The armies as drawn up</h3>
+<p><strong>The Confederates</strong> (8,580 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Jackson's brigade</td>
+<td>2,600</td>
+<td>regular</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>33rd Virginia</td>
+<td>450</td>
+<td>green</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>The blue regiment and Stuart's horse</td>
+</tr>
+<tr>
+<td>Confederate guns (Imboden, Stanard, Pendleton)</td>
+<td>130</td>
+<td>regular</td>
+<td>Artillery</td>
+<td>Unarmoured</td>
+<td>Battery</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Hampton's Legion</td>
+<td>600</td>
+<td>green</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Bee's and Bartow's men, rallied</td>
+<td>1,000</td>
+<td>green</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Stuart's cavalry</td>
+<td>300</td>
+<td>regular</td>
+<td>Sabre</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>The blue regiment and Stuart's horse</td>
+</tr>
+<tr>
+<td>Kirby Smith's and Early's brigades (onto Chinn Ridge)</td>
+<td>3,500</td>
+<td>green</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>Chinn Ridge</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Union</strong> (11,480 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ricketts's battery (10-pounder Parrotts)</td>
+<td>70</td>
+<td>regular</td>
+<td>Artillery</td>
+<td>Unarmoured</td>
+<td>Battery</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Griffin's battery (rifles and howitzers)</td>
+<td>60</td>
+<td>regular</td>
+<td>Artillery</td>
+<td>Unarmoured</td>
+<td>Battery</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>11th New York (Fire Zouaves)</td>
+<td>900</td>
+<td>green</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>US Marines</td>
+<td>350</td>
+<td>green</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>14th Brooklyn</td>
+<td>700</td>
+<td>green</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Willcox's and Franklin's brigades</td>
+<td>4,000</td>
+<td>green</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Sherman's brigade (coming over)</td>
+<td>3,000</td>
+<td>green</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>Sherman's attacks</td>
+</tr>
+<tr>
+<td>Howard's brigade (Chinn Ridge)</td>
+<td>2,400</td>
+<td>green</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>Chinn Ridge</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases_5">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>The guns on Henry Hill</td>
+<td>About 14:00: Ricketts's and Griffin's batteries unlimber near the Henry house; Willcox's and Franklin's men are already engaged.</td>
+</tr>
+<tr>
+<td>61</td>
+<td>The blue regiment and Stuart's horse</td>
+<td>About 15:00: the 33rd Virginia, in blue, comes out of the woods by the Sudley road and shoots down the gunners; Stuart's horse ride into the Zouaves.</td>
+</tr>
+<tr>
+<td>76</td>
+<td>Sherman's attacks</td>
+<td>Sherman's regiments go up the hill one after another (est.); by about 15:30 his brigade is in confusion.</td>
+</tr>
+<tr>
+<td>121</td>
+<td>Chinn Ridge</td>
+<td>About 16:00: Kirby Smith's and Early's fresh brigades come in on Chinn Ridge against Howard, and the Union line begins to break.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-fetterman-1866">The Fetterman Fight, 21 December 1866</h2>
+<ul>
+<li><em>The armies:</em> US Army and Lakota, Cheyenne and Arapaho.</li>
+<li><em>Fought for:</em> no one place the map can mark.</li>
+<li><em>The field:</em> 150 by 120 hexes of 10 m, about 1,500 by 1,040 m, north at the top.</li>
+<li><em>The weather:</em> Fair, calm or light air from the north-west.</li>
+<li><em>Wounds:</em> <a href="#table-indian-wars-1865-71-arrows">Indian Wars 1865-71 - arrow wounds (US Army surgeons)</a>.</li>
+<li><em>On the travel map:</em> Fort Phil Kearny, 1866 (Red Cloud's War), at Fetterman battlefield.</li>
+</ul>
+<h3 id="what-happened_7">What happened</h3>
+<p>The wood train was attacked on its way to the pinery, and Fetterman led a relief out of the fort. Ten decoys, Lakota, Cheyenne and Arapaho, drew him over Lodge Trail Ridge, against orders, and along its crest. At a signal about a thousand warriors came up out of the ravines and across the flats. The cavalry, ahead, fell back up the ridge; the infantry fought from the rocks; within the hour all 81 soldiers and civilians were dead. The warriors' own losses are put by different accounts at about a dozen to many more. It was the Army's worst loss on the Plains until the Little Bighorn ten years later.</p>
+<h3 id="how-the-field-is-drawn_7">How the field is drawn</h3>
+<p>The Fetterman Fight, north of Fort Phil Kearny, 21 December 1866, at 10 m a hex: 150 x 120 hexes, about 1500 m east to west and 1040 m north to south, north at the top: the north end of Lodge Trail Ridge down the middle, ravines on both sides, Peno Creek and its flats at the top. The ridge, the ravines, the rocks and the creek are drawn by hand to the shape the accounts give, not traced from any map; the deployment is the moment the decoys turned, in our own words, with round numbers for play. Cold and clear, a little snow on the ground.</p>
+<h3 id="the-armies-as-drawn-up_7">The armies as drawn up</h3>
+<p><strong>The US Army</strong> (78 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>18th Infantry (Fetterman and Brown)</td>
+<td>49</td>
+<td>regular</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Wheatley and Fisher (civilians, repeating rifles)</td>
+<td>2</td>
+<td>veteran</td>
+<td>Breech-loader</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>2nd Cavalry, Company C (Grummond)</td>
+<td>27</td>
+<td>regular</td>
+<td>Breech-loader</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Lakota, Cheyenne and Arapaho</strong> (1,010 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The decoys (Lakota, Cheyenne and Arapaho)</td>
+<td>10</td>
+<td>veteran</td>
+<td>Bow</td>
+<td>Rawhide shield, no armour (Plains warrior)</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Lakota horsemen on the flats beyond the creek</td>
+<td>300</td>
+<td>veteran</td>
+<td>Bow</td>
+<td>Rawhide shield, no armour (Plains warrior)</td>
+<td>Open order</td>
+<td>The trap is sprung</td>
+</tr>
+<tr>
+<td>Lakota on foot in the west ravines</td>
+<td>350</td>
+<td>veteran</td>
+<td>Bow</td>
+<td>Rawhide shield, no armour (Plains warrior)</td>
+<td>Open order</td>
+<td>The trap is sprung</td>
+</tr>
+<tr>
+<td>Cheyenne and Arapaho in the east ravines</td>
+<td>350</td>
+<td>veteran</td>
+<td>Bow</td>
+<td>Rawhide shield, no armour (Plains warrior)</td>
+<td>Open order</td>
+<td>The trap is sprung</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases_6">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>On the crest</td>
+<td>About 11:45 the column is on Lodge Trail Ridge, following the decoys.</td>
+</tr>
+<tr>
+<td>11</td>
+<td>The trap is sprung</td>
+<td>At the signal the warriors come up out of the ravines and across the flats (est.: the firing is almost continuous by noon).</td>
+</tr>
+<tr>
+<td>31</td>
+<td>The infantry overrun</td>
+<td>About 20 minutes after the signal the infantry are overrun (Ambrose); the cavalry hold out about 20 minutes more.</td>
+</tr>
+<tr>
+<td>61</td>
+<td>Silence</td>
+<td>12:45: the firing dies as Ten Eyck reaches the ridge top.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-wagon-box-1867">The Wagon Box Fight, 2 August 1867</h2>
+<ul>
+<li><em>The armies:</em> US Army and Lakota, Cheyenne and Arapaho.</li>
+<li><em>Fought for:</em> the wagon-box corral, attacked by the Lakota, Cheyenne and Arapaho.</li>
+<li><em>The field:</em> 100 by 80 hexes of 10 m, about 1,000 by 690 m, north at the top.</li>
+<li><em>The weather:</em> Fair, breeze from the west.</li>
+<li><em>Wounds:</em> <a href="#table-indian-wars-1865-71-arrows">Indian Wars 1865-71 - arrow wounds (US Army surgeons)</a>.</li>
+<li><em>On the travel map:</em> Fort Phil Kearny, 1866 (Red Cloud's War), at Wagon Box corral.</li>
+</ul>
+<h3 id="what-happened_8">What happened</h3>
+<p>Warriors struck the woodcutters' camps and ran off the herd, and the men who could reached the corral. Through the morning mounted and foot attacks came at it from several sides; the soldiers' breech-loaders, fired as fast as they could be loaded, held them off. Lieutenant Jenness and two soldiers were killed. In the early afternoon a relief column came out from the fort with a mountain howitzer (it comes on in the last phase; the howitzer itself is not on this map), and the warriors drew off. Estimates of their losses run from a handful to sixty.</p>
+<h3 id="how-the-field-is-drawn_8">How the field is drawn</h3>
+<p>The Wagon Box Fight, west of Fort Phil Kearny, 2 August 1867, at 10 m a hex: 100 x 80 hexes, about 1000 m east to west and 690 m north to south, north at the top: the plateau between the Big Piney (top) and the Little Piney (bottom), pine woods to the west, a ravine to the east, and the corral of wagon boxes in the middle. The plateau, the creeks, the woods and the ravine are drawn by hand to the shape the accounts give, not traced from any map; the corral's exact place was never agreed, and it is drawn as a ring of wagon hexes round two hexes, larger than the real one. The deployment is the first charge, in our own words, with round numbers for play. A hot summer day.</p>
+<h3 id="the-armies-as-drawn-up_8">The armies as drawn up</h3>
+<p><strong>The US Army</strong> (132 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>27th Infantry, Company C (Powell and Jenness)</td>
+<td>26</td>
+<td>regular</td>
+<td>Breech-loader</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Woodcutters and teamsters (civilians, repeating rifles)</td>
+<td>6</td>
+<td>green</td>
+<td>Breech-loader</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Major Smith's relief column</td>
+<td>100</td>
+<td>regular</td>
+<td>Breech-loader</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>Smith's relief is seen</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Lakota, Cheyenne and Arapaho</strong> (650 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mounted warriors, the first charge (Lakota and Cheyenne)</td>
+<td>300</td>
+<td>veteran</td>
+<td>Bow</td>
+<td>Rawhide shield, no armour (Plains warrior)</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Warriors on foot from the ravine</td>
+<td>250</td>
+<td>veteran</td>
+<td>Bow</td>
+<td>Rawhide shield, no armour (Plains warrior)</td>
+<td>Open order</td>
+<td>The foot attacks</td>
+</tr>
+<tr>
+<td>Warriors with guns, along the plateau's edge</td>
+<td>100</td>
+<td>veteran</td>
+<td>Rifle-musket</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases_7">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>The mounted charge</td>
+<td>About 09:15 some 800 mounted warriors surround the corral and are driven back (Powell's report).</td>
+</tr>
+<tr>
+<td>16</td>
+<td>The foot attacks</td>
+<td>The warriors strip on a hill and attack on foot, for three hours (est. for the start); Jenness is killed in the second attack.</td>
+</tr>
+<tr>
+<td>196</td>
+<td>Smith's relief is seen</td>
+<td>About 12:30 the relief from the fort is seen and the warriors draw off.</td>
+</tr>
+</tbody>
+</table>
+<h1 id="index">Index</h1>
+<div class="index">
+<h3 class="ix-letter">A</h3>
+<p class="ix"><b>Allies</b>: <a href="#field-albuera-1811">Albuera, 16 May 1811</a></p>
+<p class="ix"><b>Americans</b>: <a href="#field-cowpens-1781">Cowpens, 17 January 1781</a>, <a href="#field-lundys-lane-1814">Lundy's Lane, 25 July 1814</a></p>
+<h3 class="ix-letter">B</h3>
+<p class="ix"><b>British</b>: <a href="#field-cowpens-1781">Cowpens, 17 January 1781</a>, <a href="#field-lundys-lane-1814">Lundy's Lane, 25 July 1814</a>, <a href="#field-redan-1855-june">The Great Redan, 18 June 1855</a>, <a href="#field-redan-1855">The Great Redan, 8 September 1855</a></p>
+<h3 class="ix-letter">C</h3>
+<p class="ix"><b>Climb or jump</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Confederates</b>: <a href="#field-bull-run-1861">First Bull Run, 21 July 1861</a></p>
+<h3 class="ix-letter">D</h3>
+<p class="ix"><b>Diagnose</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Drive a hard task</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">E</h3>
+<p class="ix"><b>Endure</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">F</h3>
+<p class="ix"><b>Find a billet</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Find the way</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Force or carry</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Forge a pass</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>French</b>: <a href="#field-albuera-1811">Albuera, 16 May 1811</a></p>
+<h3 class="ix-letter">H</h3>
+<p class="ix"><b>Haggle</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Handle a boat</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Hunt or gather</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">I</h3>
+<p class="ix"><b>Imperialists</b>: <a href="#field-lutzen-1632">Lützen, 16 November 1632</a></p>
+<p class="ix"><b>Impress</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">K</h3>
+<p class="ix"><b>Keep his head</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Keep order</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">L</h3>
+<p class="ix"><b>Lakota, Cheyenne and Arapaho</b>: <a href="#field-fetterman-1866">The Fetterman Fight, 21 December 1866</a>, <a href="#field-wagon-box-1867">The Wagon Box Fight, 2 August 1867</a></p>
+<h3 class="ix-letter">M</h3>
+<p class="ix"><b>Make something</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Mend kit</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">N</h3>
+<p class="ix"><b>Notice or remember</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">Q</h3>
+<p class="ix"><b>Question a prisoner</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">R</h3>
+<p class="ix"><b>Read or write</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Ride hard</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Russians</b>: <a href="#field-redan-1855-june">The Great Redan, 18 June 1855</a>, <a href="#field-redan-1855">The Great Redan, 8 September 1855</a></p>
+<h3 class="ix-letter">S</h3>
+<p class="ix"><b>Search</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Sneak</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Spot</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Steal</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Swedes</b>: <a href="#field-lutzen-1632">Lützen, 16 November 1632</a></p>
+<p class="ix"><b>Swim a horse</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">T</h3>
+<p class="ix"><b>Talk past a guard</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Track</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">U</h3>
+<p class="ix"><b>Union</b>: <a href="#field-bull-run-1861">First Bull Run, 21 July 1861</a></p>
+<p class="ix"><b>US Army</b>: <a href="#field-fetterman-1866">The Fetterman Fight, 21 December 1866</a>, <a href="#field-wagon-box-1867">The Wagon Box Fight, 2 August 1867</a></p>
+</div>
+
+<p class="note">Every number in this book is filled in from the game's data when it is built, so it says what the pages do. The repository's docs go into more detail on each part, and the printed tables hold every table. Print this book from the browser for a paper copy.</p>
+<p class="note">© 2026 Scott Wares. All rights reserved.</p>
+  </main>
+</div>
+<script>
+// tables scroll sideways on a phone rather than widening the page
+for (const t of document.querySelectorAll("main table")){ const w = document.createElement("div"); w.className = "tw"; t.replaceWith(w); w.appendChild(t) }
+</script>
+</body>
+</html>

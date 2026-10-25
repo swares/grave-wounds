@@ -307,20 +307,11 @@ def tables(d: Data, only: set | None = None) -> dict:
         ["A leech with the force", "+ his Leechcraft ÷ 10"],
         ["Battle wounds heal easily", f"+{-d.disease['wounds']['wound']['virulence']}"],
         ["Wound fever is hard", f"−{d.disease['wounds']['fever']['virulence']}"]])
-    E = d.teams["medieval"]
-    names = {s["id"]: s["name"] for s in E["skills"]}
-    out["careers"] = _md(["Career", "Main skill", "Second skill"], [[c["name"], names[c["main"]], names[c["second"]]] for c in E["careers"]])
+    out.update(team_tables(d, "medieval"))
     out.update(_field_tables(d), **_travel_tables(d), **LATER.tables(d, only))
     if d.checks:
-        from .checks import use_rows
-        ur = use_rows(d, "medieval")
-        out["skill_uses"] = _md(ur[0], ur[1:])
         out["difficulty"] = _md(["Difficulty", "Modifier", "When"], [[x["name"], _sign(x["mod"]) if x["mod"] else "±0", x.get("what", "")] for x in d.checks["difficulty"]])
     if d.ranks:
-        RE = (d.ranks.get("eras") or {}).get("medieval") or {}
-        out["ranks"] = _md(["Rank", "Pay (× a soldier's)", "Least years in the rank below", "Command check"],
-                           [[r["name"], f"{r['pay']:g}", f"{r.get('years', 0):g}" if i else "—", (next((x["name"] for x in d.checks.get("difficulty", []) if x["id"] == r.get("diff")), "") + (", only after a deed" if r.get("deed_only") else "")) if i else "—"]
-                            for i, r in enumerate(RE.get("ladder") or [])])
         out["finds"] = _md(["d100", "He finds", "Worth (Days)"], [[f"{lo}–{f['to']}" if lo != f["to"] else str(f["to"]), f["what"], "—" if not f["days"][1] else f"{f['days'][0]}–{f['days'][1]}"]
                                                               for f, lo in zip(d.ranks["finds"], [1] + [x["to"] + 1 for x in d.ranks["finds"][:-1]])])
     if d.languages:
@@ -466,12 +457,31 @@ def tables(d: Data, only: set | None = None) -> dict:
                             [[f"{b['from']}–{nb['from'] - 1}" if nb else f"{b['from']} and over", *[dice(b.get(k)) for k in names]]
                              for b, nb in zip(bands, bands[1:] + [None]) if b["from"] > 0]
                             )
-    if "medieval" in d.jobs:
+    return out
+
+
+def team_tables(d: Data, eid: str) -> dict:
+    """An era's own team tables: careers, followers' quality, ranks, work between fights and its
+    trouble, and the uses of its skills. The Rules show the medieval era's; each period book its own."""
+    E, U = d.teams[eid], d.units
+    names = {s["id"]: s["name"] for s in E["skills"]}
+    out = {"careers": _md(["Career", "Main skill", "Second skill"], [[c["name"], names[c["main"]], names[c["second"]]] for c in E["careers"]]),
+           "fq": _md(["Quality table", *[q.capitalize() for q in U["quality"]]],
+                     [[k.capitalize(), *_ranges(rows)] for k, rows in E["followers"]["quality"].items()])}
+    if d.checks:
+        from .checks import use_rows
+        ur = use_rows(d, eid)
+        out["skill_uses"] = _md(ur[0], ur[1:])
+    if d.ranks:
+        RE = (d.ranks.get("eras") or {}).get(eid) or {}
+        if RE.get("ladder"):
+            out["ranks"] = _md(["Rank", "Pay (× a soldier's)", "Least years in the rank below", "Command check"],
+                               [[r["name"], f"{r['pay']:g}", f"{r.get('years', 0):g}" if i else "—", (next((x["name"] for x in d.checks.get("difficulty", []) if x["id"] == r.get("diff")), "") + (", only after a deed" if r.get("deed_only") else "")) if i else "—"]
+                                for i, r in enumerate(RE["ladder"])])
+    if eid in d.jobs:
         from .jobs import job_rows, trouble_rows
-        jr, tr = job_rows(d, "medieval"), trouble_rows(d, "medieval")
+        jr, tr = job_rows(d, eid), trouble_rows(d, eid)
         out["jobs"], out["job_trouble"] = _md(jr[0], jr[1:]), _md(tr[0], tr[1:])
-    out["fq"] = _md(["Quality table", *[q.capitalize() for q in U["quality"]]],
-                    [[k.capitalize(), *_ranges(rows)] for k, rows in E["followers"]["quality"].items()])
     return out
 
 

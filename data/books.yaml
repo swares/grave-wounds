@@ -19,3 +19,22 @@ books:
     switched_on: >-
       No module: the core rules are written for blades, bows and armour. Wounds heal and fester as
       the Rules' Recovery says, with no antibiotics and the camp's leech the only help.
+  black_powder:
+    title: "The Black-Powder Wars"
+    dates: "1618–1877"
+    file: book-black-powder.html
+    eras: [thirty_years, horse_musket, crimea, civil_war, plains_nations]
+    fields: [lutzen-1632, cowpens-1781, albuera-1811, lundys-lane-1814, redan-1855-june, redan-1855, bull-run-1861, fetterman-1866, wagon-box-1867]
+    intro: >-
+      Nine battles from Gustavus Adolphus at Lützen in 1632 to the Wagon Box Fight in 1867: the
+      Thirty Years' War, the American Revolution, the Peninsula and the War of 1812, the storming
+      of the Great Redan before Sevastopol, the first battle of the American Civil War, and two
+      fights on the Bozeman Trail against the Lakota, Cheyenne and Arapaho. Every rule is in the
+      Rules; this book holds the armies' figures for five eras, the wound tables their battles
+      roll on, and the battlefields.
+    switched_on: >-
+      The [guns of the black-powder wars](rules.html#guns), for every battery in the book. From
+      the Rules' [Modern infantry](rules.html#modern-infantry), only the rule that modern fire puts
+      men down, and only for the breech-loaders: the soldiers' Springfields at the Wagon Box, and
+      the carbines of Fetterman's cavalry and the civilians' repeating rifles. Muskets and rifle-muskets fight as the core
+      rules say. Wounds heal and fester as the Rules' Recovery says, with no antibiotics.
