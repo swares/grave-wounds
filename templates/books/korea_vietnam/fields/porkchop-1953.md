@@ -1,5 +1,5 @@
 ### The campaign
-By the end of 1952 the front had hardly moved for a year. The talks at Panmunjom were in a long recess, stuck on the exchange of prisoners. Both sides lived in deep bunkers and fought with raids, patrols and night attacks on the outposts in front of their main lines. Each outpost was a hill held by a company or a platoon. Hill 255, known as Porkchop for its shape on the map, was one of them. Hermes says two platoons of I Company, 180th Infantry, took it on 6 June 1952, and that it was attacked twice in November. From the end of December it lay in the sector of the 7th Infantry Division, under Major General Arthur G. Trudeau.
+By the end of 1952 the front had hardly moved for a year. The talks at Panmunjom were in a long recess, stuck on the exchange of prisoners. Both sides lived in deep bunkers and fought with raids, patrols and night attacks on the outposts in front of their main lines. Each outpost was a hill held by a company or a platoon. Hill 255, known as Porkchop, was one of them. Hermes says two platoons of I Company, 180th Infantry, took it on 6 June 1952, and that it was attacked twice in November. From the end of December it lay in the sector of the 7th Infantry Division, under Major General Arthur G. Trudeau.
 
 On 23 March 1953 a battalion of the 423rd Regiment, 141st Division, of the Chinese 47th Army struck Old Baldy, Hill 266, while the Colombian Battalion was relieving its garrison. Two companies of the 201st Regiment, 67th Division, 23rd Army, struck Porkchop. Lieutenant Forrest Crittenden's company held it until its ammunition ran low and then pulled back from the crest, and the 31st Infantry took it again on the 24th. Old Baldy was not retaken; on 30 March General Taylor decided it was not essential. Pork Chop now stood with Chinese hills on three sides.
 
@@ -7,12 +7,12 @@ In April the talks moved again. The two sides agreed to exchange their sick and 
 
 ### The places
 - **Pork Chop Hill (Hill 255)**: the outpost, ringed with trenches, bunkers and wire. Hermes spells it Porkchop.
-- **Old Baldy (Hill 266)**: the next outpost to the west, lost in March.
-- **Hill 200**: a smaller outpost to the south-east, where part of L Company was held up.
+- **Old Baldy (Hill 266)**: the neighbouring outpost, Outpost 11 to Pork Chop's Outpost 10 in Hermes, lost in March.
+- **Hill 200**: a smaller outpost close by, where part of L Company was held up.
 - **The main line of resistance**: the 7th Division's line on the hills to the south, from which the relief companies came.
-- **Hasakkol**: the Chinese ground to the north, from which Marino says the attacks came.
+- **Hasakkol**: the Chinese-held ground from which Marino says the attacks came.
 - **The chow bunker**: a bunker on the hill where L Company's platoon was stopped about 50 yards short.
-- **Panmunjom**: where the talks went on, a few miles to the west.
+- **Panmunjom**: where the talks went on through the fighting.
 
 ### The leaders
 - **Arthur G. Trudeau** (UN, 7th Infantry Division): came forward by helicopter on 17 April and decided to hold the hill.
@@ -27,11 +27,11 @@ In April the talks moved again. The two sides agreed to exchange their sick and 
 - **Hou Yung-chun** (Chinese, 1st Battalion, 141st Division): named by Marino.
 
 ### The battle
-The accounts give hours without naming a clock; the times here are taken as local. On the night of 16 April 1953 E Company, 31st Infantry, held the hill with 96 men, of whom 76 were riflemen and 20 were out at listening posts. A patrol had gone out at 20:00. At about 23:00 Chinese infantry came up the slope out of the dark, and Harrold fired his signal flares. At about 23:05 the searchlights and flares came on all over the hill. A sergeant of E Company later recalled a flare, then artillery, mortars and bugles. Within the hour most of the trenches were in Chinese hands.
+The accounts give hours without naming a clock; the times here are taken as local. On the night of 16 April 1953 E Company, 31st Infantry, held the hill with 96 men, of whom 76 were riflemen and 20 were out at listening posts. A patrol had gone out at 20:00. At about 23:00 Chinese infantry came up the slope out of the dark, and Harrold fired his signal flares. At about 23:05 the lights came on. A sergeant of E Company later recalled a flare, then artillery, mortars and bugles. The Chinese overran most of E Company's trenches.
 
 At about 02:00 Kern sent reinforcements up. A platoon of F Company lost its way, and a platoon of L Company was stopped about 50 yards from the chow bunker. K Company, 135 men under Clemons, came forward, and at 04:30 the barrage lifted and it went up, with L Company attacking again. It took 29 minutes to cover 170 yards, and the first man reached the trenches at about 05:00. By 07:45 the company had gone about 200 yards in two hours. G Company of the 17th Infantry came up at 08:14 (Marino) and pulled out again at 15:00. At 11:00 Clemons radioed for water, plasma, litters, ammunition and flame throwers; little arrived but some water and rations.
 
-Trudeau reached Davis's command post by helicopter at 15:00. At 16:40 Clemons reported about 20 men unhurt and asked to be relieved or withdrawn. Trudeau decided to hold, and with Eighth Army's leave put the 2nd Battalion, 17th Infantry, under the 31st. F Company of the 17th started up at 21:30; Chinese shelling killed 19 of its men on the way. K Company's survivors came off at about midnight. At 01:30 on 18 April the Chinese attacked again. E Company of the 17th came up and drove them back, and further attacks at 03:20 and 04:20 gained no ground. A Company of the 17th came up at dawn. The Chinese drew off at dusk on 18 April; the VFW account says by 18:00. On the 17th and 18th the American guns fired some 77,000 rounds, and Marshall says the Chinese fired almost as many.
+Trudeau reached Davis's command post by helicopter at 15:00. At 16:40 Clemons reported about 20 men unhurt and asked to be relieved or withdrawn. Trudeau decided to hold, and with Eighth Army's leave put the 2nd Battalion, 17th Infantry, under the 31st. F Company of the 17th started up at 21:30; Chinese shelling killed 19 of its men on the way. K Company's survivors came off at about midnight. At 01:30 on 18 April the Chinese attacked again. E Company of the 17th came up and drove them back, and further attacks at 03:20 and 04:20 gained no ground. A Company of the 17th came up at dawn. The Chinese drew off at dusk on 18 April; the VFW account says by 18:00. The American guns fired tens of thousands of rounds a day, and Marshall says the Chinese fired almost as many (the figures are below).
 
 {{picture:porkchop-oldbaldy-map}}
 
@@ -51,11 +51,11 @@ The April battle is not the one fought there in July. On the night of 6 July 195
 
 !!! story "The medic of K Company"
     Sergeant Samuel K. Maxwell was K Company's medic when it went up Pork Chop before dawn on 17
-    April 1953. He recalled a Corporal Hatfield as the first man killed. Through the morning he
+    April 1953. He recalled a Corporal Hatfield as the first man killed. Through the day he
     worked in the trenches with what he carried, until he had used every item in his kit. Clemons
-    had asked by radio for plasma and litters at 11:00, but almost none came. When F Company of
-    the 17th Infantry reached the hill that night, Maxwell gave his kit to its medic before K
-    Company's survivors came down. Marino tells the story, and the VFW printed Maxwell's own
+    asked by radio for plasma and litters at 11:00, but almost none came. Later, when F Company
+    of the 17th Infantry came up to relieve K Company, Maxwell gave what was left of his kit to
+    one of its medics. Marino tells the story, and the VFW printed Maxwell's own
     recollections in 1995.
 
 ### Sources

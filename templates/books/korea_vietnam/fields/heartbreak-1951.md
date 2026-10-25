@@ -1,7 +1,7 @@
 ### The campaign
 Armistice talks opened at Kaesong in July 1951. The front stayed still while they went on, but neither side stopped fighting. Hermes says the Communist delegates called off the meetings on the night of 22 August, and early on the 23rd they said a UN aircraft had bombed the conference site. The UN investigators did not believe it, and Ridgway thought the break had been planned in advance.
 
-In the east, X Corps under Major General Clovis E. Byers held a bulge round the Punchbowl. The 2nd Infantry Division attacked Bloody Ridge from 18 August. The ROK 36th Regiment took it and was driven off. Attacks by the US 9th Infantry failed, and the ridge fell only when the 23rd and 38th Infantry worked round both flanks. The North Koreans left on 4 and 5 September, leaving more than 500 dead on the heights. On 5 September Van Fleet dropped a larger plan for limited attacks to straighten the line.
+In the east, X Corps under Major General Clovis E. Byers held the line round the Punchbowl. The 2nd Infantry Division attacked Bloody Ridge from 18 August. The ROK 36th Regiment took it and was driven off. Attacks by the US 9th Infantry failed, and the ridge fell only when the 23rd and 38th Infantry worked round both flanks. The North Koreans left on 4 and 5 September, leaving more than 500 dead on the heights. On 5 September Van Fleet dropped a larger offensive in favour of limited attacks to tidy up the line.
 
 The North Koreans dug in again about 1,500 yards north, on a hill mass some 7 miles long. Its peaks were Hill 894 in the south, Hill 931, about 1,300 yards beyond it and the highest, and Hill 851, about 2,100 yards further north. The press came to call it Heartbreak Ridge. Korea's veterans' ministry says the name came from a UPI reporter, Stan Carter, after he saw a wounded soldier at an aid station.
 
@@ -13,7 +13,7 @@ The North Koreans dug in again about 1,500 yards north, on a hill mass some 7 mi
 - **The Sat'ae-ri valley**: east of the ridge, up which the 23rd first attacked.
 - **The Mundung-ni valley**: west of the ridge, up which the tanks went from 10 October.
 - **Bloody Ridge**: to the south, fought over from 18 August to 5 September.
-- **The Punchbowl**: the round valley to the east that gave X Corps its bulge.
+- **The Punchbowl**: the round valley nearby; the battle took the sag out of X Corps' line there.
 - **Panmunjom**: where the talks began again on 25 October 1951.
 
 ### The leaders
@@ -28,7 +28,7 @@ The North Koreans dug in again about 1,500 yards north, on a hill mass some 7 mi
 - **Hong Nim** (North Korean, 6th Division): sent the fresh 13th Regiment onto the ridge in mid-September (Hermes).
 
 ### The battle
-The sources give hours without naming a clock; the times here are taken as local. At 05:30 on 13 September a 30-minute bombardment began, and the 23rd Infantry went up from the east, Craven's 3rd Battalion leading and Daniels's 2nd behind. Hidden bunkers held by the 1st Regiment of the North Korean 6th Division stopped them at the foot of the spur by nightfall. The 9th Infantry took Hill 894 on the 15th and lost over 200 men to counter-attacks in the next two days. Through the rest of the month the 23rd attacked 931 again and again. Its men reached the crest on 23 September, but the 3rd Regiment of the 12th Division threw them off. On 26 September the French Battalion and the 23rd failed against the 15th Regiment. On the 27th Young and Byers stopped the attacks. The 23rd had lost over 950 men.
+The sources give hours without naming a clock; the times here are taken as local. At 05:30 on 13 September a 30-minute bombardment began, and the 23rd Infantry went up from the east, Craven's 3rd Battalion leading and Daniels's 2nd behind. Hidden bunkers held by the 1st Regiment of the North Korean 6th Division stopped them at the foot of the spur by nightfall. The 2nd Battalion, 9th Infantry, took Hill 894 on the 15th and lost over 200 men to counter-attacks in the next two days. Through the rest of the month the 23rd attacked 931 again and again. Its men reached the crest on 23 September, but the 3rd Regiment of the 12th Division threw them off. On 26 September the French Battalion and the 23rd failed against the 15th Regiment. On the 27th Young and Byers stopped the attacks. The 23rd had lost over 950 men.
 
 Hermes says North Korean mortars caused about 85 per cent of the division's casualties up to then. Korean civilian porters often dropped their loads and ran when the enemy came close, so riflemen had to carry the supplies and litters. Bringing a litter case down from the 23rd's forward positions could take up to ten hours. No source read for this page says how many of the ridge's wounded went out by helicopter; across the war, Zimmerman says, helicopters carried more than 20,000 casualties to the surgical hospitals.
 
