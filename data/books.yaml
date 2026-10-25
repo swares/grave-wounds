@@ -81,4 +81,24 @@ books:
       The wounded go out by helicopter where a landing zone and a helicopter are left, as the
       Rules' After the battle says; else by motor ambulance. Wounds heal and fester as the Rules'
       Recovery says: it does not yet count the antibiotics of these wars.
+  late_wars:
+    title: "The Late Wars"
+    dates: "1982–2014"
+    file: book-late-wars.html
+    eras: [modern]
+    fields: [goosegreen-1982, easting73-1991, mogadishu-1993, grozny-1995, fallujah-2004, wanat-2008, keating-2009]
+    intro: >-
+      Seven battles from Goose Green in 1982 to Combat Outpost Keating in 2009: the paratroops at
+      Darwin Hill in the Falklands, Eagle Troop at 73 Easting in the Gulf, the crash sites in
+      Mogadishu, the Russian assault on the railway station in Grozny, the Marines and soldiers in
+      Fallujah, and two American outposts in the mountains of north-east Afghanistan, at Wanat and
+      Keating. Every rule is in the Rules; this book holds the armies' figures, the wound tables
+      their battles roll on, and the battlefields.
+    switched_on: >-
+      All three modern modules: [Modern fire](rules.html#fire), [Armour and
+      mines](rules.html#vehicles) and [Air and night devices](rules.html#air), with helicopters,
+      landing by air and thermal sights. The wounded go out by helicopter where a landing zone and
+      a helicopter are left, as the Rules' After the battle says. Wounds heal and fester as the
+      Rules' Recovery says: it does not yet count the antibiotics, the tourniquets or the surgical
+      teams of these wars.
 

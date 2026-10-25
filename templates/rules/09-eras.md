@@ -6,8 +6,7 @@ skills, origins, careers, events, armies, teams, followers and jobs. Pick one wi
 [team builder](team.html).
 
 Each period has its own book with its armies' figures, the wound tables its battles roll on and
-its battlefields: {{books_list}}. The periods that have no book yet keep their figures in
-[Other periods](#other-periods), at the end of these rules.
+its battlefields: {{books_list}}.{{others_note}}
 
 ## The eras {#era-list}
 
