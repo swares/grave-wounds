@@ -121,6 +121,8 @@ def render_rules(d: Data, root: Path, books: dict) -> str:
     vals, tabs = RB.values(d), RB.tables(d)
     vals["books_list"] = ", ".join(f"[{B['title']}]({B['file']}) ({B['dates']})" for B in books.values()) or "none yet"
     others = other_eras(d, books)
+    vals["others_note"] = (" The periods that have no book yet keep their figures in [Other periods](#other-periods), "
+                           "at the end of these rules." if others else "")
     otabs = RB.tables(d, set(others))
     spots, parts = [], []
     for p in chapters(root):
