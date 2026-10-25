@@ -58,7 +58,7 @@ const units = [
 
 writeField({
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
-    { name: "Caught at first light", at: 1, note: "About 06:10, short of the town: three self-propelled guns open on the column." },
+    { name: "Caught at first light", at: 1, note: "About 06:10, short of the town, a German sentry cries out as he is knifed and the column is discovered; at dawn three self-propelled guns open on it." },
     { name: "A hasty defence", at: 61, note: "By about 07:10 the battalions are in a crescent-shaped hasty defence; at 07:30 the 1st Battalion breaks radio silence." },
     { name: "The tanks", at: 351, note: "About noon tanks come down from Highway 7 and drive through the Rangers.", arrive: ["Tanks (later in the morning)"] },
     { name: "The last message", at: 366, note: "12:15 to 12:30: the last radio messages; the line is rolled up." },

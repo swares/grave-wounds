@@ -101,7 +101,7 @@ export const UNIT_SIZES = {
     "23rd Infantry machine-gun company": "company",
   },
   "bull-run-1861": {
-    "Kirby Smith's and Early's brigades (onto Chinn Ridge)": "brigade",
+    "Elzey's and Early's brigades (onto Chinn Ridge)": "brigade",
     "Howard's brigade (Chinn Ridge)": "brigade",
     "Jackson's brigade": "brigade",
     "33rd Virginia": "battalion",
@@ -400,7 +400,7 @@ export const UNIT_SIZES = {
     "Glengarry Light Infantry": "battalion",
     "8th and 41st Foot (on the lane)": "battalion",
     "19th Light Dragoons": "company",
-    "Drummond's column (coming up)": "battalion",
+    "Hercules Scott's column (coming up)": "battalion",
   },
   "lutzen-1632": {
     "Pappenheim's foot (coming up, too late)": "brigade",
@@ -444,7 +444,7 @@ export const UNIT_SIZES = {
     "Middlesex machine guns": "section",
     "IR 84, I Battalion": "battalion",
     "IR 84, II Battalion": "battalion",
-    "IR 86, I Battalion (from the woods)": "battalion",
+    "FR 86, I Battalion (from the woods)": "battalion",
     "IR 84 machine-gun company": "company",
     "IR 84, III Battalion (in support)": "battalion",
   },

@@ -45,6 +45,8 @@ export function unit(name, army, men, kind, at){
   const [width, col0, row] = at;
   return { name, ...army, men, ...kind, width, pos: [middle(col0, width, army.facing), row] };
 }
+// A unit placed by hand: its front's middle at pos, facing that way.
+export const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 // Hexes as the rules count them (units.js step: odd rows shifted half a hex east): a hex n steps
 // from h in direction d (0 east, then anticlockwise: NE, NW, W, SW, SE).
 const AX = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]];

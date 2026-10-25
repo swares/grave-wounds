@@ -11,7 +11,7 @@
 // later that morning. The ridge, the gully, the gorse, the shore and Darwin settlement are drawn by
 // hand to that shape, not traced from any map, and are approximate; the deployment is the fight
 // at dawn, in our own words, with round numbers for play.
-import { frontRow, N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { frontRow, N, S, wobble, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
 
 const COLS = 140, ROWS = 110;                 // 1400 m east to west, about 950 m north to south
 const RIDGE = c => 56 + Math.round(wobble(c / 8, 0.6, 1.4));             // the crest of Darwin ridge, west to east
@@ -36,7 +36,6 @@ const PARA = { quality: "veteran", weapon: "rifle_assault", kit: "ww2_rifleman",
 const GPMG = { quality: "veteran", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false };
 const CONSCRIPT = { quality: "green", weapon: "rifle_assault", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true };
 const MAG = { quality: "regular", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false, prone: true };
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("A Company, 2 Para (in the gorse gully)", UK, 90, PARA, 10, [GULLY[0], GULLY[1] - 6], S),
   at("B Company, 2 Para (on the open slope)", UK, 90, PARA, 14, [44, 30], S),

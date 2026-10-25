@@ -11,7 +11,7 @@
 // snipers, and fell back south. The streets, the houses, the park, the mosques and the railway are
 // drawn by hand to that pattern, not traced from any map or photograph, and are approximate; the
 // deployment is the attack south, in our own words, with round numbers for play.
-import { N, S, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
 
 const COLS = 140, ROWS = 120;                 // 1400 m east to west, about 1040 m north to south
 const RAIL = 10, RIVER = 6;                   // the railway embankment across the north; the Euphrates along the west
@@ -42,7 +42,6 @@ const BRADLEY = { ...TANK, vehicle: "ifv", armour: undefined };
 const FIGHTER = { quality: "regular", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false, prone: true };
 const RPG = { ...FIGHTER, weapon: "rpg" };
 const PKM = { quality: "regular", weapon: "machine_gun", kit: "none", formation: "mg", mounted: false, prone: true };
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("2-7 Cavalry's M1A1 tanks (the main street)", US, 16, TANK, 2, [MAIN, 14], S),
   at("2-7 Cavalry's Bradleys (behind the tanks)", US, 12, BRADLEY, 2, [MAIN, 4], S),

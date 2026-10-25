@@ -31,8 +31,8 @@ weather: {cond: fair, wind: calm, ground: {mud: 0, snow: 0}}
 lz: [[104, 66]]               # landing zones (units with `lands` come in by air at that one)
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [104, 66], side: 1, name: "the landing zone", radius: 6}
-# How long the fight went on, in exchanges from the first, by the account (the cut-off platoon reached the next afternoon: 12:00 from 13:35): self-play runs at least this long (never past commander.self_play.most).
-ends: 1346
+# How long the fight went on, in exchanges from the first, by the account (the cut-off platoon reached the next afternoon, about 15:30 (Carland; 26 hours by Savage's citation), from 13:35): self-play runs at least this long (never past commander.self_play.most).
+ends: 1556
 # Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
 # then come on where they are drawn, or at their side's entry edge if that is taken.
 phases:

@@ -74,7 +74,7 @@ writeField({
   weather: "{cond: overcast, wind: calm, dir: S, ground: {mud: 1, snow: 0}}",
   grid, units,
   support: [
-    { name: "105 mm howitzers (52nd Field Artillery)", side: 0, kind: "field", tubes: 6 },
+    { name: "105 mm howitzers (52nd Field Artillery)", side: 0, kind: "field", tubes: 5 },
     { name: "4.2-inch mortars", side: 0, kind: "mortar", tubes: 2 },
     { name: "60 mm mortars", side: 0, kind: "mortar", tubes: 4 },
     { name: "T-34 tanks (107th Tank Regiment)", side: 1, kind: "tank", tubes: 8 },

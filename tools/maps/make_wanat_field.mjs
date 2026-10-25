@@ -15,7 +15,7 @@
 // high ground and farmland. The fields, terraces, houses and slopes are drawn by hand to that
 // shape, not traced from any map or photograph, and are approximate; the deployment is about
 // 04:20, in our own words, with round numbers for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
 
 const COLS = 90, ROWS = 70;                   // 900 m east to west, about 600 m north to south
 const VPB = { c0: 34, c1: 44, r0: 26, r1: 60 };   // the patrol base: an open field about 100 m by 300 m, north to south
@@ -50,7 +50,6 @@ const PARA = { quality: "veteran", weapon: "rifle_assault", kit: "interceptor", 
 const M240 = { quality: "veteran", weapon: "machine_gun", kit: "interceptor", formation: "mg", mounted: false, prone: true };
 const ANA = { quality: "green", weapon: "rifle_assault", kit: "pasgt", formation: "extended", mounted: false, prone: true };
 const FIGHTER = { quality: "regular", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false, prone: true };   // in cover, firing from hiding
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("Observation Post Topside (paratroopers)", US, 6, PARA, 2, [OP[0], OP[1] - 1], N),
   at("Observation Post Topside (the M240 and its crew)", US, 3, M240, 1, [OP[0] + 2, OP[1]], 0),

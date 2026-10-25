@@ -267,8 +267,8 @@ units:
   - {name: "Alten's Germans in the village", side: 0, men: 1000, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 20, pos: [102, 32], facing: 4, size: battalion}
   - {name: "Girard's division, in column", side: 1, men: 4500, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 30, pos: [74, 175], facing: 1, size: division}
   - {name: "Gazan's division, in column", side: 1, men: 4000, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 30, pos: [106, 182], facing: 1, size: division}
-  - {name: "Werlé's brigade (reserve)", side: 1, men: 3500, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 30, pos: [84, 205], facing: 1, size: brigade}
-  - {name: "Polish lancers and hussars", side: 1, men: 1500, quality: veteran, weapon: lance, kit: dragoon_helmet, formation: close, width: 25, pos: [22, 172], facing: 1, mounted: true, size: regiment}
+  - {name: "Werlé's brigade (reserve)", side: 1, men: 5600, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 30, pos: [84, 205], facing: 1, size: brigade}
+  - {name: "Polish lancers and hussars", side: 1, men: 880, quality: veteran, weapon: lance, kit: dragoon_helmet, formation: close, width: 25, pos: [22, 172], facing: 1, mounted: true, size: regiment}
   - {name: "Latour-Maubourg's dragoons", side: 1, men: 2000, quality: regular, weapon: saber, kit: dragoon_helmet, formation: close, width: 30, pos: [54, 222], facing: 1, mounted: true, size: regiment}
   - {name: "French guns with the columns", side: 1, men: 200, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 10, pos: [54, 192], facing: 1, size: battery}
   - {name: "Allied guns on the heights", side: 0, men: 120, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 6, pos: [43, 136], facing: 4, size: battery}

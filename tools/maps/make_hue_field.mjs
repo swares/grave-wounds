@@ -12,7 +12,7 @@
 // was cold, with drizzle and low cloud. The streets, blocks and buildings are drawn by hand to
 // that pattern, not traced from any map or photograph, and are approximate; the deployment is
 // the attack east, in our own words, with round numbers for play.
-import { N, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
 
 const COLS = 150, ROWS = 110;                 // 1500 m east to west, about 950 m north to south
 const RIVER = 8, LE_LOI = 11, CANAL = 100;    // the river along the north, Le Loi street on its bank, the Phu Cam canal along the south
@@ -46,12 +46,11 @@ const MG = { quality: "regular", weapon: "machine_gun", kit: "vietnam_usmc", for
 const TANK = { quality: "regular", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank" };
 const ONTOS = { ...TANK, vehicle: "ontos" };
 const PAVN = { quality: "veteran", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false, prone: true };
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("F Company, 2/5 Marines (by the university)", US, 140, MARINE, 12, [UNIVERSITY[0] + 7, 24], 0),
   at("H Company, 2/5 Marines (for the Treasury)", US, 140, MARINE, 12, [74, 36], 0),
   at("G Company, 2/5 Marines (the south blocks)", US, 120, MARINE, 12, [70, 62], 0),
-  at("A Company, 1/1 Marines and the MACV compound", US, 160, MARINE, 10, [MACV[0], MACV[1] + 5], 0),
+  at("A Company, 1/1 Marines and the MACV compound", US, 147, MARINE, 10, [MACV[0], MACV[1] + 5], 0),
   at("Marine machine guns", US, 12, MG, 2, [UNIVERSITY[0], UNIVERSITY[1] + 3], 0),
   at("Marine M48 tanks (Highway 1)", US, 8, TANK, 2, [HIGHWAY, 46], N),           // the 2 gun tanks the accounts name in the assaults (2 M67 flame tanks came too)
   at("Marine Ontos (with H Company)", US, 6, ONTOS, 2, [56, 46], N),               // 2, which came in with H/2/5 on 2 February
