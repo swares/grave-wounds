@@ -1,0 +1,13 @@
+# Pictures for the second Redan section (8 September 1855) of The Black-Powder Wars. Each is public domain
+# or openly licensed, checked on its source page. The file goes in images/books/black_powder/ under `file`;
+# until it is there the book shows a captioned slot with this credit and source.
+# redan-sept-ditch: LICENCE CONFIRMED. The Rijksmuseum's object page marks this print public domain
+# (Creative Commons Public Domain Mark 1.0). James Robertson died in 1888. Wikimedia Commons could not be
+# reached from this session; download from the Rijksmuseum page.
+- id: redan-sept-ditch
+  file: redan-sept-ditch.jpg
+  caption: "The ditch of the Redan, photographed by James Robertson after the fall of Sevastopol in 1855. The stormers had to jump down into it and climb out by ladders, too few and too short."
+  credit: "James Robertson, Interior of ditch Redan (Fort Redan seen from within the entrenchment), 1855, salted paper print from a waxed paper negative, Rijksmuseum, RP-F-F80131"
+  licence: "Public domain"
+  source: "https://www.rijksmuseum.nl/en/collection/object/RP-F-F80131--0f5b4d0e93f761406019dea611759037"
+  alt: "A photograph of the ditch and earthen rampart of the Redan at Sevastopol, taken after the siege."
