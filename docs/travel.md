@@ -8,7 +8,9 @@ there.
 ## Scale and time
 
 - Each hex is usually 0.6 mile (1 km). A map can set its own size with `hex_km`.
-- A force marches 8 hours a day, starting at 08:00, at its type's speed on a road:
+- A force marches up to 8 hours a day, starting an hour after sunrise and stopping an hour
+  before sunset, so short days give fewer hours (see [weather.md](weather.md)). It goes at its
+  type's speed on a road:
 
   | Force type | Road speed | A day on the road |
   |---|---|---|
@@ -16,7 +18,12 @@ there.
   | Mounted | 3.7 mph (6 km/h) | 30 miles (48 km) |
   | Baggage wagons | 1.9 mph (3 km/h) | 15 miles (24 km) |
 
-- Wagons cannot enter forest, marsh, mountains or heath.
+- Wagons cannot enter forest, marsh, mountains or heath. On maps that start before 1914,
+  horse-drawn wagons and guns cannot cross a ford deeper than 2 ft 4 in (0.7 m); routes go round it.
+- A flooded ford stops everyone, unless the force has **Risk a flooded ford** ticked: a force
+  without wagons then wades it, and every named man risks being swept off.
+- **March on by night** lets a force march up to 4 more hours after dark, more slowly (see
+  *One clock*, below).
 - These speeds are for a small, fit band. A large army's column, with its halts and its
   stragglers, made less ground a day; cut its hours or its speed to suit.
 
@@ -39,8 +46,11 @@ takes about half as long again as a road, woods and hills about twice as long, a
 or mountains far longer. The printed tables give the km a day for each force type on each
 terrain.
 
-Each terrain also records **cover**, **forage** and whether it is **wet**. Nothing uses them
-yet. They are there for later rules on ambush, food, and fevers in damp camps.
+Each terrain also records **cover**, **forage** and whether it is **wet**. **Forage** sets
+where fresh food can be had against scurvy, and where a named man can forage it on the march
+(see *Scurvy*, below). **Cover** and **wet** are not used yet: what hides a force from the
+enemy (`sight.hidden_in`) and what breeds fevers (`disease.yaml` `terrain_factors`) have their
+own lists of terrain.
 
 ## One clock
 
@@ -70,6 +80,11 @@ on only when the GM moves it, and every force moves with it:
 - **Part of a hex.** A march stopped in the middle of a hex keeps the time already spent on
   it, so an hour at a time gets as far as a whole day at once. A force still stops for the
   night rather than finish a hex after its marching hours.
+- **By night.** A force with **March on by night** ticked keeps going after its marching hours,
+  up to 4 hours more, and the day's end waits for it. Each hex takes 1.4 times as long. Once a
+  night the best guide with it rolls Fieldcraft (Hard off the road, Ordinary on it): fail and
+  the night's march goes slower again; fumble and 2 hours go on the wrong road. A night march
+  of 2 hours or more costs a step of fatigue (`data/uses.yaml`, `night`).
 - **Saved campaigns** from before the clock start it at their latest force's time; the
   others wait where they are until then, their nights passing in place.
 
@@ -106,7 +121,8 @@ village or town. The time depends on the force's size and tools and on whether w
 near. A column makes one camp for all its forces (see *Marching together*). Camp work can use 4 evening hours after the march, so a camp made at the end of the
 day costs no marching time. Once an enemy force has marched to within 0.6 mile (1 km), **Set up the fight** opens a battle page.
 **Fight it on** picks which:
-- **the wound roller**, man by man (up to 8 men a force, the force's named men first, as
+- **the wound roller**, man by man (up to 8 men a force, or more if more of its named men are
+  on the roller; the force's named men first, as
   themselves: the fighters they are on the roller, with their sheets, kit and wounds; a named man
   with the force who is not on the roller is named in the setup's notes), with the camp's works laid out
   on its battle map and the ground laid out to match the defenders' hex: woods in forest,
@@ -266,7 +282,9 @@ onions). The count goes back to nought on a day that ends in farmland, a village
 in open ground, forest or hills if the force spent the whole day camped there and foraging
 (it did not march), or on a march day there if a named man with the force finds it (his
 **Fieldcraft**, rolled each such day, the best with the force); or every day while **Fresh
-food issued** is ticked on its health panel. Other ground has none. The health note says how many days it has gone without, and whether
+food issued** is ticked on its health panel. Other ground has none. A night when **Hunt for
+the pot** brings in enough game to feed the whole force also sets the count back to nought:
+the meat is fresh. The health note says how many days it has gone without, and whether
 fresh food can be had where it stands.
 
 After 6 weeks without fresh food, each week every well man may fall ill: 10% the first week,
@@ -291,6 +309,36 @@ A named man falls ill the same way. When he does, every old wound from his team-
 and every scar comes back on the wound track at Mending, and shows on his card as "Old
 wounds reopened". They cannot heal while he has scurvy; after that they heal by the week as
 any wound. These numbers are design estimates.
+
+## Supplies
+
+Each force carries **ammunition** (a share of its full loads), **rations** (days a man carries),
+**water** (litres a man) and **medical stores**. The numbers are in `data/supplies.yaml`, and the
+rule book has them in full (`dist/rules.html#supplies`). The health
+panel's note shows what the force has left. Each night:
+
+- **Rations.** A day its army does not feed it (**Fed by its army** unticked), and it neither
+  foraged nor hunted its food, it eats a day's rations. Men carry 2 to 4 days, by era. With
+  none left it goes hungry until it is fed or refilled.
+- **Water.** By a river, lake, ford, marsh, bridge, village or town, or in rain, it fills up.
+  Elsewhere each man needs 2 L a day up to 59 °F (15 °C), 3 L up to 77 °F (25 °C), 5 L up to
+  90 °F (32 °C) and 8 L above. Men carry about 1 L, or 3 L from Vietnam on. Short
+  of it, the force is thirsty: a step more fatigue.
+- **Medical stores** serve 10 wounded or sick for each 100 men. Each new wounded man draws one
+  and each sick man a seventh a day; with none left, its sick and wounded are cared for a step
+  worse.
+- **Ammunition** goes into a battle on the field map as its share of a load, and what is left
+  comes back.
+
+To fill up:
+
+- **Refill at the depot**: at its army's depot (where it started on the map, or a place marked a
+  depot of its side) everything is filled.
+- **Draw from the train**: a baggage train of its side in the same hex carries 10 days'
+  rations, 2 loads of ammunition and 2 fills of medical stores for each 1,000 men. The force
+  takes its own share and the train's stock falls by it.
+- **Buy a day's rations**: in a village or town, a force its army does not feed can buy a day's
+  rations for every man; its named men pay their army's keep from their purses.
 
 ## Events on the march
 
@@ -404,8 +452,9 @@ each day, and mud, snow and flooded fords change the going. See [weather.md](wea
   - **Undo all painting** goes back to the map as built.
 - **Health.** The selected force's camp hygiene, **Nurses keep clean**, **Fresh food
   issued**, **Fed by its army**, **Events on the march**, **Withdrawing**, **Short of food**,
-  **Pay in arrears** and **Named men can be injured**, with a note on its sick, nursing, days without fresh food,
-  its named men's keep and the week's chances.
+  **Pay in arrears**, **Hunt for the pot**, **Risk a flooded ford**, **March on by night**,
+  **In the line** and **Named men can be injured**, with a note on its supplies, its sick,
+  nursing, days without fresh food, its named men's keep and the week's chances.
 - Forces, routes, clocks and painting are kept in your browser. When the day changes in another
   tab or in the campaign console, the page takes the new day and says so.
 
@@ -563,7 +612,7 @@ cold maritime spring (a climate shift of −1.8 °F, −1 °C), so snow is possi
 
 How it is drawn: towns, villages, the bridge and the ford are at their modern places, and
 the rivers, brooks, woods and roads are drawn by hand through them (approximate). The map
-is generated by `tools/maps/make_towton.mjs`. The two campaign maps share their drawing
+is generated by `tools/maps/make_towton.mjs`. The campaign maps share their drawing
 code, `tools/maps/campaign_lib.mjs`, so a new campaign is a new spec: places, rivers,
 roads, woods and forces.
 
@@ -884,8 +933,8 @@ roads and railroad by hand. It is generated by `tools/maps/make_chipyong.mjs`. A
 hexes of Chipyong-ni is offered on the Chipyong-ni battlefield.
 
 **Ia Drang, 1965** (`data/maps/iadrang-1965.yaml`) covers the Ia Drang valley and the Chu
-Pong massif by the Cambodian border, on 0.3-mile (0.5 km) hexes: 53 × 43 hexes, about 16 by 12
-miles (26 by 19 km). Nearly all of it is scrub forest and tall elephant grass, with a few
+Pong massif by the Cambodian border, on 0.3-mile (0.5 km) hexes: 76 × 43 hexes, about 24 by 12
+miles (38 by 19 km). Nearly all of it is scrub forest and tall elephant grass, with a few
 clearings and no roads; the Ia Drang is crossed at its fords. It starts on 14 November 1965
 (Gregorian), with seven forces:
 - United States: the 1st Battalion, 7th Cavalry at landing zone X-Ray, the 2nd Battalion, 7th
@@ -1062,7 +1111,7 @@ battlefield.
 
 **Hamburger Hill, 1969** (`data/maps/hamburger-1969.yaml`) covers the A Shau valley from the
 Laotian border and Dong Ap Bia (Hill 937) east across the valley floor to A Luoi and Ta Bat, on
-0.3-mile (0.5 km) hexes: 53 × 50 hexes, about 16 by 13 miles (27 by 22 km). Mountains under
+0.3-mile (0.5 km) hexes: 53 × 63 hexes, about 16 by 17 miles (27 by 27 km). Mountains under
 thick jungle on both sides of an open valley floor of elephant grass. It starts on 10 May 1969
 (Gregorian), in the Annamite hills climate, with six forces:
 - United States and ARVN: the 3rd Battalion, 187th Infantry at its landing zone, the 1st
@@ -1163,5 +1212,5 @@ Campaign and battle maps can be added in the same format, one file per map:
 - `period` (optional): the period the **Map** picker lists it under. Without it, a map takes
   the period of a battlefield drawn on it (its wound table's conflict, as the roller groups
   its tables), or "Any period". The picker lists the periods oldest first, and each period's
-  maps by start date; Agincourt and Aljubarrota say `period: "Hundred Years' War"`, as they
+  maps by start date; Crécy, Aljubarrota and Agincourt say `period: "Hundred Years' War"`, as they
   borrow the Towton tables.

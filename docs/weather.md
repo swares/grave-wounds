@@ -20,6 +20,11 @@ stops an hour before sunset, rounded to the quarter hour, up to the usual 8 hour
 - At 52°N that is 7 hours in late October and about 5½ in December.
 - Midsummer gives the full 8.
 - Camp work can still use 4 evening hours after the march.
+- A force with **March on by night** ticked can march up to 4 more hours after its marching
+  hours, at 1.4 times the time, with the guide's Fieldcraft to keep the way (see
+  [travel.md](travel.md#one-clock)). A night march of 2 hours or more tires it (*Fatigue*, below).
+
+`day_starts` in `data/terrain.yaml` is not used: the day starts from sunrise.
 
 ## Weather
 
@@ -42,8 +47,9 @@ Each day's weather is rolled from the climate's figures for that month:
   and the Mediterranean, from the north in the desert, and from the south-west in eastern
   North America.
 
-The **climate shift** cools the modern figures. The Little Ice Age, roughly 1300–1850, ran
-somewhat cooler; the test valley uses −0.9 °F (−0.5 °C).
+The **climate shift** moves the modern figures, usually cooler. The Little Ice Age, roughly
+1300–1850, ran somewhat cooler; the test valley uses −0.9 °F (−0.5 °C). Mons, 1914, is the one
+map shifted warmer, +1.8 °F (+1 °C).
 
 | Climate | Like |
 |---|---|
@@ -65,6 +71,10 @@ somewhat cooler; the test valley uses −0.9 °F (−0.5 °C).
 | Falkland Islands, cold oceanic | Stanley, with the seasons reversed; rounded design estimates |
 | North Korean plateau, bitter winters | the Changjin (Chosin) plateau at about 1,100 m; rounded design estimates |
 | Hindu Kush valleys, hot summers and cold winters | the Kunar and Nuristan valleys at about 1,200 m; rounded design estimates |
+| Balkan uplands, cold winters | the Kosovo basin at about 600 m (Priština); rounded design estimates |
+| Western Portugal, Atlantic Mediterranean | Leiria and Alcobaça, behind the coast; rounded design estimates |
+| Egyptian Mediterranean coast, desert | El Alamein; October from the published normals, the other months rounded design estimates |
+| Upper Jordan valley, hot and dry | Tiberias, by the Sea of Galilee; rounded design estimates |
 
 The four North American climates are rounded approximations of 1991–2020 station normals
 for the places named; the Greenville-Spartanburg January figures and Sheridan's temperatures
@@ -86,9 +96,13 @@ Mud and lying snow build up and wear off day by day:
 - **Floods.** Heavy rain or a storm floods the fords that day and the next.
 
 On the **travel map**, mud and snow slow the going. Mud is worst on unpaved roads and
-ploughed fields, at one and a half times the usual time. Snow is one and a half times
-everywhere, and double in the mountains. A flooded ford can't be crossed, and routes go
-round it. The planned arrival time uses each day's ground where that day's weather is already known
+ploughed fields, at one and a half times the usual time. Snow is one and a half times on most
+ground, one and three quarters in the hills, double in the mountains, and one and a quarter on
+a bridge or in a village or town. Where both lie, the worse counts. A flooded ford can't be
+crossed, and routes go round it, unless a force without wagons has **Risk a flooded ford**
+ticked: it wades, and its named men may be swept off (see [travel.md](travel.md#scale-and-time)).
+On maps before 1914, wagons can't cross a ford deeper than 2 ft 4 in (0.7 m) even out of flood.
+The planned arrival time uses each day's ground where that day's weather is already known
 (a busy force's own time may be ahead of the map's clock). Beyond the last known day it repeats that day's ground,
 and the summary says from which date the ground is a guess.
 
@@ -273,6 +287,17 @@ the clock to reach the next morning).
 - **Cold:** +1 if it marched 4 hours or more with the high at 23 °F (−5 °C) or under.
 - **Heavy going:** +1 for 6 hours or more of marching in deep mud or snow.
 - **The night:** a bad night +1; poor 0; fair −1; good −2.
+
+Then, after the night's rest:
+- **The night's events** (with **Events on the march**): what desertion, straggling, injuries,
+  horses and incidents add (see [travel.md](travel.md#events-on-the-march)).
+- **Load:** a force carrying more than its usual load takes a step for every 20 km (12 miles)
+  marched under a medium load, 12 km heavy, 6 km overloaded or 2 km immobile, less what its usual
+  load would cost (`data/loads.yaml`, `fatigue_km`).
+- **Packs lost:** +1 if its men lost the packs they dropped before a fight (no blankets or rations).
+- **Thirst:** +1 if it had no water to be had and not enough carried (see
+  [travel.md](travel.md#supplies)).
+- **Night march:** +1 for 2 hours or more of **March on by night** (`data/uses.yaml`, `night`).
 
 On the battle map each fighter's card shows his fatigue. A fight set up from the travel
 map gives each side its force's level.

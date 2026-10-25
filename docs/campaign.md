@@ -93,7 +93,8 @@ map still takes it itself if it is opened first; either way it is taken once.
 The console never keeps the day itself: each press starts from what the travel map last saved and
 saves the result, and the page in the frame is reloaded to show it. A travel map open in another
 tab follows too: when the day changes elsewhere it takes the new one and says so, rather than save
-the day it had over it. (The roller and the team builder in another tab do not yet: reload them.)
+the day it had over it. The roller and the team builder in another tab follow too (a roller
+hosting players online leaves that to the GM).
 
 ## The fight
 
@@ -221,7 +222,6 @@ A save file is still the way to move a campaign to another computer.
   takes it back; columns, the forces' own settings, adding forces and painting the map are on the
   travel map, a person's moves and strikes on the roller, and placing and ordering units by hand on
   the field map.
-- The pages' own state is still per page; a campaign's whole state exists only as a save file.
 
 ## Tests
 
