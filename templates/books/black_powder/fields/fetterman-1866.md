@@ -9,8 +9,8 @@ Those villages, of Oglala, Miniconjou, Northern Cheyenne and Arapaho, planned a 
 
 ### The places
 - **Fort Phil Kearny**: Carrington's headquarters, a stockade of about 17 acres on the Little Piney, near present-day Story, Wyoming.
-- **Pilot Hill**: the lookout south of the fort, whose pickets signalled when a train was attacked.
-- **Sullivant Hills**: the hills west of the fort along which the wood road ran; the train was attacked here.
+- **Pilot Hill**: the lookout hill near the fort, whose pickets signalled when a train was attacked.
+- **Sullivant Hills**: the hills on the wood road where the train was attacked on 21 December.
 - **The pinery**: the woods about five miles north-west of the fort, where the trains cut timber.
 - **Lodge Trail Ridge**: the ridge about two miles north of the fort. Carrington's order forbade pursuit over it.
 - **Peno Creek**: the creek and flats at the north foot of the ridge, where the warriors waited.
@@ -24,11 +24,11 @@ Those villages, of Oglala, Miniconjou, Northern Cheyenne and Arapaho, planned a 
 - **Frederick H. Brown** (US Army, captain): the post quartermaster, under orders to leave the post. He joined the column; killed.
 - **George W. Grummond** (US Army, lieutenant): led the cavalry. Carrington ordered him to obey Fetterman and not leave him. Killed.
 - **Tenodor Ten Eyck** (US Army, captain): led the second relief, which found the dead.
-- **Red Cloud** (Oglala Lakota): the leading voice for war. Wikipedia and the fort's history both note that his part on the day is not known.
+- **Red Cloud** (Oglala Lakota): the leading voice for war. Wikipedia counts him present with his role unknown; the fort's history doubts he fought.
 - **High Back Bone (Hump)** (Miniconjou Lakota): named as the chief fighting leader.
 - **Crazy Horse** (Oglala Lakota): by later tradition a leader of the decoys. Monnett finds no early Indian account that puts him there.
 - **American Horse** (Oglala Lakota): named by Ricker's informants as a decoy. He said he killed Fetterman.
-- **Little Wolf** (Northern Cheyenne), **Black Shield** (Miniconjou) and **Medicine Man** and **Black Bear** (Arapaho): named by the fort's history among the other leaders.
+- **Little Wolf** (Northern Cheyenne), **Black Shield** and **Black Leg** (Lakota) and **Medicine Man** and **Black Bear** (Arapaho): named by the fort's history among the other leaders.
 
 ### The battle
 On 21 December a train went out about 10:00 towards the pinery. Carrington testified that "it was nearly 11 o'clock" when Pilot Hill signalled it had corralled under attack. He sent 49 infantry and 27 men of the 2nd Cavalry. Fetterman took the command from Powell. Brown and two civilians, James Wheatley and Isaac Fisher, carrying Henry repeating rifles, went too. Carrington put the total at 81. His written order was "Under no circumstances pursue over the ridge viz; Lodge Trail Ridge."
@@ -51,16 +51,17 @@ That night Phillips and Daniel Dixon rode for help. Phillips reached Fort Larami
 - **The boast.** The legend has Fetterman say that with 80 men he could ride through the whole Sioux nation. WyoHistory's battlefield page gives 100 men. Smith traces his reckless image to the books of Carrington's two wives (1868, 1910) and calls it flawed; Monnett also treats it as myth.
 - **The orders.** Carrington and his wives say the order was given twice. Smith suggests Carrington and Fetterman may have planned an attack from the rear.
 - **Fetterman's death.** Carrington found him and Brown each with a revolver shot in the left temple, suggesting they shot each other. American Horse claimed to have killed him.
+- **The sides of the trap.** Wikipedia puts the Cheyenne and Arapaho west of the trail and the Lakota east. The game's map, for play, has Lakota in the west ravines and Cheyenne and Arapaho in the east.
 - **Crazy Horse.** Most popular accounts make him the leading decoy. Monnett traces this to Mari Sandoz's 1942 book and finds no early Indian source for it, though he doubts Crazy Horse was absent.
 
 !!! story "The bugler"
     Adolph Metzger was the cavalry's bugler, a German-born soldier who had served since 1855.
-    By the warriors' accounts he fought on after his ammunition was gone, striking out with his
-    bugle until it was battered out of shape. He was among the last to die. American Horse
-    testified that the warriors did not mutilate his body. They covered it with a buffalo robe,
-    in respect. When Carrington's men came to collect the dead, his was the only body not cut.
-    The Lakota called the fight the Battle of the Hundred in the Hand, after a vision before it
-    in which a holy man came back with a hundred soldiers in his hands.
+    Accounts say that at the end he fought with his bugle, striking out with it until it was
+    battered out of shape. He is thought to have been the last soldier to die, though whether
+    he fell with Wheatley and Fisher or near Fetterman is not clear. American Horse testified
+    that the warriors did not mutilate his body. They covered his head with a buffalo robe.
+    When Carrington's men came to collect the dead, his was the only body not cut. Nobody
+    recorded why he was spared.
 
 ### Sources
 - H. B. Carrington, testimony and reports, Fort Phil Kearny investigation 1867 (National Archives M740), transcribed by B. Markland: https://freepages.rootsweb.com/~familyinformation/history/fpk/car_5.html
@@ -69,7 +70,7 @@ That night Phillips and Daniel Dixon rode for help. Phillips reached Fort Larami
 - E. Ostlind, "Red Cloud's War", WyoHistory.org (2014): https://www.wyohistory.org/encyclopedia/red-clouds-war
 - WyomingHeritage.org, "Fetterman Battlefield", WyoHistory.org (2014): https://www.wyohistory.org/encyclopedia/fetterman-battlefield
 - Fort Phil Kearny State Historic Site, "Fetterman Battle History" (after McWilliams and Wilson's self-guided tour, Ricker's interviews and Tallbull): https://www.fortphilkearny.org/fetterman-battle-history
-- G. Stevens, "Interview with Fetterman Fight author John Monnett", HistoryNet, on *Where a Hundred Soldiers Were Killed* (2008): https://historynet.com/interview-with-fetterman-fight-author-john-monnett/
+- "Interview with Fetterman Fight author John Monnett", HistoryNet, on *Where a Hundred Soldiers Were Killed* (2008): https://historynet.com/interview-with-fetterman-fight-author-john-monnett/
 - Review of J. H. Monnett, *Eyewitness to the Fetterman Fight: Indian Views* (2017), HistoryNet: https://historynet.com/book-review-eyewitness-fetterman-fight/
 - "Fetterman Fight", *Wikipedia* (summarising Ambrose, Bent, Calitri/Smith, Monnett and others): https://en.wikipedia.org/wiki/Fetterman_Fight
 - "Red Cloud's War", *Wikipedia*: https://en.wikipedia.org/wiki/Red_Cloud%27s_War
