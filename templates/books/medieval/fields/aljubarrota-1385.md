@@ -48,12 +48,12 @@ Juan rode about 50 km that night to Santarém, then took ship for Seville, where
 - **The "square".** Later tradition has Nuno form his men in a hollow square. Monteiro argues it never existed: the valleys and the works did the job.
 - **The first charge.** Some accounts have the French charge on horseback and be destroyed by the archers. Others have them come on foot, or dismount under fire.
 - **The attack on the rear.** Modern accounts give it to the Master of Alcántara, or to Pedro Álvares Pereira, Master of Calatrava.
-- **The losses.** Modern figures are about 4,000 Castilians killed on the field and as many again in the rout, against about 1,000 Portuguese. The ossuary on the field holds about 2,800 bones from more than 400 men.
+- **The losses.** Modern figures are about 4,000 Castilians killed on the field and about 5,000 more in the rout, against about 1,000 Portuguese. The ossuary on the field holds about 2,800 bones from more than 400 men.
 
 !!! story "The English at Aljubarrota"
     On Easter Sunday, 2 April 1385, two ships reached Lisbon with 200 men-at-arms, 200 archers and 400 moios
     of wheat. A third ship landed 90 men at Setúbal, and a fourth about 150 at Porto. They had been
-    mustered at Plymouth and paid three months in advance from 24 March. Their captains included Peter
+    mustered at Plymouth and paid three months in advance from 24 March. The muster orders name captains such as Peter
     Cressingham, Robert Grantham and Thomas Dale. Fernão Lopes, writing some 50 years later, gave them little
     space. Peter Russell found their muster orders in the Public Record Office in London, and argued that
     their 300 or so bows, beside Lopes's 800 crossbows, gave João more firepower than the chronicle admits.
