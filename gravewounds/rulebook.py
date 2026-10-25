@@ -13,6 +13,7 @@ from pathlib import Path
 
 from . import combat as C
 from . import rulebook_later as LATER
+from . import book_examples as BOOKEX
 from .engine import armor_at, armor_steps, compose_wound, reduce_severity
 from .model import Data
 
@@ -206,6 +207,7 @@ def values(d: Data) -> dict:
     }
     v.update(_field_values(d), **_travel_values(d), **LATER.values(d))
     v["ex"] = example(d)
+    v.update(BOOKEX.values(d))   # the period books' worked examples (bx, wx, mx)
     return v
 
 
