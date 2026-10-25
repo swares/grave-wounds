@@ -18,7 +18,7 @@ That afternoon the allied cavalry under General Long fell back across the Albuer
 - **Jerumenha**: the river crossing Kemmis's brigade had to use, about 30 miles round. It arrived the day after the battle.
 
 ### The leaders
-- **William Carr Beresford** (Allies, commander): a marshal in the Portuguese army. He held the high ground, with his troops hidden behind the crest.
+- **William Carr Beresford** (Allies, commander): a British general and marshal of the Portuguese army, which he had reformed. He held the high ground, with his troops hidden behind the crest.
 - **Joaquín Blake** (Allies, Spanish commander): about 14,000 men. He was slow to turn his line to face the flank attack.
 - **José de Zayas** (Allies, Spanish division): his four battalions turned to face the French on the heights and held for over an hour.
 - **William Stewart** (Allies, 2nd Division): sent Colborne's brigade into the attack before the rest of the division was up.
@@ -60,11 +60,11 @@ Beresford brought up the Portuguese but would not storm Soult's guns on the hill
     Lieutenant Matthew Latham of the Buffs was near the King's Colour when the lancers came out of
     the hail. The ensign carrying it, Walsh, was 16; the other colour was carried by Ensign Edward
     Thomas, 15, who was killed by a lance after refusing to give his flag to a French officer.
-    Latham took the King's Colour and fought for it with his sword. He was cut about the head and arm,
-    knocked down and kicked by the horses. On the ground he tore the cloth from the staff and lay on it.
+    Latham took the King's Colour and fought for it with his sword. He lost an arm, and was knocked
+    down and kicked by the horses. On the ground he tore the cloth from the staff and lay on it.
     At the end of the day Sergeant Gough of the 7th Fusiliers found it under him, stained with blood.
-    Latham lived. His fellow officers gave him a medal, and the regiment's silver centrepiece shows the
-    moment.
+    Latham lived. His fellow officers gave him a medal, and a piece of the regiment's silver, the
+    Latham Centrepiece of 1872, records the moment.
 
 ### Sources
 - C. Oman, *A History of the Peninsular War*, vol. IV (Oxford, 1911), section XXVI, ch. IV-V and appendix XV, at the Internet Archive (page text read through the archive's reader): https://archive.org/details/historyofpeninsu04oman ; also at Project Gutenberg: https://www.gutenberg.org/ebooks/56812
