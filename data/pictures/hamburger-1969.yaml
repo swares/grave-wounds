@@ -1,0 +1,19 @@
+# Pictures for the Hamburger Hill section of Korea and Vietnam. Each is public domain, checked on its
+# source page. The file goes in images/books/korea_vietnam/ under `file`; until it is there the book
+# shows a captioned slot with this credit and source.
+# hamburger-1969-wounded: LICENCE FROM THE CREDIT LINE ONLY. The photograph is printed on p. 36 of the
+# Center of Military History's pamphlet Transition (CMH Pub 76-6, 2018), read for this page,
+# with the caption "Wounded soldiers receive treatment before medical evacuation during the Battle of
+# Hamburger Hill in May 1969" and the credit "U.S. Army". A US Army photograph is a US government work
+# and public domain. We have not found the same photograph on Commons or in the National Archives
+# catalogue (Commons could not be reached from here), so the photographer and negative number are not
+# known. Take the image from the pamphlet or find the original at NARA (Record Group 111) before print.
+# Photographs of the battle credited to the Associated Press or Stars and Stripes were rejected.
+- id: hamburger-1969-wounded
+  file: hamburger-1969-wounded.jpg
+  caption: "Wounded soldiers are treated before they are flown out, during the battle for Hamburger Hill, May 1969. US Army photograph."
+  credit: "U.S. Army, from A. G. Traas, Transition, November 1968–December 1969, CMH Pub 76-6 (2018), p. 36"
+  licence: "Public domain (US government work)"
+  source: "https://history.army.mil/html/books/076/76-6/cmhPub_76-6.pdf"
+  alt: "A photograph of wounded American soldiers being treated before evacuation by helicopter."
+# alt: written from the CMH caption; the image itself has not been seen. Check it against the photograph.

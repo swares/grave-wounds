@@ -1,0 +1,20 @@
+# Pictures for the Pork Chop Hill section of Korea and Vietnam. Each is public domain or openly licensed,
+# checked as far as this session could. The file goes in images/books/korea_vietnam/ under `file`; until it
+# is there the book shows a captioned slot with this credit and source.
+# porkchop-oldbaldy-map: LICENCE CONFIRMED BY PUBLISHER, IMAGE NOT SEEN. No Pork Chop photograph with a
+# checkable free licence was found: Commons category and search pages refused this session's requests, and
+# web searches found no Commons file of the April 1953 battle. This is instead "Map 4. The Old Baldy Area"
+# from W. G. Hermes, Truce Tent and Fighting Front (US Army Center of Military History, 1966), chap. XIII,
+# as the Korean War Project's transcription names it (file maps/map4.gif on the chapter page below). A map
+# drawn for a CMH official history is a work of the US government and in the public domain. The map image
+# itself could not be opened in this session, so we have NOT confirmed that it labels Porkchop (Hill 255);
+# Hermes's text on the same page names Outpost 10 on Hill 255 (Porkchop) and Outpost 11 on Hill 266 (Old
+# Baldy). The map was drawn for the 1952 fighting. Look at it before print, and use the CMH's own PDF of the
+# book (CMH Pub 20-3) for the scan rather than the transcription's GIF. No Commons copy was found.
+- id: porkchop-oldbaldy-map
+  file: porkchop-oldbaldy-map.gif
+  caption: "The Old Baldy area, from the US Army's official history of the last two years of the war. Hermes numbers the outposts: Outpost 10 on Hill 255, Porkchop, and Outpost 11 on Hill 266, Old Baldy."
+  credit: "US Army Center of Military History, map 4 in W. G. Hermes, Truce Tent and Fighting Front (1966)"
+  licence: "Public domain (US government work)"
+  source: "https://www.koreanwaronline.com/history/TruceTent/ch13.htm"
+  alt: "A black-and-white map of the hills round Old Baldy and Porkchop on the western front in Korea."

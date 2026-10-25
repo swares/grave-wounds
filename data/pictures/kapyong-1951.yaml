@@ -1,0 +1,17 @@
+# Pictures for the Kapyong section of Korea and Vietnam. Each is public domain or openly licensed,
+# checked on its source page. The file goes in images/books/korea_vietnam/ under `file`; until it is there
+# the book shows a captioned slot with this credit and source.
+# kapyong-valley: LICENCE CONFIRMED ON THE HOLDER'S OWN PAGE (Australian War Memorial, 147835; the same
+# record is shown at https://www.awm.gov.au/collection/C276851). The Memorial gives the maker as Claude
+# Rudolph Holzheimer, the copyright status as "Copyright expired - public domain", and marks it with the
+# Public Domain Mark 1.0. No Commons copy was found, so the source is the AWM page. The photograph was taken
+# on 16 April 1952, a year after the battle. The Memorial's description dates the battle "1951-04-26",
+# which is wrong (23-25 April 1951); a sister photograph in the same series (147830) also calls the
+# Australian position "Hill 355", where the other sources say Hill 504. Our caption follows the sources.
+- id: kapyong-valley
+  file: kapyong-valley.jpg
+  caption: "The Kapyong valley seen from the positions 3 RAR held on Hill 504, photographed by Claude Holzheimer on 16 April 1952, a year after the battle."
+  credit: "Claude Rudolph Holzheimer, 16 April 1952, Australian War Memorial, 147835"
+  licence: "Public domain (copyright expired; marked Public Domain Mark 1.0 by the Australian War Memorial)"
+  source: "https://www.awm.gov.au/photograph/147835"
+  alt: "A photograph looking down from the Australian positions on Hill 504 over the Kapyong river valley."
