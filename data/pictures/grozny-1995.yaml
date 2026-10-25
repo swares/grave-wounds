@@ -1,0 +1,20 @@
+# Pictures for the Grozny section of The Late Wars. Openly licensed, credit required. The file goes in
+# images/books/late_wars/ under `file`; until it is there the book shows a captioned slot with this credit
+# and source.
+# grozny-prayer: LICENCE NOT FULLY CONFIRMED - CHECK BEFORE PRINT. Commons could not be read from this session:
+# the file page below was found by a web search limited to commons.wikimedia.org but returned "not found"
+# when fetched, as did every other Commons page tried (so the file may also have been deleted since). The
+# licence was read instead on a mirror of Evstafiev's Commons upload list
+# (https://blogs.ashmolean.org/commons.wikimedia.org/wiki/Special_ListFiles/Evstafiev.html), which shows
+# this file, uploaded 7 November 2007, described as "A Chechen man prays in Grozny, January 1995. Photo by
+# Mikhail Evstafiev", with the licence template {{cc-by-sa-2.5}}. The University of Trier's EGO site also
+# credits an Evstafiev photograph of the war in Chechnya, 1995, to Commons under CC BY-SA 3.0. Mikhail
+# Evstafiev is living; the licence was his own upload's. The photograph is not of the railway station and
+# its exact day in January 1995 is not given. If the Commons page cannot be confirmed, drop this picture.
+- id: grozny-prayer
+  file: grozny-prayer.jpg
+  caption: "A Chechen man prays in Grozny, January 1995, during the battle for the city. Photograph by Mikhail Evstafiev."
+  credit: "Mikhail Evstafiev, January 1995, via Wikimedia Commons"
+  licence: "CC BY-SA 2.5 (Creative Commons Attribution-ShareAlike 2.5 Generic)"
+  source: "https://commons.wikimedia.org/wiki/File:Evstafiev-chechnya-prayer2.jpg"
+  alt: "A Chechen man at prayer in Grozny in January 1995."

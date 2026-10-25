@@ -1,0 +1,29 @@
+# Pictures for the Combat Outpost Keating section of The Late Wars. Each is credited to the US Army on its
+# source page, so public domain as a US government work. The file goes in images/books/late_wars/ under
+# `file`; until it is there the book shows a captioned slot with this credit and source.
+# keating-aerial: LICENCE TAKEN AS A US GOVERNMENT WORK, NOT FULLY CONFIRMED, NOT FOUND ON COMMONS. The
+# Defense Media Network article on Romesha (2013) captions it as an aerial view of Combat Outpost Keating,
+# Nuristan, where the battle of 3 October 2009 took place, and credits it "U.S. Army photo by 1st Lt. Brad
+# Larson". A photograph taken by a serving officer on duty is public domain, but Defense Media Network is
+# a commercial site and no army.mil or DVIDS page for this picture was found (Commons and DVIDS image pages
+# could not be reached from this session). The picture is undated on the page and may be from before the
+# battle. Check before print: find the army.mil or DVIDS copy, confirm the credit and the date.
+# keating-humvee: LICENCE CONFIRMED AS A US GOVERNMENT WORK ON ARMY.MIL, NOT ON COMMONS. The army.mil Ty Carter
+# Medal of Honor pages (2013) show a pockmarked Humvee at COP Keating credited "U.S. Army photo". The exact
+# caption, date and image URL were not recorded from this session: check the caption before print.
+# Not used: the army.mil Romesha picture of B Troop with Apache pilots and Latvian soldiers, credited only
+# "Photo courtesy of U.S. Army", and the Carter family photographs ("courtesy").
+- id: keating-aerial
+  file: keating-aerial.jpg
+  caption: "Combat Outpost Keating from the air, at the bottom of the valley in Nuristan where it was attacked on 3 October 2009."
+  credit: "US Army photograph by 1st Lt. Brad Larson (via Defense Media Network)"
+  licence: "Public domain (US government work)"
+  source: "https://www.defensemedianetwork.com/stories/staff-sgt-clinton-l-romesha-and-the-battle-of-kamdesh/"
+  alt: "An aerial photograph of the outpost in its valley."
+- id: keating-humvee
+  file: keating-humvee.jpg
+  caption: "A Humvee pocked by fire at Combat Outpost Keating, 2009."
+  credit: "US Army photograph (army.mil, Ty Carter Medal of Honor pages)"
+  licence: "Public domain (US government work)"
+  source: "https://www.army.mil/medalofhonor/carter"
+  alt: "A Humvee marked by bullets and fragments."
