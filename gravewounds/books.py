@@ -154,7 +154,7 @@ def render_book(d: Data, root: Path, books: dict, bid: str) -> str:
     used = _book_tables(d, B)
     md = [f"# {B['title']}, {B['dates']} {{#{bid}}}",
           B["intro"],
-          f"The battlefields: {', '.join(f'[{_short(d.fields[f])}](#field-{f})' for f in fields)}."
+          f"The battlefields: {', '.join(f'[{_short(d.fields[f], d)}](#field-{f})' for f in fields)}."
           if fields else "",
           _content(root, bid, "intro.md"),
           "## What is switched on {#switched-on}",
@@ -174,11 +174,15 @@ def render_book(d: Data, root: Path, books: dict, bid: str) -> str:
     return _page(root, "\n\n".join(x for x in md if x), books, B["file"], f"Grave Wounds: {B['title']}", desc, B["title"])
 
 
-def _short(f: dict) -> str:
-    """'Crécy, 26 August 1346 (the Vallée des Clercs)' -> 'Crécy 1346'."""
+def _short(f: dict, d: Data | None = None) -> str:
+    """'Crécy, 26 August 1346 (the Vallée des Clercs)' -> 'Crécy 1346'; with the day and month when
+    another battlefield has the same short name ('The Great Redan, 18 June 1855')."""
     name = f["name"].split(",")[0].split(" (")[0]
     year = re.search(r"(1\d{3}|20\d{2})", f["id"])
-    return f"{name} {year.group(1)}" if year and year.group(1) not in name else name
+    short = f"{name} {year.group(1)}" if year and year.group(1) not in name else name
+    if d is not None and any(g is not f and _short(g) == short for g in d.fields.values()):
+        return f["name"].split(" (")[0]
+    return short
 
 
 def _switched_on(d: Data, B: dict) -> str:
@@ -192,17 +196,28 @@ def _switched_on(d: Data, B: dict) -> str:
     return RB._md(["Era", "Armies", "A career term", "Fighting skills"], rows)
 
 
+TEAM_TABLES = (("careers", "Careers"), ("fq", "Followers"), ("ranks", "Ranks"), ("jobs", "Work between fights"),
+               ("job_trouble", "Trouble at work"), ("skill_uses", "What each skill is for"))
+
+
 def _armies(d: Data, B: dict, tabs: dict, spots: list) -> list:
-    """The era's own tables: careers and followers (as the Rules' Making a team), then each era
+    """The book's eras' own tables: careers, followers, ranks, work and skill uses (as the Rules'
+    Making a team), each era's under its own heading when the book holds several; then each era
     table's rows, linked to the rule they belong to."""
-    out = []
-    if "medieval" in B["eras"]:
-        out += ["## Careers {#era-careers}", "The Rules' [Making a team](rules.html#team) uses these same tables "
-                "for its running example.", tabs["careers"], "## Followers {#era-followers}", tabs["fq"]]
-        for name, title in (("ranks", "Ranks"), ("jobs", "Work between fights"), ("job_trouble", "Trouble at work"),
-                            ("skill_uses", "What each skill is for")):
-            if name in tabs:
-                out += [f"## {title} {{#era-{name}}}", tabs[name]]
+    out, eras = [], B["eras"]
+    own = {e: RB.team_tables(d, e) for e in eras}
+    for name, title in TEAM_TABLES:
+        have = [e for e in eras if name in own[e]]
+        if not have:
+            continue
+        out.append(f"## {title} {{#era-{'careers' if name == 'careers' else 'followers' if name == 'fq' else name}}}")
+        if name == "careers" and "medieval" in eras:
+            out.append("The Rules' [Making a team](rules.html#team) uses these same tables for its running example.")
+        if len(eras) == 1:
+            out.append(own[have[0]][name])
+        else:
+            for e in have:
+                out += [f"### {d.teams[e]['name']} {{#era-{name}-{e}}}", own[e][name]]
     done = set()
     for name, anchor, title in spots:
         if name in done:
@@ -238,7 +253,7 @@ CONF = {"historical": "taken directly from a source", "fitted": "estimated to ma
 def _table_note(d: Data, tid: str, B: dict) -> str:
     """The free note on a wound table: what it counts, how sure it is, its sources, who rolls on it."""
     t = d.tables[tid]
-    fields = [f"[{_short(d.fields[f])}](#field-{f})" for f in B.get("fields", []) if d.fields[f]["table"] == tid]
+    fields = [f"[{_short(d.fields[f], d)}](#field-{f})" for f in B.get("fields", []) if d.fields[f]["table"] == tid]
     armies = [r.get("short") or r["name"] for e in B["eras"] for r in d.teams[e]["regions"] if r.get("table") == tid]
     used = []
     if fields:
@@ -371,12 +386,25 @@ def _sidebar(root: Path, name: str) -> str:
     return path.read_text(encoding="utf-8").strip()
 
 
+def _picture_books(root: Path) -> dict:
+    """{data/pictures file stem: its book}: 'rules', '<book>-intro', or a battlefield's id."""
+    books = (yaml.safe_load((root / "data" / "books.yaml").read_text(encoding="utf-8")) or {}).get("books") or {}
+    out = {"rules": "rules"}
+    for bid, B in books.items():
+        out[f"{bid}-intro"] = bid
+        out.update({f: bid for f in B.get("fields", [])})
+    return out
+
+
 def load_pictures(root: Path) -> dict:
-    """{id: picture}: data/pictures/*.yaml. A picture's file lives in images/books/<folder>/, the folder
-    being the YAML file's book: 'rules' for rules.yaml, else 'medieval' (each period book's battlefields)."""
-    out = {}
+    """{id: picture}: data/pictures/*.yaml. A picture's file lives in images/books/<book>/, the book
+    being its YAML file's: rules.yaml the Rules', <book>-intro.yaml that book's, <battlefield>.yaml
+    the book that holds the battlefield."""
+    out, where = {}, _picture_books(root)
     for path in sorted((root / "data" / "pictures").glob("*.yaml")):
-        folder = "rules" if path.stem == "rules" else "medieval"
+        folder = where.get(path.stem)
+        if folder is None:
+            raise ValueError(f"data/pictures/{path.name}: no book holds it (name it rules, <book>-intro or a battlefield id)")
         for P in yaml.safe_load(path.read_text(encoding="utf-8")) or []:
             for k in ("id", "file", "caption", "credit", "licence", "source"):
                 if not P.get(k):

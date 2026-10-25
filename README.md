@@ -12,7 +12,7 @@ Morrow Project, Gamma World and Traveller.
 
 **Status: early design.** The rule book is built and is being split into books: the Rules
 (`dist/rules.html`, from the 14 chapters in `templates/rules/`) and a book for each period, the
-first being *The Medieval Wars* (`dist/book-medieval.html`). The design proposal is in [docs/design.md](docs/design.md). It includes a comparison with Aftermath!, Rolemaster,
+so far *The Medieval Wars* (`dist/book-medieval.html`) and *The Black-Powder Wars* (`dist/book-black-powder.html`). The design proposal is in [docs/design.md](docs/design.md). It includes a comparison with Aftermath!, Rolemaster,
 Gamma World, Traveller and The Morrow Project. The first playtest era is medieval.
 
 **First playable piece:** the roller now runs the Grave Wounds stop check, graze and team
@@ -94,7 +94,10 @@ in the Rules' *Other periods*.
 **Period books:** `dist/book-medieval.html`, *The Medieval Wars, c.1180-1500*: the medieval armies'
 figures, a note on where each wound table comes from, and the eight battlefields from Jacob's Ford
 (1179) to Dornach (1499), each with what happened, how the field is drawn, the armies as drawn up and
-the phases. `data/books.yaml` says which eras and battlefields each book holds.
+the phases. `dist/book-black-powder.html`, *The Black-Powder Wars, 1618-1877*: the figures of five
+eras (the Thirty Years' War, horse and musket, the Crimea, the Civil War and frontier, and the Plains
+nations) and nine battlefields from Lützen (1632) to the Wagon Box (1867). `data/books.yaml` says
+which eras and battlefields each book holds.
 
 **Team builder:** `dist/team.html` makes a team of four to six in a few rolls each, from the
 tables of eleven eras (medieval, the Thirty Years' War, horse and musket, the Crimean War, the Civil War and
