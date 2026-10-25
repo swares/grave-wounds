@@ -67,6 +67,8 @@ a whole, not just in that career, so treat it as a rough guide. A GM may prefer 
 
 {{era:women}}
 
+{{sidebar:deborah-sampson}}
+
 !!! gm "For the GM"
     Pick an era for the fighting you want, not the uniforms. Before the machine gun, battles
     are decided in the press and the rout, as in the medieval chapters. From 1914 on, men

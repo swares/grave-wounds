@@ -1,0 +1,13 @@
+# Pictures for the Towton section of The Medieval Wars. Each is public domain or openly licensed, checked
+# on its source page. The file goes in images/books/medieval/ under `file`; until it is there the book shows
+# a captioned slot with this credit and source.
+# Wikimedia Commons could not be reached from this session; the licence below was checked on the PICRYL
+# mirror of the Commons file (Public Domain Mark), and the artist died in 1927 and the picture was published
+# in 1922, so it is public domain in the UK and the US. Download from the Commons file named in `credit`.
+- id: towton-woodville
+  file: towton-woodville.jpg
+  caption: "The battle of Towton as Richard Caton Woodville imagined it in 1922, more than 450 years after the battle."
+  credit: "Richard Caton Woodville Jr, for Hutchinson's Story of the British Nation, vol. 1 (London, 1922); Wikimedia Commons, File:Richard Caton Woodville's The Battle of Towton.jpg"
+  licence: "Public domain"
+  source: "https://picryl.com/media/the-battle-of-towton-by-richard-caton-woodville-2a2798"
+  alt: "A 20th-century illustration of armoured men fighting hand to hand at Towton."

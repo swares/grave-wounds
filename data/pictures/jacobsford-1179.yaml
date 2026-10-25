@@ -1,0 +1,13 @@
+# Pictures for the Jacob's Ford section of The Medieval Wars. Each is public domain or openly licensed, checked
+# on its source page. The file goes in images/books/medieval/ under `file`; until it is there the book shows
+# a captioned slot with this credit and source.
+# jacobsford-baldwin-coronation: commons.wikimedia.org could not be reached from this session. The folio and
+# the licence were checked on the Walters Art Museum's own description of the manuscript (the `source` page),
+# which licenses the Digital Walters data set under CC BY-SA 3.0. The image file itself was not opened.
+- id: jacobsford-baldwin-coronation
+  file: jacobsford-baldwin-coronation.jpg
+  caption: "The death of King Amaury and the coronation of his son Baldwin IV, who built the castle at Jacob's Ford. From a French manuscript of William of Tyre's history, Paris, about 1300, over a century after the events."
+  credit: "Walters Art Museum, Baltimore, Ms. W.142 (William of Tyre, Estoire d'Eracles), f. 210v"
+  licence: "CC BY-SA 3.0 (Walters Art Museum)"
+  source: "https://thedigitalwalters.org/Data/WaltersManuscripts/html/W142/description.html"
+  alt: "A historiated initial M from a medieval manuscript: King Amaury on his deathbed, and the young Baldwin IV crowned by the patriarch."

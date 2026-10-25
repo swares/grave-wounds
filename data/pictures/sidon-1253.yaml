@@ -1,0 +1,20 @@
+# Pictures for the Sidon section of The Medieval Wars. Each is public domain or openly licensed, checked
+# on its source page. The file goes in images/books/medieval/ under `file`; until it is there the book shows
+# a captioned slot with this credit and source.
+# commons.wikimedia.org could not be reached from this session; both licences were checked on the holding
+# institutions' own pages (the `source` pages). sidon-louis-captured: the Walters Art Museum licenses the
+# Digital Walters data set under CC BY-SA 3.0; the image file itself was not opened.
+- id: sidon-louis-captured
+  file: sidon-louis-captured.jpg
+  caption: "Louis IX and his nobles taken prisoner on the retreat from Mansurah, 1250. From the continuation of William of Tyre's history in a Paris manuscript of about 1340, some 90 years after the event."
+  credit: "Walters Art Museum, Baltimore, Ms. W.142 (William of Tyre, Estoire d'Eracles, with continuations), f. 326r"
+  licence: "CC BY-SA 3.0 (Walters Art Museum)"
+  source: "https://thedigitalwalters.org/Data/WaltersManuscripts/html/W142/description.html"
+  alt: "A panel miniature from a medieval manuscript: the French king and his knights seized by their enemies."
+- id: sidon-roberts-1843
+  file: sidon-roberts-1843.jpg
+  caption: "Sidon, looking towards Lebanon: a lithograph of 1843 after a sketch David Roberts made in 1839, almost 600 years after the raid."
+  credit: "Louis Haghe after David Roberts, The Holy Land, Syria, Idumea, Arabia, Egypt and Nubia (1843), coloured lithograph, Wellcome Collection"
+  licence: "Public domain (Public Domain Mark)"
+  source: "https://wellcomecollection.org/works/ahsksps6"
+  alt: "A 19th-century coloured print of the coastal town of Sidon with the mountains of Lebanon behind, and travellers with camels and horses."

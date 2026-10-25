@@ -1,0 +1,10 @@
+# Pictures for "The period's fighting", the opening chapter of The Medieval Wars. Each is public domain
+# or openly licensed, checked on its source page. The file goes in images/books/medieval/ under `file`;
+# until it is there the book shows a captioned slot with this credit and source.
+- id: medieval-surgeons
+  file: medieval-surgeons.jpg
+  caption: "Surgeons at work, from a manuscript of Roger Frugardi's Chirurgia (late 13th or early 14th century)."
+  credit: "British Library, Sloane MS 1977; photograph Wellcome Collection, M0006986"
+  licence: "Public domain (Public Domain Mark 1.0)"
+  source: "https://wellcomecollection.org/works/x66u88bc"
+  alt: "A medieval manuscript page with small painted scenes of surgeons treating patients, beside scenes from the life of Christ."

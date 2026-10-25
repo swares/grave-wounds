@@ -2137,6 +2137,9 @@ def main() -> int:
     from gravewounds.books import render_all as rule_books
     for name, page in rule_books(d, ROOT).items():     # the Rules and each period book (data/books.yaml)
         (DIST / name).write_text(page, encoding="utf-8")
+    if (ROOT / "images").exists():                     # the books' pictures (data/pictures), served beside the pages
+        import shutil
+        shutil.copytree(ROOT / "images", DIST / "images", dirs_exist_ok=True)
     ctpl = (ROOT / "templates" / "campaign.html").read_text(encoding="utf-8")       # the GM's console over the pages
     chtml = ctpl.replace("/*__CAMPAIGN_JS__*/", (ROOT / "templates" / "campaign.js").read_text(encoding="utf-8"))
     chtml = chtml.replace("/*__GAMELOG_JS__*/", (ROOT / "templates" / "gamelog.js").read_text(encoding="utf-8"))

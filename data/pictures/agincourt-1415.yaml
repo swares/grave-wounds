@@ -1,0 +1,20 @@
+# Pictures for the Agincourt section of The Medieval Wars. Each is public domain or openly licensed, checked
+# on its source page. The file goes in images/books/medieval/ under `file`; until it is there the book shows
+# a captioned slot with this credit and source.
+# Both files are on Wikimedia Commons, but its pages could not be fetched from here; `source` is the
+# mirror page that was checked (it carries the Commons description and licence). Swap in the Commons URL
+# when someone can confirm it.
+- id: agincourt-walsingham
+  file: agincourt-walsingham.jpg
+  caption: "The battle of Agincourt, from an English manuscript of Thomas Walsingham's St Albans Chronicle, about 1422, a few years after the battle."
+  credit: "Unknown illuminator (English, with Flemish illuminations), Thomas Walsingham, St Albans Chronicle, Lambeth Palace Library, MS 6, f. 243"
+  licence: "Public domain"
+  source: "https://c.enwp.org/wiki/File:Battle_of_Agincourt,_St._Alban%27s_Chronicle_by_Thomas_Walsingham.jpg"
+  alt: "A 15th-century manuscript painting of the English and French armies fighting at Agincourt."
+- id: agincourt-monstrelet
+  file: agincourt-monstrelet.jpg
+  caption: "The battle of Agincourt, from an abridged copy of Enguerrand de Monstrelet's chronicle made in Paris about 1470-1480, more than 50 years after the battle."
+  credit: "Unknown illuminator, Enguerrand de Monstrelet, Chronique (abridged), Bibliothèque nationale de France, Français 2680, f. 208"
+  licence: "Public domain"
+  source: "https://en.vikidia.org/wiki/File:Schlacht_von_Azincourt.jpg"
+  alt: "A late 15th-century manuscript painting of armoured men in battle at Agincourt."

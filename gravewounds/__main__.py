@@ -225,8 +225,10 @@ def _main(argv=None) -> int:
         for w in d.warnings:
             print("warning:", w)
         from pathlib import Path
-        from .books import load_books
-        books = load_books(d, Path(__file__).resolve().parent.parent)   # data/books.yaml: eras and battlefields exist, none in two books
+        from .books import load_books, load_pictures
+        root = Path(__file__).resolve().parent.parent
+        books = load_books(d, root)          # data/books.yaml: eras and battlefields exist, none in two books
+        load_pictures(root)                  # data/pictures: every picture has its file, caption, credit, licence and source
         print(f"OK: {len(d.locations)} locations, {len(d.weapons)} weapons, {len(d.tables)} tables, {len(books)} period book{'s' if len(books) != 1 else ''}")
     elif a.cmd == "list":
         print("Tables:")

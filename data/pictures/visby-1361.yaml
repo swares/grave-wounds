@@ -1,0 +1,14 @@
+# Pictures for the Visby section of The Medieval Wars. Each is public domain or openly licensed, checked
+# on its source page. The file goes in images/books/medieval/ under `file`; until it is there the book shows
+# a captioned slot with this credit and source.
+# visby-hellqvist: commons.wikimedia.org could not be reached from this session; the licence was checked on
+# a mirror of the Commons file page (https://c.enwp.org/wiki/File:Valdemar_Atterdag_brandskattar_Visby_(1882).jpg),
+# which shows PD-Art (PD-old-100) and the Public Domain Mark. Hellqvist died in 1890. The painting's details
+# were checked on the Nationalmuseum's page (https://collection.nationalmuseum.se/en/collection/item/18434/).
+- id: visby-hellqvist
+  file: visby-hellqvist.jpg
+  caption: "Valdemar Atterdag holding Visby to ransom, 1361, painted by Carl Gustaf Hellqvist in 1882, more than 500 years after the event. It shows the legend of the barrels, not a recorded scene."
+  credit: "Carl Gustaf Hellqvist, Valdemar Atterdag brandskattar Visby (1882), oil on canvas, Nationalmuseum, Stockholm, NM 1431"
+  licence: "Public domain"
+  source: "https://commons.wikimedia.org/wiki/File:Valdemar_Atterdag_brandskattar_Visby_(1882).jpg"
+  alt: "A 19th-century painting: a king sits on a raised red throne before a church while townspeople carry treasure to large vats; in the middle a burgher shakes his fist at the king."

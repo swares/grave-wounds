@@ -1,0 +1,13 @@
+# Pictures for the Dornach section of The Medieval Wars. Each is public domain or openly licensed, checked
+# on its source page. The file goes in images/books/medieval/ under `file`; until it is there the book shows
+# a captioned slot with this credit and source.
+# Wikimedia Commons could not be reached from this session; the licence below was checked in the image
+# licence table of the Austria-Forum mirror of the German Wikipedia article, which reproduces the Commons
+# file's credit and licence. Download from the Commons file named in `credit`.
+- id: dornach-woodcut
+  file: dornach-woodcut.jpg
+  caption: "The battle of Dornach, from an anonymous woodcut of the period (right half). Three copies survive, in Nuremberg, Basel and Zürich; Josef Zemp (1897) suggested the Basel master Rudolf Heri."
+  credit: "Anonymous woodcut, perhaps by Rudolf Heri; scan from W. Meyer and H. D. Finck, Die Schweiz in der Geschichte 700-1700, vol. 1 (1995); Wikimedia Commons, File:Schlacht bei Dorneck.jpg"
+  licence: "Public domain"
+  source: "https://austria-forum.org/af/AustriaWiki/Schlacht_bei_Dornach"
+  alt: "An early woodcut of the battle of Dornach, showing the fighting below the castle of Dorneck."
