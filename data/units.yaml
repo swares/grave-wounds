@@ -558,8 +558,9 @@ anti_tank_guns:
 # Towing: anti-tank guns hook up to gun tractors or trucks of their side beside them
 # (vehicles.kinds `tows`: guns a vehicle tows), riding with them as riders do and neither
 # firing nor fighting; unhooked, they get down beside the tractors and fire from the next
-# exchange. Tractors are soft-skinned (vehicles.armour.soft). The enemy
-# commander leaves tractors and the guns they tow to the GM. Design estimates.
+# exchange. Tractors are soft-skinned (vehicles.armour.soft). The enemy commander hooks its
+# guns up and tows them: attacking, when no known enemy is in reach and there is somewhere to go,
+# and in either stance to pull them back under threat (commander._hook_up). Design estimates.
 # Each gun goes into action with `rounds` rounds, spent one a round fired; Resupply refills them
 # (an exchange out of contact, neither moving nor firing), as a black-powder battery's caissons.
 
@@ -582,8 +583,10 @@ gun_shields:
 # The GM paints minefields on hexes before the battle (field.mines: {hex: {kind, hidden}}),
 # on a table that has mine wounds (`weapon`, 1939 on). A marked field shows on the map; a
 # hidden one only once something has gone into it. A unit that moves into minefield hexes (its
-# ground crossed: its footprint along a straight line from where it stood when the exchange's
-# moves began, less where it was) sets them off when the exchange is resolved, before the
+# ground crossed: its footprint along the way it took from where it stood when the exchange's
+# moves began, less where it was; the way within its move that crosses the fewest minefield hexes
+# its side knows of, then costs the least, nearest the straight line (units.mine_path); the
+# straight line if there is none) sets them off when the exchange is resolved, before the
 # shooting: for each such hex, each man of a hex's worth (its formation's men a hex) is struck at
 # the kind's `men` %, and rolls a wound as one struck by a mine at `attack` %; a vehicle that goes
 # into it is struck at its `vehicles` %, and then knocked out at its armour's `mine` %, else
@@ -613,8 +616,8 @@ mines:
 # within `blocked` hexes of the zone, or where the men would not fit. An enemy unit (not
 # broken or fled) that could shoot at the zone's hex makes it hot: each man landing is struck
 # at `hot` % and rolls a wound as a man struck by shellfire (indirect.attack), and each
-# helicopter landing there is hit at `hit` %: of those `downed` % come down on the zone (a
-# wreck, its crew out of the fight), the rest go home damaged; either way it is lost for the
+# helicopter landing there is hit at `hit` %: of those `downed` % come down (a wreck on the
+# nearest hex to the zone, within `zone` hexes, with no work on it; its crew out of the fight), the rest go home damaged; either way it is lost for the
 # battle. A helicopter can also bring a supply dump to a zone (the wars in `supply_battles`),
 # or lift a unit out from within `zone` hexes of one (out of contact; it does not move while
 # it boards; its men flown out are safe). Design estimates.

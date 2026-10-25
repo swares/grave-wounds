@@ -82,7 +82,7 @@ fight on their own sheets, untouched by their unit's fatigue. Units start the ba
 
 This is what costs the French at Agincourt: their men in plate reach the English line
 already Tired from the mud, and the fighting and the mud behind them soon make them
-Exhausted. Measured over the 37 battlefields, 4 seeds each, only Agincourt changes its
+Exhausted. Measured over the battlefields there were then (37; there are now 44), 4 seeds each, only Agincourt changes its
 result. The English still have units standing at the end of all four runs (before, two runs
 ended with the whole English army gone), and they win one of the four outright. The other three still go to
 the French on the share of men lost, because one English archer block breaks and is cut
@@ -143,7 +143,7 @@ The check is d100 against its Nerve (green 35, regular 50, veteran 65), with mod
 | Modifier | |
 |---|---|
 | Still steady (ranks closed) | +20 |
-| A named leader with it, up | +10 |
+| A named leader with it, up | +10, and his rank bonus |
 | Its leader down | −20 |
 | Half its men down | −20 |
 | Struck in flank or rear | −20 |
@@ -226,7 +226,7 @@ prisoners, 8% in the open). Self-play showed the gap: cornered Somali militia at
 were cut down almost to the last man over 79 and 187 exchanges. Measured on 24 runs of every
 battlefield: 658 of 912 from 657, the morale targets about as before (the rout's share of the
 loser's losses 5% to 4%, now counting prisoners); Visby 23 to 24 (the Gotlanders' losses 21% to
-32%: medieval quarter is 20%), X-Ray, Grozny, Lützen and Agincourt +1; Mogadishu 21 to 19, Wanat
+32%: Visby's quarter is 20%), X-Ray, Grozny, Lützen and Agincourt +1; Mogadishu 21 to 19, Wanat
 and the September Redan -1. The self-play tools count prisoners as losses.
 
 ## What the numbers give
@@ -237,7 +237,7 @@ Regular swordsmen front to front, on the Towton tables, per minute:
 |---|---|---|
 | No armour | 3.2% | 1.1% |
 | Gambeson and cap | 2.6% | 0.7% |
-| Jack and sallet | 1.5% | 0.4% |
+| Jack and sallet | 1.4% | 0.4% |
 | Mail hauberk | 1.1% | 0.3% |
 | Full plate | 0.2% | 0.0% |
 
@@ -246,9 +246,9 @@ Example fights, 120 men a side, 30 abreast (medians of 40 runs):
 | Fight | Breaks after | Who broke | Winner down | Loser down |
 |---|---|---|---|---|
 | Equal regulars, no armour | 12 min | either | 3 | 22 |
-| Equal regulars in jacks | 27 min | either | 2 | 10 |
-| Regulars v greens, in jacks | 17 min | greens 36 of 40 | 1 | 13 |
-| Bills v swords, in jacks | 16 min | swords 29 of 40 | 1 | 12 |
+| Equal regulars in jacks | 24 min | either | 2 | 11 |
+| Regulars v greens, in jacks | 16 min | greens 35 of 40 | 1 | 13 |
+| Bills v swords, in jacks | 14 min | swords 26 of 40 | 2 | 12 |
 | Veterans in mail v unarmoured regulars | 9 min | regulars every time | 0 | 28 |
 
 A melee of tens of minutes, decided by morale more than by wounds, with the beaten side
@@ -620,7 +620,8 @@ general. All its numbers are in units.yaml `commander`.
     E or W), and leaves the field there ("withdraw off the field, as ordered"; it counts as
     gone, not broken). Mons (the Fusiliers at 281), Osan (the hillock platoon at 46, the rest
     at 166), X-Ray (A and B Companies to the landing zone at 246), Kapyong (the battalion
-    HQ and Shermans at 466, B Company at 586) and the Babuna pass (the Serbs at 931) give way so.
+    HQ and Shermans at 466, B Company at 586), Snipe (the 47th and 41st RTR at 166) and the
+    Babuna pass (the Serbs at 931) give way so.
   A unit the sources say was driven off, or that they do not cover, has no entry, and the fight
   decides. Bull Run has none: its brigades held Henry Hill, which is the objective, so they go
   up onto it as any holding unit does (marked to hold where they stood, they let the Union take
@@ -630,14 +631,14 @@ general. All its numbers are in units.yaml `commander`.
   spread. The morale targets did not move (T1 before 1914 5/15/26%, T2 3.1, T5 6/68%; T3 8% to
   5%, the target that varies most).
 - **Pursuit.** A steady unit that fights hand to hand goes after a broken enemy: horse one within
-  a charge of it (twice its move) when no standing enemy is as near, foot one within its own move
+  a charge of it (twice its move) when no standing enemy is within a charge of it, foot one within its own move
   when it is nearer than any standing enemy. It moves or charges into contact, and the broken unit
   is struck each exchange it stays in reach (*The rout*). It keeps on until the fugitives are out
   of reach or off the map; veterans (and better) give it up after 2 moves (`commander.pursuit.rally`)
   if a standing enemy is within their reach, and go back to the fight. Shooters on foot, vehicles
   and units on a route do not pursue. Before 17 October 2026 the commander never went after a
   broken unit, so the rout struck only while the fugitives happened to stay in contact. Measured on
-  all 37 battlefields, four runs each: 101 of 148 runs matched, against 98, Lützen 0 to 3 of 4 (the
+  all 37 battlefields there were then (there are now 44), four runs each: 101 of 148 runs matched, against 98, Lützen 0 to 3 of 4 (the
   Swedish horse run down the broken Imperial units). The loser's men lost after breaking did not
   rise (a median 14-20% before 1914, against most in the sources): losers still lose most of their
   men in the line before they break.
@@ -865,12 +866,12 @@ at a time; **Run** (shown only then) plays a move about every 0.7 seconds until 
   from the first); a run then goes at least that long, still no more than `most`. Where the
   account gives only a vague end, `ends` is the earliest the words allow: "before noon" is noon,
   "the next afternoon" 12:00, "near midnight" 23:30, and "at dawn" the sunrise worked out for the
-  place and day. Twenty battlefields set it: Lundy's Lane 271 (counter-attacks until near
+  place and day. Twenty-one battlefields set it: Lundy's Lane 271 (counter-attacks until near
   midnight), the Monastery 418 (failed by dawn, sunrise about 06:57), Lützen 541 (Wallenstein
   withdraws at 20:00), Keating 361, Mogadishu 783 (out at dawn, sunrise 05:44), Kapyong 871,
   Crécy 241 (four hours into the moonlight, our cut), Beaumont-Hamel 181 (to the Essex's attack, our cut), Snipe 806 (the last round at 19:40), Aljubarrota 61 (the attack broken in less than an hour), Dornach 241 (four to five hours), Jacob's Ford 121 (a morning's storm, our reading),
   the Babuna pass 931 (the retreat ordered at 22:00),
-  Heartbreak Ridge 901, and, past `most` and so cut short at 1,200, X-Ray, Pork Chop, Grozny,
+  Heartbreak Ridge 901, and, past `most` and so cut short at 1,200, X-Ray, Pork Chop, Grozny, Hue,
   Bougainville, Dak To and Cassino town. `ends` never shortens a run.
   Until 17 October 2026 it was 240, which stopped a run before the last phase began on fifteen
   battlefields (Bougainville, the Poles at Cassino, Cassino town, the Monastery, Chipyong-ni,
@@ -901,9 +902,9 @@ change no result, only the time a battle takes (every battlefield plays move for
 the page about five times faster):
 
 - what the ground lets a man see from one hex to another (dead ground behind a crest, woods
-  and buildings between, light cover thinning his aim), and what ground stands on each hex,
-  kept for the field's ground until the GM paints it (smoke drifts and thins, so it is
-  looked at every shot);
+  and buildings between, light cover thinning his aim), kept for the field's ground until the
+  GM paints it (smoke drifts and thins, so it is looked at every shot);
+- what ground stands on each hex, kept the same way;
 - what each step costs a unit to move (works, ground, mud and snow, the dark), kept while a
   commander orders its side: nothing changes the works, ground or weather until the exchange.
 
@@ -1156,7 +1157,10 @@ the horse-and-musket wars mostly took prisoners, and the wars since vary with th
 The after-battle list says what became of each hero. A prisoner goes back to the roller out
 of the fight, marked taken prisoner; the GM decides what comes next.
 
-A **leader** gives his unit +10 morale while he is up, and −20 once he is down. A unit with
+A **leader** gives his unit +10 morale while he is up, and −20 once he is down. While he is
+up his rank adds too: 3 a step above the lowest rank (`heroes.rank_step`), at most 12
+(`rank_cap`). An officer is struck twice as often (`officer_exposure`) by the blows that fall
+on his unit's heroes. A unit with
 a hero still up shows a star on the map. The heroes' list shows each one's attack and defence
 after his wounds, his state and his Blood.
 
@@ -1189,12 +1193,12 @@ of making them a unit of their own. `python3 -m gravewounds units` shows how her
 
 | A hero leading billmen in jacks, until one side breaks | Wounded | Down | Killed | Men he puts down |
 |---|---|---|---|---|
-| Knight in mail | 50% | 30% | 0% | 0.2 |
-| Knight in plate | 20% | 4% | 0% | 0.3 |
-| Champion, no armour | 74% | 54% | 2% | 0.2 |
+| Knight in mail | 51.5% | 30.0% | 0.5% | 0.24 |
+| Knight in plate | 23.5% | 5.5% | 0.0% | 0.30 |
+| Champion, no armour | 72.0% | 56.5% | 2.0% | 0.19 |
 
 A fight of this kind lasts a quarter of an hour or more, long enough for a hero's wounds to bleed him
-down: about one wounded hero in two ends the fight down.
+down: about three wounded heroes in five end the fight down.
 
 A hero matters most through morale and through what happens to him: in a press of hundreds,
 one man fells few. The numbers are in `data/units.yaml` (`heroes`).
@@ -1301,9 +1305,10 @@ out. All of this is design estimates (`data/units.yaml`).
   shoots at the nearest enemy in front, in range and in sight, as any unit.
 - **The beaten zone**: the cone falls on past the target. The first other unit, friend or foe,
   within 20 hexes (220 yards, 200 m) past it on the line of fire takes half as many shots, at
-  the longer range. Woods, rough ground and marsh stop it.
+  the longer range. Ground that stops shots stops it: rough ground, woods, marsh, buildings,
+  tall buildings and rubble.
 
-What the numbers give (`python3 -m gravewounds units`, 1000 runs, the First World War table),
+What the numbers give (`python3 -m gravewounds units --runs 200`, 1,000 runs, the First World War table),
 fire for one minute at 100 unarmoured regular riflemen:
 
 | Shooting | Target | Hit | Put down |
@@ -1492,8 +1497,8 @@ beaten zone), checks at the end of the exchange: d100 against its Nerve (+10 if 
 ground). A failure pins it for the next exchange: it cannot move and shoots at half its rate.
 The list shows "pinned". Broken units do not check.
 
-One minute of fire on the middle of 100 regular riflemen (`python3 -m gravewounds units`, 1000
-runs, the First World War table):
+One minute of fire on the middle of 100 regular riflemen (`python3 -m gravewounds units --runs 200`,
+1,000 runs, the First World War table):
 
 | Fire | Target | Struck | Put down | Pinned |
 | --- | --- | --- | --- | --- |
@@ -1690,7 +1695,8 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   than 3 block sight as woods do (aimed fire, guns laying, calling fire). The field map's own
   battlefields have it only where the accounts name it: the gorse at Goose Green, the
   elephant grass at Khe Sanh and X-Ray, the brush in Wanat's draw, the scrub on Keating's
-  lower slopes and Cassino's. Each field's notes say so.
+  lower slopes and Cassino's; and Aljubarrota, the Babuna pass, Beaumont-Hamel, Crécy, Dornach
+  and Jacob's Ford draw it too. Each field's notes say so.
 - **Shooting:** the target takes the average cover of its row nearest the shooters (rounded
   down), each hex the best of the works and ground there: a bank on its side −20%, a palisade
   or barred gate −40%, a wall −50%, a pavise or felled trees in its hex −20%, wagons in front
@@ -1733,8 +1739,8 @@ vehicles** or **Armoured carriers**, and **Men** is then how many vehicles; thei
 crews (4 a tank, 3 an infantry fighting vehicle or carrier).
 
 - **Moving.** Tanks move 12 hexes, infantry fighting vehicles and carriers 14. Each hex costs
-  open or high ground 1, rough ground or a slope 2, woods 3. They cannot enter marsh,
-  buildings, tall buildings, rubble or water, so in a town they keep to the streets. Works
+  open or high ground 1, rough ground or a slope 2, woods 3. They cannot enter scrub or
+  orchard, marsh, buildings, tall buildings, rubble or water, so in a town they keep to the streets. Works
   and deep going cost them what they cost men.
 - **Their machine guns** fire as a machine-gun team's, about a gun a vehicle.
 - **Main guns** fire each exchange at the nearest enemy in range, in sight (as guns are: the
@@ -1991,7 +1997,8 @@ marks it as the objective (`objective` in its file: the hex, the army that attac
 name and its radius), and laying out the field marks it on the map (O, with a dashed ring
 when it is wider than a hex).
 - **Radius.** A hill or a perimeter is more than one hex, so each battlefield gives its
-  objective a radius that takes in the position as the map draws it: 9 hexes round Pork
+  objective a radius that takes in the position as the map draws it: 22 hexes round the Snipe
+  outpost, 12 at Crécy, 10 at Beaumont-Hamel, 9 round Pork
   Chop's top (its trench ring) and round the position behind the rise at 73 Easting, 8 at
   Khe Sanh, Kapyong and Keating, 7 at Fox Hill, Darwin
   Hill and on Bougainville, down to 1 for the wagon-box corral. Within the radius counts as
@@ -2030,7 +2037,7 @@ what happened, and the units it brings on.
 - **Where they're used.** Phases apply with *the armies as drawn up*, not to forces sent
   from the travel map.
 
-Twenty-seven battlefields have phases. Each phase's time is our reading of the accounts, rounded to the
+Thirty-five battlefields have phases. Each phase's time is our reading of the accounts, rounded to the
 minute from the deployment moment (exchange 1). The sources are named in each generator's notes
 where they are not plain.
 - **The Redan, 8 September:** the stormers go over (1); the supports come forward (10); the
@@ -2069,22 +2076,22 @@ where they are not plain.
   the retreat ordered at 22:00 (931).
 - **Osan** (from about 11:45): a battalion works round the west (46, 12:30); another comes
   down the railroad and Smith withdraws (166, 14:30).
-- **Chipyong-ni**, the night of 14–15 February (from 22:00): G Company's hill falls and the
-  Rangers counter-attack (331, about 03:30); the dawn counter-attack fails (496, 06:15).
+- **Chipyong-ni**, the night of 14–15 February and the day after (from 22:00): G Company's hill
+  falls and the Rangers counter-attack (331, about 03:30); the dawn counter-attack fails (496,
+  06:15); B Company counter-attacks (721, 10:00); the hill retaken (1111); Task Force Crombez
+  (1156, about 17:15).
 - **Kapyong**, the night of 23–24 April (from 21:30): the Chinese reach headquarters (31);
   the main assaults (201); headquarters pulls out (451); B Company called up the hill (586).
 - **Pork Chop Hill** (from 23:05): L Company (176, shortly after 02:00); K Company
-  counter-attacks (326, 04:30); a fresh Chinese company (550, 08:14).
+  counter-attacks (326, 04:30); a fresh Chinese company, and G Company of the 17th Infantry
+  with it (550, 08:14).
 - **X-Ray** (from about 13:35): D Company lands (56, 14:30); the push for the cut-off platoon
   (131); B Company of the 2nd Battalion at dusk (211, 17:05).
 - **Dak To** (from 10:30): the attack from behind onto A Company (241, 14:30); C Company
   surrounded (271); the stray bomb (509, 18:58).
 - **73 Easting** (from 16:18): through the trenches (5); the T-72s on the high ground beyond
   (19, about 16:36).
-- **Chipyong-ni by day:** B Company counter-attacks (721, 10:00); the hill retaken (1111);
-  Task Force Crombez (1156, about 17:15).
-- **Pork Chop Hill:** G Company of the 17th Infantry comes up with the fresh Chinese company
-  (550).
+- **Grozny** (from about 16:30, as the sun sets): dark (31, about 17:05).
 - Fifteen more, from the second round of research (times and sources in the project's
   `battle-phases-research-round2.md`): Fox Hill, Wanat (the Apaches at 61, the QRFs at 102 and
   241, the jets on call at 131), Khe Sanh 861A, First Bull Run (Chinn Ridge at 121), Cisterna
@@ -2283,7 +2290,7 @@ about 1,640 by 1,140 yards (1,500 by 1,040 m), with north at the top:
   6,000, and 1,500 men hidden in Castle Hill Wood, on the Yorkist left.
 - Everyone wears jack and sallet; the wound tables are Towton's own.
 
-It is drawn the same way, by `tools/maps/make_towton_field.mjs`. The two battlefields share
+It is drawn the same way, by `tools/maps/make_towton_field.mjs`. The battlefield scripts share
 their drawing code, `tools/maps/field_lib.mjs`.
 
 **Visby, 27 July 1361** (`data/fields/visby-1361.yaml`). The field is 80 × 70 hexes, about
@@ -2320,7 +2327,8 @@ about 2,410 by 1,140 yards (2,200 by 1,040 m), with north at the top:
   4,000 pike in the centre, 800 musketeers guarding the battery on the windmill hill, 1,500
   horse on the right and 2,000 cuirassiers on the left, with Pappenheim's 2,500 horse coming
   up at the north-east corner and his foot coming up, too late, at 18:00.
-- Pikemen fight with the spear's numbers, the nearest the Thirty Years' War tables offer.
+- Pikemen fight with the pike (`weapon: pike`): no count of pike wounds was found, so it rolls
+  on the Visby melee table as a spear, with no shield.
 - The guns (see *Guns*): the windmill battery of 7 on the hill, 14 in the Imperial centre
   behind the road, and 20 heavy Swedish guns in front of their foot. The regimental guns are
   left out. No gun wounds survive from the Thirty Years' War, so they roll on the Peninsular
@@ -2519,8 +2527,6 @@ north at the top: the plateau between the Big Piney (top) and the Little Piney (
   the warriors present run from 300 to 1,000; here 650.
 - Major Smith's relief column (100 men) comes from the fort, to the east, in the last phase;
   its mountain howitzer is not on the map.
-- The relief column with its mountain howitzer, which came in the early afternoon, is not on
-  the map: on its move the Army side can bring it on with **Add a unit**.
 - Fair, a breeze from the west.
 
 It is drawn by `tools/maps/make_wagon_box_field.mjs`.
@@ -2559,8 +2565,8 @@ the top: the ground of the Newfoundland Memorial Park.
   on the right) at zero, and its second wave (1st Border, 1st KOSB) five minutes later; the 1st
   Newfoundland Regiment (780, by Nicholson: A and B Companies in front, C and D behind) from St
   John's Road at 09:15; and two companies of the 1st Essex on their right at 09:55.
-- German: two companies of RIR 119 in the front trench, three pairs of machine guns (at the head
-  of Y Ravine, in the second trench, and on the right firing across), a company in Y Ravine and
+- German: two companies of RIR 119 in the front trench, four pairs of machine guns (at the head
+  of Y Ravine, in the front trench, behind on the right, and on the right firing across), a company in Y Ravine and
   another in the third trench, all dug in; twelve field guns and four howitzers on call for the
   barrage on the British trenches. The British barrage lifted at zero and is not on call.
 - The Germans hold where they stand (data/orders.yaml).
@@ -2694,8 +2700,9 @@ north at the top.
   behind the ridge; the one on the railroad, down past C Company's right and behind the ridge
   (our reading of the account).
 - Fire support: American 105 mm howitzers, 4.2-inch and 60 mm mortars; North Korean mortars and
-  the T-34s of the 107th Tank Regiment firing over open sights. There are no vehicle rules: the
-  tanks are on call as fire support, and the recoilless rifles and bazookas fight as riflemen.
+  the T-34s of the 107th Tank Regiment firing over open sights. The tanks are kept on call as fire
+  support, and the recoilless rifles and bazookas fight as riflemen: a design choice, not a
+  gap in the vehicle rules.
 - The wound tables are Korea's (hospitalized wounded).
 
 It is drawn by `tools/maps/make_osan_field.mjs`, from the plain facts of the US Army's account,
@@ -2762,8 +2769,8 @@ is 110 × 110 hexes, about 1,200 by 1,040 yards (1,100 by 950 m), north at the t
 - The relief column (10th Mountain infantry, Malaysian APCs and Pakistani tanks) reaches the
   trapped force at 01:55, in the last phase.
 - Fire support: Little Bird gunships.
-- There are no vehicle rules: the relief column can be brought on as infantry with **Add a
-  unit**.
+- The relief column comes on as two units: the 10th Mountain infantry, and the Malaysian APCs
+  and Pakistani tanks together as **armoured carriers**.
 - The wound tables are Somalia's (penetrating wounds).
 
 It is drawn by `tools/maps/make_mogadishu_field.mjs`, from the plain facts of the US Army's
@@ -2911,7 +2918,8 @@ hexes, about 1,640 by 1,040 yards (1,500 by 950 m), north at the top.
   provincial headquarters, the Treasury, the hospital and the prison.
 - Cold drizzle and low cloud.
 - United States: three companies of the 2nd Battalion, 5th Marines and A Company, 1st
-  Marines, attacking east, with machine guns and four M48 **tanks** on Highway 1.
+  Marines, attacking east, with machine guns, two M48 **tanks** on Highway 1 and two **Ontos**
+  (106 mm recoilless rifles) with H Company.
 - North Vietnamese (veteran, in cover): the provincial headquarters, the Treasury, the
   hospital and the prison held (a strongpoint, a **bunker**, under the middle of the front
   in the Treasury, the hospital and the prison), with RPG teams that can knock out tanks,
@@ -3008,8 +3016,8 @@ is 140 × 110 hexes, about 1,530 by 1,040 yards (1,400 by 950 m), north at the t
 - **Dusk** on a winter afternoon (about 16:30), and from exchange 31 (about 17:05) a **dark
   night**: overcast, the moon a day from new (worked out for the place and day).
 - The objective is the Chechens': the night was their attack on the station the battalion
-  had taken that afternoon. Its self-play covers the first hour of the night (61 exchanges); the
-  survivors broke out about 18:00 the next day, far beyond it.
+  had taken that afternoon. A run goes on for the account's length (`ends` 1,531: 16:30 on 31
+  December to the survivors' break-out about 18:00 the next day), so at most 1,200 exchanges.
 - Russians (green): the 131st Brigade's 1st Battalion in the station and the freight yard,
   with its **infantry fighting vehicles** (BMPs) and **tanks** parked in the square.
 - Chechens (veteran, in cover): **RPG** teams in the buildings on three sides of the square
@@ -3053,7 +3061,7 @@ table's conflict.
 
 **A battlefield file** has an `id` and `name`, `sides` (two names), `table`, `size`
 ([cols, rows]) and `weather`. Its `ground` is rows of one letter per hex: `.` open, `r`
-rough, `F` woods, `m` marsh, `h` high ground, `T` buildings, `B` tall buildings, `x` rubble, `w` water (the `key` of each kind in `data/units.yaml`).
+rough, `F` woods, `o` scrub and orchard, `m` marsh, `s` slope, `h` high ground, `T` buildings, `B` tall buildings, `x` rubble, `w` water (the `key` of each kind in `data/units.yaml`).
 `up` (optional) is the compass point at the top of the map, if not north, and `weather` may
 give the wind's direction as `dir` (where it blows from). `travel` (optional) is `{map, place, within, sides}`: the travel map and place it belongs
 to, how many hexes from the place count as there, and the travel-map side names that stand
@@ -3061,5 +3069,5 @@ with each army. `works` has `hexes`, a list of `{type, at: [hexes]}`, and `edges
 [[hex, hex], ...]}` with the first hex the high or inner side. `units` lists `{name, side
 (0 or 1), men, quality, weapon, kit, formation, width, pos (the middle of the front row),
 facing, mounted}`. `support` (optional) lists each side's batteries on call, `{name, side
-(0 or 1), kind (mortar, field or howitzer), tubes}`: loading the field fills the Fire support
+(0 or 1), kind (mortar, field, howitzer, tank, autocannon, fighter_bomber or gunship), tubes}`: loading the field fills the Fire support
 panel. `python3 -m gravewounds check` makes sure every unit fits where it stands.
