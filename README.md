@@ -12,7 +12,7 @@ Morrow Project, Gamma World and Traveller.
 
 **Status: early design.** The rule book is built and is being split into books: the Rules
 (`dist/rules.html`, from the 14 chapters in `templates/rules/` and the modules in `templates/rules/modules/`) and a book for each period, the
-so far *The Medieval Wars* (`dist/book-medieval.html`) and *The Black-Powder Wars* (`dist/book-black-powder.html`). The design proposal is in [docs/design.md](docs/design.md). It includes a comparison with Aftermath!, Rolemaster,
+so far *The Medieval Wars* (`dist/book-medieval.html`), *The Black-Powder Wars* (`dist/book-black-powder.html`) and *The World Wars* (`dist/book-world-wars.html`). The design proposal is in [docs/design.md](docs/design.md). It includes a comparison with Aftermath!, Rolemaster,
 Gamma World, Traveller and The Morrow Project. The first playtest era is medieval.
 
 **First playable piece:** the roller now runs the Grave Wounds stop check, graze and team
@@ -84,9 +84,9 @@ player. `python3 tools/guide/check.py` (in CI) checks every control it names is 
 
 **Rule book:** `dist/rules.html` teaches the game: making a team, the fight, wounds, first
 aid and recovery, battles of hundreds, the march and the camp, and weather and works,
-following one team from the road to Towton into camp; then the other eras, guns and fire
-support, vehicles, night and the air, with a rifle squad in Vietnam followed through one
-night; and money by era. GM notes are set apart, and an index of its terms closes it. It prints cleanly from
+following one team from the road to Towton into camp; then the other eras, night, a rifle
+squad in Vietnam followed through one night, and money by era; then the four modules a period
+book can switch on: black-powder guns, modern fire, armour and mines, and air and night devices. GM notes are set apart, and an index of its terms closes it. It prints cleanly from
 the browser, with page numbers in Chrome and Edge. Each era's own figures (its prices, pay, coin, tongues,
 prisoners, women under arms, supplies and kit) are in its period book, or, for the eras with no book yet,
 in the Rules' *Other periods*.
@@ -97,7 +97,8 @@ figures, a note on where each wound table comes from, and the eight battlefields
 the phases. `dist/book-black-powder.html`, *The Black-Powder Wars, 1618-1877*: the figures of five
 eras (the Thirty Years' War, horse and musket, the Crimea, the Civil War and frontier, and the Plains
 nations) and nine battlefields from Lützen (1632) to the Wagon Box (1867). `data/books.yaml` says
-which eras and battlefields each book holds.
+which eras and battlefields each book holds. `dist/book-world-wars.html`, *The World Wars, 1914-1945*:
+both world wars' figures and nine battlefields from Mons (1914) to the Poles at Cassino (1944).
 
 **Team builder:** `dist/team.html` makes a team of four to six in a few rolls each, from the
 tables of eleven eras (medieval, the Thirty Years' War, horse and musket, the Crimean War, the Civil War and

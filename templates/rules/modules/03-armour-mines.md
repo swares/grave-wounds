@@ -1,4 +1,4 @@
-# Vehicles {#vehicles}
+# Armour and mines {#vehicles}
 
 On the field map, tanks, infantry fighting vehicles and
 armoured carriers fight as units, one vehicle to a hex. The unit's men are its crews. They
@@ -124,6 +124,25 @@ knocked out, each of its riders is struck at {{v_riders_struck}}%, as by shellfi
 are soft-skinned: a rifle or machine-gun hit that does not knock one out strikes a man aboard.
 Men riding on a tank's hull are in the open: small arms shoot at the tanks for them, and each
 hit strikes a rider; shells bursting near the tanks strike them as men in the open.
+
+## The enemy commander {#vehicles-commander}
+
+With this module, the [enemy commander](#commander) also:
+
+- **Tanks.** A unit with a main gun counts the target in range where the gun reaches and it
+  can see; a vehicle with one prefers a spot where the target can neither reach it nor see it.
+  Any shooter counts a target in range only where the weather and light let it see that far.
+  Attacking, a vehicle unit leaves its immobilised vehicles behind and goes on with the rest.
+- **Minefields.** It steers round minefields it knows of. Its sappers, attacking, lift a
+  lane through known enemy mines in the row ahead when those mines lie on the way to their
+  target or the objective, closing up to the belt first and working through it row by row. Holding, or at the objective, with no enemy it knows of within
+  {{c_sap_clear}} hexes, they lay mines in the row ahead: mixed if the enemy it knows of has
+  vehicles, otherwise anti-personnel.
+- **Towing and carriers.** Attacking, its anti-tank guns with no enemy in reach hook up to an
+  empty tractor beside them (an empty tractor drives over to fetch them), are towed, and are
+  unhooked in reach; holding, they unhook where they stand, and to pull back they hook up.
+  Attacking, its foot units get aboard empty carriers beside them while no known enemy is in
+  reach, and get down once one is (or at the objective).
 
 !!! gm "For the GM"
     Armour is a problem the infantry must solve, not a fight it can win with rifles. Give

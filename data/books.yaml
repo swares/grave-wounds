@@ -35,7 +35,29 @@ books:
     switched_on: >-
       The [Black-powder guns](rules.html#mod-black-powder) module: batteries, misfires in the
       wet, and storming works with the bayonet. From
-      the Rules' [Modern infantry](rules.html#modern-infantry), only the rule that modern fire puts
-      men down, and only for the breech-loaders: the soldiers' Springfields at the Wagon Box, and
+      the [Modern fire](rules.html#fire) module, only the rule that [modern fire puts men
+      down](rules.html#modern-down), and only for the breech-loaders: the soldiers' Springfields at the Wagon Box, and
       the carbines of Fetterman's cavalry and the civilians' repeating rifles. Muskets and rifle-muskets fight as the core
       rules say. Wounds heal and fester as the Rules' Recovery says, with no antibiotics.
+  world_wars:
+    title: "The World Wars"
+    dates: "1914–1945"
+    file: book-world-wars.html
+    eras: [wwi, wwii]
+    fields: [mons-1914, babuna-1915, beaumont-hamel-1916, snipe-1942, cisterna-1944, cassino-monastery-1944, bougainville-1944, cassino-town-1944, cassino-poles-1944]
+    intro: >-
+      Nine battles from the canal at Mons in 1914 to the Poles on Monte Cassino in 1944: the
+      first British battle of the Great War, the Serbian stand at the Babuna pass, the
+      Newfoundlanders on the first day of the Somme, the anti-tank guns at Snipe in the desert,
+      the Rangers at Cisterna, three battles for Cassino and the Japanese counter-offensive on
+      Bougainville. Every rule is in the Rules; this book holds the armies' figures for both wars,
+      the wound tables their battles roll on, and the battlefields.
+    switched_on: >-
+      [Modern fire](rules.html#fire), in full: machine guns, barrages, trenches, digging in, and
+      more men put down. [Armour and mines](rules.html#vehicles), for the tanks, carriers and
+      anti-tank guns at Snipe and the minefields of the desert. [Air and night devices](rules.html#air)
+      for aircraft from 1944 (the page leaves the date to the GM); night vision and landing by air
+      belong to later wars. The wounded go back by motor ambulance, as the Rules' After the battle
+      says. Wounds heal and fester as the Rules' Recovery says: it does not yet count the sulpha
+      drugs of the Second World War or the penicillin of 1944.
+

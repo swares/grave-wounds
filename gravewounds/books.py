@@ -20,8 +20,9 @@ SIDEBAR = re.compile(r"\{\{sidebar:([a-z0-9-]+)\}\}")
 HEADING = re.compile(r"^(#{1,3}) (.+?) \{#([^}]+)\}\s*$")
 RULES_FILE = "rules.html"
 RULES_DESC = ("The Grave Wounds rules: how to play, making a team, the fight, wounds and recovery, battles of hundreds, "
-              "the march and the camp, weather and works, the other eras, guns and fire support, vehicles, night and the air, "
-              "money by era, with a medieval retinue and a Vietnam rifle squad followed through.")
+              "the march and the camp, weather and works, the other eras, night, money by era, and the modules for "
+              "black-powder guns, modern fire, armour and mines, and air and night devices, with a medieval retinue and "
+              "a Vietnam rifle squad followed through.")
 
 
 def load_books(d: Data, root: Path) -> dict:

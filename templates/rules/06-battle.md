@@ -46,9 +46,8 @@ just behind it sees over it and is seen, and a man on the top sees down both slo
    its parry.
 4. **The wound** is rolled as for one man. A light wound or a graze: he fights on. Serious
    or critical: a stop check, and failing it puts him **down**. A wound that kills within
-   rounds kills. Against **modern fire** (breech-loaders on, machine guns, shell, grenades),
-   every serious or critical wound puts him down and a light one calls for the check: the
-   casualty returns from 1914 on count nearly every man hit as out of the line.
+   rounds kills. A module can change who goes down: [Modern fire](#modern-down) puts more men
+   down.
 5. **Morale**, below; then the next exchange.
 
 **Fatigue.** A unit tires as a character does. Each exchange it fights hand to hand counts
@@ -202,18 +201,11 @@ steady friends touching it, who go in with it), and green units sometimes hesita
   on.
 - **In range** means the weapon reaches, the light lets it see, and nothing blocks the line
   from where it would stand.
-- **Tanks.** A unit with a main gun counts the target in range where the gun reaches and it
-  can see; a vehicle with one prefers a spot where the target can neither reach it nor see it.
-  Any shooter counts a target in range only where the weather and light let it see that far.
-  Attacking, a vehicle unit leaves its immobilised vehicles behind and goes on with the rest.
 - **Reserve.** Regulars and veterans hold back their rearmost units (not one on a route, nor tanks and other vehicles with a main gun), and commit one when a
   unit of theirs breaks or the enemy comes close; veterans also commit to exploit an enemy
   rout. Attacking, they also commit one when the attack has stalled: five moves without
   putting down any real share of the enemy or getting nearer. A unit committed because one broke goes to plug the gap where it stood. The GM can
   mark reserves instead.
-- **Digging in.** Its foot units with modern weapons dig in where they stand when it is
-  safe (not under fire, no enemy it knows of in their range): at the objective, holding
-  with no objective, and in reserve while they wait.
 - **Objective.** The GM can mark a hex as its objective. Attacking, its units advance on it
   when they have nothing better to do and hold it once there (within {{c_obj_radius}}
   hex), but go on attacking while their target is on it too; holding, units more than {{c_obj_hold}} hexes from it fall back to it. Enemies near
@@ -223,24 +215,13 @@ steady friends touching it, who go in with it), and green units sometimes hesita
   The GM can also mark a second objective. Attacking, once it holds the first, the units on
   it stay and the rest go on to the second (and back to the first if the enemy retakes it);
   holding, once the enemy holds the first, its units fall back to the second.
-- **Minefields.** It steers round minefields it knows of. Its sappers, attacking, lift a
-  lane through known enemy mines in the row ahead when those mines lie on the way to their
-  target or the objective, closing up to the belt first and working through it row by row. Holding, or at the objective, with no enemy it knows of within
-  {{c_sap_clear}} hexes, they lay mines in the row ahead: mixed if the enemy it knows of has
-  vehicles, otherwise anti-personnel.
-- **Guns.** It turns its guns to face the enemy and calls its off-map batteries and its
-  aircraft (when they can fly; a strafing run or napalm strip along a wide enemy front) on
-  what it sees, first what its forward air controllers see, and closer to its own men there. A controller with nothing
-  to do and no target in its sight moves up to where it sees one (attacking only), up to {{c_spot_moves}} moves away, a move at a time,
-  preferring a spot out of the enemy's reach; not while it has a fight of its own (an enemy touching it or in its own reach, pinned, or men lost the exchange before). Attacking, one battery lays a creeping barrage ahead of a unit closing on the
-  enemy. Its batteries under counter-battery fire displace (a placed one moves its place {{c_displace_shift}} hexes along its map edge, away from the battery firing). In the dark it first has one battery fire illumination over the enemy it has lost
-  sight of nearest its men, where it was last seen. Attacking, guns with no enemy in reach go forward: a battery limbers, moves and
-  unlimbers once an enemy is in reach; anti-tank guns hook up to an empty tractor beside
-  them (an empty tractor drives over to fetch them), are towed, and are unhooked in reach. They stop in reach but no nearer than
-  {{c_keep_off}} hexes. Holding, its guns unlimber or unhook where they stand. Attacking, its foot units get aboard empty carriers beside them while no known enemy is in reach, and get down once one is (or at the objective). Attacking or holding, guns an enemy could reach at a charge, with no steady friend on the line between, limber or hook up and pull back as far as they can from it. Attacking, it first has one battery smoke an enemy that is shooting at men who
-  cannot reply (not in the dark, or in a gale). Then one battery fires counter-battery on
-  a located enemy battery it can reach: the one with the best counter % on the one with the
-  most guns still served.
+- **Guns.** It turns its guns to face the enemy. Attacking, guns with no enemy in reach go
+  forward and stop in reach, but no nearer than {{c_keep_off}} hexes; holding, they stay where
+  they stand. Attacking or holding, guns an enemy could reach at a charge, with no steady friend
+  on the line between, pull back as far as they can from it.
+- **Modules.** What it does with batteries, shellfire, vehicles, mines and aircraft is in the
+  modules that bring them: [Black-powder guns](#bp-commander), [Modern fire](#fire-commander),
+  [Armour and mines](#vehicles-commander) and [Air and night devices](#air-commander).
 
 **Undo its orders** puts the move back for the GM to make by hand.
 
