@@ -1,0 +1,20 @@
+# Pictures for the Goose Green section of The Late Wars. Openly licensed, checked on its source page.
+# The file goes in images/books/late_wars/ under `file`; until it is there the book shows a captioned
+# slot with this credit and source.
+# No British photograph is used: photographs by British service photographers in 1982 are still Crown
+# Copyright (it runs 50 years from 1982), and press photographs are never free.
+# goosegreen-darwin: LICENCE CONFIRMED AS CC BY 4.0 BY THE SITE'S TERMS; THE PHOTOGRAPH ITSELF NOT FULLY
+# CHECKED. The Argentine Army's page "Darwin - Pradera del Ganso" on argentina.gob.ar (published 7 May
+# 2018, modified 11 June 2020) shows a photograph captioned "Soldados argentinos en Darwin" (file
+# darwin_01.jpg), with no photographer or date. The site's Términos y condiciones license all its
+# contents under Creative Commons Atribución 4.0 Internacional "excepto cuando se declare lo
+# contrario"; nothing to the contrary is stated on the page. Not checked: whether it was taken in 1982
+# (it is presumed so from the page, not confirmed) and whether the Army holds its copyright. Commons
+# could not be reached. Alt text written from the caption; the image was not viewed. Check before print.
+- id: goosegreen-darwin
+  file: goosegreen-darwin.jpg
+  caption: "Argentine soldiers at Darwin, from the Argentine Army's account of the battle."
+  credit: "Ejército Argentino, \"Darwin - Pradera del Ganso\", argentina.gob.ar"
+  licence: "CC BY 4.0 (Creative Commons Attribution 4.0 International)"
+  source: "https://www.argentina.gob.ar/node/82582"
+  alt: "A photograph of Argentine soldiers at Darwin in the Falkland Islands."

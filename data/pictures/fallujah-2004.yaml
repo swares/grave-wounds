@@ -1,0 +1,32 @@
+# Pictures for the Fallujah (into the Jolan, November 2004) section of The Late Wars. Each is public domain
+# as a US government work, checked on its source page. The file goes in images/books/late_wars/ under `file`;
+# until it is there the book shows a captioned slot with this credit and source.
+# fallujah-april-2004: LICENCE CONFIRMED on marines.mil. The photo page (also on trngcmd.marines.mil as
+# 230403-M-CG311-001.JPG, posted 3 April 2023) credits "U.S. Marine Corps photo by Cpl. Matthew J. Apprendi",
+# dates it 7 April 2004, and states "IMAGE IS PUBLIC DOMAIN" and "cleared for release", asking for credit to the
+# photographer. Wikimedia Commons was not reachable from this session and no Commons file page was found.
+# The caption below names only the officer; the original also names four corporals and lance corporals.
+- id: fallujah-april-2004
+  file: fallujah-april-2004.jpg
+  caption: "Fallujah, 7 April 2004, during the first battle: Marines of A Company, 1st Battalion, 5th Marines fire on insurgents while Captain Philip Treglia calls in an air strike close to his own men."
+  credit: "US Marine Corps photograph by Cpl. Matthew J. Apprendi"
+  licence: "Public domain (US government work)"
+  source: "https://www.marines.mil/Photos/igphoto/2003192096/"
+  alt: "Marines, one of them kneeling, firing their rifles in Fallujah while their captain calls in an air strike."
+# fallujah-jolan: LICENCE CONFIRMED ON A COMMONS MIRROR, NOT ON COMMONS ITSELF. The OsmAnd mirror of the
+# Commons file page File:INDIA5.jpg gives the author as LCpl Miguel A. Carrasco Jr., the source as the old
+# marinelink page http://www.usmc.mil/marinelink/image1.nsf/Lookup/2004121981534 (photo ID 2004121981534,
+# submitted by the 1st Marine Division), the licence as public domain (a work of a US Marine or federal
+# employee on official duty), and says the source marked it "cleared for release". The photo date is
+# 10 December 2004 in its metadata and 11 December in the Commons structured data. It was taken in 3/5's
+# sector, which was the Jolan, a month after the battle in the text, during the later clearing; the
+# caption says so. A better picture of 9 November exists on Commons (File:US Navy 041108-M-8205V-006, K
+# Company, 3/5, calling in an air strike at the edge of Fallujah, 8 November 2004) but its description page
+# could not be read from this session (the URL was too long for the fetch tool); check it before print.
+- id: fallujah-jolan
+  file: fallujah-jolan.jpg
+  caption: "Lance Corporal Jeromy S. Pilon of I Company, 3rd Battalion, 5th Marines watches for insurgents in Fallujah, 10 December 2004, as his company makes one of its last sweeps of its sector before the people are let back."
+  credit: "US Marine Corps photograph by LCpl. Miguel A. Carrasco Jr., 1st Marine Division"
+  licence: "Public domain (US government work)"
+  source: "https://commons.wikimedia.org/wiki/File:INDIA5.jpg"
+  alt: "A Marine looking through the sights of his rifle in Fallujah."

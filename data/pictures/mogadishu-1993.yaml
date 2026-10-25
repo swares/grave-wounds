@@ -1,0 +1,17 @@
+# Pictures for the Mogadishu section of The Late Wars. Public domain as a US government work, checked on its
+# source. The file goes in images/books/late_wars/ under `file`; until it is there the book shows a
+# captioned slot with this credit and source.
+# mogadishu-pararescue: LICENCE CONFIRMED AS A US GOVERNMENT WORK on the holder's own page, NOT CHECKED ON
+# COMMONS. The National Museum of the US Air Force's gallery page (Operation Gothic Serpent) says "IMAGE IS
+# PUBLIC DOMAIN" and "cleared for release", and asks for a credit to the photographer; the "PHOTO BY" field is
+# blank, so no photographer can be named. It dates the photograph only to 1993 and does not say whether it was
+# taken before or after 3-4 October. Commons file pages for other Mogadishu photographs ("Black Hawk Down
+# Rangers under fire October 3, 1993.jpg", "Black Hawk Down Super64 over Mogadishu coast.jpg") were found by
+# search but could not be read from this session, so their licences are unchecked and they are not used.
+- id: mogadishu-pararescue
+  file: mogadishu-pararescue.jpg
+  caption: "Combat controller Dan Schilling with the pararescuemen Timothy Wilkinson and Scott Fales in front of the MH-60 Black Hawk Super 68, \"Razor's Edge\", in Mogadishu, 1993. Super 68 put the rescue team down at the first crash site on 3 October."
+  credit: "US Air Force photograph, photographer not named, National Museum of the US Air Force"
+  licence: "Public domain (US government work)"
+  source: "https://www.nationalmuseum.af.mil/Upcoming/Photos/igphoto/2003330944/"
+  alt: "Three American airmen standing in front of a Black Hawk helicopter."
