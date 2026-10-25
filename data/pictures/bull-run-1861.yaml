@@ -1,0 +1,25 @@
+# Pictures for the First Bull Run section of The Black-Powder Wars. Each is public domain or openly licensed,
+# checked on its source page. The file goes in images/books/black_powder/ under `file`; until it is there the
+# book shows a captioned slot with this credit and source.
+# Wikimedia Commons could not be reached from this session, so no Commons file page is given.
+# bull-run-henry-house: checked on the Metropolitan Museum of Art's object page (33.65.106), which marks the
+# image "Public Domain" (Open Access). Barnard died in 1902 and the print dates from March 1862. Confirmed.
+# bull-run-bamberger-map: checked on the Library of Congress item page (from the World Digital Library;
+# original in the US National Archives). The Library says it is "unaware of any copyright or other
+# restrictions" and asks for the credit line "[Original Source citation], World Digital Library". The map was
+# published in Richmond in 1861, so it is public domain in the US. Confirmed as far as the LoC page goes;
+# I did not see the image itself, so check the caption against it before printing.
+- id: bull-run-henry-house
+  file: bull-run-henry-house.jpg
+  caption: "The ruins of Judith Henry's house on Henry Hill, photographed in March 1862, eight months after the battle. The fighting for the Union guns went on around it."
+  credit: "George N. Barnard (formerly attributed to Mathew B. Brady), Ruins of Mrs. Henry's House, Battlefield of Bull Run, March 1862, albumen silver print; The Metropolitan Museum of Art, Harris Brisbane Dick Fund, 1933 (33.65.106)"
+  licence: "Public domain"
+  source: "https://www.metmuseum.org/art/collection/search/267887"
+  alt: "A photograph of 1862 of the ruins of the Henry house on Henry Hill."
+- id: bull-run-bamberger-map
+  file: bull-run-bamberger-map.jpg
+  caption: "A map of the battles of Bull Run near Manassas, drawn by Solomon Bamberger and printed in Richmond in 1861."
+  credit: "Solomon Bamberger, Map of the Battles of Bull Run Near Manassas (Richmond: West & Johnston, 1861), U.S. National Archives and Records Administration, World Digital Library; Library of Congress"
+  licence: "Public domain"
+  source: "https://www.loc.gov/item/2021668395/"
+  alt: "A colour lithograph map of 1861 of the country round Bull Run and Manassas."

@@ -1,0 +1,22 @@
+# Pictures for "The period's fighting", the opening chapter of The Black-Powder Wars. Each is public
+# domain or openly licensed, checked on its source page. The file goes in images/books/black_powder/
+# under `file`; until it is there the book shows a captioned slot with this credit and source.
+# Checked: Wellcome Collection's work page (24566i, V0015791) gives Public Domain Mark 1.0;
+# lithographed by E. Walker (d. 1882) after William Simpson (d. 1899), published 1856. Confirmed.
+- id: black_powder-scutari-ward
+  file: black_powder-scutari-ward.jpg
+  caption: "\"One of the wards of the hospital at Scutari\": Florence Nightingale in a ward of the base hospital, lithograph by E. Walker after William Simpson, published by Colnaghi, 21 April 1856."
+  credit: "Wellcome Collection, 24566i (V0015791)"
+  licence: "Public domain (Public Domain Mark 1.0)"
+  source: "https://wellcomecollection.org/works/vurtxepf"
+  alt: "A coloured lithograph of a military hospital ward at Scutari, with sick and wounded soldiers in their beds and Florence Nightingale among them."
+# Checked: the Metropolitan Museum's object page (57.650.404(6)) marks the image Public Domain /
+# Open Access; Callot died in 1635. Confirmed. (The Art Institute of Chicago's impression of
+# plate 5, 1936.341, is CC0 too, if a different plate is wanted.)
+- id: black_powder-callot-village
+  file: black_powder-callot-village.jpg
+  caption: "Soldiers looting and burning a village, plate 7 of Jacques Callot's The Miseries and Misfortunes of War, etching, 1633."
+  credit: "The Metropolitan Museum of Art, 57.650.404(6), Bequest of Edwin De T. Bechtel, 1957"
+  licence: "Public domain (Met Open Access)"
+  source: "https://www.metmuseum.org/art/collection/search/420843"
+  alt: "A small, finely detailed etching of soldiers looting a village and setting it on fire."
