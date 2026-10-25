@@ -3,23 +3,20 @@ After the failure of 18 June the allies went back to digging. Lord Raglan died o
 
 On 16 August Gorchakov tried to break the siege from outside. He attacked the French and Piedmontese at the Traktir bridge on the Chernaya with some 58,000-60,000 men and was beaten off with the loss of about 8,800. After that the garrison could expect no relief, and the French trenches crept up until they were a few yards from the Malakoff.
 
-The allies bombarded the town from 17 August and again, more heavily, from 5 September. The Wikipedia article on the siege, following Figes, gives 307 guns and 2,000-3,000 Russian casualties a day. On 3 September the generals settled the plan. At noon on 8 September the French would storm the Malakoff and the works either side of it. When they were established, the British would storm the Redan, and the French would go in against the town front further west.
+The allies bombarded the town from 17 August and again, more heavily, from 5 September. The Wikipedia article on the siege gives 2,000-3,000 Russian casualties a day in the last bombardment. At noon on 8 September the French would storm the Malakoff and the works either side of it. When they were established, the British would storm the Redan, and the French would go in against the town front further west.
 
 ### The places
 - **The Redan's salient**: the point of the work, chosen by Simpson because it was "less exposed to the heavy flanking fire". The ditch there was about 15 feet deep.
 - **The advanced parallel**: the British forward trench, from which the stormers went over. Codrington watched from the fifth parallel.
 - **The Malakoff**: the work east of the Redan, taken by the French at noon and held.
-- **The Little Redan**: the work beyond the Malakoff, where the French attack failed.
 - **The Mamelon**: the French-held hill in front of the Malakoff, where Pélissier gathered his storming columns.
-- **The Barrack Battery**: Russian guns west of the Redan that fired into the attackers.
+- **The Barrack Battery**: Russian guns west of the Redan.
 - **Chapman's attack**: the British left attack. An eyewitness says the signal rockets went up from it.
-- **The Karabelnaya**: the suburb behind the Redan, where the Russian reserves stood.
 - **The raft bridge and the North Side**: the floating bridge across the harbour by which the garrison left that night.
 
 ### The leaders
 - **James Simpson** (British, commander): 63. He watched from the trench with his cloak over his head.
-- **Sir William Codrington** (British, Light Division): planned the attack with Markham. He took command of the army in November.
-- **Frederick Markham** (British, 2nd Division).
+- **Sir William Codrington** (British, Light Division): planned the attack with Markham of the 2nd Division.
 - **Charles Windham** (British, 2nd Division): led the assaulting column into the Redan. Known after as "Redan Windham".
 - **Colonel Unett** (British, 19th): senior officer of Shirley's brigade. Badly wounded before reaching the abatis.
 - **Major Augustus Welsford** (British, 97th): led half the ladder party. Killed.
@@ -34,7 +31,7 @@ It was a cold day, with a strong wind and dust. At 10:30 the stormers of the Lig
 
 The covering party went first: 100 men of the Buffs under Captain Lewes and 100 of the 2nd Battalion, Rifle Brigade, under Captain Hammond. Then came the ladders, 160 men of the Buffs under Captain Maude and 160 of the 97th under Welsford. The stormers followed, the Light Division leading. The guns of the Redan swept them with grape as they crossed. The British bombardment had torn up the abatis, and they got through it. But the ladders were too short, and some had been broken or left behind. Only six or seven reached the salient. Men jumped down into the ditch and climbed the parapet.
 
-At first there was little opposition. The Russians fell back behind their traverses and a breastwork, and fired from there. Hammond and Welsford were killed. Colonel Handcock of the 97th was hit in the head and mortally wounded. Brigadier Shirley was blinded by dust and earth, and Brigadier Van Straubenzee was hit in the face. Of the senior officers, only Windham and Captains Fyers, Lewes and Maude got into the Redan unhurt.
+At first there was little opposition. The Russians fell back behind their traverses and a breastwork, and fired from there. Hammond and Welsford were killed. Colonel Handcock of the 97th was hit in the head and mortally wounded. Two brigadiers, Shirley and Van Straubenzee, were put out of action. Of the senior officers, only Windham and Captains Fyers, Lewes and Maude got into the Redan unhurt.
 
 Windham sent three officers back in turn for reinforcements. All three were wounded on the way. The supports came forward in disorder and crowded into the salient. Then Russian reserves came up from the town and drove the British back over the parapet into the ditch. Simpson says the fight lasted "nearly an hour". Windham went back himself to ask for men, but by then the retreat had been ordered.
 
@@ -48,7 +45,7 @@ Simpson meant to attack again next morning with the Highlanders under Sir Colin 
 - **The ground to cross.** The British Empire site, following Collins, says the nearest parallel was nearly 300 yards from the Russian ramparts. The Wikipedia article calls it a 400 m field. The game gives about 200 yards.
 - **The stormers.** Simpson gives about 1,000 men, half from each division, besides the 200 covering and 320 with ladders. The *Household Narrative* lists 760 from the 2nd Division alone. The Wikipedia article counts 15 battalions, about 11,000 men, in the right attack, stormers, supports and reserves together.
 - **British losses.** The Wikipedia article gives 2,447: 385 killed, 1,886 wounded and 176 missing. Fletcher and Ishchenko give 390 killed, 2,043 wounded and 177 missing.
-- **Russian and French losses.** For the whole day Russell (1865) gives 11,692 Russians; Fletcher and Ishchenko give 2,684 killed, 7,243 wounded and 1,739 missing. They give the French 1,634 killed, 4,513 wounded and 1,410 missing.
+- **Russian losses.** For the whole day Russell (1865) gives 11,692; Fletcher and Ishchenko, 11,666 (2,684 killed, 7,243 wounded, 1,739 missing).
 - **The Russian counter-attack.** The Wikipedia article has Ventsel send in the Selenginski and Iakutski regiments, about 3,000 men. The game has the Kamchatski and Iakutski.
 - **Windham.** The Dictionary of Canadian Biography says soldiers criticised him for going back. William Howard Russell of *The Times* wrote that he had "saved the honour of the army".
 
