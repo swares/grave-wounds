@@ -1,0 +1,19 @@
+# Pictures for the Mons section of The World Wars. Each is public domain or openly licensed, checked
+# on its source page. The file goes in images/books/world_wars/ under `file`; until it is there the book shows
+# a captioned slot with this credit and source.
+# mons-fusiliers-grand-place: LICENCE NOT FULLY CONFIRMED. Commons and Wikipedia's file pages were not
+# reachable from this session. The IWM object page (Q 70071) was read: it gives the date 22 August 1914, names
+# no photographer, and marks the image "IWM Non Commercial Licence" (IWM's own term for its copies, not a
+# copyright claim on the photograph). A mirror of the Commons category "Battle of Mons" lists the file
+# "4th Bn Royal Fusiliers 22 August 1914.jpg", but its licence template could not be read. The photograph is
+# out of copyright in the UK by age if, as the IWM record suggests, the photographer is unknown (UK term for an
+# anonymous work: 70 years from making or publication), and in the US it is public domain if, as is
+# likely, it was published before 1931 (date of first publication not found). The image itself was not seen. Confirm the Commons template before printing.
+# The IWM caption gives the 7th Brigade; the battalion was in the 9th Brigade (Doyle, Kendall, visitmons).
+- id: mons-fusiliers-grand-place
+  file: mons-fusiliers-grand-place.jpg
+  caption: "Men of A Company, 4th Royal Fusiliers, resting in the Grand Place at Mons on 22 August 1914, the day before they held the Nimy bridges."
+  credit: "Photographer unknown, 22 August 1914, Imperial War Museums, Q 70071"
+  licence: "Public domain (photographer unknown, 1914; Commons template not yet confirmed)"
+  source: "https://www.iwm.org.uk/collections/item/object/205091163"
+  alt: "A photograph of men of the 4th Royal Fusiliers at rest in the Grand Place at Mons, the day before the battle."
