@@ -1,13 +1,15 @@
 # Vehicles {#vehicles}
 
-On the field map, in wars with machine guns or later, tanks, infantry fighting vehicles and
-armoured carriers fight as units, one vehicle to a hex. The unit's men are its crews.
+On the field map, tanks, infantry fighting vehicles and
+armoured carriers fight as units, one vehicle to a hex. The unit's men are its crews. They
+belong to the wars with machine guns or later; the page leaves that to the GM and does not
+stop him.
 
 {{table:vehicles}}
 
 - **Moving.** Vehicles cross open and high ground at a hex for a hex, and rough ground,
-  slopes and woods for more. They cannot enter marsh, buildings, rubble or water, so in a
-  town they keep to the streets.
+  slopes and woods for more. They cannot enter marsh, scrub and orchard, buildings, tall
+  buildings, rubble or water, so in a town they keep to the streets.
 - **Their machine guns** fire as a machine-gun team's, about one gun to a vehicle.
 - **Main guns** fire each exchange at the nearest enemy in range, in sight and in front,
   enemy vehicles first, with a clear line of fire. A tank's gun hits and reaches by its fire
@@ -38,13 +40,15 @@ rocket bursts in the room and strikes each man there at half. A hit knocks the v
   vehicles still fighting.
 - **Damage short of that.** A hit that does not knock the vehicle out strikes the turret at
   {{v_turret}}%, else the hull.
-  - On the turret it puts the main gun out at {{v_t_gun}}%, and immobilises the vehicle at
-    only {{v_t_imm}}%.
-  - On the hull it immobilises the vehicle at {{v_h_imm}}%, and puts the gun out at
-    {{v_h_gun}}%.
 
-  Immobilised vehicles can still turn. Their crews can abandon them and leave the fight
-  unhurt.
+    - On the turret it puts the main gun out at {{v_t_gun}}%, and immobilises the vehicle at
+      only {{v_t_imm}}%.
+    - On the hull it immobilises the vehicle at {{v_h_imm}}%, and puts the gun out at
+      {{v_h_gun}}%.
+
+    Immobilised vehicles can still turn. Their crews can abandon them and leave the fight
+    unhurt.
+
 - **Shells and bombs** bursting in a vehicle's hex knock it out at the kind's own chance: a
   heavy howitzer's {{i_how_knock}}%, a fighter-bomber's {{v_fb_knock}}%. Light armour is
   {{v_shell_light}} times as likely to go, soft-skinned vehicles {{v_shell_soft}} times.
@@ -93,19 +97,20 @@ its side knows of, so a known field it went round is not set off; a hidden one o
 
 - **Men.** A man struck rolls a wound as one hit by a mine, at {{m_attack}}%. Mine wounds
   fall mostly on the feet and legs.
-- **Vehicles.** A vehicle struck is knocked out at {{m_heavy}}% (heavy armour) or
-  {{m_light}}% (light). Otherwise a track is blown off and it is immobilised.
+- **Vehicles.** A vehicle struck is knocked out at {{m_heavy}}% (heavy or composite armour),
+  {{m_light}}% (light) or {{m_soft}}% (soft-skinned). Otherwise a track is blown off and it is immobilised.
 - **Sappers.** In set-up the GM can mark a foot unit as sappers. On its own side's move,
   before it moves and out of contact, it can start to **lay** mines of any kind or to **lift**
   them. While it works it neither moves nor fires. Moving, turning, breaking or coming into
   contact stops the work.
-  - Laying takes {{m_lay}} exchanges. Then the row of hexes just ahead of its front, as wide
-    as its front, is a hidden minefield. Hexes where a unit stands are left clear.
-  - Lifting takes {{m_clear}} exchanges. Then the minefield hexes in that row that its side
-    knows of are lifted: a lane.
-  - The enemy commander sets its own sappers to work (see [the enemy commander](#commander)).
-  - A side knows the mines its own sappers laid: its commander steers round them, and they do
-    not strike its own men.
+
+    - Laying takes {{m_lay}} exchanges. Then the row of hexes just ahead of its front, as wide
+      as its front, is a hidden minefield. Hexes where a unit stands are left clear.
+    - Lifting takes {{m_clear}} exchanges. Then the minefield hexes in that row that its side
+      knows of are lifted: a lane.
+    - The enemy commander sets its own sappers to work (see [the enemy commander](#commander)).
+    - A side knows the mines its own sappers laid: its commander steers round them, and they do
+      not strike its own men.
 
 ## Riders {#riders}
 

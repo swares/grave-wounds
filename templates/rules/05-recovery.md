@@ -9,7 +9,7 @@ on one **track** of five steps, and each step weakens a man in the next fight:
 
 Each wound goes onto the track at the step its severity gives (light **mending**, serious
 **serious**, critical **grave**), or worse if its clock is short: a wound that would kill in
-hours or minutes starts at **grave**. In camp the bleeding stops, and each night he gets
+days starts at **serious** at least, and one that would kill in hours or minutes at **grave**. In camp the bleeding stops, and each night he gets
 back {{blood_night}} Blood.
 
 On the [wound roller](roller.html), put him **With** his force on the
@@ -67,13 +67,15 @@ Fighting wears on a man's mind as well as his body. **Strain** builds from what 
 
 {{table:strain}}
 
-A day in the line, a fight or an extreme day is changed by how he stands with his comrades,
-summed: {{table:strain_mods}}
+A light day in the line, a day in the line, a fight or an extreme day is changed by how he
+stands with his comrades, summed:
 
-and {{st_toll}}% of every point also goes into his **Toll**, which only going home lowers. Each
+{{table:strain_mods}}
+
+{{st_toll}}% of every point also goes into his **Toll**, which only going home lowers. Each
 time Strain and Toll together pass {{st_every}}, 20, 30 and on, he rolls d100: at or under his
-Nerve + {{st_base}} − that total, he holds; a man who has broken down before rolls 10 less. If he
-fails, he rolls d10, adding 1 for each 10 he failed by: 1-4 **shaken** (−10 to attack and Nerve
+Nerve + {{st_base}} − that total, he holds; a man who has broken down before rolls 10 less, and a roll of
+{{st_fail_from}} or more always fails. If he fails, he rolls d10, adding 1 for each 10 he failed by: 1-4 **shaken** (−10 to attack and Nerve
 until a day's rest), 5-7 **strained** (−20 until treated), 8-9 **broken down** (out of the fight
 until treated), 10 or more **severely** (out, and to be sent back). Each era has its own words for
 these: nostalgia in the Napoleonic and Civil wars, shell shock in 1914-18, combat exhaustion in
@@ -81,7 +83,7 @@ these: nostalgia in the Napoleonic and Civil wars, shell shock in 1914-18, comba
 
 A day out of the line, camped, takes {{st_rest}} Strain off. A man who breaks down is treated
 where he is, near the front or in the rear; the nearer and the sooner, the likelier he goes back
-to duty:
+to duty, and treatment takes Strain off him (sent home, all of it, and half his Toll):
 
 {{table:treatment}}
 

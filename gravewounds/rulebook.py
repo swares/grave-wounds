@@ -6,6 +6,8 @@ book says what the pages do, and a change to the data changes the book. A placeh
 no value stops the build."""
 from __future__ import annotations
 
+import math
+
 import re
 from pathlib import Path
 
@@ -183,7 +185,7 @@ def values(d: Data) -> dict:
         "origin_gain": E["gain"], "first_term": E["first_term"], "term_main": E["term_main"], "term_second": E["term_second"],
         "event_gain": E["gain"], "age_start": E["age"]["start"], "age_term": E["age"]["per_term"], "skill_max": E["skill_max"],
         "deed_bonus": d.ranks.get("deed_bonus", 20), "literate": d.ranks.get("literate", 20), "sack_bonus": d.ranks.get("sack_bonus", 15),
-        "st_base": d.stress.get("base", 115), "st_every": d.stress.get("check_every", 10), "st_toll": round(d.stress.get("toll_share", 0.4) * 100),
+        "st_base": d.stress.get("base", 115), "st_every": d.stress.get("check_every", 10), "st_toll": round(d.stress.get("toll_share", 0.4) * 100), "st_fail_from": d.stress.get("fail_from", 99),
         "st_rest": d.stress.get("rest_day", 3.5),
         "chk_crit": round(d.checks.get("critical_fraction", 0.1) * 100), "chk_fumble": d.checks.get("fumble_from", 96),
         "haggle_seller": (d.checks.get("haggle") or {}).get("seller", 50), "haggle_win": round(-(d.checks.get("haggle") or {}).get("win", -0.1) * 100),
@@ -200,7 +202,7 @@ def values(d: Data) -> dict:
         "fever_high": DZ["wounds"]["fever_chance"]["high"], "fever_nocamp": DZ["wounds"]["fever_care"]["none"],
         "fever_quarters": -DZ["wounds"]["fever_care"]["shelter"], "fever_harder": DZ["wounds"]["fever"]["virulence"],
         "blood_night": DZ["named_blood_per_day"], "leech_per": 10,
-        "stop_sev": " and ".join(SC["severities"]),
+        "stop_sev": " or ".join(SC["severities"]),
     }
     v.update(_field_values(d), **_travel_values(d), **LATER.values(d))
     v["ex"] = example(d)
@@ -257,6 +259,7 @@ def _travel_values(d: Data) -> dict:
         "w_deep": WX["ground"]["deep"], "w_flood": WX["ground"]["flood_days"],
         "t_foot_day": f"{T['forces']['foot']['kmh'] * T['hours_per_day'] / 1.609:.0f} miles ({T['forces']['foot']['kmh'] * T['hours_per_day']:g} km)",
         "w_snow_f": round(WX["snow_at_or_below"] * 9 / 5 + 32), "w_snow": WX["snow_at_or_below"],
+        **_wind_cold(d),
     }
 
 
@@ -402,8 +405,9 @@ def tables(d: Data) -> dict:
     if d.stress:
         SX = d.stress
         out["strain"] = _md(["What", "Strain"], [[v["name"], f"+{v['strain']:g}"] for v in SX["sources"].values()])
-        out["treatment"] = _md(["Where", "Days", "Back to duty: shaken", "strained", "broken down", "severely"],
+        out["treatment"] = _md(["Where", "Days", "Strain off", "Back to duty: shaken", "strained", "broken down", "severely"],
                                [[t["name"] + (" (from 1916)" if "forward" == k else " (before 1914)" if k == "furlough" else ""), t["days"],
+                                 "all" if t["strain"] == "all" else t["strain"],
                                  *[f"{t['rtd'][x]}%" for x in ("shaken", "strained", "exhaustion", "severe")]] for k, t in SX["treatment"].items()])
     if d.loads:
         LB = d.loads["bands"]
@@ -471,8 +475,8 @@ def _travel_tables(d: Data) -> dict:
     ter = [[t["name"], f"×{t['cost']:g}" if t.get("cost") else "cannot enter"] for t in T["terrain"].values()]
     camps = [[c["name"], c["desc"], _needs(c), _sign(c["surprise"]), c["rest"]] for c in W["camps"].values()]
     dis = [[x["name"], x["caught"], f"{x['incubation'][0]}–{x['incubation'][1]} days", f"{x['deaths']:g}%"] for x in DZ["diseases"].values()]
-    works = [[w["name"], _off(w.get("cover")), _cross(w.get("cross")), "yes" if w.get("blocks_melee") else "—"] for w in W["edge_works"].values()]
-    works += [[w["name"], _off(w.get("cover_here") or w.get("cover_behind")), _cross(w.get("enter")), "—"] for w in W["hex_works"].values()]
+    works = [[w["name"], _off(w.get("cover")), _cross(w.get("cross"), w), "yes" if w.get("blocks_melee") else "—"] for w in W["edge_works"].values()]
+    works += [[w["name"], _off(w.get("cover_here") or w.get("cover_behind")), _cross(w.get("enter"), w), "—"] for w in W["hex_works"].values()]
     return {"speeds": _md(["Force", "Road speed", "A day on the road"], sp), "terrain": _md(["Terrain", "Time against a road"], ter),
             "camps": _md(["Camp", "What it is", "Needs", "Surprise", "Rest"], camps),
             "diseases": _md(["Disease", "Caught from", "Shows after", "Deaths per case (records)"], dis),
@@ -519,10 +523,16 @@ def _sight(hexes) -> str:
     return "no limit" if hexes is None else f"{round(hexes * 2 * 1.0936):,} yards ({hexes * 2:,} m)"
 
 
-def _cross(x) -> str:
-    if x is None:
+def _cross(x, w: dict | None = None) -> str:
+    """How a work is crossed: its movement cost, or how it is opened when it cannot be."""
+    if x is not None:
+        return f"+{x} movement" if x else "free"
+    w = w or {}
+    if w.get("breach"):
         return "cannot be crossed (breach it)"
-    return f"+{x} movement" if x else "free"
+    if w.get("charge") or w.get("shelled"):
+        return "cannot be crossed (ladders; from 1914, charges or heavy shells)"
+    return "cannot be crossed"
 
 
 def _state_text(st: dict) -> str:
@@ -600,8 +610,38 @@ def example(d: Data) -> dict:
               a_init=s["agi"] // d.wounds["combat"]["characteristics"]["initiative"]["agi_per"],
               a_events=" and ".join(e.rstrip(".").lower() for e in arch["events"]),
               a_skills=", ".join(f"{names[k]} {arch['skills'][k]}" for k in ("bow", "dodge", "fieldcraft", "stealth")))
+    pool = d.wounds["tracking"]["blood_pool"]
+    ex["a_blood_note"] = (f"His Endurance is low, and it shows in a fight: his **Blood** is {ex['a_blood']}, not the usual {pool}"
+                          if ex["a_blood"] < pool else
+                          f"His Endurance is {'high' if ex['a_blood'] > pool else 'ordinary'}: his **Blood** is {ex['a_blood']}"
+                          + (f", above the usual {pool}" if ex["a_blood"] > pool else ", the usual pool"))
+    surgeon = leech["career"] == "barber_surgeon"
+    ex["leech_who"] = (f"its barber-surgeon's, {leech['name']}'s" if surgeon
+                       else f"not its barber-surgeon's but {leech['name']}'s, the {ex['leech_career']}")
+    if not 19 <= ex["leech_skill"] < 41:
+        raise ValueError(f"rule book example: the tourniquet rolls 41 (fails) and 19 (holds), but the leech's skill is {ex['leech_skill']}")
+    ex["a_origin"] = _article(ex["a_origin"])
     ex.update(_shot(d, arch), **_cut(d, arch), **_camp(d, arch, leech))
     return ex
+
+
+def _wind_cold(d: Data) -> dict:
+    """Shooting into the wind and fighting in the cold (weather.yaml winds, cold)."""
+    W = {w["id"]: w for w in d.weather["winds"]}
+    L = d.weather["cold"]["levels"]
+    out = {"w_into_strong": W["strong"]["into_wind"], "w_into_gale": W["gale"]["into_wind"]}
+    for k in ("hard", "bitter"):
+        out.update({f"w_{k}": L[k]["below"], f"w_{k}_f": round(L[k]["below"] * 9 / 5 + 32), f"w_{k}_name": L[k]["name"].lower(),
+                    f"w_{k}_jam": L[k]["jam"], f"w_{k}_move": L[k]["move"]})
+    return out
+
+
+def _article(phrase: str) -> str:
+    """'novice who left the cloister' -> 'a novice who left the cloister' (unless it has one)."""
+    first = phrase.split()[0] if phrase else ""
+    if first in ("a", "an", "the") or first.endswith("'s"):
+        return phrase
+    return ("an " if first[:1] in "aeiou" else "a ") + phrase
 
 
 def _choose_weapons(d: Data) -> str:
@@ -659,7 +699,7 @@ def _cut(d: Data, arch: dict) -> dict:
     MV = d.wounds["combat"]["move"]
     return {"c_attack": q["attack"], "c_roll": roll, "c_margin": margin, "c_sev": sev, "c_droll": droll, "c_loc": d.loc[loc]["name"].lower(),
             "c_bleed": fx["bleed"], "c_pain": fx["pain"], "c_impair": ", ".join(fx["impair"]) or "none", "c_lethal": fx["lethal"],
-            "c_shock": "does not" if not fx.get("shock") else "does", "c_per": f"{per:g}", "c_rounds_dead": int(blood // per),
+            "c_shock": "does not" if not fx.get("shock") else "does", "c_per": f"{per:g}", "c_rounds_dead": math.ceil(blood / per),
             "c_left": f"{left:g}", "c_blood": blood, "c_th": th["effect"].split(":")[0].lower() if th else "steady",
             "c_patt": p["attack"], "c_pdef": p["defence"], "c_adv": MV["advance"] // 2, "c_run": MV["run"] // 2,
             "c_infection": fx["infection"]}
@@ -670,7 +710,11 @@ def _camp(d: Data, arch: dict, leech: dict) -> dict:
     DZ, R = d.disease, d.disease["recovery"]
     end, bonus = arch["stats"]["end"], leech["skills"]["leechcraft"] // 10
     target = end + R["care"]["field"] + R["activity"]["rest"] + bonus - DZ["wounds"]["wound"]["virulence"]
-    r1, r2 = 52, 30
+    big = R["big"]                                    # a success by this much is two steps
+    r1 = target - big // 2                            # week one: one step (serious to mending)
+    r2 = min(30, target)                              # week two: mending to healed
+    if not (0 <= target - r1 < big and 1 <= r1 <= 100 and 0 <= target - r2 and 1 <= r2):
+        raise ValueError(f"rule book example: the camp checks no longer fit their text (target {target})")
     fever = DZ["wounds"]["fever_chance"]["medium"] + DZ["wounds"]["fever_care"]["field"] - bonus
     blood = d.wounds["tracking"]["blood_pool"] + (end - 50) // d.wounds["combat"]["characteristics"]["blood"]["per"]
     return {"k_end": end, "k_bonus": bonus, "k_target": target, "k_r1": r1, "k_m1": target - r1, "k_r2": r2, "k_m2": target - r2,

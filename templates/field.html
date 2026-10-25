@@ -830,7 +830,8 @@ function fireRefused(b, K, h, fire){              // why battery b cannot fire `
   if (fire === "illum" && !K.illum) return `${K.name} have no illumination rounds.`;
   const run = FD.units.indirect.air.runs?.[fire];
   if (run && !run.kinds.includes(b.kind)) return `${K.name} do not fly ${fire === "napalm" ? "napalm strips" : "strafing runs"}.`;
-  if (run?.wars && !run.wars.includes(FD.tables[S.table]?.battle)) return "Napalm is for the wars from 1944 on.";
+  if (run?.wars && !run.wars.includes(FD.tables[S.table]?.battle)) return `Napalm is for the wars from ${run.from} on.`;
+  if (run?.from && S.field.year && S.field.year < run.from) return `Napalm was first dropped in ${run.from}: not at a battle of ${S.field.year}.`;
   if (K.air && fire === "smoke") return `${K.name} drop no smoke.`;
   if (!inReach(b, h)) return `${b.name} cannot reach ${hexName(h)} from where they stand (${nOf(reachOf(b), "hex", "hexes")}).`;
   if (fire !== "illum" && !spotted(S.units, S.field, b.side, h)) return `No unit of ${b.side} can see ${hexName(h)}: fire can only be called where someone sees it fall (not through woods or smoke).`;
@@ -1151,6 +1152,7 @@ function armourText(l, nm){                       // rockets at vehicles, a tank
 }
 function bunkerText(l, nm){                       // a bunker stormed (it falls or holds), or knocked out by shellfire
   const at = `${l.at[0] + 1},${l.at[1] + 1}`;
+  if (l.kind === "knocked" && l.work) return `${l.name} (${l.side}) blow a gap in the ${WK.edge_works[l.work].name.toLowerCase()} beside ${at}.`;
   if (l.kind === "knocked") return `${l.name} (${l.side}) knock out the bunker at ${at}.`;
   const how = `${nm(l.unit)} storm the bunker at ${at} with ${FD.units.assault.means[l.means].name.toLowerCase()} (rolled ${l.roll}, needed ${l.need} or less)`;
   if (!l.out) return `${how}: it holds.`;

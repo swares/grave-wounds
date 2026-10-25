@@ -428,7 +428,8 @@ indirect:
     # ground's cover and for going to ground, as shellfire; napalm: neither helps), a vehicle in it
     # knocked out at `knock` % times its armour's `shell`. Strafing wounds as the table's machine
     # gun (else shell fragments); napalm puts a man struck down with critical burns, and kills
-    # `dead` % of them outright. `kinds`: the aircraft that fly it; napalm only in `wars`.
+    # `dead` % of them outright. `kinds`: the aircraft that fly it; napalm only in `wars`, and on a
+    # battlefield not before `from` (its year: first dropped in action in 1944).
     # Marking: an air attack whose aimed hex is in smoke (a mortar's or gun's smoke round laid on
     # it) scatters half as far, as with a forward air controller (not both).
     # Ground fire: an anti-aircraft gun unit (`aa_weapons`) adds `aa` % a gun it serves, within
@@ -437,7 +438,7 @@ indirect:
     # damaged: they drop their remaining attacks and turn for home (out of the mission either way).
     runs:
       strafe: {length: 5, struck: 12, knock: 3, kinds: [fighter_bomber, gunship]}
-      napalm: {length: 3, struck: 45, knock: 15, dead: 35, kinds: [fighter_bomber], wars: [WWII, Korea, Vietnam, "Late 20th century", "Iraq & Afghanistan"]}
+      napalm: {length: 3, struck: 45, knock: 15, dead: 35, kinds: [fighter_bomber], from: 1944, wars: [WWII, Korea, Vietnam, "Late 20th century", "Iraq & Afghanistan"]}
   tree_burst: {ground: [woods], factor: 1.5, prone: 0.7}
   smoke: {radius: 1, lasts: {calm: 4, breeze: 3, strong: 2, gale: 1}, drift: {calm: 0, breeze: 1, strong: 2, gale: 2}}
   counter_battery: {among: 2, near: 3, near_struck: 1}

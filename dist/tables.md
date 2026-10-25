@@ -7732,6 +7732,8 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 **Followers:** a big team's other men get one line each: a career (for kit and weapon), a name, and a quality on d100 (default: 01-30 green, 31-80 regular, 81-00 veteran; hardened: 01-15 green, 16-60 regular, 61-00 veteran; raw: 01-55 green, 56-90 regular, 91-00 veteran), which gives attack/defence/Nerve (green 40/25/35, regular 50/35/50, veteran 60/45/65). No characteristics or skills (50 in each in the roller). The team's followers are in the table below.
 
+**Women under arms:** a member may be a woman (her own name lists and origins, no beard; the texts say she and her), chosen or rolled d10000 at or under the army's share x 100 before the characteristics, for a career open to women: The Lakota (Oglala, Minneconjou and other bands) (no reliable share: chosen, never rolled): warrior with bow and shield, warrior with a gun; The Cheyenne and Arapaho (no reliable share: chosen, never rolled): warrior with bow and shield, warrior with a gun. Elsewhere these careers were closed to them.
+
 | Skill | Starts at | Weapons |
 |---|---|---|
 | Bow | Agility / 2 | bow |

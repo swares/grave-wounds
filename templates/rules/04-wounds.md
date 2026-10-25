@@ -63,7 +63,7 @@ turn. A side with no sheets binds without rolling.
 
 !!! example "The retinue: the tourniquet"
     {{ex.arch_first}}'s thigh bleeds {{ex.c_per}} Blood a round. The best Leechcraft in the
-    retinue is not its barber-surgeon's but {{ex.leech}}'s, the {{ex.leech_career}}: {{ex.leech_skill}}.
+    retinue is {{ex.leech_who}}: {{ex.leech_skill}}.
     He drags {{ex.arch_first}} back and tries a tourniquet; he rolls 41, over his
     {{ex.leech_skill}}, and the strap slips. He tries again the next round and rolls 19: it
     holds, and the bleeding stops. Two rounds of bleeding have left {{ex.arch_first}} **{{ex.c_left}}** of

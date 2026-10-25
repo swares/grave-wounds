@@ -39,8 +39,8 @@ just behind it sees over it and is seen, and a man on the top sees down both slo
    longbowman looses {{f_bow_rate}} arrows a minute, and about one shot in {{f_aimed}} is aimed at
    a man rather than loosed at the mass.
 3. **Each attempt is one attack**, at the unit's quality, exactly as in [the fight](#turn):
-   +{{f_flank}} from the flank, +{{f_rear}} from the rear (and no parry), +{{f_charge}} for a
-   mounted charge in its first exchange, −{{f_shaken}} for a shaken unit, +{{f_pikes}} for
+   +{{f_flank}} from the flank and +{{f_rear}} from the rear (and no parry from either),
+   +{{f_charge}} and twice as many attempts for a mounted charge in its first exchange, −{{f_shaken}} for a shaken unit, +{{f_pikes}} for
    pikes in close order against horse to their front; range, weather and cover come off
    missiles. A tired unit loses its [fatigue](#fatigue) level's penalty off its attack and
    its parry.
@@ -71,8 +71,8 @@ on average, with the same spread, as rolling every blow. Shellfire goes the same
 
 After an exchange a unit checks its morale if it lost the exchange in contact (more of its
 men down than it put down), has {{f_trigger}} of its men down, lost {{f_shock}} of its men in
-this exchange, or was struck in the flank or rear. A unit holding its ground in a position (in
-a bunker, dug in, behind works, in buildings or rubble, or lying down in woods or scrub), not
+this exchange, or was struck in the flank or rear. A unit of a side holding its ground (its
+commander's stance) that stands in a position (in a bunker, dug in, behind works, in buildings or rubble, or lying down in woods or scrub), not
 flanked, has lost the exchange only if it lost more men hand to hand than it put down hand to
 hand, and counts its losses only in an exchange it lost men: a garrison does not break from the
 passing of time, nor from fire it cannot answer. It rolls d100 against its quality's Nerve:
@@ -81,7 +81,7 @@ passing of time, nor from fire it cannot answer. It rolls d100 against its quali
 
 - **Steady, fails:** it is **shaken**: it fights at −{{f_shaken}} and cannot charge. Failing
   by more than {{f_shaken_by}} while flanked, or with half its men down, it breaks at once. A unit
-  holding a position is never flanked: its men there face every way.
+  of a holding side in a position is never flanked: its men there face every way.
 - **Shaken, fails:** it **breaks**.
 - **Shaken, passes out of contact:** it rallies to steady.
 
@@ -278,7 +278,7 @@ The rules never depend on it.
 says who holds the field and the objective. Then:
 
 1. **The field.** A side with no unit still standing has lost the field: the men it had down
-   there are left behind.
+   there are left behind, and die; a hero left there is found, or not, by quarter.
 1. **The pursuit.** If the other side still has units standing, the beaten side loses more as it
    flees, as a share of its killed and left on the field (each share rolled between its figures):
 

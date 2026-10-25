@@ -1243,12 +1243,17 @@ function laySmoke(field, bursts){                 // smoke over each burst and t
   const S = UD.indirect.smoke, lasts = S.lasts[field.weather?.wind || "calm"], sm = field.smoke || (field.smoke = {});
   for (const at of bursts) for (const h of within(at, S.radius)){ const key = `${h[0]},${h[1]}`; sm[key] = Math.max(sm[key] || 0, lasts) }
 }
-function knockBunkers(field, k, b, bursts, rng, log){   // a shell bursting on a bunker's hex knocks it out at the kind's knock %
+function knockBunkers(field, k, b, bursts, rng, log){   // a shell bursting on a bunker's hex knocks it out at the kind's knock %, and opens a stone wall (shelled) on its sides at the same % (as units._knock_bunkers)
   const knock = UD.indirect.kinds[b.kind].knock || 0;
   if (!knock) return;
   for (const at of bursts){
     const it = bunkerAt(field, at);
     if (it && rng.randint(1, 100) <= knock){ it.out = true; log.push({ kind: "knocked", sup: k, name: b.name, side: b.side, at }) }
+    for (let dn = 0; dn < 6; dn++){
+      for (const w of field.works ? edgeItems(field.works, at, step(at, dn)) : []){
+        if (specOf("edge", w).shelled && rng.randint(1, 100) <= knock){ w.out = true; log.push({ kind: "knocked", sup: k, name: b.name, side: b.side, at, work: w.type }) }
+      }
+    }
   }
 }
 function blastWeapon(table){                      // the weapon a storming party's grenades and charges wound as, or null
@@ -1892,12 +1897,16 @@ function breaching(field, u){                     // indexes of the front hexes 
 function breachable(field, u, h){                // [kind, key, item]: the first work h's front rank can hack at
   for (const dn of [u.facing, u.facing + 1]){
     const x = step(h, dn);
-    const e = edgeItems(field.works, h, x).find(it => specOf("edge", it).breach);
+    const e = edgeItems(field.works, h, x).find(it => canOpen(field, "edge", it));
     if (e) return ["edge", edgeKey(h, x), e];
     const it = hexItem(field.works, x);
-    if (it && specOf("hex", it).breach) return ["hex", hk(x), it];
+    if (it && canOpen(field, "hex", it)) return ["hex", hk(x), it];
   }
   return null;
+}
+function canOpen(field, kind, it){                // men can open this work: by hand (breach), or with charges (charge) where the table has them (as units._can_open)
+  const s = specOf(kind, it);
+  return !!(s.breach || (s.charge && field.blast));
 }
 function breachAll(us, field, log){               // units ordered to breach hack at the works on their front (works updated in place)
   if (!field?.works) return;
@@ -1949,6 +1958,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   shootAll(us, table, rng, acc, log, field, under);
   indirectAll(us, table, rng, acc, log, field, under);
   assaultAll(us, table, rng, acc, log, field);
+  if (field) field.blast = !!blastWeapon(table);   // demolition charges on this table (walls)
   breachAll(us, field, log);
   const occ = occupancy(us), before = us.map(u => u.men), fired = firedOn(log);
   us.forEach((u, i) => {
@@ -2986,11 +2996,12 @@ function airRun(us, side, b, K, [j, h], [table, field]){   // a strafing run or 
   const ours = us.filter(u => u.side === side && u.men > 0 && u.state !== "fled");
   for (const mode of ["napalm", "strafe"]){
     const r = R[mode];
-    if (!r?.kinds.includes(b.kind) || front < r.length || (r.wars && !r.wars.includes(war))) continue;
+    if (!r?.kinds.includes(b.kind) || front < r.length || (r.wars && !r.wars.includes(war)) || tooEarly(r, field)) continue;
     if (!runLine(h, dirn, mode).some(x => tooNear(ours, x, airScatter(us, field, b, K, h)))) return { attack: mode, dir: dirn };
   }
   return null;
 }
+const tooEarly = (r, field) => !!(r.from && field?.year && field.year < r.from);   // an attack run (napalm) not yet used in the battlefield's year (as commander._too_early)
 function callIllum(us, side, field, [known, exchange], free){   // in the dark: illumination over the lost enemy nearest its units, by the free battery with illumination that lands soonest (as commander._call_illum)
   const L = lightOf(field), ours = us.filter(u => u.side === side && u.men > 0 && u.state !== "fled");
   if ((L?.sight ?? null) === null || !ours.length) return [];

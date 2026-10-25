@@ -65,12 +65,24 @@ regions:
     colours: ["#9a7347", "#7d5530", "#c9a227", "#e6e0d2"]
     names: [Kills, Stands, Runs, Charging, Swift, Iron, Brave, Good, Plenty, Yellow, Hollow, Comes, High, Long, Thunder, Bold]
     bynames: [Hawk, Elk, Buffalo, Eagle, Bear, Shield, Hand, Horn, Hail, Lance, Horses, Arrow]
+    women:
+      share: null
+      careers: [warrior, gunman]
+      names: [Pretty, Holy, Walks, Moving, Brings, White, Owns, Good, Kills, Comes]
+      closed: "Women who fought rode in as warriors when the camp or a kinsman was in danger; these tables have no record of them in the other careers."
+      source: "Buffalo Calf Road Woman (Northern Cheyenne) rode in to rescue her brother at the Rosebud on 17 June 1876 and fought at the Little Bighorn nine days later (Wikipedia); Moving Robe Woman (Hunkpapa), One Who Walks With the Stars and Minnie Hollow Wood fought at the Little Bighorn (TheCollector, Indigenous women who fought at the Little Bighorn). Chosen, never rolled: four named women among some 1,500 to 2,000 fighting men (our arithmetic: about 0.2%) is too few to roll."
   - id: cheyenne
     name: "The Cheyenne and Arapaho"
     table: indian-wars-1865-71-arrows
     colours: ["#7d5530", "#8a2b2b", "#c9a227", "#e6e0d2"]
     names: [Walking, Standing, Running, Young, Big, Brave, Swift, Iron, High, Whistling, Leaning, Bird]
     bynames: [Coyote, Whirlwind, Magpie, Beaver, Owl, Badger, Otter, Turtle, Hawk, Rock, Hail, Feather]
+    women:
+      share: null
+      careers: [warrior, gunman]
+      names: [Pretty, Holy, Walks, Moving, Brings, White, Owns, Good, Kills, Comes]
+      closed: "Women who fought rode in as warriors when the camp or a kinsman was in danger; these tables have no record of them in the other careers."
+      source: "Buffalo Calf Road Woman (Northern Cheyenne) rode in to rescue her brother at the Rosebud on 17 June 1876 and fought at the Little Bighorn nine days later (Wikipedia); Moving Robe Woman (Hunkpapa), One Who Walks With the Stars and Minnie Hollow Wood fought at the Little Bighorn (TheCollector, Indigenous women who fought at the Little Bighorn). Chosen, never rolled: four named women among some 1,500 to 2,000 fighting men (our arithmetic: about 0.2%) is too few to roll."
 
 origins:
   - {name: "Raised in a hunting camp", gain: fieldcraft, trait: {text: "Knows the game trails", fieldcraft: 15}, drawback: {text: "Uneasy near the forts", persuade: -15}}

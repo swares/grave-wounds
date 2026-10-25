@@ -820,7 +820,8 @@ def _call_creep(d: Data, us: list, side, field: dict | None, ko: tuple, free: li
 
 def _air_run(d: Data, us: list, side, bk: tuple, aim: tuple, tf: tuple) -> dict | None:
     """A strafing run or napalm strip for aircraft b (kind K) on enemy aim[0] at aim[1]: napalm
-    if the aircraft carry it and the war allows it (table's battle), else strafing, when the
+    if the aircraft carry it and the war allows it (table's battle) and the battlefield's year is
+    not before its `from`, else strafing, when the
     target's front is at least the run's length; along its front; only if none of the side's
     men are within the scatter (_air_scatter: cut where a controller sees the aim) of a hex of
     the line. -> {attack, dir}, or None (a plain attack)."""
@@ -833,11 +834,18 @@ def _air_run(d: Data, us: list, side, bk: tuple, aim: tuple, tf: tuple) -> dict 
     dirn = (us[j]["facing"] + 5) % 6
     for mode in ("napalm", "strafe"):
         r = R.get(mode)
-        if not r or b["kind"] not in r["kinds"] or front < r["length"] or ("wars" in r and war not in r["wars"]):
+        if not r or b["kind"] not in r["kinds"] or front < r["length"] or ("wars" in r and war not in r["wars"]) or _too_early(r, field):
             continue
         if not any(_too_near(d, ours, x, _air_scatter(d, us, field, (b, K), h)) for x in U.run_line(d, h, dirn, mode)):
             return {"attack": mode, "dir": dirn}
     return None
+
+
+def _too_early(r: dict, field: dict | None) -> bool:
+    """An attack run (napalm) not yet used in the battlefield's year (`from`); open ground with no
+    year is never too early."""
+    year = (field or {}).get("year")
+    return bool(r.get("from") and year and year < r["from"])
 
 
 def _displace(d: Data, field: dict | None, side) -> list:
