@@ -11,7 +11,7 @@
 // knoll and attacking A and D Companies on the hill until dawn. The hill, the spurs, the river,
 // the road and the hamlet are drawn by hand to that shape, not traced from any map, and are
 // approximate; the deployment is the night attack, in our own words, with round numbers for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
 
 const COLS = 220, ROWS = 160;                 // 2200 m east to west, about 1390 m north to south
 const RIVER = r => 92 + Math.round(wobble(r / 10, 0.7, 1.9) * 2);        // the Kapyong river, north to south
@@ -42,7 +42,6 @@ const DIGGER = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman
 const MG = { quality: "veteran", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false, prone: true };
 const PVA = { quality: "veteran", weapon: "rifle_service", kit: "none", formation: "extended", mounted: false };
 const TANK = { quality: "regular", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank" };
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("A Company, 3 RAR (the north spur)", UN, 120, DIGGER, 14, [150, 40], N),
   at("D Company, 3 RAR (the summit)", UN, 120, DIGGER, 14, [SUMMIT[0], SUMMIT[1] - 8], N),
@@ -53,17 +52,18 @@ const units = [
   at("Platoon of Shermans (72nd Heavy Tank Battalion)", UN, 20, TANK, 5, TANKS, N),
   at("Chinese battalion down the valley", CH, 600, PVA, 30, [ROAD(10), 10], S),
   at("Chinese battalion onto the north spur", CH, 500, PVA, 30, [150, 12], S),
-  { ...at("Chinese battalion round the east of the hill", CH, 500, PVA, 30, [200, 30], 3), via: [[214, 96], [150, 128], [100, 126]] },   // down the east of the hill and round its south to battalion headquarters (the phase note; the way is our reading)
+  { ...at("Chinese battalion round the west of the hill", CH, 500, PVA, 30, [60, 20], 3), via: [[66, 90], [88, 126], [100, 126]] },   // round the Australians' left, the west, down the valley to battalion headquarters (the Anzac Portal; the way is our reading)
   at("Chinese machine guns", CH, 10, { ...MG, kit: "none", prone: false }, 2, [110, 20], 4),
 ];
 
 writeField({
   phases: [   // an exchange is about a minute; times from docs and sources in the project's battle-phases research, rounded
     { name: "The valley outpost is hit", at: 1, note: "21:30: the Chinese strike the forward tank platoon and probe A Company." },
-    { name: "Round the flank", at: 31, note: "About 22:00, mixed in with retreating South Koreans, the Chinese reach battalion headquarters at Chuktun-ni.", arrive: ["Chinese battalion round the east of the hill"] },
+    { name: "Round the flank", at: 31, note: "About 22:00, mixed in with retreating South Koreans, the Chinese reach battalion headquarters at Chuktun-ni.", arrive: ["Chinese battalion round the west of the hill"] },
     { name: "The main assaults", at: 201, note: "00:50: the main assault on B Company's 4 Platoon; A Company's 1 Platoon is pulled back at 01:00." },
     { name: "Headquarters pulls out", at: 451, note: "05:00 to 06:00: battalion headquarters withdraws down the valley, the Shermans escorting it." },
     { name: "B Company called up the hill", at: 586, note: "07:15: after the last assault on it at 04:45, B Company is ordered up onto the hill." },
+    { name: "B Company back on its knoll", at: 721, note: "09:30: B Company goes back, and Lieutenant Montgomerie's 4 Platoon retakes the knoll with the bayonet (Anzac Portal)." },
   ],
   ends: { at: 871, why: "fell back the next afternoon: 12:00 from 21:30" },
   objective: { at: SUMMIT, side: 1, name: "Hill 504's summit", radius: 8 },

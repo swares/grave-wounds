@@ -12,7 +12,7 @@
 // railroad and the paddies are drawn by hand to that shape, not traced from any map, and are
 // approximate; the deployment is the second night's attack, in our own words, with round numbers
 // for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
 
 const COLS = 200, ROWS = 170;                 // 2000 m east to west, about 1470 m north to south
 const CX = 100, CY = 86, RX = 72, RY = 58;    // the perimeter: an uneven ring of low hills round the village
@@ -39,7 +39,6 @@ const edge = (angle, out = 0) => {                                        // the
   const a = angle * Math.PI / 180;
   return [Math.round(CX + (RX + out) * 0.97 * Math.cos(a)), Math.round(CY + (RY + out) * 0.97 * Math.sin(a))];
 };
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   // the 1st Battalion on the north
   at("A Company, 23rd Infantry", UN, 150, DUG, 30, edge(-115), N),

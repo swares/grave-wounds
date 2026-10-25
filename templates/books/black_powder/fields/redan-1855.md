@@ -40,12 +40,12 @@ Simpson meant to attack again next morning with the Highlanders under Sir Colin 
 
 ### Where the accounts disagree
 - **The signal.** Simpson says the tricolour on the Malakoff's parapet. The eyewitness in Dickens's *Household Narrative* says four rockets fired from Chapman's attack, the British left, once the flag was seen. The Wikipedia article says the flag of St George raised over the Mamelon.
-- **How long it lasted.** Simpson says "nearly an hour", the *Household Narrative* "an hour". The Wikipedia article says Windham held the Redan for about 2 hours. The game gives about an hour and a half.
+- **How long it lasted.** Simpson says "nearly an hour", the *Household Narrative* "an hour". The Wikipedia article says Windham held the Redan for about 2 hours. The game follows Simpson.
 - **The ground to cross.** The British Empire site, following Collins, says the nearest parallel was nearly 300 yards from the Russian ramparts. The Wikipedia article calls it a 400 m field. The game gives about 200 yards.
 - **The stormers.** Simpson gives about 1,000 men, half from each division, besides the 200 covering and 320 with ladders. The *Household Narrative* lists 760 from the 2nd Division alone. The Wikipedia article counts about 11,000 men in the whole right attack.
 - **British losses.** The Wikipedia article gives 2,447: 385 killed, 1,886 wounded and 176 missing. Fletcher and Ishchenko give 390 killed, 2,043 wounded and 177 missing.
 - **Russian losses.** For the whole day Russell (1865) gives 11,692; Fletcher and Ishchenko, 11,666 (2,684 killed, 7,243 wounded, 1,739 missing).
-- **The Russian counter-attack.** The Wikipedia article has Ventsel send in the Selenginski and Iakutski regiments, about 3,000 men. The game has the Kamchatski and Iakutski.
+- **The Russian counter-attack.** The Wikipedia article has Ventsel send in the Selenginski and Iakutski regiments, about 3,000 men. The Kamchatski stood in the first line; the game follows Wikipedia for the counter-attack.
 - **Windham.** Simpson says he stayed with the troops throughout. The *Dictionary of Canadian Biography* says he went back himself to ask for men, found the retreat already ordered, and was criticised for it by soldiers, while William Howard Russell of *The Times* wrote that he had "saved the honour of the army".
 
 !!! story "Redan Massy"

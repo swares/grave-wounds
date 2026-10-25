@@ -49,7 +49,7 @@ const units = [
   unit("Middlesex machine guns", BR, 10, MG, [2, 118, rowFor(118, 2)]),
   unit("IR 84, I Battalion", GE, 900, COLUMN, [6, 62, 18]),
   unit("IR 84, II Battalion", GE, 900, COLUMN, [6, 84, 16]),
-  unit("IR 86, I Battalion (from the woods)", GE, 900, COLUMN, [6, 116, 36]),
+  unit("FR 86, I Battalion (from the woods)", GE, 900, COLUMN, [6, 116, 36]),
   unit("IR 84 machine-gun company", GE, 30, { ...MG, quality: "regular" }, [6, 73, 26]),
   unit("IR 84, III Battalion (in support)", GE, 900, { ...COLUMN, formation: "extended" }, [60, 72, 9]),
 ];
@@ -57,7 +57,7 @@ const units = [
 writeField({
   phases: [   // an exchange is about a minute; times from docs and sources in the project's battle-phases research, rounded
     { name: "The first assault", at: 1, note: "09:00: IR 84 comes at the bridges of the salient in close order." },
-    { name: "A renewed attack", at: 31, note: "Half an hour after the first is beaten off, a wider attack comes in through the woods (which battalion is our reading).", arrive: ["IR 86, I Battalion (from the woods)"] },
+    { name: "A renewed attack", at: 31, note: "Half an hour after the first is beaten off, a wider attack comes in through the woods (which battalion is our reading).", arrive: ["FR 86, I Battalion (from the woods)"] },
     { name: "The attack in force", at: 121, note: "11:00: the Germans attack in force (that the supporting battalion went in then is our reading).", arrive: ["IR 84, III Battalion (in support)"] },
     { name: "Withdrawal", at: 251, note: "13:10: the Fusiliers are ordered back; they go at 13:40." },
   ],

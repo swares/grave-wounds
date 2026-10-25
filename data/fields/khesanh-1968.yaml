@@ -8,7 +8,7 @@
 # give, not traced from any map; the deployment is the North Vietnamese attack, in our own words,
 # with round numbers for play. Fog and a dark night: fire illumination and flares.
 #
-# What happened, briefly: at about 03:05 on 5 February 1968, as the base was shelled, about 200
+# What happened, briefly: at about 03:00 on 5 February 1968, as the base was shelled, about 200
 # North Vietnamese came through the wire on the north of Hill 861A and into E Company's
 # trenches. At 05:00 Lieutenant Shanley's 1st Platoon, pushed out to its alternate positions,
 # counterattacked and threw them out hand to hand; the survivors came again, half-heartedly, and
@@ -28,7 +28,7 @@ objective: {at: [72, 62], side: 1, name: "the top of Hill 861A", radius: 8}
 # Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
 # then come on where they are drawn, or at their side's entry edge if that is taken.
 phases:
-  - {name: "Through the north wire", at: 1, note: "About 03:05: Captain Breeding reports 200 North Vietnamese breaching the wire atop the hill."}
+  - {name: "Through the north wire", at: 1, note: "About 03:00: Captain Breeding reports 200 North Vietnamese breaching the wire atop the hill."}
   - {name: "Shanley's counter-attack", at: 116, note: "05:00: Lieutenant Shanley leads the 1st Platoon out of its fall-back holes in a counter-attack."}
   - {name: "A half-hearted second attack", at: 131, note: "The survivors regroup and attack again, half-heartedly, and are repulsed (est.: no time given)."}
 ground: |
@@ -169,5 +169,5 @@ units:
   - {name: "E Company, 2/26 Marines (the west and east trenches)", side: 0, men: 60, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 8, pos: [64, 64], facing: 3, prone: true, nv: starlight, size: company}
   - {name: "E Company's reserve platoon", side: 0, men: 50, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 8, pos: [74, 66], facing: 1, nv: starlight, size: platoon}
   - {name: "E Company's machine guns", side: 0, men: 10, quality: regular, weapon: machine_gun, kit: vietnam_usmc, formation: mg, width: 2, pos: [77, 56], facing: 1, prone: true, fixed: [72, 16], nv: starlight, size: company}
-  - {name: "North Vietnamese battalion (through the north wire)", side: 1, men: 400, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 30, pos: [72, 16], facing: 4, nv: none, size: battalion}
+  - {name: "North Vietnamese battalion (through the north wire)", side: 1, men: 200, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 30, pos: [72, 16], facing: 4, nv: none, size: battalion}
   - {name: "North Vietnamese machine guns", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [92, 22], facing: 4, prone: true, nv: none, size: section}

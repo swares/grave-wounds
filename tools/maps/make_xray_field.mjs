@@ -13,7 +13,7 @@
 // and south-west. The clearing, the creek bed, the knoll and the slopes are drawn by hand to that
 // shape, not traced from any map, and are approximate; the deployment is mid-afternoon of the
 // 14th, as D Company was coming in, in our own words, with round numbers for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
 
 const COLS = 160, ROWS = 130;                 // 1600 m east to west, about 1130 m north to south
 const LZ = [104, 66];                         // the middle of the clearing
@@ -35,7 +35,6 @@ const US = { side: 0, facing: N }, VN = { side: 1, facing: S };
 const CAV = { quality: "regular", weapon: "rifle_assault", kit: "ww2_rifleman", formation: "extended", mounted: false };
 const MG = { quality: "regular", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false };
 const PAVN = { quality: "veteran", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false };
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const flying = u => ({ ...u, lands: 0 });     // comes in by air at the landing zone
 const units = [
   at("B Company, 1st Battalion, 7th Cavalry (across the creek bed)", US, 90, { ...CAV, prone: true }, 20, [creek(50) - 4, 50], 3),
@@ -58,7 +57,7 @@ writeField({
     { name: "The push for the cut-off platoon", at: 131, note: "15:45: A and B Companies push toward the cut-off platoon and are stopped; they try again at 16:20." },
     { name: "Reinforcement at dusk", at: 211, note: "17:05: B Company of the 2nd Battalion flies in; at 17:40 A and B pull back to the edge of the landing zone.", arrive: ["B Company, 2nd Battalion, 7th Cavalry (flown in at dusk)"] },
   ],
-  ends: { at: 1346, why: "the cut-off platoon reached the next afternoon: 12:00 from 13:35" },
+  ends: { at: 1556, why: "the cut-off platoon reached the next afternoon, about 15:30 (Carland; 26 hours by Savage's citation), from 13:35" },
   objective: { at: LZ, side: 1, name: "the landing zone", radius: 6 },
   id: "xray-1965", name: "Landing zone X-Ray, 14 November 1965", sides: ["United States", "North Vietnamese"], table: "vietnam-1965-70-hospitalized",
   travel: { map: "iadrang-1965", place: "Landing zone X-Ray", within: 2, sides: ["United States", "North Vietnamese"] },

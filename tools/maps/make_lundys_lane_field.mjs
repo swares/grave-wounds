@@ -41,7 +41,7 @@ const units = [
   unit("Glengarry Light Infantry", GB, 300, { ...LINE, formation: "open" }, [15, 14, 40]),
   unit("8th and 41st Foot (on the lane)", GB, 400, LINE, [10, 66, 35]),
   unit("19th Light Dragoons", GB, 150, HORSE, [6, 86, 30]),
-  unit("Drummond's column (coming up)", GB, 1000, LINE, [25, 40, 10]),
+  unit("Hercules Scott's column (coming up)", GB, 1000, LINE, [25, 40, 10]),
 ];
 
 writeField({
@@ -49,7 +49,7 @@ writeField({
     { name: "Scott attacks the hill", at: 1, note: "About seven in the evening: Scott's brigade attacks the guns on the hill rather than wait, while Jesup's 25th works round the British left." },
     { name: "Sunset", at: 31, note: "About half past seven the sun sets (worked out for the place and day): dusk.", light: "dusk" },
     { name: "Dark, by moonlight", at: 61, note: "By about eight it is dark; a moon some eight days old, more than half lit, is up until after midnight.", light: "moonlit" },
-    { name: "Ripley and Drummond come up", at: 120, note: "About nine, in the dark: Brown brings up Ripley's brigade and Porter's volunteers, and Drummond's column reaches the British line.", arrive: ["Ripley's brigade (21st, 23rd, coming up)", "Porter's volunteers (coming up)", "Drummond's column (coming up)"] },
+    { name: "Ripley and Hercules Scott come up", at: 120, note: "About nine, in the dark: Brown brings up Ripley's brigade and Porter's volunteers, and Hercules Scott's column, sent towards Queenston and recalled, reaches the British line.", arrive: ["Ripley's brigade (21st, 23rd, coming up)", "Porter's volunteers (coming up)", "Hercules Scott's column (coming up)"] },
     { name: "Drummond's counter-attacks", at: 150, note: "Drummond's reinforced line counter-attacks three times to win back the guns, until near midnight." },
   ],
   ends: { at: 271, why: "counter-attacks until near midnight: 23:30 from 19:00" },
@@ -73,7 +73,7 @@ writeField({
     "Jesup's 25th worked round the British left in the dusk and took Riall prisoner. Brown brought up",
     "Ripley's brigade; in the dark Colonel Miller's 21st Infantry rushed the guns and took them, and",
     "the Americans held the crest. Drummond's reinforced line counter-attacked three times until",
-    "near midnight. Both sides were exhausted; the Americans fell back to Chippawa without the guns.",
+    "near midnight. Both sides were exhausted; the Americans fell back to Chippawa, taking one British 6-pounder but leaving the rest.",
     "Most of it was fought at night: the phases bring dusk at sunset (about 19:30) and a moonlit night",
     "from about 20:00 (a moon about eight days old, more than half lit: sunset and moon are worked out",
     "for the place and the day, not from the accounts, which speak of darkness and thick smoke).",

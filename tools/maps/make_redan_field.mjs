@@ -34,7 +34,7 @@ const units = [
   unit("Guns on the right face", RUSSIANS, 40, { ...GUNS, size: "battery" }, [3, 62, 35]),
   unit("Vladimirski Regiment, behind the breastwork", RUSSIANS, 1400, { ...MUSKET, size: "regiment" }, [26, 37, 24]),
   unit("Riflemen on the line to the west", RUSSIANS, 300, { ...MUSKET, weapon: "rifle_musket", formation: "open", size: "company" }, [20, 12, 34]),
-  unit("Kamchatski and Iakutski regiments (reserve)", RUSSIANS, 2000, { ...MUSKET, size: "brigade" }, [40, 30, 12]),
+  unit("Iakutski and Selenginski regiments (reserve)", RUSSIANS, 2000, { ...MUSKET, size: "brigade" }, [40, 30, 12]),
 ];
 
 writeField({
@@ -43,7 +43,7 @@ writeField({
   phases: [   // an exchange is about a minute; the times are our reading of the accounts, rounded
     { name: "The stormers go over", at: 1, note: "On the French signal from the Malakhov, the covering party, the ladders and the stormers leave the advanced trench." },
     { name: "The supports come forward", at: 10, note: "The supports follow up piecemeal and crowd into the salient behind the stormers.", arrive: ["Supports (7th, 23rd, 33rd, 34th and 77th)"] },
-    { name: "The Russian counter-attack", at: 80, note: "After about an hour and a half the Russian reserves come up from the Karabelnaya and drive the British back over the parapet.", arrive: ["Kamchatski and Iakutski regiments (reserve)"] },
+    { name: "The Russian counter-attack", at: 50, note: "After nearly an hour (Simpson's despatch) the Russian reserves come up from the Karabelnaya and drive the British back over the parapet.", arrive: ["Iakutski and Selenginski regiments (reserve)"] },
   ],
   weather: "{cond: fair, wind: strong, dir: N, ground: {mud: 0, snow: 0}}",
   grid, units, hexWorks, edgeWorks,
@@ -65,7 +65,7 @@ stormers of the Light and 2nd Divisions. Many fell crossing the open ground; the
 too few and some too short, but men got down into the ditch and up onto the salient. There
 they stopped and fired from the parapet instead of pressing on, while the Russians fired back
 from behind their breastwork and traverses and their reserves came up. The supports came
-forward piecemeal and crowded into the salient. After about an hour and a half a Russian
+forward piecemeal and crowded into the salient. After nearly an hour, Simpson says, a Russian
 counter-attack drove them back over the parapet and the ditch. That night the Russians blew
 up their works and left the south side of the town. It was a cold day, with a strong wind
 and dust.`.split("\n"),

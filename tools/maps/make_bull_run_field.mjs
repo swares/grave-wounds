@@ -37,7 +37,7 @@ const units = [
   unit("Confederate guns (Imboden, Stanard, Pendleton)", CSA, 130, { ...GUNS }, [7, 74, 84]),
   unit("Hampton's Legion", CSA, 600, RIFLE, [15, 104, 70]),
   unit("Bee's and Bartow's men, rallied", CSA, 1000, RIFLE, [25, 82, 100]),
-  unit("Stuart's cavalry", CSA, 300, { ...RIFLE, weapon: "saber", mounted: true, quality: "regular" }, [10, 12, 116]),
+  unit("Stuart's cavalry", CSA, 150, { ...RIFLE, weapon: "saber", mounted: true, quality: "regular" }, [10, 12, 116]),
   unit("Ricketts's battery (10-pounder Parrotts)", USA, 70, { ...GUNS, guns: "rifled" }, [3, 62, 52]),
   unit("Griffin's battery (rifles and howitzers)", USA, 60, { ...GUNS, guns: "rifled" }, [3, 46, 54]),
   unit("11th New York (Fire Zouaves)", USA, 900, RIFLE, [22, 30, 48]),
@@ -45,7 +45,7 @@ const units = [
   unit("14th Brooklyn", USA, 700, RIFLE, [18, 80, 46]),
   unit("Willcox's and Franklin's brigades", USA, 4000, RIFLE, [50, 30, 30]),
   unit("Sherman's brigade (coming over)", USA, 3000, RIFLE, [40, 80, 12]),
-  unit("Kirby Smith's and Early's brigades (onto Chinn Ridge)", CSA, 3500, RIFLE, [40, 2, 122]),
+  unit("Elzey's and Early's brigades (onto Chinn Ridge)", CSA, 3500, RIFLE, [40, 2, 122]),
   unit("Howard's brigade (Chinn Ridge)", USA, 2400, RIFLE, [30, 2, 16]),
 ];
 
@@ -54,7 +54,7 @@ writeField({
     { name: "The guns on Henry Hill", at: 1, note: "About 14:00: Ricketts's and Griffin's batteries unlimber near the Henry house; Willcox's and Franklin's men are already engaged." },
     { name: "The blue regiment and Stuart's horse", at: 61, note: "About 15:00: the 33rd Virginia, in blue, comes out of the woods by the Sudley road and shoots down the gunners; Stuart's horse ride into the Zouaves.", arrive: ["33rd Virginia", "Stuart's cavalry"] },
     { name: "Sherman's attacks", at: 76, note: "Sherman's regiments go up the hill one after another (est.); by about 15:30 his brigade is in confusion.", arrive: ["Sherman's brigade (coming over)"] },
-    { name: "Chinn Ridge", at: 121, note: "About 16:00: Kirby Smith's and Early's fresh brigades come in on Chinn Ridge against Howard, and the Union line begins to break.", arrive: ["Kirby Smith's and Early's brigades (onto Chinn Ridge)", "Howard's brigade (Chinn Ridge)"] },
+    { name: "Chinn Ridge", at: 121, note: "About 16:00: Kirby Smith's brigade (Elzey leading once Smith is hit) and Early's come in on Chinn Ridge against Howard, and the Union line begins to break.", arrive: ["Elzey's and Early's brigades (onto Chinn Ridge)", "Howard's brigade (Chinn Ridge)"] },
   ],
   objective: { at: [78, 60], side: 1, name: "the top of Henry Hill", radius: 8 },
   id: "bull-run-1861", name: "First Bull Run, 21 July 1861", sides: ["Confederates", "Union"], table: "acw-1861-all-hits",

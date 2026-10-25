@@ -2045,7 +2045,7 @@ where they are not plain.
 - **The Redan, 18 June:** the two flank columns go out (1); their supports follow (4); the Russian
   reserve comes up (15).
 - **Lundy's Lane:** Scott attacks the hill (1, about 7 pm); sunset, dusk (31, about 7:30);
-  dark, by moonlight (61, about 8); Ripley, Porter and Drummond's column come up (120, about
+  dark, by moonlight (61, about 8); Ripley, Porter and Hercules Scott's column come up (120, about
   9 pm); Drummond counter-attacks (150, until near midnight).
 - **Lützen** (from about 11:00): Pappenheim's horse arrive (76); the King is killed and the
   second line goes in (151, an estimate); a lull (241); the windmill hill falls (271); Pappenheim's foot
@@ -2369,7 +2369,7 @@ allied line north of the village is off the map.
   Abercrombie's 3,500 behind them, Lumley's 2,000 cavalry, Cole's 5,000 coming up from the
   north-west, Hamilton's 5,000 Portuguese in reserve and Alten's 1,000 Germans in the village.
 - The French, coming up from the south: Girard's 4,500 and Gazan's 4,000 in deep columns
-  (narrow fronts, many ranks), Werlé's 3,500 in reserve, 1,500 Polish lancers and hussars
+  (narrow fronts, many ranks), Werlé's 5,600 in reserve (Oman), 880 Polish lancers and hussars (Oman: 580 and 300)
   out on the west flank, Latour-Maubourg's 2,000 dragoons, and Godinot's 3,500 making their
   show against the village from the east (facing west, so its front runs on the diagonal).
 - The guns (see *Guns*): 20 French with the columns and 12 allied on the heights.
@@ -2429,7 +2429,7 @@ south, north at the top: the Redan's point toward the British trench at the bott
   which do nothing on an earthwork; see *Escalade*) out in front, the
   stormers of the Light and 2nd Divisions in the trench, and green supports behind.
 - The Russians: the Vladimirski Regiment at the salient and behind the breastwork, guns at
-  each shoulder, riflemen on the line to the west, and the Kamchatski and Iakutski regiments
+  each shoulder, riflemen on the line to the west, and the Iakutski and Selenginski regiments
   in reserve in the suburb. The Russian infantry have smoothbore muskets, their riflemen and
   the British rifle-muskets; the guns are smoothbore.
 - The wound tables are the Crimean War's. The siege guns on both sides, the French attack on
@@ -2487,7 +2487,7 @@ down the west side and Chinn Ridge beyond it.
   brigades behind them and Sherman's coming over the turnpike.
 - The Confederates: Jackson's brigade and its guns at the edge of the pines, the 33rd Virginia
   in the woods by the Sudley road, Hampton's Legion by the Robinson farm, Bee's and Bartow's
-  men rallied behind, and Stuart's horse to the south-west. Kirby Smith's and Early's brigades
+  men rallied behind, and Stuart's horse to the south-west. Kirby Smith's (Elzey's once Smith fell) and Early's brigades
   come in on Chinn Ridge at about 16:00, against Howard's Union brigade.
 - The wound tables are the Civil War's, its guns on the Civil War artillery wounds. Ricketts's
   six 10-pounder Parrotts and Griffin's battery are rifled guns; the Confederate guns, mostly
@@ -2543,7 +2543,7 @@ the canal salient at Nimy.
   its machine guns along the canal to the east. All long-service regulars (veteran).
 - The Germans: two battalions of Infantry Regiment 84 in close order in the fields north of
   the bridges, its machine-gun company with them, its third battalion in extended order
-  behind, and a battalion of Infantry Regiment 86 coming out of the woods to the north-east.
+  behind, and a battalion of Fusilier Regiment 86 coming out of the woods to the north-east.
 - Fire support: six British 18-pounders against twelve German 77 mm field guns and six field
   howitzers.
 - The wound tables are the First World War's.
@@ -2872,9 +2872,9 @@ field is 220 × 160 hexes, about 2,410 by 1,520 yards (2,200 by 1,390 m), north 
 - United Nations: 3 RAR's A Company (north spur), D (summit), B (the knoll), C (reserve),
   machine guns and headquarters; a platoon of Shermans (**vehicles**) on dry ground by the
   road.
-- Chinese (veteran): battalions down the valley, onto the north spur and round the east of the
-  hill, with machine guns. The battalion round the east has a route down the east of the hill
-  and round its south to battalion headquarters at Chuktun-ni (where the phase note has the
+- Chinese (veteran): battalions down the valley, onto the north spur and round the west of the
+  hill, with machine guns. The battalion round the west has a route down the west of the hill
+  and down the valley to battalion headquarters at Chuktun-ni (where the phase note has the
   Chinese at about 22:00; the way is our reading).
 - Fire support: the New Zealand 25-pounders and 3 RAR's mortars; Chinese mortars.
 

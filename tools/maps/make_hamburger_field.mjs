@@ -11,7 +11,7 @@
 // taken about noon. The hill, its spurs and the bunkers are drawn by hand to that shape, not traced
 // from any map, and are approximate; the deployment is the last assault, in our own words, with
 // round numbers for play.
-import { N, S, wobble, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
 
 const COLS = 140, ROWS = 140;                 // 1400 m east to west, about 1210 m north to south
 const TOP = [70, 66];
@@ -45,11 +45,11 @@ const SKY = { quality: "veteran", weapon: "rifle_assault", kit: "vietnam_army", 
 const ARVN = { ...SKY, quality: "regular", kit: "none" };
 const PAVN = { quality: "veteran", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false, prone: true };
 const MG = { quality: "veteran", weapon: "machine_gun", kit: "none", formation: "mg", mounted: false, prone: true };
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("3/187 Infantry (up the north-west spur)", US, 200, SKY, 14, [TOP[0] - 22, TOP[1] - 22], 5),
   at("1/506 Infantry (up the south spur)", US, 200, SKY, 14, [TOP[0] + 2, TOP[1] + 30], N),
   at("ARVN 2nd Battalion, 3rd Regiment (from the east)", US, 200, ARVN, 14, [TOP[0] + 32, TOP[1]], 3),
+  at("2/501 Infantry (from the north-east)", US, 200, SKY, 14, [TOP[0] + 24, TOP[1] - 26], S),   // landed about 1,200 m north-east on 19 May (Traas)
   at("29th Regiment on the summit", NV, 120, PAVN, 10, [TOP[0], TOP[1] - 2], 2),
   at("29th Regiment in the north-west bunkers", NV, 60, PAVN, 8, [TOP[0] - 10, TOP[1] - 10], 2),
   at("29th Regiment in the south bunkers", NV, 60, PAVN, 8, [TOP[0] + 2, TOP[1] + 14], 4),
@@ -81,7 +81,8 @@ writeField({
     "",
     "What happened, briefly: on the morning of 20 May 1969, after ten days of attacks, the 3rd",
     "Battalion, 187th Infantry went up from the north-west, the 1st Battalion, 506th Infantry from",
-    "the south and an ARVN battalion from the east. The North Vietnamese held their bunkers to the",
+    "the south, the 2nd Battalion, 501st from the north-east and an ARVN battalion from the east.",
+    "The North Vietnamese held their bunkers to the",
     "last or slipped away towards Laos, and the summit was taken about noon.",
   ],
 });

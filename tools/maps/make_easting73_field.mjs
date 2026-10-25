@@ -15,7 +15,7 @@
 // rise, the trenches and the high ground beyond are drawn by hand to that shape, not traced
 // from any map, and are approximate; the deployment is the moment of cresting, in our own words,
 // with round numbers for play. No minefields are drawn: the accounts we used name none here.
-import { frontRow, wobble, speckle, patch, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { frontRow, wobble, speckle, patch, groundGrid, unit, writeField, at } from "./field_lib.mjs";
 
 const COLS = 200, ROWS = 120;                 // 2 km east to west (about 72.2 to 74.2 Easting), 1.2 km north to south
 const E = 0, W = 3;                           // facings: east (a little north) and west (a little south)
@@ -35,7 +35,6 @@ const T72 = { quality: "regular", weapon: "machine_gun", kit: "none", formation:
 const BMP = { ...T72, vehicle: "ifv" };
 const LORRY = { ...T72, vehicle: "lorry" };
 const GUARD = { quality: "regular", weapon: "rifle_assault", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true };
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("Eagle Troop's tanks (the troop commander and the north platoon)", US, 20, M1A1, 5, [38, 50], E),
   at("Eagle Troop's tanks (the south platoon)", US, 16, M1A1, 4, [36, 72], E),

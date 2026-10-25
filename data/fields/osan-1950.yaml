@@ -148,7 +148,7 @@ ground: |
   mmmmm.m.mm.mmmmmmm.mmmmmmmm.m.mmm.mmmm....m.mmmmmmm.mmmmmmmmmm.mm.m..mm.mmmmmmmmm..mm.mmmm...mmmmmmmm.mmmmmmmmmmmm.mmmm.mmmm.mmmmm..mm.mmmmmmm..m.mmm.mmmm.mmmmm.m.mmmmm.mmm.m..mmm...mmmmmmm...mm.mmm.m.mmm.mmmmmmmmmmmmmmm
 # Batteries on call (off the map): loading the field fills the Fire support panel.
 support:
-  - {name: "105 mm howitzers (52nd Field Artillery)", side: 0, kind: field, tubes: 6}
+  - {name: "105 mm howitzers (52nd Field Artillery)", side: 0, kind: field, tubes: 5}
   - {name: "4.2-inch mortars", side: 0, kind: mortar, tubes: 2}
   - {name: "60 mm mortars", side: 0, kind: mortar, tubes: 4}
   - {name: "T-34 tanks (107th Tank Regiment)", side: 1, kind: tank, tubes: 8}

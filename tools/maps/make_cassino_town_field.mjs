@@ -4,7 +4,7 @@
 //
 // Sources, all public domain or plain fact, and the drawing is ours: the plain facts of the
 // battle as the official histories give them and as they are summarised publicly. On the
-// morning of 15 March bombers and some 900 guns reduced the town to rubble and craters; the 25th
+// morning of 15 March about 435 bombers and some 750 guns (Blumenson) reduced the town to rubble and craters; the 25th
 // New Zealand Battalion went in from the north down the road from Caira, with tanks of the 19th
 // Armoured Regiment that the rubble and craters stopped, and took Castle Hill; German paratroops
 // of the 1st Parachute Division came up out of the cellars and held the south of the town, the
@@ -12,7 +12,7 @@
 // The ruins, the craters, the castle and the roads are drawn by hand, not traced from any map or
 // photograph, and are approximate; the deployment is the attack going in, in our own words, with
 // round numbers for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
 
 const COLS = 140, ROWS = 120;                 // 1400 m east to west, about 1040 m north to south
 const NORTH_ROAD = 84;                          // the road from Caira, straight down into the town from the north
@@ -44,7 +44,6 @@ const NZ = { side: 0, facing: S }, DE = { side: 1, facing: N };
 const KIWI = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false };
 const PARA = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true };
 const MG = { quality: "veteran", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false, prone: true };
-const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 const units = [
   at("25th New Zealand Battalion (into the town from the north)", NZ, 500, KIWI, 30, [70, 40], S),
   at("D Company, 25th Battalion (for Castle Hill)", NZ, 100, KIWI, 10, [CASTLE[0] + 6, 18], S),
@@ -66,7 +65,7 @@ writeField({
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
     { name: "Into the rubble", at: 1, note: "Noon on 15 March: the bombing stops, the guns open and the 25th Battalion goes in from the north." },
     { name: "Castle Hill taken", at: 241, note: "About 16:00, four hours later: D Company of the 25th takes Castle Hill (Point 193)." },
-    { name: "The 26th Battalion committed", at: 301, note: "Late afternoon (est.): the 26th Battalion is committed and takes three hours in the dark to reach Route 6.", arrive: ["26th New Zealand Battalion (following up)"] },
+    { name: "The 26th Battalion committed", at: 301, note: "Late afternoon (est.): the 26th Battalion is committed and works forward in the dark; it could not reach Route 6 (Blumenson).", arrive: ["26th New Zealand Battalion (following up)"] },
   ],
   ends: { at: 10801, why: "called off on 23 March: midnight from noon on the 15th" },
   objective: { at: CASTLE, side: 0, name: "Castle Hill", radius: 3 },
@@ -95,7 +94,7 @@ writeField({
     "fields, and the paratroops' cellars are bunkers. Overcast, the ground already wet; that evening",
     "the rain came down.",
     "",
-    "What happened, briefly: on the morning of 15 March 1944 some 500 bombers and 900 guns reduced",
+    "What happened, briefly: on the morning of 15 March 1944 about 435 bombers and some 750 guns reduced",
     "the town to rubble. The 25th New Zealand Battalion went in from the north with tanks of the",
     "19th Armoured Regiment, which the rubble and craters stopped short; D Company took Castle Hill.",
     "German paratroops came up out of the cellars and held the south of the town and the Continental",

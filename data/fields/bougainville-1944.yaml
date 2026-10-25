@@ -12,8 +12,10 @@
 # at about 02:30 on 9 March the regiment came again in column of battalions, the 2nd leading,
 # and seized several pillboxes. American artillery and mortars fired close in front of the line
 # all night, and the 1st Battalion, 145th, was released from division reserve that day. Over
-# the next days the 145th Infantry, with engineers and later tanks and flamethrowers, cleared
-# the pillboxes one by one, and by 12 March the line was whole again. The Japanese dead lay
+# the next days the 145th Infantry, with engineers, cleared the pillboxes one by one (two light
+# tanks tried to help on the 9th but could not climb the hill); on 12 March E and F Companies of
+# the 2nd Battalion, 148th Infantry, took the last of them with flamethrowers, and the line was
+# whole again (Miller, CARTWHEEL). The Japanese dead lay
 # thick on the slopes. The weather was hot and wet.
 id: bougainville-1944
 name: "Hill 700, Bougainville, 8-12 March 1944"
@@ -34,6 +36,7 @@ phases:
   - {name: "The saddle is seized", at: 1, note: "About 02:30 on 9 March the 23rd Infantry's 2nd Battalion blows the wire and takes the saddle."}
   - {name: "The 3rd Battalion follows", at: 6, note: "The 3rd Battalion follows in the same column and is caught by American artillery (est. minutes).", arrive: ["23rd Infantry, III Battalion (east slope)"]}
   - {name: "The reserve counter-attacks", at: 571, note: "About noon on 9 March, C Company of the 1st Battalion, 145th, starts up Hill 700 against the saddle.", arrive: ["145th Infantry, 1st Battalion (reserve)"]}
+  - {name: "The 148th Infantry", at: 3531, note: "13:20 on 11 March: the 2nd Battalion, 148th Infantry, attacks the saddle; on 12 March its E and F Companies take the last pillboxes with flamethrowers (Miller, CARTWHEEL).", arrive: ["148th Infantry, 2nd Battalion (11-12 March)"]}
 ground: |
   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
@@ -137,7 +140,7 @@ ground: |
   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 works:
   hexes:
-    - {type: bunker, at: [[7, 47], [14, 47], [21, 47], [28, 47], [35, 47], [42, 47], [75, 46], [82, 46], [89, 46], [96, 46], [103, 46], [110, 46], [51, 46], [68, 46]]}
+    - {type: bunker, at: [[7, 47], [14, 47], [21, 47], [28, 47], [35, 47], [42, 47], [75, 46], [82, 46], [89, 46], [96, 46], [103, 46], [110, 46], [51, 46], [68, 46], [38, 86], [45, 86], [52, 86], [59, 86], [66, 86], [73, 86], [80, 86]]}
     - {type: wire, at: [[2, 37], [3, 37], [4, 37], [5, 37], [7, 37], [8, 37], [9, 37], [10, 37], [11, 37], [12, 37], [13, 37], [14, 37], [15, 36], [16, 36], [17, 36], [18, 36], [20, 37], [21, 37], [22, 37], [23, 37], [24, 37], [25, 37], [26, 37], [27, 37], [28, 37], [29, 37], [30, 37], [31, 37], [33, 37], [34, 37], [35, 37], [36, 37], [37, 37], [38, 37], [39, 37], [40, 36], [41, 36], [42, 36], [43, 36], [44, 36], [46, 35], [47, 35], [48, 35], [49, 35], [50, 35], [51, 35], [52, 35], [53, 35], [54, 34], [55, 34], [56, 34], [57, 34], [59, 34], [60, 34], [61, 34], [62, 35], [63, 35], [64, 35], [65, 35], [66, 35], [67, 35], [68, 35], [69, 35], [70, 35], [72, 36], [73, 36], [74, 36], [75, 36], [76, 36], [77, 36], [78, 36], [79, 36], [80, 36], [81, 36], [82, 36], [83, 36], [85, 36], [86, 36], [87, 36], [88, 36], [89, 36], [90, 36], [91, 36], [92, 36], [93, 36], [94, 36], [95, 36], [96, 36], [98, 36], [99, 36], [100, 36], [101, 36], [102, 37], [103, 37], [104, 37], [105, 37], [106, 37], [107, 37], [108, 37], [109, 37], [111, 38], [112, 38], [113, 38], [114, 38], [115, 38], [116, 38], [117, 38]]}
 # Batteries on call (off the map): loading the field fills the Fire support panel.
 support:
@@ -152,6 +155,7 @@ units:
   - {name: "Machine guns covering the saddle (west)", side: 0, men: 12, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 3, pos: [51, 46], facing: 1, size: section}
   - {name: "Machine guns covering the saddle (east)", side: 0, men: 12, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 3, pos: [68, 46], facing: 1, size: section}
   - {name: "145th Infantry, 1st Battalion (reserve)", side: 0, men: 700, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 60, pos: [59, 82], facing: 1, size: battalion}
+  - {name: "148th Infantry, 2nd Battalion (11-12 March)", side: 0, men: 600, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 50, pos: [59, 86], facing: 1, size: battalion}
   - {name: "23rd Infantry, II Battalion (on the saddle)", side: 1, men: 800, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 36, pos: [48, 20], facing: 4, size: battalion}
   - {name: "23rd Infantry, III Battalion (east slope)", side: 1, men: 800, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 36, pos: [94, 14], facing: 4, size: battalion}
   - {name: "23rd Infantry machine-gun company", side: 1, men: 30, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 6, pos: [63, 26], facing: 4, size: company}

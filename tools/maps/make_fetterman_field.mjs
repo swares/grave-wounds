@@ -44,9 +44,9 @@ const CAV = { quality: "regular", weapon: "breechloader", kit: "none", formation
 const BOWS = { quality: "veteran", weapon: "bow", kit: "rawhide_shield", formation: "open", mounted: true };
 const FOOT = { ...BOWS, mounted: false };
 const units = [
-  unit("18th Infantry (Fetterman and Brown)", US, 49, INF, [3, 73, 86]),
+  unit("18th Infantry (Fetterman and Brown)", US, 51, INF, [3, 73, 86]),
   unit("Wheatley and Fisher (civilians, repeating rifles)", US, 2, { ...CAV, quality: "veteran", mounted: false }, [1, 77, 62]),
-  unit("2nd Cavalry, Company C (Grummond)", US, 27, CAV, [2, 75, 30]),
+  unit("2nd Cavalry, Company C (Grummond)", US, 28, CAV, [2, 75, 30]),
   unit("The decoys (Lakota, Cheyenne and Arapaho)", NATIONS, 10, BOWS, [1, 76, 18]),
   unit("Lakota horsemen on the flats beyond the creek", NATIONS, 300, BOWS, [15, 68, 4]),
   unit("Lakota on foot in the west ravines", NATIONS, 350, FOOT, [9, 20, 46]),

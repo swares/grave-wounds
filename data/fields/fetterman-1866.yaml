@@ -151,9 +151,9 @@ ground: |
   .......................................................................hhhhhhhhhhhhhh.................................rrrrrrrrrrr.....................
   .......................................................................hhhhhhhhhhhhhh.....................................rrrrrrr.....................
 units:
-  - {name: "18th Infantry (Fetterman and Brown)", side: 0, men: 49, quality: regular, weapon: rifle_musket, kit: none, formation: open, width: 3, pos: [74, 86], facing: 1, size: platoon}
+  - {name: "18th Infantry (Fetterman and Brown)", side: 0, men: 51, quality: regular, weapon: rifle_musket, kit: none, formation: open, width: 3, pos: [74, 86], facing: 1, size: platoon}
   - {name: "Wheatley and Fisher (civilians, repeating rifles)", side: 0, men: 2, quality: veteran, weapon: breechloader, kit: none, formation: open, width: 1, pos: [77, 62], facing: 1, size: section}
-  - {name: "2nd Cavalry, Company C (Grummond)", side: 0, men: 27, quality: regular, weapon: breechloader, kit: none, formation: open, width: 2, pos: [75, 30], facing: 1, mounted: true, size: company}
+  - {name: "2nd Cavalry, Company C (Grummond)", side: 0, men: 28, quality: regular, weapon: breechloader, kit: none, formation: open, width: 2, pos: [75, 30], facing: 1, mounted: true, size: company}
   - {name: "The decoys (Lakota, Cheyenne and Arapaho)", side: 1, men: 10, quality: veteran, weapon: bow, kit: rawhide_shield, formation: open, width: 1, pos: [76, 18], facing: 4, mounted: true, size: section}
   - {name: "Lakota horsemen on the flats beyond the creek", side: 1, men: 300, quality: veteran, weapon: bow, kit: rawhide_shield, formation: open, width: 15, pos: [75, 4], facing: 4, mounted: true, size: battalion}
   - {name: "Lakota on foot in the west ravines", side: 1, men: 350, quality: veteran, weapon: bow, kit: rawhide_shield, formation: open, width: 9, pos: [24, 46], facing: 4, size: battalion}

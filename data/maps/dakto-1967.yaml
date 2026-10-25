@@ -8,7 +8,7 @@
 # What happened, briefly: in November 1967 the North Vietnamese 1st Division and 24th Regiment
 # fought the 4th Infantry Division, the 173rd Airborne Brigade and ARVN battalions through the
 # hills round Dak To. The Americans climbed Hills 724, 823 and 1338; the North Vietnamese blew up
-# the base's ammunition dump on 12 November; and the battle ended on Hill 875, taken on 23
+# the base's ammunition dump on 15 November; and the battle ended on Hill 875, taken on 23
 # November after five days. Numbers below are round figures for play.
 id: dakto-1967
 name: "Dak To, 1967 (the base to Hill 875)"
@@ -72,7 +72,7 @@ terrain: |
     FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
     FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
 places:
-  - {name: "Dak To base and airstrip", kind: camp, hex: [50, 23], depot: ["United States and ARVN"], note: "The brigades' base and airstrip; its ammunition dump blew up under shellfire on 12 November 1967 (approximate)"}
+  - {name: "Dak To base and airstrip", kind: camp, hex: [50, 23], depot: ["United States and ARVN"], note: "The brigades' base and airstrip; its ammunition dump blew up under shellfire on 15 November 1967"}
   - {name: "Tan Canh", kind: village, hex: [48, 19], tongues: [vietnamese, montagnard]}
   - {name: "Ben Het Special Forces camp", kind: village, hex: [20, 11], depot: ["United States and ARVN"], note: "A Special Forces and CIDG camp near the border, and a fire base for the guns (approximate)"}
   - {name: "Hill 875", kind: objective, hex: [8, 41], note: "The 2nd and 4th Battalions, 503rd Infantry fought up it from 19 to 23 November 1967 (approximate)"}
