@@ -3,7 +3,7 @@
 // Snakeshead Ridge running south-east from it to Point 444 and the ruined abbey, Phantom Ridge to
 // the west, the gullies between. Drawn by hand to the shape the accounts give (narrow rocky
 // ridges, steep scrubby slopes, boulders and gullies), not traced from any map, and approximate.
-import { wobble, patch, speckle, groundGrid } from "./field_lib.mjs";
+import { wobble, patch, speckle, groundGrid, at, N } from "./field_lib.mjs";
 
 export const COLS = 200, ROWS = 150;          // 2000 m east to west, about 1300 m north to south
 export const P593 = [60, 34], P444 = [112, 72], ABBEY = [150, 112], PHANTOM = [22, 60];
@@ -21,6 +21,18 @@ function kind(c, r){
   return speckle(c, r, 3) ? "o" : "r";                                                                                 // steep slopes: scrub, broken rock
 }
 export const massif = () => groundGrid(COLS, ROWS, kind);
+// The German paratroops' and machine guns' kinds on the massif, which both its battlefields use.
+export const PARA = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true };
+export const MG = { quality: "veteran", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false, prone: true };
+// The German mortars on the heights.
+export const GERMAN_MORTARS = { name: "German mortars and Nebelwerfers", side: 1, kind: "mortar", tubes: 12 };
+// The paratroops who held Point 444 and the abbey's ruins in both battles.
+export const heldSnakeshead = () => [
+  at("German paratroops on Point 444", { side: 1, facing: N }, 100, PARA, 10, [P444[0], P444[1] + 1], N),
+  at("Germans in the abbey's ruins", { side: 1, facing: N }, 200, PARA, 18, [ABBEY[0], ABBEY[1] - 4], N),
+];
+// The header's size line.
+export const SIZE_LINE = "hexes, about 2000 m east to west and 1300 m north to south, north at the top: Point 593 at the";
 // The header lines the massif's battlefields share: the scrub, and how the ground and the deployment are drawn.
 export const MASSIF_NOTES = [
   "Light cover (scrub, key o): the thorn scrub on the steep slopes among the broken rock.",
