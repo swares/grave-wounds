@@ -1,0 +1,18 @@
+# Pictures for the Beaumont-Hamel section of The World Wars. Each is public domain or openly licensed,
+# checked on its source page. The file goes in images/books/world_wars/ under `file`; until it is there
+# the book shows a captioned slot with this credit and source.
+# beaumont-hamel-mine: LICENCE CONFIRMED ON A MIRROR, NOT ON COMMONS ITSELF. Commons and the English
+# Wikipedia file page refused this session's requests. A mirror of the Wikipedia image description page
+# (mirror2.polsri.ac.id, "Image:Hawthorn Ridge mine 1 July 1916.jpg") gives the author as Lt Ernest Brooks,
+# the source as the Imperial War Museum, Q 754, and the licence as public domain: a photograph created by
+# the United Kingdom Government before 1 June 1957 (Crown Copyright expired). The IWM's own page for Q 754
+# confirms the photographer, date and number, and marks it "IWM Non Commercial Licence"; the Commons copy is
+# held as public domain. The Commons file name below is the one a second mirror (c.enwp.org) shows; check
+# the URL resolves before printing.
+- id: beaumont-hamel-mine
+  file: beaumont-hamel-mine.jpg
+  caption: "The mine under the Hawthorn Ridge Redoubt goes up at 07:20 on 1 July 1916, ten minutes before zero, photographed by Lieutenant Ernest Brooks. The crater can be seen from the Newfoundland Park."
+  credit: "Lt Ernest Brooks, official photographer, 1 July 1916, Imperial War Museum, Q 754"
+  licence: "Public domain (UK Crown Copyright expired, photograph taken before 1957)"
+  source: "https://commons.wikimedia.org/wiki/File:Hawthorn_Ridge_Redoubt_mine_(1_July_1916)_1.jpg"
+  alt: "A black-and-white photograph of a tall column of earth and smoke thrown up by the mine on Hawthorn Ridge."

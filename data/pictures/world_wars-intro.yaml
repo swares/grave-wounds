@@ -1,0 +1,27 @@
+# Pictures for "The period's fighting", the opening chapter of The World Wars. Each is public domain,
+# checked on a source page. The file goes in images/books/world_wars/ under `file`; until it is there
+# the book shows a captioned slot with this credit and source.
+# Checked: Commons could not be reached from here. The Wikipedia file description (mirrored in the
+# Wikipedia for Schools copy at dlab.epfl.ch/wikispeedia/wpcd/images/282/28252.jpg.htm) gives
+# photographer Lt. J. W. Brooke, 1 August 1917, IWM Q 5935, tagged PD-UKGov: a UK Government
+# photograph taken before 1 January 1957, Crown Copyright expired. The IWM's own site marks its
+# images "IWM Non Commercial Licence"; Commons holds this one as public domain. Confirmed on the
+# mirror only; check the Commons page before print.
+- id: world_wars-stretcher-bearers
+  file: world_wars-stretcher-bearers.jpg
+  caption: "Stretcher-bearers carrying a wounded man through the mud near Boesinghe, in the Battle of Pilckem Ridge, 1 August 1917, photograph by Lieutenant J. W. Brooke, official photographer."
+  credit: "Imperial War Museum, Q 5935 (Lt. John Warwick Brooke)"
+  licence: "Public domain (UK Government photograph taken before 1957, Crown Copyright expired)"
+  source: "https://commons.wikimedia.org/wiki/File:Stretcher_bearers_Passchendaele_August_1917.jpg"
+  alt: "A black-and-white photograph of soldiers deep in mud carrying a man on a stretcher across a churned, waterlogged field."
+# Checked: the US National Archives' DocsTeach page for NAID 531161 (Record Group 111, Records of
+# the Office of the Chief Signal Officer) marks it "Public Domain, Free of Known Copyright
+# Restrictions" (Public Domain Mark 1.0); a US Army Signal Corps photograph, a US government work.
+# The National Library of Medicine holds a print as public domain too (101405852). Confirmed.
+- id: world_wars-plasma-sicily
+  file: world_wars-plasma-sicily.jpg
+  caption: "Private Roy Humphrey of Toledo, Ohio, wounded by shell fragments, is given blood plasma by Private First Class Harvey White in a street in Sicily, 9 August 1943. US Army Signal Corps photograph."
+  credit: "US National Archives, 111-SC (NAID 531161), Records of the Office of the Chief Signal Officer"
+  licence: "Public domain (US government work)"
+  source: "https://catalog.archives.gov/id/531161"
+  alt: "A black-and-white photograph of a wounded American soldier in a village street, a medic giving him plasma from a raised bottle while local people look on."
