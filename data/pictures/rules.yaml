@@ -1,0 +1,10 @@
+# Pictures for the sidebars of the Rules. Each is public domain or openly licensed, checked on its source
+# page. The file goes in images/books/rules/ under `file`; until it is there the book shows a captioned
+# slot with this credit and source.
+- id: sampson-engraving
+  file: sampson-engraving.jpg
+  caption: "Deborah Sampson, the frontispiece of Herman Mann's The Female Review (1797)."
+  credit: "Engraved by George Graham after a drawing by William Beastall, from a painting by Joseph Stone; Massachusetts Historical Society"
+  licence: "Public domain in the United States (published 1797)"
+  source: "https://commons.wikimedia.org/wiki/File:DeborahSampson.jpg"
+  alt: "An engraved portrait of Deborah Sampson, made for the biography of her published in 1797."
