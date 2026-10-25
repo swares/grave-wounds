@@ -1,0 +1,15 @@
+# Pictures for the Cowpens section of The Black-Powder Wars. Each is public domain or openly licensed, checked
+# on its source page. The file goes in images/books/black_powder/ under `file`; until it is there the book shows
+# a captioned slot with this credit and source.
+# Wikimedia Commons, and a Wikipedia mirror of its file page, could not be fetched from this session. The licence
+# was checked on World History Encyclopedia (image 18756), which reproduces Commons File:Cowpens.jpg and marks it
+# public domain; PBS (Africans in America) credits the painting to the South Carolina State House. Public domain
+# also follows from the date: a painting of 1845 by an artist dead well over 100 years (Ranney's dates were not
+# checked here). The Commons tag itself was not seen.
+- id: cowpens-ranney
+  file: cowpens-ranney.jpg
+  caption: "The Battle of Cowpens, painted by William Ranney in 1845, 64 years after the battle. William Washington, on a white horse, is saved by a Black soldier, unnamed, who fires a pistol at a British officer. Wikipedia notes the painting has errors of fact."
+  credit: "William Ranney, The Battle of Cowpens, 1845, oil on canvas, South Carolina State House; Wikimedia Commons, File:Cowpens.jpg"
+  licence: "Public domain"
+  source: "https://commons.wikimedia.org/wiki/File:Cowpens.jpg"
+  alt: "A 19th-century painting of a cavalry fight at Cowpens, with an American officer on a white horse and a Black horseman firing a pistol."

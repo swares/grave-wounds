@@ -37,9 +37,9 @@ Between 12:00 and 12:30 Pappenheim arrived with about 2,300 horse and struck the
 
 Some time after 13:00 Gustavus rode to help his foot. He was hit in the left arm. In the fog his small party ran into Imperial cuirassiers. He was shot in the back, stabbed and shot in the head. His body was found that evening among the dead on the Imperial side of the ditch. Knyphausen brought up the second line and held. Bernhard took command. By about 15:00 his first attack had failed and there was a lull.
 
-{{picture:lutzen-wahlbom}}
-
 The second phase is less well recorded. From about 15:30 the Swedes went forward again, retook the centre battery and, as the light failed, Bernhard's men took the windmill hill and its guns and turned them on the Imperialists. Fighting died down at dusk. About 18:00 Pappenheim's foot came up, about 2,900 strong, too late to attack. Wallenstein used them to cover his retreat, which began in the night. He left guns and baggage behind and more than 1,200 wounded, and fell back through Leipzig into Bohemia. The Swedes left the field about 11:00 the next morning.
+
+{{picture:lutzen-wahlbom}}
 
 ### Where the accounts disagree
 - **The armies.** Roberts gives the Swedes 18,996 men and 60 guns, and Wallenstein 16,770 men and 38 guns before Pappenheim's 2,300 horse came up. The Wikipedia summary gives the Swedes 18,738 and 60 guns and the Imperialists 19,175 and 43 guns; its text has Wallenstein at 13,000-15,000 before Pappenheim. Geijer says the King reckoned Wallenstein at 30,000.
