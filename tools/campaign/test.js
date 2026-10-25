@@ -13,7 +13,7 @@ function store(entries){                           // a stand-in for localStorag
   const ks = Object.keys(entries);
   return { length: ks.length, key: i => ks[i], getItem: k => entries[k] };
 }
-const CD = { maps: { "towton-1461": { name: "Towton, 1461", start_date: "1461-03-27" } }, eras: { medieval: "Medieval (c.1250-1500)" } };
+const CD = { maps: { "towton-1461": { name: "Towton, 1461", start_date: "1461-03-27" } }, eras: { medieval: "Medieval (c.1180-1500)" } };
 const J = o => JSON.stringify(o);
 const pages = {
   "gravewounds-team-builder": J({ era: "medieval", team: [{ name: "Will" }, { name: "Hal" }], losses: [] }),
@@ -33,7 +33,7 @@ check("it reads only Grave Wounds entries, as stored, and never the narrator's",
 check("the status: the team, the named men, the map and its day", () => {
   const st = C.status(C.read(store(pages)), CD);
   assert.deepEqual(st.team.men, ["Will", "Hal"]);
-  assert.equal(st.team.eraName, "Medieval (c.1250-1500)");
+  assert.equal(st.team.eraName, "Medieval (c.1180-1500)");
   assert.deepEqual([st.named.men, st.named.withForce, st.named.dead], [2, 1, 1]);
   assert.deepEqual([st.travel.mapName, st.travel.day, st.travel.forces], ["Towton, 1461", 4, 2]);
   assert.equal(st.fight.sent, null);

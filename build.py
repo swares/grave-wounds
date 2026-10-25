@@ -2134,8 +2134,9 @@ def main() -> int:
     gtpl = (ROOT / "templates" / "team.html").read_text(encoding="utf-8")
     ghtml = gtpl.replace("/*__FIGURE_JS__*/", fig_js.replace("</script>", "<\\/script>")).replace("/*__LETHAL_JS__*/", lethal_js).replace("/*__PURSE_JS__*/", purse_js).replace("/*__TEAM_JS__*/", team_js)
     (DIST / "team.html").write_text(ghtml.replace("/*__TEAM_DATA__*/null", json.dumps(team_bundle(d), separators=(",", ":"))), encoding="utf-8")
-    from gravewounds.rulebook import render as rule_book
-    (DIST / "rules.html").write_text(rule_book(d, ROOT), encoding="utf-8")
+    from gravewounds.books import render_all as rule_books
+    for name, page in rule_books(d, ROOT).items():     # the Rules and each period book (data/books.yaml)
+        (DIST / name).write_text(page, encoding="utf-8")
     ctpl = (ROOT / "templates" / "campaign.html").read_text(encoding="utf-8")       # the GM's console over the pages
     chtml = ctpl.replace("/*__CAMPAIGN_JS__*/", (ROOT / "templates" / "campaign.js").read_text(encoding="utf-8"))
     chtml = chtml.replace("/*__GAMELOG_JS__*/", (ROOT / "templates" / "gamelog.js").read_text(encoding="utf-8"))

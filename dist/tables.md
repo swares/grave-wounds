@@ -6907,9 +6907,9 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 ## Team generation
 
-### Medieval (c.1250-1500)
+### Medieval (c.1180-1500)
 
-**Medieval (c.1250-1500): a team in twenty minutes.** A player runs a team of four to six; the first member leads. Each character is made in five steps.
+**Medieval (c.1180-1500): a team in twenty minutes.** A player runs a team of four to six; the first member leads. Each character is made in five steps.
 
 **1. Characteristics:** Strength, Agility, Endurance, Wits, Nerve, Presence: roll 3d6 x 5 for each in order (15-90), or take the array 70, 60, 55, 50, 45, 35 and place it, highest first, in the order his career prefers (the GM may let him swap two).
 
@@ -8710,7 +8710,7 @@ Resolve a striking group's blows on the rankers in one roll instead of one at a 
 
 **Trouble:** a job with a risk takes one d100 a term: at or under the risk, trouble. The GM uses the job's hook, or rolls d10 on the era's trouble table. Jobs marked † are against the law. **Keep:** a man his army does not feed pays a day's food from his purse, and a bed in a town, city, village or on the road; a job marked (fed) feeds him while he works. A day he cannot pay for food he goes hungry; a night without a bed he sleeps rough.
 
-### Medieval (c.1250-1500)
+### Medieval (c.1180-1500)
 
 | Job | Skill | Pay | Term | Where | Who | Risk |
 |---|---|---|---|---|---|---|

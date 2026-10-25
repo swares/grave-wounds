@@ -4,7 +4,7 @@ A team is four to six characters with a shared history: a lord's retinue, a free
 patrol. The first character leads it, and when he falls another steps up. The
 [team builder](team.html) makes a whole team in one click, or one character at a time, from
 the tables of {{eras}} eras; the [printed tables](tables.pdf) hold the same tables for the
-table top. This chapter uses the medieval tables (c.1250–1500). The other eras follow the
+table top. This chapter uses the medieval tables (c.1180–1500). The other eras follow the
 same five steps with their own careers, skills and kit ([Other wars](#eras)).
 
 ## The five steps {#five-steps}

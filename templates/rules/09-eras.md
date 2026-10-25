@@ -5,6 +5,10 @@ Everything so far has used the medieval tables. The same rules carry a team thro
 skills, origins, careers, events, armies, teams, followers and jobs. Pick one with **Era** in the
 [team builder](team.html).
 
+Each period has its own book with its armies' figures, the wound tables its battles roll on and
+its battlefields: {{books_list}}. The periods that have no book yet keep their figures in
+[Other periods](#other-periods), at the end of these rules.
+
 ## The eras {#era-list}
 
 {{table:eras}}
@@ -61,7 +65,7 @@ bombs on the Trail, and the South Vietnamese army's women medics. In every other
 rolls a man, and the page gives the reason. An army's share is the women among its soldiers as
 a whole, not just in that career, so treat it as a rough guide. A GM may prefer to choose.
 
-{{table:women}}
+{{era:women}}
 
 !!! gm "For the GM"
     Pick an era for the fighting you want, not the uniforms. Before the machine gun, battles

@@ -92,11 +92,11 @@ def _price_rows(d: Data, eid: str) -> list:
     return rows
 
 
-def _money_tables(d: Data) -> dict:
+def _money_tables(d: Data, only: set | None = None) -> dict:
     """The money chapter's tables: each army's coin and its Day, pay by rank in that coin, and each
     era's price list in its coin with the Days it comes to."""
     out, day_rows, pay_rows = {}, [], []
-    for eid in [e for e in d.teams if e in d.equipment]:
+    for eid in [e for e in d.teams if e in d.equipment and (only is None or e in only)]:
         days, pays = _army_money_rows(d, eid)
         day_rows += days
         pay_rows += pays
@@ -263,8 +263,18 @@ def _travel_values(d: Data) -> dict:
     }
 
 
-def tables(d: Data) -> dict:
-    """Generated tables, as Markdown, by name."""
+# The tables whose rows are each era's: the Rules point to them, and each period book (or the Rules'
+# Other periods, for the eras no book holds yet) shows its own eras' rows. {{era:name}} in a chapter.
+ERA_TABLES = {"tongue_armies": "Each army's tongues", "courses": "Training courses", "patron_fate": "What becomes of a patron",
+              "prisoners": "Prisoners: what captors did", "kit_life": "How long boots and clothing last",
+              "supplies": "Rations and water carried", "women": "Women under arms", "money_days": "The Day in each army's coin",
+              "rank_pay": "Pay by rank", "prices": "Prices"}
+
+
+def tables(d: Data, only: set | None = None) -> dict:
+    """Generated tables, as Markdown, by name. only: the eras whose rows the era tables (ERA_TABLES)
+    show, for a period book or the Rules' Other periods (None: every era)."""
+    keep = (lambda e: True) if only is None else (lambda e: e in only)
     T, CB, U, V = d.wounds["tracking"], d.wounds["combat"], d.units, d.wounds["vocabulary"]
     res, out = CB["stop_check"]["results"], {}
     out["qualities"] = _md(["Quality", "Attack", "Defence", "Nerve"],
@@ -300,7 +310,7 @@ def tables(d: Data) -> dict:
     E = d.teams["medieval"]
     names = {s["id"]: s["name"] for s in E["skills"]}
     out["careers"] = _md(["Career", "Main skill", "Second skill"], [[c["name"], names[c["main"]], names[c["second"]]] for c in E["careers"]])
-    out.update(_field_tables(d), **_travel_tables(d), **LATER.tables(d))
+    out.update(_field_tables(d), **_travel_tables(d), **LATER.tables(d, only))
     if d.checks:
         from .checks import use_rows
         ur = use_rows(d, "medieval")
@@ -318,6 +328,8 @@ def tables(d: Data) -> dict:
         tn = {k: v["name"] for k, v in LG["tongues"].items()}
         rows = []
         for eid, armies in LG["armies"].items():
+            if not keep(eid):
+                continue
             regions = {r["id"]: r["name"] for r in d.teams[eid]["regions"]}
             for rid, A in armies.items():
                 own = ", ".join(f"{tn[t]} {s}%" for t, s in A["own"])
@@ -327,7 +339,7 @@ def tables(d: Data) -> dict:
         bands = LG["bands"]
         out["tongue_bands"] = _md(["Figure", "Reads as"], _band_rows(bands))
     if d.equipment:
-        out.update(_money_tables(d))
+        out.update(_money_tables(d, only))
     PU = ((d.units or {}).get("aftermath") or {}).get("pursuit")
     if PU:
         span = lambda r: f"{r[0]:g}-{r[1]:g} times" if r[1] else "none"
@@ -340,6 +352,8 @@ def tables(d: Data) -> dict:
         names = {e: d.teams[e]["name"].split(" (")[0] for e in d.teams}
         rows = []
         for k in d.training["courses"]:
+            if not any(keep(e) for e in k["eras"]):
+                continue
             gains = ", ".join(f"{s} +{n}" for s, n in k.get("gains", {}).items())
             rows.append([k["name"], ", ".join(names[e] for e in k["eras"]), f"{k['weeks']} weeks", gains + (f"; opens {k['rank'].replace('_', ' ')}" if k.get("rank") else "")])
         out["courses"] = _md(["Course", "Eras", "Away", "Gains"], rows)
@@ -375,7 +389,7 @@ def tables(d: Data) -> dict:
         out["standing_events"] = _md(["Event", "Standing"], [[e["name"], _ev(e)] for e in PT["events"].values()])
         names = {e: d.teams[e]["name"] for e in d.teams}
         out["patron_fate"] = _md(["Era", "d100"], [[names[e], ", ".join(f"{r['chance']}% {r.get('name') or PT['fates'][r['id']]['name']}" for r in rows)]
-                                                   for e, rows in PT["fate"].items()])
+                                                   for e, rows in PT["fate"].items() if keep(e)])
     if d.hazards:
         HZ = d.hazards
         sev = HZ["falls"]["severities"]
@@ -398,6 +412,8 @@ def tables(d: Data) -> dict:
               "plains_nations": "Plains", "wwi": "1914-18", "wwii": "1939-45", "korea": "Korea", "vietnam": "Vietnam", "modern": "1982-2014"}
         rows = []
         for eid, cs in d.prisoners["eras"].items():
+            if not keep(eid):
+                continue
             for c in cs:
                 extra = [x for x, on in (("ransom", c.get("ransom")), ("parole", c.get("parole")), ("service", c.get("service"))) if on]
                 rows.append([en.get(eid, eid), c["name"], f"{c['capture'][0]}", f"{c['capture'][1]}", f"{c['release']}%", f"{c['hazard']:g}%" + (f" (then {c['after']:g}%)" if "after" in c else ""), ", ".join(extra) or "—"])
@@ -427,12 +443,12 @@ def tables(d: Data) -> dict:
     if d.kit:
         K, names = d.kit, {e: T["name"].split(" (")[0] for e, T in d.teams.items()}
         out["kit_life"] = _md(["Era", "Boots (marching days)", "Clothing (days)"],
-                              [[names[e], f"{K['boots']['life'][e]:g}", f"{K['clothing']['life'][e]:g}"] for e in d.teams])
+                              [[names[e], f"{K['boots']['life'][e]:g}", f"{K['clothing']['life'][e]:g}"] for e in d.teams if keep(e)])
     if d.supplies:
         SP = d.supplies
         names = {e: T["name"].split(" (")[0] for e, T in d.teams.items()}
         out["supplies"] = _md(["Era", "Rations carried (days)", "Water carried (L a man)"],
-                              [[names[e], f"{SP['rations']['carried'][e]:g}", f"{SP['water']['carried'][e]:g}"] for e in d.teams])
+                              [[names[e], f"{SP['rations']['carried'][e]:g}", f"{SP['water']['carried'][e]:g}"] for e in d.teams if keep(e)])
     if d.weights:
         out["pack_animals"] = _md(["Animal or vehicle", "Carries", "Fodder or fuel a night", "Wheels"],
                                   [[a["name"], f"{a['load']:,} kg", f"{a['forage']} Days" + (" (fuel)" if a.get("fuel") else "") if a["forage"] else "—",
@@ -740,17 +756,10 @@ def _fill(text: str, vals: dict, tabs: dict, where: str) -> str:
 
 
 def render(d: Data, root: Path) -> str:
-    """dist/rules.html: the chapters filled and joined into the page template."""
-    import markdown
-    vals, tabs = values(d), tables(d)
-    src = root / "templates" / "rules"
-    body = "\n\n".join(_fill(p.read_text(encoding="utf-8"), vals, tabs, p.name) for p in sorted(src.glob("*.md")))
-    md = markdown.Markdown(extensions=["tables", "admonition", "toc", "attr_list"], extension_configs={"toc": {"toc_depth": "1-2"}})
-    html = md.convert(body)
-    idx = index_html(html)
-    toc = md.toc.replace("</ul>\n</div>", '<li><a href="#index">Index</a></li>\n</ul>\n</div>') if idx else md.toc
-    page = (root / "templates" / "rules.html").read_text(encoding="utf-8")
-    return page.replace("{{TOC}}", toc).replace("{{BODY}}", html + idx)
+    """dist/rules.html: the Rules (books.render_rules: the chapters, with each era's figures in
+    its period book or Other periods)."""
+    from . import books
+    return books.render_rules(d, root, books.load_books(d, root))
 
 
 HEAD = re.compile(r'<h([12]) id="([^"]+)">(.*?)</h\1>', re.S)

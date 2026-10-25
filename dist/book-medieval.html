@@ -1,0 +1,3354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Grave Wounds: The Medieval Wars</title>
+<meta name="description" content="Grave Wounds: The Medieval Wars, c.1180–1500. Eight battles from the storm of a crusader castle in 1179 to the Swiss at Dornach in 1499.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%238e1b2c'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='15' font-weight='700' fill='white' text-anchor='middle'%3Ed%25%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700&family=Alegreya+Sans:wght@400;500;700&family=Alegreya:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* The field-ledger palette of the other pages */
+:root{
+  --bg:#e9ecee; --panel:#f6f7f8; --ink:#1b2127; --muted:#5b6670; --line:#c5ccd2;
+  --steel:#3f4f5d; --blood:#8e1b2c; --blood-soft:#f1d9dc; --gm:#e6ebe0; --gm-edge:#5d6e4b;
+  --display:"Alegreya SC",Georgia,serif; --body:"Alegreya Sans","Gill Sans","Segoe UI",sans-serif;
+  --serif:"Alegreya",Georgia,serif; --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
+  --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --gm:#1f2a1c; --gm-edge:#8fa678; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
+  --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --gm:#1f2a1c; --gm-edge:#8fa678; color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:18px/1.6 var(--serif)}
+a{color:var(--blood)}
+header{border-bottom:2px solid var(--ink);padding:20px 16px 14px;max-width:1180px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:end;justify-content:space-between}
+header h1{font:700 clamp(1.8rem,5vw,2.6rem)/1.05 var(--display);margin:0}
+header .eyebrow{display:block;font:500 .72rem var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+header nav{display:flex;flex-wrap:wrap;gap:4px 16px;font:500 .95rem var(--body)}
+.layout{max-width:1180px;margin:0 auto;padding:24px 16px 64px;display:grid;grid-template-columns:240px minmax(0,1fr);gap:40px}
+@media (max-width:860px){.layout{grid-template-columns:minmax(0,1fr)}}
+.toc{font:400 .92rem/1.4 var(--body)}
+@media (min-width:861px){.toc{position:sticky;top:16px;align-self:start;max-height:calc(100vh - 32px);overflow:auto}}
+.toc .ttl{font:700 .78rem var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+.toc ul{list-style:none;margin:0;padding:0}
+.toc > div > ul > li{margin:0 0 10px}
+.toc > div > ul > li > a{font-weight:700;color:var(--ink)}
+.toc ul ul{padding-left:12px;margin-top:3px;border-left:1px solid var(--line)}
+.toc ul ul a{color:var(--muted);text-decoration:none}
+.toc a:hover{color:var(--blood)}
+main{max-width:72ch;min-width:0}
+main h1{font:700 2rem/1.15 var(--display);margin:48px 0 12px;padding-top:12px;border-top:1px solid var(--line);color:var(--ink)}
+main h1:first-child{margin-top:0;border-top:0;padding-top:0}
+main h2{font:700 1.3rem/1.25 var(--display);margin:30px 0 8px;color:var(--steel)}
+main p,main li{hyphens:auto}
+main strong{font-weight:700}
+main ul,main ol{padding-left:1.3em}
+main li{margin:3px 0}
+.tw{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;font:400 .9rem/1.4 var(--body);min-width:100%}
+th,td{border-bottom:1px solid var(--line);padding:6px 10px;text-align:left;vertical-align:top}
+th{font-weight:700;border-bottom:2px solid var(--ink);white-space:nowrap}
+tbody tr:nth-child(even){background:var(--panel)}
+.admonition{margin:18px 0;padding:12px 16px;border-radius:4px;border:1px solid var(--line);background:var(--panel);font:400 .98rem/1.55 var(--body)}
+.admonition p{margin:6px 0}
+.admonition-title{font:700 .78rem var(--mono)!important;letter-spacing:.08em;text-transform:uppercase;margin:0 0 4px!important;color:var(--muted)}
+.admonition.example{border-left:4px solid var(--blood);background:var(--blood-soft)}
+.admonition.example .admonition-title{color:var(--blood)}
+.admonition.gm{border-left:4px solid var(--gm-edge);background:var(--gm)}
+.admonition.gm .admonition-title{color:var(--gm-edge)}
+.note{font:400 .85rem var(--body);color:var(--muted);margin-top:40px;border-top:1px solid var(--line);padding-top:12px}
+.index{columns:2 16rem;column-gap:28px}
+.ix{margin:0 0 4px;font-size:.9rem;break-inside:avoid}
+.ix-letter{font:700 .9rem var(--mono);color:var(--blood);margin:14px 0 4px;break-after:avoid}
+@page{margin:16mm 14mm 18mm;@bottom-center{content:counter(page);font:9pt sans-serif}}
+@media print{
+  body{background:#fff;color:#000;font-size:11pt}
+  header nav,.toc .noprint{display:none}
+  header{border-color:#000}
+  .layout{display:block;padding:0}
+  .toc{page-break-after:always}
+  main{max-width:none}
+  main h1{page-break-before:always;border:0}
+  main h1:first-child{page-break-before:avoid}
+  main h2,.admonition,table{page-break-inside:avoid}
+  a{color:inherit;text-decoration:none}
+  .admonition{background:none!important}
+}
+</style>
+</head>
+<body>
+<header>
+  <div><span class="eyebrow">Grave Wounds · blood, bivouac and weather · playtest rules</span><h1>The Medieval Wars</h1></div>
+  <nav><a href="rules.html">Rules</a><a href="guide.html">How to play</a><a href="campaign.html">Campaign</a><a href="roller.html">Wound roller</a><a href="team.html">Team builder</a><a href="travel.html">Travel map</a><a href="field.html">Field map</a><a href="tables.pdf">Printed tables</a><a href="../index.html">Start page</a></nav>
+</header>
+<div class="layout">
+  <aside class="toc" aria-label="Contents"><p class="ttl">Contents</p><div class="toc">
+<ul>
+<li><a href="#medieval">The Medieval Wars, c.1180–1500</a><ul>
+<li><a href="#switched-on">What is switched on</a></li>
+</ul>
+</li>
+<li><a href="#medieval-armies">The armies</a><ul>
+<li><a href="#era-careers">Careers</a></li>
+<li><a href="#era-followers">Followers</a></li>
+<li><a href="#era-ranks">Ranks</a></li>
+<li><a href="#era-jobs">Work between fights</a></li>
+<li><a href="#era-job_trouble">Trouble at work</a></li>
+<li><a href="#era-skill_uses">What each skill is for</a></li>
+<li><a href="#era-tongue_armies">Each army's tongues</a></li>
+<li><a href="#era-courses">Training courses</a></li>
+<li><a href="#era-patron_fate">What becomes of a patron</a></li>
+<li><a href="#era-prisoners">Prisoners: what captors did</a></li>
+<li><a href="#era-kit_life">How long boots and clothing last</a></li>
+<li><a href="#era-supplies">Rations and water carried</a></li>
+<li><a href="#era-women">Women under arms</a></li>
+<li><a href="#era-money_days">The Day in each army's coin</a></li>
+<li><a href="#era-rank_pay">Pay by rank</a></li>
+<li><a href="#era-prices">Prices</a></li>
+</ul>
+</li>
+<li><a href="#medieval-tables">Wound tables</a><ul>
+<li><a href="#table-sidon-1253-mass-graves">Sidon, mid-13th century - crusader mass graves (bone evidence)</a></li>
+<li><a href="#table-sidon-1253-all-hits">Sidon, mid-13th century - gameplay-adjusted (before armour)</a></li>
+<li><a href="#table-visby-1361-evidence">Visby 1361 - bone evidence</a></li>
+<li><a href="#table-visby-1361-adjusted">Visby 1361 - gameplay-adjusted</a></li>
+<li><a href="#table-aljubarrota-1385-ossuary">Aljubarrota 1385 - the São Jorge ossuary (bone evidence)</a></li>
+<li><a href="#table-towton-1461-mass-grave">Towton 1461 - mass grave (bone evidence)</a></li>
+<li><a href="#table-towton-1461-all-hits">Towton 1461 - gameplay-adjusted (before armour)</a></li>
+<li><a href="#table-dornach-1499-crania">Dornach 1499 - the ossuary crania (bone evidence)</a></li>
+<li><a href="#table-dornach-1499-all-hits">Dornach 1499 - gameplay-adjusted (before armour)</a></li>
+</ul>
+</li>
+<li><a href="#medieval-fields">Battlefields</a><ul>
+<li><a href="#field-jacobsford-1179">Jacob's Ford, 30 August 1179 (the storm of the castle)</a></li>
+<li><a href="#field-sidon-1253">Sidon, 1253</a></li>
+<li><a href="#field-crecy-1346">Crécy, 26 August 1346 (the Vallée des Clercs)</a></li>
+<li><a href="#field-visby-1361">Visby, 27 July 1361</a></li>
+<li><a href="#field-aljubarrota-1385">Aljubarrota, 14 August 1385 (the plateau of São Jorge)</a></li>
+<li><a href="#field-agincourt-1415">Agincourt, 25 October 1415</a></li>
+<li><a href="#field-towton-1461">Towton, 29 March 1461</a></li>
+<li><a href="#field-dornach-1499">Dornach, 22 July 1499 (the fields below Dorneck)</a></li>
+</ul>
+</li>
+<li><a href="#index">Index</a></li>
+</ul>
+</div>
+</aside>
+  <main>
+<h1 id="medieval">The Medieval Wars, c.1180–1500</h1>
+<p>Eight battles from the storm of a crusader castle in 1179 to the Swiss at Dornach in 1499: a siege and a raid in the Latin East, the longbow battles of the Hundred Years' War and the Wars of the Roses, Portugal against Castile, the Danes at the gate of Visby, and the Confederates against the Landsknechte. Every rule is in the Rules; this book holds the medieval armies' figures, the wound tables their battles roll on, and the battlefields.</p>
+<p>The battlefields: <a href="#field-jacobsford-1179">Jacob's Ford 1179</a>, <a href="#field-sidon-1253">Sidon 1253</a>, <a href="#field-crecy-1346">Crécy 1346</a>, <a href="#field-visby-1361">Visby 1361</a>, <a href="#field-aljubarrota-1385">Aljubarrota 1385</a>, <a href="#field-agincourt-1415">Agincourt 1415</a>, <a href="#field-towton-1461">Towton 1461</a>, <a href="#field-dornach-1499">Dornach 1499</a>.</p>
+<h2 id="switched-on">What is switched on</h2>
+<p>No module: the core rules are written for blades, bows and armour. Wounds heal and fester as the Rules' Recovery says, with no antibiotics and the camp's leech the only help.</p>
+<table>
+<thead>
+<tr>
+<th>Era</th>
+<th>Armies</th>
+<th>A career term</th>
+<th>Fighting skills</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Medieval (c.1180-1500)</td>
+<td>Latin East (c.1250), Gotland and the Baltic (c.1360), England (c.1415-1460), France (c.1415), Portugal (c.1385), Castile (c.1385), Swiss Confederates (c.1499), Swabian League and Landsknechte (c.1499), Ayyubids (c.1180)</td>
+<td>4 years, from age 16</td>
+<td>Blade, Axe and mace, Polearm, Bow, Crossbow, Sling, Brawl, Parry, Dodge</td>
+</tr>
+</tbody>
+</table>
+<h1 id="medieval-armies">The armies</h1>
+<h2 id="era-careers">Careers</h2>
+<p>The Rules' <a href="rules.html#team">Making a team</a> uses these same tables for its running example.</p>
+<table>
+<thead>
+<tr>
+<th>Career</th>
+<th>Main skill</th>
+<th>Second skill</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Man-at-arms</td>
+<td>Blade</td>
+<td>Parry</td>
+</tr>
+<tr>
+<td>Archer</td>
+<td>Bow</td>
+<td>Dodge</td>
+</tr>
+<tr>
+<td>Crossbowman</td>
+<td>Crossbow</td>
+<td>Dodge</td>
+</tr>
+<tr>
+<td>Spearman or billman</td>
+<td>Polearm</td>
+<td>Parry</td>
+</tr>
+<tr>
+<td>Mounted sergeant</td>
+<td>Ride</td>
+<td>Parry</td>
+</tr>
+<tr>
+<td>Mercenary</td>
+<td>Axe and mace</td>
+<td>Parry</td>
+</tr>
+<tr>
+<td>Sailor</td>
+<td>Seamanship</td>
+<td>Dodge</td>
+</tr>
+<tr>
+<td>Clerk or priest</td>
+<td>Letters</td>
+<td>Persuade</td>
+</tr>
+<tr>
+<td>Barber-surgeon</td>
+<td>Leechcraft</td>
+<td>Craft</td>
+</tr>
+<tr>
+<td>Forester or huntsman</td>
+<td>Fieldcraft</td>
+<td>Stealth</td>
+</tr>
+<tr>
+<td>Servant or groom</td>
+<td>Ride</td>
+<td>Watch</td>
+</tr>
+<tr>
+<td>Merchant</td>
+<td>Persuade</td>
+<td>Letters</td>
+</tr>
+<tr>
+<td>Townswoman or castle household at a siege</td>
+<td>Craft</td>
+<td>Watch</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-followers">Followers</h2>
+<table>
+<thead>
+<tr>
+<th>Quality table</th>
+<th>Green</th>
+<th>Regular</th>
+<th>Veteran</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Default</td>
+<td>01–30</td>
+<td>31–80</td>
+<td>81–00</td>
+</tr>
+<tr>
+<td>Hardened</td>
+<td>01–15</td>
+<td>16–60</td>
+<td>61–00</td>
+</tr>
+<tr>
+<td>Raw</td>
+<td>01–55</td>
+<td>56–90</td>
+<td>91–00</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-ranks">Ranks</h2>
+<table>
+<thead>
+<tr>
+<th>Rank</th>
+<th>Pay (× a soldier's)</th>
+<th>Least years in the rank below</th>
+<th>Command check</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Soldier</td>
+<td>1</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Vintenar</td>
+<td>2</td>
+<td>2</td>
+<td>Ordinary</td>
+</tr>
+<tr>
+<td>Man-at-arms</td>
+<td>4</td>
+<td>10</td>
+<td>Very hard</td>
+</tr>
+<tr>
+<td>Knight</td>
+<td>8</td>
+<td>4</td>
+<td>Very hard, only after a deed</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-jobs">Work between fights</h2>
+<table>
+<thead>
+<tr>
+<th>Job</th>
+<th>Skill</th>
+<th>Pay</th>
+<th>Term</th>
+<th>Where</th>
+<th>Who</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ransom broker</td>
+<td>Persuade 50</td>
+<td>3 Days a day</td>
+<td>30-90 days</td>
+<td>town, frontier, road</td>
+<td>clerk or priest, merchant, man-at-arms, mercenary</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>Free-company routier</td>
+<td>Blade 45</td>
+<td>2 Days a day</td>
+<td>a month</td>
+<td>camp, frontier, road</td>
+<td>mercenary, man-at-arms, crossbowman, archer, mounted sergeant</td>
+<td>40%</td>
+</tr>
+<tr>
+<td>Man-at-arms in a retinue</td>
+<td>Blade 50</td>
+<td>2 Days a day</td>
+<td>90-365 days</td>
+<td>camp, frontier</td>
+<td>man-at-arms, mounted sergeant</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>Crossbowman on the walls of Acre</td>
+<td>Crossbow 45</td>
+<td>1½ Days a day</td>
+<td>a month</td>
+<td>city, frontier</td>
+<td>crossbowman, mercenary, spearman or billman</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>Pilgrim escort</td>
+<td>Ride 45</td>
+<td>1½ Days a day</td>
+<td>7-14 days</td>
+<td>road, frontier</td>
+<td>man-at-arms, mounted sergeant, crossbowman, mercenary</td>
+<td>25%</td>
+</tr>
+<tr>
+<td>Carpenter</td>
+<td>Craft 35</td>
+<td>1 Day a day</td>
+<td>a week</td>
+<td>town, city, village, camp</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Garrison archer</td>
+<td>Watch 40</td>
+<td>1 Day a day</td>
+<td>a month</td>
+<td>town, frontier</td>
+<td>archer, crossbowman, spearman or billman, mercenary</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Hired scribe</td>
+<td>Letters 40</td>
+<td>1 Day a day</td>
+<td>a week</td>
+<td>town, city, camp</td>
+<td>anyone</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Indentured archer</td>
+<td>Bow 45</td>
+<td>1 Day a day</td>
+<td>90-365 days</td>
+<td>camp, frontier</td>
+<td>archer, forester or huntsman</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>Merchant's guard</td>
+<td>Watch 40</td>
+<td>1 Day a day</td>
+<td>7-21 days</td>
+<td>road</td>
+<td>anyone</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>Day labourer</td>
+<td>none</td>
+<td>¾ Day a day</td>
+<td>a day</td>
+<td>town, city, village</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Debt collector</td>
+<td>Brawl 35</td>
+<td>¾ Day a day</td>
+<td>a week</td>
+<td>town, city</td>
+<td>anyone</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Harvest hand</td>
+<td>Fieldcraft 0</td>
+<td>¾ Day a day</td>
+<td>a week</td>
+<td>village</td>
+<td>anyone</td>
+<td>none</td>
+</tr>
+<tr>
+<td>Siege miner</td>
+<td>Craft 30</td>
+<td>¾ Day a day</td>
+<td>a week</td>
+<td>camp</td>
+<td>anyone</td>
+<td>35%</td>
+</tr>
+<tr>
+<td>Cog crew (fed)</td>
+<td>Seamanship 30</td>
+<td>½ Day a day</td>
+<td>21-42 days</td>
+<td>sea, town</td>
+<td>anyone</td>
+<td>20%</td>
+</tr>
+<tr>
+<td>Minstrel</td>
+<td>Persuade 30</td>
+<td>½ Day a day</td>
+<td>a day</td>
+<td>town, city, village, camp</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Sick-nurse (fed)</td>
+<td>Leechcraft 30</td>
+<td>½ Day a day</td>
+<td>a week</td>
+<td>town, city, camp</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Tournament servitor (fed)</td>
+<td>Ride 30</td>
+<td>½ Day a day</td>
+<td>3-7 days</td>
+<td>town, city</td>
+<td>anyone</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>Carter (fed)</td>
+<td>Ride 20</td>
+<td>¼ Day a day</td>
+<td>a month</td>
+<td>village, road</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Hired watchman</td>
+<td>Watch 0</td>
+<td>¼ Day a day</td>
+<td>a week</td>
+<td>town, city</td>
+<td>anyone</td>
+<td>10%</td>
+</tr>
+<tr>
+<td>Ostler or tapster (fed)</td>
+<td>Persuade 0</td>
+<td>¼ Day a day</td>
+<td>a month</td>
+<td>town, city, road</td>
+<td>anyone</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Battlefield stripper †</td>
+<td>Stealth 0</td>
+<td>2 Days a day</td>
+<td>a day</td>
+<td>camp, frontier</td>
+<td>anyone</td>
+<td>35%</td>
+</tr>
+<tr>
+<td>Wool smuggler †</td>
+<td>Seamanship 30</td>
+<td>2 Days a day</td>
+<td>2-5 days</td>
+<td>sea, village</td>
+<td>anyone</td>
+<td>30%</td>
+</tr>
+<tr>
+<td>Highway robber †</td>
+<td>Stealth 35</td>
+<td>1½ Days a day</td>
+<td>a week</td>
+<td>road</td>
+<td>anyone</td>
+<td>45%</td>
+</tr>
+<tr>
+<td>Poacher †</td>
+<td>Stealth 30</td>
+<td>½ Day a day</td>
+<td>a week</td>
+<td>village, frontier</td>
+<td>anyone</td>
+<td>25%</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-job_trouble">Trouble at work</h2>
+<table>
+<thead>
+<tr>
+<th>d10</th>
+<th>Trouble</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Hurt at the work: a fall, a kick or a blade. A light wound, and the rest of the term's pay is lost.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>The employer won't pay, pays short or pays in clipped coin: half, unless he can be made to pay.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>Taken before the justices for wages above the statute, or for vagrancy: fined a week's pay.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>A brawl with rival workers, soldiers or locals: a Brawl check or a wound, and a grudge either way.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Fever, flux or plague in the lodging: a recovery check, or a week sick.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>Robbed on the road or in bed: the term's earnings are gone.</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Pressed into a lord's array or onto a king's ship, willing or not.</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Falsely accused of theft or worse: find a witness, flee, or face the court.</td>
+</tr>
+<tr>
+<td>9</td>
+<td>Raiders, enemy soldiers or pirates fall on the place: a fight with a real enemy.</td>
+</tr>
+<tr>
+<td>10</td>
+<td>He saw something he should not have: a powerful man wants his silence, and may buy it or end it.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-skill_uses">What each skill is for</h2>
+<table>
+<thead>
+<tr>
+<th>Skill</th>
+<th>Use</th>
+<th>Usually</th>
+<th>Against</th>
+<th>Success</th>
+<th>Failure</th>
+<th>Fumble</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Persuade</td>
+<td><strong>Haggle</strong>: Beat down a price.</td>
+<td>Ordinary</td>
+<td>the seller (Persuade)</td>
+<td>A tenth off (a quarter on a critical).</td>
+<td>The list price.</td>
+<td>No sale today.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Find a billet</strong>: Talk a village or a householder into a bed and a meal.</td>
+<td>Ordinary</td>
+<td>the householder or headman (Presence)</td>
+<td>Fed and bedded tonight: no keep to pay.</td>
+<td>He pays his keep, or sleeps rough.</td>
+<td>The village turns against the party: trouble.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Talk past a guard</strong>: Get by a sentry, a gate or the provost without the right papers.</td>
+<td>Hard</td>
+<td>the sentry or provost (Wits)</td>
+<td>Through.</td>
+<td>Turned back.</td>
+<td>Held as a deserter or a spy.</td>
+</tr>
+<tr>
+<td>Persuade</td>
+<td><strong>Question a prisoner</strong>: Get a prisoner or a local to talk.</td>
+<td>Ordinary</td>
+<td>the prisoner (Nerve)</td>
+<td>He tells what he knows (the GM decides how much is true).</td>
+<td>Nothing.</td>
+<td>He lies, and is believed.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><strong>Drive a hard task</strong>: Get men to do something hard and tiring: dig all night, march on after dark, cross a river.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Done.</td>
+<td>Done slowly, or only half.</td>
+<td>They refuse.</td>
+</tr>
+<tr>
+<td>Command</td>
+<td><strong>Keep order</strong>: Stop plunder, drinking or a mutinous mood.</td>
+<td>Hard</td>
+<td>—</td>
+<td>They obey.</td>
+<td>Some slip away to it.</td>
+<td>They turn on him.</td>
+</tr>
+<tr>
+<td>Letters</td>
+<td><strong>Read or write</strong>: Read an order, a letter or a map's names; write a report.</td>
+<td>Easy</td>
+<td>—</td>
+<td>Read or written.</td>
+<td>Slowly, or with mistakes.</td>
+<td>He gets it wrong and does not know it.</td>
+</tr>
+<tr>
+<td>Letters</td>
+<td><strong>Forge a pass</strong>: Make a pass, an order or a billeting ticket that will be believed.</td>
+<td>Hard</td>
+<td>whoever checks it (Watch)</td>
+<td>It passes.</td>
+<td>Doubted: Talk past a guard instead.</td>
+<td>Seen through: held as a deserter or a spy.</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td><strong>Mend kit</strong>: Mend a weapon, harness, boots, a cart or a radio set; a day's work.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Mended.</td>
+<td>Not yet: another day.</td>
+<td>Ruined.</td>
+</tr>
+<tr>
+<td>Craft</td>
+<td><strong>Make something</strong>: Make ladders, a raft, a shelter, snowshoes or a litter from what is to hand.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Made.</td>
+<td>Takes twice as long.</td>
+<td>It fails when it is used.</td>
+</tr>
+<tr>
+<td>Ride</td>
+<td><strong>Ride hard</strong>: Outride a pursuer, or catch a man who rides away.</td>
+<td>Ordinary</td>
+<td>the pursuer or the pursued (Ride)</td>
+<td>Away, or caught.</td>
+<td>Still close.</td>
+<td>Thrown: roll a fall as a wound.</td>
+</tr>
+<tr>
+<td>Ride</td>
+<td><strong>Swim a horse</strong>: Cross a deep ford or swim a river mounted.</td>
+<td>Hard</td>
+<td>—</td>
+<td>Across.</td>
+<td>Turned back.</td>
+<td>Swept away: Endurance check or drowned.</td>
+</tr>
+<tr>
+<td>Seamanship</td>
+<td><strong>Handle a boat</strong>: Take a boat across a river or along a coast; in rough water, hard.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Across.</td>
+<td>Driven back.</td>
+<td>Swamped: Endurance check or drowned.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Track</strong>: Follow men or animals.</td>
+<td>Ordinary</td>
+<td>the men being followed (Stealth)</td>
+<td>On their trail.</td>
+<td>Lost it.</td>
+<td>On the wrong trail.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Find the way</strong>: Cross country without roads or a guide; at night, hard.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>On the way.</td>
+<td>Half a day lost.</td>
+<td>Lost: a day, or into the enemy.</td>
+</tr>
+<tr>
+<td>Fieldcraft</td>
+<td><strong>Hunt or gather</strong>: Find food or water for himself in the country.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Fed today: no keep to pay.</td>
+<td>Nothing found.</td>
+<td>Something that makes him ill.</td>
+</tr>
+<tr>
+<td>Watch</td>
+<td><strong>Spot</strong>: See an ambush, a man hiding, a trap or a thing out of place.</td>
+<td>Ordinary</td>
+<td>whoever is hiding (Stealth)</td>
+<td>Seen.</td>
+<td>Missed.</td>
+<td>Sure there is nothing there.</td>
+</tr>
+<tr>
+<td>Watch</td>
+<td><strong>Search</strong>: Search a house, a body or a baggage wagon.</td>
+<td>Easy</td>
+<td>—</td>
+<td>Found what there is.</td>
+<td>Missed it.</td>
+<td>Missed it and left traces.</td>
+</tr>
+<tr>
+<td>Stealth</td>
+<td><strong>Sneak</strong>: Get past sentries, into a camp or away from one.</td>
+<td>Ordinary</td>
+<td>the sentries (Watch)</td>
+<td>Unseen.</td>
+<td>Seen, but not yet caught.</td>
+<td>Walks into them.</td>
+</tr>
+<tr>
+<td>Stealth</td>
+<td><strong>Steal</strong>: Lift a purse, a horse or rations unseen.</td>
+<td>Hard</td>
+<td>the owner or the guard (Watch)</td>
+<td>Taken.</td>
+<td>Not taken.</td>
+<td>Caught in the act: the provost.</td>
+</tr>
+<tr>
+<td>Leechcraft</td>
+<td><strong>Diagnose</strong>: Tell what a sick man has, and whether it will spread.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Named: the GM tells which sickness.</td>
+<td>Unsure.</td>
+<td>Wrong.</td>
+</tr>
+<tr>
+<td>Strength</td>
+<td><strong>Force or carry</strong>: Force a door, lift a beam, carry a wounded man.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Done.</td>
+<td>Not alone.</td>
+<td>Strained: a step of fatigue.</td>
+</tr>
+<tr>
+<td>Agility</td>
+<td><strong>Climb or jump</strong>: Climb a wall, jump a ditch, keep his feet on ice.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Over.</td>
+<td>Not this way.</td>
+<td>Falls: roll a fall as a wound.</td>
+</tr>
+<tr>
+<td>Endurance</td>
+<td><strong>Endure</strong>: Keep going: swim, go without sleep, hold out in the cold.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Holds out.</td>
+<td>A step of fatigue.</td>
+<td>Collapses, or goes under.</td>
+</tr>
+<tr>
+<td>Wits</td>
+<td><strong>Notice or remember</strong>: Recall a face, a road or a password; work something out.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Yes.</td>
+<td>No.</td>
+<td>Remembers it wrong.</td>
+</tr>
+<tr>
+<td>Nerve</td>
+<td><strong>Keep his head</strong>: Stay calm out of a fight: under shelling in a dugout, at a hanging, before an officer.</td>
+<td>Ordinary</td>
+<td>—</td>
+<td>Steady.</td>
+<td>Shaken: −10 to his next check.</td>
+<td>Breaks: runs, freezes or lashes out.</td>
+</tr>
+<tr>
+<td>Presence</td>
+<td><strong>Impress</strong>: Stare a man down, make a first impression, be remembered.</td>
+<td>Ordinary</td>
+<td>the other man (Presence)</td>
+<td>He gives way.</td>
+<td>No effect.</td>
+<td>Made an enemy.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-tongue_armies">Each army's tongues</h2>
+<p>For the Rules' <a href="rules.html#tongues">Tongues</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Army</th>
+<th>His own tongue (d100)</th>
+<th>Others he may have: chance (figure)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Latin East (c.1250)</td>
+<td>French 70%, Italian 15%, Arabic 15%</td>
+<td>Arabic 30% (10-40), Latin 10% (20-50), Greek 5% (10-40), French 40% (20-50)</td>
+</tr>
+<tr>
+<td>Gotland and the Baltic (c.1360)</td>
+<td>Gutnish 50%, Low German 30%, Danish 20%</td>
+<td>Low German 30% (10-40), Latin 5% (20-50)</td>
+</tr>
+<tr>
+<td>England (c.1415-1460)</td>
+<td>English 85%, Welsh 10%, French 5%</td>
+<td>French 15% (10-50), Latin 5% (20-50)</td>
+</tr>
+<tr>
+<td>France (c.1415)</td>
+<td>French 90%, Breton 5%, Italian 5%</td>
+<td>Latin 5% (20-50), English 5% (10-40)</td>
+</tr>
+<tr>
+<td>Portugal (c.1385)</td>
+<td>Portuguese 92%, English 6%, French 2%</td>
+<td>Spanish 50% (30-60), Latin 5% (20-50), French 5% (10-40)</td>
+</tr>
+<tr>
+<td>Ayyubids (c.1180)</td>
+<td>Arabic 45%, Turkish 30%, Kurdish 25%</td>
+<td>Arabic 40% (20-60), Turkish 10% (10-40), Persian 5% (20-50), French 5% (10-40)</td>
+</tr>
+<tr>
+<td>Swiss Confederates (c.1499)</td>
+<td>German 95%, French 5%</td>
+<td>French 10% (10-40), Italian 3% (10-40), Latin 5% (20-50)</td>
+</tr>
+<tr>
+<td>Swabian League and Landsknechte (c.1499)</td>
+<td>German 80%, Low German 12%, French 8%</td>
+<td>French 10% (10-40), Latin 5% (20-50)</td>
+</tr>
+<tr>
+<td>Castile (c.1385)</td>
+<td>Spanish 72%, Portuguese 15%, French 7%, Basque 4%, Italian 2%</td>
+<td>Portuguese 40% (20-50), Latin 5% (20-50), Arabic 2% (10-40)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-courses">Training courses</h2>
+<p>For the Rules' <a href="rules.html#experience">Experience</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Course</th>
+<th>Eras</th>
+<th>Away</th>
+<th>Gains</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A year as an apprentice</td>
+<td>Medieval, Thirty Years' War, Horse and musket, Crimean War, Civil War and frontier</td>
+<td>52 weeks</td>
+<td>craft +10, letters +2</td>
+</tr>
+<tr>
+<td>A year in a knight's household (page or squire)</td>
+<td>Medieval</td>
+<td>52 weeks</td>
+<td>blade +5, ride +5, command +3, letters +2</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-patron_fate">What becomes of a patron</h2>
+<p>For the Rules' <a href="rules.html#patrons">Patrons</a>.</p>
+<table>
+<thead>
+<tr>
+<th>d100</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3% dies, 2% falls from favour, 1% changes sides</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-prisoners">Prisoners: what captors did</h2>
+<p>For the Rules' <a href="rules.html#prisoners">Prisoners</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Captors</th>
+<th>Killed at or under</th>
+<th>Stripped at or under</th>
+<th>Released a season</th>
+<th>Dies a season</th>
+<th>Also</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Taken in the field</td>
+<td>45</td>
+<td>85</td>
+<td>5%</td>
+<td>3%</td>
+<td>ransom</td>
+</tr>
+<tr>
+<td>A man of rank, held for ransom</td>
+<td>10</td>
+<td>40</td>
+<td>5%</td>
+<td>1%</td>
+<td>ransom</td>
+</tr>
+<tr>
+<td>Portugal and Castile, 1383-93: held for ransom or the peace</td>
+<td>30</td>
+<td>70</td>
+<td>3%</td>
+<td>3%</td>
+<td>ransom</td>
+</tr>
+<tr>
+<td>Taken by Saladin's army (1179-87)</td>
+<td>50</td>
+<td>85</td>
+<td>5%</td>
+<td>3%</td>
+<td>ransom</td>
+</tr>
+<tr>
+<td>The Swabian War, 1499: no quarter sworn</td>
+<td>70</td>
+<td>90</td>
+<td>20%</td>
+<td>1%</td>
+<td>ransom</td>
+</tr>
+<tr>
+<td>Caught in the rout by the countryfolk</td>
+<td>70</td>
+<td>95</td>
+<td>5%</td>
+<td>3%</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-kit_life">How long boots and clothing last</h2>
+<p>For the Rules' <a href="rules.html#kit">Boots and clothing</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Boots (marching days)</th>
+<th>Clothing (days)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>60</td>
+<td>180</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-supplies">Rations and water carried</h2>
+<p>For the Rules' <a href="rules.html#supplies">Supplies</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Rations carried (days)</th>
+<th>Water carried (L a man)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-women">Women under arms</h2>
+<p>For the Rules' <a href="rules.html#women">Women under arms</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Army</th>
+<th>Share</th>
+<th>Careers open to women</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Medieval: England (c.1415-1460)</td>
+<td>chosen, never rolled</td>
+<td>townswoman or castle household at a siege (100%)</td>
+</tr>
+<tr>
+<td>Medieval: France (c.1415)</td>
+<td>chosen, never rolled</td>
+<td>townswoman or castle household at a siege (100%)</td>
+</tr>
+<tr>
+<td>Medieval: Portugal (c.1385)</td>
+<td>chosen, never rolled</td>
+<td>townswoman or castle household at a siege (100%)</td>
+</tr>
+<tr>
+<td>Medieval: Castile (c.1385)</td>
+<td>chosen, never rolled</td>
+<td>townswoman or castle household at a siege (100%)</td>
+</tr>
+<tr>
+<td>Medieval: Swiss Confederates (c.1499)</td>
+<td>chosen, never rolled</td>
+<td>townswoman or castle household at a siege (100%)</td>
+</tr>
+<tr>
+<td>Medieval: Swabian League and Landsknechte (c.1499)</td>
+<td>chosen, never rolled</td>
+<td>townswoman or castle household at a siege (100%)</td>
+</tr>
+<tr>
+<td>Medieval: Ayyubids (c.1180)</td>
+<td>chosen, never rolled</td>
+<td>townswoman or castle household at a siege (100%)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-money_days">The Day in each army's coin</h2>
+<p>For the Rules' <a href="rules.html#money-days">The Day in each army's coin</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Army</th>
+<th>Coin</th>
+<th>A Day</th>
+<th>From</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Latin East (c.1250)</td>
+<td>Saracen bezants of Acre (24 quarrobles)</td>
+<td>8 q.</td>
+<td>a crossbowman at Acre, about 10½ bezants a month (1266)</td>
+</tr>
+<tr>
+<td>Gotland and the Baltic (c.1360)</td>
+<td>Gotland marks (8 öre, 24 örtugar, 288 penningar)</td>
+<td>3 örtugar</td>
+<td>a labourer's 1 öre a day at Nyköping (1365), standing in for a soldier's (an estimate)</td>
+</tr>
+<tr>
+<td>England (c.1415-1460)</td>
+<td>English pounds, shillings and pence</td>
+<td>6d</td>
+<td>an archer's 6d a day (1415)</td>
+</tr>
+<tr>
+<td>France (c.1415)</td>
+<td>French livres tournois (20 sous, 240 deniers)</td>
+<td>2 s. 8 d.</td>
+<td>an archer's 48 livres a year (the 1434 scale, near enough to 1415) (an estimate)</td>
+</tr>
+<tr>
+<td>Portugal (c.1385)</td>
+<td>Portuguese libras (20 soldos, 240 dinheiros), in the money of 1380</td>
+<td>1 libra</td>
+<td>a blacksmith's 20 soldos a day (1380), standing in for a soldier's: no Portuguese pay for 1383-85 was found. The libra lost two-thirds of its silver in 1384-85 (66 to the mark in 1385, 22 in 1380): prices from other years are turned into 1380 money by the mark (an estimate)</td>
+</tr>
+<tr>
+<td>Castile (c.1385)</td>
+<td>Castilian maravedís of the old money (10 dineros)</td>
+<td>1 mr 3 d.</td>
+<td>a crossbowman's 13 dineros a day (Cortes of Burgos, 1338; a lancer 1 maravedí), the nearest found to 1385 (an estimate)</td>
+</tr>
+<tr>
+<td>Swiss Confederates (c.1499)</td>
+<td>Swiss gulden (Bern, 1492: 15 Batzen, 60 Kreuzer, 2 Pfund, 480 Pfennig)</td>
+<td>2 bz. 2 kr.</td>
+<td>a Swiss foot soldier's 5 Rhenish gulden a month in papal service (1485), the gulden taken as the Swiss one: no Swiss pay for 1499 was found (an estimate)</td>
+</tr>
+<tr>
+<td>Swabian League and Landsknechte (c.1499)</td>
+<td>Rhenish gulden (60 Kreuzer)</td>
+<td>8 kr.</td>
+<td>a Landsknecht's 4 gulden a month (the German standard from the late 15th century), often late or partial</td>
+</tr>
+<tr>
+<td>Ayyubids (c.1180)</td>
+<td>Ayyubid gold dinars (24 qirat)</td>
+<td>8 q.</td>
+<td>no Ayyubid soldier's pay was found (troopers held land grants, iqta', and drew a monthly jamakiyya): the Acre crossbowman's third of a bezant a day (1266) stands in, the bezant being struck after the dinar (an estimate)</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-rank_pay">Pay by rank</h2>
+<p>For the Rules' <a href="rules.html#money-pay">Pay by rank</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Army</th>
+<th>A day's pay by rank, before stoppages</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Latin East (c.1250)</td>
+<td>Soldier 8 q. · Vintenar 16 q. · Man-at-arms 1 bezant 8 q. · Knight 2 bezants 16 q.</td>
+</tr>
+<tr>
+<td>Gotland and the Baltic (c.1360)</td>
+<td>Soldier 3 örtugar · Vintenar 6 örtugar · Man-at-arms 12 örtugar · Knight 1 mark</td>
+</tr>
+<tr>
+<td>England (c.1415-1460)</td>
+<td>Soldier 6d · Vintenar 1s · Man-at-arms 2s · Knight 4s</td>
+</tr>
+<tr>
+<td>France (c.1415)</td>
+<td>Soldier 2 s. 8 d. · Vintenar 5 s. 4 d. · Man-at-arms 10 s. 8 d. · Knight 1 l. 1 s. 4 d.</td>
+</tr>
+<tr>
+<td>Portugal (c.1385)</td>
+<td>Soldier 1 libra · Vintenar 2 libras · Man-at-arms 4 libras · Knight 8 libras</td>
+</tr>
+<tr>
+<td>Castile (c.1385)</td>
+<td>Soldier 1 mr 3 d. · Vintenar 2 mrs 6 d. · Man-at-arms 5 mrs 2 d. · Knight 10 mrs 4 d.</td>
+</tr>
+<tr>
+<td>Swiss Confederates (c.1499)</td>
+<td>Soldier 2 bz. 2 kr. · Vintenar 5 bz. · Man-at-arms 10 bz. · Knight 1 gl. 5 bz.</td>
+</tr>
+<tr>
+<td>Swabian League and Landsknechte (c.1499)</td>
+<td>Soldier 8 kr. · Vintenar 16 kr. · Man-at-arms 32 kr. · Knight 1 fl. 4 kr.</td>
+</tr>
+<tr>
+<td>Ayyubids (c.1180)</td>
+<td>Soldier 8 q. · Vintenar 16 q. · Man-at-arms 1 dinar 8 q. · Knight 2 dinars 16 q.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="era-prices">Prices</h2>
+<p>For the Rules' <a href="rules.html#money-prices">Prices</a>.</p>
+<h3 id="era-prices-medieval">Medieval (c.1180-1500)</h3>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>When</th>
+<th>Price</th>
+<th>About</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Milanese harness, ready-made</td>
+<td>1441</td>
+<td>£8 6s 8d</td>
+<td>333¼ Days</td>
+</tr>
+<tr>
+<td>Squire's armour</td>
+<td>1441</td>
+<td>£5–£6 16s 8d</td>
+<td>236¾ Days</td>
+</tr>
+<tr>
+<td>Brigandine</td>
+<td>1460s</td>
+<td>12s–£1 10s</td>
+<td>42 Days</td>
+</tr>
+<tr>
+<td>Sallet with half-visor</td>
+<td>1460s</td>
+<td>7s 4d</td>
+<td>14¾ Days</td>
+</tr>
+<tr>
+<td>Shaffron (horse's head armour)</td>
+<td>1460s</td>
+<td>4s 2d</td>
+<td>8¼ Days</td>
+</tr>
+<tr>
+<td>Plain sallet</td>
+<td>1460s</td>
+<td>2s</td>
+<td>4 Days</td>
+</tr>
+<tr>
+<td>Doublet of fence (a padded jack)</td>
+<td>1460s</td>
+<td>1s 8d</td>
+<td>3¼ Days</td>
+</tr>
+<tr>
+<td>Mail hauberk</td>
+<td></td>
+<td>£1–£2</td>
+<td>60 Days</td>
+</tr>
+<tr>
+<td>Gambeson (padded coat)</td>
+<td></td>
+<td>5s–10s</td>
+<td>15 Days</td>
+</tr>
+<tr>
+<td>Hardened leather coat</td>
+<td></td>
+<td>5s–10s</td>
+<td>15 Days</td>
+</tr>
+<tr>
+<td>Crossbow</td>
+<td></td>
+<td>5s–£1</td>
+<td>25 Days</td>
+</tr>
+<tr>
+<td>Soldier's sword</td>
+<td>16th c.</td>
+<td>6s</td>
+<td>12 Days</td>
+</tr>
+<tr>
+<td>Poleaxe</td>
+<td></td>
+<td>3s–6s</td>
+<td>9 Days</td>
+</tr>
+<tr>
+<td>Sheaf of 24 arrows</td>
+<td>1482</td>
+<td>4s</td>
+<td>8 Days</td>
+</tr>
+<tr>
+<td>Longbow</td>
+<td>16th c.</td>
+<td>2s–3s 4d</td>
+<td>5¼ Days</td>
+</tr>
+<tr>
+<td>War axe</td>
+<td></td>
+<td>1s–3s</td>
+<td>4 Days</td>
+</tr>
+<tr>
+<td>Bill</td>
+<td></td>
+<td>1s–2s</td>
+<td>3 Days</td>
+</tr>
+<tr>
+<td>Halberd</td>
+<td></td>
+<td>1s 6d–3s</td>
+<td>4½ Days</td>
+</tr>
+<tr>
+<td>Handgun (with match, powder and ball)</td>
+<td></td>
+<td>10s–£1</td>
+<td>30 Days</td>
+</tr>
+<tr>
+<td>Spear</td>
+<td></td>
+<td>6d–2s</td>
+<td>2½ Days</td>
+</tr>
+<tr>
+<td>Bow stave</td>
+<td>1483</td>
+<td>5d–1s 7d</td>
+<td>2 Days</td>
+</tr>
+<tr>
+<td>Dagger</td>
+<td></td>
+<td>4d–1s</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>Great destrier</td>
+<td>13th-14th c.</td>
+<td>£80–£100</td>
+<td>3,600 Days</td>
+</tr>
+<tr>
+<td>Warhorse</td>
+<td>1337</td>
+<td>£8–£13 6s 8d</td>
+<td>426¾ Days</td>
+</tr>
+<tr>
+<td>Riding horse (hackney)</td>
+<td></td>
+<td>13s 4d–£2</td>
+<td>53¼ Days</td>
+</tr>
+<tr>
+<td>Packhorse</td>
+<td></td>
+<td>10s–£1</td>
+<td>30 Days</td>
+</tr>
+<tr>
+<td>Saddle</td>
+<td></td>
+<td>2s–10s</td>
+<td>12 Days</td>
+</tr>
+<tr>
+<td>Cart, two-wheeled and iron-bound (its beasts not included)</td>
+<td>c. 1350</td>
+<td>4s</td>
+<td>8 Days</td>
+</tr>
+<tr>
+<td>Draught ox</td>
+<td>mid-14th c.</td>
+<td>13s 1¼d</td>
+<td>26¼ Days</td>
+</tr>
+<tr>
+<td>Gown in good cloth</td>
+<td></td>
+<td>£1</td>
+<td>40 Days</td>
+</tr>
+<tr>
+<td>Good cloth (tawny, russet) (yard)</td>
+<td>1480</td>
+<td>6s</td>
+<td>12 Days</td>
+</tr>
+<tr>
+<td>Cloak of 3-4 yards of frieze</td>
+<td></td>
+<td>3s</td>
+<td>6 Days</td>
+</tr>
+<tr>
+<td>Doublet</td>
+<td></td>
+<td>2s–5s</td>
+<td>7 Days</td>
+</tr>
+<tr>
+<td>Double cap</td>
+<td>1455</td>
+<td>1s 8d</td>
+<td>3¼ Days</td>
+</tr>
+<tr>
+<td>Boots</td>
+<td>1454-72</td>
+<td>1s–2s 6d</td>
+<td>3½ Days</td>
+</tr>
+<tr>
+<td>Felt hat</td>
+<td>1457</td>
+<td>10d</td>
+<td>1¾ Days</td>
+</tr>
+<tr>
+<td>Frieze (rough wool cloth) (yard)</td>
+<td>1431</td>
+<td>8d–1s 1d</td>
+<td>1¾ Days</td>
+</tr>
+<tr>
+<td>Shoes</td>
+<td>1457</td>
+<td>6½d</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Linen shirt</td>
+<td>1482</td>
+<td>6d</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Hood</td>
+<td></td>
+<td>6d</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Hose</td>
+<td></td>
+<td>5d</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>Gloves</td>
+<td>1457</td>
+<td>4d</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>Belt (girdle)</td>
+<td></td>
+<td>4d</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>Purse</td>
+<td>1470s</td>
+<td>1½d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Ox</td>
+<td>1434</td>
+<td>15s</td>
+<td>30 Days</td>
+</tr>
+<tr>
+<td>Pig</td>
+<td>1434</td>
+<td>2s–3s 4d</td>
+<td>5¼ Days</td>
+</tr>
+<tr>
+<td>Sheep</td>
+<td>14th c.</td>
+<td>1s 5d</td>
+<td>2¾ Days</td>
+</tr>
+<tr>
+<td>Wheat (bushel)</td>
+<td>1434</td>
+<td>8d</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>Salt (bushel)</td>
+<td>1434</td>
+<td>7d</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>Wine (Gascon to Rhenish) (gallon)</td>
+<td>1331</td>
+<td>4d–8d</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Eggs (100)</td>
+<td>1434</td>
+<td>5d</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>Goose</td>
+<td>1434</td>
+<td>4d</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>A yeoman's food for a day</td>
+<td>c.1380</td>
+<td>3d</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Hen</td>
+<td>1434</td>
+<td>2d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Good ale (gallon)</td>
+<td></td>
+<td>1d–1¼d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Bed at an inn, a night</td>
+<td>1331</td>
+<td>1d–2d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>A knight's lodging at Acre, a month</td>
+<td>1266</td>
+<td>3 bezants–9 bezants</td>
+<td>18 Days</td>
+</tr>
+<tr>
+<td>Courier to Paris</td>
+<td>1415</td>
+<td>5 l.</td>
+<td>37½ Days</td>
+</tr>
+<tr>
+<td>Great lantern</td>
+<td>1478</td>
+<td>2s 4d</td>
+<td>4¾ Days</td>
+</tr>
+<tr>
+<td>Horn lantern (iron frame)</td>
+<td></td>
+<td>8d</td>
+<td>1¼ Days</td>
+</tr>
+<tr>
+<td>Wax candles (lb)</td>
+<td></td>
+<td>6½d</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Candle wick yarn (lb)</td>
+<td>1455</td>
+<td>6d</td>
+<td>1 Day</td>
+</tr>
+<tr>
+<td>Tallow candles (lb)</td>
+<td></td>
+<td>1½d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Glass for an oil lamp</td>
+<td>1452</td>
+<td>1½d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Canvas for a lord's pavilion</td>
+<td>1513</td>
+<td>£3 12s</td>
+<td>144 Days</td>
+</tr>
+<tr>
+<td>Soldier's tent of oiled cloth</td>
+<td></td>
+<td>10s</td>
+<td>20 Days</td>
+</tr>
+<tr>
+<td>Pair of sheets</td>
+<td>1450</td>
+<td>3s 6d</td>
+<td>7 Days</td>
+</tr>
+<tr>
+<td>Blanket cloth (yard)</td>
+<td>1447</td>
+<td>1s 2d</td>
+<td>2¼ Days</td>
+</tr>
+<tr>
+<td>Blanket</td>
+<td></td>
+<td>1s</td>
+<td>2 Days</td>
+</tr>
+<tr>
+<td>Canvas (ell)</td>
+<td></td>
+<td>1½d–4½d</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Mattress</td>
+<td>1457</td>
+<td>2d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Mariner's compass (ships only)</td>
+<td>1561</td>
+<td>2s 8d</td>
+<td>5¼ Days</td>
+</tr>
+<tr>
+<td>Guide for a night</td>
+<td>14th c.</td>
+<td>1d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Flint, fire-steel and fungus tinder</td>
+<td></td>
+<td>2d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Hemp (stone)</td>
+<td></td>
+<td>10d</td>
+<td>1¾ Days</td>
+</tr>
+<tr>
+<td>Halter</td>
+<td></td>
+<td>2d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Rope (fathom)</td>
+<td></td>
+<td>1d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Oakum (loose hemp) (lb)</td>
+<td></td>
+<td>1d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Brass cooking pot</td>
+<td></td>
+<td>1s–3s</td>
+<td>4 Days</td>
+</tr>
+<tr>
+<td>Chest</td>
+<td>1457</td>
+<td>2s 2d</td>
+<td>4¼ Days</td>
+</tr>
+<tr>
+<td>Axe (tool)</td>
+<td>1457</td>
+<td>5d</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>Sheet</td>
+<td>1457</td>
+<td>4d</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>Spade and shovel</td>
+<td>1457</td>
+<td>3d</td>
+<td>½ Day</td>
+</tr>
+<tr>
+<td>Saffron (lb)</td>
+<td>1438</td>
+<td>14s 8d</td>
+<td>29¼ Days</td>
+</tr>
+<tr>
+<td>Ginger (lb)</td>
+<td>1438</td>
+<td>2s 4d</td>
+<td>4¾ Days</td>
+</tr>
+<tr>
+<td>Sugar (lb)</td>
+<td>1438</td>
+<td>2s</td>
+<td>4 Days</td>
+</tr>
+<tr>
+<td>Army surgeon, a day (assistant 6d)</td>
+<td>1415</td>
+<td>1s</td>
+<td>2 Days</td>
+</tr>
+<tr>
+<td>Honey (for wounds) (gallon)</td>
+<td></td>
+<td>11d</td>
+<td>1¾ Days</td>
+</tr>
+<tr>
+<td>Linen for bandages (ell)</td>
+<td>1482</td>
+<td>4d</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>Salve or plaster</td>
+<td></td>
+<td>2d</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Young mare (Portugal)</td>
+<td>1369</td>
+<td>12 libras 4 soldos 5 d.</td>
+<td>12¼ Days</td>
+</tr>
+<tr>
+<td>Wheat, an alqueire (about 13 litres; Portugal)</td>
+<td>1359-65</td>
+<td>15 soldos 1 d.</td>
+<td>¾ Day</td>
+</tr>
+<tr>
+<td>Wine, an almude (about 17 litres; Portugal)</td>
+<td>1394</td>
+<td>3 soldos 6 d.</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>A hen, in the siege of Lisbon (Portugal)</td>
+<td>1384</td>
+<td>2 libras 8 soldos 11 d.</td>
+<td>2½ Days</td>
+</tr>
+<tr>
+<td>Horse of a man-at-arms (Castile)</td>
+<td>1312-50</td>
+<td>600 mrs–800 mrs</td>
+<td>538½ Days</td>
+</tr>
+<tr>
+<td>Saddle, plain to Moroccan leather (Castile)</td>
+<td>1351</td>
+<td>30 mrs–200 mrs</td>
+<td>88½ Days</td>
+</tr>
+<tr>
+<td>Horseman's shield (Castile)</td>
+<td>1351</td>
+<td>100 mrs–120 mrs</td>
+<td>84½ Days</td>
+</tr>
+<tr>
+<td>Adarga (leather shield; Castile)</td>
+<td>1351</td>
+<td>7 mrs–18 mrs</td>
+<td>9½ Days</td>
+</tr>
+<tr>
+<td>Men's shoes, goatskin to cordovan (Castile)</td>
+<td>1351</td>
+<td>2 mrs 5 d.–5 mrs</td>
+<td>3 Days</td>
+</tr>
+<tr>
+<td>A mule and its man for a day's carting (Castile)</td>
+<td>1351</td>
+<td>3 mrs 6 d.</td>
+<td>2¾ Days</td>
+</tr>
+<tr>
+<td>Ransom of López de Ayala after Aljubarrota (30,000 dobras and 30 horses)</td>
+<td>1385</td>
+<td>1,050,000 mrs</td>
+<td>807,692¼ Days</td>
+</tr>
+<tr>
+<td>Ransom of a man, Jerusalem 1187 (a woman half, a child a fifth)</td>
+<td>1187</td>
+<td>10 dinars</td>
+<td>30 Days</td>
+</tr>
+<tr>
+<td>A goatskin of water carried to put out a mine's fire (Saladin's bounty)</td>
+<td>1179</td>
+<td>1 dinar</td>
+<td>3 Days</td>
+</tr>
+<tr>
+<td>A dressed stone for the castle at Jacob's Ford</td>
+<td>1179</td>
+<td>4 dinars</td>
+<td>12 Days</td>
+</tr>
+<tr>
+<td>Spelt (Kernen), a Mütt (about 80 litres; the Swiss)</td>
+<td>late 15th c.</td>
+<td>3 bz. 3 kr.</td>
+<td>1½ Days</td>
+</tr>
+<tr>
+<td>Pork (the Swiss) (lb)</td>
+<td>late 15th c.</td>
+<td>1 kr. 2 pf.–1 kr. 4 pf.</td>
+<td>¼ Day</td>
+</tr>
+<tr>
+<td>Wine, a Saum (about 160 litres; the Swiss)</td>
+<td>late 15th c.</td>
+<td>1 gl.</td>
+<td>6 Days</td>
+</tr>
+<tr>
+<td>Ox or horse (the Swiss)</td>
+<td>late 15th c.</td>
+<td>5 gl.–7 gl.</td>
+<td>36 Days</td>
+</tr>
+<tr>
+<td>A bed (the Swiss)</td>
+<td>late 15th c.</td>
+<td>11 bz. 1 kr.</td>
+<td>4½ Days</td>
+</tr>
+<tr>
+<td>Fourteen days' oatmeal, salt, bread, cheese and butter, and spare shoes (what a Swiss soldier carried)</td>
+<td>1499</td>
+<td>11 bz. 1 kr.</td>
+<td>4½ Days</td>
+</tr>
+<tr>
+<td>A month's pay for a Landsknecht</td>
+<td>c.1500</td>
+<td>4 fl.</td>
+<td>30 Days</td>
+</tr>
+<tr>
+<td>Ransom of a man-at-arms taken at Agincourt (650 ducats and up)</td>
+<td>1415</td>
+<td>£135</td>
+<td>5,400 Days</td>
+</tr>
+</tbody>
+</table>
+<h1 id="medieval-tables">Wound tables</h1>
+<p>Each battle rolls its wounds on a table built from the record of that war, and these are the notes on where each one comes from. The tables themselves are in the <a href="tables.pdf">printed tables</a> and the <a href="roller.html">wound roller</a>. A <em>gameplay-adjusted</em> table is re-weighted from bone evidence to stand for every blow that landed, not only the ones that marked bone; an <em>evidence</em> table is the record itself.</p>
+<h2 id="table-sidon-1253-mass-graves">Sidon, mid-13th century - crusader mass graves (bone evidence)</h2>
+<p>Bones of at least 25 men killed when Mamluk (1253) or Mongol (1260) forces sacked crusader Sidon, later gathered into the town ditch. Killed only.</p>
+<p><em>How sure:</em> taken directly from a source. From the study's table of bones with definite battle injuries (100 bones; 62 sharp, 35 blunt and 5 penetrating injuries) by body region. Sides are not recorded, and each region is shared among its locations by body exposure. Swords and axes roll on the sharp-force bones, the mace (spiked club) on the blunt-force ones and the spear on the penetrating ones (spiked mace, arrow, lance or javelin, the authors suggest); other weapons use all bones together.</p>
+<p><em>Rolled by:</em> no battle here: it is the evidence the others are built from.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Mikulski R.N.R., Schutkowski H., Smith M.J., Doumet-Serhal C. and Mitchell P.D., 'Weapon injuries in the crusader mass graves from a 13th century attack on the port city of Sidon (Lebanon)', PLoS ONE 16(8): e0256517 (2021), open access: S1 Table (elements with definite peri-mortem trauma by region).</li>
+<li>Same study: more wounds on the back of the body than the front (men attacked as they fled); blows concentrated on the head, neck and shoulders, compatible with mounted attackers striking down at men on foot; one man had at least 12 injuries on 16 bones.</li>
+<li>Tally: data/sources/sidon-1253-mass-graves.csv.</li>
+</ul>
+<h2 id="table-sidon-1253-all-hits">Sidon, mid-13th century - gameplay-adjusted (before armour)</h2>
+<p>Where blows land on a man fighting in the sack of a crusader town, before armour, re-weighted from the Sidon bone evidence without the neck cuts.</p>
+<p><em>How sure:</em> a design estimate from analogous evidence.</p>
+<p><em>Built from:</em> <a href="#table-sidon-1253-mass-graves">Sidon, mid-13th century - crusader mass graves (bone evidence)</a>.</p>
+<p><em>Rolled by:</em> the battlefields of <a href="#field-jacobsford-1179">Jacob's Ford 1179</a>, <a href="#field-sidon-1253">Sidon 1253</a>; the armies of Latin East (c.1250), Ayyubids (c.1180).</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Derived from sidon-1253-mass-graves (Mikulski et al. 2021, S1 Table).</li>
+</ul>
+<h2 id="table-visby-1361-evidence">Visby 1361 - bone evidence</h2>
+<p>Melee, Gotland peasant levy (mail, shields, few helmets) vs Danish professional troops.</p>
+<p><em>How sure:</em> estimated to match published summary figures.</p>
+<p><em>Rolled by:</em> no battle here: it is the evidence the others are built from.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Thordeman, B. (ed.), Armour from the Battle of Wisby 1361, vol. I, 1939 - ch. IV, Ingelmark, B. E., 'The Skeletons', p. 149ff. (NOT YET READ - counts pending)</li>
+<li>Summary figures: 1,185 individuals; 456 cut wounds; head wounds in 42.3% / 52.3% / 5.4% of graves 1-3 (Ingelmark, via Medievalists.net 2024).</li>
+<li>Swedish History Museum: visible wounds concentrate on arms, legs and skulls; torso protected by mail and shields.</li>
+</ul>
+<h2 id="table-visby-1361-adjusted">Visby 1361 - gameplay-adjusted</h2>
+<p>Same fight as the evidence table, re-weighted to where blows land before armour.</p>
+<p><em>How sure:</em> a design estimate from analogous evidence.</p>
+<p><em>Built from:</em> <a href="#table-visby-1361-evidence">Visby 1361 - bone evidence</a>.</p>
+<p><em>Rolled by:</em> the battlefields of <a href="#field-visby-1361">Visby 1361</a>; the armies of Gotland and the Baltic (c.1360).</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Derived from visby-1361-evidence.</li>
+</ul>
+<h2 id="table-aljubarrota-1385-ossuary">Aljubarrota 1385 - the São Jorge ossuary (bone evidence)</h2>
+<p>Leg bones of at least 414 men killed when the Portuguese and their English allies beat Castile and its French allies on 14 August 1385, gathered into an ossuary on the field. Killed only; long bones, few skulls.</p>
+<p><em>How sure:</em> taken directly from a source. From the 58 perimortem blunt-force fractures counted in 2,762 bone fragments (54 femur, 4 tibia; 41 left, 12 right, 5 side unknown). The side split is applied to both bones alike, an estimate: the paper's table of bone by side was not seen. The 52 sharp and puncture wounds of the earlier study (38 and 14, cuts on skulls, a crossbow bolt through a frontal bone, cuts on tibiae and femora) are not located by bone in what was published, and are left out.</p>
+<p><em>Rolled by:</em> no battle here: it is the evidence the others are built from.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Pérez Fernández Á., Alemán I., Botella M.C. and Cunha E., 'Perimortem fractures in the osteological collection of Aljubarrota (Portugal)', Journal of Anthropological Archaeology 40: 82-88 (2015), https://www.sciencedirect.com/science/article/abs/pii/S0278416515000446 (summary): MNI 414 adults, all sexed fragments male, aged about 20-60; 58 blunt fractures, 72% in the middle third of the shaft, 69% on the front.</li>
+<li>Cunha E. and Silva A.M., 'War lesions from the famous Portuguese medieval battle of Aljubarrota', International Journal of Osteoarchaeology 7(6): 595-599 (1997): cuts on crania (frontal and parietal), a frontal bone probably pierced by a crossbow bolt, cut marks on tibiae and femora, and many healed old injuries; no frequencies.</li>
+<li>Tally: data/sources/aljubarrota-1385-ossuary.csv.</li>
+</ul>
+<h2 id="table-towton-1461-mass-grave">Towton 1461 - mass grave (bone evidence)</h2>
+<p>Death wounds on the men buried at Towton Hall after the battle of 29 March 1461, most likely Lancastrians caught in the rout. Killed only.</p>
+<p><em>How sure:</em> taken directly from a source. Counted wound by wound from the study's tables: 124 head wounds (79 blade, 32 blunt, 13 penetrating) on 31 skulls and 56 injured bones below the head (52 blade, 4 blunt). Head wounds are counted per wound and body injuries per bone, as published, so the body is slightly under-counted. Blade weapons roll on the blade wounds, the poleaxe on the blunt ones and the dagger on the penetrating ones (arrow, bolt, dagger and poleaxe-spike wounds to the skull). Bows use all the wounds together. Unsided skull wounds (frontal, occipital, both parietals) are shared between left and right.</p>
+<p><em>Rolled by:</em> no battle here: it is the evidence the others are built from.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Holst M. and Sutherland T., 'Towton Revisited - Analysis of the Human Remains from the Battle of Towton 1461', in Eickhoff S. and Schopper F. (eds), Schlachtfeld und Massengrab: Spektren interdisziplinärer Auswertung von Orten der Gewalt (Zossen 2014), pp. 97-129: Tab. 9 (post-cranial injuries) and Tab. 12 (peri-mortem cranial weapon trauma).</li>
+<li>Same chapter: 36% of the skeletons had peri-mortem injuries below the head (56 in all), mostly to the hands and forearms; the back of the skull, left parietal and left frontal took the most blade wounds. Its text gives 33 blunt (25%) and 13 penetrating (10%) head wounds; its table lists 124 head wounds, which this table follows.</li>
+<li>Fiorato V., Boylston A. and Knüsel C. (eds), Blood Red Roses: the archaeology of a mass grave from the Battle of Towton AD 1461 (Oxbow, 2000; 2nd ed. 2007): the original excavation and analysis (Novak, 'Battle-related trauma').</li>
+<li>Wound-by-wound tally: data/sources/towton-1461-mass-grave.csv.</li>
+</ul>
+<h2 id="table-towton-1461-all-hits">Towton 1461 - gameplay-adjusted (before armour)</h2>
+<p>Where blows and arrows land on a man in the press at Towton, before armour, re-weighted from the bone evidence. Use for the Wars of the Roses.</p>
+<p><em>How sure:</em> a design estimate from analogous evidence.</p>
+<p><em>Built from:</em> <a href="#table-towton-1461-mass-grave">Towton 1461 - mass grave (bone evidence)</a>.</p>
+<p><em>Rolled by:</em> the battlefields of <a href="#field-crecy-1346">Crécy 1346</a>, <a href="#field-aljubarrota-1385">Aljubarrota 1385</a>, <a href="#field-agincourt-1415">Agincourt 1415</a>, <a href="#field-towton-1461">Towton 1461</a>; the armies of England (c.1415-1460), France (c.1415), Portugal (c.1385), Castile (c.1385).</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Derived from towton-1461-mass-grave (Holst and Sutherland 2014, Tab. 9 and 12).</li>
+</ul>
+<h2 id="table-dornach-1499-crania">Dornach 1499 - the ossuary crania (bone evidence)</h2>
+<p>Skulls and thigh bones of men killed when the Swiss Confederates fell on the imperial camp below Dorneck on 22 July 1499, most of them the imperial dead, left out for a time and gathered into the ossuary. Killed only; skulls (no jaws) and femora.</p>
+<p><em>How sure:</em> taken directly from a source. From 417 perimortem injuries on 102 of 106 crania (315 cut, 69 point, 28 blunt, 5 gunshot) and 6 on 4 of 33 femora (Cooper 2010). Skull wounds are shared between the left and right of the skull by the author's sides for each kind (Table 28), midline ones evenly; the face's share is our tally from her catalogue. Swords and halberds (and the poleaxe) roll on the cuts, pikes and spears on the point wounds (thrust, stab and crossbow bolt counted together), the war hammer (spiked club) on the blunt ones, the handgun (and the matchlock) on the gunshot ones; others on all together.</p>
+<p><em>Rolled by:</em> no battle here: it is the evidence the others are built from.</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Cooper C., Forensisch-anthropologische und traumatologische Untersuchungen an den menschlichen Skeletten aus der spätmittelalterlichen Schlacht von Dornach (1499 n. Chr.), Dr. phil. dissertation, Universität Mainz (2010), https://openscience.ub.uni-mainz.de/handle/20.500.12030/981 : Tables 23-32 and the lesion catalogue.</li>
+<li>Cooper C., 'Kriegsverletzungen an historischen Skeletten aus der Schweiz', in Piek and Terberger (eds) (2008): a pilot of 12 skulls, 57 lesions.</li>
+<li>Tally: data/sources/dornach-1499-crania.csv (the region of each lesion is our tally from the catalogue).</li>
+</ul>
+<h2 id="table-dornach-1499-all-hits">Dornach 1499 - gameplay-adjusted (before armour)</h2>
+<p>Where blows land on a man in a pike-and-halberd fight of about 1500, before armour: Towton's body with the head shared out as the Dornach skulls show. Use for the Swabian War and the Swiss and Landsknechte.</p>
+<p><em>How sure:</em> a design estimate from analogous evidence.</p>
+<p><em>Built from:</em> <a href="#table-dornach-1499-crania">Dornach 1499 - the ossuary crania (bone evidence)</a>.</p>
+<p><em>Rolled by:</em> the battlefields of <a href="#field-dornach-1499">Dornach 1499</a>; the armies of Swiss Confederates (c.1499), Swabian League and Landsknechte (c.1499).</p>
+<p><em>Sources:</em></p>
+<ul>
+<li>Derived from dornach-1499-crania (Cooper 2010, Tables 23-32 and the catalogue) for the head, and from towton-1461-all-hits for the rest of the body.</li>
+</ul>
+<h1 id="medieval-fields">Battlefields</h1>
+<p>Each battlefield lays out on the <a href="field.html">field map</a> under <em>Battlefield</em>. What follows is what the field and its phases hold, and, briefly, what happened there.</p>
+<h2 id="field-jacobsford-1179">Jacob's Ford, 30 August 1179 (the storm of the castle)</h2>
+<ul>
+<li><em>The armies:</em> Templars and Ayyubids.</li>
+<li><em>Fought for:</em> the castle at Jacob's Ford, attacked by the Ayyubids.</li>
+<li><em>The field:</em> 40 by 70 hexes of 10 m, about 400 by 610 m, north at the top.</li>
+<li><em>The weather:</em> Fair, breeze from the west, dusk.</li>
+<li><em>Wounds:</em> <a href="#table-sidon-1253-all-hits">Sidon, mid-13th century - gameplay-adjusted (before armour)</a>.</li>
+<li><em>On the travel map:</em> Jacob's Ford, 1179 (Tiberias to Banias), at Chastellet (the castle at Jacob's Ford).</li>
+<li><em>The record:</em> the fight lasted about 121 exchanges (a minute each).</li>
+</ul>
+<h3 id="what-happened">What happened</h3>
+<p>Saladin came to the ford on Saturday 25 August, took the outer works that evening, set up mangonels and mined the north-east corner. The first mine's fire failed and the wall stood; he paid a dinar for every skin of water carried to put the fire out so his sappers could dig deeper, fired it again, and at sunrise on Thursday the wall fell. The timber wall behind it burned in the wind, the commander threw himself into the fire, and the castle was stormed. Some 700 were taken, many killed on the road; Saladin had the apostates and the bowmen put to death. Baldwin IV's army, gathering at Tiberias, came too late.</p>
+<h3 id="how-the-field-is-drawn">How the field is drawn</h3>
+<p>The storm of the castle at Jacob's Ford, 30 August 1179, at 10 m a hex: 40 x 70 hexes, about 400 m east to west and 600 m north to south, north at the top: the castle on the tell in the middle, its north-east corner fallen (rubble), the gate in the south wall, the postern on the east and the tower at the south-west; the Jordan down the east side and round the south, with the ford below the castle. The castle is drawn to the excavated figures, the tell, river and camp by hand; the walls are stone-wall edges (no crossing but the breach and the gates), the breach rubble. The garrison is al-Qadi al-Fadil's; Saladin's numbers are not known and the attackers are ours, with round numbers for play. The wounds roll on Sidon's table (the castle's own five skeletons are too few for one).</p>
+<h3 id="the-armies-as-drawn-up">The armies as drawn up</h3>
+<p><strong>The Templars</strong> (910 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Templar knights and their squires</td>
+<td>160</td>
+<td>veteran</td>
+<td>Sword</td>
+<td>Mail hauberk and helm (c.1100-1300)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Sergeants (the fifteen companies)</td>
+<td>450</td>
+<td>regular</td>
+<td>Spear</td>
+<td>Mail hauberk and helm (c.1100-1300)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Crossbowmen and archers</td>
+<td>300</td>
+<td>regular</td>
+<td>Crossbow</td>
+<td>Gambeson and cap</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Ayyubids</strong> (3,500 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The storming column (Farrukh-Shah)</td>
+<td>1,000</td>
+<td>veteran</td>
+<td>Sword</td>
+<td>Mail hauberk and helm (c.1100-1300)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Archers north of the castle</td>
+<td>600</td>
+<td>veteran</td>
+<td>Bow</td>
+<td>Gambeson and cap</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Archers across the river</td>
+<td>400</td>
+<td>veteran</td>
+<td>Bow</td>
+<td>Gambeson and cap</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Volunteers and foot (the second wave)</td>
+<td>1,500</td>
+<td>green</td>
+<td>Spear</td>
+<td>Gambeson and cap</td>
+<td>Close order</td>
+<td>The second wave</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>The wall falls</td>
+<td>Sunrise: the second mine's fire brings down the north-east corner; the timber wall behind it catches fire in the wind, and the storming column goes in.</td>
+</tr>
+<tr>
+<td>25</td>
+<td>Full light</td>
+<td>The sun is up over the Golan.</td>
+</tr>
+<tr>
+<td>31</td>
+<td>The second wave</td>
+<td>The volunteers and the rest of the foot come up to the breach (when is our reading).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-sidon-1253">Sidon, 1253</h2>
+<ul>
+<li><em>The armies:</em> Franks and Damascenes.</li>
+<li><em>Fought for:</em> no one place the map can mark.</li>
+<li><em>The field:</em> 110 by 90 hexes of 10 m, about 1,100 by 780 m, east at the top.</li>
+<li><em>The weather:</em> Fair, calm or light air.</li>
+<li><em>Wounds:</em> <a href="#table-sidon-1253-all-hits">Sidon, mid-13th century - gameplay-adjusted (before armour)</a>.</li>
+<li><em>On the travel map:</em> Sidon, 1253 (Banias to the coast), at Sidon.</li>
+</ul>
+<h3 id="what-happened_1">What happened</h3>
+<p>An army from Damascus came down on Sidon while its walls were being rebuilt. The garrison could not hold the unfinished line; the attackers broke in, killed hundreds and carried others off, and some of the garrison held out in the sea castle. The dead found in the town ditch were young men and boys, many cut down from behind.</p>
+<h3 id="how-the-field-is-drawn_1">How the field is drawn</h3>
+<p>The raid on Sidon, 1253, at the town's landward wall, at 10 m a hex: 110 x 90 hexes, about 1100 m north to south and 780 m east to west, with east at the top (north on the left), as medieval maps were drawn: the town and the sea are at the bottom. The wall, its unfinished stretch, the ditch, the gate and the ground are drawn by hand to the excavators' description, not traced from any map; the deployment is our own reading, in our own words, and the numbers are guesses for play.</p>
+<h3 id="the-armies-as-drawn-up_1">The armies as drawn up</h3>
+<p><strong>The Franks</strong> (1,500 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Crossbowmen of the garrison</td>
+<td>300</td>
+<td>regular</td>
+<td>Crossbow</td>
+<td>Mail hauberk and helm (c.1100-1300)</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Garrison sergeants</td>
+<td>500</td>
+<td>regular</td>
+<td>Spear</td>
+<td>Mail hauberk and helm (c.1100-1300)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Knights</td>
+<td>100</td>
+<td>veteran</td>
+<td>Sword</td>
+<td>Mail hauberk and helm (c.1100-1300)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Builders and townsmen</td>
+<td>600</td>
+<td>green</td>
+<td>Axe</td>
+<td>Unarmoured</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Damascenes</strong> (3,800 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Horse archers</td>
+<td>1,500</td>
+<td>veteran</td>
+<td>Bow</td>
+<td>Hardened leather</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Heavy horse</td>
+<td>800</td>
+<td>veteran</td>
+<td>Spear</td>
+<td>Mail hauberk and helm (c.1100-1300)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Foot</td>
+<td>1,500</td>
+<td>regular</td>
+<td>Sword</td>
+<td>Gambeson and cap</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-crecy-1346">Crécy, 26 August 1346 (the Vallée des Clercs)</h2>
+<ul>
+<li><em>The armies:</em> English and French.</li>
+<li><em>Fought for:</em> the English position between Crécy and Wadicourt, attacked by the French.</li>
+<li><em>The field:</em> 200 by 160 hexes of 10 m, about 2,000 by 1,390 m, west at the top.</li>
+<li><em>The weather:</em> Overcast, breeze from the west.</li>
+<li><em>Wounds:</em> <a href="#table-towton-1461-all-hits">Towton 1461 - gameplay-adjusted (before armour)</a>.</li>
+<li><em>On the travel map:</em> Crécy, 1346 (the Somme to Crécy), at the Vallée des Clercs (the battlefield).</li>
+<li><em>The record:</em> the fight lasted about 241 exchanges (a minute each).</li>
+</ul>
+<h3 id="what-happened_2">What happened</h3>
+<p>The English drew up on foot in the morning, their horses in the park, and waited without food. Philip VI came up from Abbeville through the day and, against advice, attacked in the evening, just after a thunder shower, the first rain in six weeks. The Genoese crossbowmen, sent in first without their pavises, were shot down and ridden down by Alençon's men; the French cavalry charged again and again, contingent by contingent, into the dark, and were broken on the archers and the Prince's battle. The King of Bohemia, Alençon, Lorraine, Blois and Flanders were killed, and the heralds counted 1,542 knights and squires dead before the Prince's line; the English lost perhaps forty men-at-arms. Philip left the field about midnight.</p>
+<h3 id="how-the-field-is-drawn_2">How the field is drawn</h3>
+<p>The battle of Crécy, 26 August 1346, at 10 m a hex: 200 x 160 hexes, about 2000 m south to north and 1390 m west to east, west at the top: the wood and the wagon park behind, the English on the ridge and its slope from Crécy and the Maye (left) towards Wadicourt (right), the windmill behind the middle; the Vallée des Clercs across the middle, its far side a steep bank open only at its ends; the Estrées plateau below it, and the way in from the Fontaine-sur-Maye road at bottom left. The ridge, the valley, the bank and the terraces are drawn to the accounts' words (Preston's bank; the terraces from an unsourced guide), not traced from any survey. The bank plays as an earth bank (slow to cross, high side the plateau's): the rules have no edge horses cannot cross, so it only slows them. The pits play as stakes. The English guns (ribalds under the carts) are not on the field. The strengths are Froissart's battles for the English and Sumption's figures for the French, split among the bodies the chroniclers name, with round numbers for play; most of the French foot never came up. Men-at-arms on both sides wear the coat of plates and mail of the 1340s.</p>
+<h3 id="the-armies-as-drawn-up_2">The armies as drawn up</h3>
+<p><strong>The English</strong> (10,000 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The Prince's archers, right</td>
+<td>1,000</td>
+<td>veteran</td>
+<td>Longbow</td>
+<td>Gambeson and cap</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>The Prince of Wales's men-at-arms (with Warwick)</td>
+<td>800</td>
+<td>veteran</td>
+<td>Spear</td>
+<td>Coat of plates and mail (c.1350)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Welsh spearmen with the Prince</td>
+<td>1,000</td>
+<td>regular</td>
+<td>Spear</td>
+<td>Gambeson and cap</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>The Prince's archers, left</td>
+<td>1,000</td>
+<td>veteran</td>
+<td>Longbow</td>
+<td>Gambeson and cap</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Arundel's archers, right</td>
+<td>600</td>
+<td>veteran</td>
+<td>Longbow</td>
+<td>Gambeson and cap</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Arundel's men-at-arms (the second battle)</td>
+<td>800</td>
+<td>veteran</td>
+<td>Spear</td>
+<td>Coat of plates and mail (c.1350)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Arundel's archers, left</td>
+<td>600</td>
+<td>veteran</td>
+<td>Longbow</td>
+<td>Gambeson and cap</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Edward III's men-at-arms (by the windmill)</td>
+<td>700</td>
+<td>veteran</td>
+<td>Spear</td>
+<td>Coat of plates and mail (c.1350)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Edward III's archers</td>
+<td>2,000</td>
+<td>veteran</td>
+<td>Longbow</td>
+<td>Gambeson and cap</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>The King's spearmen</td>
+<td>1,500</td>
+<td>regular</td>
+<td>Spear</td>
+<td>Gambeson and cap</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The French</strong> (18,500 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The Genoese crossbowmen (Doria and Grimaldi)</td>
+<td>6,000</td>
+<td>veteran</td>
+<td>Crossbow</td>
+<td>Gambeson and cap</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Alençon's men-at-arms</td>
+<td>3,000</td>
+<td>veteran</td>
+<td>Spear</td>
+<td>Coat of plates and mail (c.1350)</td>
+<td>Close order</td>
+<td>Alençon rides through them</td>
+</tr>
+<tr>
+<td>John of Bohemia and his knights</td>
+<td>500</td>
+<td>veteran</td>
+<td>Spear</td>
+<td>Coat of plates and mail (c.1350)</td>
+<td>Close order</td>
+<td>The King of Bohemia</td>
+</tr>
+<tr>
+<td>Lorraine, Blois and Flanders</td>
+<td>3,000</td>
+<td>veteran</td>
+<td>Spear</td>
+<td>Coat of plates and mail (c.1350)</td>
+<td>Close order</td>
+<td>The charges go on</td>
+</tr>
+<tr>
+<td>Philip VI's battle</td>
+<td>4,000</td>
+<td>regular</td>
+<td>Spear</td>
+<td>Coat of plates and mail (c.1350)</td>
+<td>Close order</td>
+<td>Philip's battle</td>
+</tr>
+<tr>
+<td>French foot on the road</td>
+<td>2,000</td>
+<td>green</td>
+<td>Spear</td>
+<td>Gambeson and cap</td>
+<td>Close order</td>
+<td>Philip's battle</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases_1">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>The Genoese come on</td>
+<td>About 17:00, as the shower passes: the crossbowmen, tired, without their pavises and their strings wet, come up the valley with three shouts; the archers step forward and shoot 'so thick that it seemed snow'.</td>
+</tr>
+<tr>
+<td>16</td>
+<td>Alençon rides through them</td>
+<td>The Genoese break; the Count of Alençon's men ride them down and on at the Prince's battle (when is our reading).</td>
+</tr>
+<tr>
+<td>31</td>
+<td>The King of Bohemia</td>
+<td>The blind king is led in, his knights' reins tied to his; all are killed.</td>
+</tr>
+<tr>
+<td>61</td>
+<td>The charges go on</td>
+<td>Lorraine, Blois and Flanders come up, contingent by contingent (Knighton counts sixteen charges in all; Blois dismounted his men for the last).</td>
+</tr>
+<tr>
+<td>101</td>
+<td>Sunset</td>
+<td>18:40: the sun goes down behind the English.</td>
+</tr>
+<tr>
+<td>121</td>
+<td>Philip's battle</td>
+<td>The King's own battle and what foot had come up go in; two horses are killed under Philip and an arrow strikes his face (when is our reading).</td>
+</tr>
+<tr>
+<td>135</td>
+<td>Moonlight</td>
+<td>19:14: dark, under a moon about three-quarters full, low in the south; it sets about midnight.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-visby-1361">Visby, 27 July 1361</h2>
+<ul>
+<li><em>The armies:</em> Gotlanders and Danes.</li>
+<li><em>Fought for:</em> no one place the map can mark.</li>
+<li><em>The field:</em> 80 by 70 hexes of 10 m, about 800 by 610 m, north at the top.</li>
+<li><em>The weather:</em> Fair, calm or light air.</li>
+<li><em>Wounds:</em> <a href="#table-visby-1361-adjusted">Visby 1361 - gameplay-adjusted</a>.</li>
+<li><em>On the travel map:</em> Gotland, 1361 (the landing to Visby), at Visby.</li>
+</ul>
+<h3 id="what-happened_3">What happened</h3>
+<p>The Gotland levies, beaten at Mästerby, met the Danish army again outside Visby's ring wall. The townsmen kept the gates shut and stayed out of it. The farmers, most in a padded coat and a mail hood at best, were no match for the Danes' professionals and hired Germans; their dead, many with crossbow bolts and blows to the legs and head, were buried in mass graves just outside the wall.</p>
+<h3 id="how-the-field-is-drawn_3">How the field is drawn</h3>
+<p>The battle outside Visby's walls, 27 July 1361 (Julian), at 10 m a hex: 80 x 70 hexes, about 800 m east to west and 600 m north to south, north at the top. The wall, the south gate (barred), Solberga nunnery and the ground are drawn by hand to the accounts' description, not traced from any map; the deployment is our own reading, in our own words, with round numbers for play.</p>
+<h3 id="the-armies-as-drawn-up_3">The armies as drawn up</h3>
+<p><strong>The Gotlanders</strong> (2,500 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Gotland bowmen</td>
+<td>400</td>
+<td>green</td>
+<td>Bow</td>
+<td>Gotland levy: mail coif, padded coat</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Gotland levy</td>
+<td>1,600</td>
+<td>green</td>
+<td>Spear</td>
+<td>Gotland levy: mail coif, padded coat</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Gotland freeholders</td>
+<td>500</td>
+<td>regular</td>
+<td>Axe</td>
+<td>Gotland, better equipped: coif, coat of plates</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Danes</strong> (2,000 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Danish crossbowmen</td>
+<td>500</td>
+<td>regular</td>
+<td>Crossbow</td>
+<td>Coat of plates and mail (c.1350)</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Sergeants</td>
+<td>1,000</td>
+<td>veteran</td>
+<td>Spiked club</td>
+<td>Coat of plates and mail (c.1350)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Men-at-arms</td>
+<td>500</td>
+<td>veteran</td>
+<td>Sword</td>
+<td>Danish man-at-arms (1361)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-aljubarrota-1385">Aljubarrota, 14 August 1385 (the plateau of São Jorge)</h2>
+<ul>
+<li><em>The armies:</em> Portuguese and Castilians.</li>
+<li><em>Fought for:</em> the Portuguese position at São Jorge, attacked by the Castilians.</li>
+<li><em>The field:</em> 100 by 130 hexes of 10 m, about 1,000 by 1,130 m, north at the top.</li>
+<li><em>The weather:</em> Fair, breeze from the north-west.</li>
+<li><em>Wounds:</em> <a href="#table-towton-1461-all-hits">Towton 1461 - gameplay-adjusted (before armour)</a>.</li>
+<li><em>On the travel map:</em> Aljubarrota, 1385 (Leiria to Alcobaça), at São Jorge (the battlefield).</li>
+<li><em>The record:</em> the fight lasted about 61 exchanges (a minute each).</li>
+</ul>
+<h3 id="what-happened_4">What happened</h3>
+<p>The Portuguese, about a third as many, turned about in the afternoon to face the Castilians who had gone round them, and dug in between the valleys. Near sunset the French and the Portuguese who held for Castile came on, many on foot, into the pits and the shot of the English archers and the crossbowmen on the wings; the vanguards met in the narrow front, the Portuguese killed their first prisoners, and when Juan I's main battle came up it was funnelled in and broken. The royal standard fell and the Castilians fled in the dusk; the Master of Alcántara's riders, who had gone round to the baggage, were beaten off. Thousands more were killed in the rout that night and the next day.</p>
+<h3 id="how-the-field-is-drawn_4">How the field is drawn</h3>
+<p>The battle of Aljubarrota on the plateau of São Jorge, 14 August 1385, at 10 m a hex: 100 x 130 hexes, about 1000 m east to west and 1130 m north to south, north at the top: the Portuguese facing south about the chapel's ground, with the ditches in front and the pit field on their right; a stream valley on each side; the Castilians coming up from Chão da Feira at the bottom. The valleys, the ditches and the pit field are drawn to the excavated and chronicle figures, not traced from any plan; the pits play as stakes. The strengths are Fernão Lopes's, split among the bodies he names, with round numbers for play; the Castilian crossbowmen and foot, left behind by the King, are not on the field, nor the bombards, which fired once to little effect. The wounds roll on Towton's table; the ossuary's bone evidence is its own table.</p>
+<h3 id="the-armies-as-drawn-up_4">The armies as drawn up</h3>
+<p><strong>The Portuguese</strong> (5,800 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Vanguard: the Constable's men-at-arms</td>
+<td>600</td>
+<td>veteran</td>
+<td>Spear</td>
+<td>Coat of plates and mail (c.1350)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Vanguard foot</td>
+<td>1,200</td>
+<td>regular</td>
+<td>Spear</td>
+<td>Gambeson and cap</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Right wing: the Ala dos Namorados</td>
+<td>200</td>
+<td>veteran</td>
+<td>Spear</td>
+<td>Coat of plates and mail (c.1350)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Left wing: Antão Vasques and the foreigners</td>
+<td>200</td>
+<td>veteran</td>
+<td>Spear</td>
+<td>Coat of plates and mail (c.1350)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Crossbowmen, right wing</td>
+<td>400</td>
+<td>regular</td>
+<td>Crossbow</td>
+<td>Gambeson and cap</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>English archers, left wing</td>
+<td>300</td>
+<td>veteran</td>
+<td>Longbow</td>
+<td>Gambeson and cap</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Crossbowmen, left wing</td>
+<td>400</td>
+<td>regular</td>
+<td>Crossbow</td>
+<td>Gambeson and cap</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Rearguard: João I's men-at-arms</td>
+<td>700</td>
+<td>veteran</td>
+<td>Spear</td>
+<td>Coat of plates and mail (c.1350)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Rearguard foot</td>
+<td>1,500</td>
+<td>regular</td>
+<td>Spear</td>
+<td>Gambeson and cap</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Baggage guard</td>
+<td>300</td>
+<td>regular</td>
+<td>Crossbow</td>
+<td>Gambeson and cap</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Castilians</strong> (6,000 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>French vanguard (on foot)</td>
+<td>1,200</td>
+<td>veteran</td>
+<td>Spear</td>
+<td>Coat of plates and mail (c.1350)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Portuguese loyalists in the vanguard (João Afonso Telo)</td>
+<td>400</td>
+<td>veteran</td>
+<td>Spear</td>
+<td>Coat of plates and mail (c.1350)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Left wing: the Master of Alcántara's ginetes</td>
+<td>700</td>
+<td>veteran</td>
+<td>Spear</td>
+<td>Mail hauberk and helm (c.1100-1300)</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Right wing: the Master of Calatrava (Pedro Álvares Pereira)</td>
+<td>700</td>
+<td>veteran</td>
+<td>Spear</td>
+<td>Coat of plates and mail (c.1350)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Juan I's main battle (three mounted bodies)</td>
+<td>3,000</td>
+<td>regular</td>
+<td>Spear</td>
+<td>Coat of plates and mail (c.1350)</td>
+<td>Close order</td>
+<td>The main battle comes up</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases_2">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>The bombards and the advance</td>
+<td>About 18:00: the Castilian trons fire (one shot kills two squires, brothers) and the French and loyalist vanguard comes on into the pits and the shot from the wings.</td>
+</tr>
+<tr>
+<td>16</td>
+<td>The vanguards meet</td>
+<td>In the gap between the valleys; the Castilian wings cannot come up level with their vanguard. Prisoners taken in the first clash are killed.</td>
+</tr>
+<tr>
+<td>31</td>
+<td>The main battle comes up</td>
+<td>About 18:30: Juan I's three mounted bodies are funnelled onto the vanguard; the Master of Alcántara's ginetes ride round to the baggage (which way is our reading).</td>
+</tr>
+<tr>
+<td>51</td>
+<td>Sunset</td>
+<td>18:50: the sun goes down; the royal standard has fallen and the rout begins.</td>
+</tr>
+<tr>
+<td>76</td>
+<td>Moonlight</td>
+<td>19:15: dark, with a moon a little over half full in the south.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-agincourt-1415">Agincourt, 25 October 1415</h2>
+<ul>
+<li><em>The armies:</em> English and French.</li>
+<li><em>Fought for:</em> no one place the map can mark.</li>
+<li><em>The field:</em> 100 by 80 hexes of 10 m, about 1,000 by 690 m, north at the top.</li>
+<li><em>The weather:</em> Overcast, calm or light air.</li>
+<li><em>Wounds:</em> <a href="#table-towton-1461-all-hits">Towton 1461 - gameplay-adjusted (before armour)</a>.</li>
+<li><em>On the travel map:</em> Agincourt campaign, 1415 (Harfleur to Calais), at Azincourt.</li>
+</ul>
+<h3 id="what-happened_5">What happened</h3>
+<p>After a night of heavy rain the two armies stood a long way apart on freshly ploughed, sodden ground. The English moved forward to within long bowshot, planted their stakes again and shot, provoking the French. The mounted wings charged first, were stopped by the stakes and arrows, and rode back through their own vanguard; the vanguard struggled forward through the mud, crowding in towards the English men-at-arms, and was fought to a standstill and cut down, the archers joining in from the flanks. The main battle fared little better; most of the rearguard never came on.</p>
+<h3 id="how-the-field-is-drawn_5">How the field is drawn</h3>
+<p>The field of Agincourt, 25 October 1415 (Julian), at 10 m a hex: 100 x 80 hexes, about 1000 m east to west and 690 m north to south, north at the top. The woods' edges are drawn by hand to the shape the accounts give (a gap narrowing towards the English), not traced from any map; the deployment is the outline most modern accounts share, in our own words, with round numbers for play.</p>
+<h3 id="the-armies-as-drawn-up_5">The armies as drawn up</h3>
+<p><strong>The English</strong> (5,960 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Archers, left wing</td>
+<td>1,600</td>
+<td>veteran</td>
+<td>Longbow</td>
+<td>Gambeson and cap</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Rearward (Camoys)</td>
+<td>320</td>
+<td>veteran</td>
+<td>Poleaxe</td>
+<td>Full plate harness (c.1450)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Archers, left wedge</td>
+<td>900</td>
+<td>veteran</td>
+<td>Longbow</td>
+<td>Gambeson and cap</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Main battle (the King)</td>
+<td>320</td>
+<td>veteran</td>
+<td>Poleaxe</td>
+<td>Full plate harness (c.1450)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Archers, right wedge</td>
+<td>900</td>
+<td>veteran</td>
+<td>Longbow</td>
+<td>Gambeson and cap</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Vaward (York)</td>
+<td>320</td>
+<td>veteran</td>
+<td>Poleaxe</td>
+<td>Full plate harness (c.1450)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Archers, right wing</td>
+<td>1,600</td>
+<td>veteran</td>
+<td>Longbow</td>
+<td>Gambeson and cap</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The French</strong> (14,200 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Mounted wing, west</td>
+<td>800</td>
+<td>veteran</td>
+<td>Spear</td>
+<td>Full plate harness (c.1450)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Vanguard</td>
+<td>4,800</td>
+<td>veteran</td>
+<td>Poleaxe</td>
+<td>Full plate harness (c.1450)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Mounted wing, east</td>
+<td>800</td>
+<td>veteran</td>
+<td>Spear</td>
+<td>Full plate harness (c.1450)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Main battle</td>
+<td>4,800</td>
+<td>regular</td>
+<td>Poleaxe</td>
+<td>Full plate harness (c.1450)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Rearguard (mounted)</td>
+<td>3,000</td>
+<td>regular</td>
+<td>Spear</td>
+<td>Full plate harness (c.1450)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-towton-1461">Towton, 29 March 1461</h2>
+<ul>
+<li><em>The armies:</em> Yorkists and Lancastrians.</li>
+<li><em>Fought for:</em> no one place the map can mark.</li>
+<li><em>The field:</em> 150 by 120 hexes of 10 m, about 1,500 by 1,040 m, north at the top.</li>
+<li><em>The weather:</em> Snow, strong wind from the south.</li>
+<li><em>Wounds:</em> <a href="#table-towton-1461-all-hits">Towton 1461 - gameplay-adjusted (before armour)</a>.</li>
+<li><em>On the travel map:</em> Towton campaign, 1461 (Pontefract to York), at Towton.</li>
+</ul>
+<h3 id="what-happened_6">What happened</h3>
+<p>The armies drew up on two ridges across the plateau, the Lancastrians to the north, in snow driven by a wind from the south into the Lancastrians' faces. The Yorkist archers shot, stepped back out of reach and shot again with the Lancastrians' own arrows; the Lancastrians, shooting short and blind, came on. The lines fought for hours, the Lancastrians gaining ground, helped by men from Castle Hill Wood on the Yorkist left, until the Duke of Norfolk's men came up on the Yorkist right. The Lancastrian line gave way, and many were killed in the rout down to Cock Beck and on towards Tadcaster. The wind blows from the south (strong, with snow): the Yorkist archers shoot with it, reaching further; the Lancastrians shoot into it, falling short and half blinded.</p>
+<h3 id="how-the-field-is-drawn_6">How the field is drawn</h3>
+<p>The field of Towton, Palm Sunday, 29 March 1461 (Julian), at 10 m a hex: 150 x 120 hexes, about 1500 m east to west and 1040 m north to south, north at the top. The slopes, the beck, the woods and the ridges are drawn by hand to the shape the accounts give, not traced from any map; the deployment is the outline most modern accounts share, in our own words, with round numbers for play.</p>
+<h3 id="the-armies-as-drawn-up_6">The armies as drawn up</h3>
+<p><strong>The Yorkists</strong> (21,000 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Archers (Fauconberg)</td>
+<td>5,000</td>
+<td>veteran</td>
+<td>Longbow</td>
+<td>Jack and sallet (archer or billman, c.1460)</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Edward's battle</td>
+<td>11,000</td>
+<td>regular</td>
+<td>Bill</td>
+<td>Jack and sallet (archer or billman, c.1460)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Norfolk's men (coming up late)</td>
+<td>5,000</td>
+<td>regular</td>
+<td>Bill</td>
+<td>Jack and sallet (archer or billman, c.1460)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Lancastrians</strong> (27,500 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lancastrian archers</td>
+<td>6,000</td>
+<td>regular</td>
+<td>Longbow</td>
+<td>Jack and sallet (archer or billman, c.1460)</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Somerset's battle</td>
+<td>14,000</td>
+<td>regular</td>
+<td>Bill</td>
+<td>Jack and sallet (archer or billman, c.1460)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Rear battle (Exeter, Northumberland)</td>
+<td>6,000</td>
+<td>regular</td>
+<td>Bill</td>
+<td>Jack and sallet (archer or billman, c.1460)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Men in Castle Hill Wood</td>
+<td>1,500</td>
+<td>regular</td>
+<td>Bill</td>
+<td>Jack and sallet (archer or billman, c.1460)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<h2 id="field-dornach-1499">Dornach, 22 July 1499 (the fields below Dorneck)</h2>
+<ul>
+<li><em>The armies:</em> Swiss Confederates and Imperials.</li>
+<li><em>Fought for:</em> the imperial guns and camp, attacked by the Swiss Confederates.</li>
+<li><em>The field:</em> 120 by 140 hexes of 10 m, about 1,200 by 1,210 m, east at the top.</li>
+<li><em>The weather:</em> Fair, calm or light air.</li>
+<li><em>Wounds:</em> <a href="#table-dornach-1499-all-hits">Dornach 1499 - gameplay-adjusted (before armour)</a>.</li>
+<li><em>On the travel map:</em> Dornach, 1499 (Basel to Liestal), at the fields below Dorneck (the battlefield).</li>
+<li><em>The record:</em> the fight lasted about 241 exchanges (a minute each).</li>
+</ul>
+<h3 id="what-happened_7">What happened</h3>
+<p>The Confederates watched the camp from the heights through the morning, came down through the wood about four in the afternoon and fell on it while many were resting in the heat, taking the guns; the imperial commander Heinrich von Fürstenberg was killed. The Welsche Garde and the Landsknechte drove the vanguard back towards the wood and the castle, and for hours the fight swayed over the fields as the Bernese came down. About seven in the evening Lucerne and Zug came up from the Arlesheim side, and the imperial army broke and fled over the Birs, leaving its guns, its camp and some 3,000 dead; the Swiss had sworn to take no prisoners.</p>
+<h3 id="how-the-field-is-drawn_7">How the field is drawn</h3>
+<p>The battle of Dornach, 22 July 1499, at 10 m a hex: 120 x 140 hexes, about 1200 m north to south and 1210 m east to west, east at the top: the wooded scarp below the Gempen across the top, Dorneck castle on its spur at top right, Oberdornach below it, the fields and the imperial camp in the middle, Arlesheim's edge on the left, the Birs and Dornachbrugg's bridge at the bottom, the Welsche Garde beyond. The scarp, the castle, the villages, the river and the camp are drawn by hand to the shape the accounts give, not traced from any map; the Confederate contingents are the chronicles' strengths, the imperial army's split among its parts is ours, with round numbers for play. The river is shallow and fordable (marsh); the Swiss have none of their guns, left behind on the Gempen. Fourteen of the imperial army's 21 captured guns are not on the field.</p>
+<h3 id="the-armies-as-drawn-up_7">The armies as drawn up</h3>
+<p><strong>The Swiss Confederates</strong> (6,420 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Solothurn's vanguard (Niklaus Conrad)</td>
+<td>1,000</td>
+<td>veteran</td>
+<td>Pike</td>
+<td>Brigandine, sallet and arm splints (c.1460)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Solothurn's halberdiers</td>
+<td>500</td>
+<td>veteran</td>
+<td>Halberd</td>
+<td>Jack and sallet (archer or billman, c.1460)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Bernese under Kaspar von Stein</td>
+<td>500</td>
+<td>veteran</td>
+<td>Halberd</td>
+<td>Jack and sallet (archer or billman, c.1460)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Zürich (Kaspar Göldli)</td>
+<td>400</td>
+<td>veteran</td>
+<td>Pike</td>
+<td>Brigandine, sallet and arm splints (c.1460)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Bern's main banner (Rudolf von Erlach)</td>
+<td>3,000</td>
+<td>veteran</td>
+<td>Pike</td>
+<td>Brigandine, sallet and arm splints (c.1460)</td>
+<td>Close order</td>
+<td>Bern's main banner comes out of the trees</td>
+</tr>
+<tr>
+<td>Lucerne and Zug</td>
+<td>1,000</td>
+<td>veteran</td>
+<td>Pike</td>
+<td>Brigandine, sallet and arm splints (c.1460)</td>
+<td>Close order</td>
+<td>Lucerne and Zug</td>
+</tr>
+<tr>
+<td>Dorneck garrison (Benedikt Hugi)</td>
+<td>20</td>
+<td>veteran</td>
+<td>Handgun</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The Imperials</strong> (9,700 men):</p>
+<table>
+<thead>
+<tr>
+<th>Unit</th>
+<th>Men</th>
+<th>Quality</th>
+<th>Weapon</th>
+<th>Armour</th>
+<th>Formation</th>
+<th>Comes on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Imperial guns before Dorneck and in the Ramstel</td>
+<td>100</td>
+<td>regular</td>
+<td>Artillery</td>
+<td>Unarmoured</td>
+<td>Battery</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Fürstenberg and the knights</td>
+<td>300</td>
+<td>veteran</td>
+<td>Spear</td>
+<td>Full plate harness (c.1450)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Imperial handgunners</td>
+<td>300</td>
+<td>regular</td>
+<td>Handgun</td>
+<td>Unarmoured</td>
+<td>Open order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Landsknechte in the camp</td>
+<td>3,000</td>
+<td>regular</td>
+<td>Pike</td>
+<td>Jack and sallet (archer or billman, c.1460)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Geldern Landsknechte</td>
+<td>2,000</td>
+<td>veteran</td>
+<td>Pike</td>
+<td>Jack and sallet (archer or billman, c.1460)</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>Swabian and Alsatian levies</td>
+<td>3,000</td>
+<td>green</td>
+<td>Spear</td>
+<td>Gambeson and cap</td>
+<td>Close order</td>
+<td>at the start</td>
+</tr>
+<tr>
+<td>The Welsche Garde (Louis de Vaudrey)</td>
+<td>1,000</td>
+<td>veteran</td>
+<td>Spear</td>
+<td>Full plate harness (c.1450)</td>
+<td>Close order</td>
+<td>The Welsche Garde comes over the Birs</td>
+</tr>
+</tbody>
+</table>
+<h3 id="the-phases_3">The phases</h3>
+<table>
+<thead>
+<tr>
+<th>From exchange</th>
+<th>Phase</th>
+<th>What happens</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Out of the wood</td>
+<td>About 16:00: the vanguard comes down through the undergrowth on the camp in the afternoon heat and goes for the guns; Fürstenberg rides towards the noise and is killed.</td>
+</tr>
+<tr>
+<td>31</td>
+<td>The Welsche Garde comes over the Birs</td>
+<td>The horse from Reinach and the Landsknechte counter-attack; the vanguard falls back towards the wood and the castle (when the horse came is our reading).</td>
+</tr>
+<tr>
+<td>46</td>
+<td>Bern's main banner comes out of the trees</td>
+<td>The Bernese main body, slowed by the undergrowth, comes down to the fight (when is our reading).</td>
+</tr>
+<tr>
+<td>181</td>
+<td>Lucerne and Zug</td>
+<td>About 19:00: some 1,000 men of Lucerne and Zug come up from the Arlesheim side with horns and shouting.</td>
+</tr>
+<tr>
+<td>217</td>
+<td>Sunset</td>
+<td>19:36: the sun goes down behind the Birs; the rout goes over the river.</td>
+</tr>
+<tr>
+<td>253</td>
+<td>Moonlight</td>
+<td>20:12: dark, under a full moon rising in the east-south-east.</td>
+</tr>
+</tbody>
+</table>
+<h1 id="index">Index</h1>
+<div class="index">
+<h3 class="ix-letter">A</h3>
+<p class="ix"><b>Ayyubids</b>: <a href="#field-jacobsford-1179">Jacob's Ford, 30 August 1179 (the storm of the castle)</a></p>
+<h3 class="ix-letter">C</h3>
+<p class="ix"><b>Castilians</b>: <a href="#field-aljubarrota-1385">Aljubarrota, 14 August 1385 (the plateau of São Jorge)</a></p>
+<p class="ix"><b>Climb or jump</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">D</h3>
+<p class="ix"><b>Damascenes</b>: <a href="#field-sidon-1253">Sidon, 1253</a></p>
+<p class="ix"><b>Danes</b>: <a href="#field-visby-1361">Visby, 27 July 1361</a></p>
+<p class="ix"><b>Diagnose</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Drive a hard task</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">E</h3>
+<p class="ix"><b>Endure</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>English</b>: <a href="#field-crecy-1346">Crécy, 26 August 1346 (the Vallée des Clercs)</a>, <a href="#field-agincourt-1415">Agincourt, 25 October 1415</a></p>
+<h3 class="ix-letter">F</h3>
+<p class="ix"><b>Find a billet</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Find the way</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Force or carry</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Forge a pass</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Franks</b>: <a href="#field-sidon-1253">Sidon, 1253</a></p>
+<p class="ix"><b>French</b>: <a href="#field-crecy-1346">Crécy, 26 August 1346 (the Vallée des Clercs)</a>, <a href="#field-agincourt-1415">Agincourt, 25 October 1415</a></p>
+<h3 class="ix-letter">G</h3>
+<p class="ix"><b>Gotlanders</b>: <a href="#field-visby-1361">Visby, 27 July 1361</a></p>
+<h3 class="ix-letter">H</h3>
+<p class="ix"><b>Haggle</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Handle a boat</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Hunt or gather</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">I</h3>
+<p class="ix"><b>Imperials</b>: <a href="#field-dornach-1499">Dornach, 22 July 1499 (the fields below Dorneck)</a></p>
+<p class="ix"><b>Impress</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">K</h3>
+<p class="ix"><b>Keep his head</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Keep order</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">L</h3>
+<p class="ix"><b>Lancastrians</b>: <a href="#field-towton-1461">Towton, 29 March 1461</a></p>
+<h3 class="ix-letter">M</h3>
+<p class="ix"><b>Make something</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Mend kit</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">N</h3>
+<p class="ix"><b>Notice or remember</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">P</h3>
+<p class="ix"><b>Portuguese</b>: <a href="#field-aljubarrota-1385">Aljubarrota, 14 August 1385 (the plateau of São Jorge)</a></p>
+<h3 class="ix-letter">Q</h3>
+<p class="ix"><b>Question a prisoner</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">R</h3>
+<p class="ix"><b>Read or write</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Ride hard</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">S</h3>
+<p class="ix"><b>Search</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Sneak</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Spot</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Steal</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Swim a horse</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Swiss Confederates</b>: <a href="#field-dornach-1499">Dornach, 22 July 1499 (the fields below Dorneck)</a></p>
+<h3 class="ix-letter">T</h3>
+<p class="ix"><b>Talk past a guard</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<p class="ix"><b>Templars</b>: <a href="#field-jacobsford-1179">Jacob's Ford, 30 August 1179 (the storm of the castle)</a></p>
+<p class="ix"><b>Track</b>: <a href="#era-skill_uses">What each skill is for</a></p>
+<h3 class="ix-letter">Y</h3>
+<p class="ix"><b>Yorkists</b>: <a href="#field-towton-1461">Towton, 29 March 1461</a></p>
+</div>
+
+<p class="note">Every number in this book is filled in from the game's data when it is built, so it says what the pages do. The repository's docs go into more detail on each part, and the printed tables hold every table. Print this book from the browser for a paper copy.</p>
+<p class="note">© 2026 Scott Wares. All rights reserved.</p>
+  </main>
+</div>
+<script>
+// tables scroll sideways on a phone rather than widening the page
+for (const t of document.querySelectorAll("main table")){ const w = document.createElement("div"); w.className = "tw"; t.replaceWith(w); w.appendChild(t) }
+</script>
+</body>
+</html>

@@ -224,7 +224,10 @@ def _main(argv=None) -> int:
     if a.cmd == "check":
         for w in d.warnings:
             print("warning:", w)
-        print(f"OK: {len(d.locations)} locations, {len(d.weapons)} weapons, {len(d.tables)} tables")
+        from pathlib import Path
+        from .books import load_books
+        books = load_books(d, Path(__file__).resolve().parent.parent)   # data/books.yaml: eras and battlefields exist, none in two books
+        print(f"OK: {len(d.locations)} locations, {len(d.weapons)} weapons, {len(d.tables)} tables, {len(books)} period book{'s' if len(books) != 1 else ''}")
     elif a.cmd == "list":
         print("Tables:")
         for t in d.tables.values():
