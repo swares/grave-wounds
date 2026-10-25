@@ -1,0 +1,15 @@
+# Pictures for the Wagon Box Fight section of The Black-Powder Wars. Each is public domain or openly licensed,
+# checked on its source page. The file goes in images/books/black_powder/ under `file`; until it is there the
+# book shows a captioned slot with this credit and source.
+# Checked: the Rockwell Museum (Corning, NY) record, object 80.145.3 F, gives the title, the date 1867 and the
+# artist's dates as 1829-1871, but names no artist and gives no rights statement; the companion view from the
+# east (object 2169) describes it as a sketch "by Lt. Paulus". An 1867 drawing by an artist who died in 1871 is
+# public domain by age; this is NOT confirmed on Commons or by the museum, and the artist's name is unconfirmed.
+# The image itself was not viewed: check the caption and alt text against it when the file is added.
+- id: wagon-box-fort
+  file: wagon-box-fort.jpg
+  caption: "Fort Phil Kearny in 1867, the year of the fight, in a bird's-eye sketch from the south. Major Smith's relief marched from here to the corral."
+  credit: "Unnamed artist (1829-1871), \"Fort Philip Kearney, Wy. T., Bird's Eye View from the South, 1867\", Rockwell Museum, Corning, New York, gift of William C. Whitridge, 80.145.3 F"
+  licence: "Public domain (artist died 1871; unconfirmed, see note)"
+  source: "https://rockwell.emuseum.com/objects/2170/fort-philip-kearney-wy-t-birds-eye-view-from-the-south"
+  alt: "An 1867 bird's-eye sketch of Fort Phil Kearny seen from the south, with the buildings inside its stockade."
