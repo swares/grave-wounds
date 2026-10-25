@@ -30,7 +30,8 @@ is the weight of fire, and how men live under it.
   {{x_mg_aimed}} is rolled as an aimed shot.
 - **The beaten zone.** The cone of fire falls on past its target. The first other unit
   (friend or foe) within {{x_beaten}} beyond the target on the line of fire takes
-  {{x_beaten_share}}% as many shots. Woods, rough ground and marsh stop it.
+  {{x_beaten_share}}% as many shots. Woods, rough ground, marsh, buildings, tall buildings and
+  rubble stop it.
 - **Pinned.** A unit near a shell burst, or under a machine gun's fire (in its beaten zone
   too), checks at the end of the exchange: d100 against its Nerve, +{{x_sup_prone}} if gone
   to ground. On a failure it is **pinned** for the next exchange: it cannot move, and it
@@ -87,18 +88,21 @@ guns, heavy howitzers, and tanks or autocannon firing over open sights. Each is 
 {{table:smoke}}
 
 - **Illumination** lights the ground round its aim as by day (see
-  [Night and the air](#night)). It needs no one to see the hex.
+  [Night and the air](#night-air)). It needs no one to see the hex.
 - **A fire plan.** A creeping barrage lifts its aim 1 to {{i_creep}} hexes after 1 to
   {{i_each}} exchanges on each line, ahead of an advance kept to the same timetable. A
   plan can have up to eight legs, each going on the same way or turning.
-- **Counter-battery.** A battery that has fired is **located**. Field guns and heavy
+- **Counter-battery.** A battery that has fired is **located** (not tanks or autocannon
+  firing over open sights). Field guns and heavy
   howitzers can fire on it with no one needing to see it:
-  - each shell lands among its guns at {{i_cb_field}}% (field guns) or {{i_cb_how}}%
-    (heavy howitzers), knocking out a tube and striking {{i_cb_among}} of its crew;
-  - at {{i_cb_near}} times that chance, it bursts close by and strikes one man.
 
-  Counter-battery wears a battery down over a battle rather than ending it. **Displacing**
-  silences a battery for an exchange or more and leaves it no longer located.
+    - each shell lands among its guns at {{i_cb_field}}% (field guns) or {{i_cb_how}}%
+      (heavy howitzers), knocking out a tube and striking {{i_cb_among}} of its crew;
+    - at {{i_cb_near}} times that chance, it bursts close by and strikes one man.
+
+    Counter-battery wears a battery down over a battle rather than ending it. **Displacing**
+    silences a battery for an exchange or more and leaves it no longer located.
+
 - **On the map.** A battery can stand on a hex of the map instead. From there it reaches
   only its range, and an enemy unit next to it **overruns** it.
 

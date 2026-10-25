@@ -59,7 +59,8 @@ man's career and terms; a man **assigned** by the army through its own system (a
 the depot, a replacement depot, a new man on a twelve-month tour), free but green and only
 after a wait of days; or a man **hired** where the team is (a mercenary, a substitute, a
 contractor), at a price in Days from a purse, more for a veteran. If the leader is lost, the
-man with the most terms left leads.
+highest rank leads, then the man longest in that rank, then the man longest served; the same
+choice is made again after a promotion.
 
 !!! example "The retinue: {{ex.arch}}"
     The team builder rolls a lord's retinue from England: {{ex.lead}}, a man-at-arms, leads
@@ -70,8 +71,7 @@ man with the most terms left leads.
     {{ex.a_skills}}. He fights with the longbow at **{{ex.a_bow}}%**, and his defence is
     **{{ex.a_def}}%**.
 
-    His Endurance is low, and it shows in a fight: his **Blood** is {{ex.a_blood}}, not the
-    usual {{blood_pool}} (next chapter). With Agility {{ex.a_agi}} he rolls
+    {{ex.a_blood_note}} (next chapter). With Agility {{ex.a_agi}} he rolls
     **d{{init_die}} + {{ex.a_init}}** for initiative.
 
 ## Followers {#followers}

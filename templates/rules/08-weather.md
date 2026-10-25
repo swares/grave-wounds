@@ -22,9 +22,15 @@ Weather affects missiles, never close combat:
 
 Shooting **with** the wind lengthens the range bands of bows, crossbows, slings and thrown
 weapons; shooting **into** it shortens them, and rain or snow in a shooter's face halves how
-far he can see to aim. In the wet, a firearm can **misfire**, losing the shot:
+far he can see to aim. Into a strong wind they also lose {{w_into_strong}}%, into a gale
+{{w_into_gale}}%. In the wet, a firearm can **misfire**, losing the shot:
 
 {{table:misfire}}
+
+**Cold.** In {{w_hard_name}} ({{w_hard_f}} °F, {{w_hard}} °C, or colder) machine guns, submachine
+guns and assault rifles misfire {{w_hard_jam}}% more, as oil thickens and actions freeze; in
+{{w_bitter_name}} ({{w_bitter_f}} °F, {{w_bitter}} °C) {{w_bitter_jam}}% more, and every hex costs
+{{w_bitter_move}} more to cross. A battle sent from the travel map takes its cold from the day's low.
 
 ## Fatigue {#fatigue}
 
@@ -49,10 +55,14 @@ gates, walls) or in a hex (stakes, felled trees, wagons, trenches, bunkers):
 
 {{table:works}}
 
-A palisade, wall, barred gate or wagon must be **breached** to get through: men hack at it
-instead of fighting, until it is down. Across a palisade, wall or barred gate only reach-2
-weapons strike, from the front rank, and striking up a bank or ditch costs its height.
-Horses cannot charge into stakes or felled trees.
+A palisade, barred gate or wagon must be **breached** to get through: men hack at it instead
+of fighting, until it is down. No axe opens a stone **wall**. On the field map, once the
+armies carry demolition charges (from 1914), men ordered to breach blow a gap in it, and a
+shell or bomb bursting beside it opens it at the firing kind's knock-out chance, as it knocks
+out a bunker (heavy howitzers, tanks and aircraft; not mortars or field guns). Before that,
+men go over it only with ladders. Across a palisade, wall or barred gate only reach-2 weapons
+strike, from the front rank, and striking up a bank or ditch costs its height. Mounted men
+cannot enter stakes, felled trees, wagons, wire, trenches, bunkers or wrecks.
 
 On the field map, men on foot the GM marks with **ladders** can escalade a palisade, wall or
 barred gate instead: a few men a hex fight from the ladders at {{f_esc_pen}}, the defenders

@@ -10,9 +10,10 @@ skills, origins, careers, events, armies, teams, followers and jobs. Pick one wi
 {{table:eras}}
 
 Brawl, Parry and Dodge carry over to every era, and so do the skills used outside a fight
-(Leechcraft, Fieldcraft, Watch, Stealth and the rest). Bow, Crossbow, Axe and Sling stay
-medieval (the Plains nations have their own Bow). Gunnery is the skill of men who serve guns,
-mortars (and, in the Crimea, of sailors serving ships' guns ashore) and, in Korea, rocket launchers and recoilless rifles. In the Crimea one Musket skill covers both the smoothbore musket and the rifle-musket. From Vietnam on, the RPG is fired with Grenade and rocket.
+(Leechcraft, Fieldcraft, Watch, Stealth and the rest). Bow, Crossbow, Axe and mace, Polearm and
+Sling stay medieval (the Plains nations have their own Bow). Gunnery is the skill of men who serve
+guns and mortars (and, in the Crimea, of sailors serving ships' guns ashore), rocket launchers
+and recoilless rifles in Korea, recoilless rifles in Vietnam, and guided missiles in the late wars. In the Crimea one Musket skill covers both the smoothbore musket and the rifle-musket. From Vietnam on, the RPG is fired with Grenade and rocket.
 
 ## What changes {#era-changes}
 
@@ -21,18 +22,20 @@ mortars (and, in the Crimea, of sailors serving ships' guns ashore) and, in Kore
   three terms is about twenty-one.
 - **Wound tables.** Each army rolls on its own war's wound table, both for old wounds when
   a character is made and in the roller. Where a war's records have no wounds of some
-  kind, the table borrows the nearest one: the pike is rolled as a long spear, and the
-  frontier's gunshots come from the Civil War table.
+  kind, the table borrows the nearest one: the pike's thrusts are rolled on the Visby melee
+  table, and the frontier's gunshots come from the Civil War table.
 - **Armour.** It follows the army and the year:
-  - pikemen's and cuirassiers' armours in the 1630s;
-  - the steel helmet from 1915–16;
-  - nylon flak vests in Korea and Vietnam;
-  - plate armour in Iraq and Afghanistan.
 
-  Many armies wore none. A vest's rating against each threat (fragments, pistol rounds,
-  rifle rounds) decides how many steps it takes off a wound, so a vest that stops a
-  grenade fragment may do nothing against a rifle bullet. The roller and the field map read
-  the same kits.
+    - pikemen's and cuirassiers' armours in the 1630s;
+    - the steel helmet from 1915–16;
+    - nylon flak vests in Korea and Vietnam;
+    - plate armour in Iraq and Afghanistan.
+
+    Many armies wore none. A vest's rating against each threat (fragments, pistol rounds,
+    rifle rounds) decides how many steps it takes off a wound, so a vest that stops a
+    grenade fragment may do nothing against a rifle bullet. The roller and the field map read
+    the same kits.
+
 - **Kit and weapons** come with the career and the army: a Viet Cong RPG gunner carries an
   RPG, a Second World War tank crewman a submachine gun.
 - **Names** are common names of the period and place, put together at random, and are not
@@ -51,9 +54,10 @@ show them, chosen rather than rolled: the townswomen who defended Toulouse in 12
 in 1338, Margaret Corbin at her husband's gun and Deborah Sampson in the Continental line, the
 Lakota and Cheyenne women at the Rosebud and the Little Bighorn, the Russian women's battalions
 of 1917 (Bochkareva's reached the third German line at Smorgon), Serbia's women sergeants and
-Flora Sandes, a British nurse who enlisted as a private in the retreat of 1915, and Austria-Hungary's
+Flora Sandes, a British nurse who enlisted as a private in the retreat of 1915, Austria-Hungary's
 few (Viktoria Savs, disguised as a man with the Standschützen; Olena Stepaniv, an officer of the
-Ukrainian Sich Riflemen). In every other army a career
+Ukrainian Sich Riflemen), the North Vietnamese and Viet Cong women who fought, guided and cleared
+bombs on the Trail, and the South Vietnamese army's women medics. In every other army a career
 rolls a man, and the page gives the reason. An army's share is the women among its soldiers as
 a whole, not just in that career, so treat it as a rough guide. A GM may prefer to choose.
 

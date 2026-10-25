@@ -109,7 +109,7 @@ def _at_mine_values(d: Data) -> dict:
     g = A["gun"]
     return {"at_crew": A["crew"], "at_range": _field(d, g["range"]), "at_rate": g["rate"], "at_hit": "/".join(str(h[1]) for h in g["hit"]),
             "at_move": d.units["formations"]["at_gun"]["move"], "at_rounds": A["rounds"], "at_shield": d.units["gun_shields"]["cover"], "at_ground": d.units["to_ground"]["cover"],
-            "m_attack": M["attack"], "m_heavy": V["heavy"]["mine"], "m_light": V["light"]["mine"],
+            "m_attack": M["attack"], "m_heavy": V["heavy"]["mine"], "m_light": V["light"]["mine"], "m_soft": V["soft"]["mine"],
             "m_lay": M["sappers"]["lay"], "m_clear": M["sappers"]["clear"]}
 
 
@@ -276,11 +276,16 @@ def example(d: Data) -> dict:
     through with the game's own rules and chosen dice."""
     from .team import make_team
     from .units import SeededDice
-    team = make_team(d, "vietnam", "us_army", "squad", "roll", SeededDice(3))
-    lead = team[0]
-    mg = next(c for c in team if c["career"] == "machine_gunner")
-    gren = next(c for c in team if c["career"] == "grenadier")
-    medic = next(c for c in team if c["career"] == "medic")
+    for seed in range(3, 200):                        # the first seeded squad whose named men the text can tell apart
+        team = make_team(d, "vietnam", "us_army", "squad", "roll", SeededDice(seed))
+        lead = team[0]
+        mg = next(c for c in team if c["career"] == "machine_gunner")
+        gren = next(c for c in team if c["career"] == "grenadier")
+        medic = next(c for c in team if c["career"] == "medic")
+        if len({c["name"].split()[0] for c in (lead, mg, gren, medic)}) == 4:
+            break
+    else:
+        raise ValueError("rule book example: no seeded squad gives four different first names")
     E = d.teams["vietnam"]
     kit = d.armor["kits"][mg["kit"]]
     ex = {"lead": lead["name"], "lead_terms": lead["terms"], "lead_age": lead["age"], "lead_cmd": lead["skills"]["command"],

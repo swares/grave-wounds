@@ -132,14 +132,14 @@ Rangers climbed 26-30 m cliffs, the first men up within ten minutes.
 
 A deliberate feet-first jump that passes an Agility check, or soft ground, is a row lighter;
 head first, rock, or a heavy load or armour, a row heavier. A moderate injury is a light crush
-wound, a serious one serious, a grave one critical, and death a critical wound to the head; where
+wound, a serious one serious, a grave one critical, and death a critical wound; where
 it lands follows how he fell (feet first: mostly legs and lower back; thrown from a horse: arms
 and head). The dead in one modern study had fallen a median 15 m, the survivors 6 m.
 
 **Chases** are rounds of about ten seconds, the gap close, near, far, distant or lost. Pursuer and
 quarry roll Agility against each other (Ride on horseback); the winner moves the gap a step, two
 on a critical, and a tie goes to the faster (a man is slower the heavier his load). A horseman on
-open ground gains a step every second round whatever the dice; in cover the man on foot has +20
+open ground rolls +20 and gains a step every second round whatever the dice; in cover the man on foot has +20
 against him. A man on foot tires a step every three rounds, and a horse galloped more than
 fifteen is blown. Most of the dead of a beaten army fell in the pursuit, not the fight.
 
@@ -242,7 +242,7 @@ Each named man's **boots** wear with every day he marches, faster on wet or mudd
 Worn boots raise his chance of blistered feet (half again; worn out, three times); worn clothing
 makes his nights a step colder and wetter (worn out, two), for his recovery and for frostbite.
 On a day his force does not march, its best Craft mends the most worn boots or clothing among its
-named men (Mend kit: a success takes half the wear off, a fumble ruins them). He may buy new from
+named men (Mend kit: a success takes off half a life's wear, a fumble ruins them). He may buy new from
 the price list (boots, shoes, a coat, a blanket), and a force its army feeds is issued new at its
 depot. In October 1862 the 48th North Carolina returned 51 of its 619 men barefoot and 194 more
 nearly so; at Valley Forge 2,898 men were unfit for duty, "barefoot and otherwise naked".

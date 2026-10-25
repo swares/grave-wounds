@@ -25489,7 +25489,9 @@
     "height": 20,
     "blocks_melee": true,
     "breach": null,
-    "note": "Town and castle walls: already there, not built in the field."
+    "charge": 6,
+    "shelled": true,
+    "note": "Town and castle walls: already there, not built in the field. No axe opens them: demolition charges or heavy shells do, and before those only ladders get men over."
    }
   },
   "hex_works": {
@@ -34988,6 +34990,11 @@
     ],
     "sites": [
      {
+      "name": "Cr\u00e9cy",
+      "lat": 50.26,
+      "lon": 1.9
+     },
+     {
       "name": "Aljubarrota",
       "lat": 39.64,
       "lon": -8.85
@@ -35011,17 +35018,18 @@
      "borders": "",
      "dots": [
       {
+       "x": 99,
+       "y": 20.4,
+       "names": [
+        "Cr\u00e9cy",
+        "Agincourt"
+       ]
+      },
+      {
        "x": 47.7,
        "y": 92.3,
        "names": [
         "Aljubarrota"
-       ]
-      },
-      {
-       "x": 99.5,
-       "y": 19.7,
-       "names": [
-        "Agincourt"
        ]
       }
      ]
@@ -35784,6 +35792,11 @@
     ],
     "sites": [
      {
+      "name": "El Alamein (Snipe)",
+      "lat": 30.82,
+      "lon": 28.76
+     },
+     {
       "name": "Italy (Cassino)",
       "lat": 41.49,
       "lon": 13.81
@@ -35807,9 +35820,10 @@
      "borders": "",
      "dots": [
       {
-       "x": 84.1,
-       "y": 46.3,
+       "x": 86.4,
+       "y": 48.3,
        "names": [
+        "El Alamein (Snipe)",
         "Italy (Cassino)"
        ]
       },
