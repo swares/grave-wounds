@@ -1,5 +1,5 @@
 ### The campaign
-Fernando I of Portugal died in October 1383 without a son. His daughter Beatriz was married to Juan I of Castile, and by the treaty of Salvaterra de Magos the crown would pass to her line. Many Portuguese, Lisbon's merchants above all, would not have it. They made João, Master of the Order of Avis, Fernando's half-brother, defender of the realm. Juan besieged Lisbon in 1384 and failed. In March and April 1385 the Cortes of Coimbra made João king.
+Fernando I of Portugal died in October 1383 without a son. By treaty his crown would pass to his daughter Beatriz, wife of Juan I of Castile. Lisbon would not have it, and made João, Master of Avis, Fernando's half-brother, defender of the realm. Juan besieged Lisbon in 1384 and failed. In March and April 1385 the Cortes of Coimbra made João king.
 
 Juan invaded again in July 1385, with French lances and the Portuguese nobles who held for Beatriz. He came down by Coimbra to Leiria. João and his Constable, Nuno Álvares Pereira, gathered at Tomar, marched by Ourém and camped at Porto de Mós on 12-13 August, across the road to Lisbon. Some 640 English soldiers, landed at Easter, were with them.
 
@@ -7,37 +7,39 @@ On the morning of 14 August the Portuguese drew up on the plateau of São Jorge,
 
 ### The places
 - **Leiria**: the Castilian base on 12-14 August.
-- **Tomar**: where the Portuguese army gathered in early August.
-- **Ourém**: the town the Portuguese marched through on the way west.
+- **Ourém**: the Portuguese marched through it on 11 August.
 - **Porto de Mós**: the Portuguese camp on 12-13 August.
 - **The first position**: where the Portuguese drew up on the morning of the 14th, facing Leiria, about 2 km north of the field.
 - **Calvaria de Cima**: the village the Castilians passed as they went round the Portuguese to the west.
 - **Chão da Feira**: the open ground south of the field where the Castilians halted and formed up.
 - **São Jorge**: the plateau between two stream valleys where the battle was fought. The chapel of São Jorge, built by Nuno Álvares in 1393, stands about where his vanguard stood.
-- **Aljubarrota**: the village the battle is named after, about 11 km from the field.
+- **Aljubarrota**: the village the battle is named after, 11 km away.
 - **Alcobaça**: the Cistercian abbey where the Portuguese went on 17 August.
 - **Santarém**: where Juan I fled on the night of the battle.
 
 ### The leaders
-- **João I** (Portuguese, king): Master of Avis, king since April. He led the rearguard.
+- **João I** (Portuguese, king): king since April. He led the rearguard.
 - **Nuno Álvares Pereira** (Portuguese, Constable): 25 years old, winner at Atoleiros in 1384. He chose the ground and led the vanguard.
+- **Mem Rodrigues and Rui Mendes de Vasconcelos** (Portuguese, the wing of young knights later called the Ala dos Namorados): Lopes puts it on the right; Mem Rodrigues was wounded.
+- **Antão Vasques de Almada** (Portuguese, the other wing, with the foreigners).
+- **Gonzalo Núñez de Guzmán, Master of Alcántara** (Castilian, a wing): took the light horse round to the Portuguese rear.
 - **Guillaume de Montferrant** (Portuguese side, Gascon knight): joined the army at Tomar in August and was killed in the battle.
-- **Juan I** (Castilian, king): claimed Portugal through his wife. He fled the field.
+- **Juan I** (Castilian, king): claimed Portugal through his wife. He was ill and had been carried in a litter for some two weeks (Ayala).
 - **Pedro Álvares Pereira** (Castilian, Master of Calatrava): Nuno's elder brother, who had gone over to Castile. He was killed.
-- **João Afonso Telo, Count of Mayorga** (Castilian side): brother of the dowager queen Leonor Teles. He was killed, the only enemy dead whom João I had buried.
+- **João Afonso Telo, Count of Barcelos** (Castilian side): brother of the dowager queen Leonor Teles. He was killed, the only enemy dead whom João I had buried.
 - **Jean de Rye** (French, a leader of the French contingent): killed with many of his men.
 - **Pero López de Ayala** (Castilian, chancellor): fought, was taken prisoner, and later wrote the Castilian account of the battle.
 
 ### The battle
-The Castilians went round the Portuguese to the west, by Calvaria, and halted on the open ground of Chão da Feira, to the south. In the early afternoon the Portuguese turned about. They moved about 2 km south and formed up facing south, on a narrow front between the two valleys. In front of them they dug a ditch and rows of pits. A trial dig in 1995 suggested that about 350 men could dig 1,000 such pits in some 3 hours.
+The Castilians went round the Portuguese to the west, by Calvaria, and halted on the open ground of Chão da Feira, to the south. In the early afternoon the Portuguese turned about. They moved about 2 km south and formed up facing south, on a narrow front between the two valleys. In front of them they dug a ditch and rows of pits.
 
-The Castilian council argued over whether to attack a prepared position so late in the day. By Ayala's account, charges of cowardice carried the day. About 18:00 the vanguard, mostly French, with the Portuguese loyalists, came on. It met the pits and the ditch, and was shot at from the wings by the English archers and the Portuguese crossbowmen. The Castilian crossbowmen and foot had been left behind.
+By Ayala's account, charges of cowardice pushed the Castilian council to attack. About 18:00 the Castilian bombards fired first; one shot killed two squires, brothers, in the Portuguese vanguard (Lopes). Then the vanguard, mostly French, with the Portuguese loyalists, came on. It met the pits and the ditch, and was shot at from the wings by the English archers and the Portuguese crossbowmen. The Castilian crossbowmen and foot had been left behind.
 
-The vanguards met on the narrow front. The Portuguese killed the French knights they had taken prisoner, so as not to have them at their backs (by the Portuguese chronicles and Froissart). Then Juan's main battle came up behind its vanguard. The valleys funnelled it in, and it could not use its numbers. Many of its men had dismounted and cut down their lances to fight on foot.
+The vanguards met on the narrow front. The Portuguese killed the French knights they had taken prisoner, so as not to have them at their backs (by the Portuguese chronicles and Froissart). Then Juan's main battle came up behind its vanguard. The valleys funnelled it in, and it could not use its numbers. Many of its men had dismounted to fight on foot.
 
-Near sunset the Castilian royal standard fell, and the army broke. A Castilian attack on the Portuguese rear came too late to matter. The fighting had lasted under an hour. The Portuguese followed while the light lasted.
+Near sunset the Castilian royal standard fell, and the army broke. The Master of Alcántara's light horse got round to the Portuguese rear and the baggage, where crossbowmen and foot beat them off (Lopes, Ayala). The fighting had lasted under an hour. The Portuguese followed while the light lasted.
 
-Juan rode about 50 km that night to Santarém, then took ship for Seville, where he arrived in black. Thousands more Castilians were killed in the next day or two by the country people around Leiria. Castile went into mourning. The Portuguese stayed on the field until 17 August, the three days that custom required of a victor, and then marched to Alcobaça. João vowed an abbey for the victory: Santa Maria da Vitória at Batalha, begun in 1386.
+Juan rode about 50 km that night to Santarém, then went by boat down the Tagus to his fleet and on to Seville. Thousands more Castilians were killed in the next day or two by the country people around Leiria. Castile went into mourning. The Portuguese held the field the customary three days, then marched to Alcobaça on 17 August. João vowed an abbey for the victory, at Batalha, begun in 1386.
 
 {{picture:aljubarrota-wavrin}}
 
@@ -46,16 +48,17 @@ Juan rode about 50 km that night to Santarém, then took ship for Seville, where
 - **The English.** Lopes counts only 200 foreigners. Froissart gives 200 in one version and 500 in another. The Westminster chronicler gives about 700. Russell (1962), from the English records, has about 640, some 300 of them archers.
 - **The field works.** Froissart, Juan I's own letter of 29 August 1385 and the *Crónica del Despensero* say the Portuguese fortified the field. Ayala, who was there, says nothing of it. Lopes writes as if there were none. The digs of 1958-1960 found a large ditch and some 830 pits.
 - **The "square".** Later tradition has Nuno form his men in a hollow square. Monteiro argues it never existed: the valleys and the works did the job.
-- **The first charge.** Some accounts have the French charge on horseback and be destroyed by the archers. Others have them come on foot, or dismount under fire.
-- **The attack on the rear.** Modern accounts give it to the Master of Alcántara, or to Pedro Álvares Pereira, Master of Calatrava.
+- **The first charge.** Some accounts have the French charge on horseback; others have them come on foot, or dismount under fire.
+- **The attack on the rear.** Lopes and Ayala give it to the Master of Alcántara's light horse; some modern accounts give it to Pedro Álvares Pereira, Master of Calatrava.
+- **The wings.** Lopes puts the Ala dos Namorados on the right; many modern accounts put it on the left. The name "Ala da Madressilva" for the other wing is later tradition.
 - **The losses.** Modern figures are about 4,000 Castilians killed on the field and about 5,000 more in the rout, against about 1,000 Portuguese. The ossuary on the field holds about 2,800 bones from more than 400 men.
 
 !!! story "The English at Aljubarrota"
     On Easter Sunday, 2 April 1385, two ships reached Lisbon with 200 men-at-arms, 200 archers and 400 moios
     of wheat. A third ship landed 90 men at Setúbal, and a fourth about 150 at Porto. They had been
     mustered at Plymouth and paid three months in advance from 24 March. The muster orders name captains such as Peter
-    Cressingham, Robert Grantham and Thomas Dale. Fernão Lopes, writing some 50 years later, gave them little
-    space. Peter Russell found their muster orders in the Public Record Office in London, and argued that
+    Cressingham, Robert Grantham and Thomas Dale. Fernão Lopes, writing some 50 years later, made little of
+    them. Peter Russell found their muster orders in the Public Record Office in London, and argued that
     their 300 or so bows, beside Lopes's 800 crossbows, gave João more firepower than the chronicle admits.
 
 ### Sources

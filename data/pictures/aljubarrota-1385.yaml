@@ -1,0 +1,15 @@
+# Pictures for the Aljubarrota section of The Medieval Wars. Each is public domain or openly licensed, checked
+# on its source page. The file goes in images/books/medieval/ under `file`; until it is there the book shows
+# a captioned slot with this credit and source.
+# aljubarrota-wavrin: LICENCE NOT YET CONFIRMED. commons.wikimedia.org could not be reached from this session,
+# and the only mirror reached (https://zhwiki.oracleblog.org/wiki/File:Batalha_de_Aljubarrota_02.jpg) shows
+# the description (British Library, Royal 14 E IV, f. 204) but not the licence section. The British Library's
+# record (https://searcharchives.bl.uk/catalog/040-002107005) confirms the manuscript, its date (c. 1470-1480)
+# and the miniature, but states no licence for its images. Confirm on the Commons page before printing.
+- id: aljubarrota-wavrin
+  file: aljubarrota-wavrin.jpg
+  caption: "The battle of Aljubarrota, from a manuscript of Jean de Wavrin's Chronicles of England made about 1470-1480, nearly 100 years after the battle."
+  credit: "Unknown illuminator, Jean de Wavrin, Recueil des croniques d'Engleterre, British Library, Royal MS 14 E IV, f. 204r"
+  licence: "Public domain (not yet confirmed on the source page)"
+  source: "https://commons.wikimedia.org/wiki/File:Batalha_de_Aljubarrota_02.jpg"
+  alt: "A 15th-century manuscript painting of the King of Portugal and his army fighting the Castilians at Aljubarrota."
