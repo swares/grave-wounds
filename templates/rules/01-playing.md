@@ -104,20 +104,17 @@ it, and what follows (the GM decides when a case is easier or harder):
 
 {{table:skill_uses}}
 
-**Haggling.** Buying from the price list, a man may haggle: his Persuade against the
-seller's ({{haggle_seller}}). If he wins he pays {{haggle_win}}% less ({{haggle_crit}}% on a
-critical); if not, the list price; and if he fumbles the seller will not deal with him today.
-
 A skill check that succeeds (or wins against someone) ticks the skill for experience; a
 characteristic is not ticked. **A hurt man checks worse:** out of a fight a check (a job's
 included) takes the same penalty his attack would in the roller, from pain, blood lost, wounds,
 fatigue (a hungry day is a step of it), sickness and Strain; with no fight to go by, his Strain
 alone.
 
-**Selling and hiring.** Loot that is goods (not money, prize money or a ransom) may be sold
-haggling: his Persuade against the buyer's; a win gets {{sell_win}}% more ({{sell_crit}}% on a
-critical), a fumble lets a fence cheat him of {{sell_fumble}}%. A man hiring a replacement may
-haggle his price as at the price list; on a fumble the man will not sign today.
+**Bargaining.** Buying from the price list, selling goods taken as loot (not money, prize money
+or a ransom) or hiring a replacement, a man may haggle: his Persuade against the other man's (a
+seller's is {{haggle_seller}}). Buying, a win takes {{haggle_win}}% off the price ({{haggle_crit}}%
+on a critical); selling, a win gets {{sell_win}}% more ({{sell_crit}}% on a critical). On a fumble
+there is no deal today, and a man selling has been cheated of {{sell_fumble}}% by a fence.
 
 ## Tongues {#tongues}
 
@@ -125,11 +122,6 @@ A man speaks his own **tongue** at {{lg_native}}, which never changes (Letters i
 skill of reading and writing). Any other is a figure read in bands:
 
 {{table:tongue_bands}}
-
-A tongue he lacks he knows at a share of a related one he has (half of German from Low German,
-three quarters of English from Scots). Pidgins rise no higher than {{lg_pidgin}} (Bamboo English
-in Korea, GI Vietnamese), the Plains sign language no higher than {{lg_sign}}, and a learned tongue
-no higher than {{lg_max}}.
 
 **Talking in a tongue.** Persuade and Command in another tongue are at most his figure in it: a
 fine talker with twenty words of French is a man with twenty words of French.
@@ -139,101 +131,26 @@ his own surrender), a question to a prisoner or a villager: d100 at the best ton
 (the lower of their figures). A critical is understood in full; a success, understood; a failure,
 only the gist (an order half done, a surrender not understood); a fumble, a dangerous error, the
 wrong thing understood (at the Grattan fight of 1854 a drunk interpreter's broken Lakota began a
-war; in Afghanistan "fire an illume" was heard as "fire mortars"). From the Crimea on, armies
-issued phrase books: a yes or no, a number or a pointed direction is then Easy at no worse than
-{{lg_book}}.
+war; in Afghanistan "fire an illume" was heard as "fire mortars").
 
-**Passing as a native.** His figure against the listener's Watch (both roll): Ordinary in his
-own tongue, Hard fluent without the idiom (76+), Very hard a good speaker (51-75), and below that
-he cannot pass. In 1944 Skorzeny found ten men with perfect English and idiom for Operation
-Greif, thirty or forty good speakers, and over a hundred moderate ones; those caught in American
-uniform were shot.
+Related tongues, phrase books, passing as a native, the travel map's tongues, learning a tongue
+and hiring an interpreter are in [Tongues in full](#tongues-full).
 
-**Taken and escaping.** A man who asks for quarter in his captors' tongue is a little safer (the
-capture roll is 10 better: a surrender had to be accepted to protect him). Escaping, his Fieldcraft
-to get home is +10 if he converses in their tongue and +20 if it is his own.
+## Age and wear {#age}
 
-**On the travel map** the people where a force stands speak a tongue, or in mixed country several:
-the nearest town, village or landmark within {{lg_place_km}} decides (its own, if it names them),
-and everywhere else has the map's. A force with no named man who gets by in any of them forages Hard, its talk is in the best
-of them he has, and a month among them ticks their main tongue. The map shows a place's tongues
-when you point at it.
-
-**Learning.** A tongue used well is ticked and rolls to rise at End of season like a skill (one at 0
-always rises). A month among its speakers on the travel map, or a season held prisoner, ticks it;
-so does a week with a language master, a teammate who speaks it well, or (from 1943) an army
-course. The army's courses took three months for the better students to order a meal or rent a
-room; the Foreign Legion's recruits answered in French within ten days.
-
-**Interpreters.** The team may hire an interpreter for a season: a man of the other army who speaks
-the team's tongue and his own at {{int_lo}} to {{int_hi}} (rolled). He costs {{int_wage}} Day a day
-({{int_wage_modern}} for the modern wars, where Iraqi interpreters began at $600 a month in 2005). A
-man who talks through him uses the interpreter's figure in that tongue, not his own. Of those
-hired {{int_unrel}}% are unreliable (a whistleblower said 28% of one firm's Afghan hires failed the
-language standard): his roll of {{int_err}} or more is a dangerous error. Each End of season he may
-be killed ({{int_hazard}}%, {{int_hazard_modern}}% in the modern wars: in Iraq some fifteen times a US
-soldier's rate), and his season is up. On the travel map, where the people speak his tongue and
-the team's named men march with the force, he forages and talks for it: the force does not forage
-Hard for want of the tongue, and its billeting and talk go through him at his figure.
-
-Who speaks what, by army (the shares are estimates, not muster counts):
-
-{{era:tongue_armies}}
-
-## Age {#age}
-
-**Enlisting.** A man enlists at his era's starting age, raised to his army's legal least (15 to
-60 under the Statute of Winchester; 17 to 25 for Victorian recruits; 18 to 37 in the American
-draft of 1942). Then d100: a few are **boys under age** (about a tenth of the Union army was under
-18), enlisted at up to {{en_under}} years below the least, and a few **older recruits**, from
-{{en_older}} up to {{en_over}} years past the most (over it, he lied). A man under or over age is
-found out at {{en_found}}% each End of season and sent home, until he is of age (a boy) or has
-served out his first term (an older man). Most characters are made after their terms, so a boy's
-lie matters only in the eras of one-year terms. A recruit who enlisted at {{en_older}} or more
-takes {{en_wear}} times the Wear for his service: Union men enlisting at about 39 had 1.8 times the
-odds of dying of disease of men of 20 in their first year, and 2.4 after.
-
-A man ages with his terms. For every 4 years of his life past the start of his service (at the
-making of a character, the years of his terms; in play, each term served) he rolls his age band's
-decline, taken from his characteristics as a lasting hurt is (his skills that rest on them fall
-with them), and, from 20, gains a step of maturity: +1 Presence and +1 Nerve until 40, +1 Wits
-until 45 (at most +5 each). Each promotion adds +{{pres_rank}} Presence, to +{{pres_cap}} in all (a
-design estimate: a man who leads grows into it). Endurance goes first, then Agility, then Strength; Wits slows from
-50:
-
-{{table:ageing}}
-
-**Wear.** Service wears a man: +1 Wear for each 4 years, and +1 for each hard season (a month of
-hard nights on the travel map, hungry, sick or wounded, or colder and wetter than his shelter; or
-the GM's word for a siege, a famine or a tropical station). Each 4 Wear makes him 2 years older
-for his decline, and from 6 Wear his Endurance rolls twice and takes the worse.
-
-**Worn out.** For each term he serves from 35, or with 8 Wear or more, he rolls d100: at or under
-3 × Wear + 2 × (his age − 35) − (Endurance − 50) ÷ 2, he is worn out (a 1-year term rolls a
-quarter of that). From 40, Endurance under 30, or Strength, Agility or Endurance under 25, wears
-him out at once. The GM may send him home (with a pension where his army gave one) or keep him
-on. British soldiers discharged "worn out" were mostly 41 to 44, after 21 to 25 years.
+The [team builder](team.html) ages a man for the terms he served before play. In play, each term
+he serves ages him the same way: his characteristics decline with his age band, and to 40 or 45
+he gains a little Presence, Nerve and Wits with maturity. Service also **wears** him: hard seasons
+on the march, hungry, sick or wounded, add Wear, which ages him faster. From 35, or with 8 Wear,
+he may be **worn out**, and the GM may send him home. Enlisting under or over age, the ageing
+table and the Wear and worn-out rolls are in [Age and wear in full](#age-full).
 
 ## Experience {#experience}
 
-**Training.** A skill can also be ticked by a week's teaching: from a master for hire where the
-team is (a riding master, a master of defence, a schoolmaster, a surgeon, a craftsman; his skill
-counts as 60, and he charges a fee by the week), or from a teammate at least 20 better (who gives
-up the week too). The teacher rolls his skill; a success ticks the pupil's skill, a failure wastes
-the week. The pupil pays the fee and his keep; a teammate who teaches loses the week from his
-next job term. An army drills its men: a week in which a force
-its army feeds spent four days or more not marching, the best Command with it (or the army's own
-sergeants, 50) rolls, and on a success each named man's weapon skill is ticked. Riding lessons
-in London in 1879 cost about six days of a private's pay each; the other fees are estimates.
-
-**Courses.** Some training takes him away for weeks or a year, for set gains: a year as an
-apprentice or in a knight's household, two weeks at a Civil War camp of instruction, eighteen
-months at Sandhurst, four and a half at a 1916 officer cadet battalion, seventeen weeks at an
-American Officer Candidate School (22 in Korea, 23 in Vietnam, 12 today), Ranger School, the
-Special Forces course. An army's course counts as service, and an officer's course makes him
-eligible for its rank at the next vacancy, whatever his rank and years:
-
-{{era:courses}}
+**Training.** A week's teaching, from a master for hire or a teammate at least 20 better, ticks a
+skill if the teacher's roll succeeds; an army drills its men in camp; and courses (an
+apprenticeship, Sandhurst, Officer Candidate School) take a man away for set gains. The fees,
+drill and courses are in [Training in full](#training-full).
 
 A skill used well is **ticked**: a job's check that succeeds (lawful or not; a
 failed or fumbled check, or a job with no check, teaches nothing), a hit, a parry or dodge that

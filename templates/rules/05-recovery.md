@@ -67,36 +67,17 @@ Fighting wears on a man's mind as well as his body. **Strain** builds from what 
 
 {{table:strain}}
 
-A light day in the line, a day in the line, a fight or an extreme day is changed by how he
-stands with his comrades, summed:
+Part of every point also goes into his **Toll**, which only going home lowers. Each time Strain
+and Toll together pass {{st_every}}, 20, 30 and on, he rolls d100 against his Nerve. If he fails
+he is **shaken** (−10 to attack and Nerve until a day's rest), **strained** (−20 until treated),
+**broken down** (out of the fight until treated) or **severely** broken down (out, and to be sent
+back). Each era has its own words for these: nostalgia in the Napoleonic and Civil wars, shell
+shock in 1914-18, combat exhaustion in 1944.
 
-{{table:strain_mods}}
-
-{{st_toll}}% of every point also goes into his **Toll**, which only going home lowers. Each
-time Strain and Toll together pass {{st_every}}, 20, 30 and on, he rolls d100: at or under his
-Nerve + {{st_base}} − that total, he holds; a man who has broken down before rolls 10 less, and a roll of
-{{st_fail_from}} or more always fails. If he fails, he rolls d10, adding 1 for each 10 he failed by: 1-4 **shaken** (−10 to attack and Nerve
-until a day's rest), 5-7 **strained** (−20 until treated), 8-9 **broken down** (out of the fight
-until treated), 10 or more **severely** (out, and to be sent back). Each era has its own words for
-these: nostalgia in the Napoleonic and Civil wars, shell shock in 1914-18, combat exhaustion in
-1944.
-
-A day out of the line, camped, takes {{st_rest}} Strain off. A man who breaks down is treated
-where he is, near the front or in the rear; the nearer and the sooner, the likelier he goes back
-to duty, and treatment takes Strain off him (sent home, all of it, and half his Toll):
-
-{{table:treatment}}
-
-Except treatment with his unit, he is away from the force for those days: the travel map counts
-them off, and he comes back to it when they are done. If the team's leader is killed, each of his
-men takes the Strain of it ({{st_leader}}), twice that if he was a trusted leader (Command
-{{st_trusted}} or more): a design estimate, since no study measured it.
-
-Korea, Vietnam and the later wars rotated men home at the end of a tour: Strain gone, the Toll
-cut to a quarter. For the Plains nations, a homecoming that welcomes and honours a man halves it.
-A man who ends a campaign with his Toll at or above his Nerve, or who broke down, may carry a
-lasting effect: the GM notes it as part of who he is (sleeping badly, starting at noises, drinking,
-grief), never as a penalty.
+A day out of the line, camped, takes {{st_rest}} Strain off. A man who breaks down is treated: the
+nearer the front and the sooner, the likelier he goes back to duty. How his comrades change his
+Strain, the roll in full, treatment, a leader's death and going home are in
+[Strain in full](#strain-full).
 
 !!! gm "For the GM"
     These rules follow the US Army's figures of 1944: a man of ordinary Nerve in a rifle company

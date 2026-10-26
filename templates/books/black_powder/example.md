@@ -1,7 +1,7 @@
 # A worked example: the company {#example}
 
 The Rules follow one medieval retinue. This chapter follows a company of British foot at
-[Albuera](#albuera-1811) on 16 May 1811, in Colborne's brigade, through the morning the Polish
+[Albuera](#field-albuera-1811) on 16 May 1811, in Colborne's brigade, through the morning the Polish
 lancers came out of the hail. It uses the same rules and the
 [Black-powder guns](rules.html#mod-black-powder) module, and, where dice are rolled, the dice
 given. The [team builder](team.html) made the company.
