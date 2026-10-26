@@ -36,54 +36,18 @@ rocket bursts in the room and strikes each man there at half. A hit knocks the v
   ×{{v_rear}}, to 100% at most. Which it is depends on where the shooter stands.
 - **Composite armour** (a battlefield gives it to the M1A1): as heavy armour, but a main
   gun's round from its front does not knock it out.
-- **Morale.** A vehicle unit's morale checks count whole vehicles lost, not crewmen hit in
-  vehicles still fighting.
-- **Damage short of that.** A hit that does not knock the vehicle out strikes the turret at
-  {{v_turret}}%, else the hull.
-
-    - On the turret it puts the main gun out at {{v_t_gun}}%, and immobilises the vehicle at
-      only {{v_t_imm}}%.
-    - On the hull it immobilises the vehicle at {{v_h_imm}}%, and puts the gun out at
-      {{v_h_gun}}%.
-
-    Immobilised vehicles can still turn. Their crews can abandon them and leave the fight
-    unhurt.
-
-- **Shells and bombs** bursting in a vehicle's hex knock it out at the kind's own chance: a
-  heavy howitzer's {{i_how_knock}}%, a fighter-bomber's {{v_fb_knock}}%. Light armour is
-  {{v_shell_light}} times as likely to go, soft-skinned vehicles {{v_shell_soft}} times.
-- **Knocked out.** Its crew are out of the fight. Each is struck at {{v_crew_struck}}% and
-  wounded as by shellfire; the rest bail out.
+- **Short of that**, a hit may put the gun out or immobilise the vehicle; **shells and bombs**
+  bursting in its hex knock it out at their own chance; a vehicle knocked out puts its crew out
+  of the fight. The damage, shell and crew figures are in [Knocking out in full](#knocking-out-full).
 
 ## Anti-tank guns {#at-guns}
 
-In the Second World War and Korea, a unit can be **anti-tank guns**: towed guns such as
-the British 6-pounder, the American 57 mm, the German Pak 38 and 40, the Soviet and North
-Korean 45 mm and the Japanese 47 mm.
-
-- **Crews.** Each gun has {{at_crew}} men. A gun fires while one of its crew is up, and its
-  crews manhandle it {{at_move}} hexes.
-- **Fire.** Each gun fires {{at_rate}} round an exchange, as a tank's main gun does. Out to
-  {{at_range}}, it hits a vehicle at {{at_hit}}% (close, mid and full range), and the hit
-  then knocks the vehicle out as a main gun's would. At men, its high explosive bursts as a
-  tank's round does.
-- **Towing.** Gun tractors and trucks tow a gun each, the crews riding. Hooked up beside
-  them, the guns move with the tractors and do not fire; unhooked, they fire from the next
-  exchange.
-- **Rounds.** Each gun brings {{at_rounds}} rounds. A gun out of them is resupplied as a
-  battery is: an exchange out of contact, neither moving nor firing.
-- **Shields.** Anti-tank and anti-aircraft guns have shields: small arms fired at them from
-  in front lose {{at_shield}}%. Shields do nothing against shells or fire from the flank or
-  rear. Some machine guns had shields too (a Maxim on a wheeled mount, say), though most did
-  not: in set-up the GM can mark a machine-gun unit **shielded**, and it gets the same cover.
-- **Vulnerable.** Otherwise its crews are men: rifles, machine guns and shells strike them,
-  and hand to hand they fight with bayonets.
-- **Emplaced.** Before the battle the GM can dig in any gun unit (anti-tank guns,
-  anti-aircraft guns, machine guns or a battery). While it stands it counts as gone to
-  ground, −{{at_ground}}% and hidden, but it cannot move all battle, though it can turn. A
-  unit that breaks leaves its pits.
-- **The enemy commander** tows its anti-tank guns forward and unhooks them in reach (see
-  [the enemy commander](#commander)).
+In the Second World War and Korea, a unit can be **anti-tank guns** (the British 6-pounder, the
+American 57 mm, the German Pak 38 and 40, the Soviet 45 mm, the Japanese 47 mm), {{at_crew}} men to
+a gun. Each fires {{at_rate}} round an exchange as a tank's main gun does, out to {{at_range}}; its
+crews manhandle it, or a tractor tows it; its shield turns small arms from in front. Any gun unit
+may be **emplaced** before the battle: hidden and harder to hit, but it cannot move. The crews,
+towing, rounds, shields and pits are in [Anti-tank guns in full](#at-guns-full).
 
 ## Minefields {#mines}
 

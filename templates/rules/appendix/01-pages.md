@@ -194,3 +194,86 @@ With this module, the [enemy commander](#commander) also:
   where it sees one (attacking only), up to {{c_spot_moves}} moves away, a move at a time,
   preferring a spot out of the enemy's reach; not while it has a fight of its own (an enemy
   touching it or in its own reach, pinned, or men lost the exchange before).
+
+## Batteries in full {#guns-full}
+
+For [Guns of the black-powder wars](#guns).
+
+A **battery** is a unit in battery order, {{g_per_hex}} men to a hex. Its men are the crews,
+{{g_crew}} to a gun, so as crews fall fewer guns are served.
+
+- **Its fire.** Each served gun fires a round an exchange at the nearest enemy in front of it,
+  in sight and with a clear line of fire, out to {{g_range}} ({{g_rifled}} for rifled guns).
+  The GM can name another target, split the guns into sections, or choose the shot.
+- **Canister.** Within {{g_canister}} the guns fire canister: {{g_balls}} chances a round,
+  each likely to hit at short range and less so beyond.
+- **Round shot.** Beyond that range the guns fire round shot. A ball that strikes a unit
+  ploughs through its ranks, and each man in its path is hit at {{g_file}}%, so a deep
+  column suffers far more than a line. On firm ground the ball bounds on, and it can strike
+  another unit up to {{g_ricochet}} beyond.
+- **Shell.** Howitzers fire shell over anything in the way. Its fuse may burst it early, in
+  the air over the men, on the ground, or not at all. Gunners who have found the range cut
+  their fuses better.
+- **Wounds.** Every man struck by a gun rolls a wound at {{g_attack}}%, with no parry.
+- **Rounds.** Each gun carries {{g_ammo}} rounds into action. **Resupply** takes an
+  exchange.
+- **Limbering.** Changing between limbered and unlimbered takes an exchange. Unlimbered,
+  the guns can only be pushed {{g_pushed}} hexes.
+- **Losing the guns.** A battery that breaks loses its guns for good.
+- **Canister at the charge.** Charged in front, a battery gives the first charger one
+  round of canister at point-blank range before the melee.
+
+## Knocking out in full {#knocking-out-full}
+
+For [Knocking them out](#knocking-out).
+
+- **Morale.** A vehicle unit's morale checks count whole vehicles lost, not crewmen hit in
+  vehicles still fighting.
+- **Damage short of that.** A hit that does not knock the vehicle out strikes the turret at
+  {{v_turret}}%, else the hull.
+
+    - On the turret it puts the main gun out at {{v_t_gun}}%, and immobilises the vehicle at
+      only {{v_t_imm}}%.
+    - On the hull it immobilises the vehicle at {{v_h_imm}}%, and puts the gun out at
+      {{v_h_gun}}%.
+
+    Immobilised vehicles can still turn. Their crews can abandon them and leave the fight
+    unhurt.
+
+- **Shells and bombs** bursting in a vehicle's hex knock it out at the kind's own chance: a
+  heavy howitzer's {{i_how_knock}}%, a fighter-bomber's {{v_fb_knock}}%. Light armour is
+  {{v_shell_light}} times as likely to go, soft-skinned vehicles {{v_shell_soft}} times.
+- **Knocked out.** Its crew are out of the fight. Each is struck at {{v_crew_struck}}% and
+  wounded as by shellfire; the rest bail out.
+
+## Anti-tank guns in full {#at-guns-full}
+
+For [Anti-tank guns](#at-guns).
+
+In the Second World War and Korea, a unit can be **anti-tank guns**: towed guns such as
+the British 6-pounder, the American 57 mm, the German Pak 38 and 40, the Soviet and North
+Korean 45 mm and the Japanese 47 mm.
+
+- **Crews.** Each gun has {{at_crew}} men. A gun fires while one of its crew is up, and its
+  crews manhandle it {{at_move}} hexes.
+- **Fire.** Each gun fires {{at_rate}} round an exchange, as a tank's main gun does. Out to
+  {{at_range}}, it hits a vehicle at {{at_hit}}% (close, mid and full range), and the hit
+  then knocks the vehicle out as a main gun's would. At men, its high explosive bursts as a
+  tank's round does.
+- **Towing.** Gun tractors and trucks tow a gun each, the crews riding. Hooked up beside
+  them, the guns move with the tractors and do not fire; unhooked, they fire from the next
+  exchange.
+- **Rounds.** Each gun brings {{at_rounds}} rounds. A gun out of them is resupplied as a
+  battery is: an exchange out of contact, neither moving nor firing.
+- **Shields.** Anti-tank and anti-aircraft guns have shields: small arms fired at them from
+  in front lose {{at_shield}}%. Shields do nothing against shells or fire from the flank or
+  rear. Some machine guns had shields too (a Maxim on a wheeled mount, say), though most did
+  not: in set-up the GM can mark a machine-gun unit **shielded**, and it gets the same cover.
+- **Vulnerable.** Otherwise its crews are men: rifles, machine guns and shells strike them,
+  and hand to hand they fight with bayonets.
+- **Emplaced.** Before the battle the GM can dig in any gun unit (anti-tank guns,
+  anti-aircraft guns, machine guns or a battery). While it stands it counts as gone to
+  ground, −{{at_ground}}% and hidden, but it cannot move all battle, though it can turn. A
+  unit that breaks leaves its pits.
+- **The enemy commander** tows its anti-tank guns forward and unhooks them in reach (see
+  [the enemy commander](#commander)).
