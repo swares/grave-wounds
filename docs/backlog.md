@@ -78,6 +78,13 @@ When an item is done, delete it here and note it in the pull request that closes
     name his weapon, but the team builder gives him one.
   It summarises rather than repeats the docs: the travel map's battle set-up and the
   battlefields are covered in the docs and on the pages, not in the book. It ends with an index of the terms set in bold, each linked to its sections, and prints page numbers (in Chrome and Edge; other browsers may leave them off). The index has no page numbers of its own, only section names.
+- **Playing alone, first cut.** The Rules' *Playing alone* chapter (`templates/rules/15-alone.md`)
+  says how one person runs a session with the pages, and adds **Ask the dice**, a yes-or-no table
+  on the one roll with a d10 of complications for the GM's judgement calls. Still left out (the rules
+  audit of 26 October 2026): the virtual GM's side does not give first aid or surrender, which a solo
+  player's wounded men feel most; no solo campaign has been played through end to end; there is no
+  score against history yet ("Beat history": each battlefield's result as fought, the engine's
+  odds, and the player's result); and the printed tables do not carry Ask the dice.
 - **The enemy commander, beyond the second cut.** A scripted commander moves one side on
   the field map. It attacks or holds by its units' quality, knows only what its units see
   (remembering last sightings for a few exchanges), picks targets by threat and weakness,
