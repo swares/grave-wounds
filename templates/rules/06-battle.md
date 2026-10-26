@@ -171,82 +171,29 @@ quarter decides.
 
 ## The enemy commander {#commander}
 
-The GM can hand one side to a scripted **enemy commander**, attacking or holding. At the
-start of that side's move it orders each unit. It knows only the enemies its units can see
-(or saw in the last {{c_remember}} exchanges, where they were then; what a unit sees from where it has just moved, the units ordered after it know); green units go for the
-nearest, better ones for an enemy that is hurt, shaken or dangerous to them. It closes,
-takes cover, shoots from range or charges with the odds its quality wants (counting the
-steady friends touching it, who go in with it), and green units sometimes hesitate. With no enemy in sight, a unit holds; attacking with no objective, it goes forward along its facing to find one. A unit with no room to move facing its goal (or a turn too dear) moves facing as near its goal as it can. A unit on the ground turns to face its target where it lies, and stays down.
+The GM can hand one side to a scripted **enemy commander**, attacking or holding. At the start of
+that side's move it orders each unit, and **Undo its orders** puts the move back for the GM to make
+by hand. It knows only the enemies its units can see, or saw a few exchanges ago. In short, it:
 
-- **Storming works.** Attacking infantry close on an enemy behind works (a parapet, trench or
-  bank), dug in, or in buildings or rubble, as the module for their weapons says: with
-  muskets, rifle-muskets and breech-loaders, [Black-powder guns](#storming); with modern rifles
-  and sub-machine guns, [Modern infantry](#modern-storming). Archers, flintlock riflemen and
-  machine guns fight by fire.
+- closes, takes cover, shoots from range or charges with the odds its quality wants; green units go
+  for the nearest enemy and sometimes hesitate, better ones for an enemy that is hurt or dangerous;
+- storms works as its weapons' module says, and fights by fire with archers and machine guns;
+- keeps a reserve, and commits it when a unit of its own breaks, the enemy comes close, or its attack
+  stalls;
+- takes and holds the objective the GM marks, and a second if there is one;
+- follows a battlefield's routes round a flank, and the accounts' orders: who held to the end, and
+  who withdrew, when and where;
+- turns its guns on the enemy, brings them into reach and pulls them back from a charge. The modules
+  add its batteries, shellfire, vehicles, mines and aircraft.
 
-- **Routes.** A battlefield can send a unit on a route round a flank, as its account tells:
-  the commander moves it from waypoint to waypoint, turning aside only for an enemy in contact
-  or across its way, then orders it as any other.
-- **Orders from the accounts.** On the battlefields, units that the sources say held their
-  ground fight where they stand rather than fall back, and units the sources say withdrew on
-  orders fall back at the minute the accounts give, to a place or off the field.
-- **Narrowing.** Attacking, a formed unit that the ground keeps from closing on its target
-  closes in its front, a quarter at a time and deeper, until it can move nearer, but never to
-  less than half the front it started with.
-- **Pursuit.** Its horse ride down a broken enemy within a charge when no standing enemy is as
-  near, and its foot go after one within their move that is nearer than any standing enemy.
-  Veterans rally back to the fight after a couple of moves if the enemy still stands near.
-- **Shooters give way.** Attacking, archers, crossbowmen and skirmishers in open order step
-  aside when they stand in the way of their own formed men behind them, and the formed men go
-  on.
-- **In range** means the weapon reaches, the light lets it see, and nothing blocks the line
-  from where it would stand.
-- **Reserve.** Regulars and veterans hold back their rearmost units (not one on a route, nor tanks and other vehicles with a main gun), and commit one when a
-  unit of theirs breaks or the enemy comes close; veterans also commit to exploit an enemy
-  rout. Attacking, they also commit one when the attack has stalled: five moves without
-  putting down any real share of the enemy or getting nearer. A unit committed because one broke goes to plug the gap where it stood. The GM can
-  mark reserves instead.
-- **Objective.** The GM can mark a hex as its objective. Attacking, its units advance on it
-  when they have nothing better to do and hold it once there (within {{c_obj_radius}}
-  hex), but go on attacking while their target is on it too; holding, units more than {{c_obj_hold}} hexes from it fall back to it. Enemies near
-  it make better targets. The log says who holds it after each exchange. Most battlefields
-  mark the place their battle was fought for, a hill, a bridge, an outpost, as theirs,
-  taking in the whole position (a ring of trenches counts as the hill).
-  The GM can also mark a second objective. Attacking, once it holds the first, the units on
-  it stay and the rest go on to the second (and back to the first if the enemy retakes it);
-  holding, once the enemy holds the first, its units fall back to the second.
-- **Guns.** It turns its guns to face the enemy. Attacking, guns with no enemy in reach go
-  forward and stop in reach, but no nearer than {{c_keep_off}} hexes; holding, they stay where
-  they stand. Attacking or holding, guns an enemy could reach at a charge, with no steady friend
-  on the line between, pull back as far as they can from it.
-- **Modules.** What it does with batteries, shellfire, vehicles, mines and aircraft is in the
-  modules that bring them: [Black-powder guns](#bp-commander), [Modern fire](#fire-commander),
-  [Armour and mines](#vehicles-commander) and [Air and night devices](#air-commander).
+**Both sides.** Each side is moved by the GM or by the commander. With the commander on both sides
+the GM only watches: **Next** steps a move at a time, and **Run** plays on until the GM presses
+**Stop** or the battle ends itself. Under the map the page tells the battle's turning points as they
+happen, and can have a language model retell them in a voice for the war; the rules never depend on
+it.
 
-**Undo its orders** puts the move back for the GM to make by hand.
-
-**Both sides.** Each side has its own choice: moved by the GM, or the commander attacking or
-holding. With the commander on both sides the GM only watches: **Next** steps a move at a time,
-and **Run** plays on until the GM presses **Stop** or the run ends itself. It ends when a side
-has no unit left standing and none still to come, when an attacking side has taken the
-objective and held it {{c_sp_held}} exchanges running with no enemy standing within
-{{c_sp_secure}} of it and none still to come (but not before the battlefield's last phase has
-begun), or after {{c_sp_limit}} exchanges (on a
-battlefield with phases, {{c_sp_after}} past the last phase's start, if later, but never more
-than {{c_sp_most}}); then the battle
-ends, as with *End the battle*. On a battlefield the side its objective names attacks and the
-other holds, or the armies fight as the battlefield says they did (the choice marked *as
-fought*); on open ground both attack. The GM can take either side back at any
-time.
-
-**The narrative.** Under the map, the page tells the battle's turning points as they happen: a
-phase beginning (and who comes on), units breaking or fleeing, a reserve committed, the objective
-taken or lost, and the end with each side's losses. With an API key of the player's own (a
-free one serves), or a model run on the player's own computer, a language model retells each one in a short passage of at most {{n_words}} words, in a voice for
-the war (a chronicle, a dispatch, a war diary or a situation report), or one the GM picks for the
-battle (any of those, a soldier's account or a plain summary). It is told to use only the
-facts the game gives it and to write original prose; the plain line stays under each passage.
-The rules never depend on it.
+How it decides each of these, when a run ends, and what the modules add, is in
+[How the pages work](#commander-full).
 
 ## After the battle {#after}
 

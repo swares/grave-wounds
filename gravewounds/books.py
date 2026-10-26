@@ -65,10 +65,10 @@ def render_all(d: Data, root: Path) -> dict:
 # ---------- the Rules ----------
 
 def chapters(root: Path) -> list:
-    """The Rules' chapter files in order: the core (templates/rules), then the modules
-    (templates/rules/modules)."""
+    """The Rules' chapter files in order: the core (templates/rules), the modules
+    (templates/rules/modules), then the appendix of what the pages compute (templates/rules/appendix)."""
     R = root / "templates" / "rules"
-    return sorted(R.glob("*.md")) + sorted((R / "modules").glob("*.md"))
+    return sorted(R.glob("*.md")) + sorted((R / "modules").glob("*.md")) + sorted((R / "appendix").glob("*.md"))
 
 
 def _era_spots(text: str) -> list:

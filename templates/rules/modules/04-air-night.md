@@ -73,14 +73,3 @@ the nearest spot within {{h_zone}} hexes, and can move the next exchange.
   helicopters can lift a unit out from near a zone (out of contact; it does not move while
   it boards). Its men flown out are safe.
 - **A downed helicopter** gives the men in its hex cover and is slow ground to cross.
-
-## The enemy commander {#air-commander}
-
-With this module, the [enemy commander](#commander) also:
-
-- **Aircraft.** It calls its aircraft (when they can fly; a strafing run or napalm strip along a
-  wide enemy front) on what it sees, first what its forward air controllers see, and closer to
-  its own men there. A controller with nothing to do and no target in its sight moves up to
-  where it sees one (attacking only), up to {{c_spot_moves}} moves away, a move at a time,
-  preferring a spot out of the enemy's reach; not while it has a fight of its own (an enemy
-  touching it or in its own reach, pinned, or men lost the exchange before).

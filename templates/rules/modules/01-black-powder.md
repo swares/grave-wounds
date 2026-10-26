@@ -45,9 +45,3 @@ without seeking cover, firing as they go, and charge it, with the same odds. Fli
 archers and machine guns still fight by fire. A wall or palisade that blocks hand-to-hand
 fighting stops them at its foot, unless they carry ladders: then they go up it (see
 [works](#works)). Breaching it is the GM's order.
-
-## The enemy commander {#bp-commander}
-
-With this module, the [enemy commander](#commander) also moves its batteries: attacking, a
-battery with no enemy in reach limbers, moves, and unlimbers once an enemy is in reach;
-holding, it unlimbers where it stands; to pull back from a charge it limbers first.
