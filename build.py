@@ -1091,6 +1091,29 @@ CAMP_MARK = "/*__CAMP_JS__*/"
 MEASURE_MARK = "/*__MEASURE_JS__*/"
 
 
+def field_stamps(fb: dict, engine: str) -> dict:
+    """{fid: stamp}: a short hash of what decides how a battlefield plays on the field map (the page's engine, the
+    shared rules and that battlefield's own data). The commander's benchmark (tools/selfplay/commander.json) carries
+    the stamp it was run under, so a change to the rules or the battlefield shows its figures are out of date."""
+    import hashlib
+    shared = {k: v for k, v in fb.items() if k not in ("fields", "generated", "period_order", "mapStarts")}
+    base = hashlib.sha256((engine + json.dumps(shared, sort_keys=True)).encode()).hexdigest()
+    return {fid: hashlib.sha256((base + json.dumps(f, sort_keys=True)).encode()).hexdigest()[:12]
+            for fid, f in fb["fields"].items()}
+
+
+def stale_commander(stamps: dict) -> None:
+    """Warn (not fail) when the commander's benchmark was run under other rules or another version of a battlefield."""
+    p = ROOT / "tools" / "selfplay" / "commander.json"
+    if not p.exists():
+        return
+    bench = json.loads(p.read_text(encoding="utf-8"))["fields"]
+    stale = sorted(f for f in stamps if bench.get(f, {}).get("stamp") != stamps[f])
+    if stale:
+        print(f"note: the enemy commander's benchmark is out of date for {len(stale)} battlefield(s) "
+              f"({', '.join(stale[:4])}{', ...' if len(stale) > 4 else ''}): run tools/selfplay/commander.sh", file=sys.stderr)
+
+
 def field_bundle(d) -> dict:
     """What the field map needs: the unit rules, and for every table and weapon the d100 ranges
     the wound roll looks up (precomputed here so the page rolls exactly as roll_hit does)."""
@@ -2128,8 +2151,12 @@ def main() -> int:
     (DIST / "travel.html").write_text(thtml, encoding="utf-8")
     units_js = (ROOT / "templates" / "units.js").read_text(encoding="utf-8")
     ftpl = (ROOT / "templates" / "field.html").read_text(encoding="utf-8")
-    fhtml = ftpl.replace("/*__WORKS_JS__*/", works_js).replace("/*__LETHAL_JS__*/", lethal_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__UNITS_JS__*/", units_js).replace("/*__FIELD_DATA__*/null", json.dumps(field_bundle(d), separators=(",", ":")))
+    fb = field_bundle(d)
+    fhtml = ftpl.replace("/*__WORKS_JS__*/", works_js).replace("/*__LETHAL_JS__*/", lethal_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__UNITS_JS__*/", units_js).replace("/*__FIELD_DATA__*/null", json.dumps(fb, separators=(",", ":")))
     (DIST / "field.html").write_text(fhtml, encoding="utf-8")
+    stamps = field_stamps(fb, works_js + lethal_js + camp_js + measure_js + units_js + ftpl)
+    (DIST / "field-stamps.json").write_text(json.dumps(stamps, indent=1, sort_keys=True) + "\n", encoding="utf-8")
+    stale_commander(stamps)
     team_js = (ROOT / "templates" / "team.js").read_text(encoding="utf-8")
     gtpl = (ROOT / "templates" / "team.html").read_text(encoding="utf-8")
     ghtml = gtpl.replace("/*__FIGURE_JS__*/", fig_js.replace("</script>", "<\\/script>")).replace("/*__LETHAL_JS__*/", lethal_js).replace("/*__PURSE_JS__*/", purse_js).replace("/*__TEAM_JS__*/", team_js)

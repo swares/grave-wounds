@@ -63,3 +63,15 @@ Start it from the repository's Actions tab (selfplay, Run workflow: the branch t
 label, seeds and the first seed; the branch's page and battlefields are measured with the tools on main, so an older branch works too), or `gh workflow run selfplay.yml -f ref=<branch> -f label=<name>`.
 Download the artifact and compare two measurements with `report.py diff <before> <after>` and
 `targets.py <before> <after>`.
+
+## The enemy commander's benchmark
+
+`commander.sh [seeds] [workers]` plays every battlefield with the commander on both sides (12 seeds by default, about
+3½ hours on 2 workers) and `commander.py` writes `commander.json`: for each battlefield and side, how often the
+commander won, the median share of men it lost, and the **bar** a player beats. A player beats the enemy commander
+when his result is better than the commander's median run as the same side: first the outcome (win, draw, loss), then
+the loss ratio (the enemy's men lost for each of his own, both plus one).
+
+Each battlefield's entry carries the stamp, from `dist/field-stamps.json`, of the rules and battlefield it was run
+under. `build.py` writes the stamps and warns when `commander.json` no longer matches them, so the figures are rerun
+after a change to the rules or a battlefield. Build first, so `dist/field.html` is current.
