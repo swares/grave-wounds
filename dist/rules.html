@@ -198,7 +198,6 @@ figure.pic .slot-box{border:1px dashed var(--line);background:var(--panel);paddi
 <li><a href="#guns">Guns of the black-powder wars</a></li>
 <li><a href="#misfire">Misfires</a></li>
 <li><a href="#storming">Storming works</a></li>
-<li><a href="#bp-commander">The enemy commander</a></li>
 </ul>
 </li>
 <li><a href="#fire">Modern fire</a><ul>
@@ -206,7 +205,6 @@ figure.pic .slot-box{border:1px dashed var(--line);background:var(--panel);paddi
 <li><a href="#support">Fire support</a></li>
 <li><a href="#bunkers">Trenches and bunkers</a></li>
 <li><a href="#fixed-lines">Fixed lines</a></li>
-<li><a href="#fire-commander">The enemy commander</a></li>
 </ul>
 </li>
 <li><a href="#vehicles">Armour and mines</a><ul>
@@ -214,14 +212,18 @@ figure.pic .slot-box{border:1px dashed var(--line);background:var(--panel);paddi
 <li><a href="#at-guns">Anti-tank guns</a></li>
 <li><a href="#mines">Minefields</a></li>
 <li><a href="#riders">Riders</a></li>
-<li><a href="#vehicles-commander">The enemy commander</a></li>
 </ul>
 </li>
 <li><a href="#air">Air and night devices</a><ul>
 <li><a href="#night-vision">Night vision</a></li>
 <li><a href="#aircraft">Aircraft</a></li>
 <li><a href="#landing">Landing by air</a></li>
-<li><a href="#air-commander">The enemy commander</a></li>
+</ul>
+</li>
+<li><a href="#pages">How the pages work</a><ul>
+<li><a href="#exchange-full">An exchange in full</a></li>
+<li><a href="#ammunition-full">Ammunition in full</a></li>
+<li><a href="#commander-full">The enemy commander</a></li>
 </ul>
 </li>
 <li><a href="#index">Index</a></li>
@@ -1869,32 +1871,20 @@ higher than both him and his target is <strong>dead ground</strong>: a rise hide
 A crest within 1 hex of either man does not count, so a man or a tank pulled up
 just behind it sees over it and is seen, and a man on the top sees down both slopes.</p>
 <h2 id="exchange">An exchange</h2>
-<ol>
-<li><strong>Who strikes.</strong> In melee, the front rank of each hex touching the enemy, and one more
-   rank for each hex of the weapon's reach past the first (spears and bills strike from two
-   ranks, the pike from three). With missiles, the men who have the target in range.</li>
-<li><strong>How many blows tell.</strong> Most of a minute in a press is shoving and watching for an
-   opening: about one striking man in 11 makes a real attempt each exchange. A
-   longbowman looses 8 arrows a minute, and about one shot in 30 is aimed at
-   a man rather than loosed at the mass.</li>
-<li><strong>Each attempt is one attack</strong>, at the unit's quality, exactly as in <a href="#turn">the fight</a>:
-   +20 from the flank and +30 from the rear (and no parry from either),
-   +20 and twice as many attempts for a mounted charge in its first exchange, −10 for a shaken unit, +20 for
-   pikes in close order against horse to their front; range, weather and cover come off
-   missiles. A tired unit loses its <a href="#fatigue">fatigue</a> level's penalty off its attack and
-   its parry.</li>
-<li><strong>The wound</strong> is rolled as for one man. A light wound or a graze: he fights on. Serious
-   or critical: a stop check, and failing it puts him <strong>down</strong>. A wound that kills within
-   rounds kills. A module can change who goes down: <a href="#modern-down">Modern fire</a> puts more men
-   down.</li>
-<li><strong>Morale</strong>, below; then the next exchange.</li>
-</ol>
-<p><strong>Fatigue.</strong> A unit tires as a character does. Each exchange it fights hand to hand counts
-one toil, and so does each hex it goes in deep mud or snow. After 12 toil in heavy armour,
-20 in medium, or 30 in light, it is a fatigue step worse, to Exhausted at most, and stays
-so for the battle. Shooting costs none, and vehicles don't tire.</p>
+<p>In each exchange the men of every unit touching the enemy strike, and those with a target in range
+shoot. Only some of them make a real attempt in a minute: most of a press is shoving and watching
+for an opening, and most arrows and bullets go at the mass, not at a man. Each attempt is one attack
+at the unit's quality, exactly as in <a href="#turn">the fight</a>, better from a flank or the rear and for a
+mounted charge, worse for a shaken unit; range, weather and cover come off missiles.</p>
+<p>The wound is rolled as for one man. A light wound or a graze: he fights on. Serious or critical: a
+stop check, and failing it puts him <strong>down</strong>. A wound that kills within rounds kills. A module can
+change who goes down: <a href="#modern-down">Modern fire</a> puts more men down. Then each unit checks its
+morale (below), and the next exchange begins. Units tire from fighting hand to hand and from deep
+going, as men do (<a href="#fatigue">Fatigue</a>).</p>
+<p>How many men strike and how often, the bonuses, and how fast a unit tires are in
+<a href="#exchange-full">How the pages work</a>.</p>
 <p><strong>Quick-play blows (a GM's choice).</strong> Rolling every blow is exact but slow on a table. To
-roll a group's blows in one go: count the tries as above, then find the men down per 100
+roll a group's blows in one go: count the tries (<a href="#exchange-full">How the pages work</a>), then find the men down per 100
 tries in the era's quick-play chart (in the tables) for the weapon against the target's
 armour, at the attack after all modifiers, times the quality factor printed with it, times
 (1 − parry × 0.9) if the target can parry. Tries × that ÷ 100 is the average; roll d100 on
@@ -1977,26 +1967,12 @@ side losing most of its men in the rout: that is the shape the records show, and
 page is tuned to give it. Let the players' heroes break a line rather than kill it.</p>
 </div>
 <h2 id="ammunition">Ammunition</h2>
-<p>A unit that shoots carries only so much. Its load is counted in <strong>exchanges of fire</strong>: the
-rounds, arrows or bolts a man carries (a machine gun's belts, for a gun), over the rate it
-fires at, times 30% (men do not fire every round they could). Longbowmen have about
-20 exchanges of shooting, riflemen of 1914-53 about 40, a machine gun about
-22. Vehicles and guns count their own rounds.</p>
-<ul>
-<li><strong>Running low.</strong> Each exchange it shoots uses one. At 25% of a full load or less it
-  shoots at half rate; with none it cannot shoot at all, still fights hand to hand, and has
-  -10 on morale.</li>
-<li><strong>Resupply.</strong> An exchange out of contact, neither moving nor firing, within 5
-  hexes of a supply source: its side's map edge (behind the way most of its men face), a
-  lorry or armoured carrier of its side, or a <strong>supply dump</strong>. The GM places dumps before the
-  battle (a battlefield may come with its own, as the stores in RIR 119's dugouts at
-  Beaumont-Hamel); from the Second World War on, an <strong>air drop</strong> called on a side's move lands as a
-  dump at the end of the exchange, a little off the mark, and from Vietnam on a helicopter
-  can set one down on a landing zone (<a href="#landing">Landing by air</a>).</li>
-<li><strong>The enemy commander</strong> resupplies a unit that is out, or low with no enemy in its
-  range, when a source is in reach. Attacking, a unit out of ammunition with none in reach
-  falls back toward its edge; holding, it stays and fights hand to hand.</li>
-</ul>
+<p>A unit that shoots carries only so many exchanges of fire. Running low, it shoots at half rate; out,
+it cannot shoot at all, still fights hand to hand, and holds less well. It refills in an exchange out
+of contact, neither moving nor firing, near a supply source: its side's map edge, a lorry or
+carrier of its side, or a <strong>supply dump</strong> the GM places before the battle (from the Second World War
+an air drop, and from Vietnam a helicopter, can set one down). Each weapon's load, and how the enemy
+commander resupplies, are in <a href="#ammunition-full">How the pages work</a>.</p>
 <h2 id="heroes">Heroes</h2>
 <p>A team's characters go with units as <strong>heroes</strong>: in the front rank, shooting with it, or
 behind it. A hero in the front makes 3 times a ranker's attempts with his own
@@ -2040,83 +2016,28 @@ blows on the archers' front can find him, and a wound there is his own: rolled i
 bled on his own 20 Blood, and carried back to the roller when the battle is over.</p>
 </div>
 <h2 id="commander">The enemy commander</h2>
-<p>The GM can hand one side to a scripted <strong>enemy commander</strong>, attacking or holding. At the
-start of that side's move it orders each unit. It knows only the enemies its units can see
-(or saw in the last 3 exchanges, where they were then; what a unit sees from where it has just moved, the units ordered after it know); green units go for the
-nearest, better ones for an enemy that is hurt, shaken or dangerous to them. It closes,
-takes cover, shoots from range or charges with the odds its quality wants (counting the
-steady friends touching it, who go in with it), and green units sometimes hesitate. With no enemy in sight, a unit holds; attacking with no objective, it goes forward along its facing to find one. A unit with no room to move facing its goal (or a turn too dear) moves facing as near its goal as it can. A unit on the ground turns to face its target where it lies, and stays down.</p>
+<p>The GM can hand one side to a scripted <strong>enemy commander</strong>, attacking or holding. At the start of
+that side's move it orders each unit, and <strong>Undo its orders</strong> puts the move back for the GM to make
+by hand. It knows only the enemies its units can see, or saw a few exchanges ago. In short, it:</p>
 <ul>
-<li>
-<p><strong>Storming works.</strong> Attacking infantry close on an enemy behind works (a parapet, trench or
-  bank), dug in, or in buildings or rubble, as the module for their weapons says: with
-  muskets, rifle-muskets and breech-loaders, <a href="#storming">Black-powder guns</a>; with modern rifles
-  and sub-machine guns, <a href="#modern-storming">Modern infantry</a>. Archers, flintlock riflemen and
-  machine guns fight by fire.</p>
-</li>
-<li>
-<p><strong>Routes.</strong> A battlefield can send a unit on a route round a flank, as its account tells:
-  the commander moves it from waypoint to waypoint, turning aside only for an enemy in contact
-  or across its way, then orders it as any other.</p>
-</li>
-<li><strong>Orders from the accounts.</strong> On the battlefields, units that the sources say held their
-  ground fight where they stand rather than fall back, and units the sources say withdrew on
-  orders fall back at the minute the accounts give, to a place or off the field.</li>
-<li><strong>Narrowing.</strong> Attacking, a formed unit that the ground keeps from closing on its target
-  closes in its front, a quarter at a time and deeper, until it can move nearer, but never to
-  less than half the front it started with.</li>
-<li><strong>Pursuit.</strong> Its horse ride down a broken enemy within a charge when no standing enemy is as
-  near, and its foot go after one within their move that is nearer than any standing enemy.
-  Veterans rally back to the fight after a couple of moves if the enemy still stands near.</li>
-<li><strong>Shooters give way.</strong> Attacking, archers, crossbowmen and skirmishers in open order step
-  aside when they stand in the way of their own formed men behind them, and the formed men go
-  on.</li>
-<li><strong>In range</strong> means the weapon reaches, the light lets it see, and nothing blocks the line
-  from where it would stand.</li>
-<li><strong>Reserve.</strong> Regulars and veterans hold back their rearmost units (not one on a route, nor tanks and other vehicles with a main gun), and commit one when a
-  unit of theirs breaks or the enemy comes close; veterans also commit to exploit an enemy
-  rout. Attacking, they also commit one when the attack has stalled: five moves without
-  putting down any real share of the enemy or getting nearer. A unit committed because one broke goes to plug the gap where it stood. The GM can
-  mark reserves instead.</li>
-<li><strong>Objective.</strong> The GM can mark a hex as its objective. Attacking, its units advance on it
-  when they have nothing better to do and hold it once there (within 1
-  hex), but go on attacking while their target is on it too; holding, units more than 3 hexes from it fall back to it. Enemies near
-  it make better targets. The log says who holds it after each exchange. Most battlefields
-  mark the place their battle was fought for, a hill, a bridge, an outpost, as theirs,
-  taking in the whole position (a ring of trenches counts as the hill).
-  The GM can also mark a second objective. Attacking, once it holds the first, the units on
-  it stay and the rest go on to the second (and back to the first if the enemy retakes it);
-  holding, once the enemy holds the first, its units fall back to the second.</li>
-<li><strong>Guns.</strong> It turns its guns to face the enemy. Attacking, guns with no enemy in reach go
-  forward and stop in reach, but no nearer than 2 hexes; holding, they stay where
-  they stand. Attacking or holding, guns an enemy could reach at a charge, with no steady friend
-  on the line between, pull back as far as they can from it.</li>
-<li><strong>Modules.</strong> What it does with batteries, shellfire, vehicles, mines and aircraft is in the
-  modules that bring them: <a href="#bp-commander">Black-powder guns</a>, <a href="#fire-commander">Modern fire</a>,
-  <a href="#vehicles-commander">Armour and mines</a> and <a href="#air-commander">Air and night devices</a>.</li>
+<li>closes, takes cover, shoots from range or charges with the odds its quality wants; green units go
+  for the nearest enemy and sometimes hesitate, better ones for an enemy that is hurt or dangerous;</li>
+<li>storms works as its weapons' module says, and fights by fire with archers and machine guns;</li>
+<li>keeps a reserve, and commits it when a unit of its own breaks, the enemy comes close, or its attack
+  stalls;</li>
+<li>takes and holds the objective the GM marks, and a second if there is one;</li>
+<li>follows a battlefield's routes round a flank, and the accounts' orders: who held to the end, and
+  who withdrew, when and where;</li>
+<li>turns its guns on the enemy, brings them into reach and pulls them back from a charge. The modules
+  add its batteries, shellfire, vehicles, mines and aircraft.</li>
 </ul>
-<p><strong>Undo its orders</strong> puts the move back for the GM to make by hand.</p>
-<p><strong>Both sides.</strong> Each side has its own choice: moved by the GM, or the commander attacking or
-holding. With the commander on both sides the GM only watches: <strong>Next</strong> steps a move at a time,
-and <strong>Run</strong> plays on until the GM presses <strong>Stop</strong> or the run ends itself. It ends when a side
-has no unit left standing and none still to come, when an attacking side has taken the
-objective and held it 5 exchanges running with no enemy standing within
-109 yards (100 m) of it and none still to come (but not before the battlefield's last phase has
-begun), or after 60 exchanges (on a
-battlefield with phases, 30 past the last phase's start, if later, but never more
-than 1200); then the battle
-ends, as with <em>End the battle</em>. On a battlefield the side its objective names attacks and the
-other holds, or the armies fight as the battlefield says they did (the choice marked <em>as
-fought</em>); on open ground both attack. The GM can take either side back at any
-time.</p>
-<p><strong>The narrative.</strong> Under the map, the page tells the battle's turning points as they happen: a
-phase beginning (and who comes on), units breaking or fleeing, a reserve committed, the objective
-taken or lost, and the end with each side's losses. With an API key of the player's own (a
-free one serves), or a model run on the player's own computer, a language model retells each one in a short passage of at most 70 words, in a voice for
-the war (a chronicle, a dispatch, a war diary or a situation report), or one the GM picks for the
-battle (any of those, a soldier's account or a plain summary). It is told to use only the
-facts the game gives it and to write original prose; the plain line stays under each passage.
-The rules never depend on it.</p>
+<p><strong>Both sides.</strong> Each side is moved by the GM or by the commander. With the commander on both sides
+the GM only watches: <strong>Next</strong> steps a move at a time, and <strong>Run</strong> plays on until the GM presses
+<strong>Stop</strong> or the battle ends itself. Under the map the page tells the battle's turning points as they
+happen, and can have a language model retell them in a voice for the war; the rules never depend on
+it.</p>
+<p>How it decides each of these, when a run ends, and what the modules add, is in
+<a href="#commander-full">How the pages work</a>.</p>
 <h2 id="after">After the battle</h2>
 <p><strong>End the battle</strong> stops it. The page then sets the two sides' results side by side, and
 says who holds the field and the objective. Then:</p>
@@ -4228,10 +4149,6 @@ without seeking cover, firing as they go, and charge it, with the same odds. Fli
 archers and machine guns still fight by fire. A wall or palisade that blocks hand-to-hand
 fighting stops them at its foot, unless they carry ladders: then they go up it (see
 <a href="#works">works</a>). Breaching it is the GM's order.</p>
-<h2 id="bp-commander">The enemy commander</h2>
-<p>With this module, the <a href="#commander">enemy commander</a> also moves its batteries: attacking, a
-battery with no enemy in reach limbers, moves, and unlimbers once an enemy is in reach;
-holding, it unlimbers where it stands; to pull back from a charge it limbers first.</p>
 <h1 id="fire">Modern fire</h1>
 <p>For the wars of machine guns, quick-firing artillery and breech-loaders. The <a href="#field-map">field map</a>
 uses the same exchange for every era; what this module changes is the weight of fire, and how
@@ -4459,22 +4376,6 @@ hex of it, at −15%. The enemy commander, holding, lays its machine guns' lines
 day or at dusk on the nearest enemy it knows of in reach, or else ahead toward one (or
 straight ahead) as far as it can reach and see, shifting such a line once onto an enemy
 that comes into reach off it.</p>
-<h2 id="fire-commander">The enemy commander</h2>
-<p>With this module, the <a href="#commander">enemy commander</a> also:</p>
-<ul>
-<li><strong>Digging in.</strong> Its foot units with modern weapons dig in where they stand when it is
-  safe (not under fire, no enemy it knows of in their range): at the objective, holding
-  with no objective, and in reserve while they wait.</li>
-<li><strong>Shellfire.</strong> It calls its off-map batteries on what it sees, closer to its own men first.
-  Attacking, one battery lays a creeping barrage ahead of a unit closing on the enemy, and
-  first has one battery smoke an enemy that is shooting at men who cannot reply (not in the
-  dark, or in a gale). Its batteries under counter-battery fire displace (a placed one moves
-  its place 30 hexes along its map edge, away from the battery firing). In
-  the dark it first has one battery fire illumination over the enemy it has lost sight of
-  nearest its men, where it was last seen. Then one battery fires counter-battery on a located
-  enemy battery it can reach: the one with the best counter % on the one with the most guns
-  still served.</li>
-</ul>
 <h1 id="vehicles">Armour and mines</h1>
 <p>On the field map, tanks, infantry fighting vehicles and
 armoured carriers fight as units, one vehicle to a hex. The unit's men are its crews. They
@@ -4755,30 +4656,6 @@ knocked out, each of its riders is struck at 30%, as by shellfire. Lorries
 are soft-skinned: a rifle or machine-gun hit that does not knock one out strikes a man aboard.
 Men riding on a tank's hull are in the open: small arms shoot at the tanks for them, and each
 hit strikes a rider; shells bursting near the tanks strike them as men in the open.</p>
-<h2 id="vehicles-commander">The enemy commander</h2>
-<p>With this module, the <a href="#commander">enemy commander</a> also:</p>
-<ul>
-<li><strong>Tanks.</strong> A unit with a main gun counts the target in range where the gun reaches and it
-  can see; a vehicle with one prefers a spot where the target can neither reach it nor see it.
-  Any shooter counts a target in range only where the weather and light let it see that far.
-  Attacking, a vehicle unit leaves its immobilised vehicles behind and goes on with the rest.</li>
-<li><strong>Minefields.</strong> It steers round minefields it knows of. Its sappers, attacking, lift a
-  lane through known enemy mines in the row ahead when those mines lie on the way to their
-  target or the objective, closing up to the belt first and working through it row by row. Holding, or at the objective, with no enemy it knows of within
-  8 hexes, they lay mines in the row ahead: mixed if the enemy it knows of has
-  vehicles, otherwise anti-personnel.</li>
-<li><strong>Towing and carriers.</strong> Attacking, its anti-tank guns with no enemy in reach hook up to an
-  empty tractor beside them (an empty tractor drives over to fetch them), are towed, and are
-  unhooked in reach; holding, they unhook where they stand, and to pull back they hook up.
-  Attacking, its foot units get aboard empty carriers beside them while no known enemy is in
-  reach, and get down once one is (or at the objective).</li>
-</ul>
-<div class="admonition gm">
-<p class="admonition-title">For the GM</p>
-<p>Armour is a problem the infantry must solve, not a fight it can win with rifles. Give
-the side without tanks rockets, anti-tank guns, mines, ground the tanks cannot cross,
-or the dark.</p>
-</div>
 <h1 id="air">Air and night devices</h1>
 <p>For aircraft, troops landed by air, and the devices that see in the dark: from the Second World
 War for aircraft, from Vietnam for helicopters and night vision (the page leaves the dates to
@@ -4922,7 +4799,182 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
   it boards). Its men flown out are safe.</li>
 <li><strong>A downed helicopter</strong> gives the men in its hex cover and is slow ground to cross.</li>
 </ul>
-<h2 id="air-commander">The enemy commander</h2>
+<h1 id="pages">How the pages work</h1>
+<p>The main chapters say what each rule means for play. This appendix holds the procedures the pages
+compute for you, in full, so that the game can still be played on paper and checked by hand. Each
+section belongs to the rule it is linked from.</p>
+<h2 id="exchange-full">An exchange in full</h2>
+<p>For <a href="#exchange">An exchange</a>.</p>
+<ol>
+<li><strong>Who strikes.</strong> In melee, the front rank of each hex touching the enemy, and one more
+   rank for each hex of the weapon's reach past the first (spears and bills strike from two
+   ranks, the pike from three). With missiles, the men who have the target in range.</li>
+<li><strong>How many blows tell.</strong> Most of a minute in a press is shoving and watching for an
+   opening: about one striking man in 11 makes a real attempt each exchange. A
+   longbowman looses 8 arrows a minute, and about one shot in 30 is aimed at
+   a man rather than loosed at the mass.</li>
+<li><strong>Each attempt is one attack</strong>, at the unit's quality, exactly as in <a href="#turn">the fight</a>:
+   +20 from the flank and +30 from the rear (and no parry from either),
+   +20 and twice as many attempts for a mounted charge in its first exchange, −10 for a shaken unit, +20 for
+   pikes in close order against horse to their front; range, weather and cover come off
+   missiles. A tired unit loses its <a href="#fatigue">fatigue</a> level's penalty off its attack and
+   its parry.</li>
+<li><strong>The wound</strong> is rolled as for one man. A light wound or a graze: he fights on. Serious
+   or critical: a stop check, and failing it puts him <strong>down</strong>. A wound that kills within
+   rounds kills. A module can change who goes down: <a href="#modern-down">Modern fire</a> puts more men
+   down.</li>
+<li><strong>Morale</strong>, below; then the next exchange.</li>
+</ol>
+<p><strong>Fatigue.</strong> A unit tires as a character does. Each exchange it fights hand to hand counts
+one toil, and so does each hex it goes in deep mud or snow. After 12 toil in heavy armour,
+20 in medium, or 30 in light, it is a fatigue step worse, to Exhausted at most, and stays
+so for the battle. Shooting costs none, and vehicles don't tire.</p>
+<h2 id="ammunition-full">Ammunition in full</h2>
+<p>For <a href="#ammunition">Ammunition</a>.</p>
+<p>A unit that shoots carries only so much. Its load is counted in <strong>exchanges of fire</strong>: the
+rounds, arrows or bolts a man carries (a machine gun's belts, for a gun), over the rate it
+fires at, times 30% (men do not fire every round they could). Longbowmen have about
+20 exchanges of shooting, riflemen of 1914-53 about 40, a machine gun about
+22. Vehicles and guns count their own rounds.</p>
+<ul>
+<li><strong>Running low.</strong> Each exchange it shoots uses one. At 25% of a full load or less it
+  shoots at half rate; with none it cannot shoot at all, still fights hand to hand, and has
+  -10 on morale.</li>
+<li><strong>Resupply.</strong> An exchange out of contact, neither moving nor firing, within 5
+  hexes of a supply source: its side's map edge (behind the way most of its men face), a
+  lorry or armoured carrier of its side, or a <strong>supply dump</strong>. The GM places dumps before the
+  battle (a battlefield may come with its own, as the stores in RIR 119's dugouts at
+  Beaumont-Hamel); from the Second World War on, an <strong>air drop</strong> called on a side's move lands as a
+  dump at the end of the exchange, a little off the mark, and from Vietnam on a helicopter
+  can set one down on a landing zone (<a href="#landing">Landing by air</a>).</li>
+<li><strong>The enemy commander</strong> resupplies a unit that is out, or low with no enemy in its
+  range, when a source is in reach. Attacking, a unit out of ammunition with none in reach
+  falls back toward its edge; holding, it stays and fights hand to hand.</li>
+</ul>
+<h2 id="commander-full">The enemy commander</h2>
+<p>For <a href="#commander">The enemy commander</a>.</p>
+<p>The GM can hand one side to a scripted <strong>enemy commander</strong>, attacking or holding. At the
+start of that side's move it orders each unit. It knows only the enemies its units can see
+(or saw in the last 3 exchanges, where they were then; what a unit sees from where it has just moved, the units ordered after it know); green units go for the
+nearest, better ones for an enemy that is hurt, shaken or dangerous to them. It closes,
+takes cover, shoots from range or charges with the odds its quality wants (counting the
+steady friends touching it, who go in with it), and green units sometimes hesitate. With no enemy in sight, a unit holds; attacking with no objective, it goes forward along its facing to find one. A unit with no room to move facing its goal (or a turn too dear) moves facing as near its goal as it can. A unit on the ground turns to face its target where it lies, and stays down.</p>
+<ul>
+<li>
+<p><strong>Storming works.</strong> Attacking infantry close on an enemy behind works (a parapet, trench or
+  bank), dug in, or in buildings or rubble, as the module for their weapons says: with
+  muskets, rifle-muskets and breech-loaders, <a href="#storming">Black-powder guns</a>; with modern rifles
+  and sub-machine guns, <a href="#modern-storming">Modern infantry</a>. Archers, flintlock riflemen and
+  machine guns fight by fire.</p>
+</li>
+<li>
+<p><strong>Routes.</strong> A battlefield can send a unit on a route round a flank, as its account tells:
+  the commander moves it from waypoint to waypoint, turning aside only for an enemy in contact
+  or across its way, then orders it as any other.</p>
+</li>
+<li><strong>Orders from the accounts.</strong> On the battlefields, units that the sources say held their
+  ground fight where they stand rather than fall back, and units the sources say withdrew on
+  orders fall back at the minute the accounts give, to a place or off the field.</li>
+<li><strong>Narrowing.</strong> Attacking, a formed unit that the ground keeps from closing on its target
+  closes in its front, a quarter at a time and deeper, until it can move nearer, but never to
+  less than half the front it started with.</li>
+<li><strong>Pursuit.</strong> Its horse ride down a broken enemy within a charge when no standing enemy is as
+  near, and its foot go after one within their move that is nearer than any standing enemy.
+  Veterans rally back to the fight after a couple of moves if the enemy still stands near.</li>
+<li><strong>Shooters give way.</strong> Attacking, archers, crossbowmen and skirmishers in open order step
+  aside when they stand in the way of their own formed men behind them, and the formed men go
+  on.</li>
+<li><strong>In range</strong> means the weapon reaches, the light lets it see, and nothing blocks the line
+  from where it would stand.</li>
+<li><strong>Reserve.</strong> Regulars and veterans hold back their rearmost units (not one on a route, nor tanks and other vehicles with a main gun), and commit one when a
+  unit of theirs breaks or the enemy comes close; veterans also commit to exploit an enemy
+  rout. Attacking, they also commit one when the attack has stalled: five moves without
+  putting down any real share of the enemy or getting nearer. A unit committed because one broke goes to plug the gap where it stood. The GM can
+  mark reserves instead.</li>
+<li><strong>Objective.</strong> The GM can mark a hex as its objective. Attacking, its units advance on it
+  when they have nothing better to do and hold it once there (within 1
+  hex), but go on attacking while their target is on it too; holding, units more than 3 hexes from it fall back to it. Enemies near
+  it make better targets. The log says who holds it after each exchange. Most battlefields
+  mark the place their battle was fought for, a hill, a bridge, an outpost, as theirs,
+  taking in the whole position (a ring of trenches counts as the hill).
+  The GM can also mark a second objective. Attacking, once it holds the first, the units on
+  it stay and the rest go on to the second (and back to the first if the enemy retakes it);
+  holding, once the enemy holds the first, its units fall back to the second.</li>
+<li><strong>Guns.</strong> It turns its guns to face the enemy. Attacking, guns with no enemy in reach go
+  forward and stop in reach, but no nearer than 2 hexes; holding, they stay where
+  they stand. Attacking or holding, guns an enemy could reach at a charge, with no steady friend
+  on the line between, pull back as far as they can from it.</li>
+<li><strong>Modules.</strong> What it does with batteries, shellfire, vehicles, mines and aircraft is in the
+  modules that bring them: <a href="#bp-commander">Black-powder guns</a>, <a href="#fire-commander">Modern fire</a>,
+  <a href="#vehicles-commander">Armour and mines</a> and <a href="#air-commander">Air and night devices</a>.</li>
+</ul>
+<p><strong>Undo its orders</strong> puts the move back for the GM to make by hand.</p>
+<p><strong>Both sides.</strong> Each side has its own choice: moved by the GM, or the commander attacking or
+holding. With the commander on both sides the GM only watches: <strong>Next</strong> steps a move at a time,
+and <strong>Run</strong> plays on until the GM presses <strong>Stop</strong> or the run ends itself. It ends when a side
+has no unit left standing and none still to come, when an attacking side has taken the
+objective and held it 5 exchanges running with no enemy standing within
+109 yards (100 m) of it and none still to come (but not before the battlefield's last phase has
+begun), or after 60 exchanges (on a
+battlefield with phases, 30 past the last phase's start, if later, but never more
+than 1200); then the battle
+ends, as with <em>End the battle</em>. On a battlefield the side its objective names attacks and the
+other holds, or the armies fight as the battlefield says they did (the choice marked <em>as
+fought</em>); on open ground both attack. The GM can take either side back at any
+time.</p>
+<p><strong>The narrative.</strong> Under the map, the page tells the battle's turning points as they happen: a
+phase beginning (and who comes on), units breaking or fleeing, a reserve committed, the objective
+taken or lost, and the end with each side's losses. With an API key of the player's own (a
+free one serves), or a model run on the player's own computer, a language model retells each one in a short passage of at most 70 words, in a voice for
+the war (a chronicle, a dispatch, a war diary or a situation report), or one the GM picks for the
+battle (any of those, a soldier's account or a plain summary). It is told to use only the
+facts the game gives it and to write original prose; the plain line stays under each passage.
+The rules never depend on it.</p>
+<h3 id="bp-commander">With Black-powder guns</h3>
+<p>With this module, the <a href="#commander">enemy commander</a> also moves its batteries: attacking, a
+battery with no enemy in reach limbers, moves, and unlimbers once an enemy is in reach;
+holding, it unlimbers where it stands; to pull back from a charge it limbers first.</p>
+<h3 id="fire-commander">With Modern fire</h3>
+<p>With this module, the <a href="#commander">enemy commander</a> also:</p>
+<ul>
+<li><strong>Digging in.</strong> Its foot units with modern weapons dig in where they stand when it is
+  safe (not under fire, no enemy it knows of in their range): at the objective, holding
+  with no objective, and in reserve while they wait.</li>
+<li><strong>Shellfire.</strong> It calls its off-map batteries on what it sees, closer to its own men first.
+  Attacking, one battery lays a creeping barrage ahead of a unit closing on the enemy, and
+  first has one battery smoke an enemy that is shooting at men who cannot reply (not in the
+  dark, or in a gale). Its batteries under counter-battery fire displace (a placed one moves
+  its place 30 hexes along its map edge, away from the battery firing). In
+  the dark it first has one battery fire illumination over the enemy it has lost sight of
+  nearest its men, where it was last seen. Then one battery fires counter-battery on a located
+  enemy battery it can reach: the one with the best counter % on the one with the most guns
+  still served.</li>
+</ul>
+<h3 id="vehicles-commander">With Armour and mines</h3>
+<p>With this module, the <a href="#commander">enemy commander</a> also:</p>
+<ul>
+<li><strong>Tanks.</strong> A unit with a main gun counts the target in range where the gun reaches and it
+  can see; a vehicle with one prefers a spot where the target can neither reach it nor see it.
+  Any shooter counts a target in range only where the weather and light let it see that far.
+  Attacking, a vehicle unit leaves its immobilised vehicles behind and goes on with the rest.</li>
+<li><strong>Minefields.</strong> It steers round minefields it knows of. Its sappers, attacking, lift a
+  lane through known enemy mines in the row ahead when those mines lie on the way to their
+  target or the objective, closing up to the belt first and working through it row by row. Holding, or at the objective, with no enemy it knows of within
+  8 hexes, they lay mines in the row ahead: mixed if the enemy it knows of has
+  vehicles, otherwise anti-personnel.</li>
+<li><strong>Towing and carriers.</strong> Attacking, its anti-tank guns with no enemy in reach hook up to an
+  empty tractor beside them (an empty tractor drives over to fetch them), are towed, and are
+  unhooked in reach; holding, they unhook where they stand, and to pull back they hook up.
+  Attacking, its foot units get aboard empty carriers beside them while no known enemy is in
+  reach, and get down once one is (or at the objective).</li>
+</ul>
+<div class="admonition gm">
+<p class="admonition-title">For the GM</p>
+<p>Armour is a problem the infantry must solve, not a fight it can win with rifles. Give
+the side without tanks rockets, anti-tank guns, mines, ground the tanks cannot cross,
+or the dark.</p>
+</div>
+<h3 id="air-commander">With Air and night devices</h3>
 <p>With this module, the <a href="#commander">enemy commander</a> also:</p>
 <ul>
 <li><strong>Aircraft.</strong> It calls its aircraft (when they can fly; a strafing run or napalm strip along a
@@ -4945,8 +4997,8 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <p class="ix"><b>Aim</b>: <a href="#turn">A fighter's turn</a></p>
 <p class="ix"><b>Aimed</b>: <a href="#turn">A fighter's turn</a>, <a href="#aim">Aiming</a></p>
 <p class="ix"><b>Air controllers</b>: <a href="#aircraft">Aircraft</a></p>
-<p class="ix"><b>Air drop</b>: <a href="#ammunition">Ammunition</a></p>
-<p class="ix"><b>Aircraft</b>: <a href="#air-commander">The enemy commander</a></p>
+<p class="ix"><b>Air drop</b>: <a href="#ammunition-full">Ammunition in full</a></p>
+<p class="ix"><b>Aircraft</b>: <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Ammunition</b>: <a href="#supplies">Supplies</a></p>
 <p class="ix"><b>Anti-aircraft guns</b>: <a href="#aircraft">Aircraft</a></p>
 <p class="ix"><b>Anti-tank guns</b>: <a href="#at-guns">Anti-tank guns</a></p>
@@ -4967,7 +5019,7 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <p class="ix"><b>Blood lost</b>: <a href="#penalties">Penalties</a></p>
 <p class="ix"><b>Blow</b>: <a href="#round-end">The end of the round</a></p>
 <p class="ix"><b>Boots</b>: <a href="#kit">Boots and clothing</a></p>
-<p class="ix"><b>Both sides</b>: <a href="#commander">The enemy commander</a></p>
+<p class="ix"><b>Both sides</b>: <a href="#commander">The enemy commander</a>, <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Boys under age</b>: <a href="#age">Age</a></p>
 <p class="ix"><b>Breached</b>: <a href="#works">Works</a></p>
 <p class="ix"><b>Breaks</b>: <a href="#morale">Morale and the rout</a></p>
@@ -5016,23 +5068,23 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <p class="ix"><b>Diagnose</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Dice</b>: <a href="#need">What you need</a></p>
 <p class="ix"><b>Difficulty</b>: <a href="#roll">The one roll</a></p>
-<p class="ix"><b>Digging in</b>: <a href="#modern-infantry">Modern infantry</a>, <a href="#fire-commander">The enemy commander</a></p>
+<p class="ix"><b>Digging in</b>: <a href="#modern-infantry">Modern infantry</a>, <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Dismount</b>: <a href="#riders">Riders</a></p>
 <p class="ix"><b>Displacing</b>: <a href="#support">Fire support</a></p>
-<p class="ix"><b>Down</b>: <a href="#exchange">An exchange</a></p>
+<p class="ix"><b>Down</b>: <a href="#exchange">An exchange</a>, <a href="#exchange-full">An exchange in full</a></p>
 <p class="ix"><b>Downed helicopter</b>: <a href="#landing">Landing by air</a></p>
 <p class="ix"><b>Drawback</b>: <a href="#five-steps">The five steps</a></p>
 <p class="ix"><b>Drive a hard task</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Drop its packs</b>: <a href="#loads">Loads</a></p>
 <h3 class="ix-letter">E</h3>
-<p class="ix"><b>Each attempt is one attack</b>: <a href="#exchange">An exchange</a></p>
+<p class="ix"><b>Each attempt is one attack</b>: <a href="#exchange-full">An exchange in full</a></p>
 <p class="ix"><b>Either</b>: <a href="#penalties">Penalties</a></p>
 <p class="ix"><b>Emplaced</b>: <a href="#at-guns">Anti-tank guns</a></p>
 <p class="ix"><b>End of a season</b>: <a href="#experience">Experience</a></p>
 <p class="ix"><b>End the battle</b>: <a href="#after">After the battle</a></p>
 <p class="ix"><b>Endurance</b>: <a href="#characteristics">Characteristics and skills</a>, <a href="#check">The recovery check</a></p>
 <p class="ix"><b>Endure</b>: <a href="#skills">Using skills</a></p>
-<p class="ix"><b>Enemy commander</b>: <a href="#ammunition">Ammunition</a>, <a href="#commander">The enemy commander</a>, <a href="#dark">Fighting in the dark</a>, <a href="#at-guns">Anti-tank guns</a></p>
+<p class="ix"><b>Enemy commander</b>: <a href="#commander">The enemy commander</a>, <a href="#dark">Fighting in the dark</a>, <a href="#at-guns">Anti-tank guns</a>, <a href="#ammunition-full">Ammunition in full</a>, <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Enlisting</b>: <a href="#age">Age</a></p>
 <p class="ix"><b>Equal to or under</b>: <a href="#roll">The one roll</a></p>
 <p class="ix"><b>Era</b>: <a href="#eras">Other wars</a></p>
@@ -5040,13 +5092,13 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <p class="ix"><b>Event</b>: <a href="#five-steps">The five steps</a></p>
 <p class="ix"><b>Exchange</b>: <a href="#field-map">The field map</a></p>
 <p class="ix"><b>Exchanged</b>: <a href="#prisoners">Prisoners</a></p>
-<p class="ix"><b>Exchanges of fire</b>: <a href="#ammunition">Ammunition</a></p>
+<p class="ix"><b>Exchanges of fire</b>: <a href="#ammunition-full">Ammunition in full</a></p>
 <p class="ix"><b>Extended order</b>: <a href="#modern-infantry">Modern infantry</a></p>
 <h3 class="ix-letter">F</h3>
 <p class="ix"><b>Falling out</b>: <a href="#events">On the road</a></p>
 <p class="ix"><b>Falls</b>: <a href="#hazards">Water, heights and pursuit</a></p>
 <p class="ix"><b>Fate</b>: <a href="#lethality">Lethality</a></p>
-<p class="ix"><b>Fatigue</b>: <a href="#exchange">An exchange</a></p>
+<p class="ix"><b>Fatigue</b>: <a href="#exchange-full">An exchange in full</a></p>
 <p class="ix"><b>Field</b>: <a href="#after">After the battle</a></p>
 <p class="ix"><b>Fight</b>: <a href="#alone-session">How a session runs</a></p>
 <p class="ix"><b>Find a billet</b>: <a href="#skills">Using skills</a></p>
@@ -5071,7 +5123,7 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <p class="ix"><b>Grazes</b>: <a href="#turn">A fighter's turn</a></p>
 <p class="ix"><b>Gritty | Standard | Heroic</b>: <a href="#lethality">Lethality</a></p>
 <p class="ix"><b>Ground fire</b>: <a href="#aircraft">Aircraft</a></p>
-<p class="ix"><b>Guns</b>: <a href="#commander">The enemy commander</a></p>
+<p class="ix"><b>Guns</b>: <a href="#commander-full">The enemy commander</a></p>
 <h3 class="ix-letter">H</h3>
 <p class="ix"><b>Haggle</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Haggling</b>: <a href="#skills">Using skills</a></p>
@@ -5084,7 +5136,7 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <p class="ix"><b>Horses</b>: <a href="#events">On the road</a></p>
 <p class="ix"><b>Hot zone</b>: <a href="#landing">Landing by air</a></p>
 <p class="ix"><b>How bad</b>: <a href="#turn">A fighter's turn</a></p>
-<p class="ix"><b>How many blows tell</b>: <a href="#exchange">An exchange</a></p>
+<p class="ix"><b>How many blows tell</b>: <a href="#exchange-full">An exchange in full</a></p>
 <p class="ix"><b>Hunt or gather</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Hunting for the pot</b>: <a href="#march-skills">Skills on the march</a></p>
 <p class="ix"><b>Hurt man checks worse</b>: <a href="#skills">Using skills</a></p>
@@ -5095,7 +5147,7 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <p class="ix"><b>Impress</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>In a fight</b>: <a href="#loads">Loads</a></p>
 <p class="ix"><b>In arrears</b>: <a href="#rank">Rank, pay and loot</a></p>
-<p class="ix"><b>In range</b>: <a href="#commander">The enemy commander</a></p>
+<p class="ix"><b>In range</b>: <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Incident</b>: <a href="#events">On the road</a></p>
 <p class="ix"><b>Infrared beams</b>: <a href="#night-vision">Night vision</a></p>
 <p class="ix"><b>Initiative</b>: <a href="#turn">A fighter's turn</a></p>
@@ -5141,13 +5193,13 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <p class="ix"><b>Men</b>: <a href="#mines">Minefields</a></p>
 <p class="ix"><b>Mend kit</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Mending</b>: <a href="#camp">Into camp</a></p>
-<p class="ix"><b>Minefields</b>: <a href="#vehicles-commander">The enemy commander</a></p>
+<p class="ix"><b>Minefields</b>: <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Misfire</b>: <a href="#weather-fight">Weather in a fight</a>, <a href="#misfire">Misfires</a></p>
 <p class="ix"><b>Modern fire puts men down</b>: <a href="#modern-infantry">Modern infantry</a></p>
 <p class="ix"><b>Module</b>: <a href="#modules">Modules</a></p>
-<p class="ix"><b>Modules</b>: <a href="#commander">The enemy commander</a></p>
+<p class="ix"><b>Modules</b>: <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Money</b>: <a href="#five-steps">The five steps</a></p>
-<p class="ix"><b>Morale</b>: <a href="#round-end">The end of the round</a>, <a href="#exchange">An exchange</a>, <a href="#knocking-out">Knocking them out</a></p>
+<p class="ix"><b>Morale</b>: <a href="#round-end">The end of the round</a>, <a href="#knocking-out">Knocking them out</a>, <a href="#exchange-full">An exchange in full</a></p>
 <p class="ix"><b>Mount</b>: <a href="#riders">Riders</a></p>
 <p class="ix"><b>Move or stay</b>: <a href="#turn">A fighter's turn</a></p>
 <p class="ix"><b>Moving</b>: <a href="#vehicles">Armour and mines</a></p>
@@ -5156,16 +5208,16 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <h3 class="ix-letter">N</h3>
 <p class="ix"><b>Names</b>: <a href="#era-changes">What changes</a></p>
 <p class="ix"><b>Napalm strip</b>: <a href="#aircraft">Aircraft</a></p>
-<p class="ix"><b>Narrative</b>: <a href="#commander">The enemy commander</a></p>
-<p class="ix"><b>Narrowing</b>: <a href="#commander">The enemy commander</a></p>
+<p class="ix"><b>Narrative</b>: <a href="#commander-full">The enemy commander</a></p>
+<p class="ix"><b>Narrowing</b>: <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Nerve</b>: <a href="#characteristics">Characteristics and skills</a>, <a href="#turn">A fighter's turn</a></p>
-<p class="ix"><b>Next</b>: <a href="#commander">The enemy commander</a></p>
+<p class="ix"><b>Next</b>: <a href="#commander">The enemy commander</a>, <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Next fighter</b>: <a href="#fight">The fight</a></p>
 <p class="ix"><b>Next round</b>: <a href="#fight">The fight</a></p>
 <p class="ix"><b>Night vision</b>: <a href="#night-vision">Night vision</a></p>
 <p class="ix"><b>Notice or remember</b>: <a href="#skills">Using skills</a></p>
 <h3 class="ix-letter">O</h3>
-<p class="ix"><b>Objective</b>: <a href="#commander">The enemy commander</a></p>
+<p class="ix"><b>Objective</b>: <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Old wounds</b>: <a href="#five-steps">The five steps</a></p>
 <p class="ix"><b>Older recruits</b>: <a href="#age">Age</a></p>
 <p class="ix"><b>On the map</b>: <a href="#support">Fire support</a></p>
@@ -5176,7 +5228,7 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <p class="ix"><b>Open the campaign page</b>: <a href="#alone-session">How a session runs</a></p>
 <p class="ix"><b>Order</b>: <a href="#loads">Loads</a></p>
 <p class="ix"><b>Orders</b>: <a href="#marching">Marching</a></p>
-<p class="ix"><b>Orders from the accounts</b>: <a href="#commander">The enemy commander</a></p>
+<p class="ix"><b>Orders from the accounts</b>: <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Origin</b>: <a href="#five-steps">The five steps</a></p>
 <p class="ix"><b>Out of the fight</b>: <a href="#turn">A fighter's turn</a></p>
 <p class="ix"><b>Over</b>: <a href="#ask">Ask the dice</a></p>
@@ -5197,7 +5249,7 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <p class="ix"><b>Presence</b>: <a href="#characteristics">Characteristics and skills</a></p>
 <p class="ix"><b>Promotion</b>: <a href="#rank">Rank, pay and loot</a></p>
 <p class="ix"><b>Provost</b>: <a href="#rank">Rank, pay and loot</a></p>
-<p class="ix"><b>Pursuit</b>: <a href="#commander">The enemy commander</a>, <a href="#after">After the battle</a></p>
+<p class="ix"><b>Pursuit</b>: <a href="#after">After the battle</a>, <a href="#commander-full">The enemy commander</a></p>
 <h3 class="ix-letter">Q</h3>
 <p class="ix"><b>Quality</b>: <a href="#experience">Experience</a>, <a href="#followers">Followers</a></p>
 <p class="ix"><b>Quarter</b>: <a href="#heroes">Heroes</a></p>
@@ -5213,19 +5265,19 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <p class="ix"><b>Recovery check</b>: <a href="#check">The recovery check</a></p>
 <p class="ix"><b>Reduced</b>: <a href="#rank">Rank, pay and loot</a></p>
 <p class="ix"><b>Release</b>: <a href="#prisoners">Prisoners</a></p>
-<p class="ix"><b>Reserve</b>: <a href="#commander">The enemy commander</a></p>
+<p class="ix"><b>Reserve</b>: <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Results wear off</b>: <a href="#round-end">The end of the round</a></p>
-<p class="ix"><b>Resupply</b>: <a href="#ammunition">Ammunition</a>, <a href="#guns">Guns of the black-powder wars</a></p>
+<p class="ix"><b>Resupply</b>: <a href="#guns">Guns of the black-powder wars</a>, <a href="#ammunition-full">Ammunition in full</a></p>
 <p class="ix"><b>Ride hard</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Rifles</b>: <a href="#modern-infantry">Modern infantry</a></p>
 <p class="ix"><b>Risk</b>: <a href="#work">Finding work</a></p>
 <p class="ix"><b>Rolled</b>: <a href="#five-steps">The five steps</a></p>
 <p class="ix"><b>Round shot</b>: <a href="#guns">Guns of the black-powder wars</a></p>
 <p class="ix"><b>Rounds</b>: <a href="#fight">The fight</a>, <a href="#guns">Guns of the black-powder wars</a>, <a href="#at-guns">Anti-tank guns</a></p>
-<p class="ix"><b>Routes</b>: <a href="#commander">The enemy commander</a></p>
-<p class="ix"><b>Run</b>: <a href="#turn">A fighter's turn</a>, <a href="#commander">The enemy commander</a></p>
+<p class="ix"><b>Routes</b>: <a href="#commander-full">The enemy commander</a></p>
+<p class="ix"><b>Run</b>: <a href="#turn">A fighter's turn</a>, <a href="#commander">The enemy commander</a>, <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Run the fight</b>: <a href="#alone-session">How a session runs</a></p>
-<p class="ix"><b>Running low</b>: <a href="#ammunition">Ammunition</a></p>
+<p class="ix"><b>Running low</b>: <a href="#ammunition-full">Ammunition in full</a></p>
 <h3 class="ix-letter">S</h3>
 <p class="ix"><b>Sandstorm</b>: <a href="#days-weather">The day's weather</a></p>
 <p class="ix"><b>Sappers</b>: <a href="#mines">Minefields</a></p>
@@ -5241,14 +5293,14 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <p class="ix"><b>Shaken, fails</b>: <a href="#morale">Morale and the rout</a></p>
 <p class="ix"><b>Shaken, passes out of contact</b>: <a href="#morale">Morale and the rout</a></p>
 <p class="ix"><b>Shell</b>: <a href="#guns">Guns of the black-powder wars</a></p>
-<p class="ix"><b>Shellfire</b>: <a href="#fire-commander">The enemy commander</a></p>
+<p class="ix"><b>Shellfire</b>: <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Shells and bombs</b>: <a href="#knocking-out">Knocking them out</a></p>
 <p class="ix"><b>Shield arm</b>: <a href="#penalties">Penalties</a></p>
 <p class="ix"><b>Shielded</b>: <a href="#at-guns">Anti-tank guns</a></p>
 <p class="ix"><b>Shields</b>: <a href="#at-guns">Anti-tank guns</a></p>
 <p class="ix"><b>Shock</b>: <a href="#turn">A fighter's turn</a></p>
 <p class="ix"><b>Shock, fracture or severed</b>: <a href="#wounds">Wounds</a></p>
-<p class="ix"><b>Shooters give way</b>: <a href="#commander">The enemy commander</a></p>
+<p class="ix"><b>Shooters give way</b>: <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Short of food</b>: <a href="#events">On the road</a></p>
 <p class="ix"><b>Skills</b>: <a href="#characteristics">Characteristics and skills</a></p>
 <p class="ix"><b>Skills and kit</b>: <a href="#five-steps">The five steps</a></p>
@@ -5260,10 +5312,10 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <p class="ix"><b>Standing</b>: <a href="#patrons">Patrons</a></p>
 <p class="ix"><b>Steady, fails</b>: <a href="#morale">Morale and the rout</a></p>
 <p class="ix"><b>Steal</b>: <a href="#skills">Using skills</a></p>
-<p class="ix"><b>Stop</b>: <a href="#commander">The enemy commander</a></p>
+<p class="ix"><b>Stop</b>: <a href="#commander">The enemy commander</a>, <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Stop check</b>: <a href="#turn">A fighter's turn</a></p>
 <p class="ix"><b>Storming in bounds</b>: <a href="#modern-infantry">Modern infantry</a></p>
-<p class="ix"><b>Storming works</b>: <a href="#commander">The enemy commander</a></p>
+<p class="ix"><b>Storming works</b>: <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Storms</b>: <a href="#bunkers">Trenches and bunkers</a></p>
 <p class="ix"><b>Strafing and napalm</b>: <a href="#aircraft">Aircraft</a></p>
 <p class="ix"><b>Strafing run</b>: <a href="#aircraft">Aircraft</a></p>
@@ -5272,7 +5324,7 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <p class="ix"><b>Strength</b>: <a href="#characteristics">Characteristics and skills</a></p>
 <p class="ix"><b>Stunned</b>: <a href="#turn">A fighter's turn</a></p>
 <p class="ix"><b>Supplies and extraction</b>: <a href="#landing">Landing by air</a></p>
-<p class="ix"><b>Supply dump</b>: <a href="#ammunition">Ammunition</a></p>
+<p class="ix"><b>Supply dump</b>: <a href="#ammunition">Ammunition</a>, <a href="#ammunition-full">Ammunition in full</a></p>
 <p class="ix"><b>Surprise</b>: <a href="#camps">Camps</a></p>
 <p class="ix"><b>Surrenders</b>: <a href="#morale">Morale and the rout</a></p>
 <p class="ix"><b>Swim a horse</b>: <a href="#skills">Using skills</a></p>
@@ -5282,7 +5334,7 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <p class="ix"><b>Taken prisoner</b>: <a href="#prisoners">Prisoners</a></p>
 <p class="ix"><b>Talk past a guard</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Talking in a tongue</b>: <a href="#tongues">Tongues</a></p>
-<p class="ix"><b>Tanks</b>: <a href="#vehicles-commander">The enemy commander</a></p>
+<p class="ix"><b>Tanks</b>: <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Team</b>: <a href="#need">What you need</a></p>
 <p class="ix"><b>Team's own captives</b>: <a href="#prisoners">Prisoners</a></p>
 <p class="ix"><b>Term</b>: <a href="#experience">Experience</a>, <a href="#era-changes">What changes</a></p>
@@ -5296,7 +5348,7 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <p class="ix"><b>Tongue</b>: <a href="#tongues">Tongues</a></p>
 <p class="ix"><b>Tourniquet</b>: <a href="#first-aid">First aid</a></p>
 <p class="ix"><b>Towing</b>: <a href="#at-guns">Anti-tank guns</a></p>
-<p class="ix"><b>Towing and carriers</b>: <a href="#vehicles-commander">The enemy commander</a></p>
+<p class="ix"><b>Towing and carriers</b>: <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Track</b>: <a href="#skills">Using skills</a>, <a href="#recovery">Recovery</a></p>
 <p class="ix"><b>Training</b>: <a href="#experience">Experience</a></p>
 <p class="ix"><b>Trait</b>: <a href="#five-steps">The five steps</a></p>
@@ -5306,7 +5358,7 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <p class="ix"><b>Turned back</b>: <a href="#landing">Landing by air</a></p>
 <p class="ix"><b>Two steps</b>: <a href="#check">The recovery check</a></p>
 <h3 class="ix-letter">U</h3>
-<p class="ix"><b>Undo its orders</b>: <a href="#commander">The enemy commander</a></p>
+<p class="ix"><b>Undo its orders</b>: <a href="#commander">The enemy commander</a>, <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Unit</b>: <a href="#field-map">The field map</a></p>
 <p class="ix"><b>Units</b>: <a href="#battle">Battles of hundreds</a></p>
 <h3 class="ix-letter">V</h3>
@@ -5327,7 +5379,7 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <p class="ix"><b>What moves Standing</b>: <a href="#patrons">Patrons</a></p>
 <p class="ix"><b>Where it is hit</b>: <a href="#knocking-out">Knocking them out</a></p>
 <p class="ix"><b>Where it lands</b>: <a href="#turn">A fighter's turn</a>, <a href="#support">Fire support</a></p>
-<p class="ix"><b>Who strikes</b>: <a href="#exchange">An exchange</a></p>
+<p class="ix"><b>Who strikes</b>: <a href="#exchange-full">An exchange in full</a></p>
 <p class="ix"><b>With</b>: <a href="#camp">Into camp</a>, <a href="#sickness">Sickness</a>, <a href="#weather-fight">Weather in a fight</a></p>
 <p class="ix"><b>With an aid post</b>: <a href="#heroes">Heroes</a></p>
 <p class="ix"><b>With none</b>: <a href="#heroes">Heroes</a></p>
@@ -5337,7 +5389,7 @@ the nearest spot within 4 hexes, and can move the next exchange.</p>
 <p class="ix"><b>Works</b>: <a href="#works">Works</a></p>
 <p class="ix"><b>Worn out</b>: <a href="#age">Age</a></p>
 <p class="ix"><b>Worse</b>: <a href="#check">The recovery check</a></p>
-<p class="ix"><b>Wound</b>: <a href="#turn">A fighter's turn</a>, <a href="#exchange">An exchange</a></p>
+<p class="ix"><b>Wound</b>: <a href="#turn">A fighter's turn</a>, <a href="#exchange-full">An exchange in full</a></p>
 <p class="ix"><b>Wound fever</b>: <a href="#fever">Wound fever</a></p>
 <p class="ix"><b>Wound tables</b>: <a href="#era-changes">What changes</a></p>
 <p class="ix"><b>Wounds</b>: <a href="#guns">Guns of the black-powder wars</a></p>

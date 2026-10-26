@@ -31,32 +31,23 @@ just behind it sees over it and is seen, and a man on the top sees down both slo
 
 ## An exchange {#exchange}
 
-1. **Who strikes.** In melee, the front rank of each hex touching the enemy, and one more
-   rank for each hex of the weapon's reach past the first (spears and bills strike from two
-   ranks, the pike from three). With missiles, the men who have the target in range.
-2. **How many blows tell.** Most of a minute in a press is shoving and watching for an
-   opening: about one striking man in {{f_tempo}} makes a real attempt each exchange. A
-   longbowman looses {{f_bow_rate}} arrows a minute, and about one shot in {{f_aimed}} is aimed at
-   a man rather than loosed at the mass.
-3. **Each attempt is one attack**, at the unit's quality, exactly as in [the fight](#turn):
-   +{{f_flank}} from the flank and +{{f_rear}} from the rear (and no parry from either),
-   +{{f_charge}} and twice as many attempts for a mounted charge in its first exchange, −{{f_shaken}} for a shaken unit, +{{f_pikes}} for
-   pikes in close order against horse to their front; range, weather and cover come off
-   missiles. A tired unit loses its [fatigue](#fatigue) level's penalty off its attack and
-   its parry.
-4. **The wound** is rolled as for one man. A light wound or a graze: he fights on. Serious
-   or critical: a stop check, and failing it puts him **down**. A wound that kills within
-   rounds kills. A module can change who goes down: [Modern fire](#modern-down) puts more men
-   down.
-5. **Morale**, below; then the next exchange.
+In each exchange the men of every unit touching the enemy strike, and those with a target in range
+shoot. Only some of them make a real attempt in a minute: most of a press is shoving and watching
+for an opening, and most arrows and bullets go at the mass, not at a man. Each attempt is one attack
+at the unit's quality, exactly as in [the fight](#turn), better from a flank or the rear and for a
+mounted charge, worse for a shaken unit; range, weather and cover come off missiles.
 
-**Fatigue.** A unit tires as a character does. Each exchange it fights hand to hand counts
-one toil, and so does each hex it goes in deep mud or snow. After 12 toil in heavy armour,
-20 in medium, or 30 in light, it is a fatigue step worse, to Exhausted at most, and stays
-so for the battle. Shooting costs none, and vehicles don't tire.
+The wound is rolled as for one man. A light wound or a graze: he fights on. Serious or critical: a
+stop check, and failing it puts him **down**. A wound that kills within rounds kills. A module can
+change who goes down: [Modern fire](#modern-down) puts more men down. Then each unit checks its
+morale (below), and the next exchange begins. Units tire from fighting hand to hand and from deep
+going, as men do ([Fatigue](#fatigue)).
+
+How many men strike and how often, the bonuses, and how fast a unit tires are in
+[How the pages work](#exchange-full).
 
 **Quick-play blows (a GM's choice).** Rolling every blow is exact but slow on a table. To
-roll a group's blows in one go: count the tries as above, then find the men down per 100
+roll a group's blows in one go: count the tries ([How the pages work](#exchange-full)), then find the men down per 100
 tries in the era's quick-play chart (in the tables) for the weapon against the target's
 armour, at the attack after all modifiers, times the quality factor printed with it, times
 (1 − parry × 0.9) if the target can parry. Tries × that ÷ 100 is the average; roll d100 on
@@ -104,25 +95,12 @@ and did not (the battlefield says so): they are struck as before.
 
 ## Ammunition {#ammunition}
 
-A unit that shoots carries only so much. Its load is counted in **exchanges of fire**: the
-rounds, arrows or bolts a man carries (a machine gun's belts, for a gun), over the rate it
-fires at, times {{ammo_burn}}% (men do not fire every round they could). Longbowmen have about
-{{ammo_bow}} exchanges of shooting, riflemen of 1914-53 about {{ammo_rifle}}, a machine gun about
-{{ammo_mg}}. Vehicles and guns count their own rounds.
-
-- **Running low.** Each exchange it shoots uses one. At {{ammo_low}}% of a full load or less it
-  shoots at half rate; with none it cannot shoot at all, still fights hand to hand, and has
-  {{ammo_morale}} on morale.
-- **Resupply.** An exchange out of contact, neither moving nor firing, within {{ammo_reach}}
-  hexes of a supply source: its side's map edge (behind the way most of its men face), a
-  lorry or armoured carrier of its side, or a **supply dump**. The GM places dumps before the
-  battle (a battlefield may come with its own, as the stores in RIR 119's dugouts at
-  Beaumont-Hamel); from the Second World War on, an **air drop** called on a side's move lands as a
-  dump at the end of the exchange, a little off the mark, and from Vietnam on a helicopter
-  can set one down on a landing zone ([Landing by air](#landing)).
-- **The enemy commander** resupplies a unit that is out, or low with no enemy in its
-  range, when a source is in reach. Attacking, a unit out of ammunition with none in reach
-  falls back toward its edge; holding, it stays and fights hand to hand.
+A unit that shoots carries only so many exchanges of fire. Running low, it shoots at half rate; out,
+it cannot shoot at all, still fights hand to hand, and holds less well. It refills in an exchange out
+of contact, neither moving nor firing, near a supply source: its side's map edge, a lorry or
+carrier of its side, or a **supply dump** the GM places before the battle (from the Second World War
+an air drop, and from Vietnam a helicopter, can set one down). Each weapon's load, and how the enemy
+commander resupplies, are in [How the pages work](#ammunition-full).
 
 ## Heroes {#heroes}
 
