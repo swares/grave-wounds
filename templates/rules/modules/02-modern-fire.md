@@ -70,7 +70,7 @@ guns, heavy howitzers, and tanks or autocannon firing over open sights. Each is 
 {{table:smoke}}
 
 - **Illumination** lights the ground round its aim as by day (see
-  [Night](#night-air)). It needs no one to see the hex.
+  [Light and the dark](#light)). It needs no one to see the hex.
 - **A fire plan.** A creeping barrage lifts its aim 1 to {{i_creep}} hexes after 1 to
   {{i_each}} exchanges on each line, ahead of an advance kept to the same timetable. A
   plan can have up to eight legs, each going on the same way or turning.
