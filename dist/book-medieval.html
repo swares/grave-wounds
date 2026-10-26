@@ -46,7 +46,7 @@ main{max-width:72ch;min-width:0}
 main h1{font:700 2rem/1.15 var(--display);margin:48px 0 12px;padding-top:12px;border-top:1px solid var(--line);color:var(--ink)}
 main h1:first-child{margin-top:0;border-top:0;padding-top:0}
 main h2{font:700 1.3rem/1.25 var(--display);margin:30px 0 8px;color:var(--steel)}
-main p,main li{hyphens:auto}
+main p,main li{hyphens:auto;overflow-wrap:break-word}   /* a long web address in a source list wraps rather than widening the page */
 main strong{font-weight:700}
 main ul,main ol{padding-left:1.3em}
 main li{margin:3px 0}
@@ -84,6 +84,9 @@ figure.pic .slot-box{border:1px dashed var(--line);background:var(--panel);paddi
   main h1{page-break-before:always;border:0}
   main h1:first-child{page-break-before:avoid}
   main h2,.admonition,table{page-break-inside:avoid}
+  .tw{overflow:visible}
+  table{min-width:0;width:100%;font-size:.8rem}
+  th,td{padding:4px 6px;overflow-wrap:break-word}   /* a wide table fits the paper rather than shrinking the whole book */
   a{color:inherit;text-decoration:none}
   .admonition{background:none!important}
 }
