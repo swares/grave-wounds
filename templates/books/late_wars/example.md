@@ -1,7 +1,7 @@
 # A worked example: the section {#example}
 
 The Rules follow one medieval retinue. This chapter follows a section of B Troop, 3-61
-Cavalry, at [Combat Outpost Keating](#keating-2009) on 3 October 2009, from the first RPGs at
+Cavalry, at [Combat Outpost Keating](#field-keating-2009) on 3 October 2009, from the first RPGs at
 dawn to the helicopters after dark. It uses the same rules and the modules this book switches
 on, and, where dice are rolled, the dice given. The [team builder](team.html) made the section.
 

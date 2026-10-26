@@ -1,7 +1,7 @@
 # A worked example: the section {#example}
 
 The Rules follow one medieval retinue. This chapter follows a section of the 1st Newfoundland
-Regiment at [Beaumont-Hamel](#beaumont-hamel-1916) on 1 July 1916, from St John's Road to the
+Regiment at [Beaumont-Hamel](#field-beaumont-hamel-1916) on 1 July 1916, from St John's Road to the
 Danger Tree. It uses the same rules and the [Modern fire](rules.html#fire) module, and, where
 dice are rolled, the dice given. The [team builder](team.html) made the section.
 

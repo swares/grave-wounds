@@ -26,25 +26,12 @@ map or the field map, or they can be given new orders.
 
 ## On the road {#events}
 
-An army loses men without a battle. Each night every fit man takes his era's chance of
-**deserting**, of **falling out** and being lost to the force, and of being **injured** (a fall,
-a kick, an accident: he joins the sick and wounded), and every man of a mounted force or a
-wagon train of losing his **horse**. The chances depend on what the force did that day: in camp
-they are small (Valley Forge lost 3 men in 10,000 a day to desertion); on the march larger; and
-**withdrawing** far larger (the retreat to Corunna lost 1 in 100 a day, the British retreat from
-Mons nearly 2). A big force simply loses more men. Then there is a chance of an **incident**: a
-d100 on the era's table (foragers set on by peasants, a bridge down, a convoy ambushed, a mine
-in the road, a checkpoint), some for small parties or wagons only, some costing men or a step
-of fatigue, each with a hook for the GM. The rates come from the records where they exist and
-are estimates where they do not; the incidents are estimates. At the GM's choice, named
-characters take the injury chance too.
-
-A force **short of food** deserts about fifteen times as fast (the starving camp at Nuremberg in
-1632) and straggles five times; one whose **pay is in arrears** deserts three times as fast.
-The larger applies, not both. A mounted force keeps its count of **horses**: lost horses, and
-the horses its deserters ride off on, come off it, and under half a horse a man it marches at
-foot pace. A wagon train short of teams slows to three quarters, and under half its teams to
-half. The GM adds remounts when the force finds them.
+An army loses men without a battle. Each night its men may **desert**, **fall out**, be
+**injured** or lose their **horses**, at rates that are small in camp, larger on the march and far
+larger in a retreat (the retreat to Corunna lost 1 in 100 a day). Hunger and pay in arrears make
+men desert faster. Then a d100 on the era's table may bring an **incident**: foragers set on by
+peasants, a bridge down, a convoy ambushed, a mine in the road. The travel map rolls all of it;
+the rates and how horses and wagons are counted are in [On the road in full](#events-full).
 
 ## Loads {#loads}
 
@@ -234,43 +221,19 @@ dawn. A night march of {{nt_min}} hours or more costs a step more fatigue.
 
 ## Boots and clothing {#kit}
 
-Each named man's **boots** wear with every day he marches, faster on wet or muddy ground, and his
-**clothing and blankets** with every day, twice as fast on a hard night. Lives in days:
-
-{{era:kit_life}}
-
-Worn boots raise his chance of blistered feet (half again; worn out, three times); worn clothing
-makes his nights a step colder and wetter (worn out, two), for his recovery and for frostbite.
-On a day his force does not march, its best Craft mends the most worn boots or clothing among its
-named men (Mend kit: a success takes off half a life's wear, a fumble ruins them). He may buy new from
-the price list (boots, shoes, a coat, a blanket), and a force its army feeds is issued new at its
-depot. In October 1862 the 48th North Carolina returned 51 of its 619 men barefoot and 194 more
-nearly so; at Valley Forge 2,898 men were unfit for duty, "barefoot and otherwise naked".
+Each named man's **boots** and **clothing** wear out with the days he marches and the nights he
+lies out. Worn boots blister his feet; worn clothing makes his nights colder and wetter. A force
+mends them on a day it does not march, buys new, or is issued them at its depot. The lives in days
+and the mending roll are in [Boots and clothing in full](#kit-full).
 
 ## Supplies {#supplies}
 
-A force carries what it needs between fights: **ammunition** (a share of its full loads),
-**rations** (days a man carries), **water** (litres a man) and **medical stores**:
-
-{{era:supplies}}
-
-**Rations.** A day its army does not feed it, and it has not foraged or hunted its food, it eats a
-day's rations; with none left it goes hungry (desertion and straggling run higher, and its named
-men have a hard night). A Union quartermaster reckoned that of eight days issued, hardly five could
-be counted on. **Water.** By a river, lake, ford, marsh, bridge, village or town, or in rain, it
-fills up; elsewhere each man needs {{sp_cool}} L on a cool day, {{sp_warm}} L on a warm one, {{sp_hot}} L in
-heat and {{sp_vhot}} L in great heat; short of it, the force is thirsty: a step more fatigue and a
-hard night. **Medical stores** serve {{sp_cases}} wounded or sick for each hundred men; each new
-wounded man draws one and each sick man a seventh a day; with none left its sick and wounded are
-cared for a step worse in camp. **Ammunition** goes into a battle on the field map as its share of a
-load, and what is left comes back.
-
-It refills everything at its army's **depot** (where it started on the map, or a place marked a
-depot of its side, flagged ⚑ on the map: Harfleur and Calais for Henry V, Balaklava and Kamiesh
-before Sevastopol, Hagaru-ri and Koto-ri at Chosin), draws from its **baggage train** in the same hex (the train carries
-{{sp_train_rations}} days' rations, {{sp_train_ammo}} loads of ammunition and {{sp_train_med}} fills of medical
-stores for {{sp_serves}} men, and a larger force takes more of it), and where its army does not feed it
-its named men may **buy** a day's rations for every man in a village or town at their army's keep.
+A force carries **ammunition**, **rations**, **water** and **medical stores** between fights. A
+day it is not fed and has not foraged or hunted it eats a day's rations; with none left it goes
+hungry. Away from water it drinks what it carries, and short of it is thirsty. Without medical
+stores its sick and wounded are cared for worse. It refills at its army's **depot** (⚑ on the
+map), from its **baggage train**, or by buying in a village or town. The amounts by era are in
+[Supplies in full](#supplies-full).
 
 ## Camps {#camps}
 
@@ -396,27 +359,13 @@ his wealth, and giving them away turns wealth into standing.
 
 ## Sickness {#sickness}
 
-Before antibiotics, disease emptied armies faster than battle. Once a week every well man
-may catch what the camp breeds, at a chance set by its **hygiene** (a bivouac is poor,
-quarters good, other camps fair), by staying four weeks or more in one place, by the
-ground (marsh, a town) and by the week's weather:
-
-{{table:diseases}}
-
-A case climbs to its peak after it shows, then gets better or worse each night on the
-track of [Recovery](#recovery), with rest, a camp and shelter helping, and marching, cold
-wet nights and filth hurting. Survivors of typhus and plague cannot catch it again; ague comes
-back in marsh country.
-
-- **What it costs.** Men at **{{d_unfit}}** or worse cannot dig, fight or march on their own;
-  at **{{d_carried}}** or worse they are carried on litters. A force carrying litters marches at
-  {{d_march}}%, or {{d_short}}% with fewer than {{d_bearers}} fit men a litter.
-- **Scurvy.** After {{sc_weeks}} weeks without fresh food (fruit, greens, fresh meat, onions),
-  each week every well man may fall ill: {{sc_chance}}% the first week, {{sc_per}} more each week
-  after, against his Endurance. Fresh food heals it {{sc_heal}} steps a week. A scurvied man's
-  old wounds open again.
-- **Frostbite.** On a night of {{fb_below_f}} °F ({{fb_below}} °C) or colder, men without
-  enough shelter may be frostbitten, a sickness on the same track.
+Before antibiotics, disease emptied armies faster than battle. Once a week every well man may
+catch what the camp breeds, at a chance set by its **hygiene** (a bivouac is poor, quarters
+good, other camps fair), by staying long in one place, by the ground and by the weather. A case
+climbs to its peak and then gets better or worse on the track of [Recovery](#recovery). The sick
+cannot march on their own, and a force carrying them on litters is slowed. Scurvy comes after
+weeks without fresh food, frostbite on the coldest nights. The diseases, the costs, scurvy and
+frostbite are in [Sickness in full](#sickness-full).
 
 !!! example "The retinue: on the road"
     The retinue marches north on foot: {{t_foot_day}} a day on the road when the days are long,

@@ -70,7 +70,7 @@ guns, heavy howitzers, and tanks or autocannon firing over open sights. Each is 
 {{table:smoke}}
 
 - **Illumination** lights the ground round its aim as by day (see
-  [Night](#night-air)). It needs no one to see the hex.
+  [Light and the dark](#light)). It needs no one to see the hex.
 - **A fire plan.** A creeping barrage lifts its aim 1 to {{i_creep}} hexes after 1 to
   {{i_each}} exchanges on each line, ahead of an advance kept to the same timetable. A
   plan can have up to eight legs, each going on the same way or turning.
@@ -117,20 +117,3 @@ hex of it, at −{{n_fixed}}%. The enemy commander, holding, lays its machine gu
 day or at dusk on the nearest enemy it knows of in reach, or else ahead toward one (or
 straight ahead) as far as it can reach and see, shifting such a line once onto an enemy
 that comes into reach off it.
-
-## The enemy commander {#fire-commander}
-
-With this module, the [enemy commander](#commander) also:
-
-- **Digging in.** Its foot units with modern weapons dig in where they stand when it is
-  safe (not under fire, no enemy it knows of in their range): at the objective, holding
-  with no objective, and in reserve while they wait.
-- **Shellfire.** It calls its off-map batteries on what it sees, closer to its own men first.
-  Attacking, one battery lays a creeping barrage ahead of a unit closing on the enemy, and
-  first has one battery smoke an enemy that is shooting at men who cannot reply (not in the
-  dark, or in a gale). Its batteries under counter-battery fire displace (a placed one moves
-  its place {{c_displace_shift}} hexes along its map edge, away from the battery firing). In
-  the dark it first has one battery fire illumination over the enemy it has lost sight of
-  nearest its men, where it was last seen. Then one battery fires counter-battery on a located
-  enemy battery it can reach: the one with the best counter % on the one with the most guns
-  still served.
