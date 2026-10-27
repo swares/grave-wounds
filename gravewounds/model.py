@@ -2001,8 +2001,8 @@ def _fields_errors(d: Data) -> list[str]:
 
 def _account_errors(f: dict, where: str) -> list[str]:
     """A battlefield's accounts (where the accounts disagree, as a choice on the field map): each an id, a
-    question and two or more options (data/accounts.yaml), the first the game's own (no changes); an option's changes scale a
-    side's men (side, scale), set or scale a unit's (unit, men or scale), or move a phase (phase, at)."""
+    question and two or more options (data/accounts.yaml), the first the game's own (no changes); an option's
+    changes scale a side's men (side, scale), set or scale a unit's (unit, men or scale), or move a phase (phase, at)."""
     A = f.get("accounts")
     if A is None:
         return []
@@ -2015,41 +2015,50 @@ def _account_errors(f: dict, where: str) -> list[str]:
             errors.append(f"{where}: each account needs its own id and a question")
             continue
         ids.add(qid)
-        opts = q.get("options")
-        if not (isinstance(opts, list) and len(opts) >= 2 and all(isinstance(o, dict) and isinstance(o.get("label"), str) for o in opts)):
-            errors.append(f"{where}: account {qid} needs two or more options, each with a label")
-            continue
-        if opts[0].get("changes"):
-            errors.append(f"{where}: account {qid}: the first option is the game's own and changes nothing")
-        for o in opts[1:]:
-            errors += [f"{where}: account {qid}, {o['label']!r}: {e}" for e in _change_errors(f, o.get("changes"))]
+        errors += _question_errors(f, q, f"{where}: account {qid}")
     return errors
 
 
+def _question_errors(f: dict, q: dict, where: str) -> list[str]:
+    """One question's options: two or more, each with a label; the first changes nothing, each other has changes."""
+    opts = q.get("options")
+    if not (isinstance(opts, list) and len(opts) >= 2 and all(isinstance(o, dict) and isinstance(o.get("label"), str) for o in opts)):
+        return [f"{where} needs two or more options, each with a label"]
+    errors = [f"{where}: the first option is the game's own and changes nothing"] if opts[0].get("changes") else []
+    for o in opts[1:]:
+        errors += [f"{where}, {o['label']!r}: {e}" for e in _change_errors(f, o.get("changes"))]
+    return errors
+
+
+def _num(v) -> bool:
+    return isinstance(v, (int, float)) and not isinstance(v, bool) and v > 0
+
+
+def _change_error(c, units: set, ats: dict) -> str | None:
+    """One change, as _account_errors says (a moved phase is moved in ats), or what is wrong with it."""
+    if not isinstance(c, dict):
+        return "each change must be a mapping"
+    if "side" in c:
+        ok = c["side"] in (0, 1) and _num(c.get("scale")) and set(c) == {"side", "scale"}
+        return None if ok else "a side change is side (0 or 1) and scale (more than 0)"
+    if "unit" in c:
+        ok = c["unit"] in units and len(set(c) & {"men", "scale"}) == 1 and _num(c.get("men", c.get("scale")))
+        return None if ok else f"a unit change names a unit of the field ({c.get('unit')!r}) and its men or scale"
+    if "phase" in c:
+        if c["phase"] not in ats or not isinstance(c.get("at"), int):
+            return f"a phase change names a phase of the field ({c.get('phase')!r}) and its new exchange"
+        ats[c["phase"]] = c["at"]
+        return None
+    return "a change is to a side, a unit or a phase"
+
+
 def _change_errors(f: dict, changes) -> list[str]:
-    """One option's changes, as _account_errors says; a moved phase must still come after the one before and before the next."""
+    """One option's changes; a moved phase must still come after the one before and before the next."""
     if not (isinstance(changes, list) and changes):
         return ["changes must be a list of one or more"]
     units = {u.get("name") for u in f.get("units", [])}
     ats = {p["name"]: p["at"] for p in f.get("phases") or []}
-    num = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool) and v > 0
-    errors = []
-    for c in changes:
-        if not isinstance(c, dict):
-            errors.append("each change must be a mapping")
-        elif "side" in c:
-            if c["side"] not in (0, 1) or not num(c.get("scale")) or set(c) != {"side", "scale"}:
-                errors.append("a side change is side (0 or 1) and scale (more than 0)")
-        elif "unit" in c:
-            if c["unit"] not in units or len(set(c) & {"men", "scale"}) != 1 or not num(c.get("men", c.get("scale"))):
-                errors.append(f"a unit change names a unit of the field ({c.get('unit')!r}) and its men or scale")
-        elif "phase" in c:
-            if c["phase"] not in ats or not isinstance(c.get("at"), int):
-                errors.append(f"a phase change names a phase of the field ({c.get('phase')!r}) and its new exchange")
-            else:
-                ats[c["phase"]] = c["at"]
-        else:
-            errors.append("a change is to a side, a unit or a phase")
+    errors = [e for e in (_change_error(c, units, ats) for c in changes) if e]
     seq = list(ats.values())
     if any(b <= a for a, b in zip(seq, seq[1:])) or (seq and seq[0] != 1):
         errors.append("the phases, as moved, must still begin at 1 and rise")

@@ -581,7 +581,11 @@ function loadBattlefield(fid, armies){            // a battlefield from data/fie
    option a change to the armies as drawn up: a side's men scaled, a unit's men set or scaled, a phase
    moved. The first option of each is the game's own, and the commander's benchmark is run on it.
    S.picks: {fid: {question id: option index}}. */
-const picksOf = fid => (S.picks ||= {})[fid] ||= {};
+function picksOf(fid){                             // the accounts chosen for this battlefield: {question id: option index}
+  if (!S.picks) S.picks = {};
+  if (!S.picks[fid]) S.picks[fid] = {};
+  return S.picks[fid];
+}
 function asAccounted(B, fid){                       // {units, phases, chosen: ["question: option (source)"]} as the accounts chosen draw them up
   const units = B.units.map(u => ({ ...u })), phases = (B.phases || []).map(p => ({ ...p })), chosen = [], picks = picksOf(fid);
   for (const q of B.accounts || []){
@@ -1944,7 +1948,10 @@ function recordBeat(fid){                           // after a battle that ended
   card[fid] = row;
   try{ localStorage.setItem(BEAT_KEY, JSON.stringify(card)) }catch(e){ /* storage off: the result shows, but is not kept */ }
 }
-const cardBeat = x => { if (x.acct) return "on another account (the commander not scored)"; return x.beat ? "the commander beaten" : "the commander not beaten" };
+function cardBeat(x){                               // the commander's line of a scorecard row
+  if (x.acct) return "on another account (the commander not scored)";
+  return x.beat ? "the commander beaten" : "the commander not beaten";
+}
 function beatCard(fid){                             // [html]: this battlefield's best results, and the whole card in brief
   const card = readBeat(), row = card[fid] || {}, all = Object.keys(FD.beat || {});
   const beaten = all.filter(f => Object.values(card[f] || {}).some(x => x.beat)).length;

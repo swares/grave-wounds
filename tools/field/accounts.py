@@ -23,6 +23,7 @@ def check(ok, what):
 
 
 MEN = "() => S.units.filter(u => u.side === S.sides[1]).reduce((t, u) => t + u.men, 0) + S.waiting.filter(u => u.side === S.sides[1]).reduce((t, u) => t + u.men, 0)"
+BOX = "#accounts"
 APACHES = "() => S.stages.find(p => p.name === 'The Apaches arrive').at"
 
 with sync_playwright() as p:
@@ -35,7 +36,7 @@ with sync_playwright() as p:
     pg.reload()
 
     pg.select_option("#sel-field", "wanat-2008")
-    check(pg.is_visible("#accounts") and "how many fighters attacked?" in pg.inner_text("#accounts").lower(), "choosing Wanat shows its questions")
+    check(pg.is_visible(BOX) and "how many fighters attacked?" in pg.inner_text(BOX).lower(), "choosing Wanat shows its questions")
     pg.click("#btn-field")
     own = pg.evaluate(MEN)
     check(own == 245 and pg.evaluate(APACHES) == 61, f"the game's own account: {own} fighters, the Apaches at exchange 61")
@@ -55,7 +56,7 @@ with sync_playwright() as p:
     check(picks["fighters"] in (0, 1, 2) and picks["apaches"] in (0, 1), f"Roll it picks an option for each question ({picks})")
 
     pg.select_option("#sel-field", "snipe-1942")
-    check(pg.is_hidden("#accounts"), "a battlefield with no accounts shows no box")
+    check(pg.is_hidden(BOX), "a battlefield with no accounts shows no box")
     check(not errors, f"no page errors {errors[:3]}")
     browser.close()
 
