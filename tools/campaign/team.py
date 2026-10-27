@@ -7,28 +7,11 @@ travel map; a fight sent from the travel map brings the named men and the team's
 taken prisoner on the roller goes to the team builder's Prisoners. (From the first solo play test, 27
 October 2026.) Needs Python's playwright with Chromium and a built site. Exits non-zero on any failure.
 """
-import functools, http.server, json, sys, threading
-from pathlib import Path
+import json, sys
 from playwright.sync_api import sync_playwright
+from harness import check, failures, serve
 
-ROOT = Path(__file__).resolve().parents[2]
-failures = []
-
-
-def check(ok, what):
-    print(("ok   " if ok else "FAIL ") + what)
-    if not ok:
-        failures.append(what)
-
-
-class Quiet(http.server.SimpleHTTPRequestHandler):
-    def log_message(self, format, *args):
-        return None
-
-
-server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), functools.partial(Quiet, directory=str(ROOT)))
-threading.Thread(target=server.serve_forever, daemon=True).start()
-BASE = f"http://127.0.0.1:{server.server_port}/dist/"
+BASE, server = serve()
 TRAVEL = {"mapId": "towton-1461", "forces": {"towton-1461": [
     {"id": 7, "name": "Sir Roger's retinue", "side": "York", "men": 20, "type": "foot", "pos": [19, 38]},
     {"id": 6, "name": "Clifford's horse", "side": "Lancaster", "men": 500, "type": "mounted", "pos": [23, 25]}]},
