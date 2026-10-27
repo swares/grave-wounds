@@ -649,6 +649,7 @@ def example(d: Data) -> dict:
     if not 19 <= ex["leech_skill"] < 41:
         raise ValueError(f"rule book example: the tourniquet rolls 41 (fails) and 19 (holds), but the leech's skill is {ex['leech_skill']}")
     ex["a_origin"] = _article(ex["a_origin"])
+    ex["qs_men"] = _quick_men(d, team)
     ex.update(_shot(d, arch), **_cut(d, arch), **_camp(d, arch, leech))
     return ex
 
@@ -676,6 +677,18 @@ def _choose_weapons(d: Data) -> str:
     """The cut-and-thrust weapons (weapons.yaml choose), named for the text: 'sword, bill or spear'."""
     names = sorted({w.get("short", w["name"]).lower() for w in d.weapons.values() if w.get("choose")})
     return ", ".join(names[:-1]) + " or " + names[-1] if len(names) > 1 else "".join(names)
+
+
+def _quick_men(d: Data, team: list) -> str:
+    """The quick start's six men (the running example's retinue), as a Markdown table: what the
+    roller shows on their cards."""
+    per, pool = d.wounds["combat"]["characteristics"]["blood"]["per"], d.wounds["tracking"]["blood_pool"]
+    rows = ["| Man | Career | Weapon | Attack | Defence | Blood |", "| --- | --- | --- | --- | --- | --- |"]
+    for c in team:
+        lead = " (leads)" if c.get("leader") else ""
+        rows.append(f"| {c['name']}{lead} | {_career(d, c).capitalize()} | {d.weapons[c['weapon']]['name'].split(' (')[0]} | "
+                    f"{c['attack']} | {c['defence']} | {pool + (c['stats']['end'] - 50) // per} |")
+    return "\n".join(rows)
 
 
 def _career(d: Data, c: dict) -> str:
