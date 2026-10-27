@@ -2411,8 +2411,8 @@ function renderAfterFight(){
   const rows = team.map(c => {
     const why = deedWhy(c), won = men.includes(c), marked = (S.deedsDone || []).includes(c.id);
     const take = c.taken ? " · taken prisoner (to the team builder's Prisoners)" : "";
-    const takeBtn = !won && !c.taken ? ` <button class="small" data-takenman="${c.id}" title="His side broke and he was taken: he goes to the team builder's Prisoners, where his captors' situation and his fate are rolled">Taken prisoner</button>` : "";
-    return `<li><label class="check"><input type="checkbox" data-deed="${c.id}"${why && !marked ? " checked" : ""}${marked ? " disabled" : ""}> <b>${attr(c.name)}</b></label> <span class="muted">${attr(sideOf(c))}${won ? ", won" : ""} · ${c.downs || 0} put down${why ? ` · a deed: ${attr(why)}` : ""}${marked ? " · deed marked" : ""}${take}</span>${takeBtn}</li>`;
+    const takeBtn = !won && !c.taken ? takenButton(c) : "", deedTxt = why ? " · a deed: " + attr(why) : "";
+    return `<li><label class="check"><input type="checkbox" data-deed="${c.id}"${why && !marked ? " checked" : ""}${marked ? " disabled" : ""}> <b>${attr(c.name)}</b></label> <span class="muted">${attr(sideOf(c))}${won ? ", won" : ""} · ${c.downs || 0} put down${deedTxt}${marked ? " · deed marked" : ""}${take}</span>${takeBtn}</li>`;
   }).join("");
   const log = (S.afterLog || []).map(l => `<li>${attr(l)}</li>`).join("");
   box.innerHTML = `<details class="after" ${S.afterOpen || auto || S.wonBy ? "open" : ""}><summary><b>After the fight</b> <span class="muted">deeds and loot for the team builder's men</span></summary>
@@ -2422,6 +2422,7 @@ function renderAfterFight(){
     ${men.length && kinds.length ? `<div class="toolbar"><select id="sel-loot" aria-label="What to loot">${kinds.map(k => `<option value="${k}"${k === K.kind ? " selected" : ""}>${LOOT_NAMES[k]}</option>`).join("")}</select>${whoSel}<button class="small" id="btn-loot" title="Each of the winners who is still up rolls, by his era's rules; winnings go into his purse">Loot (${men.filter(c => !isDown(c)).length} able)</button></div>` : `<p class="muted" style="margin:0">${wonBy() ? "None of the team builder's men are on the winning side." : "Loot once a side has won."}</p>`}
     ${log ? `<ol class="roundlog">${log}</ol>` : ""}</details>`;
 }
+const takenButton = c => ` <button class="small" data-takenman="${c.id}" title="His side broke and he was taken: he goes to the team builder's Prisoners, where his captors' situation and his fate are rolled">Taken prisoner</button>`;
 function dropButtons(){                           // Drop packs, a side at a time (its team-builder men go to fighting order)
   const sides = [...new Set(S.chars.filter(loadEra).map(sideOf))];
   return sides.map(sd => (S.packsDropped || {})[sd] ? `<span class="muted"> ${attr(sd)}: packs dropped</span>` : ` <button class="small" data-drop="${attr(sd)}" title="Its men put down their packs and fight in fighting order; if it loses the field, the packs are lost">Drop packs: ${attr(sd)}</button>`).join("");
@@ -5479,15 +5480,21 @@ function handoffNamed(h, forces){
     if (n.dead || n.map !== h.mapId || !ids.has(n.force)) continue;
     const c = S.chars.find(ch => ch.uid === uid);
     if (!c){ missing.push(n.name || "?"); continue }
-    if (!by.has(n.force)) by.set(n.force, []);
-    by.get(n.force).push(c);
+    addTo(by, n.force, c);
   }
-  for (const c of S.chars){                         // a team's followers go with the force its named men are with
+  teamFollowers(by, h.mapId, ids);
+  return { by, missing };
+}
+function addTo(by, key, c){
+  if (!by.has(key)) by.set(key, []);
+  by.get(key).push(c);
+}
+function teamFollowers(by, mapId, ids){             // a team's followers go with the force its named men are with
+  for (const c of S.chars){
     if (!c.follower || !c.team || c.taken) continue;
     const force = teamForce(c.team);
-    if (force && force.map === h.mapId && ids.has(force.id)){ if (!by.has(force.id)) by.set(force.id, []); by.get(force.id).push(c) }
+    if (force && force.map === mapId && ids.has(force.id)) addTo(by, force.id, c);
   }
-  return { by, missing };
 }
 function renderTeamWith(){                         // a line a team: all its named men (and so its followers) with one force
   const box = $("#team-with"); if (!box) return;
@@ -5495,7 +5502,8 @@ function renderTeamWith(){                         // a line a team: all its nam
   box.innerHTML = !opts.length ? "" : teams.map(team => {
     const men = S.chars.filter(c => c.team === team && c.uid), nf = S.chars.filter(c => c.team === team && c.follower).length;
     const f = teamForce(team), cur = f ? `${f.map}:${f.id}` : "", lead = men.find(c => c.leader) || men[0];
-    const who = `${attr(lead.name)}'s team (${men.length} named men${nf ? `, ${nf} followers` : ""})`;
+    const fol = nf ? ", " + nf + " followers" : "";
+    const who = `${attr(lead.name)}'s team (${men.length} named men${fol})`;
     const opt = o => `<option value="${attr(o.value)}"${o.value === cur ? " selected" : ""}>${attr(o.label)}</option>`;
     return `<div class="toolbar"><label>${who} goes with <select data-teamwith="${attr(team)}" aria-label="Travel-map force ${who} goes with"><option value="">(no force)</option>${opts.map(opt).join("")}</select></label></div>`;
   }).join("");
