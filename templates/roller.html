@@ -561,7 +561,10 @@ function forceSide(value){                          // the side of the travel-ma
     if (i < 0) return null;
     const f = (t?.forces?.[value.slice(0, i)] || []).find(o => o.id === +value.slice(i + 1));
     return f ? f.side : null;
-  }catch(e){ return null }                         // the travel map's save unreadable: the side stays as it is
+  }catch(e){
+    console.warn("travel map save unreadable", e);   // the side stays as it is
+    return null;
+  }
 }
 function travelForces(){                          // the forces on the travel map's current map: [{value, label}]
   try{
@@ -2495,9 +2498,16 @@ function sheetLine(c){                          // a team builder character's sh
   const rank = h.rank ? (RKE(h.era)?.ladder || []).find(r => r.id === h.rank)?.name : null, ranked = rank ? attr(rank) + ", " : "";
   return `<div class="wears">${ranked}${attr(h.career)}, ${h.terms} term${h.terms > 1 ? "s" : ""}, age ${h.age}${h.leader ? " · leads" : ""} · ${stats}</div><div class="muted">${attr(skills)} · defence ${h.defence}%${attr(old)}${purse}${attr(tongues)}</div>`;
 }
+function dropExamples(){                       // the page's example pair makes way for a real team
+  if (S.chars.length && S.chars.every(c => c.example || c.name.startsWith("Example: "))) Object.assign(S, { chars: [], attacker: -1, active: 0, hit: null });
+}
+function sideOfForce(team){                     // men the campaign already has with a force fight on its side
+  const tf = teamForce(team), side = tf && forceSide(`${tf.map}:${tf.id}`);
+  if (side) S.chars.filter(c => c.team === team).forEach(c => { c.side = side });
+}
 function addTeam(){                             // the team from the team builder joins the fighters
   const t = S.teamIn; if (!t) return;
-  if (S.chars.length && S.chars.every(c => c.example || c.name.startsWith("Example: "))) Object.assign(S, { chars: [], attacker: -1, active: 0, hit: null });   // the page's example pair makes way for a real team
+  dropExamples();
   if (!S.chars.length && DATA.tables[t.table]) switchTable(t.table);   // a new fight: the team's own wound table
   const team = "team" + S.seq;                     // the team's mark on its men and followers: they go with its force together
   for (const m of t.team){
@@ -2518,8 +2528,7 @@ function addTeam(){                             // the team from the team builde
     c.team = team;
     S.chars.push(c);
   }
-  const tf = teamForce(team), side = tf && forceSide(`${tf.map}:${tf.id}`);
-  if (side) S.chars.filter(c => c.team === team).forEach(c => { c.side = side });   // men the campaign already has with a force: its side
+  sideOfForce(team);
   placeUnplaced();
   S.teamIn = null;
   try{ localStorage.removeItem("gravewounds-team-handoff") }catch(e){}
