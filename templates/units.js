@@ -634,8 +634,8 @@ function moraleMods(mods, u){
   m -= Math.min(mods.losing_cap, mods.losing_per_man * Math.max(0, (u.lost || 0) - (u.dealt || 0)));
   return m;
 }
-function failedState(mo, u, by){
-  if (u.state === "shaken") return "broken";
+function failedState(mo, u, by, rallying = false){   // a failed check; a failed rally (rallying) leaves it shaken
+  if (u.state === "shaken") return rallying ? "shaken" : "broken";
   const hard = u.flanked || u.down >= u.start / 2;
   return hard && by > mo.shaken_by ? "broken" : "shaken";
 }
@@ -650,7 +650,7 @@ function morale(u0, roll){                       // {check, target, state}; hold
   if (!struck && !rally) return { check: false, target: null, state: u.state };
   const target = quality(u.quality).nerve + moraleMods(M.mods, u);
   if (roll <= target) return { check: true, target, state: rally && !struck ? "steady" : u.state };
-  return { check: true, target, state: rally && !struck ? "shaken" : failedState(M, u, roll - target) };   // a failed rally leaves it shaken
+  return { check: true, target, state: failedState(M, u, roll - target, rally && !struck) };
 }
 
 // ---------- the field map ----------
