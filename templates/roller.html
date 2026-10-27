@@ -1425,6 +1425,7 @@ function veiledCard(c, i){                          // an enemy's card as the ta
   const isAtt = i === S.attacker, isDef = i === S.active, isTurn = c.id === S.turn, down = isDown(c), broken = !!(S.broken || {})[sideOf(c)];
   let tag = "";
   if (isTurn) tag = `<span class="turn-tag">Acting</span>`;
+  else if (c.taken || c.fled) tag = `<span class="turn-tag" style="background:var(--muted)">${c.taken ? "Taken" : "Ran"}</span>`;
   else if (down) tag = `<span class="turn-tag" style="background:var(--muted)">Down</span>`;
   else if (broken) tag = `<span class="turn-tag" style="background:var(--crit)">Broken</span>`;
   const state = c.state && !down ? `<div class="state"><span><b>${CMB.states[c.state.id].name}</b></span></div>` : "";
@@ -1548,7 +1549,7 @@ function eventText(v){                            // one event as a seat sees it
   if (v.type === "turn") return turnText(v);
   if (v.type === "undo") return `The GM took back the script's last step (${v.data.events} event${v.data.events === 1 ? "" : "s"} undone).`;
   if (v.type === "aid") return aidText(v.data);
-  if (["hazard", "words", "loot", "deed", "stop"].includes(v.type)) return esc(v.data.text);
+  if (["hazard", "words", "loot", "deed", "stop", "quarter"].includes(v.type)) return esc(v.data.text);
   if (v.type === "initiative") return "Initiative: " + v.data.order.map(o => `${evName(o.who)} ${o.init}`).join(", ");
   if (v.type === "bleed") return bleedText(v.data);
   if (v.type === "morale") return moraleText(v);
@@ -1638,9 +1639,10 @@ function brainView(c){                             // what the script sees of th
     c.pos = pos;
     return out;
   };
-  const team = brainSide(c), down = team.filter(isDown).length;
+  const team = brainSide(c), down = team.filter(isDown).length, bleedOf = o => charStats(o).bleed / poolOf(o);
   return {
-    me: { id: c.id, ranged: isShot(S.weapon), frac: c.blood / poolOf(c), named: !!c.sheet, attack: (+$("#in-atk").value || qualityOf(c).attack) - pen.attack,
+    friends: team.filter(o => o !== c && o.pos && !o.taken).map(o => ({ id: o.id, hex: hkey(o.pos), down: isDown(o), bleed: bleedOf(o) })),
+    me: { id: c.id, ranged: isShot(S.weapon), frac: c.blood / poolOf(c), named: !!c.sheet, bleed: bleedOf(c), attack: (+$("#in-atk").value || qualityOf(c).attack) - pen.attack,
       blows: w.choose ? Object.keys(w.mechanisms).filter(m => w.mechanisms[m]) : [],
       able: !cannotAttack(pen) && !(pen.flags.includes("one_arm") && w.two_handed) && !(pen.flags.includes("cannot_wield") && w.melee !== "unarmed") },
     here, reach, targetsFrom, stance: gmSide(sideOf(c)).stance, losing: down * 4 >= team.length,
@@ -1652,7 +1654,9 @@ function brainView(c){                             // what the script sees of th
 function gmTurnLine(c, plan, from){                // the script's choice in the log: the move for all, the reason for the GM
   const to = c.pos ? hkey(c.pos) : from;
   let did = "stays";
-  if (plan.cover) did = "takes cover";
+  if (plan.aid === c.id) did = "binds his own wound";
+  else if (plan.aid) did = `gives first aid to ${(S.chars.find(o => o.id === plan.aid) || {}).name || "a comrade"}`;
+  else if (plan.cover) did = "takes cover";
   else if (plan.move) did = S.tm?.ran ? "runs" : "advances";
   logEvent(S.events, { round: evRound(), type: "turn", vis: [], data: { who: evWho(c), did, from, to, why: plan.why, gap: plan.gap, blow: plan.blow }, pub: { who: evWho(c), did, from, to } });
 }
@@ -1663,9 +1667,18 @@ function gmMove(c){                                // the script's move: where t
   else if (plan.move) moveActing(parseHex(plan.move));
   gmTurnLine(c, plan, from);
 }
+function gmAid(c, id){                             // the script's first aid: the worst-bleeding wound, a tourniquet on a limb bleeding heavily, else a bind
+  const o = S.chars.find(x => x.id === id);
+  if (!o || isOut(c) && c !== o) return;
+  const w = o.wounds.filter(x => x.fx.bleed > 0).sort((a, b) => b.fx.bleed - a.fx.bleed)[0];
+  if (!w) return;
+  const limb = ["arms", "legs"].includes(LOC[w.loc].zone);
+  treat(o, w, limb && w.fx.bleed >= 3 ? "tourniquet" : "bind");
+}
 function gmStrike(c){                              // the script's strike on the enemy it chose, with its aim and blow
   const plan = S.gmTurn.plan, o = S.chars.find(x => x.id === plan.target);
   S.gmTurn.phase = "end";
+  if (plan.aid) return gmAid(c, plan.aid);
   if (!o || isOut(o) || isOut(c) || cannotAttack(penalties(c)) || S.tm?.ran || S.tm?.covered) return;
   const keep = { aim: S.aim, gap: S.gap, blow: S.blow };
   S.attacker = S.chars.indexOf(c); applyAttackerWeapon();
@@ -2543,6 +2556,7 @@ function advance(rounds){
   for (let k = 0; k < rounds; k++) lines.push(...painChecks());   // pain past the cap: every round
   for (const [side, men] of Object.entries(bled))
     logEvent(S.events, { round: from, type: "bleed", vis: [sideSeat(side)], data: { rounds, men }, pub: null });
+  lines.push(...gmQuarter());
   lines.push(...moraleChecks());
   S.round += rounds;
   const label = rounds === 1 ? `Round ${from}` : `Rounds ${from}\u2013${S.round - 1}`;
@@ -2553,7 +2567,7 @@ function advance(rounds){
 }
 // Team morale at the end of a round: each side with a quarter of its fighters down checks.
 function moraleChecks(){
-  const out = [], sides = [...new Set(S.chars.map(sideOf))];
+  const out = [], sides = [...new Set(S.chars.map(sideOf))], yields = [];
   S.broken = S.broken || {};
   if (sides.length < 2) return out;          // morale needs two sides
   let own = readDie("#in-morale");
@@ -2564,13 +2578,36 @@ function moraleChecks(){
     const m = moraleCheck(team.map(c => ({ nerve: nerveOf(c), down: isDown(c), leader: !!c.leader, pres: statOf(c, "pres") })), roll);
     if (!m) continue;
     own = null; $("#in-morale").value = "";
-    if (m.broken) S.broken[side] = true;
+    if (m.broken){ S.broken[side] = true; yields.push(side) }
     logEvent(S.events, { round: evRound(), type: "morale", vis: [sideSeat(side)],   // his side and the GM see the roll; everyone sees whether it held
       data: { side, down: m.down, of: m.of, roll: m.roll, target: m.target, broken: !!m.broken }, pub: { side, broken: !!m.broken } });
     out.push(`Morale, ${side} (${m.down} of ${m.of} down): d100 ${d2(m.roll)} vs ${m.target} \u2014 `
       + (m.broken ? `<span class="ev-bad">breaks: runs or surrenders</span>` : "holds"));
   }
+  for (const side of yields) out.push(...gmYield(side));
   return out;
+}
+/* Surrender by the GM's script (rules: a side that breaks runs or surrenders; a man who is down asks for
+   quarter): a scripted man down, conscious, with an enemy next to him asks for quarter and is taken; when a
+   scripted side breaks, its men down or next to an enemy are taken prisoner and the rest run. */
+const nextToFoe = c => !!c.pos && S.chars.some(o => o.pos && sideOf(o) !== sideOf(c) && !isOut(o) && hexDistance(c.pos, o.pos) <= 1);
+function takenBy(c, text){
+  c.taken = true;
+  logEvent(S.events, { round: evRound(), type: "quarter", vis: [], data: { text }, pub: { text } });
+  return text;
+}
+function gmQuarter(){                              // the end of the round: scripted men down beside an enemy ask for quarter
+  if (!gmOn()) return [];
+  return S.chars.filter(c => scripted(c) && !c.taken && !(S.broken || {})[sideOf(c)] && isDown(c) && !charStats(c).th?.incapacitated && nextToFoe(c))
+    .map(c => takenBy(c, `${c.name} is down and asks for quarter: taken prisoner`));
+}
+function gmYield(side){                            // a scripted side has broken: the cornered and the down are taken, the rest run
+  if (!gmOn() || gmSide(side).ctl !== "script") return [];
+  return S.chars.filter(c => sideOf(c) === side && !c.taken && !c.fled).map(c => {
+    if (isDown(c) || nextToFoe(c)) return takenBy(c, `${c.name} surrenders: taken prisoner`);
+    c.fled = true;
+    return `${c.name} runs`;
+  });
 }
 /* ---------- turn order ----------
    S.chars is the turn order: highest initiative first. Equal initiatives keep the order
@@ -3562,7 +3599,7 @@ function renderChars(){
         ${slow ? `<span class="order slow" title="Wound penalty (shown only; the order is not changed)">wounds −${slow}%</span>` : ""}
         <button class="small" data-act="up" ${tieUp ? "" : "disabled"} aria-label="Act before the fighter above (same initiative)">▲</button>
         <button class="small" data-act="down" ${tieDn ? "" : "disabled"} aria-label="Act after the fighter below (same initiative)">▼</button>
-        ${isTurn ? `<span class="turn-tag">Acting</span>` : down ? `<span class="turn-tag" style="background:var(--muted)">Down</span>` : broken ? `<span class="turn-tag" style="background:var(--crit)">Broken</span>` : ""}</div>
+        ${isTurn ? `<span class="turn-tag">Acting</span>` : c.taken || c.fled ? `<span class="turn-tag" style="background:var(--muted)">${c.taken ? "Taken" : "Ran"}</span>` : down ? `<span class="turn-tag" style="background:var(--muted)">Down</span>` : broken ? `<span class="turn-tag" style="background:var(--crit)">Broken</span>` : ""}</div>
       <div class="siderow">
         <label class="order" title="Side: fighters with the same side name check morale together">Side
           <input type="text" data-act="side" value="${attr(sideOf(c))}" aria-label="Side for ${attr(c.name)}"></label>
