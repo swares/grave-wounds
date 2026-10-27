@@ -1098,7 +1098,8 @@ def field_stamps(fb: dict, engine: str) -> dict:
     import hashlib
     shared = {k: v for k, v in fb.items() if k not in ("fields", "generated", "period_order", "mapStarts", "beat")}
     base = hashlib.sha256((engine + json.dumps(shared, sort_keys=True)).encode()).hexdigest()
-    return {fid: hashlib.sha256((base + json.dumps(f, sort_keys=True)).encode()).hexdigest()[:12]
+    play = lambda f: {k: v for k, v in f.items() if k != "accounts"}   # the accounts change nothing until one is chosen
+    return {fid: hashlib.sha256((base + json.dumps(play(f), sort_keys=True)).encode()).hexdigest()[:12]
             for fid, f in fb["fields"].items()}
 
 
@@ -1172,7 +1173,7 @@ def field_bundle(d) -> dict:
         "weather": {k: d.weather[k] for k in ("winds", "conditions", "battle", "ground", "wind_points", "driven_sight", "light", "cold", "fatigue") if k in d.weather},
         "battle_hex_m": d.wounds["combat"]["move"]["hex_m"],
         "fields": {fid: {"name": f["name"], "sides": f["sides"], "table": f["table"], "field": battlefield(d, fid), "units": f.get("units", []), "objective": f.get("objective"), "stances": f.get("stances"), "markers": f.get("markers"), "entry": f.get("entry"), "ends": f.get("ends"), "phases": f.get("phases"),
-                         "travel": f.get("travel"), "period": periods(d)["fields"][fid]}
+                         "accounts": f.get("accounts"), "travel": f.get("travel"), "period": periods(d)["fields"][fid]}
                    for fid, f in d.fields.items()},
         "period_order": periods(d)["order"],
         "mapStarts": {mid: str(m.get("start_date", "")) for mid, m in d.maps.items()},

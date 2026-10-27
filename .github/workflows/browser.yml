@@ -40,6 +40,8 @@ jobs:
         run: python3 tools/gm/selfplay.py
       - name: The field page's End the battle and Beat history panel
         run: python3 tools/field/beat.py
+      - name: The field page's Which account? box
+        run: python3 tools/field/accounts.py
       - name: A team through a fight on the roller (its force, its followers, a prisoner)
         run: python3 tools/campaign/team.py
       - name: The quick start, played by the coach's words

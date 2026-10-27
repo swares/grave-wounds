@@ -1,0 +1,68 @@
+# Where the accounts disagree, as a choice on the field map: for each battlefield (data/fields), the questions
+# its sources answer differently that the battle turns on (each period book's "Where the accounts disagree"
+# for that battlefield). Each option may change the armies as drawn up: scale a side's men (side, scale), set
+# or scale a unit's (unit, men or scale), or move a phase (phase, at). The first option of each question is
+# the game's own and changes nothing; the enemy commander's benchmark is run on it. single: a single report.
+# Kept apart from the battlefield files, which their generators (tools/maps) write.
+
+wanat-2008:
+    - id: fighters
+      question: "How many fighters attacked?"
+      options:
+        - {label: "About 200", source: "the Army's narrative"}
+        - {label: "More than 100", source: "Military Times", changes: [{side: 1, scale: 0.5}]}
+        - {label: "400 to 500", source: "an Afghan defence official, as Wikipedia reports him", single: true, changes: [{side: 1, scale: 1.8}]}
+    - id: apaches
+      question: "When did the Apaches arrive?"
+      options:
+        - {label: "About an hour in (05:20)", source: "the game's reading of the timeline; a commenter on Small Wars Journal: within the hour"}
+        - {label: "About 30 minutes in", source: "Wikipedia", changes: [{phase: "The Apaches arrive", at: 31}]}
+
+keating-2009:
+    - id: attackers
+      question: "How many insurgents attacked?"
+      options:
+        - {label: "About 300", source: "the investigation and both Medal of Honor citations"}
+        - {label: "More than 350", source: "the Long War Journal; the American Legion magazine: nearly 350", changes: [{side: 1, scale: 1.15}]}
+
+foxhill-1950:
+    - id: chinese
+      question: "How strong was the Chinese attack?"
+      options:
+        - {label: "About a company, with others fed in", source: "Simmons"}
+        - {label: "Two battalions", source: "Rasula", changes: [{side: 1, scale: 2}]}
+        - {label: "A regiment, more than 1,400 men", source: "Barber's Medal of Honor citation; Wikipedia's article on Barber", changes: [{side: 1, scale: 2.8}]}
+
+chipyong-1951:
+    - id: chinese
+      question: "How many Chinese attacked?"
+      options:
+        - {label: "Three regiments, about 3,000", source: "Xu"}
+        - {label: "Six regiments, about 6,000", source: "Mossman, from the prisoners", changes: [{side: 1, scale: 1.8}]}
+        - {label: "Eight regiments, about 8,000", source: "Wikipedia, counting those in the area", changes: [{side: 1, scale: 2.4}]}
+
+agincourt-1415:
+    - id: english
+      question: "How many English?"
+      options:
+        - {label: "About 6,000", source: "Rogers, Barker and Sumption"}
+        - {label: "About 9,000", source: "Curry, from the pay records", changes: [{side: 0, scale: 1.5}]}
+    - id: french
+      question: "How many French?"
+      options:
+        - {label: "About 14,000", source: "Sumption"}
+        - {label: "About 12,000", source: "Curry", changes: [{side: 1, scale: 0.85}]}
+        - {label: "About 24,000, counting the armed servants", source: "Rogers", changes: [{side: 1, scale: 1.7}]}
+
+crecy-1346:
+    - id: english
+      question: "How many English?"
+      options:
+        - {label: "About 10,000", source: "Sumption, 7,000 to 10,000 from what the fleet could carry"}
+        - {label: "About 14,000", source: "Ayton", changes: [{side: 0, scale: 1.4}]}
+        - {label: "About 15,000", source: "Rogers", changes: [{side: 0, scale: 1.5}]}
+    - id: crossbows
+      question: "How many Genoese crossbowmen?"
+      options:
+        - {label: "About 6,000", source: "the higher modern estimate"}
+        - {label: "About 2,000", source: "the lower modern estimate; Schnerb doubts the higher", changes: [{unit: "The Genoese crossbowmen (Doria and Grimaldi)", men: 2000}]}
