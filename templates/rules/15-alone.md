@@ -18,7 +18,10 @@ the camp. What is left is the judgement, and for that you ask the dice.
    to the field map: give the other side to the [enemy commander](#commander), attacking or holding
    as the battlefield says, and move your own units. Your team fights among them as heroes.
 5. **After the fight**, bind the wounded, carry them to camp and roll their recovery, as in
-   [Recovery](#recovery). This is where a solo campaign is won or lost.
+   [Recovery](#recovery). On the roller, **Send the result to the travel map** takes the fight's
+   dead, wounded and prisoners back to the forces, and the beaten one falls back; then rest in camp
+   (**Rest until tomorrow** on the campaign page) while the wounds mend. This is where a solo
+   campaign is won or lost.
 6. **Compare** your battle with the one fought, and with the enemy commander. On the field map a
    battlefield laid out with its armies as drawn up shows **Beat history**: how the battle went,
    how often the commander wins each side playing against itself, and, when the battle has ended

@@ -696,6 +696,11 @@ function makeTravelDay(DATA, RULES, env = {}){
     writeNamed(all);
   }
   const namedEnd = n => (Number.isFinite(n.endurance) ? n.endurance : DZ.endurance);
+  function woundSteps(before, after){             // a wound in camp that got better or worse overnight, short of healing: "his wound is now serious"
+    const was = new Map((before.cases || []).filter(c => c.d === "wound").map(c => [c.wid || c, c.step]));
+    return (after.cases || []).filter(c => c.d === "wound" && c.inc === 0 && c.step > 0 && was.has(c.wid || c) && was.get(c.wid || c) !== c.step)
+      .map(c => `his wound is now ${DZ.steps[c.step]}${c.step > was.get(c.wid || c) ? " (worse)" : ""}`);
+  }
   function namedDay(n, ctx, unnursed){            // his night: his cases run their course -> what happened, in words
     const before = n.health || newHealth(), night = () => healthDay(before, { ...ctx, men: 1, unnursed }, roll100, namedEnd(n));
     let r = night(), spared = 0;
@@ -703,7 +708,7 @@ function makeTravelDay(DATA, RULES, env = {}){
     n.health = r.health;
     n.rest = (n.rest || 0) + 1;                   // a night with the force: the roller gives him back some blood
     const one = (o, verb) => Object.entries(o).map(([did, k]) => `${verb} (${k > 1 ? k + " " : ""}${dzShort(did)})`);   // a man, not a force
-    const bits = [...one(r.events.shown, "fell ill"), ...one(r.events.healed, "recovered")];
+    const bits = [...one(r.events.shown, "fell ill"), ...one(r.events.healed, "recovered"), ...woundSteps(before, r.health)];
     const howMany = spared > 1 ? ` (${spared})` : "";
     if (spared) bits.push(r.health.dead ? `spent his fate (${spared}) in vain` : `would have died, but fate spent${howMany}: he lives`);
     if (r.health.dead){
@@ -1078,7 +1083,7 @@ function makeTravelDay(DATA, RULES, env = {}){
     const dfd = byId(p.defender), st = campStatus(dfd, p), m = curMap(), today = dayWeather(p.day);
     const brief = o => ({ id: o.id, name: o.name, side: o.side, men: fitOf(o).fit, type: o.type, fatigue: o.fatigue || 0, km: +(hexDist(o.pos, dfd.pos) * m.hex_km).toFixed(1), from: cameFrom(dfd, o) });   // the sick stay out of it
     const foes = p.attackers.map(byId).map(brief), allies = p.allies.map(byId).map(brief), surprise = rollSurprise(p);
-    try{ localStorage.setItem("gravewounds-handoff", JSON.stringify({ from: "travel", mapId: S.mapId, force: { id: dfd.id, name: dfd.name, side: dfd.side, men: fitOf(dfd).fit, type: dfd.type, fatigue: dfd.fatigue || 0 },
+    try{ localStorage.setItem("gravewounds-handoff", JSON.stringify({ from: "travel", mapId: S.mapId, battle: `${S.mapId}:${p.day}:${p.used}:${dfd.id}:roller`, start: { day: p.day, used: p.used }, force: { id: dfd.id, name: dfd.name, side: dfd.side, men: fitOf(dfd).fit, type: dfd.type, fatigue: dfd.fatigue || 0 },
       camp: st.camp ? st.camp.kind : null, campLabour: st.camp ? st.camp.labour || null : null, party: columnOf(dfd).length > 1 ? colType(dfd) : null, done: st.done, built: st.pct, hauled: !nearWoods(m, dfd.pos), foes, allies, place: where(dfd.pos), ground: terrainAt(m, dfd.pos).id, groundSeed: `${S.mapId}:${p.day}:${p.used}:${dfd.id}`, edges: sidesAround(m, dfd.pos), day: dateText(p.day, true), time: clock(p.used, p.day),
       weather: { cond: today.w.cond, wind: today.w.wind, dir: today.w.dir, high: today.w.high, low: today.w.low, ground: today.ground }, surprise })) }catch(e){}
     return "roller.html";
@@ -1110,7 +1115,19 @@ function makeTravelDay(DATA, RULES, env = {}){
     if (x.ammo !== undefined && x.ammo !== null) f.sup.ammo = x.ammo;
     f.newWounded = (f.newWounded || 0) + x.cases.length;
   }
-  function applyFieldResult(){                 // a battle fought on the field map: the dead come off, the wounded join the sick
+  function fallBack(f, mapId){                  // the beaten force: halted, two hexes farther from the nearest enemy where the ground lets it
+    const m = curMap(), foes = S.forces[mapId].filter(o => o.side !== f.side && Array.isArray(o.pos) && o.men > 0);
+    const far = h => Math.min(...foes.map(o => hexDist(o.pos, h)));
+    let best = null;
+    for (let dc = -2; dc <= 2; dc++) for (let dr = -2; dr <= 2; dr++){
+      const h = [f.pos[0] + dc, f.pos[1] + dr];
+      if (h[1] < 0 || h[1] >= m.rows.length || h[0] < 0 || h[0] >= m.rows[0].length || hexDist(f.pos, h) > 2 || !passable(m, h, colType(f), groundOf(f.day))) continue;
+      if (!best || far(h) > far(best)) best = h;
+    }
+    f.waypoints = []; f.path = null; f.order = "halt";
+    if (best && foes.length && far(best) > far(f.pos)){ f.pos = best; f.log.unshift(`Beaten, it fell back to ${where(best)}.`) }
+  }
+  function applyFieldResult(){                 // a battle fought on the field map (or a skirmish on the roller): the dead come off, the wounded join the sick
     let r = null;
     try{ r = JSON.parse(localStorage.getItem("gravewounds-field-result") || "null") }catch(e){ r = null /* unreadable: nothing to apply */ }
     if (!r?.forces || !S.forces[r.mapId] || S.fought.includes(r.battle)) return;
@@ -1122,14 +1139,19 @@ function makeTravelDay(DATA, RULES, env = {}){
       const h = healthOf(f);
       h.cases.push(...x.cases);
       for (const k of Object.keys(h.immune)) h.immune[k] = Math.min(h.immune[k], f.men);
-      const note = `Battle at ${r.place}: ${x.lost} dead (${x.killed} killed, ${x.left} left on the field, ${x.died} died of wounds), ${x.cases.length} wounded carried to camp.`;
+      const taken = x.taken ? `, ${x.taken} taken prisoner` : "";
+      const note = `${r.kind === "skirmish" ? "Skirmish" : "Battle"} at ${r.place}: ${x.lost} lost (${x.killed} killed, ${x.left} left on the field, ${x.died} died of wounds${taken}), ${x.cases.length} wounded carried to camp.`;
       f.log.unshift(note);
       if (r.start) battleTime(f, r.start, (r.minutes || 0) / 60);
       lines.push(`${f.name}: ${x.lost} dead, ${x.cases.length} wounded`);
     }
+    for (const id of r.beaten || []){             // a skirmish's beaten force falls back from the winners (the roller's result)
+      const f = S.forces[r.mapId].find(o => o.id === +id);
+      if (f) fallBack(f, r.mapId);
+    }
     S.fought.push(r.battle);
     S.mapId = r.mapId;
-    S.msg = `The battle at ${r.place} is over. ${lines.join("; ")}.`;
+    S.msg = `The ${r.kind || "battle"} at ${r.place} is over. ${lines.join("; ")}.`;
     try{ localStorage.removeItem("gravewounds-field-result") }catch(e){ /* storage off: the result stays applied once, by its battle id */ }
   }
   // For the campaign console: the fights on offer where enemies are within reach, sent from the saved state; a battle's result taken in.
