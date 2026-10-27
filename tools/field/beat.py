@@ -5,7 +5,7 @@
 Lays out Snipe and Dak To with their armies as drawn up, checks the panel shows the battle as fought
 and the enemy commander's odds, ends one battle by hand with the button (not scored: undecided), and
 runs one with the commander on both sides to its end (a test run, not scored), then scores a side as
-the player's. Needs Python's playwright with Chromium and a built site. Exits non-zero on any failure.
+the player's and keeps it on the scorecard. Needs Python's playwright with Chromium and a built site. Exits non-zero on any failure.
 """
 import sys
 from pathlib import Path
@@ -56,6 +56,13 @@ with sync_playwright() as p:
     check("Your result as United States and ARVN" in text, "a side the commander did not play is scored")
     check("history" in text.split("Your result")[-1] and "enemy commander" in text.split("Your result")[-1],
           "the result is set against history and the commander")
+    check("Your best here" not in text, "a run the commander played on both sides was not kept on the scorecard")
+    pg.evaluate("() => { recordBeat(S.drawnUp); render() }")
+    text = pg.inner_text("#beat")
+    check("Your best here: United States and ARVN" in text, "a scored result is kept on the scorecard")
+    check("of 46" in text, "the scorecard counts the battlefields where the commander was beaten")
+    card = pg.evaluate("() => JSON.parse(localStorage.getItem('gravewounds-beat'))")
+    check(list(card) == ["dakto-1967"] and "0" in card["dakto-1967"], "the scorecard is kept in the browser, by battlefield and side")
 
     pg.click("#btn-reset")
     pg.click("#chk-armies")
