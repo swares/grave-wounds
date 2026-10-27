@@ -19,8 +19,12 @@ the camp. What is left is the judgement, and for that you ask the dice.
    as the battlefield says, and move your own units. Your team fights among them as heroes.
 5. **After the fight**, bind the wounded, carry them to camp and roll their recovery, as in
    [Recovery](#recovery). This is where a solo campaign is won or lost.
-6. **Compare** your battle with the one fought: each battlefield's section in its period book says
-   how it really went, and what it cost.
+6. **Compare** your battle with the one fought, and with the enemy commander. On the field map a
+   battlefield laid out with its armies as drawn up shows **Beat history**: how the battle went,
+   how often the commander wins each side playing against itself, and, when the battle has ended
+   by itself, your result against both. You beat the commander with a better outcome than its
+   median run, or the same outcome at a better rate of their men lost for each of yours. Each
+   battlefield's section in its period book tells how it really went, and what it cost.
 
 !!! gm "Playing it straight"
     Alone, you are the GM as well as the players, so be a fair one. Ask the dice before you look

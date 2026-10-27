@@ -2,16 +2,16 @@
 # real pages round the whole loop (tools/campaign/loop.py, seeded dice), two roller pages playing a
 # fight online over WebRTC (tools/net/twopages.py), the campaign console with a player online
 # (tools/net/console.py) and by room codes (tools/net/rooms.py), and the GM's script fighting itself on the roller
-# (tools/gm/selfplay.py). A few minutes; runs on pull requests and on main when the pages change.
+# (tools/gm/selfplay.py), and the field page's End the battle and Beat history panel (tools/field/beat.py). A few minutes; runs on pull requests and on main when the pages change.
 # The pages are tested as built and committed in dist/.
 name: browser
 
 on:
   pull_request:
-    paths: ["dist/**", "templates/**", "tools/campaign/**", "tools/net/**", "tools/gm/**", "worker/**", ".github/workflows/browser.yml"]
+    paths: ["dist/**", "templates/**", "tools/campaign/**", "tools/net/**", "tools/gm/**", "tools/field/**", "tools/selfplay/commander.json", "worker/**", ".github/workflows/browser.yml"]
   push:
     branches: [main]
-    paths: ["dist/**", "templates/**", "tools/campaign/**", "tools/net/**", "tools/gm/**", "worker/**", ".github/workflows/browser.yml"]
+    paths: ["dist/**", "templates/**", "tools/campaign/**", "tools/net/**", "tools/gm/**", "tools/field/**", "tools/selfplay/commander.json", "worker/**", ".github/workflows/browser.yml"]
   workflow_dispatch:
 
 permissions:
@@ -38,6 +38,8 @@ jobs:
         run: python3 tools/net/rooms.py
       - name: The GM's script against itself
         run: python3 tools/gm/selfplay.py
+      - name: The field page's End the battle and Beat history panel
+        run: python3 tools/field/beat.py
       - name: Keep the pictures the tests take
         if: always()
         uses: actions/upload-artifact@v4

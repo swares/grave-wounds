@@ -123,6 +123,10 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .forces .meta{float:right;font:500 .75rem var(--mono);color:var(--muted)}
 .after{font-size:.9rem;margin:0;padding-left:1.1rem}
 .verdict{margin:4px 0 8px;font-weight:600}
+.beat{border:1px solid var(--line);border-left:3px solid var(--steel);border-radius:3px;padding:8px 10px;font-size:.9rem;margin:8px 0}
+.beat[hidden]{display:none}
+.beat h3{margin:0 0 4px;font:700 .95rem var(--display);letter-spacing:.03em}
+.beat p{margin:4px 0}
 .result-wrap{overflow-x:auto;margin:0 0 8px}
 .result{border-collapse:collapse;font-size:.88rem;min-width:100%}
 .result th,.result td{padding:3px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
@@ -235,6 +239,7 @@ legend{padding:0}
         <button class="small" id="btn-ai-undo" hidden title="Put its units back where they began this move, to move them yourself">Undo its orders</button>
         <button class="small" id="btn-ai-go" hidden title="Let the commander order its side for this move">Give its orders</button>
       </div>
+      <div class="beat" id="beat" hidden aria-live="polite"></div>
       <div id="after-box" hidden>
         <h2>After the battle</h2>
         <p id="verdict" class="verdict"></p>
@@ -542,6 +547,7 @@ function loadBattlefield(fid, armies){            // a battlefield from data/fie
   S.fieldId = B ? fid : null;
   S.marks = { ...markDefaults(), ...(B?.markers || {}) };
   S.entry = B?.entry || null;                       // the battlefield's entry edges, if it names them
+  S.drawnUp = null;
   S.stages = null; S.stageNo = -1; S.waiting = [];   // its phases, with the armies as drawn up (holdForStages)   // the battlefield's marker settings, else units.yaml's
   S.camp = null;
   if (B && armies && !S.forces){
@@ -552,6 +558,7 @@ function loadBattlefield(fid, armies){            // a battlefield from data/fie
     S.field.lifts = [];
     B.units.forEach(u => standOrFly(S, newUnit({ ...u, side: B.sides[u.side] }), u.lands));
     holdForStages(S, B.phases);
+    S.drawnUp = fid;                                  // the armies as drawn up: Beat history scores this battle
     S.sel = S.units[0]?.id ?? null;
     S.msg = `${B.name}: the armies as drawn up. Move, change or remove any unit before the battle starts.` + objectiveNote(B);
     return;
@@ -1627,7 +1634,8 @@ function endBattle(stop = null){                  // the dead counted; the wound
   S.fates = r.fates;
   S.pursuit = pursue(all);
   captivesToTeam();
-  tell(S.exchange - 1, [endPoint(S, stop, all, r.after)]);
+  S.end = endPoint(S, stop, all, r.after);
+  tell(S.exchange - 1, [S.end]);
   S.msg = "The battle is over.";
   S.log = [{ cls: "head", text: `The battle ends after ${S.exchange - 1} exchanges.` }, ...S.log];
   render();
@@ -1802,6 +1810,65 @@ function renderAfter(){
     return `<li>${esc(h.name)}: ${fate}${hurt}.</li>`;
   });
   $("#after").innerHTML += hs.join("");
+}
+/* ---------- Beat history, and beat the enemy commander ----------
+   For a battlefield laid out with its armies as drawn up: the battle as fought (tools/selfplay/actual.json),
+   and the commander's benchmark (commander.json: each side's wins in its runs against itself, and the bar,
+   its median run: the outcome, then the enemy's men lost for each of its own). After the battle, each side
+   the commander did not play is scored against both. Who won is decided as tools/selfplay/report.py does. */
+const BEAT_WORD = { 1: "win", 0: "draw", "-1": "loss" };
+const lostAt = s => s.killed + s.left + s.died + s.carried + (s.taken || 0);   // a side's men lost: killed, left, died, carried off, taken
+function winnerAt(F, end){                          // the side index that won (null: a draw), as report.py winner
+  const stop = end.stop || { why: "limit" }, sides = S.sides;
+  if (stop.why === "gone") return stop.sides.length === 2 ? null : 1 - stop.sides[0];
+  if (stop.why === "held") return sides.indexOf(stop.side);
+  if (F.objective){ const att = F.objective.side; return end.held[0] === sides[att] ? att : 1 - att }
+  const st = end.sides.map(s => s.standing);
+  if (st[0] === 0 && st[1] > 0) return 1;
+  if (st[1] === 0 && st[0] > 0) return 0;
+  return lostAt(end.sides[0]) / Math.max(1, end.sides[0].start) < lostAt(end.sides[1]) / Math.max(1, end.sides[1].start) ? 0 : 1;
+}
+const outcomeAt = (w, k) => (w === null ? 0 : w === k ? 1 : -1);
+const ratioAt = (end, k) => Math.round((lostAt(end.sides[1 - k]) + 1) / (lostAt(end.sides[k]) + 1) * 100) / 100;
+const barOutcome = b => ({ win: 1, draw: 0, loss: -1 })[b.outcome];
+function barText(bar){                              // how a player beats the commander's median run
+  const at = `more than ${bar.ratio} of theirs down for each of yours`;
+  if (bar.outcome === "win") return `a win with ${at}`;
+  if (bar.outcome === "draw") return `a win, or a draw with ${at}`;
+  return `a win or a draw, or a loss with ${at}`;
+}
+function beatLines(fid){                            // [html] for the panel, or null
+  const X = FD.beat?.[fid], F = FD.fields[fid];
+  if (!X?.history || !F) return null;
+  const H = X.history, B = X.bench, won = H.won === null ? "a draw" : `${esc(S.sides[H.won])} won`;
+  const out = [`<h3>Beat history</h3>`, `<p><b>As fought:</b> ${won}. ${esc(H.short)}.${H.losses ? ` Losses: ${esc(H.losses)}.` : ""}</p>`];
+  if (B){
+    const old = X.current ? "" : " <span class=\"muted\">(run under older rules)</span>";
+    out.push(`<p><b>The enemy commander</b>, playing both sides ${B.runs} times:${old}</p><ul>` + B.sides.map((s, k) =>
+      `<li>${esc(S.sides[k])} win ${Math.round(s.won * 100)}%${s.drew ? `, draw ${Math.round(s.drew * 100)}%` : ""}. To beat it: ${barText(s.bar)}.</li>`).join("") + "</ul>");
+  }
+  return out;
+}
+function beatResult(fid){                           // [html] after the battle: each side the commander did not play, against history and the bar
+  const X = FD.beat[fid], F = FD.fields[fid], end = S.end, w = winnerAt(F, end), H = X.history;
+  const mine = [0, 1].filter(k => !aiOf(k));
+  if (!end.stop) return [`<p><b>Not scored:</b> the battle was ended before it was decided. The commander's runs go on until a side is gone, the objective is held, or the exchange limit; so must yours.</p>`];
+  if (!mine.length) return [`<p><b>This run:</b> ${w === null ? "a draw" : esc(S.sides[w]) + " won"}. The commander played both sides, so nothing is scored.</p>`];
+  return mine.map(k => {
+    const o = outcomeAt(w, k), r = ratioAt(end, k), h = H.won === null ? 0 : H.won === k ? 1 : -1;
+    const hist = o > h ? "better than history" : o < h ? "worse than history" : "as history went";
+    const bar = X.bench?.sides[k].bar, beat = bar && (o > barOutcome(bar) || (o === barOutcome(bar) && r > bar.ratio));
+    const vsBar = bar ? (beat ? " <b>You beat the enemy commander.</b>" : " The enemy commander did as well or better.") : "";
+    return `<p><b>Your result as ${esc(S.sides[k])}:</b> a ${BEAT_WORD[o]}, ${r} of theirs down for each of yours: ${hist}.${vsBar}</p>`;
+  });
+}
+function renderBeat(){
+  const fid = S.drawnUp, el = $("#beat");
+  const lines = fid && fid === S.fieldId ? beatLines(fid) : null;
+  el.hidden = !lines;
+  if (!lines) return;
+  if (S.phase === "over" && S.end) lines.push(...beatResult(fid));
+  el.innerHTML = lines.join("");
 }
 function renderForces(){
   $("#forces-box").hidden = !S.forces;
@@ -3033,7 +3100,7 @@ function renderPhase(){
   ["#in-side0", "#in-side1"].forEach(b => $(b).disabled = S.phase !== "setup" || !!S.forces);
 }
 function render(){
-  renderMap(); renderUnits(); renderSel(); renderPhase(); renderAfter(); renderForces(); renderHeroes(); renderSupport(); renderWeather(); renderAi();
+  renderMap(); renderUnits(); renderSel(); renderPhase(); renderAfter(); renderBeat(); renderForces(); renderHeroes(); renderSupport(); renderWeather(); renderAi();
   $("#msg").textContent = S.msg || "";
   $("#log").innerHTML = S.log.map(l => `<li class="${l.cls}">${esc(l.text)}</li>`).join("");
   $("#in-side0").value = S.sides[0]; $("#in-side1").value = S.sides[1];
@@ -3329,7 +3396,7 @@ function init(){
   $("#btn-next").onclick = next;
   $("#btn-reset").onclick = newBattle;
   narratorControls();
-  $("#btn-end").onclick = endBattle;
+  $("#btn-end").onclick = () => endBattle();   // not the click event as the stop
   $("#chk-river").onchange = e => { S.riverBehind = e.target.checked; save() };
   $("#btn-back").onclick = backToTravel;
   $("#btn-handoff").onclick = () => { fromTravel(HANDOFF); HANDOFF = null; dropHandoff(); fillChoices(); render() };

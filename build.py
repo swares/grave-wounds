@@ -1092,14 +1092,36 @@ MEASURE_MARK = "/*__MEASURE_JS__*/"
 
 
 def field_stamps(fb: dict, engine: str) -> dict:
-    """{fid: stamp}: a short hash of what decides how a battlefield plays on the field map (the page's engine, the
-    shared rules and that battlefield's own data). The commander's benchmark (tools/selfplay/commander.json) carries
+    """{fid: stamp}: a short hash of what decides how a battlefield plays on the field map (the page's rules, as
+    self-play lifts them, not the page around them; the shared data and that battlefield's own). The commander's benchmark (tools/selfplay/commander.json) carries
     the stamp it was run under, so a change to the rules or the battlefield shows its figures are out of date."""
     import hashlib
-    shared = {k: v for k, v in fb.items() if k not in ("fields", "generated", "period_order", "mapStarts")}
+    shared = {k: v for k, v in fb.items() if k not in ("fields", "generated", "period_order", "mapStarts", "beat")}
     base = hashlib.sha256((engine + json.dumps(shared, sort_keys=True)).encode()).hexdigest()
     return {fid: hashlib.sha256((base + json.dumps(f, sort_keys=True)).encode()).hexdigest()[:12]
             for fid, f in fb["fields"].items()}
+
+
+def page_rules(page: str) -> str:
+    """The field page's rules, as tools/selfplay/page.js lifts them to play a battle: from "// Hex
+    helpers" to the page's own code. The page around them (its layout and panels) plays no part."""
+    return page[page.index("// Hex helpers"):page.index("/* ---------- the page ---------- */")]
+
+
+def beat_bundle(stamps: dict) -> dict:
+    """{fid: {history, bench, current}} for the field page's Beat history panel: the battle as fought
+    (tools/selfplay/actual.json) and the enemy commander's benchmark (commander.json), with whether
+    the benchmark was run under these rules (its stamp matches)."""
+    sp = ROOT / "tools" / "selfplay"
+    actual = json.loads((sp / "actual.json").read_text(encoding="utf-8"))
+    p = sp / "commander.json"
+    bench = json.loads(p.read_text(encoding="utf-8"))["fields"] if p.exists() else {}
+    out = {}
+    for fid in stamps:
+        b = bench.get(fid)
+        out[fid] = {"history": actual.get(fid), "bench": {"runs": b["runs"], "sides": b["sides"]} if b else None,
+                    "current": bool(b) and b.get("stamp") == stamps[fid]}
+    return out
 
 
 def stale_commander(stamps: dict) -> None:
@@ -2152,9 +2174,10 @@ def main() -> int:
     units_js = (ROOT / "templates" / "units.js").read_text(encoding="utf-8")
     ftpl = (ROOT / "templates" / "field.html").read_text(encoding="utf-8")
     fb = field_bundle(d)
+    stamps = field_stamps(fb, page_rules(ftpl.replace("/*__WORKS_JS__*/", works_js).replace("/*__LETHAL_JS__*/", lethal_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__UNITS_JS__*/", units_js)))
+    fb["beat"] = beat_bundle(stamps)
     fhtml = ftpl.replace("/*__WORKS_JS__*/", works_js).replace("/*__LETHAL_JS__*/", lethal_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__UNITS_JS__*/", units_js).replace("/*__FIELD_DATA__*/null", json.dumps(fb, separators=(",", ":")))
     (DIST / "field.html").write_text(fhtml, encoding="utf-8")
-    stamps = field_stamps(fb, works_js + lethal_js + camp_js + measure_js + units_js + ftpl)
     (DIST / "field-stamps.json").write_text(json.dumps(stamps, indent=1, sort_keys=True) + "\n", encoding="utf-8")
     stale_commander(stamps)
     team_js = (ROOT / "templates" / "team.js").read_text(encoding="utf-8")
