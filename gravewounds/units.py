@@ -3234,6 +3234,12 @@ def _hero_shots(d: Data, us: list, ctx: tuple, field: dict | None, v: dict, opts
     return log
 
 
+def _aim_at(d: Data, att: dict, A: dict, band: dict, penalty: int) -> int:
+    """The % an anti-armour round hits: a guided missile's fixed `hit` %, else the shooter's
+    attack less the range band; less cover and the rest either way."""
+    return (A["hit"] if A.get("hit") is not None else _attack(d, att) - band["penalty"]) - penalty
+
+
 def _rocket_volley(d: Data, us: list, ctx: tuple, env: tuple, v: dict) -> list:
     """Rockets and recoilless rounds at men: each aimed at the target's hex (the window, not a man
     seen) that hits bursts there as the indirect kind `rocket`."""
@@ -3242,8 +3248,9 @@ def _rocket_volley(d: Data, us: list, ctx: tuple, env: tuple, v: dict) -> list:
     band = field_range(d, att["weapon"], v["dist"], v["reach"])
     if band is None:
         return []
-    n = _count(v["men"] * _shot_at_vehicle(d, att["weapon"])["rate"] * (100 - v["misfire"]) / 100, rng)
-    atk = _attack(d, att) - band["penalty"] - v["penalty"]
+    A = _shot_at_vehicle(d, att["weapon"])
+    n = _count(v["men"] * A["rate"] * (100 - v["misfire"]) / 100, rng)
+    atk = _aim_at(d, att, A, band, v["penalty"])
     hits = sum(1 for _ in range(n) if rng.randint(1, 100) <= atk)
     log = [{"kind": "rocketfire", "att": v["att"], "dfd": v["dfd"], "dist": v["dist"], "shots": n, "hit": hits, "at": list(v["to"])}]
     weapon = shell_weapon(d, table)
@@ -3264,7 +3271,7 @@ def _armour_volley(d: Data, us: list, ctx: tuple, v: dict, opts: dict) -> list:
         return []
     A = _shot_at_vehicle(d, att["weapon"])
     n = _count(v["men"] * A["rate"] * opts["factor"], rng)
-    atk = _attack(d, att) - band["penalty"] - opts["penalty"]
+    atk = _aim_at(d, att, A, band, opts["penalty"])
     hits = sum(1 for _ in range(n) if rng.randint(1, 100) <= atk)
     p = kill_chance(d, us[v["dfd"]], A["row"], v["from"], v["to"]) if A["row"] in armour_of(d, us[v["dfd"]]) else 0
     kills = sum(1 for _ in range(hits) if p and rng.randint(1, 100) <= p)

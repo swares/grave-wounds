@@ -93,7 +93,7 @@ def _vehicle_values(d: Data) -> dict:
     V = d.units["vehicles"]
     A = V["anti_armour"]
     return {"v_flank": f"{V['aspect']['flank']:g}", "v_rear": f"{V['aspect']['rear']:g}", "v_rocket_per": round(1 / A["rpg"]["rate"]),
-            "v_atgm_per": round(1 / A["atgm"]["rate"]), "v_turret": V["damage"]["turret"],
+            "v_atgm_per": round(1 / A["atgm"]["rate"]), "v_atgm_hit": A["atgm"]["hit"], "v_turret": V["damage"]["turret"],
             "v_t_imm": V["damage"]["turret_hit"]["immobilised"], "v_t_gun": V["damage"]["turret_hit"]["gun"],
             "v_h_imm": V["damage"]["hull_hit"]["immobilised"], "v_h_gun": V["damage"]["hull_hit"]["gun"],
             **_at_mine_values(d),

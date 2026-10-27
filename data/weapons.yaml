@@ -700,13 +700,13 @@ weapons:
     short: "ATGM"
     two_handed: true
     icon: launcher
-    range: [250, 750, 1500]
+    range: [250, 1000, 2000]
     era: "1970s-"
     threat: fragment
     mechanisms: {ballistic: 70, crush: 30}
     zone_bias: {}
     confidence: extrapolated
-    notes: "Wire- or laser-guided missiles (Milan, TOW, Javelin, Konkurs) fired from a tripod, a vehicle or the shoulder; often used on bunkers and buildings as well as armour."
+    notes: "Wire- or laser-guided missiles (Milan, TOW, Javelin, Konkurs) fired from a tripod, a vehicle or the shoulder; often used on bunkers and buildings as well as armour. Range bands: Milan and Javelin about 2 km (officially), TOW 3.75 km, Konkurs 4 km; at Debecka in 2003 every Javelin was fired at 2,200 to 4,200 m."
 
   - id: mine_ied
     name: "Mine, booby trap or IED"

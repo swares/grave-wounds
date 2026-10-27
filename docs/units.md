@@ -1806,7 +1806,10 @@ crews (4 a tank, 3 an infantry fighting vehicle or carrier).
   | A main gun | 35% | 75% | 90% |
   | A rifle or machine-gun bullet | — | — | 5% |
 
-  Those are the chances that a hit knocks the vehicle out. A hit into its **flank** counts
+  Those are the chances that a hit knocks the vehicle out. A rocket hits as a shot at a man
+  does, by the shooter's attack less the range band; a **guided missile** hits at a fixed 85%
+  (less cover and the weather) at any range out to its 4 km, as at Debecka in 2003, where 19
+  Javelins fired at 2,200 to 4,200 m scored 17 hits (`anti_armour.atgm.hit`). A hit into its **flank** counts
   twice that, and into its **rear** three times, to 100% at most. Which it is depends on
   where the shooter stands, by the vehicle unit's facing (the front is the two directions
   either side of its arrow).
@@ -3059,7 +3062,8 @@ is 140 × 110 hexes, about 1,530 by 1,040 yards (1,400 by 950 m), north at the t
   intelligence men, all veteran, in Interceptor vests; the Peshmerga with the teams and those
   with the command vehicles at Press Hill (regular, unarmoured). A **supply dump** behind Press
   Hill for the "War Pigs" that brought ammunition forward.
-- Iraqis: the official history's force: five **T-55s**, four **MT-LBs**, troop trucks and
+- Iraqis: the official history's force: five **T-55s** (aiming by a stadia reticle, `fc: stadia`,
+  not the war's thermal fire control, which was the coalition's), four **MT-LBs**, troop trucks and
   command vehicles, and motorised infantry (green).
 - Fire support: the teams' 60 mm mortars and Navy fighter-bombers; two Iraqi 120 mm mortars.
 - The friendly-fire bomb on Press Hill is a phase note, not a rule: the GM takes its losses

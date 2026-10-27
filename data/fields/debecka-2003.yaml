@@ -11,6 +11,8 @@
 # Javelins were all fired at 2,200 m or more, the Iraqis first seen 2 km off: they come on at the
 # board's south edge, about 2 km from the Alamo. How far Press Hill lay behind the Alamo no source
 # gives: here about 300 m.
+# The T-55s aim by a stadia reticle (fc: stadia): the war's thermal fire control is the
+# coalition's, and no account has the tanks hitting the teams at 2 km.
 #
 # What happened, briefly: on 6 April 2003 two Special Forces teams and about 80 Peshmerga broke
 # through the Iraqi line on the ridge north of Debecka and held the crossroads for about 45 minutes.
@@ -342,6 +344,6 @@ units:
   - {name: "Peshmerga with the teams", side: 0, men: 80, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 14, pos: [105, 47], facing: 4, prone: true, size: company}
   - {name: "Peshmerga and the command vehicles at Press Hill", side: 0, men: 60, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [75, 12], facing: 4, size: platoon}
   - {name: "Iraqi MT-LBs (ahead, under smoke)", side: 1, men: 12, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 4, pos: [75, 282], facing: 1, vehicle: apc, nv: none, size: platoon}
-  - {name: "Iraqi T-55s", side: 1, men: 20, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 5, pos: [79, 288], facing: 1, vehicle: tank, nv: none, size: platoon}
+  - {name: "Iraqi T-55s", side: 1, men: 20, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 5, pos: [79, 288], facing: 1, vehicle: tank, fc: stadia, nv: none, size: platoon}
   - {name: "Iraqi motorised infantry", side: 1, men: 100, quality: green, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 14, pos: [55, 280], facing: 1, size: company}
   - {name: "Iraqi troop trucks and command vehicles", side: 1, men: 8, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 4, pos: [71, 288], facing: 1, vehicle: lorry, nv: none, size: platoon}

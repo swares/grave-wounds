@@ -6630,7 +6630,7 @@ Penalties add up; each total is capped at -60%.
 | Anti-aircraft gun (20 mm, 40 mm, ZPU, 37 mm, ZSU-23) | 150 / 400 / 750 hexes (328 / 875 / 1640 yd; 300 / 800 / 1500 m) |
 | Anti-tank gun (towed: 6-pounder, 57 mm, Pak 38 and 40, 45 mm, 47 mm) | off-map (GM decides) |
 | Recoilless rifle | 100 / 200 / 400 hexes (219 / 437 / 875 yd; 200 / 400 / 800 m) |
-| Anti-tank guided missile | 250 / 750 / 1500 hexes (547 / 1640 / 3281 yd; 500 / 1500 / 3000 m) |
+| Anti-tank guided missile | 250 / 1000 / 2000 hexes (547 / 2187 / 4374 yd; 500 / 2000 / 4000 m) |
 | Mine, booby trap or IED | off-map (GM decides) |
 | Punji stake | off-map (GM decides) |
 | Fragments, unspecified (shell, grenade, mine) | off-map (GM decides) |
