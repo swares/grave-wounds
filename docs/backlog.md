@@ -27,9 +27,11 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Virtual GM, first cut.** The roller's strike is decided with no page (`templates/strike.js`),
   each strike, wound and scripted move goes into an event log tagged with who may see it
   (`templates/gamelog.js`), and Run the fight plays each side as a player, the GM by hand, or the
-  GM's script (`templates/fighter.js`), with Step, Play to my turn and Undo. Still left out: the
-  script does not aim at a zone, take or give first aid, use works, drop packs, swim, climb or
-  surrender, and its priorities are guesses with nothing to calibrate them against; men with no
+  GM's script (`templates/fighter.js`), with Step, Play to my turn and Undo. Its men give first
+  aid out of contact (themselves when bleeding badly; comrades by the side's stance) and surrender
+  (a man down beside an enemy asks for quarter; a broken side's cornered and down are taken, the
+  rest run). Still left out: the script does not aim at a zone, use works, drop packs, swim or
+  climb, and its priorities are guesses with nothing to calibrate them against; men with no
   sheet take their side's quality, with no per-man setting; a side's Screen hides the enemy's
   state on the cards, roll form, result, messages and logs, but it is a filter anyone at the
   page can switch off, and the after-fight, hazards and tongues panels still show whoever is
@@ -81,10 +83,9 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Playing alone, first cut.** The Rules' *Playing alone* chapter (`templates/rules/15-alone.md`)
   says how one person runs a session with the pages, and adds **Ask the dice**, a yes-or-no table
   on the one roll with a d10 of complications for the GM's judgement calls. Still left out (the rules
-  audit of 26 October 2026): the virtual GM's side does not give first aid or surrender, which a solo
-  player's wounded men feel most; no solo campaign has been played through end to end; there is no
-  score against history yet ("Beat history": each battlefield's result as fought, the engine's
-  odds, and the player's result); and the printed tables do not carry Ask the dice.
+  audit of 26 October 2026): no solo campaign has been played through end to end, and the printed
+  tables do not carry Ask the dice. (Done since: the virtual GM's first aid and surrender, and Beat
+  history on the field map with its scorecard.)
 - **The enemy commander, beyond the second cut.** A scripted commander moves one side on
   the field map. It attacks or holds by its units' quality, knows only what its units see
   (remembering last sightings for a few exchanges), picks targets by threat and weakness,

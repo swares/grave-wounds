@@ -38,7 +38,7 @@ SETUP = """([seed, n, stance]) => {
 RESULT = """() => ({ won: winningSide(), round: S.round, steps: GMQ.steps, running: GMQ.running, msg: S.gmMsg,
   types: S.events.reduce((m, e) => (m[e.type] = (m[e.type] || 0) + 1, m), {}),
   outcomes: S.events.filter(e => e.type === 'strike').reduce((m, e) => (m[e.data.outcome] = (m[e.data.outcome] || 0) + 1, m), {}),
-  down: S.chars.filter(isOut).map(c => c.name), why: S.events.filter(e => e.type === 'turn').reduce((m, e) => (m[e.data.why] = (m[e.data.why] || 0) + 1, m), {}) })"""
+  down: S.chars.filter(isOut).map(c => c.name), taken: S.chars.filter(c => c.taken).length, ran: S.chars.filter(c => c.fled).length, why: S.events.filter(e => e.type === 'turn').reduce((m, e) => (m[e.data.why] = (m[e.data.why] || 0) + 1, m), {}) })"""
 
 with sync_playwright() as p:
     br = p.chromium.launch()
@@ -63,7 +63,7 @@ with sync_playwright() as p:
                 over = bool(r["won"]) or r["msg"].startswith("No one is left")
                 total += 1; ended += over
                 if not over: stalled.append(f"{tid} s{seed} {stance}")
-                print(f"{tid} s{seed} {stance}: {r['won'] or 'no one'} standing, round {r['round']}, {r['steps']} steps, strikes {r['outcomes']}, turns {r['why']}" + ("" if over else f"  STALLED: {r['msg']}"))
+                print(f"{tid} s{seed} {stance}: {r['won'] or 'no one'} standing, round {r['round']}, {r['steps']} steps, strikes {r['outcomes']}, turns {r['why']}, taken {r['taken']}, ran {r['ran']}" + ("" if over else f"  STALLED: {r['msg']}"))
     print(f"{ended} of {total} fights ran to an end; page errors: {errors[:3]}")
     br.close()
     sys.exit(1 if stalled or errors else 0)

@@ -110,5 +110,35 @@ check("the same view gives the same choice", () => {
   assert.deepEqual(F.chooseTurn(v), F.chooseTurn(v));
 });
 
+/* ----- first aid (out of an enemy's reach) ----- */
+const pal = (id, hex, more = {}) => ({ id, hex, down: false, bleed: 0, ...more });
+check("a man bleeding badly and out of reach binds his own wound", () => {
+  const t = F.chooseTurn({ ...board({ here: "2,2", enemies: [foe(2, "9,9")], me: { bleed: 0.08 } }), friends: [] });
+  assert.equal(t.aid, 1); assert.equal(t.target, null); assert.equal(t.move, null);
+});
+check("next to an enemy he fights on rather than bind himself", () => {
+  const t = F.chooseTurn({ ...board({ here: "5,5", enemies: [foe(2, "6,5")], me: { bleed: 0.08 } }), friends: [] });
+  assert.equal(t.aid, undefined); assert.equal(t.target, 2);
+});
+check("a cautious man goes to the worst-bleeding comrade", () => {
+  const v = { ...board({ here: "2,2", enemies: [foe(2, "12,10")], stance: "cautious" }), friends: [pal(3, "4,2", { bleed: 0.02 }), pal(4, "2,4", { bleed: 0.06 })] };
+  const t = F.chooseTurn(v);
+  assert.equal(t.aid, 4); assert.equal(dist(t.move, "2,4"), 1); assert.equal(t.target, null);
+});
+check("a steady man treats only a comrade who is down", () => {
+  const up = { ...board({ here: "2,2", enemies: [foe(2, "12,10")] }), friends: [pal(3, "3,2", { bleed: 0.06 })] };
+  assert.equal(F.chooseTurn(up).aid, undefined);
+  const down = { ...board({ here: "2,2", enemies: [foe(2, "12,10")] }), friends: [pal(3, "3,2", { bleed: 0.06, down: true })] };
+  assert.equal(F.chooseTurn(down).aid, 3);
+});
+check("a reckless man leaves the wounded to the others", () => {
+  const v = { ...board({ here: "2,2", enemies: [foe(2, "12,10")], stance: "reckless" }), friends: [pal(3, "3,2", { bleed: 0.06, down: true })] };
+  assert.equal(F.chooseTurn(v).aid, undefined);
+});
+check("no one gives first aid within an enemy's reach", () => {
+  const v = { ...board({ here: "5,5", enemies: [foe(2, "6,5")], stance: "cautious" }), friends: [pal(3, "4,5", { bleed: 0.06, down: true })] };
+  assert.equal(F.chooseTurn(v).aid, undefined);
+});
+
 console.log(`${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

@@ -4,7 +4,7 @@
    strike, whether to aim for a gap, and which blow a named man declares. The rules then run as
    for anyone else (strike.js); the brain never rolls a die.
 
-   FIGHTER.chooseTurn(view) -> {move, cover, target, gap, blow, why}
+   FIGHTER.chooseTurn(view) -> {move, cover, target, gap, blow, aid, why}
      view.me        {id, ranged, frac (Blood left, 0-1), named, blows (a cut-and-thrust weapon's
                     blows, else []), attack (his attack % after wounds), able (can attack at all)}
      view.here      his hex, "col,row"
@@ -16,21 +16,29 @@
      view.coverAt(hex) -> the cover % a shooter would have there
      view.losing    his side is near breaking (morale)
      view.stance    "cautious" | "steady" | "reckless" (the GM's setting for the side)
+     view.me.bleed  the share of his Blood he loses a round (0 when not bleeding)
+     view.friends   [{id, hex, down, bleed}]: his side's other men on the map, not taken
+   aid      a man of his side he gives first aid this turn (himself, or one he is next to after
+            his move), or absent; he does not strike
    move     a hex to move to, or null to stay
    cover    true: he goes to ground instead (no attack)
    target   the enemy he strikes (from where he ends up), or null
    why      a few words for the log: why he did it
 
    The choices are design guesses, not calibrated: closest and most hurt first, close in when he
-   cannot reach anyone, fall back when badly hurt by his stance. build.py puts this file into the
+   cannot reach anyone, fall back when badly hurt by his stance. First aid, out of an enemy's
+   reach (no enemy next to him): he binds his own wound if it bleeds badly; by his stance, a
+   cautious man treats the worst-bleeding comrade he can reach, a steady one only a comrade who
+   is down, a reckless one no one. build.py puts this file into the
    roller at its FIGHTER_JS marker; in Node it is a module (tools/gm/test.js). */
 
 const FIGHTER = (() => {                          // one name in the page: its helpers stay inside
   const STANCES = {
-    cautious: { fallBack: 0.6, fallBackLosing: 1, gapAttack: 70, runs: false, keepRange: 3 },
-    steady:   { fallBack: 0.35, fallBackLosing: 0.6, gapAttack: 60, runs: true, keepRange: 2 },
-    reckless: { fallBack: 0, fallBackLosing: 0, gapAttack: 50, runs: true, keepRange: 1 },
+    cautious: { fallBack: 0.6, fallBackLosing: 1, gapAttack: 70, runs: false, keepRange: 3, aid: "any" },
+    steady:   { fallBack: 0.35, fallBackLosing: 0.6, gapAttack: 60, runs: true, keepRange: 2, aid: "down" },
+    reckless: { fallBack: 0, fallBackLosing: 0, gapAttack: 50, runs: true, keepRange: 1, aid: "none" },
   };
+  const SELF_BLEED = 0.05;                          // he binds his own wound at a twentieth of his Blood a round or more (a design guess)
   const byKey = (a, b) => (a < b ? -1 : Number(a > b));
 
   function pickTarget(options, enemies){            // the most hurt first, then the easiest, then the nearest
@@ -79,9 +87,26 @@ const FIGHTER = (() => {                          // one name in the page: its h
     return strikeFrom(view, st, best ? best.hex : null, best ? "closes with the enemy" : "cannot get closer: holds");
   }
 
+  const safe = (view, hex) => nearestEnemy(view, hex) > 1;   // no enemy next to that hex
+  const aiding = (move, id, why) => ({ move, cover: false, target: null, gap: false, blow: "", aid: id, why });
+  function firstAid(view, st){                      // a turn of first aid, or null
+    if ((view.me.bleed || 0) >= SELF_BLEED && safe(view, view.here)) return aiding(null, view.me.id, "binds his own wound");
+    if (st.aid === "none" || !safe(view, view.here)) return null;   // a man in contact fights on
+    const hurt = (view.friends || []).filter(f => f.bleed > 0 && (st.aid === "any" || f.down) && safe(view, f.hex)).sort((a, b) => (b.bleed - a.bleed) || (a.id - b.id));
+    for (const f of hurt){
+      if (view.dist(view.here, f.hex) <= 1 && safe(view, view.here)) return aiding(null, f.id, "gives first aid");
+      const to = view.reach.filter(r => !r.run && view.dist(r.hex, f.hex) === 1 && safe(view, r.hex))
+        .sort((a, b) => (a.cost - b.cost) || byKey(a.hex, b.hex))[0];
+      if (to) return aiding(to.hex, f.id, "goes to a wounded comrade");
+    }
+    return null;
+  }
+
   function chooseTurn(view){
     const st = STANCES[view.stance] || STANCES.steady;
     if (!view.enemies.length) return { move: null, cover: false, target: null, gap: false, blow: "", why: "no enemy left" };
+    const aid = firstAid(view, st);
+    if (aid) return aid;
     const hurt = view.me.frac <= (view.losing ? st.fallBackLosing : st.fallBack);
     if (hurt && st.fallBack > 0) return fallBack(view, st);
     if (view.me.able && view.targetsFrom(view.here).length) return strikeFrom(view, st, null, "strikes from where he stands");
