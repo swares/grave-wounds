@@ -1170,21 +1170,31 @@ def _papers_errors(d: Data) -> list[str]:
         return []
     errors = [f"papers.yaml: no team era {eid}" for eid in P if eid not in d.teams]
     for eid, E in P.items():
-        where = f"papers.yaml: {eid}"
-        docs = E.get("docs") or {}
-        errors += [f"{where}: docs needs a title for {k}" for k in ("muster", "surgeon", "discharge") if not isinstance((docs.get(k) or {}).get("title"), str)]
-        regions = {r["id"] for r in d.teams[eid]["regions"]} if eid in d.teams else set()
-        for kind in EPILOGUE_KINDS:
-            rows = (E.get("epilogues") or {}).get(kind)
-            if not isinstance(rows, list) or not rows:
-                errors.append(f"{where}: epilogues needs rows for {kind}")
-                continue
-            for r in rows:
-                if not (isinstance(r, dict) and isinstance(r.get("text"), str) and isinstance(r.get("w"), int) and r["w"] > 0 and r.get("when", "any") in EPILOGUE_WHEN):
-                    errors.append(f"{where}: an epilogue row for {kind} needs w (a whole number), text and when (any, lasting or whole)")
-                elif set(r.get("regions") or []) - regions:
-                    errors.append(f"{where}: an epilogue row for {kind} names unknown regions {sorted(set(r['regions']) - regions)}")
+        if eid in d.teams:
+            errors += _era_papers_errors(d, eid, E)
     return errors
+
+
+def _era_papers_errors(d: Data, eid: str, E: dict) -> list[str]:
+    """One era's papers: a title for each of its three handouts, and rows for each kind of epilogue."""
+    where, docs = f"papers.yaml: {eid}", E.get("docs") or {}
+    errors = [f"{where}: docs needs a title for {k}" for k in ("muster", "surgeon", "discharge") if not isinstance((docs.get(k) or {}).get("title"), str)]
+    regions = {r["id"] for r in d.teams[eid]["regions"]}
+    for kind in EPILOGUE_KINDS:
+        rows = (E.get("epilogues") or {}).get(kind)
+        if not isinstance(rows, list) or not rows:
+            errors.append(f"{where}: epilogues needs rows for {kind}")
+            continue
+        errors += [f"{where}: {kind}: {e}" for e in (_epilogue_row_error(r, regions) for r in rows) if e]
+    return errors
+
+
+def _epilogue_row_error(r, regions: set) -> str | None:
+    """One epilogue row: w (a whole number), text and when (any, lasting or whole), and known regions if it names them."""
+    if not (isinstance(r, dict) and isinstance(r.get("text"), str) and isinstance(r.get("w"), int) and r["w"] > 0 and r.get("when", "any") in EPILOGUE_WHEN):
+        return "a row needs w (a whole number), text and when (any, lasting or whole)"
+    unknown = set(r.get("regions") or []) - regions
+    return f"a row names unknown regions {sorted(unknown)}" if unknown else None
 
 
 def _apply_accounts(fields: dict, accounts: dict) -> None:

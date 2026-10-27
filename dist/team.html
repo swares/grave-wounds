@@ -103,7 +103,7 @@ label.radio input{margin-top:4px}
 .q-green{color:var(--muted)}.q-veteran{color:var(--blood);font-weight:600}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 .papers{position:fixed;inset:24px;z-index:20;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:16px;box-shadow:0 8px 32px rgba(0,0,0,.3);display:grid;gap:16px;align-content:start}
-.papers[hidden]{display:none}
+.papers:not([open]){display:none}
 .papers .toolbar{position:sticky;top:-16px;background:var(--bg);padding:6px 0;z-index:1}
 .paper{background:#f4ecd8;color:#2b2216;border:1px solid #b9a77f;padding:18px 22px;max-width:720px;width:100%;margin:0 auto;box-sizing:border-box;font-family:Georgia,"Times New Roman",serif;break-inside:avoid;page-break-after:always}
 .paper h3{margin:.2em 0 .4em;text-align:center;letter-spacing:.06em;font-variant:small-caps;font-size:1.25rem}
@@ -119,8 +119,8 @@ label.radio input{margin-top:4px}
 .look-told .paper{background:#f1e6d2;font-family:Georgia,serif}
 @media (max-width:560px){.papers{inset:0;border-radius:0;padding:10px}.paper{padding:12px}}
 @media print{
-  body.papers-open > :not(#papers){display:none !important}
-  body.papers-open .papers{position:static;box-shadow:none;border:0;padding:0;display:block}
+  body.papers-open > .wrap{display:none}
+  body.papers-open .papers{position:static;inset:auto;margin:0;width:auto;max-width:none;height:auto;max-height:none;overflow:visible;box-shadow:none;border:0;padding:0;display:block;background:#fff}
   body.papers-open .papers .toolbar{display:none}
   body{background:#fff;color:#000;padding:0}
   header nav,.controls,.sheet .tools,.work,.spend,.ledger button{display:none}
@@ -393,7 +393,7 @@ const FIG = (() => {
 if (typeof module !== "undefined") module.exports = FIG;
 </script>
 <body>
-<div id="papers" class="papers" hidden role="dialog" aria-label="His papers"></div>
+<dialog id="papers" class="papers" aria-label="His papers"></dialog>
 <div class="wrap">
   <header>
     <div>
@@ -1679,7 +1679,10 @@ function settleLost(left, survivors, practice){    // {each, gone}
    or any; its regions, if it names them, limit it to those armies. The text says {name}, {he}, {his},
    {him}, {He}, {His}, and {wound}: the place of his lasting hurt. */
 const EPI_DEAD = /killed|died/i;
-const epKind = why => (EPI_DEAD.test(why) ? "dead" : why === "deserted" ? "deserted" : "alive");
+function epKind(why){                              // dead, deserted or alive
+  if (EPI_DEAD.test(why)) return "dead";
+  return why === "deserted" ? "deserted" : "alive";
+}
 function epRows(era, c, kind){                       // the rows he can roll
   const rows = TD.papers?.[era]?.epilogues?.[kind] || [], lasting = (c.old || []).some(w => w.kind === "lasting");
   const fit = r => (r.when || "any") === "any" || (r.when === "lasting") === lasting;
@@ -2954,10 +2957,14 @@ function hireHaggle(k, P){                         // the box to haggle a hired 
   if (!TD.checks) return "";
   return " " + tick(`data-rhaggle="${k}"`, P.haggle, "haggle", "The payer's Persuade against the man's: a tenth off, a quarter on a critical; a fumble and he will not sign today");
 }
+function lossHead(c, career, k){                    // his name, how he was lost, what became of him, and his papers
+  const L = c.lost, epi = c.epilogue ? " <i>" + esc(c.epilogue.text) + "</i>" : "", by = L.auto ? " (from the roller or travel map)" : "";
+  const terms = c.terms + (c.terms > 1 ? " terms" : " term");
+  return `<b>${esc(c.name)}</b>, ${esc(career.name.toLowerCase())}, ${terms}: ${esc(L.why)}${by}.${epi} <button class="small" data-papers-lost="${k}">Papers</button>`;
+}
 function lossHtml(c, k){                          // one lost man: settle his purse, then replace him
   const career = byId(T.careers, c.career), L = c.lost, left = purseFor(c.region, c.terms, c.ledger).days;
-  const epi = c.epilogue ? ` <i>${esc(c.epilogue.text)}</i>` : "";
-  const head = `<b>${esc(c.name)}</b>, ${esc(career.name.toLowerCase())}, ${c.terms} term${c.terms > 1 ? "s" : ""}: ${esc(L.why)}${L.auto ? " (from the roller or travel map)" : ""}.${epi} <button class="small" data-papers-lost="${k}">Papers</button>`;
+  const head = lossHead(c, career, k);
   if (!L.settled){
     const E = effectsFor(c.region), pick = L.practice || E.practice;
     const opt = (v, t) => `<option value="${v}"${v === pick ? " selected" : ""}>${t}${v === E.practice ? " (the era's practice)" : ""}</option>`;
@@ -3001,7 +3008,8 @@ function musterDoc(c, D){                            // who he is, where from, h
   const sx = c.sex || "m", career = careerOf(c), w = TD.weapons[c.weapon], kit = TD.kits[c.kit];
   const life = c.events.map((e, k) => `<li>Term ${k + 1}: ${esc(pron(e, sx))}</li>`).join("");
   const rank = rankLine(c);
-  return `<article class="paper">${HANDOUT}<h3>${esc(D.title)}</h3>${D.intro ? `<p class="lead">${esc(D.intro)}</p>` : ""}<table>
+  const intro = D.intro ? '<p class="lead">' + esc(D.intro) + "</p>" : "";
+  return `<article class="paper">${HANDOUT}<h3>${esc(D.title)}</h3>${intro}<table>
     ${paperRow("Name", esc(c.name))}${paperRow("From", esc(c.origin) + ", " + esc(byId(T.regions, c.region).name))}
     ${paperRow("Serving as", esc(rank ? rank + ", " + career.name.toLowerCase() : career.name))}${paperRow("Age", String(c.age))}
     ${paperRow("Marks", esc(pron(c.trait, sx)) + "; " + esc(pron(c.drawback, sx).toLowerCase()))}
@@ -3019,16 +3027,21 @@ function surgeonDoc(c, D){                           // every wound: his old one
 }
 function dischargeDoc(c, D){                         // how he left the team, and what became of him
   const why = c.lost.why, dead = epKind(why) === "dead";
-  const served = `${c.terms} term${c.terms > 1 ? "s" : ""}${c.xp_terms ? `, and ${c.xp_terms} more with the team` : ""}`;
+  const served = c.terms + (c.terms > 1 ? " terms" : " term") + (c.xp_terms ? ", and " + c.xp_terms + " more with the team" : "");
+  const after = c.epilogue ? "<h4>" + esc(D.after || "What became of him") + "</h4><p>" + esc(c.epilogue.text) + "</p>" : "";
   return `<article class="paper">${HANDOUT}<h3>${esc(dead ? D.dead_title || D.title : D.title)}</h3><table>
     ${paperRow("Name", esc(c.name))}${paperRow("Served", esc(served))}${paperRow(dead ? "Died" : "Left", esc(why))}</table>
-    ${c.epilogue ? `<h4>${esc(D.after || "What became of him")}</h4><p>${esc(c.epilogue.text)}</p>` : ""}</article>`;
+    ${after}</article>`;
+}
+function papersMan(P){                              // the man whose papers are open: on the team, or among the losses
+  if (!P) return null;
+  return P.team === undefined ? (S.losses || [])[P.lost] : S.team[P.team];
 }
 function renderPapers(){
-  const el = $("#papers"), P = S.papers, c = P ? (P.team !== undefined ? S.team[P.team] : (S.losses || [])[P.lost]) : null;
-  el.hidden = !c;
+  const el = $("#papers"), c = papersMan(S.papers);
   document.body.classList.toggle("papers-open", !!c);
-  if (!c){ S.papers = null; el.innerHTML = ""; return }
+  if (!c){ S.papers = null; el.innerHTML = ""; if (el.open) el.close(); return }
+  if (!el.open) el.show();
   const E = papersOf(), R = E.regions?.[c.region] || {}, D = {};
   for (const k of ["muster", "surgeon", "discharge"]) D[k] = { ...PAPERS_DEFAULT.docs[k], ...(E.docs || {})[k], ...R[k] };   // the region's own papers over the era's
   const docs = [musterDoc(c, D.muster), surgeonDoc(c, D.surgeon), c.lost ? dischargeDoc(c, D.discharge) : ""].join("");
@@ -3390,6 +3403,7 @@ function init(){
     else if (e.target.id === "btn-papers-close"){ S.papers = null; render() }
   });
   document.addEventListener("keydown", e => { if (e.key === "Escape" && S.papers){ S.papers = null; render() } });
+  $("#papers").addEventListener("close", () => { if (S.papers){ S.papers = null; render() } });
   $("#sheets").addEventListener("click", e => {
     const r = e.target.closest("button[data-reroll]"); if (r) return reroll(+r.dataset.reroll);
     const pp = e.target.closest("button[data-papers]"); if (pp){ S.papers = { team: +pp.dataset.papers }; return render() }

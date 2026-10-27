@@ -406,7 +406,10 @@ function settleLost(left, survivors, practice){    // {each, gone}
    or any; its regions, if it names them, limit it to those armies. The text says {name}, {he}, {his},
    {him}, {He}, {His}, and {wound}: the place of his lasting hurt. */
 const EPI_DEAD = /killed|died/i;
-const epKind = why => (EPI_DEAD.test(why) ? "dead" : why === "deserted" ? "deserted" : "alive");
+function epKind(why){                              // dead, deserted or alive
+  if (EPI_DEAD.test(why)) return "dead";
+  return why === "deserted" ? "deserted" : "alive";
+}
 function epRows(era, c, kind){                       // the rows he can roll
   const rows = TD.papers?.[era]?.epilogues?.[kind] || [], lasting = (c.old || []).some(w => w.kind === "lasting");
   const fit = r => (r.when || "any") === "any" || (r.when === "lasting") === lasting;
