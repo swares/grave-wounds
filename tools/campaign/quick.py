@@ -1,6 +1,6 @@
 """The quick start in a headless browser, served as the site is: the start page's Play in 15 minutes.
 
-    python3 tools/campaign/quick.py
+    python3 tools/campaign/quick.py [seed]
 
 The start page's button makes the Rules' running-example retinue in the team builder (the men the Rules'
 examples name) and sets up the roller's fight against four Lancastrian billmen, the GM's script playing
@@ -9,15 +9,21 @@ Next fighter, Stay, click an enemy, Roll the hit, Next fighter, until the fight 
 playwright with Chromium and a built site. Exits non-zero on any failure.
 """
 import sys
+import time
 from playwright.sync_api import sync_playwright
 from harness import ROOT, check, failures, serve
 
 BASE, server = serve()
+SEED = int(sys.argv[1]) if len(sys.argv) > 1 else 1
+DICE = """(() => { let s = Math.max(1, %d * 7919 %% 2147483647);
+  crypto.getRandomValues = a => { for (let i = 0; i < a.length; i++){ s = (s * 16807) %% 2147483647; a[i] = s } return a } })();"""   # seeded, as loop.py's
 RULES = (ROOT / "dist" / "rules.html").read_text(encoding="utf-8")
 
 with sync_playwright() as p:
     br = p.chromium.launch()
-    pg = br.new_page(viewport={"width": 1400, "height": 1100})
+    ctx = br.new_context(viewport={"width": 1400, "height": 1100})
+    ctx.add_init_script(DICE % SEED)
+    pg = ctx.new_page()
     errors = []
     pg.on("pageerror", lambda e: errors.append(str(e)))
     pg.on("dialog", lambda d: d.accept())
@@ -36,7 +42,8 @@ with sync_playwright() as p:
 
     pg.click("#btn-init"); pg.click("#btn-next")
     turns, struck = 0, 0
-    for _ in range(400):
+    until = time.time() + 300
+    while time.time() < until:
         if pg.evaluate("() => !!gmOver()"):
             break
         pg.wait_for_timeout(50)
