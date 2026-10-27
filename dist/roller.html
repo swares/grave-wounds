@@ -357,6 +357,7 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
       <div id="gm-bar"></div>
       <div id="net-bar"></div>
       <ol class="roundlog" id="round-log" aria-label="What happened each round"></ol>
+      <div id="team-with"></div>
       <div id="chars" style="display:flex;flex-direction:column;gap:10px"></div>
       <div id="after-fight"></div>
       <div id="hazards"></div>
@@ -2409,7 +2410,9 @@ function renderAfterFight(){
   const sel = `<select id="sel-won" aria-label="Who won"><option value="">${auto ? `${attr(auto)} (still standing)` : "No side has won yet"}</option>${sides.map(sd => `<option value="${attr(sd)}"${S.wonBy === sd ? " selected" : ""}>${attr(sd)}</option>`).join("")}</select>`;
   const rows = team.map(c => {
     const why = deedWhy(c), won = men.includes(c), marked = (S.deedsDone || []).includes(c.id);
-    return `<li><label class="check"><input type="checkbox" data-deed="${c.id}"${why && !marked ? " checked" : ""}${marked ? " disabled" : ""}> <b>${attr(c.name)}</b></label> <span class="muted">${attr(sideOf(c))}${won ? ", won" : ""} · ${c.downs || 0} put down${why ? ` · a deed: ${attr(why)}` : ""}${marked ? " · deed marked" : ""}</span></li>`;
+    const take = c.taken ? " · taken prisoner (to the team builder's Prisoners)" : "";
+    const takeBtn = !won && !c.taken ? ` <button class="small" data-takenman="${c.id}" title="His side broke and he was taken: he goes to the team builder's Prisoners, where his captors' situation and his fate are rolled">Taken prisoner</button>` : "";
+    return `<li><label class="check"><input type="checkbox" data-deed="${c.id}"${why && !marked ? " checked" : ""}${marked ? " disabled" : ""}> <b>${attr(c.name)}</b></label> <span class="muted">${attr(sideOf(c))}${won ? ", won" : ""} · ${c.downs || 0} put down${why ? ` · a deed: ${attr(why)}` : ""}${marked ? " · deed marked" : ""}${take}</span>${takeBtn}</li>`;
   }).join("");
   const log = (S.afterLog || []).map(l => `<li>${attr(l)}</li>`).join("");
   box.innerHTML = `<details class="after" ${S.afterOpen || auto || S.wonBy ? "open" : ""}><summary><b>After the fight</b> <span class="muted">deeds and loot for the team builder's men</span></summary>
@@ -4596,8 +4599,10 @@ function sheetLine(c){                          // a team builder character's sh
 function addTeam(){                             // the team from the team builder joins the fighters
   const t = S.teamIn; if (!t) return;
   if (!S.chars.length && DATA.tables[t.table]) switchTable(t.table);   // a new fight: the team's own wound table
+  const team = "team" + S.seq;                     // the team's mark on its men and followers: they go with its force together
   for (const m of t.team){
     const c = newChar(m.name, m.kit, m.weapon, m.look, t.side);
+    c.team = team;
     c.nerve = m.nerve; c.rating = Object.keys(RATINGS).find(r => RATINGS[r] === m.nerve) || "custom"; c.leader = !!m.leader;
     c.sheet = m.sheet;
     c.blood = poolOf(c);                           // his Endurance sets his Blood
@@ -4610,6 +4615,7 @@ function addTeam(){                             // the team from the team builde
     const c = newChar(f.name, f.kit, f.weapon, f.look, t.side);
     c.nerve = f.nerve; c.rating = f.quality in RATINGS ? f.quality : "custom";
     c.follower = { career: f.careerName || f.career, quality: f.quality, attack: f.attack, defence: f.defence };
+    c.team = team;
     S.chars.push(c);
   }
   placeUnplaced();
@@ -4757,6 +4763,7 @@ function moraleChecks(){
 const nextToFoe = c => !!c.pos && S.chars.some(o => o.pos && sideOf(o) !== sideOf(c) && !isOut(o) && hexDistance(c.pos, o.pos) <= 1);
 function takenBy(c, text){
   c.taken = true;
+  if (c.sheet?.pid) markLost(c.sheet.pid, "taken prisoner");   // the team builder's man: to its Prisoners, his fate rolled there
   logEvent(S.events, { round: evRound(), type: "quarter", vis: [], data: { text }, pub: { text } });
   return text;
 }
@@ -5475,9 +5482,30 @@ function handoffNamed(h, forces){
     if (!by.has(n.force)) by.set(n.force, []);
     by.get(n.force).push(c);
   }
+  for (const c of S.chars){                         // a team's followers go with the force its named men are with
+    if (!c.follower || !c.team || c.taken) continue;
+    const force = teamForce(c.team);
+    if (force && force.map === h.mapId && ids.has(force.id)){ if (!by.has(force.id)) by.set(force.id, []); by.get(force.id).push(c) }
+  }
   return { by, missing };
 }
-const forceCount = (o, named) => Math.max(Math.min(o.men, 8), (named?.by.get(o.id) || []).length);   // its fighters here: up to 8, its named men always
+function renderTeamWith(){                         // a line a team: all its named men (and so its followers) with one force
+  const box = $("#team-with"); if (!box) return;
+  const teams = [...new Set(S.chars.filter(c => c.team && c.uid).map(c => c.team))], opts = travelForces();
+  box.innerHTML = !opts.length ? "" : teams.map(team => {
+    const men = S.chars.filter(c => c.team === team && c.uid), nf = S.chars.filter(c => c.team === team && c.follower).length;
+    const f = teamForce(team), cur = f ? `${f.map}:${f.id}` : "", lead = men.find(c => c.leader) || men[0];
+    const who = `${attr(lead.name)}'s team (${men.length} named men${nf ? `, ${nf} followers` : ""})`;
+    const opt = o => `<option value="${attr(o.value)}"${o.value === cur ? " selected" : ""}>${attr(o.label)}</option>`;
+    return `<div class="toolbar"><label>${who} goes with <select data-teamwith="${attr(team)}" aria-label="Travel-map force ${who} goes with"><option value="">(no force)</option>${opts.map(opt).join("")}</select></label></div>`;
+  }).join("");
+}
+function teamForce(team){                           // {map, id} of the force a team's named men are with (its leader's, else the first's), or null
+  const named = readNamed(), men = S.chars.filter(c => c.team === team && c.uid && named[c.uid]?.force != null);
+  const n = named[(men.find(c => c.leader) || men[0])?.uid];
+  return n ? { map: n.map, id: n.force } : null;
+}
+const forceCount = (o, named) => Math.max(Math.min(o.men, 8), (named?.by.get(o.id) || []).length);   // its fighters here: up to 8, its named men and their team's followers always
 function forceChars(o, positions, named = null){  // up to 8 of a travel-map force's men, its named men first, at these hexes if given
   const out = [];
   for (const c of named?.by.get(o.id) || []){       // his own fighter, wounds and all, ready for a new fight
@@ -5798,7 +5826,7 @@ function renderChars(){
   renderMap();
   save();
   veilInputs();
-  renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); renderAfterFight(); renderHazards(); renderWords(); renderEvents(); renderGM(); relayFollow(); netSides(); netSync();
+  renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); renderAfterFight(); renderTeamWith(); renderHazards(); renderWords(); renderEvents(); renderGM(); relayFollow(); netSides(); netSync();
   consolePush();
 }
 /* ---------- the campaign console: this page in its frame, run from there ----------
@@ -5879,9 +5907,16 @@ $("#after-fight").addEventListener("change", e => {
   else if (e.target.id === "sel-loot"){ S.afterK.kind = e.target.value; renderChars() }
   else if (e.target.id === "sel-loot-who"){ S.afterK.who = e.target.value; renderChars() }
 });
+$("#team-with")?.addEventListener("change", e => {
+  const team = e.target.dataset?.teamwith; if (!team) return;
+  S.chars.filter(c => c.team === team && c.uid).forEach(c => attachNamed(c, e.target.value));
+  renderChars();
+});
 $("#after-fight").addEventListener("click", e => {
   const dp = e.target.closest("button[data-drop]");
   if (dp){ const sd = dp.dataset.drop; S.packsDropped ||= {}; S.packsDropped[sd] = true; S.chars.filter(c => sideOf(c) === sd && loadEra(c)).forEach(c => { c.loadOrder = "fighting" }); S.afterOpen = true; return renderChars() }
+  const tk = e.target.closest("button[data-takenman]");
+  if (tk){ const c = S.chars.find(x => x.id === +tk.dataset.takenman); if (c){ takenBy(c, `${c.name} is taken prisoner`); S.afterOpen = true; renderChars() } return }
   if (e.target.closest("#btn-deeds")){ S.afterOpen = true; markDeeds() }
   else if (e.target.closest("#btn-loot")){ S.afterOpen = true; rollAfterLoot() }
 });

@@ -203,7 +203,7 @@ function musterLines(st){
 function marchLines(st){
   const map = st.travel ? "On the map of " + esc(st.travel.mapName) + bit(st.travel.day, ", day " + st.travel.day) + "." : "Choose the campaign's map: <b>Map</b>, above (or on the travel map).";
   return [map,
-    "Put the team's force on it (or use one of the map's own), and in the roller put each named man <b>With</b> it on his card.",
+    "Put the team's force on it (or use one of the map's own), and in the roller put the team <b>with</b> it (one control for the whole team; its followers go with it too, or each man <b>With</b> a force on his card).",
     "Give each force its route, orders and camps under <b>Orders</b> in <b>Run the march</b> (or on the travel map), and move the clock on: weather, food, the sick and the road's incidents come each day.",
     "When the force meets the enemy, set up the fight under <b>Fights on offer</b> here, or with <b>Fight here</b> on the travel map: a skirmish on the roller, a battle on the field map. This page moves to the fight."];
 }
