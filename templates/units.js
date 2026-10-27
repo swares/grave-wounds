@@ -1762,10 +1762,11 @@ function shootAll(us, table, rng, acc, log, field, under = null){
   for (const c of cannonades(us, field)) fireBattery(us, table, rng, acc, log, c);
   vehicleGuns(us, table, rng, acc, log, field, under);
 }
+const aimAt = (att, A, band, penalty) => (A.hit !== undefined && A.hit !== null ? A.hit : attackOf(att) - band.penalty) - penalty;   // a guided missile's fixed hit %, else the shooter's attack less the range band; less cover and the rest (as units._aim_at)
 function rocketVolley(ctx, v){                    // rockets and recoilless rounds at men: each aimed at the target's hex (the window, not a man seen) that hits bursts there as the indirect kind `rocket` (as units._rocket_volley)
   const { us, table, rng, log, field } = ctx, att = sideOfUnit(shooterOf(us, v), table), band = fieldRange(att.weapon, v.dist, v.reach || 0);
   if (!band) return;
-  const n = countBlows(v.men * shotAtVehicle(att.weapon).rate * (100 - v.misfire) / 100, rng), atk = attackOf(att) - band.penalty - v.penalty;
+  const A = shotAtVehicle(att.weapon), n = countBlows(v.men * A.rate * (100 - v.misfire) / 100, rng), atk = aimAt(att, A, band, v.penalty);
   let hits = 0;
   for (let s = 0; s < n; s++) if (rng.randint(1, 100) <= atk) hits++;
   log.push({ kind: "rocketfire", att: v.att, dfd: v.dfd, dist: v.dist, shots: n, hit: hits, at: [...v.to] });
@@ -1776,7 +1777,7 @@ function armourVolley(us, table, rng, acc, log, v, opts){   // anti-armour shots
   const att = sideOfUnit(shooterOf(us, v), table), band = fieldRange(att.weapon, v.dist, opts.reach || 0);
   if (!band) return;
   const A = shotAtVehicle(att.weapon);
-  const n = countBlows(v.men * A.rate * opts.factor, rng), atk = attackOf(att) - band.penalty - opts.penalty;
+  const n = countBlows(v.men * A.rate * opts.factor, rng), atk = aimAt(att, A, band, opts.penalty);
   let hits = 0, kills = 0;
   for (let s = 0; s < n; s++) if (rng.randint(1, 100) <= atk) hits++;
   const p = A.row in UD.vehicles.armour[vehicleKind(us[v.dfd]).armour] ? killChance(us[v.dfd], A.row, v.from, v.to) : 0;

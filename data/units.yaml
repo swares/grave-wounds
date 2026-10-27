@@ -456,7 +456,8 @@ indirect:
 # Armour: small arms cannot hurt a vehicle (men with them do not shoot at one), and no one
 # strikes it, or is struck by it, hand to hand. Men with an `anti_armour` weapon fire its `rate`
 # rounds a man at a vehicle (every one aimed); each that hits (as at men: range, cover, the
-# weather) knocks a vehicle out at its armour's `row` % (rpg or atgm). A round into a vehicle's
+# weather; a guided missile with a `hit` instead hits at that %, less cover, at any range) knocks a
+# vehicle out at its armour's `row` % (rpg or atgm). A round into a vehicle's
 # flank or rear (where the shooter stands, by the vehicle unit's facing) knocks it out at that %
 # times `aspect` (to 100 at most). A hit that does not knock it out may still do harm (`damage`):
 # each such hit is on the turret at `turret` %, else the hull, and does what that part's line
@@ -529,7 +530,7 @@ vehicles:
     rpg:        {rate: 0.25, row: rpg}
     bazooka:    {rate: 0.25, row: rpg}
     recoilless: {rate: 0.25, row: rpg}
-    atgm:       {rate: 0.1,  row: atgm}
+    atgm:       {rate: 0.1,  row: atgm, hit: 85}   # guided: hits at `hit` % less cover, whatever the range (Debecka 2003: 19 Javelins, 17 hits, all at 2,200 m or more)
   damage:
     turret: 35
     turret_hit: {immobilised: 5, gun: 40}
