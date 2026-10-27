@@ -1175,13 +1175,13 @@ def _papers_errors(d: Data) -> list[str]:
     return errors
 
 
-def _era_papers_errors(d: Data, eid: str, E: dict) -> list[str]:
+def _era_papers_errors(d: Data, eid: str, era: dict) -> list[str]:
     """One era's papers: a title for each of its three handouts, and rows for each kind of epilogue."""
-    where, docs = f"papers.yaml: {eid}", E.get("docs") or {}
+    where, docs = f"papers.yaml: {eid}", era.get("docs") or {}
     errors = [f"{where}: docs needs a title for {k}" for k in ("muster", "surgeon", "discharge") if not isinstance((docs.get(k) or {}).get("title"), str)]
     regions = {r["id"] for r in d.teams[eid]["regions"]}
     for kind in EPILOGUE_KINDS:
-        rows = (E.get("epilogues") or {}).get(kind)
+        rows = (era.get("epilogues") or {}).get(kind)
         if not isinstance(rows, list) or not rows:
             errors.append(f"{where}: epilogues needs rows for {kind}")
             continue

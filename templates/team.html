@@ -1539,7 +1539,11 @@ function papersMan(P){                              // the man whose papers are 
 function renderPapers(){
   const el = $("#papers"), c = papersMan(S.papers);
   document.body.classList.toggle("papers-open", !!c);
-  if (!c){ S.papers = null; el.innerHTML = ""; if (el.open) el.close(); return }
+  if (!c){
+    S.papers = null; el.innerHTML = "";
+    if (el.open) el.close();
+    return;
+  }
   if (!el.open) el.show();
   const E = papersOf(), R = E.regions?.[c.region] || {}, D = {};
   for (const k of ["muster", "surgeon", "discharge"]) D[k] = { ...PAPERS_DEFAULT.docs[k], ...(E.docs || {})[k], ...R[k] };   // the region's own papers over the era's
