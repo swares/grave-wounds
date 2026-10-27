@@ -55,6 +55,16 @@ with sync_playwright() as p:
     picks = pg.evaluate("() => S.picks['wanat-2008']")
     check(picks["fighters"] in (0, 1, 2) and picks["apaches"] in (0, 1), f"Roll it picks an option for each question ({picks})")
 
+    bad = pg.evaluate("""() => { const out = [];
+      for (const [fid, B] of Object.entries(FD.fields)) for (const q of B.accounts || []) q.options.forEach((o, k) => {
+        S.picks = { [fid]: { [q.id]: k } }; S.phase = "setup"; loadBattlefield(fid, true);
+        const want = asAccounted(B, fid);
+        if (!S.units.length && !S.waiting.length) out.push(`${fid} ${q.id} ${k}: no units`);
+        if (k && !want.chosen.length) out.push(`${fid} ${q.id} ${k}: not chosen`) });
+      return out }""")
+    check(not bad, f"every option of every battlefield's accounts draws its armies up ({bad[:3]})")
+    pg.evaluate("() => { S.picks = {}; loadBattlefield('wanat-2008', true) }")
+
     pg.select_option("#sel-field", "snipe-1942")
     check(pg.is_hidden(BOX), "a battlefield with no accounts shows no box")
     check(not errors, f"no page errors {errors[:3]}")

@@ -2060,9 +2060,10 @@ from the battlefield files because their generators write those.
   against history only, with no commander's bar, and the scorecard marks it so.
 - **In the books.** Each battlefield's section lists its questions under *The accounts to
   choose*.
-- **The pilot.** Six battlefields: Wanat (the fighters; when the Apaches came), Keating
-  (the attackers), Fox Hill and Chipyong-ni (the Chinese), Agincourt and Crécy (each army;
-  Crécy's Genoese crossbowmen).
+- **Where.** Twenty-three battlefields, 36 questions. The other battlefields with disputes
+  have none the changes can express: their figures are for a whole army the field shows only
+  part of, the time in dispute is the battle's start, or a phase would have to jump past the
+  next. Where the field's own figure matches no account, its option says "the game's figure".
 
 Thirty-five battlefields have phases. Each phase's time is our reading of the accounts, rounded to the
 minute from the deployment moment (exchange 1). The sources are named in each generator's notes
