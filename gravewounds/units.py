@@ -1059,7 +1059,7 @@ def morale(d: Data, unit: dict, roll: int) -> dict:
     target = quality(d, unit["quality"])["nerve"] + _morale_mods(M["mods"], unit)
     if roll <= target:
         return {"check": True, "target": target, "state": "steady" if rally and not struck else unit["state"]}
-    return {"check": True, "target": target, "state": _failed(M, unit, roll - target)}
+    return {"check": True, "target": target, "state": _failed(M, unit, roll - target, rally and not struck)}
 
 
 def _holding(unit: dict) -> bool:
@@ -1083,11 +1083,12 @@ def _attrition(mo: dict, unit: dict) -> bool:
     return unit["down"] >= mo["trigger"] * unit["start"] and (unit["lost"] > 0 or not _holding(unit))
 
 
-def _failed(mo: dict, unit: dict, by: int) -> str:
+def _failed(mo: dict, unit: dict, by: int, rallying: bool = False) -> str:
     """A failed check: a steady unit is shaken, unless it fails badly while flanked or with
-    half its men down; a shaken unit breaks."""
+    half its men down; a shaken unit breaks, unless it was only trying to rally (rallying):
+    then it stays shaken."""
     if unit["state"] == "shaken":
-        return "broken"
+        return "shaken" if rallying else "broken"
     hard = unit.get("flanked") or unit["down"] >= unit["start"] / 2
     return "broken" if hard and by > mo["shaken_by"] else "shaken"
 

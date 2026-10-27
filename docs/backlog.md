@@ -211,6 +211,14 @@ When an item is done, delete it here and note it in the pull request that closes
   over a whole exchange is told (a unit that broke and rallied within one is missed), no rally or hero turning points, no narration on the travel map, no streamed or
   regenerated passages. The GM can pick the voice for a battle (the war's by default); passages already written are
   not retold in a new voice.
+- **Tumbledown, a known miss** (the rules audit, 26 October 2026). The Scots Guards lose every
+  self-play run. Traced: the companies break under mortar fire and fire they cannot answer long
+  before they close. Tried and not adopted: less lethal shellfire on dug-in men, location error
+  and planned fire (`indirect.shelter`, `error`, `planned`, branch `shellfire-test`); going to
+  ground after a mission's first salvo (`indirect.go_to_ground`, branch `go-to-ground`); a shaken
+  unit breaking only for a heavy cause (3 of 6 at Tumbledown, but Mons, Wanat and Cowpens flip:
+  189 of 276 against 198). Adopted: a failed rally leaves a unit shaken (202 of 276). Still to
+  find: a narrower cause, such as how a night attack's men see and answer the defenders.
 - **Self-play against the battles as fought, first review** (`docs/selfplay-review.md`). Every
   battlefield was played with the commander on both sides and set against what happened; what has
   been changed since, and what was measured and not built, is in the review. To do, from the
