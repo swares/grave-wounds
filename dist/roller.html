@@ -2784,7 +2784,11 @@ function namedRow(c){                             // Endurance, the force he goe
 }
 const playerView = () => typeof location !== "undefined" && /^#(join=|relay)/.test(location.hash);   // a player's page: joined to the GM's, or his fight inside his campaign page
 if (typeof window !== "undefined" && !playerView()){   // the travel map may have run his days (the GM's page: a player's page holds no game)
-  window.addEventListener("focus", () => { syncNamed(); renderChars() });
+  // Focus redraws only when another page changed what the cards show: a redraw on every focus replaced the
+  // buttons under the pointer, so the first click into the roller in the campaign console's frame was lost.
+  const outside = () => { try { return [NAMED_KEY, XP_KEY, PURSES_KEY, "gravewounds-travel"].map(k => localStorage.getItem(k)).join("\u0001") } catch { return null } };
+  let seenOutside = outside();
+  window.addEventListener("focus", () => { const now = outside(); if (now === seenOutside) return; seenOutside = now; syncNamed(); renderChars() });
   window.addEventListener("storage", e => {
     let now = null;
     try { now = localStorage.getItem("gravewounds-chars") } catch { return }
