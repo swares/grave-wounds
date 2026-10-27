@@ -1,0 +1,286 @@
+# Each era's game handouts (a hero's papers in the team builder) and epilogues (what became of a man when he
+# leaves the team). The research, with its sources and what it could not find: the project doc
+# "epilogues-research". Every handout says it is a game handout, not a record: the titles are the game's own,
+# echoing the kind of paper a soldier of that army had, with no real form, number, crest or insignia.
+#
+# docs: muster (who he is and his service), surgeon (his wounds), discharge (how he left; dead_title when he
+# died). look: vellum, printed, typed or told. regions: a region's own docs, over the era's.
+# epilogues: for alive, dead and deserted, rows of {w (weight), text, when: any | lasting (he carries a lasting
+# hurt) | whole (he does not), regions (optional: those armies only)}. The text says {name}, {he}, {his},
+# {him}, {He}, {His} and {wound} (the place of his lasting hurt).
+eras:
+  medieval:
+    look: vellum
+    docs:
+      muster: {title: "From the muster roll", intro: "Taken at the muster under his captain: his name, and a mark that he appeared, horsed and harnessed as he should be."}
+      surgeon: {title: "The barber-surgeon's note"}
+      discharge: {title: "Off the roll", dead_title: "Struck from the roll: dead"}
+    regions:
+      ayyubid:
+        muster: {title: "From the army's register", intro: "Entered in the register of the army office, with his description and his grade of pay."}
+    epilogues:
+      alive:
+        - {w: 3, when: lasting, text: "Maimed in the {wound}, {he} ends {his} days on a corrody at an abbey: a daily loaf and a gallon of ale, a bed and a fire."}
+        - {w: 2, when: lasting, text: "Maimed in the {wound} and with no lord to keep {him}, {he} begs under licence, and ends at an almshouse door."}
+        - {w: 1, when: lasting, text: "With the hurt to {his} {wound}, {he} has a smith make {him} an iron brace, and works on at {his} trade."}
+        - {w: 3, when: any, regions: [england, france, portugal, castile, latin_east, baltic, landsknecht], text: "{He} answers the next muster, and the one after: twenty years under three captains."}
+        - {w: 2, when: whole, regions: [england], text: "{He} is granted a house in a conquered town in Normandy, marries there, and loses it all when the duchy falls in 1450."}
+        - {w: 2, when: any, regions: [england, france, portugal, castile], text: "{He} comes home with {his} share of a ransom, less the thirds owed upward to {his} captain and the king."}
+        - {w: 3, when: any, regions: [swiss, landsknecht], text: "{He} comes home from the war with a purse, and spends it in the taverns of the valley."}
+        - {w: 2, when: any, regions: [latin_east], text: "Taken in a rout, {he} is sold in the slave market; a knight of the Orders would have been put to death."}
+        - {w: 2, when: any, text: "{He} goes home to {his} fields and {his} trade, and never takes the road to war again."}
+      dead:
+        - {w: 4, text: "{He} is thrown into a pit dug beside the field with the others who fell there."}
+        - {w: 2, text: "{He} lies in a grave pit by the field; years later {his} bones are moved to a churchyard."}
+        - {w: 1, regions: [england, france, portugal, castile], text: "{His} name is read among the dead at a chantry mass that {his} lord pays for."}
+      deserted:
+        - {w: 3, regions: [swiss], text: "{He} never comes back from the foreign contract, as a quarter or more of the young men did not."}
+        - {w: 3, text: "{He} slips away from the host by night and walks home, and no captain sends after {him}."}
+        - {w: 1, text: "{He} goes over to another captain who pays better."}
+  thirty_years:
+    look: vellum
+    docs:
+      muster: {title: "From the company roll", intro: "A line in the company's roll: his name, where he was born, his age, his years in service and his trade."}
+      surgeon: {title: "The field barber's note"}
+      discharge: {title: "Remarks on the roll", dead_title: "Remarks on the roll: dead"}
+    epilogues:
+      alive:
+        - {w: 2, when: lasting, text: "Wounded in the {wound} and of good conduct, {he} is given a small pension through the regiment."}
+        - {w: 2, when: lasting, text: "Crippled in the {wound}, {he} is sent home to {his} parish with nothing, and lives on the charity of {his} kin."}
+        - {w: 3, when: any, text: "Paid off at last, {he} marches away to find the next paymaster."}
+        - {w: 2, when: any, text: "Unpaid for months, {he} turns marauder with other men like {him}, living off the villages."}
+        - {w: 2, when: whole, regions: [swedish], text: "{He} goes home to {his} rote and {his} farm, an old soldier among farmers."}
+      dead:
+        - {w: 3, text: "The villagers strip {him} and lay {him} in a pit with dozens of others."}
+        - {w: 2, text: "{He} dies of camp fever, and at the next muster {he} is struck off the roll."}
+      deserted:
+        - {w: 2, regions: [swedish], text: "Caught, {he} runs the gauntlet between two lines of {his} comrades, and serves on."}
+        - {w: 3, text: "{He} runs from the colours and is not found; the roll says only that {he} ran off."}
+  horse_musket:
+    look: printed
+    docs:
+      muster: {title: "From the description book", intro: "His entry: his age and height, where he enlisted, where he was born, and his trade."}
+      surgeon: {title: "Hospital note"}
+      discharge: {title: "Discharge", dead_title: "Return of the dead"}
+    regions:
+      continental: {discharge: {title: "Declaration for a pension", dead_title: "Return of the dead"}}
+      french: {muster: {title: "From the troop register", intro: "His line in the register: his parents, his age, where he was born, his company and his description."}}
+    epilogues:
+      alive:
+        - {w: 3, when: lasting, regions: [continental, us_1812], text: "Disabled in the {wound}, {he} is put on half pay for life as an invalid."}
+        - {w: 3, when: lasting, regions: [british_rev, british_pen], text: "Discharged with the hurt to {his} {wound}, {he} is made an out-pensioner of Chelsea at a few pence a day, and called back now and then to show {he} is still unfit."}
+        - {w: 1, when: lasting, regions: [british_rev, british_pen], text: "Too broken in the {wound} to live outside, {he} is taken into the Royal Hospital at Chelsea as an in-pensioner, in its red coat."}
+        - {w: 3, when: lasting, regions: [french], text: "{He} enters Les Invalides, and works out {his} days in its workshops."}
+        - {w: 3, when: whole, regions: [continental, us_1812], text: "{He} is granted bounty land in the west, and sells the warrant for ready money."}
+        - {w: 2, when: any, regions: [continental], text: "Old and poor, {he} swears a declaration before a county court for a pension, listing all {he} owns."}
+        - {w: 2, when: whole, regions: [british_rev], text: "{He} takes a lot of land in Nova Scotia with the other Loyalists, and does not go home."}
+        - {w: 2, when: any, regions: [french], text: "{He} lives to old age, and in 1857 is given the Saint Helena Medal with the other old soldiers of the Empire."}
+        - {w: 2, when: any, text: "{He} goes back to {his} trade, and tells the story of the war in the tavern for the rest of {his} life."}
+      dead:
+        - {w: 3, text: "{He} is buried in haste in an unmarked hospital grave."}
+        - {w: 3, text: "{He} is buried where {he} fell, in a common grave on the field."}
+      deserted:
+        - {w: 3, regions: [british_rev, british_pen], text: "{He} deserts, as most deserters did, in {his} first year; a third or more were brought back, and {he} is one."}
+        - {w: 3, text: "{He} deserts and is never taken: {he} lives out {his} life under another name."}
+        - {w: 1, text: "Caught, {he} is court-martialled and flogged, and serves on."}
+  crimea:
+    look: printed
+    docs:
+      muster: {title: "From the pay-list", intro: "His line in the regiment's pay-list, with the depot's remarks."}
+      surgeon: {title: "Hospital record"}
+      discharge: {title: "Discharge", dead_title: "Return of the dead"}
+    epilogues:
+      alive:
+        - {w: 3, when: lasting, regions: [british], text: "Discharged with the hurt to {his} {wound} on a pension of ninepence a day, {he} draws it for nearly forty years."}
+        - {w: 1, when: lasting, regions: [british], text: "Poor in old age, {he} is granted a compassionate pension at last."}
+        - {w: 2, when: whole, regions: [british], text: "{He} re-enlists for India."}
+        - {w: 2, when: any, regions: [russian], text: "{He} is discharged after long service, a free man at last."}
+        - {w: 2, when: any, text: "{He} goes home and back to work, and keeps {his} medal in a drawer."}
+      dead:
+        - {w: 3, text: "{He} dies of disease at Scutari, and is buried in the cemetery there."}
+        - {w: 2, regions: [british], text: "{He} is buried on Cathcart's Hill, under a stone that will be broken in another war."}
+        - {w: 3, text: "{He} is buried in an unmarked grave on the plateau, and no record says where."}
+      deserted:
+        - {w: 3, text: "{He} deserts at a port on the way home, and is not taken."}
+        - {w: 1, text: "Caught, {he} is court-martialled and serves {his} sentence before rejoining."}
+  civil_war:
+    look: printed
+    docs:
+      muster: {title: "Enlistment and description", intro: "His enlistment: his age, where he was born, his trade, and his description."}
+      surgeon: {title: "Hospital card"}
+      discharge: {title: "Discharge", dead_title: "From the casualty list"}
+      # the frontier army keeps the same papers
+    epilogues:
+      alive:
+        - {w: 3, when: lasting, regions: [union, frontier], text: "Rated for the hurt to {his} {wound}, {he} draws eight dollars a month, raised under the later pension acts."}
+        - {w: 3, when: lasting, regions: [confederacy], text: "With the hurt to {his} {wound}, {he} gets nothing until {his} state pays its old soldiers, years after the war, and is poor until then."}
+        - {w: 2, when: lasting, text: "{He} ends {his} days in a soldiers' home."}
+        - {w: 2, when: any, regions: [union], text: "In old age {he} draws a pension for age alone, as nearly all the old soldiers came to."}
+        - {w: 1, when: any, text: "Taken into a soldiers' home, {he} is put out of it for drink."}
+        - {w: 3, when: whole, text: "{He} goes home, marries, and marches with the old regiment on Decoration Day."}
+      dead:
+        - {w: 3, regions: [union, frontier], text: "{He} is reburied in a national cemetery; nearly half of those reburied lie under stones marked Unknown, and {he} is one."}
+        - {w: 2, regions: [union, frontier], text: "{He} is reburied in a national cemetery, under {his} own name."}
+        - {w: 3, regions: [confederacy], text: "{He} is left in a trench on the field, and reburied years later by the ladies' memorial association."}
+      deserted:
+        - {w: 3, regions: [union, confederacy], text: "{He} deserts, as one man in ten did; caught, {he} serves out {his} time with a ball and chain."}
+        - {w: 1, regions: [union, confederacy], text: "Caught, {he} is one of the few hundred deserters shot by a firing party."}
+        - {w: 3, text: "{He} deserts and goes west, where no one asks a man's name."}
+  plains_nations:
+    look: told
+    docs:
+      muster: {title: "His deeds, as told", intro: "Told in the style of a ledger drawing's story, in words: what he did and was known for.", service: "His deeds"}
+      surgeon: {title: "His wounds, as told"}
+      discharge: {title: "How his story ends", dead_title: "As his people remember him"}
+    epilogues:
+      alive:
+        - {w: 3, when: lasting, text: "{His} deeds are told before the band, and {he} wears a feather painted red for the wound to {his} {wound}."}
+        - {w: 3, when: any, text: "{He} comes in and surrenders with {his} band at the agency in 1877."}
+        - {w: 2, when: any, regions: [lakota], text: "{He} goes north into Canada with Sitting Bull, and comes back with him in 1881."}
+        - {w: 2, when: any, regions: [cheyenne], text: "Sent south to Indian Territory, {he} goes north again with the people in the flight of 1878."}
+        - {w: 1, when: any, text: "Taken and held at Fort Marion, {he} draws {his} life in a ledger book."}
+        - {w: 2, when: any, text: "The year of {his} great fight goes into the band's winter count."}
+      dead:
+        - {w: 3, regions: [lakota], text: "{He} is laid on a scaffold with {his} belongings, and {his} people mourn {him}."}
+        - {w: 2, text: "{His} deeds are told among {his} people for as long as anyone who knew {him} lives."}
+        - {w: 1, regions: [cheyenne], text: "{He} is killed in the breakout from Fort Robinson in January 1879."}
+      deserted:
+        - {w: 1, text: "{He} leaves the war party and goes home to {his} family's lodge."}
+  wwi:
+    look: printed
+    docs:
+      muster: {title: "Attestation and service", intro: "His attestation: his age, his trade, his next of kin, and where he served."}
+      surgeon: {title: "Field medical card"}
+      discharge: {title: "Discharge and pension", dead_title: "Notice of death"}
+    epilogues:
+      alive:
+        - {w: 3, when: lasting, regions: [british, newfoundland], text: "Assessed for the hurt to {his} {wound}, {he} draws a pension; a firm on the King's Roll gives {him} work."}
+        - {w: 2, when: lasting, regions: [british, newfoundland], text: "Discharged with shell shock, {he} is one of the many pensioned for {his} nerves, and the war never quite leaves {him}."}
+        - {w: 3, when: lasting, regions: [france], text: "Disabled in the {wound}, {he} is one of the mutilés de guerre, and the law of 1919 keeps a job for {him}."}
+        - {w: 3, when: lasting, regions: [germany, austria_hungary], text: "With the hurt to {his} {wound}, {he} is one of the hundreds of thousands still on the state's support in 1924."}
+        - {w: 3, when: lasting, regions: [russia], text: "Disabled in the {wound}, {he} goes home to the revolution, and is forgotten by it."}
+        - {w: 2, when: any, regions: [us], text: "{He} is given a bonus certificate, marches with the Bonus Army in 1932, and is paid at last in 1936."}
+        - {w: 2, when: any, regions: [germany, austria_hungary], text: "Taken prisoner in Russia, {he} comes home only in 1920, or fights on in the civil war there."}
+        - {w: 2, when: any, regions: [russia], text: "In 1917 {he} leaves the trenches with the others, and walks home for the land."}
+        - {w: 3, when: whole, text: "{He} goes back to {his} old job, and never speaks of the war to {his} children."}
+        - {w: 1, when: lasting, text: "With the hurt to {his} {wound}, {he} goes home and lives as best {he} can on what {his} family can spare."}   # the research found nothing on this army's disabled veterans
+      dead:
+        - {w: 3, regions: [british, newfoundland], text: "{He} lies under a headstone like every other, with a line {his} family chose."}
+        - {w: 3, regions: [british, newfoundland], text: "{He} is never found; {his} name is carved on a memorial to the missing."}
+        - {w: 2, regions: [us], text: "{He} is brought home at {his} family's wish, as tens of thousands were."}
+        - {w: 1, regions: [us], text: "{He} is buried in France, and in 1931 {his} mother sails to see the grave."}
+        - {w: 3, text: "{He} is buried in a war cemetery near where {he} fell, or never found at all."}
+      deserted:
+        - {w: 2, regions: [british, newfoundland], text: "Caught and sentenced to death, {he} has the sentence commuted, as nearly all were."}
+        - {w: 1, regions: [british, newfoundland], text: "Caught, {he} is shot at dawn."}
+        - {w: 3, regions: [russia], text: "{He} walks away from the front with thousands of others in 1917."}
+        - {w: 2, text: "{He} deserts and is caught, and serves {his} sentence in a military prison."}
+  wwii:
+    look: typed
+    docs:
+      muster: {title: "Service record", intro: "His record: his number, his unit, his next of kin, his trade, and where he served."}
+      surgeon: {title: "Casualty and case notes"}
+      discharge: {title: "Separation", dead_title: "Report of death"}
+    regions:
+      germany: {muster: {title: "From his service book"}}
+      soviet: {muster: {title: "From his service book"}}
+      japan: {muster: {title: "From his service booklet"}}
+    epilogues:
+      alive:
+        - {w: 3, when: lasting, regions: [us, us_pacific], text: "Discharged with the hurt to {his} {wound}, {he} is rated by the VA and draws a disability pension for life."}
+        - {w: 2, when: any, regions: [us, us_pacific], text: "{He} is discharged for {his} nerves, one of the many psychiatric discharges."}
+        - {w: 3, when: whole, regions: [us, us_pacific], text: "{He} goes to college on the GI Bill, and buys a house with a VA loan."}
+        - {w: 3, when: whole, regions: [commonwealth], text: "{He} is demobbed with a suit, a gratuity and {his} old job back."}
+        - {w: 2, when: any, regions: [commonwealth], text: "Held by the Japanese, {he} comes home with worms, numb feet and nightmares that last {his} life."}
+        - {w: 3, when: any, regions: [germany], text: "Taken by the Soviets, {he} comes home from captivity in 1949, or in 1956."}
+        - {w: 3, when: any, regions: [italy], text: "Interned in Germany after 1943, {he} refuses to fight for the Germans, and comes home in 1945."}
+        - {w: 3, when: any, regions: [soviet], text: "Back from German captivity, {he} is screened by the NKVD, then drafted again or sent to the camps."}
+        - {w: 3, when: any, regions: [japan], text: "Held in Siberia for years, {he} comes home at last through a repatriation port."}
+        - {w: 2, when: lasting, text: "With the hurt to {his} {wound}, {he} learns a new trade, and the war is a thing {he} does not talk about."}
+      dead:
+        - {w: 3, regions: [us, us_pacific], text: "{His} family has {him} brought home after the war, as most families chose."}
+        - {w: 2, regions: [us, us_pacific], text: "{He} lies in an American cemetery overseas."}
+        - {w: 3, regions: [commonwealth], text: "{He} lies in a war cemetery near where {he} fell, under a headstone like every other."}
+        - {w: 3, regions: [germany, soviet, japan, italy], text: "{He} is missing for decades; a search team finds {him} at last, or no one ever does."}
+      deserted:
+        - {w: 3, regions: [us, us_pacific, commonwealth], text: "Caught, {he} goes to military prison with a dishonourable discharge."}
+        - {w: 3, regions: [germany], text: "Caught, {he} is shot."}
+        - {w: 2, text: "{He} deserts and hides until the war is over."}
+  korea:
+    look: typed
+    docs:
+      muster: {title: "Service record", intro: "His record: his number, his unit, his next of kin, and where he served."}
+      surgeon: {title: "Casualty card"}
+      discharge: {title: "Separation", dead_title: "Report of death"}
+    epilogues:
+      alive:
+        - {w: 3, when: any, regions: [us_1950, us_1952], text: "{He} goes to school on the Korean GI Bill, a hundred and ten dollars a month for three years."}
+        - {w: 2, when: any, regions: [us_1950, us_1952], text: "Taken prisoner, {he} lives through the camps, as fewer than two in three did."}
+        - {w: 3, when: lasting, regions: [rok], text: "Disabled in the {wound}, {he} begs in the streets in the 1960s, and is honoured only half a century later."}
+        - {w: 3, when: any, regions: [chinese], text: "Taken prisoner, {he} chooses Taiwan when the war ends, as two in three Chinese prisoners did."}
+        - {w: 2, when: any, regions: [chinese], text: "Taken prisoner, {he} goes back to China, and nothing more is heard of {him}."}
+        - {w: 2, when: lasting, regions: [us_1950, us_1952, commonwealth], text: "With the hurt to {his} {wound}, {he} draws a disability pension, and keeps to {him}self."}
+        - {w: 3, when: whole, text: "{He} goes home, and finds no one much wants to hear about the war."}
+        - {w: 1, when: lasting, text: "With the hurt to {his} {wound}, {he} goes home and lives as best {he} can on what {his} family can spare."}   # the research found nothing on this army's disabled veterans
+      dead:
+        - {w: 3, regions: [commonwealth], text: "{He} lies in the United Nations cemetery at Tanggok, in Busan, or {his} name is on the memorial there."}
+        - {w: 3, regions: [chinese, north_korea], text: "{He} is buried in the North; or found in the South decades later and sent home to Shenyang."}
+        - {w: 3, regions: [rok], text: "{His} remains are dug up decades later and returned to {his} family."}
+        - {w: 3, regions: [us_1950, us_1952], text: "{He} is brought home and buried by {his} family."}
+      deserted:
+        - {w: 2, text: "Caught, {he} goes to military prison with a dishonourable discharge."}
+  vietnam:
+    look: typed
+    docs:
+      muster: {title: "Service record", intro: "His record: his number, his unit, his specialty, and his tour."}
+      surgeon: {title: "Casualty card"}
+      discharge: {title: "Separation", dead_title: "Report of death"}
+    regions:
+      pavn: {muster: {title: "From his notebook", intro: "Pages from his notebook: route notes, poems, the names of friends."}}
+      nlf: {muster: {title: "From his notebook", intro: "Pages from his notebook: route notes, poems, the names of friends."}}
+    epilogues:
+      alive:
+        - {w: 3, when: lasting, regions: [us_army, us_marines], text: "With the hurt to {his} {wound}, {he} is rated disabled by the VA for life."}
+        - {w: 2, when: any, regions: [us_army, us_marines], text: "{He} lives with the war for years after, as perhaps one in four of {his} generation of soldiers did."}
+        - {w: 1, when: any, regions: [us_army, us_marines], text: "Absent without leave and in trouble with drugs, {he} leaves with a bad-paper discharge."}
+        - {w: 3, when: any, regions: [anzac], text: "{He} comes home at night with no welcome, and marches at last with the others in 1987."}
+        - {w: 3, when: any, regions: [arvn], text: "After the fall, {he} spends years in a re-education camp, then leaves by boat."}
+        - {w: 2, when: any, regions: [pavn, nlf], text: "{He} comes over to the other side under the Open Arms programme, and serves the government."}
+        - {w: 3, when: whole, text: "{He} goes home and does not talk about it."}
+      dead:
+        - {w: 3, regions: [us_army, us_marines], text: "{He} is flown home through the mortuary at Tan Son Nhut; {his} name is carved on the Wall."}
+        - {w: 3, regions: [pavn, nlf], text: "{He} is one of the many never found, or never named."}
+        - {w: 2, regions: [arvn], text: "{He} dies in a camp after the war, and the grave is let go."}
+        - {w: 2, regions: [anzac], text: "{He} is buried in a war cemetery in Malaysia, or brought home to Australia."}
+      deserted:
+        - {w: 3, regions: [us_army, us_marines], text: "{He} goes to Canada and is never pardoned; or comes back and takes an undesirable discharge."}
+        - {w: 2, text: "{He} slips away from {his} unit and goes home to {his} village."}
+  modern:
+    look: typed
+    docs:
+      muster: {title: "Service record", intro: "His record: his number, his unit, his trade, and his tours."}
+      surgeon: {title: "Casualty notes"}
+      discharge: {title: "Leaving the service", dead_title: "Report of death"}
+    regions:
+      chechen: {muster: {title: "His story, as his comrades tell it"}}
+      insurgent: {muster: {title: "His story, as his comrades tell it"}}
+    epilogues:
+      alive:
+        - {w: 3, when: lasting, regions: [uk_1982, uk_2005], text: "For the hurt to {his} {wound}, {he} is paid a lump sum and a monthly income under the armed forces' compensation scheme."}
+        - {w: 3, when: lasting, regions: [us_1991, us_1993, us_2005], text: "Home with the hurt to {his} {wound}, {he} is treated by the VA, and has years of operations ahead."}
+        - {w: 2, when: any, regions: [us_1991, us_1993, us_2005, uk_1982, uk_2005], text: "{He} is diagnosed with post-traumatic stress, and is treated for it."}
+        - {w: 3, when: any, regions: [argentina_1982], text: "Told to keep silent about the war, {he} spends years fighting for a veteran's pension."}
+        - {w: 3, when: any, regions: [russia_1995], text: "Neglected when {he} comes home, {he} drifts into drink, a veterans' gang, or a security job."}
+        - {w: 3, when: any, regions: [iraq_2003], text: "{He} is dismissed with the rest of the army in 2003, four hundred thousand men out of work."}
+        - {w: 3, when: whole, text: "{He} leaves the service and finds work as a civilian, and keeps in touch with the old crew."}
+        - {w: 1, when: lasting, text: "With the hurt to {his} {wound}, {he} goes home and lives as best {he} can on what {his} family can spare."}   # the research found nothing on this army's disabled veterans
+      dead:
+        - {w: 3, regions: [uk_1982, uk_2005], text: "{He} is flown home, and the streets of a market town fall silent as {he} passes."}
+        - {w: 3, regions: [us_1991, us_1993, us_2005], text: "{He} is flown home and buried with honours."}
+        - {w: 3, regions: [argentina_1982], text: "{He} lies at Darwin, known unto God, until a DNA test gives {him} back {his} name."}
+        - {w: 3, regions: [russia_1995], text: "{He} lies unidentified in a military morgue for months before {his} family finds {him}."}
+        - {w: 3, regions: [chechen, insurgent, iraq_2003, peshmerga_2003], text: "{He} is buried the same day, as a martyr."}
+      deserted:
+        - {w: 3, regions: [russia_1995], text: "{His} mother comes to the camp and takes {him} home."}
+        - {w: 2, text: "{He} goes absent, and is caught and discharged."}
+        - {w: 2, regions: [chechen, insurgent, peshmerga_2003, iraq_2003], text: "{He} puts down {his} rifle and goes home to {his} family."}

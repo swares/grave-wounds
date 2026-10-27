@@ -370,7 +370,7 @@ function keepFor(j, region, place){                // as jobs.py keep_for: {food
   return { food: k.food, bed: BED_PLACES.includes(place) ? k.bed : 0 };
 }
 /* Replacing losses (as gravewounds/replace.py): TD.repl is the era's data/replacements file. */
-const LOST_WHY = ["killed", "died of wounds", "died of disease", "taken prisoner", "deserted", "sent home"];
+const LOST_WHY = ["killed", "died of wounds", "died of disease", "taken prisoner", "deserted", "sent home", "discharged"];
 const replFor = (row, region) => !row.regions || !row.regions.length || row.regions.includes(region);
 const replCareers = row => TD.era.careers.map(c => c.id).filter(id => (row.careers ?? "any") === "any" || row.careers.includes(id));
 function replaceOptions(region, place, career, terms){   // roll first, then assigned, then hire
@@ -399,4 +399,29 @@ function settleLost(left, survivors, practice){    // {each, gone}
   left = Math.max(0, left);
   if (practice === "share" && survivors > 0) return { each: left / survivors, gone: 0 };
   return { each: 0, gone: left };
+}
+/* Epilogues (data/papers.yaml: TD.papers[era].epilogues): what became of a man when he leaves the team,
+   rolled once. Dead (killed, died of wounds or disease), deserted, or alive (sent home, discharged, and a
+   prisoner whose story ends free). A row's when: lasting (he carries a lasting hurt), whole (he does not),
+   or any; its regions, if it names them, limit it to those armies. The text says {name}, {he}, {his},
+   {him}, {He}, {His}, and {wound}: the place of his lasting hurt. */
+const EPI_DEAD = /killed|died/i;
+const epKind = why => (EPI_DEAD.test(why) ? "dead" : why === "deserted" ? "deserted" : "alive");
+function epRows(era, c, kind){                       // the rows he can roll
+  const rows = TD.papers?.[era]?.epilogues?.[kind] || [], lasting = (c.old || []).some(w => w.kind === "lasting");
+  const fit = r => (r.when || "any") === "any" || (r.when === "lasting") === lasting;
+  return rows.filter(r => fit(r) && (!r.regions || r.regions.includes(c.region)));
+}
+function epText(text, c){                           // the row's words, said of him
+  const hurt = (c.old || []).find(w => w.kind === "lasting"), wound = hurt ? (TD.locs[hurt.loc]?.name || hurt.loc).toLowerCase() : "";
+  const f = c.sex === "f", words = { name: c.name, he: f ? "she" : "he", his: f ? "her" : "his", him: f ? "her" : "him", He: f ? "She" : "He", His: f ? "Her" : "His", wound };
+  return text.replace(/\{(\w+)\}/g, (m, k) => (k in words ? words[k] : m));
+}
+function epRoll(era, c, why, rng){                  // {kind, text, roll} or null (no epilogues for this era)
+  const kind = epKind(why), rows = epRows(era, c, kind), total = rows.reduce((t, r) => t + r.w, 0);
+  if (!total) return null;
+  const roll = rng.randint(1, total);
+  let acc = 0;
+  const row = rows.find(r => (acc += r.w) >= roll);
+  return { kind, text: epText(row.text, c), roll };
 }

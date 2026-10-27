@@ -135,6 +135,25 @@ offers the replacements: roll a new man of the same career and terms, an assigne
 his sheet), or a hire where the team is (the place in Find work), paid from the purse of the
 member the GM names. `templates/team.js` repeats `options`, `hire_cost`, `effects` and `settle`.
 
+**Papers and epilogues.** *Papers* on a sheet (or on a lost man's line) opens his game handouts, in
+his era's style, ready to print one to a page. Each paper carries a banner saying it is a game
+handout and not a historical record. The titles are the game's own, echoing the kind of paper a
+soldier of that army had (a muster roll, a description book, a pension card, a service record),
+with no real form, number, crest or insignia.
+- **The muster entry:** who he is, where from, what he serves as, his marks and arms, and his
+  terms as a lifepath.
+- **The surgeon's card:** each wound, from his sheet's old wounds and the roller's record of him
+  (healed and still open, with how each was treated).
+- **The discharge or notice of death:** once he has left, how he left and what became of him.
+
+When a man leaves the team (killed, died, deserted, sent home, or the new *discharged*; a
+prisoner when his story ends), an **epilogue** is rolled once from his era's table in
+`data/papers.yaml`: weighted rows for the alive, the dead and deserters. A row may be for a man
+with a lasting hurt (`when: lasting`, naming its place) or without (`whole`), and for some armies
+only. The rows come from the project's research doc "epilogues-research", each with its sources.
+Where the research found nothing for an army (Serbia and Bulgaria in the First World War, North
+Korea, the Chechen fighters, insurgents and Peshmerga), a disabled man gets a generic line.
+
 Prices live in `data/equipment/<era>.yaml`, one file to an era, like the team tables:
 
 - **currencies:** each coin, its units (or a decimal coin), its Day in its smallest unit, and

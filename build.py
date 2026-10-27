@@ -2119,6 +2119,7 @@ def team_bundle(d) -> dict:
     eras = {eid: {"era": d.teams[eid], "ranges": old_wound_ranges(d, eid), "equip": equip_bundle(d, eid), "jobs": jobs_bundle(d, eid), "keep": keep_bundle(d, eid), "repl": d.replacements.get(eid)} for eid in team_eras(d)}
     first = team_eras(d)[0]
     return {"eras": eras, "era": eras[first]["era"], "ranges": eras[first]["ranges"], "equip": eras[first]["equip"], "money": d.money, "xp": d.experience, "checks": d.checks, "ranks": d.ranks, "training": d.training, "ageing": d.ageing, "loads": d.loads, "weights": d.weights, "kit": d.kit, "stress": d.stress, "prisoners": d.prisoners, "hazards": d.hazards, "languages": d.languages, "patrons": d.patrons,
+            "papers": (d.papers or {}).get("eras", {}),
             "locs": {l["id"]: {"name": l["name"], "zone": l["zone"], "class": l["class"]} for l in d.locations},
             "kits": {k: d.armor["kits"][k] for k in sorted(kits)},
             "fight": {"blood_pool": d.wounds["tracking"]["blood_pool"], "chr": d.wounds["combat"]["characteristics"]},
