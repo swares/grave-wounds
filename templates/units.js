@@ -1308,9 +1308,10 @@ function shellUnits(ctx, k, b, bursts){           // the men struck in every uni
   const I = UD.indirect, K = b.spec || I.kinds[b.kind], att = { table, weapon, kit: null, quality: "regular" };   // spec: a burst that is no battery's (rockets at men)
   us.forEach((u, i) => {
     if (u.vehicle){ shellVehicle(us, i, bursts, K, { table, rng, acc, log, src: [k, b] }); return }
-    const struck = shellStruckUnit(field, u, bursts, K, rng);
+    const struck = shellStruckUnit(field, u, bursts, K, rng, caughtStanding(u, b));
     if (struck === null) return;
     under[i] = true;
+    if (I.go_to_ground) u.warned = 2;
     if (!struck) return;
     const t = takeHurt(u, blows(att, sideOfUnit(u, table), struck, I.attack, 0, rng, { exposed: exposure(u, false, true), shift: -1000 }));
     acc.lost[i] += t.down; acc.dead[i] += t.dead;
@@ -1350,12 +1351,15 @@ function hullShelled(us, i, bursts, kind, table, rng, src){   // men riding on t
   return [{ kind: "hullshelled", sup: src[0], name: src[1].name, dfd: i, struck, down, dead: Math.min(t.dead, down) }];
 }
 const inRoom = (field, h) => (UD.indirect.room_ground || []).includes(field?.ground?.[`${h[0]},${h[1]}`] || "open");   // a building hex: direct-fire HE bursts in its rooms (indirect.room_ground) (as units._in_room)
-function shellStruckUnit(field, u, bursts, kind, rng){   // men of u struck by these bursts, or null if none came near
+const caughtStanding = (u, b) => (!UD.indirect.go_to_ground ? Infinity : low(u) || u.warned ? 0 : b.tubes || Infinity);   // indirect.go_to_ground: how many of a mission's bursts catch u's men on their feet; the rest find them down (a unit shelled last exchange is down from the first) (as units._caught_standing)
+function shellStruckUnit(field, u, bursts, kind, rng, standing = Infinity){   // men of u struck by these bursts, or null if none came near; after the first `standing` bursts its men have gone to ground
   if (u.men <= 0 || u.state === "fled") return null;
-  const hexes = footprint(u).flat(), men = menByHex(u), cuts = hexes.map(h => shellCut(field, h, low(u))), rooms = hexes.map(h => inRoom(field, h));
+  const hexes = footprint(u).flat(), men = menByHex(u), rooms = hexes.map(h => inRoom(field, h));
+  const up = hexes.map(h => shellCut(field, h, low(u))), down = hexes.map(h => shellCut(field, h, true));
   const quick = !!UD.quick?.blows;
   let near = false, struck = 0, tries = 0, mean = 0;
-  for (const at of bursts){
+  bursts.forEach((at, n) => {
+    const cuts = n < standing ? up : down;
     hexes.forEach((h, j) => {
       const dist = hdist(h, at);
       if (dist > kind.radius) return;
@@ -1364,7 +1368,7 @@ function shellStruckUnit(field, u, bursts, kind, rng){   // men of u struck by t
       if (quick){ tries += men[j]; mean += men[j] * Math.min(100, Math.max(0, Math.floor(p))) / 100; return }   // quick-play: the average, rolled once below
       for (let x = 0; x < men[j]; x++) if (rng.randint(1, 100) <= p) struck++;
     });
-  }
+  });
   if (quick && near) struck = quickDown(tries, tries > 0 ? mean / tries : 0, rng);   // one d100 on the curve for this fire on this unit (as units._shell_struck_unit)
   return near ? struck : null;
 }
@@ -2192,6 +2196,7 @@ function afterExchange(us, field, log = []){        // charges spent, batteries 
     if (u.resupplying && ammoFull(u)) log.push({ kind: "resupplied", unit: i });
     batteryAfter(u);
     if (u.pinned) u.pinned -= 1;
+    if (u.warned) u.warned -= 1;
     if (u.lost) u.lost -= 1;
   });
   flashes(us, log, field);

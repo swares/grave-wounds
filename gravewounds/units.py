@@ -2531,6 +2531,8 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
         _battery_after(d, u)
         if u.get("pinned"):
             u["pinned"] -= 1
+        if u.get("warned"):
+            u["warned"] -= 1
         if u.get("lost"):
             u["lost"] -= 1
     _flashes(d, us, log, field)
@@ -3916,10 +3918,12 @@ def _shell_units(d: Data, us: list, tw: tuple, rng, acc: tuple, field: dict, und
         if u.get("vehicle"):
             log += _shell_vehicle(d, us, i, bursts, K, (table, rng), acc, (k, b))
             continue
-        struck = _shell_struck_unit(d, field, u, bursts, K, rng)
+        struck = _shell_struck_unit(d, field, u, bursts, K, rng, _caught_standing(d, u, b))
         if struck is None:
             continue
         under[i] = True
+        if I.get("go_to_ground"):
+            u["warned"] = 2
         if not struck:
             continue
         t = _take_hurt(u, _blows(d, att, _side(u, table), struck, I["attack"], 0, rng, _exposure(d, u, False, True), -1000))
@@ -3975,15 +3979,26 @@ def _hull_shelled(d: Data, us: list, i: int, bursts: list, kind: dict, tr: tuple
     return [{"kind": "hullshelled", "sup": src[0], "name": src[1]["name"], "dfd": i, "struck": struck, "down": down, "dead": min(t["dead"], down)}]
 
 
-def _shell_struck_unit(d: Data, field: dict, u: dict, bursts: list, kind: dict, rng) -> int | None:
+def _caught_standing(d: Data, u: dict, b: dict) -> float:
+    """indirect.go_to_ground: how many of a mission's bursts catch u's men on their feet (one a
+    tube, the first salvo); the rest find them down. A unit already down, or shelled last
+    exchange, is down from the first. Off: every burst finds it as it stands."""
+    if not d.units["indirect"].get("go_to_ground"):
+        return math.inf
+    return 0 if low(u) or u.get("warned") else (b.get("tubes") or math.inf)
+
+
+def _shell_struck_unit(d: Data, field: dict, u: dict, bursts: list, kind: dict, rng, standing: float = math.inf) -> int | None:
     """Men of unit u struck by these bursts: each man in a hex within a burst's radius at the %
-    for his distance (gone to ground, less; ground cover, less). None if no burst came near.
+    for his distance (gone to ground, less; ground cover, less). After the first `standing`
+    bursts its men have gone to ground. None if no burst came near.
     Quick-play (quick.blows): the sum of those chances is the average, rolled once."""
     if u["men"] <= 0 or u["state"] == "fled":
         return None
     hexes = [h for row in footprint(d, u) for h in row]
-    men, cuts, rooms = men_by_hex(d, u), [_shell_cut(d, field, h, low(u)) for h in hexes], [_in_room(d, field, h) for h in hexes]
-    reached = [(n, p) for at in bursts for h, n, cut, room in zip(hexes, men, cuts, rooms) if (p := _burst_pct(kind, hdist(h, at), cut, room)) is not None]
+    men, rooms = men_by_hex(d, u), [_in_room(d, field, h) for h in hexes]
+    up, down = [_shell_cut(d, field, h, low(u)) for h in hexes], [_shell_cut(d, field, h, True) for h in hexes]
+    reached = [(n, p) for k, at in enumerate(bursts) for h, n, cut, room in zip(hexes, men, up if k < standing else down, rooms) if (p := _burst_pct(kind, hdist(h, at), cut, room)) is not None]
     if not reached:
         return None
     if (d.units.get("quick") or {}).get("blows"):

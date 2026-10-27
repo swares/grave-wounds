@@ -397,6 +397,10 @@ indirect:
   fallback: explosive_fragment
   attack: 70
   prone: 0.35
+  # go_to_ground (a test switch, off): men caught by a mission go to ground after its first salvo,
+  #   one burst a tube; its later bursts, and a unit shelled last exchange, find them down (prone).
+  #   FM 7-90: a warned platoon took 10 to 15 rounds to suffer what 2 did to one caught standing.
+  go_to_ground: false
   # room: direct-fire HE (a tank's, an Ontos's or an anti-tank gun's main gun, the `tank` kind's
   #   room; a rocket or recoilless round, `rocket` below) bursting in a building hex (room_ground)
   #   strikes each man there at `room` %, with no cut for the building's cover or for lying down:
