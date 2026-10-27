@@ -4081,7 +4081,8 @@ function fightsHtml(){                                // the fights on offer whe
   let fights = [];
   try { fights = newDay().fightsOnOffer() } catch { return "" }   // the map's state cannot be read here: the travel map sets them up
   if (!fights.length) return "";
-  return `<h3>Fights on offer</h3><ul class="fights">${fights.map(fightHtml).join("")}</ul>`;
+  const ask = `<p class="muted" style="margin:.2em 0">Who attacks, and whether a fight is fought at all, is the GM's choice. Playing alone, <a href="rules.html#ask" target="_blank" rel="noopener">Ask the dice</a> before you pick: does the enemy attack, or wait? Do your men stand, or fall back?</p>`;
+  return `<h3>Fights on offer</h3>${ask}<ul class="fights">${fights.map(fightHtml).join("")}</ul>`;
 }
 function sendFight(id, k){                             // the fight sent as the travel map's Fight here sends it; the console follows to the fight
   const x = newDay().fightsOnOffer().find(f => f.id === id);

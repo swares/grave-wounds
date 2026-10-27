@@ -4,8 +4,8 @@
 
 The team builder's retinue goes to the roller; one control puts all its named men with a force on the
 travel map; a fight sent from the travel map brings the named men and the team's followers by name; a man
-taken prisoner on the roller goes to the team builder's Prisoners. (From the first solo play test, 27
-October 2026.) Needs Python's playwright with Chromium and a built site. Exits non-zero on any failure.
+taken prisoner on the roller goes to the team builder's Prisoners; the page's example pair makes way for the team, which takes its force's side; the
+setup says the travel map's odds the cap of 8 hides. (From the first solo play test, 27 October 2026.) Needs Python's playwright with Chromium and a built site. Exits non-zero on any failure.
 """
 import json, sys
 from playwright.sync_api import sync_playwright
@@ -29,17 +29,22 @@ with sync_playwright() as p:
     pg.evaluate(f"() => localStorage.setItem('gravewounds-travel', {json.dumps(json.dumps(TRAVEL))})")
     pg.click("#btn-send")
     pg.wait_for_function("() => location.pathname.endsWith('roller.html')", timeout=15000)
+    pg.wait_for_function("() => typeof S === 'object' && Array.isArray(S.chars)", timeout=10000)
+    had = pg.evaluate("() => S.chars.filter(c => c.example).length")
     pg.get_by_role("button", name="Add the team").first.click()
     pg.wait_for_function("() => S.chars.some(c => c.uid)", timeout=10000)
     named = pg.evaluate("() => S.chars.filter(c => c.uid).length")
     followers = pg.evaluate("() => S.chars.filter(c => c.follower).map(c => c.name)")
     check(named >= 4 and len(followers) >= 1, f"the team's {named} named men and {len(followers)} followers are on the roller")
+    check(had == 2 and not pg.evaluate("() => S.chars.some(c => c.example)"), f"the page's example pair ({had}) makes way for the team")
 
     sel = pg.locator("select[data-teamwith]")
     check(sel.count() == 1 and "goes with" in pg.inner_text("#team-with").lower(), "one control puts the whole team with a force")
     sel.select_option("towton-1461:7")
     with_force = pg.evaluate("() => Object.values(JSON.parse(localStorage.getItem('gravewounds-named'))).filter(n => n.map === 'towton-1461' && n.force === 7).length")
     check(with_force == named, f"all {named} named men go with the retinue at once")
+    sides = pg.evaluate("() => [...new Set(S.chars.filter(c => c.team).map(c => c.side))]")
+    check(sides == ["York"], f"the team takes its force's side ({sides})")
 
     handoff = {"from": "travel", "mapId": "towton-1461", "force": {"id": 7, "name": "Sir Roger's retinue", "side": "York", "men": 20, "type": "foot"},
                "place": "Sherburn-in-Elmet", "day": "27 Mar", "time": "10:00", "ground": "open",
@@ -53,6 +58,8 @@ with sync_playwright() as p:
     check(len(york) == named + len(followers) and all(f in york for f in followers),
           f"the fight from the travel map brings the named men and the team's followers by name ({len(york)} of the retinue's 20)")
     check(pg.evaluate("() => S.chars.filter(c => sideOf(c) === 'Lancaster').length") == 8, "the enemy force brings its 8 as before")
+    odds = pg.evaluate("() => S.pending.find(p => p.startsWith('The odds on the travel map')) || ''")
+    check("20 men against 500" in odds and "1 to 25" in odds and "Ask the dice" in odds, f"the setup says what the cap of 8 hides ({odds[:90]})")
 
     man = pg.evaluate("() => S.chars.find(c => c.uid && c.sheet).name")
     pid = pg.evaluate("() => S.chars.find(c => c.uid && c.sheet).sheet.pid")
