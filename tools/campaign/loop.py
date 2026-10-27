@@ -212,6 +212,8 @@ with sync_playwright() as p:
     offered = pg.locator(FIGHTS).count()
     first = pg.locator(FIGHTS).first
     check(offered >= 1 and " against " in first.inner_text() and "Surprise:" in first.inner_text(), f"the console offers {offered} fight(s) where the forces met, with the odds of surprise")
+    ask = pg.locator("#c-march a[href='rules.html#ask']")
+    check(ask.count() == 1, "the offer points a solo player to Ask the dice: who attacks is the GM's choice")
     first.locator("select").select_option("roller")
     first.locator(B_FIGHT).first.click()
     pg.wait_for_function("() => REC.phase === 'fight'", timeout=6000)

@@ -2230,6 +2230,14 @@ function sickOf(c){                               // {step, did} at his worst sh
   const w = shown.reduce((a, b) => (b.step > a.step ? b : a));
   return { step: DZR.steps[w.step], did: w.d };
 }
+function forceSide(value){                          // the side of the travel-map force "map:id", or null
+  try{
+    const t = JSON.parse(localStorage.getItem("gravewounds-travel") || "null"), i = value ? value.lastIndexOf(":") : -1;
+    if (i < 0) return null;
+    const f = (t?.forces?.[value.slice(0, i)] || []).find(o => o.id === +value.slice(i + 1));
+    return f ? f.side : null;
+  }catch(e){ return null }                         // the travel map's save unreadable: the side stays as it is
+}
 function travelForces(){                          // the forces on the travel map's current map: [{value, label}]
   try{
     const t = JSON.parse(localStorage.getItem("gravewounds-travel") || "null");
@@ -4649,6 +4657,7 @@ function sheetLine(c){                          // a team builder character's sh
 }
 function addTeam(){                             // the team from the team builder joins the fighters
   const t = S.teamIn; if (!t) return;
+  if (S.chars.length && S.chars.every(c => c.example || c.name.startsWith("Example: "))) Object.assign(S, { chars: [], attacker: -1, active: 0, hit: null });   // the page's example pair makes way for a real team
   if (!S.chars.length && DATA.tables[t.table]) switchTable(t.table);   // a new fight: the team's own wound table
   const team = "team" + S.seq;                     // the team's mark on its men and followers: they go with its force together
   for (const m of t.team){
@@ -4669,6 +4678,8 @@ function addTeam(){                             // the team from the team builde
     c.team = team;
     S.chars.push(c);
   }
+  const tf = teamForce(team), side = tf && forceSide(`${tf.map}:${tf.id}`);
+  if (side) S.chars.filter(c => c.team === team).forEach(c => { c.side = side });   // men the campaign already has with a force: its side
   placeUnplaced();
   S.teamIn = null;
   try{ localStorage.removeItem("gravewounds-team-handoff") }catch(e){}
@@ -5579,6 +5590,19 @@ function forceChars(o, positions, named = null){  // up to 8 of a travel-map for
   out.forEach((c, i) => { c.forceId = o.id; if (positions && positions[i]) c.pos = positions[i] });
   return out;
 }
+// What the cap of 8 a force hides: the travel map's odds, when they are 3 to 1 or longer and the roller's are not.
+function oddsHidden(defenders, foes, named){
+  const sum = (list, f) => list.reduce((t, o) => t + f(o), 0);
+  const realD = sum(defenders, o => o.men), realF = sum(foes, o => o.men);
+  const hereD = sum(defenders, o => forceCount(o, named)), hereF = sum(foes, o => forceCount(o, named));
+  if (!realD || !realF) return null;
+  const real = Math.max(realD, realF) / Math.min(realD, realF), here = Math.max(hereD, hereF) / Math.min(hereD, hereF);
+  if (real < 3 || here >= real / 2) return null;
+  const few = realD < realF ? defenders : foes;
+  return `The odds on the travel map: ${realD} men against ${realF} (about 1 to ${Math.round(real)}); here ${hereD} against ${hereF}. ` +
+    `The roller fights a few of each force, so this is the few who met. Whether ${few.map(o => o.name).join(" and ")} stand${few.length > 1 ? "" : "s"} at all, ` +
+    `or slip${few.length > 1 ? "" : "s"} away, is the GM's call: playing alone, Ask the dice (Rules, Playing alone).`;
+}
 const menOf = o => { const n = Math.min(o.men, 8); return n < o.men ? `${n} of its ${o.men} men` : `its ${n} men` };
 // Where men coming from one side of the travel hex arrive: the dry, empty hexes nearest the map's
 // edge in that direction (across a river, the far bank or the ford).
@@ -5659,6 +5683,8 @@ function setupHandoff(){                     // a camp or position sent from the
   if (sp) S.pending.push(`${sp.text} Rolled ${sp.roll}: ${sp.surprised ? "caught unawares, they cannot act in round 1" : "not surprised"}`);
   for (const o of h.allies || []) S.pending.push(`With them: ${o.name}, ${o.men} men (${o.side})`);
   for (const o of foes) S.pending.push(`Facing them: ${o.name}, ${o.men} men (${o.side})`);
+  const odds = oddsHidden(defenders, foes, named);
+  if (odds) S.pending.push(odds);
   const came = [...named.by.values()].flat(), nNamed = came.filter(c => c.uid).length, nFol = came.length - nNamed;
   const namedWord = nNamed === 1 ? "1 named man" : nNamed + " named men", folWord = nFol ? " and " + nFol + " of their team's followers" : "";
   if (came.length) S.pending.push(`With their forces: ${namedWord}${folWord} (${came.map(c => c.name).join(", ")})`);
@@ -5970,6 +5996,8 @@ $("#after-fight").addEventListener("change", e => {
 $("#team-with")?.addEventListener("change", e => {
   const team = e.target.dataset?.teamwith; if (!team) return;
   S.chars.filter(c => c.team === team && c.uid).forEach(c => attachNamed(c, e.target.value));
+  const side = forceSide(e.target.value);
+  if (side) S.chars.filter(c => c.team === team).forEach(c => { c.side = side });   // the team fights on its force's side
   renderChars();
 });
 $("#after-fight").addEventListener("click", e => {
@@ -6272,7 +6300,7 @@ $("#coach")?.addEventListener("click", e => { if (e.target.dataset?.coach === "d
 function startExamples(){                       // example combatants from this conflict, so the tracker shows what it does
   const conf = DATA.conflicts[DATA.tables[S.table].battle] || {}, ex = conf.examples || [];
   const pick = [ex[0], ex[ex.length - 1]].filter(Boolean);
-  S.chars = pick.map(x => newChar("Example: " + x.name, x.kit, x.weapon, FIG.lookFor(conf, x), x.side));
+  S.chars = pick.map(x => Object.assign(newChar("Example: " + x.name, x.kit, x.weapon, FIG.lookFor(conf, x), x.side), { example: true }));
   if (!S.chars.length) return;
   selectChar(0);
   if (S.chars.length > 1) setAttacker(S.chars.length - 1);
