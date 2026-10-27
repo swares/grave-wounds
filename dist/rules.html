@@ -46,7 +46,14 @@ main{max-width:72ch;min-width:0}
 main h1{font:700 2rem/1.15 var(--display);margin:48px 0 12px;padding-top:12px;border-top:1px solid var(--line);color:var(--ink)}
 main h1:first-child{margin-top:0;border-top:0;padding-top:0}
 main h2{font:700 1.3rem/1.25 var(--display);margin:30px 0 8px;color:var(--steel)}
-main p,main li{hyphens:auto;overflow-wrap:break-word}   /* a long web address in a source list wraps rather than widening the page */
+main p,main li{hyphens:auto;overflow-wrap:break-word}
+.bodychart-fig{float:right;margin:0 0 .8em 1.2em;text-align:center;max-width:170px}   /* where a table's wounds fell */
+.bodychart-fig figcaption{font-size:.78em;color:var(--muted,#666);line-height:1.3}
+.bodychart text{fill:currentColor;opacity:.6}
+.bodychart [fill-opacity]{fill:var(--heat,#9b2226);stroke:var(--muted)}   /* the heat: red on paper, a brighter red on the dark page */
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .bodychart{--heat:#ff6b6b}}
+:root[data-theme="dark"] .bodychart{--heat:#ff6b6b}
+@media (max-width:560px){.bodychart-fig{float:none;margin:0 auto 1em}}   /* a long web address in a source list wraps rather than widening the page */
 main strong{font-weight:700}
 main ul,main ol{padding-left:1.3em}
 main li{margin:3px 0}
