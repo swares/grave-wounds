@@ -58,6 +58,13 @@ The Scots Guards lost eight men killed, with Pashley of the Royal Engineers, and
     mortar fire. He was awarded the Distinguished Conduct Medal after his death, and his name is
     one of the eight on the Scots Guards' memorial on Tumbledown.
 
+!!! gm "On the field map"
+    The engine does not yet fight this battle as it went. Played by the enemy commander on both
+    sides, the Scots Guards lose every run: shelled by the mortars and under fire they cannot
+    answer in the dark, the companies break long before they close, where the real Left Flank lay
+    pinned below the summit for three hours and then went in with the bayonet. A player who keeps
+    his companies in hand, and closes, can do better than the commander.
+
 ### Sources
 - L. Freedman, *The Official History of the Falklands Campaign*, vol. II (2005), p. 548, as cited by "Battle of Mount Tumbledown", *Wikipedia*: https://en.wikipedia.org/wiki/Battle_of_Mount_Tumbledown
 - Ministerio de Defensa, "Malvinas 44 años: últimos combates por Malvinas", argentina.gob.ar (2026): https://www.argentina.gob.ar/node/504778

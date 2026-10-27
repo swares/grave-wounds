@@ -730,8 +730,10 @@ quick: {blows: false, samples: 4000, normal_from: 9}
 # its present men in this exchange, or was struck in flank or rear: d100 against its Nerve
 # with the modifiers below. A steady unit that fails is shaken (fights worse, cannot
 # charge); one that fails by more than `shaken_by` while flanked or with half its men down
-# breaks at once. A shaken unit that fails breaks. A shaken unit out of contact that passes
-# a check rallies to steady. A broken unit runs.
+# breaks at once. A shaken unit that fails breaks. A shaken unit out of contact rallies: it
+# checks each exchange nothing new strikes it, and passing returns to steady; failing, it stays
+# shaken (self-play, all 46 battlefields: 202 of 276 runs as fought, against 198 when a failed
+# rally broke it). A broken unit runs.
 morale:
   trigger: 0.25
   shock: 0.10

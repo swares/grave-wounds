@@ -155,7 +155,10 @@ The check is d100 against its Nerve (green 35, regular 50, veteran 65), with mod
   once instead if it fails by more than 20 while flanked or with half its men down (a unit
   holding a position is not flanked; see below).
 - **Shaken, fails:** broken.
-- **Shaken, passes out of contact:** it rallies to steady.
+- **Shaken, out of contact:** it checks to rally each exchange nothing new strikes it: passing,
+  it rallies to steady; failing, it stays shaken. (Until October 2026 a failed rally broke it,
+  so a shaken company out of contact broke about half the time each exchange; self-play, all
+  46 battlefields: 202 of 276 runs as fought, against 198.)
 
 **Holding a position** (`morale.posture`). A unit of a side the commander has holding its ground
 (not attacking), that holds a position, and is not struck in flank or rear, checks for being a

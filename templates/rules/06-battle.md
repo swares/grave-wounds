@@ -73,7 +73,8 @@ passing of time, nor from fire it cannot answer. It rolls d100 against its quali
   by more than {{f_shaken_by}} while flanked, or with half its men down, it breaks at once. A unit
   of a holding side in a position is never flanked: its men there face every way.
 - **Shaken, fails:** it **breaks**.
-- **Shaken, passes out of contact:** it rallies to steady.
+- **Shaken, out of contact:** it tries to rally each exchange nothing new strikes it. Passing,
+  it is steady again; failing, it stays shaken.
 
 A broken unit runs. Every enemy man in reach strikes it at +{{f_rout}}, with no parry and
 twice as often, as long as the pursuers keep up. This is where most of a battle's dead

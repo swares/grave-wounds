@@ -650,7 +650,7 @@ function morale(u0, roll){                       // {check, target, state}; hold
   if (!struck && !rally) return { check: false, target: null, state: u.state };
   const target = quality(u.quality).nerve + moraleMods(M.mods, u);
   if (roll <= target) return { check: true, target, state: rally && !struck ? "steady" : u.state };
-  return { check: true, target, state: failedState(M, u, roll - target) };
+  return { check: true, target, state: rally && !struck ? "shaken" : failedState(M, u, roll - target) };   // a failed rally leaves it shaken
 }
 
 // ---------- the field map ----------
