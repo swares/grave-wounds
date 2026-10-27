@@ -271,7 +271,10 @@ def _table_note(d: Data, tid: str, B: dict) -> str:
         used.append("the battlefields of " + ", ".join(fields))
     if armies:
         used.append("the armies of " + ", ".join(armies))
-    lines = [f"## {t['name']} {{#table-{tid}}}", t.get("context", "")]
+    from .bodychart import svg
+    chart = (f'<figure class="bodychart-fig">{svg(d, tid, None, t["name"])}<figcaption>Where the wounds fell: '
+             f'the stronger the red, the oftener (point at a place for its %)</figcaption></figure>')
+    lines = [f"## {t['name']} {{#table-{tid}}}", chart, t.get("context", "")]
     note = t.get("confidence_note") if not t.get("derived_from") else ""   # an adjusted table's method: Sources and Methods
     lines.append(f"*How sure:* {CONF.get(t.get('confidence'), t.get('confidence', ''))}." + (f" {note}" if note else ""))
     if t.get("derived_from"):

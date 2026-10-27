@@ -229,6 +229,10 @@ def _main(argv=None) -> int:
         root = Path(__file__).resolve().parent.parent
         books = load_books(d, root)          # data/books.yaml: eras and battlefields exist, none in two books
         load_pictures(root)                  # data/pictures: every picture has its file, caption, credit, licence and source
+        from .bodychart import _shapes
+        unseen = set(d.loc) - {i for i, _ in _shapes()}
+        if unseen:                           # the books' body charts draw every place a table can roll
+            raise SystemExit(f"body.yaml: {sorted(unseen)} have no shape in gravewounds/bodychart.py (or roller.html)")
         print(f"OK: {len(d.locations)} locations, {len(d.weapons)} weapons, {len(d.tables)} tables, {len(books)} period book{'s' if len(books) != 1 else ''}")
     elif a.cmd == "list":
         print("Tables:")
