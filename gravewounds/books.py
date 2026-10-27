@@ -355,6 +355,14 @@ def _field_section(d: Data, fid: str, root: Path | None = None, bid: str | None 
     if F.get("phases"):
         out += ["### The phases", RB._md(["From exchange", "Phase", "What happens"],
                                          [[p["at"], _cell(p["name"]), _cell(p.get("note", ""))] for p in F["phases"]])]
+    if F.get("accounts"):
+        out += ["### The accounts to choose",
+                "Where the sources disagree on something the battle turns on, the [field map](field.html) asks which account "
+                "to fight (or rolls it, each as likely). The first is the game's own, and the enemy commander's benchmark is "
+                "run on it; a battle on another is scored against history only.",
+                RB._md(["Question", "The accounts"], [[_cell(q["question"]), _cell("; ".join(
+                    f"{o['label']} ({o.get('source', 'an account')}{', a single report' if o.get('single') else ''})" + (" (the game's own)" if not k else "")
+                    for k, o in enumerate(q["options"])))] for q in F["accounts"]])]
     return "\n\n".join(out)
 
 

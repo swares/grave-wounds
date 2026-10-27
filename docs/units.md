@@ -2043,6 +2043,27 @@ what happened, and the units it brings on.
 - **Where they're used.** Phases apply with *the armies as drawn up*, not to forces sent
   from the travel map.
 
+**Which account.** Where a battlefield's sources disagree on something the battle turns on
+(how many attacked, when help came), `data/accounts.yaml` makes it a choice. It is kept apart
+from the battlefield files because their generators write those.
+- **The questions.** Each has an id, a question and two or more options, each with a label and
+  its source (`single: true` for a single report). The first option is the game's own and
+  changes nothing.
+- **The changes.** Each other option changes the armies as drawn up: a side's men scaled
+  (`side`, `scale`), a unit's men set or scaled (`unit`, `men` or `scale`), or a phase moved
+  (`phase`, `at`, still in order). The ground, works and units stay as drawn.
+- **On the field map.** Choosing the battlefield shows a *Which account?* box during set-up:
+  a select for each question, and *Roll it* (each option as likely). The armies are drawn up
+  again as chosen, and the message says by which accounts.
+- **Scoring.** The enemy commander's benchmark is run on the game's own account, and the
+  accounts are left out of the battlefield's stamp. A battle on another account is scored
+  against history only, with no commander's bar, and the scorecard marks it so.
+- **In the books.** Each battlefield's section lists its questions under *The accounts to
+  choose*.
+- **The pilot.** Six battlefields: Wanat (the fighters; when the Apaches came), Keating
+  (the attackers), Fox Hill and Chipyong-ni (the Chinese), Agincourt and Crécy (each army;
+  Crécy's Genoese crossbowmen).
+
 Thirty-five battlefields have phases. Each phase's time is our reading of the accounts, rounded to the
 minute from the deployment moment (exchange 1). The sources are named in each generator's notes
 where they are not plain.

@@ -127,6 +127,9 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .beat[hidden]{display:none}
 .beat h3{margin:0 0 4px;font:700 .95rem var(--display);letter-spacing:.03em}
 .beat p{margin:4px 0}
+.accounts{border:1px dashed var(--line);border-radius:3px;padding:6px 10px;font-size:.88rem;margin:8px 0}
+.accounts label{display:inline-flex;gap:6px;align-items:center;flex-wrap:wrap}
+.accounts select{max-width:100%}
 .result-wrap{overflow-x:auto;margin:0 0 8px}
 .result{border-collapse:collapse;font-size:.88rem;min-width:100%}
 .result th,.result td{padding:3px 8px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
@@ -191,6 +194,7 @@ legend{padding:0}
         <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="chk-armies" checked> with the armies as drawn up</label></div>
         <div style="flex:0 0 auto;align-self:end"><button class="small" id="btn-field" title="Lay out this ground, its works and weather (set-up only)">Lay it out</button></div>
       </div>
+      <div class="accounts" id="accounts" hidden></div>
       <p class="stage" id="stage" hidden></p>
       <output class="msg" id="msg"></output>
       <div class="mapbox" id="map" title="Click a hex to place or move the selected unit"></div>
@@ -547,7 +551,7 @@ function loadBattlefield(fid, armies){            // a battlefield from data/fie
   S.fieldId = B ? fid : null;
   S.marks = { ...markDefaults(), ...(B?.markers || {}) };
   S.entry = B?.entry || null;                       // the battlefield's entry edges, if it names them
-  S.drawnUp = null;
+  S.drawnUp = null; S.drawnAccount = null;
   S.stages = null; S.stageNo = -1; S.waiting = [];   // its phases, with the armies as drawn up (holdForStages)   // the battlefield's marker settings, else units.yaml's
   S.camp = null;
   if (B && armies && !S.forces){
@@ -556,11 +560,14 @@ function loadBattlefield(fid, armies){            // a battlefield from data/fie
     S.seq = 1;
     S.units = [];
     S.field.lifts = [];
-    B.units.forEach(u => standOrFly(S, newUnit({ ...u, side: B.sides[u.side] }), u.lands));
-    holdForStages(S, B.phases);
+    const A = asAccounted(B, fid);
+    A.units.forEach(u => standOrFly(S, newUnit({ ...u, side: B.sides[u.side] }), u.lands));
+    holdForStages(S, A.phases);
     S.drawnUp = fid;                                  // the armies as drawn up: Beat history scores this battle
+    S.drawnAccount = A.chosen.length ? A.chosen.join("; ") : null;   // another account than the game's own: history is scored, not the commander's bar
     S.sel = S.units[0]?.id ?? null;
-    S.msg = `${B.name}: the armies as drawn up. Move, change or remove any unit before the battle starts.` + objectiveNote(B);
+    const acct = S.drawnAccount ? ` By the accounts you chose: ${S.drawnAccount}.` : "";
+    S.msg = `${B.name}: the armies as drawn up.${acct} Move, change or remove any unit before the battle starts.` + objectiveNote(B);
     return;
   }
   const keep = S.units.filter((u, i) => fits(S.units, i, u, SIZE, S.field)), gone = S.units.length - keep.length;
@@ -569,6 +576,59 @@ function loadBattlefield(fid, armies){            // a battlefield from data/fie
   const what = travelWx ? "the ground and works (the weather stays the travel map's)" : "the ground, works and weather";
   S.msg = (B ? `${B.name}: ${what}.` : "Open ground.") + (gone ? ` ${gone} unit(s) no longer fit and were taken off.` : "") + objectiveNote(B);
 }
+/* ---------- which account: where the accounts disagree, as a choice ----------
+   A battlefield's accounts (data/fields: accounts) are questions the sources answer differently, each
+   option a change to the armies as drawn up: a side's men scaled, a unit's men set or scaled, a phase
+   moved. The first option of each is the game's own, and the commander's benchmark is run on it.
+   S.picks: {fid: {question id: option index}}. */
+function picksOf(fid){                             // the accounts chosen for this battlefield: {question id: option index}
+  if (!S.picks) S.picks = {};
+  if (!S.picks[fid]) S.picks[fid] = {};
+  return S.picks[fid];
+}
+function asAccounted(B, fid){                       // {units, phases, chosen: ["question: option (source)"]} as the accounts chosen draw them up
+  const units = B.units.map(u => ({ ...u })), phases = (B.phases || []).map(p => ({ ...p })), chosen = [], picks = picksOf(fid);
+  for (const q of B.accounts || []){
+    const k = picks[q.id] || 0, o = q.options[k];
+    if (!k || !o) continue;
+    chosen.push(`${q.question} ${o.label} (${o.source || "an account"})`);
+    for (const c of o.changes || []) applyChange(c, units, phases);
+  }
+  return { units, phases, chosen };
+}
+function applyChange(c, units, phases){            // one change of an account
+  const men = (u, n) => { u.men = Math.max(1, Math.round(n)) };
+  if ("side" in c) units.filter(u => u.side === c.side).forEach(u => men(u, u.men * c.scale));
+  else if ("unit" in c) units.filter(u => u.name === c.unit).forEach(u => men(u, c.men ?? u.men * c.scale));
+  else if ("phase" in c) phases.filter(p => p.name === c.phase).forEach(p => { p.at = c.at });
+}
+function renderAccounts(){                          // the questions of the battlefield chosen, before the battle
+  const el = $("#accounts"), fid = $("#sel-field").value, B = FD.fields[fid];
+  el.hidden = !(B?.accounts && S.phase === "setup" && !S.from);
+  if (el.hidden) return;
+  const picks = picksOf(fid);
+  const opt = (o, k, cur) => `<option value="${k}"${k === cur ? " selected" : ""}>${esc(o.label)} (${esc(o.source || "an account")})${o.single ? ", a single report" : ""}${k ? "" : ": the game's own"}</option>`;
+  const qs = B.accounts.map(q => `<label>${esc(q.question)} <select data-account="${esc(q.id)}">${q.options.map((o, k) => opt(o, k, picks[q.id] || 0)).join("")}</select></label>`).join("");
+  el.innerHTML = `<b>Which account?</b> <span class="muted">The sources disagree here (the period book's <i>Where the accounts disagree</i>). Choose, or roll it; the armies are drawn up again as you choose. The enemy commander's benchmark is run on the game's own.</span>
+    <div class="toolbar">${qs}<button type="button" class="small" id="btn-roll-accounts" title="Each account as likely as the others, as Ask the dice">Roll it</button></div>`;
+}
+function chooseAccount(fid, qid, k){                // an account chosen: the armies drawn up again if they stand as drawn up
+  picksOf(fid)[qid] = k;
+  if (S.phase === "setup" && S.drawnUp === fid) loadBattlefield(fid, true);
+}
+$("#accounts").addEventListener("change", e => {
+  const qid = e.target.dataset?.account; if (!qid) return;
+  chooseAccount($("#sel-field").value, qid, +e.target.value);
+  fillChoices(); render();
+});
+$("#accounts").addEventListener("click", e => {
+  if (e.target.id !== "btn-roll-accounts") return;
+  const fid = $("#sel-field").value, B = FD.fields[fid];
+  for (const q of B.accounts) picksOf(fid)[q.id] = dice.randint(0, q.options.length - 1);
+  if (S.phase === "setup" && S.drawnUp === fid) loadBattlefield(fid, true);
+  fillChoices(); render();
+});
+$("#sel-field").addEventListener("change", () => renderAccounts());
 function objectiveNote(B){                         // " Objective: ... (O on the map, 77,57; attackers: Chinese). ..." for a battlefield with one
   const o = B?.objective;
   if (!o) return "";
@@ -1843,7 +1903,9 @@ function beatLines(fid){                            // [html] for the panel, or 
   if (!X?.history || !F) return null;
   const H = X.history, B = X.bench, won = H.won === null ? "a draw" : `${esc(S.sides[H.won])} won`;
   const out = [`<h3>Beat history</h3>`, `<p><b>As fought:</b> ${won}. ${esc(H.short)}.${H.losses ? ` Losses: ${esc(H.losses)}.` : ""}</p>`];
-  if (B){
+  if (B && S.drawnAccount){
+    out.push(`<p><b>The enemy commander</b>'s runs are on the game's own account; this battle is on another (${esc(S.drawnAccount)}), so it is scored against history only.</p>`);
+  } else if (B){
     const old = X.current ? "" : " <span class=\"muted\">(run under older rules)</span>";
     out.push(`<p><b>The enemy commander</b>, playing both sides ${B.runs} times:${old}</p><ul>` + B.sides.map((s, k) =>
       `<li>${esc(S.sides[k])} win ${Math.round(s.won * 100)}%${s.drew ? `, draw ${Math.round(s.drew * 100)}%` : ""}. To beat it: ${barText(s.bar)}.</li>`).join("") + "</ul>");
@@ -1854,7 +1916,7 @@ function beatScores(fid){                           // after a battle that ended
   const X = FD.beat[fid], F = FD.fields[fid], end = S.end, w = winnerAt(F, end), H = X.history;
   return [0, 1].filter(k => !aiOf(k)).map(k => {
     const o = outcomeAt(w, k), r = ratioAt(end, k), h = H.won === null ? 0 : H.won === k ? 1 : -1;
-    const bar = X.bench?.sides[k].bar;
+    const bar = S.drawnAccount ? null : X.bench?.sides[k].bar;   // another account: no bar to beat
     return { k, o, r, hist: Math.sign(o - h), beat: !!bar && (o > barOutcome(bar) || (o === barOutcome(bar) && r > bar.ratio)), bar: !!bar };
   });
 }
@@ -1880,16 +1942,20 @@ function recordBeat(fid){                           // after a battle that ended
   if (!S.end?.stop || !FD.beat?.[fid]) return;
   const card = readBeat(), row = card[fid] || {};
   for (const x of beatScores(fid)){
-    const now = { beat: x.beat, hist: x.hist, o: x.o, r: x.r, at: new Date().toISOString().slice(0, 10) };
+    const now = { beat: x.beat, hist: x.hist, o: x.o, r: x.r, at: new Date().toISOString().slice(0, 10), ...(S.drawnAccount ? { acct: true } : {}) };
     if (!row[x.k] || beatBetter(now, row[x.k])) row[x.k] = now;
   }
   card[fid] = row;
   try{ localStorage.setItem(BEAT_KEY, JSON.stringify(card)) }catch(e){ /* storage off: the result shows, but is not kept */ }
 }
+function cardBeat(x){                               // the commander's line of a scorecard row
+  if (x.acct) return "on another account (the commander not scored)";
+  return x.beat ? "the commander beaten" : "the commander not beaten";
+}
 function beatCard(fid){                             // [html]: this battlefield's best results, and the whole card in brief
   const card = readBeat(), row = card[fid] || {}, all = Object.keys(FD.beat || {});
   const beaten = all.filter(f => Object.values(card[f] || {}).some(x => x.beat)).length;
-  const mine = Object.entries(row).map(([k, x]) => `${esc(S.sides[k])}: ${x.beat ? "the commander beaten" : "the commander not beaten"}, ${["worse than history", "as history went", "better than history"][x.hist + 1]} (a ${BEAT_WORD[x.o]}, ${x.r}; ${x.at})`);
+  const mine = Object.entries(row).map(([k, x]) => `${esc(S.sides[k])}: ${cardBeat(x)}, ${["worse than history", "as history went", "better than history"][x.hist + 1]} (a ${BEAT_WORD[x.o]}, ${x.r}; ${x.at})`);
   const out = [];
   if (mine.length) out.push(`<p><b>Your best here:</b> ${mine.join("; ")}.</p>`);
   out.push(`<p class="muted">Battlefields where you have beaten the enemy commander: ${beaten} of ${all.length}.</p>`);
@@ -3134,7 +3200,7 @@ function renderPhase(){
   ["#in-side0", "#in-side1"].forEach(b => $(b).disabled = S.phase !== "setup" || !!S.forces);
 }
 function render(){
-  renderMap(); renderUnits(); renderSel(); renderPhase(); renderAfter(); renderBeat(); renderForces(); renderHeroes(); renderSupport(); renderWeather(); renderAi();
+  renderMap(); renderUnits(); renderSel(); renderPhase(); renderAfter(); renderBeat(); renderAccounts(); renderForces(); renderHeroes(); renderSupport(); renderWeather(); renderAi();
   $("#msg").textContent = S.msg || "";
   $("#log").innerHTML = S.log.map(l => `<li class="${l.cls}">${esc(l.text)}</li>`).join("");
   $("#in-side0").value = S.sides[0]; $("#in-side1").value = S.sides[1];
