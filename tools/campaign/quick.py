@@ -3,7 +3,7 @@
     python3 tools/campaign/quick.py [seed]
 
 The start page's button makes the Rules' running-example retinue in the team builder (the men the Rules'
-examples name) and sets up the roller's fight against four Lancastrian billmen, the GM's script playing
+examples name) and sets up the roller's fight against three Lancastrian billmen, the GM's script playing
 them; the player's men are played here as a new player would, by the coach's words: Roll initiative,
 Next fighter, Stay, click an enemy, Roll the hit, Next fighter, until the fight is over. Needs Python's
 playwright with Chromium and a built site. Exits non-zero on any failure.
@@ -33,7 +33,7 @@ with sync_playwright() as p:
     pg.wait_for_function("() => location.pathname.endsWith('roller.html') && typeof S === 'object' && S.quick", timeout=20000)
     men = pg.evaluate("() => S.chars.filter(c => c.sheet).map(c => c.name)")
     foes = pg.evaluate("() => S.chars.filter(c => sideOf(c) === 'Lancastrians').length")
-    check(len(men) == 6 and foes == 4, f"Play in 15 minutes sets up the retinue's six against four billmen ({men})")
+    check(len(men) == 6 and foes == 3, f"Play in 15 minutes sets up the retinue's six against three billmen ({men})")
     check(all(m in RULES for m in men), "the six are the men the Rules' examples and Quick start name")
     check(pg.evaluate("() => gmOn() && gmSide('Lancastrians').ctl === 'script' && gmSide('The retinue').ctl === 'player'"),
           "the GM's script plays the billmen; the player plays the retinue")

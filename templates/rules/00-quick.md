@@ -2,7 +2,7 @@
 
 Fifteen minutes, one small fight, and you have rolled your first wounds. On the start page press
 **Play in 15 minutes**: the pages make the retinue this book follows in its examples and set
-them on the road to Towton, 1461, against four Lancastrian billmen. The pages play the
+them on the road to Towton, 1461, against three Lancastrian billmen. The pages play the
 billmen, and a coach above the map says what to press next. Everything below is in the rest of
 this book; this page is enough to start.
 

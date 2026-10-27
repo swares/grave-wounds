@@ -4064,7 +4064,7 @@ function fillWeapons(){
    The team builder sends the Rules' own retinue (made with the running example's seeded dice) and comes
    here with #quickstart: the fight is set up against Lancastrian billmen, regulars, as in the Rules' "The
    retinue: the arrow"; the GM's script plays them, and the coach above the map says what to press next. */
-const QUICK = { foes: 4, side: "Lancastrians", kit: "jack_sallet", weapon: "bill" };
+const QUICK = { foes: 3, side: "Lancastrians", kit: "jack_sallet", weapon: "bill" };
 function quickSetup(){
   history.replaceState(null, "", location.pathname);
   if (!S.teamIn) return;
@@ -4082,7 +4082,7 @@ function quickSetup(){
   S.gm.sides[QUICK.side] = { ...gmSide(QUICK.side), ctl: "script", stance: "steady", quality: "regular" };
   S.gm.auto = true;
   S.quick = true;
-  S.mapMsg = "The quick start: the retinue from the Rules' examples on the road to Towton, against four Lancastrian billmen. Follow the coach above the map.";
+  S.mapMsg = "The quick start: the retinue from the Rules' examples on the road to Towton, against three Lancastrian billmen. Follow the coach above the map.";
   save();
 }
 function coachText(){                              // what to press next in the quick start, or null
