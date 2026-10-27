@@ -689,7 +689,7 @@ function strainAtEnd(){                           // once a side has won: the fi
 }
 function newFightMarks(){                         // a new fight: no downs, coups, winner or marks carried over
   for (const c of S.chars){ delete c.downs; delete c.downedLeader; delete c.coups; delete c.fieldWon }
-  S.wonBy = null; S.deedsDone = []; S.afterLog = []; S.afterOpen = false; S.packsDropped = {}; S.packsLost = []; S.strainDone = false;
+  S.wonBy = null; S.deedsDone = []; S.afterLog = []; S.afterOpen = false; S.packsDropped = {}; S.packsLost = []; S.strainDone = false; S.travelFrom = null;
   for (const c of S.chars) delete c.loadOrder;
 }
 function creditDown(a, c){                         // a put c down with his hit
@@ -724,15 +724,20 @@ function lootKindsFor(eid){
   const L = ((DATA.ranks || {}).loot || {})[eid] || {};
   return Object.keys(LOOT_NAMES).filter(k => (k === "field" && L.field) || ((k === "sack" || k === "sack_after") && L.sack) || L[k]);
 }
+function wonSelect(sides, auto){                  // who won: still standing, or the GM's choice
+  const first = auto ? attr(auto) + " (still standing)" : "No side has won yet";
+  const opt = sd => `<option value="${attr(sd)}"${S.wonBy === sd ? " selected" : ""}>${attr(sd)}</option>`;
+  return `<select id="sel-won" aria-label="Who won"><option value="">${first}</option>${sides.map(opt).join("")}</select>`;
+}
 function renderAfterFight(){
   const box = $("#after-fight"); if (!box) return;
   const sides = [...new Set(S.chars.map(sideOf))], auto = winningSide(), men = afterMen(), team = S.chars.filter(c => c.sheet && c.sheet.pid);
-  if (!team.length || !DATA.ranks){ box.innerHTML = ""; return }
+  const sel = wonSelect(sides, auto);
+  if (!team.length || !DATA.ranks){ box.innerHTML = S.travelFrom ? `<details class="after" open><summary><b>After the fight</b> <span class="muted">back to the travel map</span></summary><div class="toolbar"><label>Won by ${sel}</label></div>${travelButton()}</details>` : ""; return }
   const eras = [...new Set(men.map(eraOfChar).filter(Boolean))], kinds = [...new Set(eras.flatMap(lootKindsFor))];
   const K = (S.afterK ||= { kind: "field", who: "all" }); if (!kinds.includes(K.kind)) K.kind = kinds[0];
   if (K.who !== "all" && !men.some(c => String(c.id) === String(K.who))) K.who = "all";
   const whoSel = `<select id="sel-loot-who" aria-label="Who loots"><option value="all">Every winner still up</option>${men.map(c => `<option value="${c.id}"${String(c.id) === String(K.who) ? " selected" : ""}>${attr(c.name)}</option>`).join("")}</select>`;
-  const sel = `<select id="sel-won" aria-label="Who won"><option value="">${auto ? `${attr(auto)} (still standing)` : "No side has won yet"}</option>${sides.map(sd => `<option value="${attr(sd)}"${S.wonBy === sd ? " selected" : ""}>${attr(sd)}</option>`).join("")}</select>`;
   const rows = team.map(c => {
     const why = deedWhy(c), won = men.includes(c), marked = (S.deedsDone || []).includes(c.id);
     const take = c.taken ? " · taken prisoner (to the team builder's Prisoners)" : "";
@@ -741,12 +746,56 @@ function renderAfterFight(){
   }).join("");
   const log = (S.afterLog || []).map(l => `<li>${attr(l)}</li>`).join("");
   box.innerHTML = `<details class="after" ${S.afterOpen || auto || S.wonBy ? "open" : ""}><summary><b>After the fight</b> <span class="muted">deeds and loot for the team builder's men</span></summary>
-    <div class="toolbar"><label>Won by ${sel}</label>${dropButtons()}</div>${packsLostText()}${(strainAtEnd(), "")}
+    <div class="toolbar"><label>Won by ${sel}</label>${dropButtons()}</div>${packsLostText()}${(strainAtEnd(), "")}${travelButton()}
     <ul class="xp">${rows}</ul>
     <div class="toolbar"><button class="small" id="btn-deeds" title="The ticked men did a deed: +20 to their next promotion roll on the team builder, and the wait waived">Mark deeds</button></div>
     ${men.length && kinds.length ? `<div class="toolbar"><select id="sel-loot" aria-label="What to loot">${kinds.map(k => `<option value="${k}"${k === K.kind ? " selected" : ""}>${LOOT_NAMES[k]}</option>`).join("")}</select>${whoSel}<button class="small" id="btn-loot" title="Each of the winners who is still up rolls, by his era's rules; winnings go into his purse">Loot (${men.filter(c => !isDown(c)).length} able)</button></div>` : `<p class="muted" style="margin:0">${wonBy() ? "None of the team builder's men are on the winning side." : "Loot once a side has won."}</p>`}
     ${log ? `<ol class="roundlog">${log}</ol>` : ""}</details>`;
 }
+/* A skirmish from the travel map, back on it (as the field map's Back to the travel map): each force loses
+   the men it lost here (killed outright, died before help came, left on the field by a beaten side,
+   taken prisoner), its wounded men without a record of their own join its sick, its named men's wounds
+   go to camp (To camp), the beaten force falls back, and the team's captives go to the team builder. */
+const DIES = { instant: "killed", rounds: "died", minutes: "died" };
+function worstWound(c){ return campable(c).sort((a, b) => DZR.steps.indexOf(DZR.wounds.start[b.sev]) - DZR.steps.indexOf(DZR.wounds.start[a.sev]))[0] }
+function fighterFate(c, won){                       // "taken", "killed", "died", "left", "wounded" or null (came through, or ran)
+  if (c.taken) return "taken";
+  if (c.fled) return null;
+  const d = DIES[charStats(c).worst];
+  if (d) return d;
+  if (!won && isDown(c)) return "left";
+  return campable(c).length ? "wounded" : null;
+}
+function rollerResult(){                            // the travel map's battle result, from this fight: {battle, mapId, place, start, minutes, kind, forces, beaten}
+  const T = S.travelFrom, w = wonBy(), out = {};
+  for (const c of S.chars){
+    if (c.forceId === undefined || c.forceId === null) continue;
+    const x = out[c.forceId] ??= { killed: 0, left: 0, died: 0, taken: 0, lost: 0, cases: [] };
+    const fate = fighterFate(c, sideOf(c) === w);
+    if (fate === "wounded" && c.uid) toCamp(c);                   // his own record: his wounds go to camp with him
+    else if (fate === "wounded") x.cases.push(woundCaseFor(worstWound(c)));
+    else if (fate) x[fate] += 1;
+  }
+  for (const x of Object.values(out)) x.lost = x.killed + x.left + x.died + x.taken;
+  const beaten = w ? [...new Set(S.chars.filter(c => c.forceId != null && sideOf(c) !== w).map(c => c.forceId))] : [];
+  return { battle: T.battle, mapId: T.mapId, place: T.place, start: T.start, minutes: Math.max(1, Math.round(S.round / 10)), kind: "skirmish", forces: out, beaten };
+}
+function captivesOut(){                             // the enemy the team's side took, offered to the team builder's captives
+  const w = wonBy(); if (!w || !S.chars.some(c => c.sheet && sideOf(c) === w)) return;
+  const taken = S.chars.filter(c => c.taken && sideOf(c) !== w), enemy = taken[0] ? sideOf(taken[0]) : null;
+  if (!taken.length) return;
+  try{ localStorage.setItem("gravewounds-field-captives", JSON.stringify({ from: "roller", place: S.travelFrom?.place || "", side: w, enemy, taken: taken.length })) }catch(e){ /* storage off: the GM takes them by hand */ }
+}
+function sendToTravel(){
+  if (!S.travelFrom || S.travelFrom.sent) return;
+  const r = rollerResult();
+  try{ localStorage.setItem("gravewounds-field-result", JSON.stringify(r)) }catch(e){ S.mapMsg = "Could not save the result for the travel map (storage is off)."; return renderChars() }
+  captivesOut();
+  S.travelFrom.sent = true;
+  S.afterLog = [`Sent to the travel map: ${Object.values(r.forces).map(x => x.lost).reduce((a, b) => a + b, 0)} men lost, ${Object.values(r.forces).map(x => x.cases.length).reduce((a, b) => a + b, 0)} wounded to the forces' camps.`, ...(S.afterLog || [])];
+  save(); renderChars();
+}
+const travelButton = () => (S.travelFrom && !S.travelFrom.sent && wonBy() ? `<div class="toolbar"><button class="small primary" id="btn-to-travel" title="Each force loses the men it lost here, its wounded go to camp (the named men's with them), the beaten force falls back, and the team's prisoners go to the team builder">Send the result to the travel map</button></div>` : "");
 const takenButton = c => ` <button class="small" data-takenman="${c.id}" title="His side broke and he was taken: he goes to the team builder's Prisoners, where his captors' situation and his fate are rolled">Taken prisoner</button>`;
 function dropButtons(){                           // Drop packs, a side at a time (its team-builder men go to fighting order)
   const sides = [...new Set(S.chars.filter(loadEra).map(sideOf))];
@@ -1280,7 +1329,7 @@ const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
 let SAVED_AS = null;                                 // the fight as this page last wrote or read it: another page changing it means a reload, not a save over it
-function save(){ try{ SAVED_AS = JSON.stringify({chars:S.chars,events:S.events,gm:S.gm,screen:S.screen,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone}); localStorage.setItem("gravewounds-chars", SAVED_AS) }catch(e){ /* storage off: the fight lasts while the page is open */ } }
+function save(){ try{ SAVED_AS = JSON.stringify({chars:S.chars,events:S.events,gm:S.gm,screen:S.screen,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone,travelFrom:S.travelFrom}); localStorage.setItem("gravewounds-chars", SAVED_AS) }catch(e){ /* storage off: the fight lasts while the page is open */ } }
 function restore(){
   try {
     SAVED_AS = localStorage.getItem("gravewounds-chars");
@@ -3366,7 +3415,7 @@ function forceChars(o, positions, named = null){  // up to 8 of a travel-map for
     c.fatigue = o.fatigue || 0;
     out.push(c);
   }
-  out.forEach((c, i) => { if (positions && positions[i]) c.pos = positions[i] });
+  out.forEach((c, i) => { c.forceId = o.id; if (positions && positions[i]) c.pos = positions[i] });
   return out;
 }
 const menOf = o => { const n = Math.min(o.men, 8); return n < o.men ? `${n} of its ${o.men} men` : `its ${n} men` };
@@ -3449,9 +3498,11 @@ function setupHandoff(){                     // a camp or position sent from the
   if (sp) S.pending.push(`${sp.text} Rolled ${sp.roll}: ${sp.surprised ? "caught unawares, they cannot act in round 1" : "not surprised"}`);
   for (const o of h.allies || []) S.pending.push(`With them: ${o.name}, ${o.men} men (${o.side})`);
   for (const o of foes) S.pending.push(`Facing them: ${o.name}, ${o.men} men (${o.side})`);
-  const came = [...named.by.values()].flat().map(c => c.name);
-  if (came.length) S.pending.push(`Named men with their forces: ${came.join(", ")}`);
+  const came = [...named.by.values()].flat(), nNamed = came.filter(c => c.uid).length, nFol = came.length - nNamed;
+  const namedWord = nNamed === 1 ? "1 named man" : nNamed + " named men", folWord = nFol ? " and " + nFol + " of their team's followers" : "";
+  if (came.length) S.pending.push(`With their forces: ${namedWord}${folWord} (${came.map(c => c.name).join(", ")})`);
   if (named.missing.length) S.pending.push(`With these forces on the travel map but not on the roller, so not here: ${named.missing.join(", ")} (send the team to the roller and put each With his force to bring him)`);
+  S.travelFrom = h.mapId ? { battle: h.battle || `${h.mapId}:${h.day}:${h.time}:${h.force.id}:roller`, mapId: h.mapId, place: h.place, start: h.start || null, sent: false } : null;
   try{ localStorage.removeItem("gravewounds-handoff") }catch(e){}
   S.handoff = null;
   renderResult();
@@ -3765,6 +3816,7 @@ $("#after-fight").addEventListener("click", e => {
   if (dp){ const sd = dp.dataset.drop; S.packsDropped ||= {}; S.packsDropped[sd] = true; S.chars.filter(c => sideOf(c) === sd && loadEra(c)).forEach(c => { c.loadOrder = "fighting" }); S.afterOpen = true; return renderChars() }
   const tk = e.target.closest("button[data-takenman]");
   if (tk){ const c = S.chars.find(x => x.id === +tk.dataset.takenman); if (c){ takenBy(c, `${c.name} is taken prisoner`); S.afterOpen = true; renderChars() } return }
+  if (e.target.closest("#btn-to-travel")){ S.afterOpen = true; sendToTravel(); return }
   if (e.target.closest("#btn-deeds")){ S.afterOpen = true; markDeeds() }
   else if (e.target.closest("#btn-loot")){ S.afterOpen = true; rollAfterLoot() }
 });

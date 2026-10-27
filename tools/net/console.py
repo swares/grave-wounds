@@ -248,7 +248,7 @@ with sync_playwright() as p:
     rf.evaluate("() => { S.handoff = JSON.parse(localStorage.getItem('gravewounds-handoff')); setupHandoff(); renderChars() }")
     hal = rf.evaluate("() => { const c = S.chars.find(c => c.uid === 'u1'); return c && [c.name, sideOf(c), c.sheet === undefined, S.pending.join(' | ')] }")
     york = gm.evaluate(f"() => newDay().marchSummary().forces.find(f => f.name === {mine!r}).side")
-    check(bool(hal) and hal[0] == "Hal Ashby" and hal[1] == york and "Named men with their forces: Hal Ashby" in hal[3],
+    check(bool(hal) and hal[0] == "Hal Ashby" and hal[1] == york and "With their forces: 1 named man (Hal Ashby)" in hal[3],
           f"the fight set up from the travel map brings his named man in as himself, on his force's side ({hal[:2] if hal else None})")
     check(rf.evaluate("() => S.chars.filter(c => !c.uid).length") >= 2, "with the forces' other men beside him")
     pl.wait_for_function("() => { const f = document.querySelector('#p-fight iframe'); return f && f.contentDocument && (f.contentDocument.querySelector('#chars') || {}).textContent?.includes('Hal Ashby') }", timeout=15000)

@@ -104,7 +104,7 @@ const CAMPAIGN = (() => {
     return {
       sent: waiting[0] || null, waiting, fell, routed, broke,
       roller,
-      fieldResult: result ? { battle: result.battle || "", place: result.place || "", minutes: result.minutes || 0,
+      fieldResult: result ? { battle: result.battle || "", place: result.place || "", minutes: result.minutes || 0, kind: result.kind || "battle",
         lost: Object.values(result.forces || {}).reduce((a, x) => a + (x.lost || 0), 0) } : null,
     };
   }
@@ -131,7 +131,8 @@ const CAMPAIGN = (() => {
     }
     if (f.fieldResult){
       const mark = `field:${f.fieldResult.battle}`;
-      if (!seen[mark]) return { phase: "aftermath", page: "travel.html", why: `The battle at ${f.fieldResult.place || "?"} is over: ${f.fieldResult.lost} men lost in ${f.fieldResult.minutes} minutes. Its result waits for the travel map.`, mark };
+      const r = f.fieldResult, mins = r.minutes === 1 ? "1 minute" : `${r.minutes} minutes`;
+      if (!seen[mark]) return { phase: "aftermath", page: "travel.html", why: `The ${r.kind} at ${r.place || "?"} is over: ${r.lost} men lost in ${mins}. Its result waits for the travel map.`, mark };
     }
     if (f.roller?.wonBy && phase === "fight"){
       const mark = `won:${f.roller.wonBy}:${f.roller.strikes}`;

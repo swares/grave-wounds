@@ -617,7 +617,8 @@ function dropFieldCaptives(){ try { localStorage.removeItem(FIELD_CAP) } catch (
 function fieldCaptivesHtml(){
   const F = fieldCaptives(); if (!F) return "";
   const at = F.place ? " at " + esc(F.place) : "", most = Math.min(F.taken, 20);
-  return `<p class="note">From the field map${at}: ${esc(F.side)} took ${F.taken} of ${esc(F.enemy)} prisoner in the pursuit. <label>Into the team's charge <input type="number" id="cap-field-n" min="1" max="${most}" value="${Math.min(3, most)}" style="width:4em"></label> <button class="small" id="btn-take-field">Take them</button> <button class="small" id="btn-drop-field">Leave them to the army</button></p>`;
+  const src = F.from === "roller" ? "From the roller" : "From the field map", how = F.from === "roller" ? "" : " in the pursuit";
+  return `<p class="note">${src}${at}: ${esc(F.side)} took ${F.taken} of ${esc(F.enemy)} prisoner${how}. <label>Into the team's charge <input type="number" id="cap-field-n" min="1" max="${most}" value="${Math.min(3, most)}" style="width:4em"></label> <button class="small" id="btn-take-field">Take them</button> <button class="small" id="btn-drop-field">Leave them to the army</button></p>`;
 }
 function takeFieldCaptives(){
   const F = fieldCaptives(); if (!F) return;

@@ -13,8 +13,8 @@ from harness import check, failures, serve
 
 BASE, server = serve()
 TRAVEL = {"mapId": "towton-1461", "forces": {"towton-1461": [
-    {"id": 7, "name": "Sir Roger's retinue", "side": "York", "men": 20, "type": "foot", "pos": [19, 38]},
-    {"id": 6, "name": "Clifford's horse", "side": "Lancaster", "men": 500, "type": "mounted", "pos": [23, 25]}]},
+    {"id": 7, "name": "Sir Roger's retinue", "side": "York", "men": 20, "type": "foot", "pos": [19, 38], "log": [], "day": 1, "used": 0},
+    {"id": 6, "name": "Clifford's horse", "side": "Lancaster", "men": 500, "type": "mounted", "pos": [23, 25], "log": [], "day": 1, "used": 0}]},
     "clock": {"towton-1461": {"day": 1, "used": 0}}}
 
 with sync_playwright() as p:
@@ -61,6 +61,18 @@ with sync_playwright() as p:
     lost = pg.evaluate(f"() => (JSON.parse(localStorage.getItem('gravewounds-purses'))[{json.dumps(pid)}] || {{}}).lost")
     check(lost == {"why": "taken prisoner"}, f"Taken prisoner after the fight marks {man} taken, for the team builder")
     check("taken prisoner" in pg.inner_text("#after-fight") and "taken" in pg.inner_text("#chars").lower(), "the roller shows him taken")
+    lost_york = pg.evaluate("() => S.chars.filter(c => sideOf(c) === 'York' && (c.taken || isDown(c))).length")
+    pg.click("#btn-to-travel")
+    r = json.loads(pg.evaluate("() => localStorage.getItem('gravewounds-field-result')") or "null")
+    check(r and r["kind"] == "skirmish" and r["beaten"] == [7] and r["forces"]["7"]["taken"] >= 1,
+          f"Send the result to the travel map writes each force's losses and the beaten force ({r and r['forces']['7']})")
+    pg.goto(BASE + "travel.html")
+    pg.wait_for_function("() => typeof forcesHere === 'function'", timeout=15000)
+    ret = pg.evaluate("() => { const f = forcesHere().find(o => o.id === 7); return { men: f.men, pos: f.pos, log: f.log.slice(0, 3) } }")
+    check(ret["men"] == 20 - r["forces"]["7"]["lost"] and any(l.startswith("Skirmish at Sherburn-in-Elmet") for l in ret["log"]),
+          f"the travel map takes the skirmish in: the retinue has {ret['men']} men ({ret['log'][:2]})")
+    check(ret["pos"] != [19, 38] and any("fell back" in l for l in ret["log"]), f"the beaten retinue fell back ({ret['pos']})")
+    check(pg.evaluate("() => localStorage.getItem('gravewounds-field-result')") is None, "and the result is used once")
     pg.goto(BASE + "team.html")
     pg.wait_for_timeout(1500)
     check(man in pg.inner_text("#prisoners") and "is taken" in pg.inner_text("#prisoners"),
