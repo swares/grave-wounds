@@ -57,8 +57,8 @@ writeField({
   grid, units,
   phases: [   // the squall on an event: no source gives its time; Oman, Fortescue and Napier put it at the end of Colborne's fire-fight (claude/albuera-times-research)
     { name: "Soult's flank attack", at: 1, note: "Girard's and Gazan's divisions come up onto the heights in heavy columns; Zayas's Spaniards turn to face them." },
-    { name: "The squall", at: 90, when: { fires: "Colborne's brigade", wait: 6 }, weather: { cond: "storm", wind: "strong" }, note: "A squall of rain and hail blows in from the north at the end of Colborne's fire-fight, and in it the Vistula Lancers and the 2nd Hussars come round the open flank (six exchanges after Colborne's brigade first fires, or at 90 at the latest: our reading, no source gives the time)." },
-    { name: "The storm clears", at: 102, when: { after: 12 }, weather: { cond: "overcast", wind: "breeze" }, note: "After a time the storm clears off (Fortescue): about 12 exchanges, our estimate." },
+    { name: "The squall", at: 30, when: { fires: "Colborne's brigade", wait: 6 }, weather: { cond: "storm", wind: "strong" }, note: "A squall of rain and hail blows in from the north at the end of Colborne's fire-fight, and in it the Vistula Lancers and the 2nd Hussars come round the open flank (six exchanges after Colborne's brigade first fires, or at 30 at the latest: our reading, no source gives the time)." },
+    { name: "The storm clears", at: 42, when: { after: 12 }, weather: { cond: "overcast", wind: "breeze" }, note: "After a time the storm clears off (Fortescue): about 12 exchanges, our estimate." },
   ],
   header: [
     `The field of Albuera, 16 May 1811 (Gregorian), at 10 m a hex: ${COLS} x ${ROWS} hexes, about 1500 m`,

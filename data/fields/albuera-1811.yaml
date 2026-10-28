@@ -30,8 +30,8 @@ objective: {at: [40, 136], side: 1, name: "the heights south of the allied line"
 # then come on where they are drawn, or at their side's entry edge if that is taken.
 phases:
   - {name: "Soult's flank attack", at: 1, note: "Girard's and Gazan's divisions come up onto the heights in heavy columns; Zayas's Spaniards turn to face them."}
-  - {name: "The squall", at: 90, when: {fires: "Colborne's brigade", wait: 6}, note: "A squall of rain and hail blows in from the north at the end of Colborne's fire-fight, and in it the Vistula Lancers and the 2nd Hussars come round the open flank (six exchanges after Colborne's brigade first fires, or at 90 at the latest: our reading, no source gives the time).", weather: {cond: "storm", wind: "strong"}}
-  - {name: "The storm clears", at: 102, when: {after: 12}, note: "After a time the storm clears off (Fortescue): about 12 exchanges, our estimate.", weather: {cond: "overcast", wind: "breeze"}}
+  - {name: "The squall", at: 30, when: {fires: "Colborne's brigade", wait: 6}, note: "A squall of rain and hail blows in from the north at the end of Colborne's fire-fight, and in it the Vistula Lancers and the 2nd Hussars come round the open flank (six exchanges after Colborne's brigade first fires, or at 30 at the latest: our reading, no source gives the time).", weather: {cond: "storm", wind: "strong"}}
+  - {name: "The storm clears", at: 42, when: {after: 12}, note: "After a time the storm clears off (Fortescue): about 12 exchanges, our estimate.", weather: {cond: "overcast", wind: "breeze"}}
 ground: |
   ..............................hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh.....mm...........................................
   ..............................hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh.....mm...........................................
