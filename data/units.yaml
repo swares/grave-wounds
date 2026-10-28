@@ -239,7 +239,11 @@ melee:
   # "inexperienced" Portuguese, in line, "stood firm and drove away the cavalry without even
   # forming square", and Zayas's Spaniards met the lancers "unflinchingly"; Colborne's brigade was
   # broken in the flank, in a squall (Wikipedia, "Battle of Albuera", after Oman and Fortescue).
-  pikes: {weapons: [pike, musket_smoothbore, rifle_musket], formations: [close], attack: 20}
+  # holds: such a front, struck hand to hand only by horse at its front, does not count as losing
+  # the exchange (morale): the horse shied off or rode round it more than they broke it, so it
+  # checks only for a quarter down, a shock or a flank. Without it 4,000 Spaniards steady in line
+  # broke to 400 lancers in two minutes, about 1% down, losing 10 men a minute to 6 put down.
+  pikes: {weapons: [pike, musket_smoothbore, rifle_musket], formations: [close], attack: 20, holds: true}
 
 # ---------- missiles ----------
 # Shooting men: those with a missile weapon and the target in range (the field map counts

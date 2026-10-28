@@ -18,7 +18,7 @@ For [An exchange](#exchange).
 3. **Each attempt is one attack**, at the unit's quality, exactly as in [the fight](#turn):
    +{{f_flank}} from the flank and +{{f_rear}} from the rear (and no parry from either),
    +{{f_charge}} and twice as many attempts for a mounted charge in its first exchange, −{{f_shaken}} for a shaken unit, +{{f_pikes}} for
-   pikes in close order against horse to their front; range, weather and cover come off
+   pikes, or muskets with the bayonet, in close order against horse to their front; range, weather and cover come off
    missiles. A tired unit loses its [fatigue](#fatigue) level's penalty off its attack and
    its parry.
 4. **The wound** is rolled as for one man. A light wound or a graze: he fights on. Serious

@@ -1069,8 +1069,9 @@ def _holding(unit: dict) -> bool:
 
 def _losing(mo: dict, unit: dict) -> bool:
     """Lost the exchange in contact: more men down than it put down; holding a position
-    (morale.posture_hand), only by its losses hand to hand."""
-    if not unit.get("contact"):
+    (morale.posture_hand), only by its losses hand to hand. A front of pikes or bayonets struck
+    hand to hand only by horse at its front (braced, melee.pikes.holds) does not count as losing."""
+    if not unit.get("contact") or unit.get("braced"):
         return False
     if mo.get("posture_hand") and _holding(unit):
         return unit.get("hand_lost", 0) > unit.get("hand_dealt", 0)
@@ -2507,7 +2508,8 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     log += _mines_all(d, us, table, rng, acc, field)
     log += _closing_all(d, us, table, rng, acc, field)
     lost0, dealt0 = list(lost), list(dealt)
-    struck = _strike_all(d, us, table, rng, acc, flanked, field, lost0)
+    braced = [None] * len(us)
+    struck = _strike_all(d, us, table, rng, acc, flanked, field, lost0, braced)
     hand = ([x - y for x, y in zip(lost, lost0)], [x - y for x, y in zip(dealt, dealt0)])   # hand to hand this exchange (morale.posture_hand)
     fought = {l[k] for l in struck if l["kind"] == "melee" for k in ("att", "dfd")}
     log += struck
@@ -2531,7 +2533,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
             u["hit"] = True                         # it lost men this exchange: under fire, for the next moves
         else:
             u.pop("hit", None)
-    log += _morale_all(d, us, occ, before, (lost, dealt, flanked, hand), rng, table, field)
+    log += _morale_all(d, us, occ, before, (lost, dealt, flanked, hand, braced), rng, table, field)
     log += _suppress_all(d, us, under, rng)
     log += _heroes_after(d, us, rng, [not lost[i] and not under[i] and not in_contact(d, us, occ, i) for i in range(len(us))], cauterises(d, table), posts_moving(field))
     log += _parties_after(d, us, field)
@@ -3043,7 +3045,7 @@ def _fired_on(log: list) -> set:
     return {l["dfd"] for l in log if l.get("dfd") is not None and (l.get("kind") in _FIRE or (l.get("kind") == "hero" and "dist" in l))}
 
 
-def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list, field: dict | None = None, thinned: list | None = None) -> list:
+def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list, field: dict | None = None, thinned: list | None = None, braced: list | None = None) -> list:
     """Every melee, each unit's front heroes striking with its first (or dueling the enemy's).
     thinned: men each unit lost to canister as it came in (closing fire), its striking men cut
     in the same share (rounded down)."""
@@ -3055,6 +3057,8 @@ def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list, f
         t = _take_hurt(b, melee(d, _side(a, table, d), _side(b, table, d), s["men"], rng, **opts))
         _tally(*acc, s, t)
         flanked[s["dfd"]] = flanked[s["dfd"]] or s["situation"] in ("flank", "rear")
+        if braced is not None and not s["rout"]:   # struck hand to hand only by horse, at its front of pikes or bayonets (melee.pikes.holds)
+            braced[s["dfd"]] = braced[s["dfd"]] is not False and bool(a.get("mounted")) and s["situation"] == "front" and pike_front(d, b)
         log += _logged({"kind": "rout" if s["rout"] else "melee", **s}, t)
         if s["att"] in struck:
             continue
@@ -4275,7 +4279,7 @@ def holds_position(d: Data, us: list, i: int, field: dict | None) -> bool:
 def _morale_all(d: Data, us: list, occ: dict, before: list, acc: tuple, rng, table: str = "", field: dict | None = None) -> list:
     """Every unit still in the fight checks; any that breaks is struck at once by the enemies
     touching it, every man of them."""
-    (lost, dealt, flanked, hand), log, broke = acc, [], []
+    (lost, dealt, flanked, hand, braced), log, broke = acc, [], []
     M = d.units["morale"]
     for i, u in enumerate(us):
         if u["state"] in ("broken", "fled") or u["men"] <= 0:
@@ -4288,7 +4292,8 @@ def _morale_all(d: Data, us: list, occ: dict, before: list, acc: tuple, rng, tab
                 "friends": any(us[j]["side"] == u["side"] and us[j]["state"] == "steady" for j in near),
                 "dug": low(u) or in_bunker(d, field, u), "no_ammo": ammo_state(d, u) == "out",
                 "holds": bool(M.get("posture")) and bool(u.get("holding")) and holds_position(d, us, i, field),
-                "hand_lost": hand[0][i], "hand_dealt": hand[1][i]}
+                "hand_lost": hand[0][i], "hand_dealt": hand[1][i],
+                "braced": bool(d.units["melee"]["pikes"].get("holds")) and braced[i] is True}
         m = morale(d, unit, rng.randint(1, 100))
         if m["check"]:
             log.append({"kind": "morale", "unit": i, "target": m["target"], "from": u["state"], "state": m["state"]})

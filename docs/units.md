@@ -384,6 +384,12 @@ each side is the flank; the two behind are the rear.
   the front of 120 regular pikemen (400 runs, the Thirty Years' War table, no armour on
   either side): the horse hit 0.65 pikemen, against 1.7 if the pikes gave no edge; the
   pikemen hit 4.1 horse, against 3.1. Spears and bills get no such edge. Design estimates.
+  Formed infantry with the bayonet (smoothbore muskets and rifle-muskets) keep the same front:
+  at Albuera Harvey's "inexperienced" Portuguese, in line, "stood firm and drove away the
+  cavalry without even forming square", and Zayas's Spaniards met the lancers "unflinchingly",
+  while Colborne's brigade was broken in the flank, in a squall (Wikipedia, after Oman and
+  Fortescue). Without it Cole's division, steady in line, broke to the lancers from its front
+  in 5 of 12 runs, about 50 men down.
 - **Pursuit:** contact with a broken unit is a charge like any other, and every man of the
   pursuing unit strikes the fleeing.
 

@@ -643,7 +643,7 @@ function morale(u0, roll){                       // {check, target, state}; hold
   const M = UD.morale, u = M.posture_flank && u0.holds ? { ...u0, flanked: false } : u0;
   if (u.state === "broken") return { check: false, target: null, state: "broken" };
   const byHand = !!M.posture_hand && u.holds && !u.flanked;   // holding a position: lost the fight hand to hand, not men lost to fire from afar (morale.posture_hand)
-  const losing = (byHand ? (u.hand_lost || 0) > (u.hand_dealt || 0) : (u.lost || 0) > (u.dealt || 0)) && u.contact;
+  const losing = !u.braced && (byHand ? (u.hand_lost || 0) > (u.hand_dealt || 0) : (u.lost || 0) > (u.dealt || 0)) && u.contact;   // a front of pikes or bayonets struck only by horse at its front does not count as losing (melee.pikes.holds)
   const attrition = u.down >= M.trigger * u.start && (u.lost > 0 || !(u.holds && !u.flanked));   // past a quarter down: every exchange in the open; holding a position, only when it lost men (morale.posture)
   const struck = attrition || u.lost >= M.shock * Math.max(1, u.men) || u.flanked || losing;
   const rally = u.state === "shaken" && !u.contact;
@@ -1689,6 +1689,7 @@ function strikeAll(us, table, rng, acc, log, field, thinned = null){   // thinne
     const t = takeHurt(b, melee(meleeSide(a, table), meleeSide(b, table), s.men, rng, opts));
     tallyLoss(acc, s, t);
     acc.flanked[s.dfd] = acc.flanked[s.dfd] || s.situation === "flank" || s.situation === "rear";
+    if (!s.rout) acc.braced[s.dfd] = acc.braced[s.dfd] !== false && !!a.mounted && s.situation === "front" && pikeFront(b);   // struck hand to hand only by horse, at its front of pikes or bayonets (melee.pikes.holds)
     log.push(...logged({ kind: s.rout ? "rout" : "melee", ...s }, t));
     if (struck.has(s.att)) continue;
     struck.add(s.att);
@@ -1989,7 +1990,7 @@ function firedOn(log){                            // the units fired on in an ex
 }
 function exchange(units, table, rng, field = null){   // -> {units, log}; works being breached are updated in field
   const us = units.map(copyUnit), n = us.length, log = [];
-  const acc = { lost: new Array(n).fill(0), dead: new Array(n).fill(0), dealt: new Array(n).fill(0), flanked: new Array(n).fill(false) };
+  const acc = { lost: new Array(n).fill(0), dead: new Array(n).fill(0), dealt: new Array(n).fill(0), flanked: new Array(n).fill(false), braced: new Array(n).fill(null) };
   toilGoing(us, field);
   const under = new Array(n).fill(false);          // under shellfire or machine-gun fire this exchange (suppression)
   minesAll(us, table, rng, acc, log, field);
@@ -2302,7 +2303,7 @@ function moraleAll(us, occ, before, acc, rng, table, field = null){
     const [down, lost] = vehicleLosses(u, before[i], acc.lost[i]);
     const unit = { quality: u.quality, start: u.start, down, lost, dealt: acc.dealt[i], men: before[i], state: u.state,
       leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u), no_ammo: ammoState(u) === "out",
-      holds: !!M.posture && !!u.holding && holdsPosition(us, i, field), hand_lost: acc.hand.lost[i], hand_dealt: acc.hand.dealt[i] };
+      holds: !!M.posture && !!u.holding && holdsPosition(us, i, field), hand_lost: acc.hand.lost[i], hand_dealt: acc.hand.dealt[i], braced: !!UD.melee.pikes.holds && acc.braced[i] === true };
     const m = morale(unit, rng.randint(1, 100));
     if (m.check) log.push({ kind: "morale", unit: i, target: m.target, from: u.state, state: m.state });
     if (m.state === "broken") broke.push(i);
