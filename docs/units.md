@@ -384,6 +384,16 @@ each side is the flank; the two behind are the rear.
   the front of 120 regular pikemen (400 runs, the Thirty Years' War table, no armour on
   either side): the horse hit 0.65 pikemen, against 1.7 if the pikes gave no edge; the
   pikemen hit 4.1 horse, against 3.1. Spears and bills get no such edge. Design estimates.
+  Formed infantry with the bayonet (smoothbore muskets and rifle-muskets) keep the same front:
+  at Albuera Harvey's "inexperienced" Portuguese, in line, "stood firm and drove away the
+  cavalry without even forming square", and Zayas's Spaniards met the lancers "unflinchingly",
+  while Colborne's brigade was broken in the flank, in a squall (Wikipedia, after Oman and
+  Fortescue). Struck hand to hand only by horse at its front, such a front does not count as
+  losing the exchange (`melee.pikes.holds`): it checks only for a quarter down, a shock or a
+  flank. Without that, 4,000 Spaniards steady in line broke to 400 lancers in two minutes,
+  about 1% down, losing 10 men a minute to the 6 they put down, and Cole's division went the
+  same way. Measured on 12 runs of every battlefield: 426 of 576 from 422 (Albuera 7 to 12, its
+  losses 19% and 30% against the battle's 17% and 29%; Lundy's Lane 1 to 0).
 - **Pursuit:** contact with a broken unit is a charge like any other, and every man of the
   pursuing unit strikes the fleeing.
 
