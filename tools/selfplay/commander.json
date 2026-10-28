@@ -925,6 +925,34 @@
    ],
    "stamp": "b60693d26a58"
   },
+  "mojkovac-1916": {
+   "runs": 12,
+   "sides": [
+    {
+     "bar": {
+      "outcome": "win",
+      "ratio": 1.83
+     },
+     "drew": 0.0,
+     "lost_share": 0.191,
+     "side": "Montenegrins",
+     "stance": "hold",
+     "won": 1.0
+    },
+    {
+     "bar": {
+      "outcome": "loss",
+      "ratio": 0.55
+     },
+     "drew": 0.0,
+     "lost_share": 0.125,
+     "side": "Austro-Hungarians",
+     "stance": "attack",
+     "won": 0.0
+    }
+   ],
+   "stamp": "c6d957fdcbe8"
+  },
   "mons-1914": {
    "runs": 12,
    "sides": [
@@ -1120,6 +1148,34 @@
     }
    ],
    "stamp": "95d0d34df917"
+  },
+  "topolcani-1915": {
+   "runs": 12,
+   "sides": [
+    {
+     "bar": {
+      "outcome": "loss",
+      "ratio": 0.39
+     },
+     "drew": 0.0,
+     "lost_share": 0.452,
+     "side": "Serbians",
+     "stance": "hold",
+     "won": 0.08
+    },
+    {
+     "bar": {
+      "outcome": "win",
+      "ratio": 2.61
+     },
+     "drew": 0.0,
+     "lost_share": 0.038,
+     "side": "Bulgarians",
+     "stance": "attack",
+     "won": 0.92
+    }
+   ],
+   "stamp": "5f4c9544debc"
   },
   "towton-1461": {
    "runs": 12,

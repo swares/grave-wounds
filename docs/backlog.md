@@ -112,23 +112,12 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Campaign and battle maps for the other campaigns.** Sidon (1253), Visby (1361),
   Jacob's Ford (1179), Crécy (1346), Aljubarrota (1385), Agincourt (1415), Towton (1461), Dornach (1499), Lützen (1632), Albuera (1811), Cowpens (1781), Lundy's
   Lane (1814), Sevastopol (1855, two battlefields), First Bull Run (1861), Fort Phil Kearny (1866-67, with two battlefields), Mons
-  (1914), Beaumont-Hamel (1916), Snipe at El Alamein (1942), the Serbian retreat (1915, the Babuna pass), Hill 700 on Bougainville (1944), Anzio and Cisterna (1944), Osan (1950), Chipyong-ni
+  (1914), Beaumont-Hamel (1916), Snipe at El Alamein (1942), the Serbian retreat (1915-16, the Babuna pass, Topolčani and Mojkovac), Hill 700 on Bougainville (1944), Anzio and Cisterna (1944), Osan (1950), Chipyong-ni
   (1951), the Ia Drang (1965), Mogadishu (1993), Wanat (2008), Cassino (1944, three battlefields), the Chosin Reservoir (1950), Kapyong (1951), Heartbreak Ridge (1951), Pork Chop Hill (1953), Hue (1968), Khe Sanh (1968), Dak To (1967), Hamburger Hill (1969), Goose Green (1982), 73 Easting (1991), Grozny (1995), Fallujah (2004) and COP Keating (2009) have both a campaign map and a battlefield. The rest of Italy, the rest of the Gulf War (1991) and Northern Ireland
   still play on the generic valley and open ground (the unit rules for them are in: machine
   guns, extended order, artillery and mortars on call, suppression). Each needs the same work: a spec for `tools/maps/campaign_lib.mjs` (places,
   rivers and roads drawn through public-domain facts) and one for `field_lib.mjs` (the
   battlefield and its armies).
-- **More battlefields for the Serbian retreat (to do).** The Serbia 1915 map has one battlefield,
-  the Babuna pass. Two more are researched (project doc "serbia1915-research"):
-  - **Topolčani**, between Prilep and Bitola: Flora Sandes's company fought a rearguard in the snow,
-    with a river, a bridge whose ten mines failed, a hill, trenches and a roadside inn. From
-    daybreak in a blizzard the Bulgarians took the trenches about midday and their guns crossed
-    the bridge; the Serbs went at dusk. The ground is well described, but there is no date and no
-    strengths on either side. The place is on the map (approximate).
-  - **Mojkovac**, 6-7 January 1916: the Montenegrin Sandžak army (6,500 men, 25 guns, 8 machine
-    guns) held off the Austro-Hungarians in knee-deep snow, covering the Serbs' retreat to the
-    coast. Strengths are sourced on the Montenegrin side only. It lies inside the map's bounds but
-    is not yet a place on it, and the map starts on 5 November, two months earlier.
 - **Night, second cut.** Muzzle flashes, night vision, fixed lines, slower moves and losing
   direction are in. Night-vision devices (Starlight scope, goggles, thermal sight) are a
   unit's whole: a Starlight scope stands for the few rifles that had one. A vehicle firing by its
@@ -207,8 +196,8 @@ When an item is done, delete it here and note it in the pull request that closes
   battlefield marks with a defensive fire plan (`df: true`) may fire, unseen, within 12 hexes of
   its own side's start positions (Pork Chop's flash fire: 4 to 12 of 12). Given to every
   defender, the fire plan put Tumbledown back to 0 (and Grozny 2 to 7, Hue and Chipyong-ni -1), so
-  it is marked by battlefield where a source gives one. 400 of 552 runs now match the battle as
-  fought. Still behind: Albuera 9 of 12 with the squall, Chipyong-ni 10, Dak To and Khe Sanh 11.
+  it is marked by battlefield where a source gives one. 423 of 576 runs now match the battle as
+  fought (Mojkovac 12 of 12 and Topolčani 11 of 12 added). Still behind: Albuera 9 of 12 with the squall, Chipyong-ni 10, Dak To and Khe Sanh 11.
 - **Self-play against the battles as fought, first review** (`docs/selfplay-review.md`). Every
   battlefield was played with the commander on both sides and set against what happened; what has
   been changed since, and what was measured and not built, is in the review. To do, from the
