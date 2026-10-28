@@ -28,18 +28,19 @@ const LINE = { quality: "regular", weapon: "musket_smoothbore", kit: "none", for
 const HORSE = { quality: "veteran", weapon: "saber", kit: "dragoon_helmet", formation: "close", mounted: true };
 const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", formation: "battery", mounted: false };   // ten crew to a gun
 const units = [
-  unit("Riflemen skirmishing (McDowell, Cunningham)", US, 150, RIFLES, [40, 40, 62]),
-  unit("Militia line (Pickens)", US, 900, MILITIA, [50, 35, 50]),
-  unit("Continentals and Virginia men (Howard)", US, 550, { ...LINE, quality: "veteran" }, [28, 46, 36]),
-  unit("Washington's horse", US, 150, HORSE, [8, 56, 16]),
-  unit("Legion infantry", GB, 250, LINE, [8, 50, 84]),
-  unit("7th Fusiliers", GB, 200, { ...LINE, quality: "green" }, [7, 60, 84]),
-  unit("Light infantry", GB, 200, { ...LINE, formation: "open" }, [12, 36, 84]),
+  // the National Park Service's strengths (Bearss): at least 1,500 Americans, about 120 of them riflemen, and nearly 1,100 British
+  unit("Riflemen skirmishing (McDowell, Cunningham)", US, 120, RIFLES, [40, 40, 62]),
+  unit("Militia line (Pickens)", US, 780, MILITIA, [50, 35, 50]),
+  unit("Continentals and Virginia men (Howard)", US, 470, { ...LINE, quality: "veteran" }, [28, 46, 36]),
+  unit("Washington's horse", US, 130, HORSE, [8, 56, 16]),
+  unit("Legion infantry", GB, 235, LINE, [8, 50, 84]),
+  unit("7th Fusiliers", GB, 190, { ...LINE, quality: "green" }, [7, 60, 84]),
+  unit("Light infantry", GB, 190, { ...LINE, formation: "open" }, [12, 36, 84]),
   unit("Grasshopper guns", GB, 20, GUNS, [1, 58, 87]),
-  unit("71st Highlanders (reserve)", GB, 250, { ...LINE, quality: "veteran" }, [8, 54, 94]),
-  unit("Legion dragoons, right", GB, 50, { ...HORSE, quality: "regular" }, [3, 28, 86]),
-  unit("Legion dragoons, left", GB, 50, { ...HORSE, quality: "regular" }, [3, 74, 86]),
-  unit("Legion dragoons (reserve)", GB, 150, { ...HORSE, quality: "regular" }, [5, 66, 95]),
+  unit("71st Highlanders (reserve)", GB, 235, { ...LINE, quality: "veteran" }, [8, 54, 94]),
+  unit("Legion dragoons, right", GB, 45, { ...HORSE, quality: "regular" }, [3, 28, 86]),
+  unit("Legion dragoons, left", GB, 45, { ...HORSE, quality: "regular" }, [3, 74, 86]),
+  unit("Legion dragoons (reserve)", GB, 140, { ...HORSE, quality: "regular" }, [5, 66, 95]),
 ];
 
 writeField({

@@ -62,12 +62,12 @@ const units = [
   // the reserve inside
   at("B Company, 23rd Infantry (reserve)", UN, 150, { ...DUG, prone: false }, 25, [CX - 30, CY + 12], S),
   at("1st Ranger Company (reserve)", UN, 100, { ...DUG, prone: false, quality: "veteran" }, 20, [CX + 30, CY + 12], S),
-  // the Chinese, closing in the dark
-  at("Chinese regiment from Hill 397 (against G Company)", CH, 1200, PVA, 60, [edge(92)[0], 150], N),
-  at("Chinese battalion (against E Company)", CH, 500, PVA, 30, edge(50, 22), 2),
-  at("Chinese battalion (against C Company)", CH, 600, PVA, 40, [edge(-80, 26)[0], 6], S),
-  at("Chinese battalion (against K Company)", CH, 500, PVA, 30, [edge(0, 18)[0], edge(0)[1]], 3),
-  at("Chinese battalion (against the French)", CH, 500, PVA, 30, [16, edge(190)[1]], 0),
+  // the Chinese, closing in the dark: six regiments, about 6,000, as Mossman's prisoners named them (Xu: three, about 3,000)
+  at("Chinese regiment from Hill 397 (against G Company)", CH, 2150, PVA, 108, [edge(92)[0], 150], N),
+  at("Chinese battalion (against E Company)", CH, 900, PVA, 30, edge(50, 22), 2),
+  at("Chinese battalion (against C Company)", CH, 1100, PVA, 72, [edge(-80, 26)[0], 6], S),
+  at("Chinese battalion (against K Company)", CH, 900, PVA, 40, [181, edge(0)[1]], 3),   // a little nearer the line than its 500 stood, to fit on the map
+  at("Chinese battalion (against the French)", CH, 900, PVA, 34, [16, edge(190)[1]], 0),
   at("Task Force Crombez (tanks, up Route 24A)", { side: 0, facing: N }, 80, { quality: "regular", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank" }, 4, [CX - 1, ROWS - 5], N),
   at("Chinese machine guns (south)", CH, 15, { ...MG, kit: "none", quality: "veteran", prone: false }, 3, [edge(110)[0], 160], N),
 ];

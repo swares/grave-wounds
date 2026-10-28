@@ -562,11 +562,13 @@ function loadBattlefield(fid, armies){            // a battlefield from data/fie
     S.field.lifts = [];
     const A = asAccounted(B, fid);
     A.units.forEach(u => standOrFly(S, newUnit({ ...u, side: B.sides[u.side] }), u.lands));
+    const crowded = A.chosen.length ? refit() : [];
     holdForStages(S, A.phases);
     S.drawnUp = fid;                                  // the armies as drawn up: Beat history scores this battle
     S.drawnAccount = A.chosen.length ? A.chosen.join("; ") : null;   // another account than the game's own: history is scored, not the commander's bar
     S.sel = S.units[0]?.id ?? null;
-    const acct = S.drawnAccount ? ` By the accounts you chose: ${S.drawnAccount}.` : "";
+    const room = crowded.length ? ` No room as drawn for ${crowded.join(", ")}: move ${crowded.length > 1 ? "them" : "it"} before the battle.` : "";
+    const acct = S.drawnAccount ? ` By the accounts you chose: ${S.drawnAccount}.${room}` : "";
     S.msg = `${B.name}: the armies as drawn up.${acct} Move, change or remove any unit before the battle starts.` + objectiveNote(B);
     return;
   }
@@ -601,6 +603,18 @@ function applyChange(c, units, phases){            // one change of an account
   if ("side" in c) units.filter(u => u.side === c.side).forEach(u => men(u, u.men * c.scale));
   else if ("unit" in c) units.filter(u => u.name === c.unit).forEach(u => men(u, c.men ?? u.men * c.scale));
   else if ("phase" in c) phases.filter(p => p.name === c.phase).forEach(p => { p.at = c.at });
+}
+function refit(){                                  // units an account made bigger or smaller: the nearest frontage that fits where they stood -> names with none
+  const left = [];
+  S.units.forEach((u, i) => {
+    if (fits(S.units, i, u, SIZE, S.field)) return;
+    const w0 = u.width || 1, tries = [];
+    for (let d = 1; d <= 60; d++) tries.push(w0 + d, w0 - d);   // wider first: a bigger unit keeps its depth
+    const w = tries.find(x => x >= 1 && fits(S.units, i, { ...u, width: x }, SIZE, S.field));
+    if (w) u.width = w;
+    else left.push(u.name);
+  });
+  return left;
 }
 function renderAccounts(){                          // the questions of the battlefield chosen, before the battle
   const el = $("#accounts"), fid = $("#sel-field").value, B = FD.fields[fid];

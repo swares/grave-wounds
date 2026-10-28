@@ -26,8 +26,9 @@ const { grid, hexWorks, edgeWorks } = redan({ rows: ROWS, trenchRow: 67, holes: 
 const units = [
   unit("Covering party (2nd Rifle Brigade and the Buffs)", BRITISH, 200, { ...RIFLE, formation: "open", size: "company" }, [20, 40, 63]),
   unit("Ladder party (the Buffs and the 97th)", BRITISH, 320, { ...RIFLE, ladders: true, size: "company" }, [10, 45, 65]),
-  unit("Light Division stormers (90th and 97th)", BRITISH, 1000, { ...RIFLE, size: "regiment" }, [20, 28, 68]),
-  unit("2nd Division stormers (the Buffs, 41st and 62nd)", BRITISH, 760, { ...RIFLE, quality: "green", size: "regiment" }, [16, 50, 68]),
+  // Simpson's about 1,000 stormers, half from each division (the Household Narrative: 760 from the 2nd alone)
+  unit("Light Division stormers (90th and 97th)", BRITISH, 500, { ...RIFLE, size: "regiment" }, [20, 28, 68]),
+  unit("2nd Division stormers (the Buffs, 41st and 62nd)", BRITISH, 500, { ...RIFLE, quality: "green", size: "regiment" }, [16, 50, 68]),
   unit("Supports (7th, 23rd, 33rd, 34th and 77th)", BRITISH, 1500, { ...RIFLE, quality: "green", size: "brigade" }, [30, 35, 74]),
   unit("Vladimirski Regiment, at the salient", RUSSIANS, 400, { ...MUSKET, size: "battalion" }, [12, 44, 45]),
   unit("Guns on the left face", RUSSIANS, 40, { ...GUNS, size: "battery" }, [3, 35, 35]),

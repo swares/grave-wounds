@@ -287,10 +287,10 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 5.04
+      "ratio": 4.47
      },
      "drew": 0.0,
-     "lost_share": 0.118,
+     "lost_share": 0.232,
      "side": "United Nations",
      "stance": "hold",
      "won": 1.0
@@ -298,16 +298,16 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.22
+      "ratio": 0.27
      },
      "drew": 0.0,
-     "lost_share": 0.379,
+     "lost_share": 0.361,
      "side": "Chinese",
      "stance": "attack",
      "won": 0.0
     }
    ],
-   "stamp": "aa608f3605ec"
+   "stamp": "8b3f78b9224e"
   },
   "cisterna-1944": {
    "runs": 12,
@@ -335,7 +335,7 @@
      "won": 1.0
     }
    ],
-   "stamp": "64b765b7e31b"
+   "stamp": "fe31102286c4"
   },
   "cowpens-1781": {
    "runs": 12,
@@ -343,10 +343,10 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 1.26
+      "ratio": 1.36
      },
      "drew": 0.0,
-     "lost_share": 0.191,
+     "lost_share": 0.206,
      "side": "Americans",
      "stance": "hold",
      "won": 1.0
@@ -354,16 +354,16 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.79
+      "ratio": 0.75
      },
      "drew": 0.0,
-     "lost_share": 0.379,
+     "lost_share": 0.37,
      "side": "British",
      "stance": "attack",
      "won": 0.0
     }
    ],
-   "stamp": "12d8c38372b8"
+   "stamp": "89cec3598dc8"
   },
   "crecy-1346": {
    "runs": 12,
@@ -1015,27 +1015,27 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.36
+      "ratio": 0.26
      },
      "drew": 0.0,
-     "lost_share": 0.378,
+     "lost_share": 0.375,
      "side": "British",
      "stance": "attack",
-     "won": 0.33
+     "won": 0.17
     },
     {
      "bar": {
       "outcome": "win",
-      "ratio": 3.23
+      "ratio": 3.96
      },
      "drew": 0.0,
-     "lost_share": 0.181,
+     "lost_share": 0.127,
      "side": "Russians",
      "stance": "hold",
-     "won": 0.67
+     "won": 0.83
     }
    ],
-   "stamp": "3a8f71e3f7fb"
+   "stamp": "5d7f81b52df2"
   },
   "redan-1855-june": {
    "runs": 12,

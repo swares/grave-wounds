@@ -37,9 +37,9 @@ chipyong-1951:
     - id: chinese
       question: "How many Chinese attacked?"
       options:
-        - {label: "Three regiments, about 3,000", source: "Xu"}
-        - {label: "Six regiments, about 6,000", source: "Mossman, from the prisoners", changes: [{side: 1, scale: 1.8}]}
-        - {label: "Eight regiments, about 8,000", source: "Wikipedia, counting those in the area", changes: [{side: 1, scale: 2.4}]}
+        - {label: "Six regiments, about 6,000", source: "Mossman, from the prisoners"}
+        - {label: "Three regiments, about 3,000", source: "Xu", changes: [{side: 1, scale: 0.5}]}
+        - {label: "Eight regiments, about 8,000", source: "Wikipedia, counting those in the area", changes: [{side: 1, scale: 1.34}]}
 
 agincourt-1415:
     - id: english
@@ -118,16 +118,15 @@ cowpens-1781:
     - id: americans
       question: "How many Americans?"
       options:
-        - {label: "About 1,750, the game's figure", source: "the game's reading"}
-        - {label: "About 800", source: "Morgan's report", single: true, changes: [{side: 0, scale: 0.46}]}
-        - {label: "About 1,000", source: "Mount Vernon; the American Battlefield Trust: about 1,065", changes: [{side: 0, scale: 0.59}]}
-        - {label: "At least 1,500", source: "the NPS", changes: [{side: 0, scale: 0.86}]}
-        - {label: "About 1,900", source: "Babits, from pension statements", changes: [{side: 0, scale: 1.09}]}
+        - {label: "At least 1,500", source: "the NPS"}
+        - {label: "About 800", source: "Morgan's report", single: true, changes: [{side: 0, scale: 0.53}]}
+        - {label: "About 1,000", source: "Mount Vernon; the American Battlefield Trust: about 1,065", changes: [{side: 0, scale: 0.67}]}
+        - {label: "About 1,900", source: "Babits, from pension statements", changes: [{side: 0, scale: 1.27}]}
     - id: riflemen
       question: "How many riflemen skirmished in front?"
       options:
-        - {label: "About 150", source: "Mount Vernon"}
-        - {label: "About 120", source: "Bearss", changes: [{unit: "Riflemen skirmishing (McDowell, Cunningham)", men: 120}]}
+        - {label: "About 120", source: "Bearss"}
+        - {label: "About 150", source: "Mount Vernon", changes: [{unit: "Riflemen skirmishing (McDowell, Cunningham)", men: 150}]}
         - {label: "More than 300", source: "Babits", changes: [{unit: "Riflemen skirmishing (McDowell, Cunningham)", men: 300}]}
 
 jacobsford-1179:
@@ -160,8 +159,8 @@ cisterna-1944:
     - id: lastmessage
       question: "When did the last message come?"
       options:
-        - {label: "12:15", source: "Stewart and King"}
-        - {label: "12:30", source: "the Army's Anzio Beachhead", changes: [{phase: "The last message", at: 381}]}
+        - {label: "12:30", source: "the Army's Anzio Beachhead"}
+        - {label: "12:15", source: "Stewart and King", changes: [{phase: "The last message", at: 366}]}
 
 mons-1914:
     - id: germans
@@ -208,8 +207,8 @@ redan-1855:
     - id: stormers
       question: "How many stormers went in?"
       options:
-        - {label: "About 1,760, the game's figure", source: "the game's reading, with the Household Narrative's 760 for the 2nd Division"}
-        - {label: "About 1,000, half from each division", source: "Simpson", changes: [{unit: "Light Division stormers (90th and 97th)", men: 500}, {unit: "2nd Division stormers (the Buffs, 41st and 62nd)", men: 500}]}
+        - {label: "About 1,000, half from each division", source: "Simpson"}
+        - {label: "About 1,760", source: "the Household Narrative's 760 from the 2nd Division, with 1,000 from the Light", changes: [{unit: "Light Division stormers (90th and 97th)", men: 1000}, {unit: "2nd Division stormers (the Buffs, 41st and 62nd)", men: 760}]}
     - id: held
       question: "How long did the British hold the Redan?"
       options:

@@ -35,7 +35,7 @@ phases:
   - {name: "Caught at first light", at: 1, note: "About 06:10, short of the town, a German sentry cries out as he is knifed and the column is discovered; at dawn three self-propelled guns open on it."}
   - {name: "A hasty defence", at: 61, note: "By about 07:10 the battalions are in a crescent-shaped hasty defence; at 07:30 the 1st Battalion breaks radio silence."}
   - {name: "The tanks", at: 351, note: "About noon tanks come down from Highway 7 and drive through the Rangers.", arrive: ["Tanks (later in the morning)"]}
-  - {name: "The last message", at: 366, note: "12:15 to 12:30: the last radio messages; the line is rolled up."}
+  - {name: "The last message", at: 381, note: "12:30 (Anzio Beachhead; Stewart says 12:15): the last radio messages; the line is rolled up."}
 ground: |
   r.....TTT.TTT...T.TTTT..T...TTTTTTTTTTTTTTTTTTTTT.TTTTTTTTTTT.T.TTTT..TTTT.TTTTT.TTT.TT..TTTT.TTTTTTTTT.TTTTTT.TTTTTTTTT.TTTTT.TT.T.TTTTT.TTTT........
   .......TTTTTTTTTTTTTTTTTTTTTTTT..TT.TTTTTTTTTTTTTTTT.TTT..T.TTT.TTTTT.TTTTTTT.TTTTTTTTT.TTTT.TTTTTTTT.TTTTTTT.TTTTTTTTTTTT.TTTTTT..TTT.TT.TT.T........
