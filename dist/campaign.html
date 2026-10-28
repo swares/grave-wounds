@@ -2225,8 +2225,10 @@ function makeTravelDay(DATA, RULES, env = {}){
       f.sup = spRefill(eid, supOf(f), f.men).sup; f.supHungry = false;
       const issued = DATA.kit && fedByArmy(f) ? namedWith(readNamed(), f).filter(([, n]) => n.pid) : [];   // its army issues new boots and clothing
       for (const [, n] of issued) xpKitSet(n.pid, { boots: 0, clothing: 0 });
-      const mounts = remount(f);
-      f.log.unshift(`${dateText(f.day, true)}: refilled at its depot${issued.length ? "; new boots and clothing issued to its named men" : ""}${mounts ? `; ${mounts} remount${mounts === 1 ? "" : "s"} drawn` : ""}.`);
+      const mounts = remount(f), kit = issued.length ? "; new boots and clothing issued to its named men" : "";
+      let drawn = "";
+      if (mounts) drawn = mounts === 1 ? "; 1 remount drawn" : "; " + mounts + " remounts drawn";
+      f.log.unshift(`${dateText(f.day, true)}: refilled at its depot${kit}${drawn}.`);
       return;
     }
     const t = trainHere(f); if (!t) return;
