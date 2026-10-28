@@ -48,9 +48,14 @@ injury:
 #              of food) and unpaid (pay in arrears). They do not stack: the largest applies (a
 #              starving army is seldom paid, so Nuremberg's figure already holds both); never above 1.
 conditions:
-  hungry: {desert: 15, straggle: 5, source: {url: "https://en.wikipedia.org/wiki/Siege_of_Nuremberg", note: "the starving Swedish camp at Nuremberg, 1632, lost about 5e-3 a man a day to desertion, against the Army of Flanders' usual 2.5-3.3e-4 (about 15 times); Lee's hungry, barefoot army straggled at 1.8e-2 in Maryland, 1862, against about 2e-3 (Maryland campaign page), so straggling about 5 times, an estimate"}}
+  hungry: {desert: 15, straggle: 5, horses: 4, source: {url: "https://en.wikipedia.org/wiki/Siege_of_Nuremberg", note: "the starving Swedish camp at Nuremberg, 1632, lost about 5e-3 a man a day to desertion, against the Army of Flanders' usual 2.5-3.3e-4 (about 15 times); Lee's hungry, barefoot army straggled at 1.8e-2 in Maryland, 1862, against about 2e-3 (Maryland campaign page), so straggling about 5 times, an estimate; horses: Cole's column in cold and hunger lost 3.6e-2 a horse a day (1865) against a Union cavalry horse's 8.3e-3 on campaign (https://www.civilwarmonitor.com/article/the-army-horse/), about 4 times, a single report"}}
   unpaid: {desert: 3, source: {url: "https://www.oocities.org/ao1617/life.html", note: "Army of Flanders (after Parker): foreign units, often in arrears, lost 2-7% a month against 0.7-2% for the tercios, about 3 times"}, approx: true}
 
+# remount - at its army's depot (Refill at the depot), a mounted force or wagon train fed by its army
+#           is brought back up to this many horses a man; a force with more keeps them. A design
+#           estimate: armies kept remount depots behind the front (the British in France, the Union's
+#           Cavalry Bureau from 1863), but no source gives how fully a unit was made up.
+remount: 1
 # horses_march - how a mounted force or a wagon train marches when it has lost horses: below
 #                `below` of a horse a man, it keeps `pct` of its speed (the highest band that applies).
 horses_march:

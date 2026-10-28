@@ -391,6 +391,14 @@ function makeTravelDay(DATA, RULES, env = {}){
     const base = (baseMap().forces || []).find(b => b.name === f.name), at = h => h && h[0] === f.pos[0] && h[1] === f.pos[1];
     return at(base?.hex) || (baseMap().places || []).some(p => at(p.hex) && (p.depot || []).includes(f.side));
   }
+  function remount(f){                             // at the depot, a horsed force its army feeds is made up to events.yaml remount horses a man: how many it drew
+    const per = DATA.events?.remount;
+    if (!per || !EV_HORSE_TYPES.includes(f.type) || !fedByArmy(f)) return 0;
+    const want = Math.ceil(per * f.men), have = horsesOf(f);
+    if (have >= want) return 0;
+    f.horses = want;
+    return want - have;
+  }
   const trainHere = f => (S.forces[S.mapId] || []).find(o => o !== f && o.type === "wagons" && o.side === f.side && o.pos[0] === f.pos[0] && o.pos[1] === f.pos[1] && o.men > 0) || null;
   function refillForce(f, how){                    // at the depot, or from the train with it
     const eid = forceEra(f);
@@ -398,7 +406,10 @@ function makeTravelDay(DATA, RULES, env = {}){
       f.sup = spRefill(eid, supOf(f), f.men).sup; f.supHungry = false;
       const issued = DATA.kit && fedByArmy(f) ? namedWith(readNamed(), f).filter(([, n]) => n.pid) : [];   // its army issues new boots and clothing
       for (const [, n] of issued) xpKitSet(n.pid, { boots: 0, clothing: 0 });
-      f.log.unshift(`${dateText(f.day, true)}: refilled at its depot${issued.length ? "; new boots and clothing issued to its named men" : ""}.`);
+      const mounts = remount(f), kit = issued.length ? "; new boots and clothing issued to its named men" : "";
+      let drawn = "";
+      if (mounts) drawn = mounts === 1 ? "; 1 remount drawn" : "; " + mounts + " remounts drawn";
+      f.log.unshift(`${dateText(f.day, true)}: refilled at its depot${kit}${drawn}.`);
       return;
     }
     const t = trainHere(f); if (!t) return;
