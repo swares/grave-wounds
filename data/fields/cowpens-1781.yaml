@@ -135,15 +135,15 @@ ground: |
   FFFFFFmmmm..................................................................................................mmmm....FFFF
   FFFFFFmmmm...................................................................................................mmmm...FFFF
 units:
-  - {name: "Riflemen skirmishing (McDowell, Cunningham)", side: 0, men: 150, quality: regular, weapon: rifle_flintlock, kit: none, formation: open, width: 40, pos: [60, 62], facing: 4, size: company}
-  - {name: "Militia line (Pickens)", side: 0, men: 900, quality: green, weapon: rifle_flintlock, kit: none, formation: open, width: 50, pos: [60, 50], facing: 4, size: battalion}
-  - {name: "Continentals and Virginia men (Howard)", side: 0, men: 550, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 28, pos: [60, 36], facing: 4, size: battalion}
-  - {name: "Washington's horse", side: 0, men: 150, quality: veteran, weapon: saber, kit: dragoon_helmet, formation: close, width: 8, pos: [60, 16], facing: 4, mounted: true, size: company}
-  - {name: "Legion infantry", side: 1, men: 250, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 8, pos: [53, 84], facing: 1, size: company}
-  - {name: "7th Fusiliers", side: 1, men: 200, quality: green, weapon: musket_smoothbore, kit: none, formation: close, width: 7, pos: [63, 84], facing: 1, size: company}
-  - {name: "Light infantry", side: 1, men: 200, quality: regular, weapon: musket_smoothbore, kit: none, formation: open, width: 12, pos: [41, 84], facing: 1, size: company}
+  - {name: "Riflemen skirmishing (McDowell, Cunningham)", side: 0, men: 120, quality: regular, weapon: rifle_flintlock, kit: none, formation: open, width: 40, pos: [60, 62], facing: 4, size: company}
+  - {name: "Militia line (Pickens)", side: 0, men: 780, quality: green, weapon: rifle_flintlock, kit: none, formation: open, width: 50, pos: [60, 50], facing: 4, size: battalion}
+  - {name: "Continentals and Virginia men (Howard)", side: 0, men: 470, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 28, pos: [60, 36], facing: 4, size: battalion}
+  - {name: "Washington's horse", side: 0, men: 130, quality: veteran, weapon: saber, kit: dragoon_helmet, formation: close, width: 8, pos: [60, 16], facing: 4, mounted: true, size: company}
+  - {name: "Legion infantry", side: 1, men: 235, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 8, pos: [53, 84], facing: 1, size: company}
+  - {name: "7th Fusiliers", side: 1, men: 190, quality: green, weapon: musket_smoothbore, kit: none, formation: close, width: 7, pos: [63, 84], facing: 1, size: company}
+  - {name: "Light infantry", side: 1, men: 190, quality: regular, weapon: musket_smoothbore, kit: none, formation: open, width: 12, pos: [41, 84], facing: 1, size: company}
   - {name: "Grasshopper guns", side: 1, men: 20, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 1, pos: [58, 87], facing: 1, size: battery}
-  - {name: "71st Highlanders (reserve)", side: 1, men: 250, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 8, pos: [57, 94], facing: 1, size: company}
-  - {name: "Legion dragoons, right", side: 1, men: 50, quality: regular, weapon: saber, kit: dragoon_helmet, formation: close, width: 3, pos: [29, 86], facing: 1, mounted: true, size: platoon}
-  - {name: "Legion dragoons, left", side: 1, men: 50, quality: regular, weapon: saber, kit: dragoon_helmet, formation: close, width: 3, pos: [75, 86], facing: 1, mounted: true, size: platoon}
-  - {name: "Legion dragoons (reserve)", side: 1, men: 150, quality: regular, weapon: saber, kit: dragoon_helmet, formation: close, width: 5, pos: [68, 95], facing: 1, mounted: true, size: company}
+  - {name: "71st Highlanders (reserve)", side: 1, men: 235, quality: veteran, weapon: musket_smoothbore, kit: none, formation: close, width: 8, pos: [57, 94], facing: 1, size: company}
+  - {name: "Legion dragoons, right", side: 1, men: 45, quality: regular, weapon: saber, kit: dragoon_helmet, formation: close, width: 3, pos: [29, 86], facing: 1, mounted: true, size: platoon}
+  - {name: "Legion dragoons, left", side: 1, men: 45, quality: regular, weapon: saber, kit: dragoon_helmet, formation: close, width: 3, pos: [75, 86], facing: 1, mounted: true, size: platoon}
+  - {name: "Legion dragoons (reserve)", side: 1, men: 140, quality: regular, weapon: saber, kit: dragoon_helmet, formation: close, width: 5, pos: [68, 95], facing: 1, mounted: true, size: company}

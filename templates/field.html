@@ -542,6 +542,24 @@ function newField(){                              // open ground of the default 
   SIZE = DEFAULT_SIZE.slice();
   return { ground: {}, works: { edges: {}, hexes: {} }, weather: { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0 } }, size: SIZE.slice() };
 }
+function drawUp(B, fid){                           // the battlefield's armies as drawn up, by the accounts chosen
+  S.sides = B.sides.slice();
+  S.table = B.table;
+  S.seq = 1;
+  S.units = [];
+  S.field.lifts = [];
+  const A = asAccounted(B, fid);
+  A.units.forEach(u => standOrFly(S, newUnit({ ...u, side: B.sides[u.side] }), u.lands));
+  const crowded = A.chosen.length ? refit() : [];
+  holdForStages(S, A.phases);
+  S.drawnUp = fid;                                  // the armies as drawn up: Beat history scores this battle
+  S.drawnAccount = A.chosen.length ? A.chosen.join("; ") : null;   // another account than the game's own: history is scored, not the commander's bar
+  S.sel = S.units[0]?.id ?? null;
+  const them = crowded.length > 1 ? "them" : "it";
+  const room = crowded.length ? ` No room as drawn for ${crowded.join(", ")}: move ${them} before the battle.` : "";
+  const acct = S.drawnAccount ? ` By the accounts you chose: ${S.drawnAccount}.${room}` : "";
+  S.msg = `${B.name}: the armies as drawn up.${acct} Move, change or remove any unit before the battle starts.` + objectiveNote(B);
+}
 function loadBattlefield(fid, armies){            // a battlefield from data/fields: its ground, works, weather and size; its armies if asked
   if (S.phase !== "setup"){ S.msg = "The battlefield is chosen before the battle starts."; return }
   const B = FD.fields[fid], travelWx = S.from ? S.field.weather : null;   // a battle from the travel map keeps that day's weather
@@ -554,22 +572,7 @@ function loadBattlefield(fid, armies){            // a battlefield from data/fie
   S.drawnUp = null; S.drawnAccount = null;
   S.stages = null; S.stageNo = -1; S.waiting = [];   // its phases, with the armies as drawn up (holdForStages)   // the battlefield's marker settings, else units.yaml's
   S.camp = null;
-  if (B && armies && !S.forces){
-    S.sides = B.sides.slice();
-    S.table = B.table;
-    S.seq = 1;
-    S.units = [];
-    S.field.lifts = [];
-    const A = asAccounted(B, fid);
-    A.units.forEach(u => standOrFly(S, newUnit({ ...u, side: B.sides[u.side] }), u.lands));
-    holdForStages(S, A.phases);
-    S.drawnUp = fid;                                  // the armies as drawn up: Beat history scores this battle
-    S.drawnAccount = A.chosen.length ? A.chosen.join("; ") : null;   // another account than the game's own: history is scored, not the commander's bar
-    S.sel = S.units[0]?.id ?? null;
-    const acct = S.drawnAccount ? ` By the accounts you chose: ${S.drawnAccount}.` : "";
-    S.msg = `${B.name}: the armies as drawn up.${acct} Move, change or remove any unit before the battle starts.` + objectiveNote(B);
-    return;
-  }
+  if (B && armies && !S.forces) return drawUp(B, fid);
   const keep = S.units.filter((u, i) => fits(S.units, i, u, SIZE, S.field)), gone = S.units.length - keep.length;
   S.units = keep;
   S.sel = keep.some(u => u.id === S.sel) ? S.sel : keep[0]?.id ?? null;
@@ -601,6 +604,18 @@ function applyChange(c, units, phases){            // one change of an account
   if ("side" in c) units.filter(u => u.side === c.side).forEach(u => men(u, u.men * c.scale));
   else if ("unit" in c) units.filter(u => u.name === c.unit).forEach(u => men(u, c.men ?? u.men * c.scale));
   else if ("phase" in c) phases.filter(p => p.name === c.phase).forEach(p => { p.at = c.at });
+}
+function refit(){                                  // units an account made bigger or smaller: the nearest frontage that fits where they stood -> names with none
+  const left = [];
+  S.units.forEach((u, i) => {
+    if (fits(S.units, i, u, SIZE, S.field)) return;
+    const w0 = u.width || 1, tries = [];
+    for (let d = 1; d <= 60; d++) tries.push(w0 + d, w0 - d);   // wider first: a bigger unit keeps its depth
+    const w = tries.find(x => x >= 1 && fits(S.units, i, { ...u, width: x }, SIZE, S.field));
+    if (w) u.width = w;
+    else left.push(u.name);
+  });
+  return left;
 }
 function renderAccounts(){                          // the questions of the battlefield chosen, before the battle
   const el = $("#accounts"), fid = $("#sel-field").value, B = FD.fields[fid];

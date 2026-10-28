@@ -60,9 +60,11 @@ with sync_playwright() as p:
         S.picks = { [fid]: { [q.id]: k } }; S.phase = "setup"; loadBattlefield(fid, true);
         const want = asAccounted(B, fid);
         if (!S.units.length && !S.waiting.length) out.push(`${fid} ${q.id} ${k}: no units`);
-        if (k && !want.chosen.length) out.push(`${fid} ${q.id} ${k}: not chosen`) });
+        if (k && !want.chosen.length) out.push(`${fid} ${q.id} ${k}: not chosen`);
+        const crowded = S.units.filter((u, i) => !fits(S.units, i, u, SIZE, S.field)).filter(u => !S.msg.includes(u.name));
+        if (crowded.length) out.push(`${fid} ${q.id} ${k}: ${crowded[0].name} does not fit, unsaid`) });
       return out }""")
-    check(not bad, f"every option of every battlefield's accounts draws its armies up ({bad[:3]})")
+    check(not bad, f"every option of every battlefield's accounts draws its armies up, each unit fitting or named to move ({bad[:3]})")
     pg.evaluate("() => { S.picks = {}; loadBattlefield('wanat-2008', true) }")
 
     pg.select_option("#sel-field", "snipe-1942")

@@ -130,8 +130,8 @@ works:
 units:
   - {name: "Covering party (2nd Rifle Brigade and the Buffs)", side: 0, men: 200, quality: regular, weapon: rifle_musket, kit: none, formation: open, width: 20, pos: [49, 63], facing: 1, size: company}
   - {name: "Ladder party (the Buffs and the 97th)", side: 0, men: 320, quality: regular, weapon: rifle_musket, kit: none, formation: close, width: 10, pos: [49, 65], facing: 1, ladders: true, size: company}
-  - {name: "Light Division stormers (90th and 97th)", side: 0, men: 1000, quality: regular, weapon: rifle_musket, kit: none, formation: close, width: 20, pos: [37, 68], facing: 1, size: regiment}
-  - {name: "2nd Division stormers (the Buffs, 41st and 62nd)", side: 0, men: 760, quality: green, weapon: rifle_musket, kit: none, formation: close, width: 16, pos: [57, 68], facing: 1, size: regiment}
+  - {name: "Light Division stormers (90th and 97th)", side: 0, men: 500, quality: regular, weapon: rifle_musket, kit: none, formation: close, width: 20, pos: [37, 68], facing: 1, size: regiment}
+  - {name: "2nd Division stormers (the Buffs, 41st and 62nd)", side: 0, men: 500, quality: green, weapon: rifle_musket, kit: none, formation: close, width: 16, pos: [57, 68], facing: 1, size: regiment}
   - {name: "Supports (7th, 23rd, 33rd, 34th and 77th)", side: 0, men: 1500, quality: green, weapon: rifle_musket, kit: none, formation: close, width: 30, pos: [49, 74], facing: 1, size: brigade}
   - {name: "Vladimirski Regiment, at the salient", side: 1, men: 400, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 12, pos: [50, 45], facing: 4, size: battalion}
   - {name: "Guns on the left face", side: 1, men: 40, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 3, pos: [36, 35], facing: 4, size: battery}

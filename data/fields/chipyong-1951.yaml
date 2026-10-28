@@ -232,10 +232,10 @@ units:
   - {name: "2nd Battalion machine guns", side: 0, men: 15, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 3, pos: [78, 133], facing: 4, prone: true, size: section}
   - {name: "B Company, 23rd Infantry (reserve)", side: 0, men: 150, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 25, pos: [70, 98], facing: 4, size: company}
   - {name: "1st Ranger Company (reserve)", side: 0, men: 100, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 20, pos: [130, 98], facing: 4, size: company}
-  - {name: "Chinese regiment from Hill 397 (against G Company)", side: 1, men: 1200, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 60, pos: [98, 150], facing: 1, size: regiment}
-  - {name: "Chinese battalion (against E Company)", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [159, 145], facing: 2, size: company}
-  - {name: "Chinese battalion (against C Company)", side: 1, men: 600, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 40, pos: [117, 6], facing: 4, size: company}
-  - {name: "Chinese battalion (against K Company)", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [187, 86], facing: 3, size: company}
-  - {name: "Chinese battalion (against the French)", side: 1, men: 500, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [16, 76], facing: 0, size: battalion}
+  - {name: "Chinese regiment from Hill 397 (against G Company)", side: 1, men: 2150, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 108, pos: [98, 150], facing: 1, size: regiment}
+  - {name: "Chinese battalion (against E Company)", side: 1, men: 900, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [159, 145], facing: 2, size: company}
+  - {name: "Chinese battalion (against C Company)", side: 1, men: 1100, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 72, pos: [117, 6], facing: 4, size: company}
+  - {name: "Chinese battalion (against K Company)", side: 1, men: 900, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 40, pos: [181, 86], facing: 3, size: company}
+  - {name: "Chinese battalion (against the French)", side: 1, men: 900, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 34, pos: [16, 76], facing: 0, size: battalion}
   - {name: "Task Force Crombez (tanks, up Route 24A)", side: 0, men: 80, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 4, pos: [99, 165], facing: 1, vehicle: tank, size: company}
   - {name: "Chinese machine guns (south)", side: 1, men: 15, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 3, pos: [76, 160], facing: 1, size: section}
