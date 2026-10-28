@@ -1012,7 +1012,7 @@ def _fire_aim(d: Data, us: list, side, field: dict | None, known: dict, bk: tupl
     held when the battle began (_near_located), seen or not: planned fire."""
     b, K = bk
     P = d.units["indirect"].get("planned") or {}
-    plan = attacking and _plans(P, K)
+    plan = _battery_plan(P, bk, attacking)
     best = None
     ours = [u for u in us if u["side"] == side and u["men"] > 0 and u["state"] != "fled"]
     if not ours:
@@ -1030,6 +1030,17 @@ def _fire_aim(d: Data, us: list, side, field: dict | None, known: dict, bk: tupl
     return None if best is None else best[1]
 
 
+def _battery_plan(planned: dict, bk: tuple, attacking: bool):
+    """The battery's planned fire: "attack" (on the defenders' start positions), "hold" (its own
+    defensive fire plan, a battery marked df), or None."""
+    b, kind = bk
+    if not _plans(planned, kind):
+        return None
+    if attacking:
+        return "attack"
+    return "hold" if b.get("df") else None
+
+
 def _plans(planned: dict, kind: dict) -> bool:
     """Planned fire is on (indirect.planned) and the kind fires it: guns and mortars, not aircraft or tanks."""
     return bool(planned) and not kind.get("air") and not kind.get("direct")
@@ -1042,7 +1053,7 @@ def _clear_shot(d: Data, uof: tuple, bk: tuple, h, extra: int) -> bool:
     return U.in_reach(d, b, h) and not _too_near(d, ours, h, K["radius"] + _air_scatter(d, us, field, bk, h) + extra)
 
 
-def _aim_at(d: Data, us: list, sfk: tuple, je: tuple, plan: bool) -> tuple:
+def _aim_at(d: Data, us: list, sfk: tuple, je: tuple, plan) -> tuple:
     """(hex, planned) to aim at enemy j: the first of its hexes the side sees now, else, for planned
     fire, where it stands near a located place; (None, False) if neither."""
     side, field, known = sfk
@@ -1050,9 +1061,16 @@ def _aim_at(d: Data, us: list, sfk: tuple, je: tuple, plan: bool) -> tuple:
     seen = next((x for x in _marks(d, e) if U.spotted(d, us, field, side, x)), None) if str(j) in known else None
     if seen is not None:
         return seen, False
-    if plan and _near_located(d, field, e):
+    if (plan == "attack" and _near_located(d, field, e)) or (plan == "hold" and _near_own(d, field, side, e)):
         return e["pos"], True
     return None, False
+
+
+def _near_own(d: Data, field: dict | None, side, e: dict) -> bool:
+    """Holding: enemy e within indirect.planned.defend hexes of a place the side itself held when the
+    battle began (field.located): in its defensive fire plan."""
+    far = d.units["indirect"]["planned"]["defend"]
+    return e["men"] > 0 and e["state"] not in ROUTED and any(s == side and U.hdist(h, e["pos"]) <= far for s, h in (field or {}).get("located") or [])
 
 
 def _near_located(d: Data, field: dict | None, e: dict) -> bool:
