@@ -1503,11 +1503,11 @@ function stopped(field, weapon, out){              // stoppages on top of the we
   if (p) out.misfire = Math.min(100, out.misfire + p);
   return out;
 }
-function unfitVehicles(B, rng){                    // as a battle begins, each vehicle unfit at its unit's unfit %, else reliability.unfit % (by war) is left out with its crew, a unit keeping at least one: [{unit, unfit}] (as battle.unfit_vehicles)
+function unfitVehicles(B, rng){                    // as a battle begins, each vehicle unfit at its unit's unfit %, else (not drawn up as fought) reliability.unfit % (by war) is left out with its crew, a unit keeping at least one: [{unit, unfit}] (as battle.unfit_vehicles)
   const war = RELY().unfit?.[B.field.war] || 0, out = [];
   if (!rng) return out;
   B.units.forEach((u, i) => {
-    const K = vehicleKind(u), n = vehiclesLeft(u), pct = u.unfit ?? war;   // a battlefield's own figure for its vehicles (unfit), else the war's
+    const K = vehicleKind(u), n = vehiclesLeft(u), pct = u.unfit ?? (u.asFought ? 0 : war);   // a battlefield's own figure for its vehicles (unfit); its armies as fought are what fought, so else none; else (drawn by the GM or from the travel map) the war's
     if (!K || n < 1 || !pct) return;
     let k = 0;
     for (let j = 0; j < n; j++) if (rng.randint(1, 100) <= pct) k++;
@@ -3929,7 +3929,7 @@ function makeUnit(o, id, table){                   // a new unit as the GM or a 
 function unitMarks(o){                             // a drawn unit's optional marks, copied as given
   return { ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.armour ? { armour: o.armour } : {}),
     ...(o.via?.length ? { via: o.via.map(h => [...h]) } : {}), ...unitOrders(o), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}),
-    ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}), ...(o.fights_on ? { fights_on: true } : {}), ...(o.unfit != null ? { unfit: o.unfit } : {}) };
+    ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}), ...(o.fights_on ? { fights_on: true } : {}), ...(o.unfit != null ? { unfit: o.unfit } : {}), ...(o.asFought ? { asFought: true } : {}) };
 }
 const unitOrders = o => ({ ...(o.hold ? { hold: true } : {}), ...(o.withdraw ? { withdraw: { ...o.withdraw } } : {}) });   // its orders from the accounts
 function ensureTags(B){                            // each unit's number on its side, kept for the battle (B3 stays B3) (as battle.ensure_tags)
@@ -3963,7 +3963,7 @@ function setUpBattle(fid){                         // a battlefield with its arm
   const B = { sides: F.sides.slice(), table: F.table, units: [], field: structuredClone(F.field), exchange: 0, phase: "setup", stages: null, stageNo: -1, waiting: [], start: null, entry: F.entry || null, seq: 1, ends: F.ends || null };
   B.size = B.field.size.slice();
   B.field.lifts = [];
-  F.units.forEach(u => standOrFly(B, makeUnit({ ...u, side: F.sides[u.side] }, B.seq++, B.table), u.lands));
+  F.units.forEach(u => standOrFly(B, makeUnit({ ...u, side: F.sides[u.side], asFought: true }, B.seq++, B.table), u.lands));
   holdForStages(B, F.phases);
   return B;
 }

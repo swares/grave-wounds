@@ -549,7 +549,7 @@ function drawUp(B, fid){                           // the battlefield's armies a
   S.units = [];
   S.field.lifts = [];
   const A = asAccounted(B, fid);
-  A.units.forEach(u => standOrFly(S, newUnit({ ...u, side: B.sides[u.side] }), u.lands));
+  A.units.forEach(u => standOrFly(S, newUnit({ ...u, side: B.sides[u.side], asFought: true }), u.lands));   // as fought: no breakdown roll unless the battlefield gives one (reliability)
   const crowded = A.chosen.length ? refit() : [];
   holdForStages(S, A.phases);
   S.drawnUp = fid;                                  // the armies as drawn up: Beat history scores this battle

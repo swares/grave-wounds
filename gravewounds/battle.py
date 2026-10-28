@@ -59,6 +59,8 @@ def _unit_marks(o: dict) -> dict:
         out["fights_on"] = True
     if o.get("unfit") is not None:
         out["unfit"] = o["unfit"]
+    if o.get("asFought"):
+        out["asFought"] = True
     if o.get("withdraw"):
         out["withdraw"] = {"at": o["withdraw"]["at"], "to": o["withdraw"]["to"]}
     return out
@@ -115,7 +117,7 @@ def set_up(d: Data, fid: str) -> dict:
     bt["size"] = list(field["size"])
     field["lifts"] = []
     for u in F.get("units", []):
-        unit = make_unit(d, {**u, "side": F["sides"][u["side"]]}, bt["seq"], bt["table"])
+        unit = make_unit(d, {**u, "side": F["sides"][u["side"]], "asFought": True}, bt["seq"], bt["table"])
         bt["seq"] += 1
         stand_or_fly(bt, unit, u.get("lands"))
     hold_for_stages(bt, F.get("phases"))
@@ -336,7 +338,7 @@ def unfit_vehicles(d: Data, bt: dict, rng) -> list:
         return out
     for i, u in enumerate(bt["units"]):
         K, n = U.vehicle_kind(d, u), U.vehicles_left(d, u)
-        pct = u["unfit"] if u.get("unfit") is not None else war   # a battlefield's own figure for its vehicles (unfit), else the war's
+        pct = u["unfit"] if u.get("unfit") is not None else (0 if u.get("asFought") else war)   # a battlefield's own figure (unfit); its armies as fought are what fought, so else none; else (GM-drawn) the war's
         if not K or n < 1 or not pct:
             continue
         k = min(sum(1 for _ in range(n) if rng.randint(1, 100) <= pct), n - 1)

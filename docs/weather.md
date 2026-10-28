@@ -150,14 +150,15 @@ The chance depends on how the weapon is fired:
 
 | Ignition | Dry | Rain, snow or heavy snow | Heavy rain, storm or blizzard |
 |---|---|---|---|
-| Matchlock | 15% | 45% | 75% |
-| Wheellock, flintlock | 15% | 30% | 45% |
+| Matchlock | – | 30% | 60% |
+| Wheellock | – | 15% | 30% |
+| Flintlock | 15% | 30% | 45% |
 | Percussion cap | 0.6% | 5% | 10% |
 | Cartridge | – | – | – |
 
 The dry figures are the Woolwich trials of 1834 (flint about 1 in 6.5, percussion about 1 in
 165; project doc "reliability-weapons-research"); no dry figure was found for the matchlock or
-the wheellock, which take the flintlock's. The wet steps are design estimates; the one figure
+the wheellock, which have none (a gap, not a finding). The wet steps are design estimates; the one figure
 found, about half of Austrian flintlocks failing in rain, is a single report. Automatic weapons
 also lose fire to stoppages on the field map (see units.md, *Reliability*).
 

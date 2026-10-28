@@ -115,8 +115,9 @@ Machine guns, submachine guns and assault rifles **stop** now and then: a jammed
 broken part, a barrel to change. Each exchange they lose a share of their fire to it, by war,
 on top of any misfire in the wet or jam in the cold. As a battle begins, some of a side's
 **vehicles** have broken down on the approach or will not start: each is left out at its war's
-chance, its crew with it, unhurt and not counted as lost, a unit keeping at least one. A
-battlefield whose account gives its own figure uses that. First World War tanks also break
+chance, its crew with it, unhurt and not counted as lost, a unit keeping at least one. This is
+for vehicles the GM or the travel map brings: a battlefield's armies as drawn up are what
+fought, so they roll only where the battlefield gives its own figure. First World War tanks also break
 down on the move: each hex moved, a small chance each vehicle is immobilised.
 
 {{table:reliability}}

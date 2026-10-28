@@ -1965,8 +1965,11 @@ field as the battle begins (`field.war`).
   (assault rifles 10%: the M16 in 1967, four in five of 1,585 men asked having had a stoppage,
   and 3.4 malfunctions a thousand rounds in the 1968 Panama jungle test), the later wars 2% (a
   quarter of M249 and M9 users reporting a stoppage in combat, CNA 2006). Design conversions.
-- **Unfit vehicles.** As the battle begins each vehicle is left out at its war's chance, with its
-  crew, unhurt and not counted as lost; a unit keeps at least one. WWI 15% (Cambrai's first day,
+- **Unfit vehicles.** As the battle begins each vehicle the GM or the travel map brings is left
+  out at its war's chance, with its crew, unhurt and not counted as lost; a unit keeps at least
+  one. A battlefield's armies as drawn up are what fought (Eagle Troop's tanks, the trucks at
+  Debecka), so they roll only where the battlefield gives its own `unfit` %: rolled on top, the
+  war's chance took away vehicles that were there (73 Easting 5 to 1 of 12, Debecka 11 to 7). WWI 15% (Cambrai's first day,
   71 of about 476 tanks broken down, the official history); 5% after (approx: Kursk's Panthers
   lost 16 of 200 before the attack, an outlier, early Panthers running under 150 km between
   major drivetrain failures (Jentz); the M1A1 over 90% ready in 1991; nothing found for Korea or Vietnam). A battlefield
@@ -1978,7 +1981,8 @@ field as the battle begins (`field.war`).
 - **Breakdowns on the move.** WWI vehicles break down (immobilised) at 0.03% a hex moved, each
   vehicle: Cambrai's day again. The later wars' 8-11% a hundred miles (21st Army Group, 1944)
   would not show in one battle.
-- **Muskets** misfire even dry: flint 15%, percussion 0.6% (Woolwich, 1834); see weather.md.
+- **Muskets** misfire even dry: flint 15%, percussion 0.6% (Woolwich, 1834); no dry figure was
+  found for matchlocks or wheellocks; see weather.md.
 
 ## Landing by air
 
