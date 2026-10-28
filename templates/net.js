@@ -173,9 +173,9 @@ const NET = (() => {
     const cut = { cut: [a, b, now.slice(a, now.length - b)] };
     if (cut.cut[2].length < 200) return cut;
     const steps = shortestEdit(tags(was), tags(now));
-    if (!steps) return cut;
-    const ops = { ops: compact(steps) };
-    return JSON.stringify(ops).length < JSON.stringify(cut).length ? ops : cut;
+    const ops = steps ? { ops: compact(steps) } : null;
+    const best = ops && JSON.stringify(ops).length < JSON.stringify(cut).length ? ops : cut;
+    return JSON.stringify(best).length < JSON.stringify(now).length ? best : now;   // an edit longer than the panel itself: the panel
   }
   function apply(was, change){
     if (!change || typeof change !== "object" || !(Array.isArray(change.cut) || Array.isArray(change.ops))) return change;   // anything else is itself
