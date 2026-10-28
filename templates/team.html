@@ -102,9 +102,12 @@ label.radio input{margin-top:4px}
 .work .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .q-green{color:var(--muted)}.q-veteran{color:var(--blood);font-weight:600}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
-.papers{position:fixed;inset:24px;z-index:20;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:16px;box-shadow:0 8px 32px rgba(0,0,0,.3);display:grid;gap:16px;align-content:start}
+.papers{position:fixed;inset:24px;width:auto;height:auto;max-width:none;max-height:none;margin:0;box-sizing:border-box;z-index:20;overflow-y:auto;overscroll-behavior:contain;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:16px;box-shadow:0 8px 32px rgba(0,0,0,.3);display:grid;gap:16px;align-content:start}
 .papers:not([open]){display:none}
-.papers .toolbar{position:sticky;top:-16px;background:var(--bg);padding:6px 0;z-index:1}
+.papers .toolbar{position:sticky;top:-16px;background:var(--bg);padding:6px 0;z-index:1;display:flex;gap:8px;align-items:center}
+.papers .paper-end{text-align:center}
+body.papers-open{overflow:hidden}
+.papers .toolbar .x{margin-left:auto;font-size:1.1rem;line-height:1;padding:2px 9px}
 .paper{background:#f4ecd8;color:#2b2216;border:1px solid #b9a77f;padding:18px 22px;max-width:720px;width:100%;margin:0 auto;box-sizing:border-box;font-family:Georgia,"Times New Roman",serif;break-inside:avoid;page-break-after:always}
 .paper h3{margin:.2em 0 .4em;text-align:center;letter-spacing:.06em;font-variant:small-caps;font-size:1.25rem}
 .paper h4{margin:.8em 0 .3em;font-variant:small-caps;letter-spacing:.04em}
@@ -121,7 +124,8 @@ label.radio input{margin-top:4px}
 @media print{
   body.papers-open > .wrap{display:none}
   body.papers-open .papers{position:static;inset:auto;margin:0;width:auto;max-width:none;height:auto;max-height:none;overflow:visible;box-shadow:none;border:0;padding:0;display:block;background:#fff}
-  body.papers-open .papers .toolbar{display:none}
+  body.papers-open .papers .toolbar, body.papers-open .papers .paper-end{display:none}
+  body.papers-open{overflow:visible}
   body{background:#fff;color:#000;padding:0}
   header nav,.controls,.sheet .tools,.work,.spend,.ledger button{display:none}
   .grid{grid-template-columns:1fr}
@@ -1549,7 +1553,7 @@ function renderPapers(){
   for (const k of ["muster", "surgeon", "discharge"]) D[k] = { ...PAPERS_DEFAULT.docs[k], ...(E.docs || {})[k], ...R[k] };   // the region's own papers over the era's
   const docs = [musterDoc(c, D.muster), surgeonDoc(c, D.surgeon), c.lost ? dischargeDoc(c, D.discharge) : ""].join("");
   el.className = "papers look-" + (E.look || "printed");
-  el.innerHTML = `<div class="toolbar"><b>${esc(c.name)}: ${esc(pron("his papers", c.sex || "m"))}</b><button class="small" id="btn-papers-print">Print</button><button class="small" id="btn-papers-close">Close</button></div>${docs}`;
+  el.innerHTML = `<div class="toolbar"><b>${esc(c.name)}: ${esc(pron("his papers", c.sex || "m"))}</b><button class="small" id="btn-papers-print">Print</button><button class="small" id="btn-papers-close">Close</button><button class="small x" id="btn-papers-x" aria-label="Close the papers" title="Close (Esc)">×</button></div>${docs}<div class="paper-end"><button class="small" id="btn-papers-close2">Close</button></div>`;
 }
 function renderLosses(){
   const L = S.losses || [], box = $("#losses");
@@ -1903,7 +1907,7 @@ function init(){
   $("#btn-print").onclick = () => window.print();
   $("#papers").addEventListener("click", e => {
     if (e.target.id === "btn-papers-print") window.print();
-    else if (e.target.id === "btn-papers-close"){ S.papers = null; render() }
+    else if (["btn-papers-close", "btn-papers-close2", "btn-papers-x"].includes(e.target.id)){ S.papers = null; render() }
   });
   document.addEventListener("keydown", e => { if (e.key === "Escape" && S.papers){ S.papers = null; render() } });
   $("#papers").addEventListener("close", () => { if (S.papers){ S.papers = null; render() } });
