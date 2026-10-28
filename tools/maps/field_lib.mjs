@@ -79,7 +79,8 @@ function objLine(o){                              // the objective's line (and i
 }
 function phasesText(ps){                          // the phases (and their comment), or ""
   if (!ps?.length) return "";
-  const line = p => `  - {name: ${yq(p.name)}, at: ${p.at}${p.note ? ", note: " + yq(p.note) : ""}${p.light ? ", light: " + p.light : ""}${p.arrive?.length ? ", arrive: [" + p.arrive.map(yq).join(", ") + "]" : ""}}`;
+  const flow = o => "{" + Object.entries(o).map(([k, v]) => `${k}: ${typeof v === "string" ? yq(v) : v}`).join(", ") + "}";   // a phase's when or weather, inline
+  const line = p => `  - {name: ${yq(p.name)}, at: ${p.at}${p.when ? ", when: " + flow(p.when) : ""}${p.note ? ", note: " + yq(p.note) : ""}${p.light ? ", light: " + p.light : ""}${p.weather ? ", weather: " + flow(p.weather) : ""}${p.arrive?.length ? ", arrive: [" + p.arrive.map(yq).join(", ") + "]" : ""}}`;
   return `\n# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,\n# then come on where they are drawn, or at their side's entry edge if that is taken.\nphases:\n${ps.map(line).join("\n")}`;
 }
 function endsLine(e){                              // the account's length of the fight (and its comment), or ""

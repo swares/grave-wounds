@@ -18,8 +18,9 @@ given. The [team builder](team.html) made the company.
 
 !!! example "The company: out of the hail"
     The company stands in Colborne's brigade, in line, firing into the flank of Girard's
-    column. The field opens overcast. When the lancers come, the GM makes the weather a storm,
-    as the accounts tell it: a squall of rain and hail from the north. No one can see to aim
+    column. The field opens overcast. When the lancers come, the field's own phase makes the
+    weather a storm (six exchanges after the brigade first fires: no source gives the time), as
+    the accounts tell it: a squall of rain and hail from the north. No one can see to aim
     past {{bx.storm_sight}}, and each flintlock that fires misfires {{bx.mf_storm}}% of the
     time ({{bx.mf_rain}}% in plain rain), as in [Misfires](rules.html#misfire).
 

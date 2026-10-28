@@ -3716,7 +3716,7 @@ def _bombard(d: Data, ctx: tuple, k: int, b: dict, shells: int, scatter: int | N
     or the men struck and bunkers knocked."""
     us, table, weapon, rng, acc, field, under = ctx
     K, m, bursts = d.units["indirect"]["kinds"][b["kind"]], b["mission"], []
-    scatter = K["scatter"] if scatter is None else scatter
+    scatter = (K["scatter"] if scatter is None else scatter) + (d.units["indirect"]["planned"]["scatter"] if m.get("planned") else 0)   # planned fire: on the place, not an observer's correction
     for _ in range(shells):
         dirn, far = rng.randint(0, 5), rng.randint(0, scatter)
         bursts.append(step(m["hex"], dirn, far))

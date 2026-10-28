@@ -198,14 +198,39 @@ def place_arrival(d: Data, bt: dict, u: dict, k: int) -> dict | None:
     return None
 
 
+def _phase_due(bt: dict, st: dict) -> bool:
+    """A phase's time has come: its exchange (at the latest), or sooner on an event: when {fires: a
+    unit's name, wait} that many exchanges after the unit first fired; when {after} that many after
+    the phase before began."""
+    if st["at"] <= bt["exchange"]:
+        return True
+    on = st.get("when") or {}
+    if on.get("fires"):
+        f = (bt.get("fired") or {}).get(on["fires"])
+        return f is not None and f + on.get("wait", 0) <= bt["exchange"]
+    if "after" in on:
+        s = (bt.get("stageBegan") or {}).get(bt["stageNo"])
+        return s is not None and s + on["after"] <= bt["exchange"]
+    return False
+
+
+def _note_fired(bt: dict, log: list) -> None:
+    """The exchange each unit first fired a volley (bt.fired: {name: exchange}), for phases that begin on it."""
+    fired = bt.setdefault("fired", {})
+    for line in log or []:
+        if line.get("kind") == "volley" and line.get("att") is not None and line["att"] < len(bt["units"]):
+            fired.setdefault(bt["units"][line["att"]]["name"], bt["exchange"])
+
+
 def advance_stages(d: Data, bt: dict) -> dict:
     """At the start of an exchange: begin each phase whose exchange has come, and bring on its
     units (any with no room wait for the next exchange)."""
     out = {"begun": [], "came": [], "flying": [], "onCall": []}
     if not bt.get("stages"):
         return out
-    while bt["stageNo"] + 1 < len(bt["stages"]) and bt["stages"][bt["stageNo"] + 1]["at"] <= bt["exchange"]:
+    while bt["stageNo"] + 1 < len(bt["stages"]) and _phase_due(bt, bt["stages"][bt["stageNo"] + 1]):
         bt["stageNo"] += 1
+        bt.setdefault("stageBegan", {})[bt["stageNo"]] = bt["exchange"]
         out["begun"].append(bt["stageNo"])
         _light_of_phase(d, bt, bt["stages"][bt["stageNo"]], out)
     keep = []
@@ -231,7 +256,13 @@ def advance_stages(d: Data, bt: dict) -> dict:
 
 def _light_of_phase(d: Data, bt: dict, st: dict, out: dict) -> None:
     """A phase that sets the light (light: a weather.yaml light level) changes the field's from
-    then on (sunset, dawn); out["light"]: {phase index: the level's name}."""
+    then on (sunset, dawn); one that sets the weather (weather: {cond, wind}) changes it (a squall);
+    out["light"], out["weather"]: {phase index: its name}."""
+    if st.get("weather"):
+        W = st["weather"]
+        bt["field"]["weather"] = {**(bt["field"].get("weather") or {}), **W}
+        wind = (", " + next(w["name"] for w in d.weather["winds"] if w["id"] == W["wind"]).lower()) if W.get("wind") else ""
+        out.setdefault("weather", {})[bt["stageNo"]] = (d.weather["conditions"][W["cond"]]["name"] if W.get("cond") else "") + wind
     if not st.get("light"):
         return
     bt["field"]["weather"] = {**(bt["field"].get("weather") or {}), "light": st["light"]}
@@ -299,6 +330,7 @@ def begin(d: Data, bt: dict) -> dict:
     bt["exchange"] = 1
     stages = advance_stages(d, bt)
     mark_starts(bt)
+    bt["field"]["located"] = [[u["side"], list(u["pos"])] for u in bt["units"] if u.get("pos")]   # where each unit stood when the battle began: located before it, for planned fire (indirect.planned)
     return {"stages": stages, "ran": start_phase(d, bt, 0)}
 
 
@@ -310,6 +342,7 @@ def end_move(d: Data, bt: dict, rng) -> dict:
         return {"lost": lost, "log": None, "stages": None, "ran": start_phase(d, bt, 1)}
     lost = drifts(d, bt, 1, rng)
     bt["units"], log = U.exchange(d, bt["units"], bt["table"], rng, bt["field"])
+    _note_fired(bt, log)
     bt["exchange"] += 1
     stages = advance_stages(d, bt)
     return {"lost": lost, "log": log, "stages": stages, "ran": start_phase(d, bt, 0)}
@@ -478,8 +511,8 @@ def _side_points(bt: dict, base: dict, commits: list) -> list:
 def turning_points(d: Data, bt: dict, base: dict, stages: dict | None, commits: list) -> list:
     """Since base: phases begun (and who came on), units broken or fled by side, objectives taken
     or lost, reserves committed (ids by side)."""
-    lights = (stages or {}).get("light") or {}
-    out = [{"kind": "phase", "stage": i, "came": [bt["units"][k]["id"] for k in stages.get("came", [])], **({"light": lights[i]} if i in lights else {})}
+    lights, skies = (stages or {}).get("light") or {}, (stages or {}).get("weather") or {}
+    out = [{"kind": "phase", "stage": i, "came": [bt["units"][k]["id"] for k in stages.get("came", [])], **({"light": lights[i]} if i in lights else {}), **({"weather": skies[i]} if i in skies else {})}
            for i in (stages or {}).get("begun", [])]
     out += _side_points(bt, base, commits)
     for i, o in enumerate(U.objective_held(d, bt["units"], bt["field"])):

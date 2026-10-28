@@ -12,8 +12,8 @@
 # came up on their right and was caught in line by the Polish lancers and hussars in a sudden
 # hailstorm and nearly destroyed. Hoghton's and Abercrombie's brigades took the Spaniards'
 # place and stood exchanging volleys at short range until most of their men were down; Cole's
-# division, coming up on the right, drove the French off the heights. The hailstorm is not
-# set: the GM can bring it in (storm) for the lancers' charge. The guns: 20 French with the
+# division, coming up on the right, drove the French off the heights. The hailstorm comes
+# in a phase, six exchanges after Colborne's brigade first fires, and clears 12 later. The guns: 20 French with the
 # columns and 12 allied on the heights (round figures).
 id: albuera-1811
 name: "Albuera, 16 May 1811"
@@ -26,6 +26,12 @@ size: [150, 230]
 weather: {cond: overcast, wind: breeze, ground: {mud: 0, snow: 0}}
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [40, 136], side: 1, name: "the heights south of the allied line", radius: 6}
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "Soult's flank attack", at: 1, note: "Girard's and Gazan's divisions come up onto the heights in heavy columns; Zayas's Spaniards turn to face them."}
+  - {name: "The squall", at: 30, when: {fires: "Colborne's brigade", wait: 6}, note: "A squall of rain and hail blows in from the north at the end of Colborne's fire-fight, and in it the Vistula Lancers and the 2nd Hussars come round the open flank (six exchanges after Colborne's brigade first fires, or at 30 at the latest: our reading, no source gives the time).", weather: {cond: "storm", wind: "strong"}}
+  - {name: "The storm clears", at: 42, when: {after: 12}, note: "After a time the storm clears off (Fortescue): about 12 exchanges, our estimate.", weather: {cond: "overcast", wind: "breeze"}}
 ground: |
   ..............................hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh.....mm...........................................
   ..............................hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh.....mm...........................................

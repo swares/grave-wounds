@@ -1339,7 +1339,13 @@ with shell wounds (the First World War and later):
   its kind's rounds and has its crew: 4 men a mortar, 6 a field gun, 8 a heavy howitzer.
 - **Call fire**: on the battery's side's move (or in set-up), press **Call fire**, then click
   the hex to fire on. One of the side's units must see it: within the weather's sight and the light's, with
-  no woods or smoke between. Tick **Keep firing each exchange** before calling to repeat the
+  no woods or smoke between. Or, **planned fire** (`indirect.planned`): high explosive from guns or
+  mortars may fall unseen within `near` (3) hexes of any place an enemy unit stood when the battle
+  began, located before it by patrols and air photographs, with `scatter` more hexes of scatter
+  (0 for now). The enemy commander does the same when attacking: each of its free batteries may be
+  called on an enemy near such a place, seen or not. From the second Tumbledown study: the Scots
+  Guards saw no Argentine unit all night and their guns never fired; with planned fire they took the
+  mountain in 4 runs of 6. Tick **Keep firing each exchange** before calling to repeat the
   mission until **Stop** or the rounds run out. The map marks the hex ⌖ and the last
   exchange's bursts ✷. Before calling, **Fire** picks high explosive, smoke or illumination, and **Creep**
   makes a creeping barrage (below).
@@ -2037,6 +2043,9 @@ what happened, and the units it brings on.
   exchange.
 - **The light.** A phase may set the light (`light`: dusk, moonlit, night or day) from then
   on: the sun setting or rising during the battle. The log and the turning points say so.
+- **The weather.** A phase may set the weather (`weather: {cond, wind}`, either or both) from
+  then on: a squall coming through, and another phase can clear it. The log and the turning
+  points say so.
 - **By air.** A unit that comes in by air (`lands`) takes off when its phase begins and lands
   at its landing zone by the usual rules, as many men an exchange as the lift allows. That is
   how X-Ray's D Company and the 2nd Battalion's B Company come in.

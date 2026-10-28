@@ -392,6 +392,15 @@ machine_guns:
 #   each line (1 to `every_max`), and over `lines` lines before it stops (0: until it leaves
 #   the map).
 indirect:
+  # planned: the attacker's guns have the defenders' positions from before the battle (patrols, air
+  #   photographs, the fire plan): attacking, a battery may be called on an enemy unit standing
+  #   within `near` hexes of a place its side held when the battle began, seen or not, its shells
+  #   landing `scatter` more hexes wide; elsewhere a target must be seen, as before. Self-play (the
+  #   second Tumbledown study, claude/tumbledown-study-2): the Scots Guards saw no Argentine unit all
+  #   night, so their 18 light guns never fired, and every run was lost; with planned fire, 4 wins,
+  #   a draw and a loss in 6, near history's losses. Only on the very place (near 0) the defenders,
+  #   shifting in their works, slipped out of it (1 win in 6); with more scatter, fewer wins. Design choice.
+  planned: {scatter: 0, near: 3}
   displace_shift: 30
   weapon: mortar_artillery
   fallback: explosive_fragment

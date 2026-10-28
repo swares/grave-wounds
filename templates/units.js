@@ -1191,7 +1191,7 @@ function groundFire(us, flight, attacking, rng){   // ground fire at the aircraf
   return [{ kind: "airloss", sup: k, name: b.name, side: b.side, lost: downed, damaged: hit - downed, left: b.tubes }];
 }
 function bombard(ctx, k, b, shells, scatter = null){   // shells on a hex: where each lands (0 to scatter hexes off), then smoke laid, or men struck and bunkers knocked
-  const { rng, log, field } = ctx, K = UD.indirect.kinds[b.kind], m = b.mission, bursts = [], sc = scatter ?? K.scatter;
+  const { rng, log, field } = ctx, K = UD.indirect.kinds[b.kind], m = b.mission, bursts = [], sc = (scatter ?? K.scatter) + (m.planned ? UD.indirect.planned.scatter : 0);   // planned fire: on the place, not an observer's correction
   for (let s = 0; s < shells; s++){ const dirn = rng.randint(0, 5), far = rng.randint(0, sc); bursts.push(step(m.hex, dirn, far)) }
   log.push({ kind: "barrage", sup: k, name: b.name, side: b.side, shells, at: m.hex, bursts, smoke: !!m.smoke });
   if (m.smoke) laySmoke(field, bursts);
@@ -2964,10 +2964,10 @@ function callFireAi(us, side, field, known, [stance, exchange, orders, table] = 
   [...free, ...air].sort((a, b) => a - b).forEach(k => {
     const b = field.support[k], K = UD.indirect.kinds[b.kind];
     if (b.mission) return;
-    const aim = fireAim(us, side, field, known, b, K);
+    const aim = fireAim(us, side, field, known, b, K, stance === "attack");
     if (!aim) return;
     const run = K.air ? airRun(us, side, b, K, aim, [table, field]) : null;
-    b.mission = { hex: aim[1], wait: K.delay, repeat: false, ...run };
+    b.mission = { hex: aim[1], wait: K.delay, repeat: false, ...(aim[2] ? { planned: true } : {}), ...run };
     out.push({ unit: null, act: "fire", battery: k, target: aim[0], hex: aim[1], ...(run ? { attack: run.attack } : {}), ...(K.air && facSees(us, field, b, aim[1]) ? { fac: true } : {}) });
   });
   return out;
@@ -3098,19 +3098,23 @@ function shootingAt(us, side, known){              // [[distance, enemy index]],
   }
   return [...seen.values()].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
 }
-function fireAim(us, side, field, known, b, K){    // [enemy index, hex] to fire on, or null: none of its men within burst and scatter (airScatter); aircraft prefer an aim a controller sees (as commander._fire_aim)
-  const ours = us.filter(u => u.side === side && u.men > 0 && u.state !== "fled");
+function fireAim(us, side, field, known, b, K, attacking = false){   // [enemy index, hex, planned] to fire on, or null: none of its men within burst and scatter (airScatter, more for planned fire); aircraft prefer an aim a controller sees (as commander._fire_aim)
+  const ours = us.filter(u => u.side === side && u.men > 0 && u.state !== "fled"), P = UD.indirect.planned;
+  const plan = attacking && !!P && !K.air && !K.direct;   // the attacker's guns have the defenders' positions from before the battle
   let best = null;
   us.forEach((e, j) => {
-    if (e.side === side || !(String(j) in known) || !ours.length) return;
-    const h = marksOf(e).find(x => spotted(us, field, side, x));
-    if (!h || !inReach(b, h) || tooNear(ours, h, K.radius + airScatter(us, field, b, K, h))) return;
+    if (e.side === side || !ours.length) return;
+    const seen = String(j) in known ? marksOf(e).find(x => spotted(us, field, side, x)) : undefined;
+    const planned = !seen && plan && nearLocated(field, e);
+    const h = seen || (planned ? e.pos : undefined);
+    if (!h || !inReach(b, h) || tooNear(ours, h, K.radius + airScatter(us, field, b, K, h) + (planned ? P.scatter : 0))) return;
     const u = ours.reduce((a, o) => (hdist(o.pos, e.pos) < hdist(a.pos, e.pos) ? o : a), ours[0]);
     const talked = !!K.air && facSees(us, field, b, h), sc = threatScore(u, e, e);
-    if (!best || (talked && !best[0]) || (talked === best[0] && sc > best[1])) best = [talked, sc, [j, [...h]]];
+    if (!best || (talked && !best[0]) || (talked === best[0] && sc > best[1])) best = [talked, sc, [j, [...h], planned]];
   });
   return best ? best[2] : null;
 }
+const nearLocated = (field, e) => e.men > 0 && !ROUTED.has(e.state) && (field?.located || []).some(([s, h]) => s === e.side && hdist(h, e.pos) <= UD.indirect.planned.near);   // standing within planned.near hexes of a place its side held when the battle began (as commander._near_located)
 const airScatter = (us, field, b, K, h) => (K.air && field && facSees(us, field, b, h) ? Math.floor(K.scatter / UD.indirect.air.fac.scatter) : K.scatter);   // aircraft scatter at h: cut where a controller of their side sees it (as commander._air_scatter)
 const marksOf = e => { const rows = footprint(e); return [e.pos, ...(rows.length ? [rows[0][0], rows[0].at(-1)] : [])] };   // its middle hex, then either end of its front row
 const tooNear = (ours, h, r) => ours.some(u => footprint(u).flat().some(x => hdist(x, h) <= r));   // any of the side's hexes within r of h
@@ -3961,16 +3965,35 @@ function placeArrival(B, u, k){                    // where an arriving unit com
   }
   return null;
 }
-function lightOfPhase(B, st, out){                 // a phase that sets the light (light: a weather.yaml light level) changes the field's from then on (sunset, dawn); out.light: {phase index: the level's name} (as battle._light_of_phase)
+function lightOfPhase(B, st, out){                 // a phase that sets the light (light: a weather.yaml light level) or the weather (weather: {cond, wind}) changes the field's from then on (sunset, dawn, a squall); out.light, out.weather: {phase index: its name} (as battle._light_of_phase)
+  if (st.weather){
+    B.field.weather = { ...B.field.weather, ...st.weather };
+    const wind = st.weather.wind ? ", " + FD.weather.winds.find(w => w.id === st.weather.wind).name.toLowerCase() : "";
+    (out.weather || (out.weather = {}))[B.stageNo] = (st.weather.cond ? FD.weather.conditions[st.weather.cond].name : "") + wind;
+  }
   if (!st.light) return;
   B.field.weather = { ...B.field.weather, light: st.light };
   (out.light || (out.light = {}))[B.stageNo] = FD.weather.light.levels[st.light].name;
 }
+function phaseDue(B, st){                          // a phase's time has come: its exchange (at the latest), or sooner on an event: when {fires: a unit's name, wait} that many exchanges after the unit first fired; when {after} that many after the phase before began (as battle._phase_due)
+  if (st.at <= B.exchange) return true;
+  const on = st.when;
+  if (on?.fires){ const f = B.fired?.[on.fires]; return f !== undefined && f + (on.wait || 0) <= B.exchange }
+  if (on?.after !== undefined){ const s = B.stageBegan?.[B.stageNo]; return s !== undefined && s + on.after <= B.exchange }
+  return false;
+}
+function noteFired(B, log){                         // the exchange each unit first fired a volley (B.fired: {name: exchange}), for phases that begin on it (as battle._note_fired)
+  for (const l of log || []){
+    const n = l.kind === "volley" ? B.units[l.att]?.name : null;
+    if (n && !(n in (B.fired || (B.fired = {})))) B.fired[n] = B.exchange;
+  }
+}
 function advanceStages(B){                         // at the start of an exchange: begin each phase whose exchange has come, and bring on its units (any with no room wait for the next exchange): {begun: [phase index], came: [unit index], flying: [{name, left}], onCall: [name]} (as battle.advance_stages)
   const out = { begun: [], came: [], flying: [], onCall: [] };
   if (!B.stages) return out;
-  while (B.stageNo + 1 < B.stages.length && B.stages[B.stageNo + 1].at <= B.exchange){
+  while (B.stageNo + 1 < B.stages.length && phaseDue(B, B.stages[B.stageNo + 1])){
     B.stageNo += 1;
+    (B.stageBegan || (B.stageBegan = {}))[B.stageNo] = B.exchange;
     out.begun.push(B.stageNo);
     lightOfPhase(B, B.stages[B.stageNo], out);
   }
@@ -4024,6 +4047,7 @@ function beginBattle(B){                           // set-up done: the first exc
   B.exchange = 1;
   const stages = advanceStages(B);
   markStarts(B);
+  B.field.located = B.units.filter(u => u.pos).map(u => [u.side, [...u.pos]]);   // where each unit stood when the battle began: located before it, for planned fire (indirect.planned)
   return { stages, ran: startPhase(B, 0) };
 }
 function endMove(B, rng){                          // the moving side's move is done: after side 0, side 1 moves; after side 1, the exchange is fought and the next begins: {lost, log, stages, ran} (as battle.end_move)
@@ -4033,6 +4057,7 @@ function endMove(B, rng){                          // the moving side's move is 
   }
   const lost = drifts(B, 1, rng), r = exchange(B.units, B.table, rng, B.field);
   B.units = r.units;
+  noteFired(B, r.log);
   B.exchange += 1;
   const stages = advanceStages(B);
   return { lost, log: r.log, stages, ran: startPhase(B, 0) };
@@ -4111,7 +4136,7 @@ function commitsOf(B, orders){                     // the reserve units a comman
 }
 function turningPoints(B, base, stages, commits){  // since base: phases begun (and who came on), units broken or fled by side, objectives taken or lost, reserves committed (ids by side): [point] (as battle.turning_points)
   const out = [];
-  for (const i of stages?.begun || []) out.push({ kind: "phase", stage: i, came: (stages.came || []).map(k => B.units[k]?.id), ...(stages.light?.[i] ? { light: stages.light[i] } : {}) });
+  for (const i of stages?.begun || []) out.push({ kind: "phase", stage: i, came: (stages.came || []).map(k => B.units[k]?.id), ...(stages.light?.[i] ? { light: stages.light[i] } : {}), ...(stages.weather?.[i] ? { weather: stages.weather[i] } : {}) });
   for (const [k, side] of B.sides.entries()){
     const mine = B.units.filter(u => u.side === side && u.id in base.states);
     const broke = mine.filter(u => STANDING.has(base.states[u.id]) && !STANDING.has(u.state)).map(u => u.id);

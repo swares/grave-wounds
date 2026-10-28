@@ -51,7 +51,7 @@ const units = [
   at("Peshmerga with the teams", US, 80, PESH, 14, [ROAD + 30, ALAMO(ROAD + 30)], 4),
   at("Peshmerga and the command vehicles at Press Hill", US, 60, { ...PESH, prone: false }, 10, [PRESS[0], PRESS[1] + 2], 4),
   at("Iraqi MT-LBs (ahead, under smoke)", IQ, 12, MTLB, 4, [ROAD, 282], 1),
-  at("Iraqi T-55s", IQ, 20, T55, 5, [ROAD + 4, 288], 1),
+  at("Iraqi T-55s", IQ, 20, { ...T55, fc: "stadia" }, 5, [ROAD + 4, 288], 1),
   at("Iraqi motorised infantry", IQ, 100, IRAQI, 14, [ROAD - 20, 280], 1),
   at("Iraqi troop trucks and command vehicles", IQ, 8, TRUCK, 4, [ROAD - 4, 288], 1),
 ];
@@ -87,6 +87,8 @@ writeField({
     "Javelins were all fired at 2,200 m or more, the Iraqis first seen 2 km off: they come on at the",
     "board's south edge, about 2 km from the Alamo. How far Press Hill lay behind the Alamo no source",
     "gives: here about 300 m.",
+    "The T-55s aim by a stadia reticle (fc: stadia): the war's thermal fire control is the",
+    "coalition's, and no account has the tanks hitting the teams at 2 km.",
     "",
     "What happened, briefly: on 6 April 2003 two Special Forces teams and about 80 Peshmerga broke",
     "through the Iraqi line on the ridge north of Debecka and held the crossroads for about 45 minutes.",
