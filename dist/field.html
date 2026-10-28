@@ -6059,11 +6059,13 @@ function ranNote(ran){                            // the broken units that ran a
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
 function unfitNote(unfit){                         // the vehicles left out as the battle began (reliability.unfit), logged: " ... " or ""
   for (const x of unfit || []) S.log.unshift({ cls: "morale", text: `${unitName(S.units[x.unit])}: ${plural(x.unfit, "vehicle", "vehicles")} broke down on the approach or would not start, and are left out with their crews.` });
-  return unfit?.length ? ` Not fit to fight: ${unfit.map(x => `${plural(x.unfit, "vehicle", "vehicles")} of ${S.units[x.unit].name}`).join(", ")}.` : "";
+  const whose = x => plural(x.unfit, "vehicle", "vehicles") + " of " + S.units[x.unit].name;
+  return unfit?.length ? ` Not fit to fight: ${unfit.map(whose).join(", ")}.` : "";
 }
 function brokeNote(broke){                         // the vehicles that broke down on the move this phase (reliability.per_hex), logged: " ... " or ""
   for (const x of broke || []) S.log.unshift({ cls: "morale", text: `${unitName(S.units[x.unit])}: ${plural(x.broke, "vehicle breaks", "vehicles break")} down on the move and cannot go on.` });
-  return broke?.length ? ` Broken down: ${broke.map(x => `${plural(x.broke, "vehicle", "vehicles")} of ${S.units[x.unit].name}`).join(", ")}.` : "";
+  const whose = x => plural(x.broke, "vehicle", "vehicles") + " of " + S.units[x.unit].name;
+  return broke?.length ? ` Broken down: ${broke.map(whose).join(", ")}.` : "";
 }
 function lostNote(lost){                          // the units that lost their way in the dark, logged: " X lose their way." or ""
   for (const l of lost){

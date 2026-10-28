@@ -329,16 +329,24 @@ def realign_starts(bt: dict) -> None:
     bt["start"] = out
 
 
+def _unfit_pct(u: dict, war) -> float:
+    """A unit's unfit %: a battlefield's own figure (unfit); its armies as fought are what fought,
+    so else none; else (drawn by the GM or from the travel map) the war's."""
+    if u.get("unfit") is not None:
+        return u["unfit"]
+    return 0 if u.get("asFought") else war
+
+
 def unfit_vehicles(d: Data, bt: dict, rng) -> list:
     """As a battle begins, each vehicle is unfit at its unit's `unfit` %, else units.yaml
-    reliability.unfit % (by war): left
-    out with its crew, unhurt, a unit keeping at least one. [{unit, unfit}]."""
+    reliability.unfit % (by war): left out with its crew, unhurt, a unit keeping at least one.
+    [{unit, unfit}]."""
     war, out = ((d.units.get("reliability") or {}).get("unfit") or {}).get(bt["field"].get("war")) or 0, []
     if rng is None:
         return out
     for i, u in enumerate(bt["units"]):
         K, n = U.vehicle_kind(d, u), U.vehicles_left(d, u)
-        pct = u["unfit"] if u.get("unfit") is not None else (0 if u.get("asFought") else war)   # a battlefield's own figure (unfit); its armies as fought are what fought, so else none; else (GM-drawn) the war's
+        pct = _unfit_pct(u, war)
         if not K or n < 1 or not pct:
             continue
         k = min(sum(1 for _ in range(n) if rng.randint(1, 100) <= pct), n - 1)
@@ -346,6 +354,14 @@ def unfit_vehicles(d: Data, bt: dict, rng) -> list:
             u["men"] = max(K["crew"], u["men"] - k * K["crew"])
             out.append({"unit": i, "unfit": k})
     return out
+
+
+def _moved(bt: dict, k: int, starts: list, i: int, u: dict) -> int:
+    """How many hexes vehicle unit i of side k has moved this phase (0 if not one, or not on the map)."""
+    was = starts[i] if i < len(starts) else None
+    if u["side"] != bt["sides"][k] or not u.get("vehicle") or not was or not u.get("pos") or not was.get("pos"):
+        return 0
+    return U.hdist(was["pos"], u["pos"])
 
 
 def breakdowns(d: Data, bt: dict, k: int, rng) -> list:
@@ -356,10 +372,8 @@ def breakdowns(d: Data, bt: dict, k: int, rng) -> list:
         return out
     starts = bt.get("start") or []
     for i, u in enumerate(bt["units"]):
-        was = starts[i] if i < len(starts) else None
-        if u["side"] != bt["sides"][k] or not u.get("vehicle") or not was or not u.get("pos") or not was.get("pos"):
-            continue
-        hexes, n = U.hdist(was["pos"], u["pos"]), U.vehicles_left(d, u) - (u.get("immobile") or 0)
+        hexes = _moved(bt, k, starts, i, u)
+        n = U.vehicles_left(d, u) - (u.get("immobile") or 0)
         if not hexes or n < 1:
             continue
         q = math.floor((1 - (1 - p / 100) ** hexes) * 10000 + 0.5)

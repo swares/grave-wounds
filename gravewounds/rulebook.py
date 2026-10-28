@@ -515,9 +515,9 @@ def _reliability_tables(d: Data) -> dict:
     """Stoppages and unfit vehicles by war (units.yaml reliability)."""
     R = d.units.get("reliability") or {}
     S, unfit = R.get("stoppage") or {}, R.get("unfit") or {}
-    def fire(W):
-        own = [f"{d.weapons[w]['name'].lower()} {W[w]}%" for w in S.get("weapons", []) if w in W]
-        return f"{W.get('all', 0)}%" + (f" ({'; '.join(own)})" if own else "")
+    def fire(rates):
+        own = [f"{d.weapons[w]['name'].lower()} {rates[w]}%" for w in S.get("weapons", []) if w in rates]
+        return f"{rates.get('all', 0)}%" + (f" ({'; '.join(own)})" if own else "")
     wars = list(dict.fromkeys([*(S.get("by_war") or {}), *unfit]))
     rows = [[w, fire((S.get("by_war") or {}).get(w) or {}), f"{unfit[w]}%" if w in unfit else "—"] for w in wars]
     return {"reliability": _md(["War", "Automatic fire lost to stoppages", "Vehicles unfit as the battle begins"], rows)}
