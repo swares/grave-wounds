@@ -50,7 +50,7 @@ jobs:
         run: python3 tools/campaign/papers.py
       - name: Presence and followers
         run: python3 tools/campaign/followers.py
-      - name: Horses on the travel map: hungry horses and remounts at the depot
+      - name: Horses on the travel map (hungry horses, remounts at the depot)
         run: python3 tools/campaign/remount.py
       - name: Keep the pictures the tests take
         if: always()
