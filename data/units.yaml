@@ -509,8 +509,8 @@ indirect:
 reliability:
   stoppage:
     weapons: [machine_gun, pistol_smg, rifle_assault]
-    by_war: {WWI: {all: 5}, WWII: {all: 3}, Korea: {all: 3}, Vietnam: {all: 3, rifle_assault: 10}, "Late 20th century": {all: 2}, "Iraq & Afghanistan": {all: 2}}
-  unfit: {WWI: 15, WWII: 5, Korea: 5, Vietnam: 5, "Late 20th century": 5, "Iraq & Afghanistan": 5}
+    by_war: {}
+  unfit: {}
   per_hex: {WWI: 0.03}
   approx: true
 
