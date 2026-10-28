@@ -1018,9 +1018,7 @@ def _fire_aim(d: Data, us: list, side, field: dict | None, known: dict, bk: tupl
     for j, e in enumerate(us):
         if e["side"] == side or not ours:
             continue
-        seen = next((x for x in _marks(d, e) if U.spotted(d, us, field, side, x)), None) if str(j) in known else None
-        planned = seen is None and plan and _near_located(d, field, e)
-        h = seen if seen is not None else (e["pos"] if planned else None)
+        h, planned = _aim_at(d, us, (side, field, known), (j, e), plan)
         extra = P["scatter"] if planned else 0
         if h is None or not U.in_reach(d, b, h) or _too_near(d, ours, h, K["radius"] + _air_scatter(d, us, field, bk, h) + extra):
             continue
@@ -1029,6 +1027,19 @@ def _fire_aim(d: Data, us: list, side, field: dict | None, known: dict, bk: tupl
         if best is None or key < best[0]:
             best = (key, (j, list(h), planned))
     return None if best is None else best[1]
+
+
+def _aim_at(d: Data, us: list, sfk: tuple, je: tuple, plan: bool) -> tuple:
+    """(hex, planned) to aim at enemy j: the first of its hexes the side sees now, else, for planned
+    fire, where it stands near a located place; (None, False) if neither."""
+    side, field, known = sfk
+    j, e = je
+    seen = next((x for x in _marks(d, e) if U.spotted(d, us, field, side, x)), None) if str(j) in known else None
+    if seen is not None:
+        return seen, False
+    if plan and _near_located(d, field, e):
+        return e["pos"], True
+    return None, False
 
 
 def _near_located(d: Data, field: dict | None, e: dict) -> bool:
