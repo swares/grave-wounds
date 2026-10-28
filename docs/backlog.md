@@ -294,15 +294,11 @@ When an item is done, delete it here and note it in the pull request that closes
   Strength, Presence), and Leechcraft, Fieldcraft, Watch and Stealth work outside a fight.
   Followers have one-line stat blocks, and the gunpowder eras (1618-1876) and the world wars
   (1914-18, 1939-45), Korea, Vietnam and the later wars (1982-2014) have their own tables.
-- **Presence and followers (to do).** How many followers a team has comes from its template
-  (`followers` in data/teams/*.yaml, such as a medieval retinue's 8 archers, 4 spearmen and 2
-  servants), changed by hand on the page; a leader's Presence touches only his men's morale
-  (`fight_line` in gravewounds/team.py). So a leader with Presence 30 keeps as many men as one
-  with 80, though the design (design.md, item 12, from Gamma World's Charisma) has Presence set
-  how many followers he can keep as well as their morale. One way to fix it: a cap on followers
-  by Presence band (a design table, as no period source gives one), checked on the team builder
-  when followers are added and at End of season, with men over the cap drifting away (deserting
-  or leaving at the term's end) rather than vanishing at once.
+- **Presence and followers, first cut.** A leader's Presence now caps how many of the
+  template's followers stay (data/followers.yaml, a design table, as no period source gives
+  one): shown on the team builder, with a warning over the cap, and half the excess, rounded up,
+  drifting away at each End of season (deserting or going home). Still left out: the field
+  map and the roller do not apply it.
 - **Rank, pay and loot, first cut.** Ranks, promotion by vacancy, pay by rank, loot, prize money,
   ransom and the Plains nations' honours are on the team builder. Still left out:
   - the field map now counts a hero's hits and downs (a deed at two) and a Plains hero's

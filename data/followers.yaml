@@ -1,0 +1,21 @@
+# How many followers a leader's Presence keeps (rules in gravewounds/team.py follower_cap, repeated
+# in templates/team.js). design.md, item 12, has Presence set how many followers a leader can keep
+# as well as their morale, after Gamma World's Charisma; no period source gives a number, so the
+# bands are a design table (approx).
+#
+#   - The cap is the team template's followers (`followers` in data/teams/<era>.yaml, a medieval
+#     retinue's 14, say) times the share for the leader's Presence band, to the nearest man, at
+#     least one. A template with no followers (Your own team) has no cap.
+#   - The team builder shows the cap beside the followers, and warns when there are more; more
+#     can still be added.
+#   - At each End of season, `leave` of the men over the cap (rounded up) drift away, each one
+#     d100 against `deserted` (deserted) or else gone home, picked at random among the followers.
+approx: true
+bands:                       # Presence up to `to`: the share of the template's followers he keeps
+  - {to: 29, share: 0.5}
+  - {to: 44, share: 0.75}
+  - {to: 59, share: 1}
+  - {to: 74, share: 1.25}
+  - {to: 999, share: 1.5}
+leave: 0.5                   # of the men over the cap, the share that leave each End of season
+deserted: 50                 # d100 at or under: he deserts; over: he goes home at his time's end

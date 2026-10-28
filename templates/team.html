@@ -163,6 +163,7 @@ body.papers-open{overflow:hidden}
         <legend class="sr">Followers</legend>
         <span class="lbl" aria-hidden="true">Followers <span id="fqual"></span></span>
         <ul class="fcounts" id="fcounts"></ul>
+        <p class="muted" id="fover" role="status" style="margin:4px 0 0;font-size:.85rem"></p>
         <div class="toolbar"><select id="sel-fadd" aria-label="Career to add followers of"></select><button class="small" id="btn-fadd">Add</button></div>
       </fieldset>
       <fieldset>
@@ -348,13 +349,31 @@ function sexOpts(i, cid, sex){                    // man, woman or roll for an o
 }
 function renderFollowers(){                       // the counts to roll, and the rolled followers' lines
   const name = cid => byId(T.careers, cid).name;
-  $("#fqual").textContent = `(quality: ${tplQuality(S.template)})`;
+  const cap = followerCap(), have = followersHave(), keep = cap ? cap.cap : null;
+  $("#fqual").textContent = `(quality: ${tplQuality(S.template)}` + (cap ? `; ${cap.lead.name}'s Presence ${cap.lead.stats.pres} keeps ${keep}` : "") + ")";
+  $("#fover").textContent = cap && have > keep ? `${have} is ${have - keep} more than his Presence keeps: ${fwLeaving(have, keep)} will drift away at the End of season.` : "";
   const row = ([cid, n], i) => `<li><span>${esc(name(cid))}</span><button class="small" data-fless="${i}" aria-label="One fewer ${esc(name(cid))}">−</button><b>${n}</b><button class="small" data-fmore="${i}" aria-label="One more ${esc(name(cid))}">+</button></li>`;
   $("#fcounts").innerHTML = S.fcounts.map(row).join("") || `<li class="muted">None: add a career below</li>`;
   $("#sel-fadd").innerHTML = T.careers.filter(c => !S.fcounts.some(([x]) => x === c.id)).map(c => `<option value="${c.id}">${esc(c.name)}</option>`).join("");
   const n = S.crew.length, line = f => `<li class="q-${f.quality}">${esc(followerLine(f))}</li>`, lines = S.crew.map(line).join("");
   $("#crew").innerHTML = n ? `<section class="crew" aria-label="Followers"><h3>Followers (${n})</h3><ol>${lines}</ol>
     <div class="toolbar" style="justify-content:flex-end;margin-top:8px"><button class="small" id="btn-reroll-crew">Reroll the followers</button></div></section>` : "";
+}
+function followerCap(){                          // {cap, lead}: what the leader's Presence keeps of the template's followers, or null
+  const lead = S.team.find(m => m.leader); if (!lead || S.template === "own") return null;
+  const cap = fwCap(tplFollowers(S.template), lead.stats.pres);
+  return cap === null ? null : { cap, lead };
+}
+const followersHave = () => Math.max(S.crew.length, S.fcounts.reduce((t, [, n]) => t + n, 0));   // the rolled followers, or the counts to roll if more
+function followersDrift(lines){                   // End of season: half the men over the cap, rounded up, desert or go home
+  const cap = followerCap(); if (!cap || !S.crew.length) return;
+  const n = fwLeaving(S.crew.length, cap.cap), name = cid => byId(T.careers, cid).name.toLowerCase(), gone = [];
+  for (let k = 0; k < n; k++){
+    const f = S.crew.splice(realDice.randint(0, S.crew.length - 1), 1)[0], row = S.fcounts.find(([cid]) => cid === f.career);
+    if (row) row[1] = Math.max(0, row[1] - 1);
+    gone.push(`${f.name}, ${name(f.career)}, ${realDice.randint(1, 100) <= TD.followers.deserted ? "deserted" : "gone home"}`);
+  }
+  if (gone.length) lines.push(`${cap.lead.name}'s Presence keeps ${cap.cap} followers; ${gone.length} of the ${S.crew.length + gone.length} drift away: ${gone.join("; ")}.`);
 }
 const rollCrew = () => { S.crew = makeFollowers(S.region, S.fcounts.filter(([, n]) => n > 0), tplQuality(S.template), realDice, S.women) };
 function termOpts(n){                             // 1 to 3 terms
@@ -1331,6 +1350,7 @@ function endSeason(){
   for (const c of S.team) Object.assign(all[c.pid], { sheet: rollerSheet(c), stamp });
   writeXp(all);
   for (const c of S.team) if (c.joined) c.joined.seasons = (c.joined.seasons || 0) + 1;   // a season with the team: no longer a stranger
+  followersDrift(lines);
   if (TD.prisoners){ prisonSeason(); captiveSeason(lines) }
   if (TD.patrons) patronSeason(lines);
   if (TD.languages) interpSeason(lines);

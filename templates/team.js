@@ -247,6 +247,12 @@ function makeFollower(region, careerId, table, rng, women = "none"){
   return { name, sex, career: careerId, quality, attack: q.attack, defence: q.defence, nerve: q.nerve, kit, weapon, look, mounted: !!career.mounted };
 }
 const makeFollowers = (region, counts, table, rng, women = "none") => counts.flatMap(([cid, n]) => Array.from({ length: n }, () => makeFollower(region, cid, table, rng, women)));
+function fwCap(counts, pres){                     // as team.py follower_cap: how many of the template's followers his Presence keeps, or null
+  const F = TD.followers, total = counts.reduce((t, [, n]) => t + n, 0);
+  if (!F || !F.bands || !total) return null;
+  return Math.max(1, Math.floor(total * F.bands.find(b => pres <= b.to).share + 0.5));
+}
+const fwLeaving = (have, cap) => (cap === null || have <= cap ? 0 : Math.ceil((have - cap) * TD.followers.leave));   // how many drift away this End of season
 function followerLine(f){                         // as team.py follower_line
   const career = byId(TD.era.careers, f.career).name.toLowerCase(), kit = TD.kits[f.kit].name.split(" (")[0].toLowerCase();
   return `${f.name}${f.sex === "f" ? " (a woman)" : ""}, ${career}, ${f.quality}: ${TD.weapons[f.weapon].short.toLowerCase()} ${f.attack}%, defence ${f.defence}%, Nerve ${f.nerve}; ${kit}`;
