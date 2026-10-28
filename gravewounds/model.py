@@ -117,6 +117,7 @@ class Data:
     hazards: dict = field(default_factory=dict)     # swimming, climbing, falls, chases (data/hazards.yaml)
     languages: dict = field(default_factory=dict)   # tongues by army, bands, passing (data/languages.yaml)
     patrons: dict = field(default_factory=dict)     # standing, favours, a patron's fate (data/patrons.yaml)
+    followers: dict = field(default_factory=dict)   # how many followers a leader's Presence keeps (data/followers.yaml)
     papers: dict = field(default_factory=dict)      # each era's game handouts and epilogues (data/papers.yaml)
     uses: dict = field(default_factory=dict)        # skills that do things on the travel map (data/uses.yaml)
     weights: dict = field(default_factory=dict)     # item weights, coin, pack animals (data/weights.yaml)
@@ -189,6 +190,7 @@ def load(root: str | Path = "data") -> Data:
     languages = _optional(root / "languages.yaml", {})
     patrons = _optional(root / "patrons.yaml", {})
     papers = _optional(root / "papers.yaml", {})
+    followers = _optional(root / "followers.yaml", {})
     uses = _optional(root / "uses.yaml", {})
     weights = _optional(root / "weights.yaml", {})
     supplies = _optional(root / "supplies.yaml", {})
@@ -233,6 +235,7 @@ def load(root: str | Path = "data") -> Data:
         languages=languages,
         patrons=patrons,
         papers=papers,
+        followers=followers,
         uses=uses,
         weights=weights,
         supplies=supplies,
@@ -678,6 +681,7 @@ def validate(d: Data) -> None:
             elif k.get("rank") and k["rank"] not in {r["id"] for r in ((d.ranks or {}).get("eras", {}).get(eid) or {}).get("ladder", [])}:
                 errors.append(f"training.yaml: course {k['id']} opens {k['rank']}, not a rank in {eid}")
     errors += _papers_errors(d)
+    errors += _followers_errors(d)
     if d.patrons:
         PT, diffs = d.patrons, {x["id"] for x in d.checks.get("difficulty", [])}
         for f in PT["favours"]:
@@ -1160,6 +1164,27 @@ def _stall_errors(commander: dict) -> list[str]:
 
 EPILOGUE_KINDS = ("alive", "dead", "deserted")
 EPILOGUE_WHEN = ("any", "lasting", "whole")
+
+
+def _followers_errors(d: Data) -> list[str]:
+    """data/followers.yaml: Presence bands rising to 100 or more, each a share over 0, and the
+    share that leave and the desertion chance, each in range."""
+    F = d.followers
+    if not F:
+        return []
+    bands, errors = F.get("bands") or [], []
+    tos = [b.get("to") for b in bands]
+    if not bands or any(not isinstance(t, int) for t in tos) or tos != sorted(set(tos)) or tos[-1] < 100:
+        errors.append("followers.yaml: bands need whole `to` values, rising, the last at least 100")
+    if any(not isinstance(b.get("share"), (int, float)) or b["share"] <= 0 for b in bands):
+        errors.append("followers.yaml: each band needs a share over 0")
+    if not 0 < (F.get("leave") or 0) <= 1:
+        errors.append("followers.yaml: leave must be over 0 and at most 1")
+    if not 0 <= (F.get("deserted") if isinstance(F.get("deserted"), int) else -1) <= 100:
+        errors.append("followers.yaml: deserted must be 0 to 100")
+    if not F.get("approx") and not F.get("source"):
+        errors.append("followers.yaml: needs a source, or approx: true")
+    return errors
 
 
 def _papers_errors(d: Data) -> list[str]:

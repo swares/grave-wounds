@@ -211,6 +211,17 @@ def make_followers(d: Data, eid: str, region: str, counts: list, table: str, rng
     return [make_follower(d, eid, region, cid, table, rng, women) for cid, n in counts for _ in range(n)]
 
 
+def follower_cap(d: Data, counts: list, pres: int):
+    """How many of the template's followers (counts [[career, n], ...]) a leader of Presence `pres`
+    keeps (data/followers.yaml): their number times his band's share, to the nearest man, at least
+    one; None with no followers or no table."""
+    F, total = d.followers, sum(n for _, n in counts)
+    if not F or not total:
+        return None
+    share = next(b["share"] for b in F["bands"] if pres <= b["to"])
+    return max(1, int(total * share + 0.5))
+
+
 def follower_line(d: Data, f: dict, eid: str = "medieval") -> str:
     """A follower in one line: "John Archer, archer, regular: bow 50%, defence 35%, Nerve 50; jack and sallet"."""
     career = _by_id(era(d, eid)["careers"], f["career"])

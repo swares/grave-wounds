@@ -336,6 +336,22 @@ On the page, **Followers** lists how many of each career come with the team; **�
 **+** change them, and **Add** brings in another career. **Roll the team** rolls them with
 the team, and **Reroll the followers** rolls them again. Their lines print below the sheets.
 
+**How many he keeps.** A leader's Presence sets how many followers stay with him
+(`data/followers.yaml`, a design table: design.md item 12, after Gamma World's Charisma; no
+period source gives a number). The cap is the template's followers times his Presence band's
+share, to the nearest man, at least one:
+
+| Presence | 01-29 | 30-44 | 45-59 | 60-74 | 75+ |
+| --- | --- | --- | --- | --- | --- |
+| Share kept | ½ | ¾ | 1 | 1¼ | 1½ |
+
+So a retinue's leader keeps 7 of its 14 at Presence 25, 14 at 50 and 21 at 80. The followers'
+line names him and the cap, and warns when there are more; more can still be added. At each
+**End of season** half the men over the cap, rounded up, drift away, picked at random, each
+deserting (d100 01-50) or going home; the season's log names them and the counts drop with
+them. Your own team has no template followers, so no cap. On the command line, `team` prints
+the cap beside the followers.
+
 - **Send to the roller** brings the followers too, each as a fighter on the team's side.
   His card says "Follower" with his career and quality. His quality's attack and defence
   fill the Strike panel whatever weapon he holds, and his Nerve is the quality's.
