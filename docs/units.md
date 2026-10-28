@@ -1343,7 +1343,10 @@ with shell wounds (the First World War and later):
   mortars may fall unseen within `near` (3) hexes of any place an enemy unit stood when the battle
   began, located before it by patrols and air photographs, with `scatter` more hexes of scatter
   (0 for now). The enemy commander does the same when attacking: each of its free batteries may be
-  called on an enemy near such a place, seen or not. From the second Tumbledown study: the Scots
+  called on an enemy near such a place, seen or not. Holding, its batteries have a defensive fire
+  plan instead (`defend`, 12 hexes): they may be called, seen or not, on an enemy within that of a
+  place its own side held when the battle began, never nearer its own men than the burst and
+  scatter (the SOS and DF tasks, Pork Chop's "flash fire"). From the second Tumbledown study: the Scots
   Guards saw no Argentine unit all night and their guns never fired; with planned fire they took the
   mountain in 4 runs of 6. Tick **Keep firing each exchange** before calling to repeat the
   mission until **Stop** or the rounds run out. The map marks the hex ⌖ and the last
