@@ -1030,9 +1030,9 @@ def _fire_aim(d: Data, us: list, side, field: dict | None, known: dict, bk: tupl
     return None if best is None else best[1]
 
 
-def _plans(P: dict, K: dict) -> bool:
+def _plans(planned: dict, kind: dict) -> bool:
     """Planned fire is on (indirect.planned) and the kind fires it: guns and mortars, not aircraft or tanks."""
-    return bool(P) and not K.get("air") and not K.get("direct")
+    return bool(planned) and not kind.get("air") and not kind.get("direct")
 
 
 def _clear_shot(d: Data, uof: tuple, bk: tuple, h, extra: int) -> bool:
