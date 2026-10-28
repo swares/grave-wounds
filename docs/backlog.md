@@ -155,18 +155,20 @@ When an item is done, delete it here and note it in the pull request that closes
 - **Ammunition, beyond the first cut.** Units count their ammunition and resupply from their
   edge, a supply vehicle or a dump (air drops from 1944, helicopters from 1965). Still left out:
   riders resupplying aboard their carrier.
-- **Wear and reliability of weapons, wagons and vehicles (to consider).** Only the named men's
-  boots and clothing wear out (data/kit.yaml). Weapons (rust and fouling in the wet, worn barrels,
-  broken springs and stocks), harness and wagons (broken axles and wheels, lame or galled animals),
-  tanks, lorries and jeeps (breakdowns by miles run, track and engine wear, fuel and spare parts),
-  radios (batteries, damp) and machine guns (stoppages, barrel changes) do not. Worth considering:
-  a reliability by era and kind (e.g. the share of tanks that broke down on a road march, wagons
-  lost to breakage, misfires of flintlocks in rain against percussion caps), wear on the travel map
-  that lowers it, its effect in the roller and on the field map (misfires and stoppages, a vehicle
-  that will not start, a wagon left by the road), and Mend kit, a fitter or an armourer, spare parts
-  and the depot putting it right. Research first: breakdown rates (Panthers at Kursk, Shermans in
-  Normandy, M48s and M113s in Vietnam), stoppages by weapon (the M16 in 1967), and train wagons
-  lost on the march.
+- **Reliability, first cut** (units.yaml `reliability`, weather.yaml misfires; project docs
+  "reliability-weapons-research" and "reliability-vehicles-research"). Flintlocks misfire 15% even
+  dry and percussion caps 0.6% (Woolwich, 1834); automatic weapons lose a share of their fire to
+  stoppages by war (the M16 in Vietnam 10%); vehicles the GM or the travel map brings may be unfit
+  as the battle begins (Cambrai's 15% for WWI, 5% after), a battlefield's armies as fought only by
+  its own `unfit` %; WWI vehicles break down on the move. Self-play 422 of 576 (from 423): Albuera
+  9 to 7, Mogadishu 8 to 12. Still left out:
+  - horses and draught animals wearing out on the travel map (next: Union cavalry horses about 4
+    months' service, the Boer War about 6 weeks), wagons and harness breaking;
+  - no dry figure for matchlocks or wheellocks; the wet steps are design estimates;
+  - no battlefield yet has the models the sources single out (the Panther's final drives, the
+    Tiger's gearbox, the T-34's clutches of 1941) to carry its own `unfit`;
+  - artillery duds and worn bores, radios and their batteries, bows and crossbows (the Crécy
+    strings rest on one 1875 source).
 - **Supplies between fights, first cut.** A travel-map force carries ammunition, rations, water
   and medical stores; a field battle takes its ammunition and sends back what is left; it refills
   at its depot, from its baggage train in the hex, and by buying rations in a village or town
@@ -196,8 +198,8 @@ When an item is done, delete it here and note it in the pull request that closes
   battlefield marks with a defensive fire plan (`df: true`) may fire, unseen, within 12 hexes of
   its own side's start positions (Pork Chop's flash fire: 4 to 12 of 12). Given to every
   defender, the fire plan put Tumbledown back to 0 (and Grozny 2 to 7, Hue and Chipyong-ni -1), so
-  it is marked by battlefield where a source gives one. 423 of 576 runs now match the battle as
-  fought (Mojkovac 12 of 12 and Topolčani 11 of 12 added). Still behind: Albuera 9 of 12 with the squall, Chipyong-ni 10, Dak To and Khe Sanh 11.
+  it is marked by battlefield where a source gives one. 422 of 576 runs now match the battle as
+  fought (Mojkovac and Topolčani added; reliability, 423 to 422). Still behind: Albuera 9 of 12 with the squall, Chipyong-ni 10, Dak To and Khe Sanh 11.
 - **Self-play against the battles as fought, first review** (`docs/selfplay-review.md`). Every
   battlefield was played with the commander on both sides and set against what happened; what has
   been changed since, and what was measured and not built, is in the review. To do, from the
