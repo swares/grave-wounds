@@ -1012,7 +1012,7 @@ def _fire_aim(d: Data, us: list, side, field: dict | None, known: dict, bk: tupl
     held when the battle began (_near_located), seen or not: planned fire."""
     b, K = bk
     P = d.units["indirect"].get("planned") or {}
-    plan = _plans(P, K) and ("attack" if attacking else "hold")
+    plan = _battery_plan(P, bk, attacking)
     best = None
     ours = [u for u in us if u["side"] == side and u["men"] > 0 and u["state"] != "fled"]
     if not ours:
@@ -1020,7 +1020,7 @@ def _fire_aim(d: Data, us: list, side, field: dict | None, known: dict, bk: tupl
     for j, e in enumerate(us):
         if e["side"] == side:
             continue
-        h, planned = _aim_at(d, us, (side, field, known), (j, e), plan if plan == "attack" or b.get("df") else None)
+        h, planned = _aim_at(d, us, (side, field, known), (j, e), plan)
         if h is None or not _clear_shot(d, (us, ours, field), bk, h, P.get("scatter", 0) * planned):
             continue
         talked = bool(K.get("air")) and U._fac_sees(d, us, field, b, h)
@@ -1028,6 +1028,17 @@ def _fire_aim(d: Data, us: list, side, field: dict | None, known: dict, bk: tupl
         if best is None or key < best[0]:
             best = (key, (j, list(h), planned))
     return None if best is None else best[1]
+
+
+def _battery_plan(planned: dict, bk: tuple, attacking: bool):
+    """The battery's planned fire: "attack" (on the defenders' start positions), "hold" (its own
+    defensive fire plan, a battery marked df), or None."""
+    b, kind = bk
+    if not _plans(planned, kind):
+        return None
+    if attacking:
+        return "attack"
+    return "hold" if b.get("df") else None
 
 
 def _plans(planned: dict, kind: dict) -> bool:
