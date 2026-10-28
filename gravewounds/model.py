@@ -1746,6 +1746,8 @@ def _events_errors(d: Data) -> list[str]:
                 errors.append(f"{at}: {k} must be a positive multiplier")
         if not x.get("approx") and not x.get("source"):
             errors.append(f"{at}: needs a source, or approx: true")
+    if "remount" in E and not (isinstance(E["remount"], (int, float)) and E["remount"] > 0):
+        errors.append(f"{where}: remount must be horses a man, more than 0")
     for t, bands in (E.get("horses_march") or {}).items():
         if t not in ("mounted", "wagons"):
             errors.append(f"{where}: horses_march names {t}, not mounted or wagons")

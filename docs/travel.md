@@ -373,8 +373,13 @@ until the GM sets it (for remounts, or a force with spare horses or too few) or 
 one. Each night every horse rolls its chance; a mounted deserter rides off on his. With too few
 horses for its men (`horses_march`) it slows: a mounted force under half a horse a man marches
 at foot pace (67% of its speed: 4 km/h of 6), and a wagon train keeps 75% under three teams in
-four and 50% under half (estimates). The log says when it happens. Remounts are the GM's: raise
-the count when it finds or buys horses.
+four and 50% under half (estimates). The log says when it happens. A hungry force (the health
+panel's Hungry, or its rations run out) loses its horses four times as fast: Cole's column, in
+cold and hunger in 1865, lost 3.6% of its horses a day against a Union cavalry horse's 0.83% on
+campaign (a single report). At its army's depot, **Refill at the depot** also makes a horsed
+force its army feeds up to one horse a man (`remount`, a design estimate: armies kept remount
+depots, but no source gives how fully a unit was made up); the log counts the remounts. Away
+from a depot remounts are the GM's: raise the count when it finds or buys horses.
 
 The rates and their sources are in the project doc "travel-events-research"; each rate in the
 file has its source or `approx: true`. The best are Korea's injuries by kind of operation,

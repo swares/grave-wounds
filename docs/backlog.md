@@ -162,8 +162,8 @@ When an item is done, delete it here and note it in the pull request that closes
   as the battle begins (Cambrai's 15% for WWI, 5% after), a battlefield's armies as fought only by
   its own `unfit` %; WWI vehicles break down on the move. Self-play 422 of 576 (from 423): Albuera
   9 to 7, Mogadishu 8 to 12. Still left out:
-  - horses and draught animals wearing out on the travel map (next: Union cavalry horses about 4
-    months' service, the Boer War about 6 weeks), wagons and harness breaking;
+  - wagons and harness breaking (horses already wear out by era on the travel map, events.yaml:
+    four times as fast when hungry, and a force fed by its army is remounted at its depot);
   - no dry figure for matchlocks or wheellocks; the wet steps are design estimates;
   - no battlefield yet has the models the sources single out (the Panther's final drives, the
     Tiger's gearbox, the T-34's clutches of 1941) to carry its own `unfit`;
