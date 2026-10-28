@@ -234,8 +234,12 @@ melee:
   shaken: {attack: -10}                   # a shaken unit fights worse
   # A front of pikes against horse: a steady unit in one of `formations` armed with one of
   # `weapons`, struck by mounted men from its front, takes no charge from them (as stakes), and
-  # its men strike mounted men to their front at +`attack` %. Design estimate.
-  pikes: {weapons: [pike], formations: [close], attack: 20}
+  # its men strike mounted men to their front at +`attack` %. Design estimate. Formed infantry
+  # with the bayonet (muskets and rifle-muskets) keep the same front: at Albuera Harvey's
+  # "inexperienced" Portuguese, in line, "stood firm and drove away the cavalry without even
+  # forming square", and Zayas's Spaniards met the lancers "unflinchingly"; Colborne's brigade was
+  # broken in the flank, in a squall (Wikipedia, "Battle of Albuera", after Oman and Fortescue).
+  pikes: {weapons: [pike, musket_smoothbore, rifle_musket], formations: [close], attack: 20}
 
 # ---------- missiles ----------
 # Shooting men: those with a missile weapon and the target in range (the field map counts
