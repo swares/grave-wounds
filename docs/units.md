@@ -2649,6 +2649,49 @@ at the top: the pass on the road from Veles to Prilep.
 
 It is drawn by `tools/maps/make_babuna_field.mjs`.
 
+**Topolčani, November 1915** (`data/fields/topolcani-1915.yaml`). The field is 130 × 110 hexes,
+about 1,420 yards (1,300 m) east to west and 1,040 yards (950 m) north to south, north at the top:
+the road from Prilep (north) to Bitola (south) by Topolčani.
+- A long low hillside across the north of the map, with little shallow trenches dotted along
+  its forward slope; the road runs down past the hahn (two small rooms) and the village to the
+  west, to a river near the bottom that can be crossed only at the road bridge (its ten mines
+  failed, so it stands), and a little hill by the road.
+- A blizzard from the north in a gale after a night of snow, lying snow at 2; it eases to heavy
+  snow about midday and to snow in the late afternoon.
+- The Serbian 2nd Regiment: a company each side of the road in the trenches, two machine guns,
+  and a company of reinforcements coming up through the drifts at 121. The Bulgarians: three
+  battalions and their machine guns, more than four to one (Sandes's odds).
+- Fire support: two old Serbian mountain guns against eight Bulgarian field guns and two big
+  guns.
+- Flora Sandes's account is the only one found. The date (about 19 November, between the fall
+  of Prilep and of Bitola), the companies, the battalions and the hours are our reading; the
+  Serbs go at twilight (data/orders.yaml).
+- The wound tables are the First World War's.
+
+It is drawn by `tools/maps/make_topolcani_field.mjs`.
+
+**Mojkovac, 6 January 1916** (`data/fields/mojkovac-1916.yaml`). The field is 130 × 110 hexes,
+about 1,420 yards (1,300 m) east to west and 1,040 yards (950 m) north to south, north at the top:
+the Bojna njiva above Mojkovac on the upper Tara.
+- Snowfields and woods in the north; the long rise of the Bojna njiva across the middle, its
+  brow high ground with the Montenegrin trenches along it; the Tara down the west edge with a
+  bridge; the edge of Mojkovac at the bottom left.
+- Snow and a breeze from the north, lying snow at 2 (knee-deep); heavy snow from about noon,
+  fog from about 14:30.
+- The Montenegrin Sandžak army: three companies along the brow, its machine guns, and the
+  Drobnjak battalion, its only reserve, coming in at 301. The Austro-Hungarians: three
+  battalions of the 205th Landsturm Brigade and their machine guns, and Reinöhl's last reserves
+  at 421. About three to one, the sourced odds (6,500 against about 20,000).
+- Fire support: two Montenegrin mountain guns against eight Austro-Hungarian field and mountain
+  guns and two heavy guns.
+- The sources disagree on who attacked (the English and German Wikipedia articles); the field
+  has the Austro-Hungarian attack first and the Montenegrin reserve go in after noon. The slice
+  of the line, the companies and the hours are our reading; the line on the brow holds
+  (data/orders.yaml).
+- The wound tables are the First World War's.
+
+It is drawn by `tools/maps/make_mojkovac_field.mjs`.
+
 **Snipe, 27 October 1942** (`data/fields/snipe-1942.yaml`). The field is 200 × 160 hexes, about
 2,190 yards (2,000 m) west to east and 1,520 yards (1,390 m) north to south, north at the top: the
 hollow of Snipe, west of the Kidney feature at El Alamein.

@@ -110,6 +110,13 @@ function sized(id, units){
 }
 const hexList = hs => hs.map(h => `[${h.join(", ")}]`).join(", ");
 
+// Foot in extended order, machine-gun teams, and a front row laid along a line: the presets the
+// First World War battlefields share. line(w) is the row of the line at a column; the front row is the
+// lowest of the w columns from c0, less `ahead` rows (nearer the enemy to the north).
+export const extended = (quality, more = {}) => ({ quality, weapon: "rifle_service", kit: "none", formation: "extended", mounted: false, ...more });
+export const mgTeam = (quality, more = {}) => ({ quality, weapon: "machine_gun", kit: "none", formation: "mg", mounted: false, ...more });
+export const alongLine = (line, ahead) => (w, c0) => [w, c0, Math.min(...Array.from({ length: w }, (_, i) => line(c0 + i))) - ahead];
+
 // Writes the battlefield file. spec: {id, script, header (comment lines), name, sides, table,
 // travel {map, place, within, sides}, weather (YAML flow text), grid, hexWorks {type: [hexes]},
 // edgeWorks {type: [[hex, hex], ...]} (the first hex of each pair the high or inner side), units,

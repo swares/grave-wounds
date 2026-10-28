@@ -230,6 +230,13 @@ mogadishu-1993:
     - "Rangers and Delta at the corner west of the crash"
     - "Machine guns (SAWs and M60s) at the crash"
     - "Crash site 2: the crew, Gordon and Shughart"
+mojkovac-1916:
+  source: "https://de.wikipedia.org/wiki/Schlacht_von_Mojkovac"
+  hold:   # the line on the Bojna njiva stands; only the Drobnjak battalion, the reserve, goes forward (German Wikipedia)
+    - "Sandžak army, a company above the Tara"
+    - "Sandžak army, a company on the Bojna njiva"
+    - "Sandžak army machine guns"
+    - "Sandžak army, a company on the east of the rise"
 mons-1914:
   source: "https://visitmons.co.uk/see-do/top-sights/mons-the-first-the-last/battlefields-guide/3-the-rail-bridge"
   hold:
@@ -283,6 +290,13 @@ wagon-box-1867:
   hold:
     - "27th Infantry, Company C (Powell and Jenness)"
     - "Woodcutters and teamsters (civilians, repeating rifles)"
+topolcani-1915:
+  source: "https://www.gutenberg.org/ebooks/71442"
+  withdraw:
+    - {unit: "2nd Regiment, a company west of the road", at: 541, to: S}   # gone at twilight, over the bridge towards Bitola (Sandes)
+    - {unit: "2nd Regiment, a company astride the road", at: 541, to: S}   # gone at twilight, over the bridge towards Bitola (Sandes)
+    - {unit: "2nd Regiment machine guns", at: 541, to: S}   # gone at twilight, over the bridge towards Bitola (Sandes)
+    - {unit: "2nd Regiment, the company of reinforcements", at: 541, to: S}   # gone at twilight, over the bridge towards Bitola (Sandes)
 tumbledown-1982:
   source: "https://www.argentina.gob.ar/node/504778"
   hold:

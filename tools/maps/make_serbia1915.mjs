@@ -26,7 +26,7 @@ const P = {
   struga: [41.167, 20.667], ohrid: [41.117, 20.802], resen: [41.089, 21.012], elbasan: [41.111, 20.081],
   tetovo: [42.010, 20.971], gostivar: [41.796, 20.908], kicevo: [41.512, 20.959], veles: [41.716, 21.775],
   izvor: [41.555, 21.697], babuna: [41.45, 21.60], prilep: [41.344, 21.553], topolcani: [41.23, 21.43],
-  bitola: [41.032, 21.335],
+  bitola: [41.032, 21.335], mojkovac: [42.960, 19.580], bijelopolje: [43.038, 19.747], kolasin: [42.823, 19.520],
   // where forces stand that are not at a named place
   austrians: [43.78, 20.28], germans: [43.79, 21.05], sandzak: [43.15, 19.85], mountainbde: [43.60, 19.75],
   timok: [43.28, 21.72], bulgars1: [43.52, 21.82],
@@ -46,6 +46,7 @@ const RIVERS = {
   lepenac: [[42.33, 21.17], [42.22, 21.24], [42.10, 21.33], [42.00, 21.42]],
   crna: [[41.00, 21.40], [41.10, 21.44], [41.25, 21.68], [41.40, 21.95]],
   shkumbin: [[41.00, 20.47], [41.08, 20.30], [41.10, 20.10], [41.08, 19.85], [41.03, 19.60], [41.00, 19.48]],
+  tara: [[42.78, 19.48], [42.823, 19.520], [42.90, 19.56], [42.96, 19.575], [43.03, 19.50], [43.12, 19.38], [43.20, 19.25]],   // the upper Tara, past Kolašin and Mojkovac
   lim: [[42.60, 19.93], [42.73, 19.80], [42.84, 19.86], [43.04, 19.75], [43.30, 19.60], [43.50, 19.45]],
 };
 const STREAMS = [
@@ -106,14 +107,14 @@ const ROADS = [
   ["skopje", [41.85, 21.60], "veles", "izvor", "babuna", "prilep", "topolcani", "bitola"],   // the road over the Babuna
   ["bitola", "resen", "ohrid"], ["elbasan", [41.20, 19.80], "durres"],
   ["podgorica", [42.25, 19.40], "shkoder"], ["shkoder", [41.95, 19.56], "lezhe", [41.55, 19.55], "durres"], ["lezhe", "shengjin"],
-  ["berane", "andrijevica"],
+  ["berane", "andrijevica"], ["berane", "bijelopolje", [43.00, 19.68], "mojkovac", "kolasin"],   // up the Lim and over to the Tara
 ];
 
 const TOWNS = ["kraljevo", "krusevac", "nis", "leskovac", "mitrovica", "pristina", "skopje", "prizren", "pec", "podgorica", "shkoder",
   "durres", "bitola", "prilep", "elbasan", "veles", "ohrid"];
 const VILLAGES = ["prokuplje", "kursumlija", "raska", "novipazar", "vucitrn", "podujevo", "lipljan", "gnjilane", "ferizaj", "kacanik",
   "vranje", "kumanovo", "djakovica", "rozaje", "plav", "andrijevica", "berane", "kukes", "spas", "puke", "lezhe", "shengjin", "debar",
-  "struga", "resen", "tetovo", "gostivar", "kicevo", "izvor", "topolcani"];
+  "struga", "resen", "tetovo", "gostivar", "kicevo", "izvor", "topolcani", "mojkovac", "bijelopolje", "kolasin"];
 
 const NAMES = { kraljevo: "Kraljevo", krusevac: "Kruševac", nis: "Niš", prokuplje: "Prokuplje", kursumlija: "Kuršumlija",
   raska: "Raška", novipazar: "Novi Pazar", leskovac: "Leskovac", mitrovica: "Mitrovica", vucitrn: "Vučitrn", podujevo: "Podujevo",
@@ -124,7 +125,7 @@ const NAMES = { kraljevo: "Kraljevo", krusevac: "Kruševac", nis: "Niš", prokup
   spas: "Spas", viziers: "Vizier's Bridge", kukesford: "Drin crossing below Kukës", strugabridge: "Struga bridge", puke: "Pukë", lezhe: "Lezhë (Alessio)", shengjin: "Shëngjin (San Giovanni di Medua)",
   durres: "Durrës (Durazzo)", debar: "Debar", struga: "Struga", ohrid: "Ohrid", resen: "Resen", elbasan: "Elbasan", tetovo: "Tetovo",
   gostivar: "Gostivar", kicevo: "Kičevo", veles: "Veles", izvor: "Izvor", babuna: "Babuna pass", prilep: "Prilep",
-  topolcani: "Topolčani", bitola: "Bitola (Monastir)" };
+  topolcani: "Topolčani", bitola: "Bitola (Monastir)", mojkovac: "Mojkovac", bijelopolje: "Bijelo Polje", kolasin: "Kolašin" };
 const notes = {
   kraljevo: "The Supreme Command's seat until early November; the West Morava valley road runs east from here",
   nis: "Taken by the Bulgarian 1st Army on 5 November",
@@ -149,6 +150,8 @@ const notes = {
   izvor: "Where the Bulgarian attack was driven back to, in the first days of November",
   prilep: "Occupied by the Bulgarians on 17 November",
   topolcani: "Where Flora Sandes's company fought a rearguard in the snow, by a river and a mined bridge (approximate)",
+  mojkovac: "Where the Montenegrin Sandžak army beat off the Austro-Hungarians on 6-7 January 1916, covering the Serbian retreat",
+  bijelopolje: "Reached by the Austro-Hungarian 62nd Division on 16 December",
   debar: "Taken by the Bulgarians about 8-9 December",
   ohrid: "Taken by the Bulgarians about 8-9 December",
 };
@@ -182,7 +185,7 @@ const map = buildCampaign({
   ],
   places: P, names: NAMES, notes, rivers: RIVERS, majorRivers: ["drin", "vardar"], streams: STREAMS, bridges: BRIDGES, fords: FORDS,
   base: "h", farms: FARMS, water: WATER, woods: WOODS, marsh: MARSH, hills: HILLS, mountains: MOUNTAINS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
-  kinds: { pristina: "objective", babuna: "objective", durres: "camp", shkoder: "camp" },
+  kinds: { pristina: "objective", babuna: "objective", mojkovac: "objective", durres: "camp", shkoder: "camp" },
   // where each side resupplies (project docs "depots-research" and "serbia1915-research"): the
   // Serbs from their stores in Kosovo and the Montenegrins at Podgorica, with a little brought in
   // by sea at the coast; the Bulgarians from Niš and Skopje.
@@ -199,6 +202,7 @@ const map = buildCampaign({
     ohrid: ["bulgarian", "turkish", "albanian"], struga: ["bulgarian", "turkish", "albanian"], debar: ["albanian", "bulgarian"],
     tetovo: ["albanian", "bulgarian", "turkish"], gostivar: ["albanian", "bulgarian", "turkish"], kicevo: ["bulgarian", "albanian"],
     resen: ["bulgarian", "turkish"], izvor: ["bulgarian"], babuna: ["bulgarian"], topolcani: ["bulgarian"],
+    mojkovac: SR, bijelopolje: SR, kolasin: SR,
   },   // the people's own tongues where they differ from the map's (project doc "tongues-research")
   forces: [
     { name: "Serbian 1st Army (Mišić)", type: "foot", side: "Serbia and Montenegro", men: 40000, tools: true, at: "kraljevo" },

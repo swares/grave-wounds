@@ -41,18 +41,18 @@ terrain: |
     hhhhhh~hhhhhhhhhhhFFFFh=~MMMMhhhhh=hhhhhfffbThh
     hhhhhh~hhhhhhhhhhhhhhhhvMMMMMhhhhh=hhhfmm==b=hh
     hhhhhhh~hhhhhhhhhhhhhhh=bMMMMMhhhh=hhmm===h~==h
-    hhMMhhh~hhhhhhhhhhhhhh=b=MMMMhhhhh=m===vhhh~=hh
-    hhMMMMhh~hhhhhhhhhhhhh=hbhMMhhhhhh====hhhhhh~=h
-    hMMMMMhh~hhhhhhhhhhhhvhhbhhhhhhhhv=hhhhhhhh~=hh
-    hMMMMMMh~~hhhhhhhhhhh=hhhbhhhhhhhh=hhhhhhhhh~=h
-    hMMMMMhh~hhhhhhhhhh==hhhhbhhhhhhh=hhhhhhhhhhb=h
-    hhMMMMhhh~hhhhhhFFh==hhhhhbhhhhhh=hhhhFFhhhh~=h
-    hhMMMMhhh~hhhhhFFF=hhhhhhhbhhhhhh=hhhFFFhhhh~Th
-    hhhMMMMMhh~hhhhFFF=Mhhhhhhhbhhhhh=hhhFFFFhhhhbh
-    hhMMMMMMhh~hhhhM==MM~~~~~~~ThhhhvhhhhFFFhhhhb=h
-    hhMMMMMMMhhvhhhM==M~~~~~hh==bffhh=hhhhhhhhhhfbh
-    hhMMMMMMhhb=MMMv~~~MMhhhh=hfbvff=hhhhhhhhhhfbfh
-    hhhMMMMMhMb=MMMM~hMMMhhh==hff~=ff=hhhhhhhhhffbh
+    ~hMMhhh~hhhhhhhhhhhhhh=b=MMMMhhhhh=m===vhhh~=hh
+    h~~MMMhh~hhhhhhhhhhhhh=hbhMMhhhhhh====hhhhhh~=h
+    hM~MMMhh~hhhhhhhhhhhhvhhbhhhhhhhhv=hhhhhhhh~=hh
+    hMM~~MMh~~hhhhhhhhhhh=hhhbhhhhhhhh=hhhhhhhhh~=h
+    hMMM~Mhh~hhhhhhhhhh==hhhhbhhhhhhh=hhhhhhhhhhb=h
+    hhMMM~hh=vhhhhhhFFh==hhhhhbhhhhhh=hhhhFFhhhh~=h
+    hhMMM~==hbhhhhhFFF=hhhhhhhbhhhhhh=hhhFFFhhhh~Th
+    hhhMMMvMhhbhhhhFFF=Mhhhhhhhbhhhhh=hhhFFFFhhhhbh
+    hhMMMbMMhhbhhhhM==MM~~~~~~~ThhhhvhhhhFFFhhhhb=h
+    hhMMM=bMMhhvhhhM==M~~~~~hh==bffhh=hhhhhhhhhhfbh
+    hhMMMvMMhhb=MMMv~~~MMhhhh=hfbvff=hhhhhhhhhhfbfh
+    hhhMM~MMhMb=MMMM~hMMMhhh==hff~=ff=hhhhhhhhhffbh
     hhhMMMMMMvbMMMMhhh~hhh==hhhff~=f=ffhhhhhhhhfbfh
     hhhhhMhMMM~hMMMMMh~~===hhhhhff~==fffhhhhhhhhhbh
     hhhhhhhMMM~~MMMMMTbbhhhhhhhfff~=Tffhhhhhhhhhbhh
@@ -155,6 +155,9 @@ places:
   - {name: "Prilep", kind: town, hex: [38, 63], tongues: [bulgarian, turkish], note: "Occupied by the Bulgarians on 17 November"}
   - {name: "Topolčani", kind: village, hex: [37, 66], tongues: [bulgarian], note: "Where Flora Sandes's company fought a rearguard in the snow, by a river and a mined bridge (approximate)"}
   - {name: "Bitola (Monastir)", kind: town, hex: [35, 71], tongues: [turkish, bulgarian, aromanian, spanish, albanian]}
+  - {name: "Mojkovac", kind: objective, hex: [6, 22], tongues: [serbian], note: "Where the Montenegrin Sandžak army beat off the Austro-Hungarians on 6-7 January 1916, covering the Serbian retreat"}
+  - {name: "Bijelo Polje", kind: village, hex: [9, 20], tongues: [serbian], note: "Reached by the Austro-Hungarian 62nd Division on 16 December"}
+  - {name: "Kolašin", kind: village, hex: [5, 25], tongues: [serbian]}
 forces:
   - {name: "Serbian 1st Army (Mišić)", type: foot, side: "Serbia and Montenegro", men: 40000, tools: true, hex: [24, 2]}
   - {name: "Serbian 3rd Army (Šturm)", type: foot, side: "Serbia and Montenegro", men: 35000, tools: true, hex: [35, 6]}

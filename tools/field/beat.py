@@ -7,11 +7,14 @@ and the enemy commander's odds, ends one battle by hand with the button (not sco
 runs one with the commander on both sides to its end (a test run, not scored), then scores a side as
 the player's and keeps it on the scorecard. Needs Python's playwright with Chromium and a built site. Exits non-zero on any failure.
 """
+import json
 import sys
 from pathlib import Path
 from playwright.sync_api import sync_playwright
 
-PAGE = (Path(__file__).resolve().parents[2] / "dist" / "field.html").as_uri()
+ROOT = Path(__file__).resolve().parents[2]
+PAGE = (ROOT / "dist" / "field.html").as_uri()
+BENCHED = len(json.loads((ROOT / "tools" / "selfplay" / "commander.json").read_text())["fields"])   # the battlefields with a benchmark
 failures = []
 
 
@@ -60,7 +63,7 @@ with sync_playwright() as p:
     pg.evaluate("() => { recordBeat(S.drawnUp); render() }")
     text = pg.inner_text("#beat")
     check("Your best here: United States and ARVN" in text, "a scored result is kept on the scorecard")
-    check("of 46" in text, "the scorecard counts the battlefields where the commander was beaten")
+    check(f"of {BENCHED}" in text, "the scorecard counts the battlefields where the commander was beaten")
     card = pg.evaluate("() => JSON.parse(localStorage.getItem('gravewounds-beat'))")
     check(list(card) == ["dakto-1967"] and "0" in card["dakto-1967"], "the scorecard is kept in the browser, by battlefield and side")
 
