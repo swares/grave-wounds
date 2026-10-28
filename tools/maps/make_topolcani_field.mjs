@@ -28,19 +28,31 @@ const riverRow = c => Math.round(86 + 3 * Math.sin(c / 17) + wobble(c / 5, 0.2, 
 const HAHN = [ROAD_C + 4, 68];                // the hahn by the roadside, close to the village
 const onRoad = (c, r) => Math.abs(c - road(r)) <= 0;
 
-function kind(c, r){
-  const k = crest(c), w = riverRow(c);
+const pick = (c, r, n, yes, no) => (speckle(c, r, n) ? yes : no);                               // a speckle of one ground on another
+function roadside(c, r, w){                                                                      // the river, the bridge, the road and the hahn, or null
   if (r >= w && r <= w + 1) return c === ROAD_C ? "." : "w";                                    // the river and its bridge
   if (onRoad(c, r)) return ".";
-  if (Math.abs(c - HAHN[0]) <= 1 && Math.abs(r - HAHN[1]) <= 0) return "T";                     // the hahn: two small rooms
-  if (r > w + 1) return speckle(c, r, 5) ? "o" : ".";                                           // beyond the river, towards Bitola
-  if (Math.abs(r - k) <= 1) return speckle(c, r, 5) ? "r" : "h";                                // the crest of the hillside
-  if (r < k - 1 && r >= k - 12) return speckle(c, r, 7) ? "r" : "s";                            // its forward slope, towards Prilep
-  if (r < k - 12) return patch(c, r, { cx: 112, cy: 6, rx: 18, ry: 8, a: 0.8, b: 1.6 }) ? "F" : (speckle(c, r, 9) ? "o" : ".");
-  if (r > k + 1 && r <= k + 10) return speckle(c, r, 6) ? "o" : "s";                            // the reverse slope
+  if (Math.abs(c - HAHN[0]) <= 1 && r === HAHN[1]) return "T";                                  // the hahn: two small rooms
+  return null;
+}
+function hillside(c, r, k){                                                                      // the hillside, or null below it
+  if (Math.abs(r - k) <= 1) return pick(c, r, 5, "r", "h");                                     // the crest of the hillside
+  if (r < k - 12) return patch(c, r, { cx: 112, cy: 6, rx: 18, ry: 8, a: 0.8, b: 1.6 }) ? "F" : pick(c, r, 9, "o", ".");
+  if (r < k - 1) return pick(c, r, 7, "r", "s");                                                // its forward slope, towards Prilep
+  if (r <= k + 10) return pick(c, r, 6, "o", "s");                                              // the reverse slope
+  return null;
+}
+function lowGround(c, r){                                                                        // between the hillside and the river
   if (patch(c, r, { cx: 104, cy: 74, rx: 14, ry: 6, a: 1.1, b: 0.5 })) return "h";               // a little hill by the road
   if (patch(c, r, { cx: 26, cy: 66, rx: 16, ry: 8, a: 0.4, b: 2.3 })) return "T";                // Topolčani village
-  return speckle(c, r, 6) ? "o" : ".";
+  return pick(c, r, 6, "o", ".");
+}
+function kind(c, r){
+  const w = riverRow(c);
+  const near = roadside(c, r, w);
+  if (near) return near;
+  if (r > w + 1) return pick(c, r, 5, "o", ".");                                                // beyond the river, towards Bitola
+  return hillside(c, r, crest(c)) ?? lowGround(c, r);
 }
 const grid = groundGrid(COLS, ROWS, kind);
 

@@ -26,23 +26,25 @@ const brow = c => Math.round(52 + 6 * Math.cos((c - 70) / 26) + wobble(c / 7, 0.
 const river = r => 5 + Math.round(wobble(r / 4, 1.1, 0.3) * 0.6);   // the Tara, down the west edge
 const BRIDGE = 96;                                                  // the road bridge into Mojkovac
 
+const pick = (c, r, n, yes, no) => (speckle(c, r, n) ? yes : no);                               // a speckle of one ground on another
+function north(c, r, k){                                                                         // below the brow, towards the enemy
+  if (r >= k - 16) return patch(c, r, { cx: 108, cy: k - 9, rx: 12, ry: 7, a: 1.2, b: 0.4 }) ? "F" : pick(c, r, 7, "r", "s");   // the slope up from the north
+  if (patch(c, r, { cx: 30, cy: 10, rx: 20, ry: 9, a: 0.3, b: 2.0 })) return "F";              // the snowfields and the woods below
+  if (patch(c, r, { cx: 98, cy: 14, rx: 24, ry: 10, a: 1.5, b: 0.8 })) return "F";
+  return pick(c, r, 8, "o", ".");
+}
+function south(c, r, k){                                                                         // the top of the rise and the far side
+  if (r > k + 22 && c < 44 && patch(c, r, { cx: 24, cy: 98, rx: 18, ry: 10, a: 0.6, b: 1.4 })) return "T";   // Mojkovac's edge
+  if (r <= k + 12) return pick(c, r, 5, "o", "h");                                              // the top of the Bojna njiva
+  return pick(c, r, 4, "o", ".");                                                               // the far side, down to the town
+}
 function kind(c, r){
   const k = brow(c), w = river(r);
   if (c <= w) return r === BRIDGE ? "." : "w";
-  if (c === w + 1 || c === w + 2) return speckle(c, r, 4) ? "r" : ".";                              // the riverbank
-  if (r > k + 22 && c < 44 && patch(c, r, { cx: 24, cy: 98, rx: 18, ry: 10, a: 0.6, b: 1.4 })) return "T";   // Mojkovac's edge
-  if (Math.abs(r - k) <= 2) return speckle(c, r, 6) ? "r" : "h";                                   // the brow: snow on short turf
-  if (r > k + 2 && r <= k + 12) return speckle(c, r, 5) ? "o" : "h";                               // the top of the Bojna njiva
-  if (r < k - 2 && r >= k - 16) {                                                                 // the slope up from the north
-    if (patch(c, r, { cx: 108, cy: k - 9, rx: 12, ry: 7, a: 1.2, b: 0.4 })) return "F";
-    return speckle(c, r, 7) ? "r" : "s";
-  }
-  if (r < k - 16) {                                                                               // the snowfields and the woods below
-    if (patch(c, r, { cx: 30, cy: 10, rx: 20, ry: 9, a: 0.3, b: 2.0 })) return "F";
-    if (patch(c, r, { cx: 98, cy: 14, rx: 24, ry: 10, a: 1.5, b: 0.8 })) return "F";
-    return speckle(c, r, 8) ? "o" : ".";
-  }
-  return speckle(c, r, 4) ? "o" : ".";                                                            // the far side, down to the town
+  if (c === w + 1 || c === w + 2) return pick(c, r, 4, "r", ".");                               // the riverbank
+  if (r > k + 22 && c < 44) return south(c, r, k);
+  if (Math.abs(r - k) <= 2) return pick(c, r, 6, "r", "h");                                     // the brow: snow on short turf
+  return r < k ? north(c, r, k) : south(c, r, k);
 }
 const grid = groundGrid(COLS, ROWS, kind);
 
