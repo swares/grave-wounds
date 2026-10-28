@@ -146,8 +146,11 @@ try:
             if (whole[p.id].length === p.of){ const text = whole[p.id].sort((a, b) => a.k - b.k).map(q => q.part).join(""); out.push([!!JSON.parse(text).part, text.length]) } }
           return out }""")
         parts = [n for part, n in msgs if part]
-        check(msgs and not msgs[0][0] and parts and sum(parts) / len(parts) < msgs[0][1] / 2,
-              f"his first screen comes whole, then only what changed ({msgs[0][1] if msgs else 0} characters whole, {len(parts)} parts of {sum(parts) // max(1, len(parts))} on average)")
+        # every later message a part, and the small changes sent small. How large the largest part is depends on how
+        # far the GM's script got before he looked: his turn redraws the whole map (the hexes he can reach), so an
+        # average against the whole screen failed now and then on a slower runner.
+        check(msgs and not msgs[0][0] and parts and len(parts) == len(msgs) - 1 and min(parts) < msgs[0][1] / 10,
+              f"his first screen comes whole, then only what changed ({msgs[0][1] if msgs else 0} characters whole, {len(parts)} parts of {min(parts, default=0)} to {max(parts, default=0)})")
         gm.wait_for_timeout(300)
         same = pl.evaluate("() => GUEST.screen"), gm.evaluate(f"() => netSeatScreen('side:{me}')")
         check(all(same[0].get(k) == same[1].get(k) for k in ("chars", "map", "bar", "log", "events", "result")), "the screen put together from the parts is the GM's page's screen for his side")
