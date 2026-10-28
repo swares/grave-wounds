@@ -287,7 +287,10 @@ careers:
     wound: 15
     wound_weapon: mortar_artillery
     kit: {default: ww2_rifleman}
-    weapon: {default: pistol_smg}
+    # unarmed: regimental bearers were issued stretchers in place of rifles, and RAMC men were forbidden to bear
+    # arms (J. Meyer, An Equal Burden: The Men of the Royal Army Medical Corps in the First World War, 2019, ch. "Carrying, Cleaning, Caring": https://www.ncbi.nlm.nih.gov/books/NBK541851/).
+    # The British practice; the other armies are taken to be the same.
+    weapon: {default: punch}
     terms:
       - {to: 20, skill: craft, text: "Worked in a casualty clearing station."}
       - {to: 40, skill: leechcraft, text: "Dressed wounds at a regimental aid post."}
