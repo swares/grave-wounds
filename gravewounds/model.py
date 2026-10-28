@@ -117,6 +117,7 @@ class Data:
     hazards: dict = field(default_factory=dict)     # swimming, climbing, falls, chases (data/hazards.yaml)
     languages: dict = field(default_factory=dict)   # tongues by army, bands, passing (data/languages.yaml)
     patrons: dict = field(default_factory=dict)     # standing, favours, a patron's fate (data/patrons.yaml)
+    papers: dict = field(default_factory=dict)      # each era's game handouts and epilogues (data/papers.yaml)
     uses: dict = field(default_factory=dict)        # skills that do things on the travel map (data/uses.yaml)
     weights: dict = field(default_factory=dict)     # item weights, coin, pack animals (data/weights.yaml)
     supplies: dict = field(default_factory=dict)    # what a force carries between fights (data/supplies.yaml)
@@ -187,6 +188,7 @@ def load(root: str | Path = "data") -> Data:
     hazards = _optional(root / "hazards.yaml", {})
     languages = _optional(root / "languages.yaml", {})
     patrons = _optional(root / "patrons.yaml", {})
+    papers = _optional(root / "papers.yaml", {})
     uses = _optional(root / "uses.yaml", {})
     weights = _optional(root / "weights.yaml", {})
     supplies = _optional(root / "supplies.yaml", {})
@@ -230,6 +232,7 @@ def load(root: str | Path = "data") -> Data:
         hazards=hazards,
         languages=languages,
         patrons=patrons,
+        papers=papers,
         uses=uses,
         weights=weights,
         supplies=supplies,
@@ -674,6 +677,7 @@ def validate(d: Data) -> None:
                 errors.append(f"training.yaml: course {k['id']} names an unknown era {eid}")
             elif k.get("rank") and k["rank"] not in {r["id"] for r in ((d.ranks or {}).get("eras", {}).get(eid) or {}).get("ladder", [])}:
                 errors.append(f"training.yaml: course {k['id']} opens {k['rank']}, not a rank in {eid}")
+    errors += _papers_errors(d)
     if d.patrons:
         PT, diffs = d.patrons, {x["id"] for x in d.checks.get("difficulty", [])}
         for f in PT["favours"]:
@@ -1152,6 +1156,45 @@ def _stall_errors(commander: dict) -> list[str]:
     if isinstance(st.get("moves"), int) and st["moves"] > 0 and isinstance(st.get("down"), (int, float)) and st["down"] >= 0:
         return []
     return ["units.yaml: commander.stall needs moves (a positive whole number) and down (a % of 0 or more)"]
+
+
+EPILOGUE_KINDS = ("alive", "dead", "deserted")
+EPILOGUE_WHEN = ("any", "lasting", "whole")
+
+
+def _papers_errors(d: Data) -> list[str]:
+    """data/papers.yaml: for each team era, its handouts' titles and look, and its epilogues: for each kind
+    (alive, dead, deserted) rows of {w (weight), text, when: any | lasting | whole, regions (optional)}."""
+    P = (d.papers or {}).get("eras")
+    if not P:
+        return []
+    errors = [f"papers.yaml: no team era {eid}" for eid in P if eid not in d.teams]
+    for eid, E in P.items():
+        if eid in d.teams:
+            errors += _era_papers_errors(d, eid, E)
+    return errors
+
+
+def _era_papers_errors(d: Data, eid: str, era: dict) -> list[str]:
+    """One era's papers: a title for each of its three handouts, and rows for each kind of epilogue."""
+    where, docs = f"papers.yaml: {eid}", era.get("docs") or {}
+    errors = [f"{where}: docs needs a title for {k}" for k in ("muster", "surgeon", "discharge") if not isinstance((docs.get(k) or {}).get("title"), str)]
+    regions = {r["id"] for r in d.teams[eid]["regions"]}
+    for kind in EPILOGUE_KINDS:
+        rows = (era.get("epilogues") or {}).get(kind)
+        if not isinstance(rows, list) or not rows:
+            errors.append(f"{where}: epilogues needs rows for {kind}")
+            continue
+        errors += [f"{where}: {kind}: {e}" for e in (_epilogue_row_error(r, regions) for r in rows) if e]
+    return errors
+
+
+def _epilogue_row_error(r, regions: set) -> str | None:
+    """One epilogue row: w (a whole number), text and when (any, lasting or whole), and known regions if it names them."""
+    if not (isinstance(r, dict) and isinstance(r.get("text"), str) and isinstance(r.get("w"), int) and r["w"] > 0 and r.get("when", "any") in EPILOGUE_WHEN):
+        return "a row needs w (a whole number), text and when (any, lasting or whole)"
+    unknown = set(r.get("regions") or []) - regions
+    return f"a row names unknown regions {sorted(unknown)}" if unknown else None
 
 
 def _apply_accounts(fields: dict, accounts: dict) -> None:

@@ -102,7 +102,26 @@ label.radio input{margin-top:4px}
 .work .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .q-green{color:var(--muted)}.q-veteran{color:var(--blood);font-weight:600}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.papers{position:fixed;inset:24px;z-index:20;overflow:auto;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:16px;box-shadow:0 8px 32px rgba(0,0,0,.3);display:grid;gap:16px;align-content:start}
+.papers:not([open]){display:none}
+.papers .toolbar{position:sticky;top:-16px;background:var(--bg);padding:6px 0;z-index:1}
+.paper{background:#f4ecd8;color:#2b2216;border:1px solid #b9a77f;padding:18px 22px;max-width:720px;width:100%;margin:0 auto;box-sizing:border-box;font-family:Georgia,"Times New Roman",serif;break-inside:avoid;page-break-after:always}
+.paper h3{margin:.2em 0 .4em;text-align:center;letter-spacing:.06em;font-variant:small-caps;font-size:1.25rem}
+.paper h4{margin:.8em 0 .3em;font-variant:small-caps;letter-spacing:.04em}
+.paper table{width:100%;border-collapse:collapse;font-size:.95rem}
+.paper th,.paper td{border-bottom:1px dotted #8a7a58;padding:4px 6px;text-align:left;vertical-align:top}
+.paper th{width:28%;font-weight:600}
+.paper .lead{text-align:center;font-style:italic;margin:0 0 .6em}
+.paper .handout{margin:0 0 8px;padding:3px 6px;border:1px dashed #7a2a1a;color:#7a2a1a;font:600 .72rem/1.3 system-ui,sans-serif;text-transform:uppercase;letter-spacing:.08em;text-align:center}
+.look-vellum .paper{background:#efe3c4;font-family:"Palatino Linotype",Palatino,Georgia,serif}
+.look-typed .paper{background:#f7f5ee;color:#1d1d1d;border-color:#999;font-family:"Courier New",Courier,monospace}
+.look-typed .paper h3,.look-typed .paper h4{font-variant:normal;text-transform:uppercase}
+.look-told .paper{background:#f1e6d2;font-family:Georgia,serif}
+@media (max-width:560px){.papers{inset:0;border-radius:0;padding:10px}.paper{padding:12px}}
 @media print{
+  body.papers-open > .wrap{display:none}
+  body.papers-open .papers{position:static;inset:auto;margin:0;width:auto;max-width:none;height:auto;max-height:none;overflow:visible;box-shadow:none;border:0;padding:0;display:block;background:#fff}
+  body.papers-open .papers .toolbar{display:none}
   body{background:#fff;color:#000;padding:0}
   header nav,.controls,.sheet .tools,.work,.spend,.ledger button{display:none}
   .grid{grid-template-columns:1fr}
@@ -112,6 +131,7 @@ label.radio input{margin-top:4px}
 </style>
 <script>/*__FIGURE_JS__*/</script>
 <body>
+<dialog id="papers" class="papers" aria-label="His papers"></dialog>
 <div class="wrap">
   <header>
     <div>
@@ -199,7 +219,7 @@ let S = { era: T.id, region: T.regions[0].id, template: T.templates[0].id, mode:
   fcounts: tplFollowers(T.templates[0].id), crew: [] };
 let SAVED_AS = null;                                 // this page's state as it last wrote or read it: another page changing it means a reload, not a save over it
 function save(){
-  try { SAVED_AS = JSON.stringify(S); localStorage.setItem(KEY, SAVED_AS); localStorage.setItem("gravewounds-interpreter", JSON.stringify(S.interp || null)) } catch (e) { /* storage may be off: the page still works */ }
+  try { SAVED_AS = JSON.stringify({ ...S, papers: null }); localStorage.setItem(KEY, SAVED_AS); localStorage.setItem("gravewounds-interpreter", JSON.stringify(S.interp || null)) } catch (e) { /* storage may be off: the page still works */ }
   pushPurses();
 }
 /* Each character's purse is shared with the wound roller and the travel map (purse.js): this page
@@ -284,6 +304,7 @@ function render(){
   renderStress();
   renderChecks();
   renderLosses();
+  renderPapers();
   $("#msg").textContent = S.msg;
   $("#sheets").innerHTML = S.team.length ? S.team.map(sheetHtml).join("") : `<p class="muted">Pick where they come from and a team, then roll.</p>`;
   save();
@@ -398,7 +419,7 @@ function sheetHtml(c, i){
     <ol class="full life">${life}</ol>
     ${c.joined ? `<div class="full muted">${esc(joinedText(c))}</div>` : ""}
     ${S.losing === i ? loseForm(c, i) : ""}
-    <div class="tools"><button class="small" data-lose="${i}" title="${pron("Killed, taken, deserted or sent home: take him off the team and replace him", sx)}">Lost…</button><button class="small" data-reroll="${i}">${pron("Reroll him", sx)}</button></div>
+    <div class="tools"><button class="small" data-papers="${i}" title="${pron("His papers: a muster entry and a surgeon's card, game handouts to print", sx)}">Papers</button><button class="small" data-lose="${i}" title="${pron("Killed, taken, deserted, sent home or discharged: take him off the team and replace him", sx)}">Lost…</button><button class="small" data-reroll="${i}">${pron("Reroll him", sx)}</button></div>
   </article>`;
 }
 /* Rank, pay and loot (team.js: rkStart, rkWage, rkPromote, rkLoot; data TD.ranks). Each man's
@@ -697,6 +718,7 @@ function prRejoin(c, how){                          // back with the team
 function prDies(c, why){
   S.prisoners = S.prisoners.filter(x => x !== c);
   c.prison = null; c.lost = { why, auto: false, slot: S.team.length, settled: null, replaced: null };
+  c.epilogue = epRoll(T.id, c, why, realDice);
   S.losses = [...(S.losses || []), c];
   prLog(`${c.name} ${why}.`);
 }
@@ -1421,6 +1443,7 @@ function loseMember(i, why, auto = false){        // off the team and onto the l
   (S.losses ||= []).push(c);
   if (rkLadder().length && rkIndex(c.rank) > 0) (S.vacancies ||= {})[c.rank] = (S.vacancies[c.rank] || 0) + 1;   // his rank falls vacant
   if (why === "taken prisoner" && TD.prisoners && prContexts(T.id).length) toPrisoners(c);   // not lost yet: a prisoner, whose fate is rolled
+  else c.epilogue = epRoll(T.id, c, why, realDice);        // what became of him
   if (c.leader && S.team.length && /killed|died/i.test(why)) leaderKilled(c);
   if (c.leader && S.team.length){
     c.leader = false;
@@ -1433,9 +1456,14 @@ function hireHaggle(k, P){                         // the box to haggle a hired 
   if (!TD.checks) return "";
   return " " + tick(`data-rhaggle="${k}"`, P.haggle, "haggle", "The payer's Persuade against the man's: a tenth off, a quarter on a critical; a fumble and he will not sign today");
 }
+function lossHead(c, career, k){                    // his name, how he was lost, what became of him, and his papers
+  const L = c.lost, epi = c.epilogue ? " <i>" + esc(c.epilogue.text) + "</i>" : "", by = L.auto ? " (from the roller or travel map)" : "";
+  const terms = c.terms + (c.terms > 1 ? " terms" : " term");
+  return `<b>${esc(c.name)}</b>, ${esc(career.name.toLowerCase())}, ${terms}: ${esc(L.why)}${by}.${epi} <button class="small" data-papers-lost="${k}">Papers</button>`;
+}
 function lossHtml(c, k){                          // one lost man: settle his purse, then replace him
   const career = byId(T.careers, c.career), L = c.lost, left = purseFor(c.region, c.terms, c.ledger).days;
-  const head = `<b>${esc(c.name)}</b>, ${esc(career.name.toLowerCase())}, ${c.terms} term${c.terms > 1 ? "s" : ""}: ${esc(L.why)}${L.auto ? " (from the roller or travel map)" : ""}.`;
+  const head = lossHead(c, career, k);
   if (!L.settled){
     const E = effectsFor(c.region), pick = L.practice || E.practice;
     const opt = (v, t) => `<option value="${v}"${v === pick ? " selected" : ""}>${t}${v === E.practice ? " (the era's practice)" : ""}</option>`;
@@ -1460,6 +1488,68 @@ function lossHtml(c, k){                          // one lost man: settle his pu
   return `<li>${head} ${settled[0].toUpperCase() + settled.slice(1)}.
     <div class="spend">${sel} ${cs} · ${ts}${payer}${wait} <button class="small" data-replace="${k}">Replace him</button></div>
     ${o.what ? `<div class="muted">${esc(o.what)}</div>` : ""}</li>`;
+}
+/* His papers: game handouts in his era's style (data/papers.yaml: TD.papers[era].docs), from his sheet,
+   the roller's record of his wounds, and, once he has left the team, how he left and what became of him.
+   Each says it is a game handout, not a record: the headings are the game's own, with no real form. */
+const PAPERS_DEFAULT = { look: "printed", docs: { muster: { title: "Muster entry" }, surgeon: { title: "Surgeon's card" }, discharge: { title: "Discharge", dead_title: "Notice of death" } } };
+const HANDOUT = `<p class="handout">A game handout from Grave Wounds. Not a historical record.</p>`;
+function papersOf(){ return TD.papers?.[T.id] || PAPERS_DEFAULT }
+function rollerWounds(c){                            // {open: [{loc, sev, mech, treated}], healed: [loc]} from the roller's fighters for him
+  let chars = [];
+  try{ chars = JSON.parse(localStorage.getItem("gravewounds-chars") || "{}").chars || [] }catch(e){ console.warn("roller save unreadable", e) }
+  const f = chars.find(x => x.sheet && x.sheet.pid && x.sheet.pid === c.pid);
+  return { open: f ? f.wounds || [] : [], healed: f ? (f.scars || []).map(w => w.loc) : [] };
+}
+const locName = id => (TD.locs[id]?.name || id);
+function paperRow(k, v){ return v ? `<tr><th>${esc(k)}</th><td>${v}</td></tr>` : "" }
+function musterDoc(c, D){                            // who he is, where from, his service as a lifepath, his arms
+  const sx = c.sex || "m", career = careerOf(c), w = TD.weapons[c.weapon], kit = TD.kits[c.kit];
+  const life = c.events.map((e, k) => `<li>Term ${k + 1}: ${esc(pron(e, sx))}</li>`).join("");
+  const rank = rankLine(c);
+  const intro = D.intro ? '<p class="lead">' + esc(D.intro) + "</p>" : "";
+  return `<article class="paper">${HANDOUT}<h3>${esc(D.title)}</h3>${intro}<table>
+    ${paperRow("Name", esc(c.name))}${paperRow("From", esc(c.origin) + ", " + esc(byId(T.regions, c.region).name))}
+    ${paperRow("Serving as", esc(rank ? rank + ", " + career.name.toLowerCase() : career.name))}${paperRow("Age", String(c.age))}
+    ${paperRow("Marks", esc(pron(c.trait, sx)) + "; " + esc(pron(c.drawback, sx).toLowerCase()))}
+    ${paperRow("Arms", esc(w.name) + ", " + esc(kit.name))}</table>
+    <h4>${esc(D.service || "Service")}</h4><ol>${life || "<li>Newly joined.</li>"}</ol></article>`;
+}
+function surgeonDoc(c, D){                           // every wound: his old ones, the healed and the open ones from the roller
+  const R = rollerWounds(c), rows = [];
+  for (const w of c.old || []) rows.push([locName(w.loc), `an old wound from ${/^[aeiou]/i.test(TD.weapons[w.weapon].short) ? "an" : "a"} ${TD.weapons[w.weapon].short.toLowerCase()}`, w.kind === "lasting" ? `a lasting hurt, ${T.lasting} off ${statName(w.stat)}` : "healed, a scar"]);
+  for (const loc of R.healed) rows.push([locName(loc), "a wound on campaign", "healed, a scar"]);
+  for (const w of R.open) rows.push([locName(w.loc), `${w.sev} ${w.mech || ""} wound`.replace(/\s+/g, " ").trim(), w.treated ? `treated: ${w.treated}` : "open, not yet treated"]);
+  const body = rows.length ? rows.map(([a, b, x]) => `<tr><th>${esc(a)}</th><td>${esc(b)}</td><td>${esc(x)}</td></tr>`).join("") : `<tr><td colspan="3">${esc(D.none || "No wounds entered.")}</td></tr>`;
+  return `<article class="paper">${HANDOUT}<h3>${esc(D.title)}</h3><p class="lead">${esc(c.name)}</p>
+    <table><thead><tr><th>Where</th><th>What</th><th>How it went</th></tr></thead><tbody>${body}</tbody></table></article>`;
+}
+function dischargeDoc(c, D){                         // how he left the team, and what became of him
+  const why = c.lost.why, dead = epKind(why) === "dead";
+  const served = c.terms + (c.terms > 1 ? " terms" : " term") + (c.xp_terms ? ", and " + c.xp_terms + " more with the team" : "");
+  const after = c.epilogue ? "<h4>" + esc(D.after || "What became of him") + "</h4><p>" + esc(c.epilogue.text) + "</p>" : "";
+  return `<article class="paper">${HANDOUT}<h3>${esc(dead ? D.dead_title || D.title : D.title)}</h3><table>
+    ${paperRow("Name", esc(c.name))}${paperRow("Served", esc(served))}${paperRow(dead ? "Died" : "Left", esc(why))}</table>
+    ${after}</article>`;
+}
+function papersMan(P){                              // the man whose papers are open: on the team, or among the losses
+  if (!P) return null;
+  return P.team === undefined ? (S.losses || [])[P.lost] : S.team[P.team];
+}
+function renderPapers(){
+  const el = $("#papers"), c = papersMan(S.papers);
+  document.body.classList.toggle("papers-open", !!c);
+  if (!c){
+    S.papers = null; el.innerHTML = "";
+    if (el.open) el.close();
+    return;
+  }
+  if (!el.open) el.show();
+  const E = papersOf(), R = E.regions?.[c.region] || {}, D = {};
+  for (const k of ["muster", "surgeon", "discharge"]) D[k] = { ...PAPERS_DEFAULT.docs[k], ...(E.docs || {})[k], ...R[k] };   // the region's own papers over the era's
+  const docs = [musterDoc(c, D.muster), surgeonDoc(c, D.surgeon), c.lost ? dischargeDoc(c, D.discharge) : ""].join("");
+  el.className = "papers look-" + (E.look || "printed");
+  el.innerHTML = `<div class="toolbar"><b>${esc(c.name)}: ${esc(pron("his papers", c.sex || "m"))}</b><button class="small" id="btn-papers-print">Print</button><button class="small" id="btn-papers-close">Close</button></div>${docs}`;
 }
 function renderLosses(){
   const L = S.losses || [], box = $("#losses");
@@ -1651,6 +1741,7 @@ function init(){
     render();
   });
   $("#losses").addEventListener("click", e => {
+    const pl = e.target.closest("button[data-papers-lost]"); if (pl){ S.papers = { lost: +pl.dataset.papersLost }; return render() }
     const s = e.target.closest("button[data-settle]"); if (s){ settleLoss(+s.dataset.settle); return render() }
     const r = e.target.closest("button[data-replace]"); if (r){ replaceLoss(+r.dataset.replace); return render() }
   });
@@ -1810,8 +1901,15 @@ function init(){
   $("#btn-roll").onclick = rollTeam;
   $("#btn-send").onclick = () => sendToRoller();   // not the click event as the page to go to
   $("#btn-print").onclick = () => window.print();
+  $("#papers").addEventListener("click", e => {
+    if (e.target.id === "btn-papers-print") window.print();
+    else if (e.target.id === "btn-papers-close"){ S.papers = null; render() }
+  });
+  document.addEventListener("keydown", e => { if (e.key === "Escape" && S.papers){ S.papers = null; render() } });
+  $("#papers").addEventListener("close", () => { if (S.papers){ S.papers = null; render() } });
   $("#sheets").addEventListener("click", e => {
     const r = e.target.closest("button[data-reroll]"); if (r) return reroll(+r.dataset.reroll);
+    const pp = e.target.closest("button[data-papers]"); if (pp){ S.papers = { team: +pp.dataset.papers }; return render() }
     const lo = e.target.closest("button[data-lose]"); if (lo){ S.losing = +lo.dataset.lose; return render() }
     if (e.target.closest("button[data-lose-cancel]")){ S.losing = null; return render() }
     const lok = e.target.closest("button[data-lose-ok]");
