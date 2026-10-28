@@ -29,7 +29,7 @@ objective: {at: [49, 40], side: 1, name: "the wagon-box corral", radius: 1}
 # Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
 # then come on where they are drawn, or at their side's entry edge if that is taken.
 phases:
-  - {name: "The mounted charge", at: 1, note: "About 09:15 some 800 mounted warriors surround the corral and are driven back (Powell's report)."}
+  - {name: "The mounted charge", at: 1, note: "About 09:15 some 800 mounted warriors surround the corral and are driven back (WyoHistory)."}
   - {name: "The foot attacks", at: 16, note: "The warriors strip on a hill and attack on foot, for three hours (est. for the start); Jenness is killed in the second attack.", arrive: ["Warriors on foot from the ravine"]}
   - {name: "Smith's relief is seen", at: 196, note: "About 12:30 the relief from the fort is seen and the warriors draw off.", arrive: ["Major Smith's relief column"]}
 ground: |

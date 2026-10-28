@@ -52,7 +52,7 @@ const units = [
 
 writeField({
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
-    { name: "The mounted charge", at: 1, note: "About 09:15 some 800 mounted warriors surround the corral and are driven back (Powell's report)." },
+    { name: "The mounted charge", at: 1, note: "About 09:15 some 800 mounted warriors surround the corral and are driven back (WyoHistory)." },
     { name: "The foot attacks", at: 16, note: "The warriors strip on a hill and attack on foot, for three hours (est. for the start); Jenness is killed in the second attack.", arrive: ["Warriors on foot from the ravine"] },
     { name: "Smith's relief is seen", at: 196, note: "About 12:30 the relief from the fort is seen and the warriors draw off.", arrive: ["Major Smith's relief column"] },
   ],
