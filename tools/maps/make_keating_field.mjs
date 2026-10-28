@@ -75,6 +75,10 @@ writeField({
   weather: "{cond: fair, wind: calm, light: dusk, ground: {mud: 0, snow: 0}}",
   grid, units,
   hexWorks: { wire: WIRE },
+  phases: [   // an exchange is about a minute from 05:58
+    { name: "The attack at dawn", at: 1, note: "05:58: some 300 insurgents open fire on the outpost from the slopes all round it." },
+    { name: "Air support arrives", at: 61, note: "About 07:00, barely an hour in: Apaches and fixed-wing aircraft arrive (the Army's account of Romesha's Medal of Honor).", arrive: ["Apaches (AH-64)", "A-10s, F-15Es and a B-1B (later in the morning)"] },
+  ],
   support: [
     { name: "120 mm mortars at Observation Post Fritsche (the outpost's own pit was knocked out early)", side: 0, kind: "mortar", tubes: 2 },
     { name: "Apaches (AH-64)", side: 0, kind: "gunship", tubes: 2 },

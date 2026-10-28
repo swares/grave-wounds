@@ -67,14 +67,6 @@ When an item is done, delete it here and note it in the pull request that closes
   `dist/book-late-wars.html`). Each but the medieval book ends with a worked example (the
   medieval retinue runs through the Rules), worked by `gravewounds/book_examples.py` and
   `rulebook_later.example`. Still to come: the pictures' files, and Sources and Methods.
-  To come back to from the worked examples (#372):
-  - **The Apaches at Keating.** The accounts differ on when they came (about 45 minutes in, by
-    the Long War Journal; by the afternoon, by Wikipedia), so the example gives no time. Settle it
-    if a better source turns up, and give the field's support a time.
-  - **The First World War stretcher-bearer's weapon.** `data/teams/wwi.yaml` gives the
-    `stretcher_bearer` career a pistol or sub-machine gun by default. The British had no
-    sub-machine guns in 1914-18, and stretcher-bearers mostly went unarmed. The example does not
-    name his weapon, but the team builder gives him one.
   It summarises rather than repeats the docs: the travel map's battle set-up and the
   battlefields are covered in the docs and on the pages, not in the book. It ends with an index of the terms set in bold, each linked to its sections, and prints page numbers (in Chrome and Edge; other browsers may leave them off). The index has no page numbers of its own, only section names.
 - **Playing alone, first cut.** The Rules' *Playing alone* chapter (`templates/rules/15-alone.md`)

@@ -27,6 +27,11 @@ weather: {cond: fair, wind: calm, light: dusk, ground: {mud: 0, snow: 0}}
 objective: {at: [50, 56], side: 1, name: "the outpost", radius: 8}
 # How long the fight went on, in exchanges from the first, by the account (the last fighters cleared from the outpost about 17:10, from 06:00 (the Army gives 10 to 13 hours of fighting)): self-play runs at least this long (never past commander.self_play.most).
 ends: 671
+# Phases: each begins at an exchange (about a minute each, the first 1); the units it lists wait off the map until then,
+# then come on where they are drawn, or at their side's entry edge if that is taken.
+phases:
+  - {name: "The attack at dawn", at: 1, note: "05:58: some 300 insurgents open fire on the outpost from the slopes all round it."}
+  - {name: "Air support arrives", at: 61, note: "About 07:00, barely an hour in: Apaches and fixed-wing aircraft arrive (the Army's account of Romesha's Medal of Honor).", arrive: ["Apaches (AH-64)", "A-10s, F-15Es and a B-1B (later in the morning)"]}
 ground: |
   hhFFhFFFFhFFFhhhFhFFFFFFwwwwwrrrorroroorrororrrrrorrorrrooorrooooorrrrorhFFhhFhFFhFhFFhFFFFFFFFhhhFFhFFFFhhhFFhFhhFFFFhh
   hhFFFFhFFFFFFFFFFFFFFhFhwwwwwrrrorroroororrrrrorrrrrorrrrroooorrorrorrooFhhhFFFFFFhFFFFFhhhhFhFhFFFhhFFhFhhhFFhFFFhhhFFF
