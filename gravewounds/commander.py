@@ -1015,18 +1015,26 @@ def _fire_aim(d: Data, us: list, side, field: dict | None, known: dict, bk: tupl
     plan = attacking and bool(P) and not K.get("air") and not K.get("direct")
     best = None
     ours = [u for u in us if u["side"] == side and u["men"] > 0 and u["state"] != "fled"]
+    if not ours:
+        return None
     for j, e in enumerate(us):
-        if e["side"] == side or not ours:
+        if e["side"] == side:
             continue
         h, planned = _aim_at(d, us, (side, field, known), (j, e), plan)
-        extra = P["scatter"] if planned else 0
-        if h is None or not U.in_reach(d, b, h) or _too_near(d, ours, h, K["radius"] + _air_scatter(d, us, field, bk, h) + extra):
+        if h is None or not _clear_shot(d, (us, ours, field), bk, h, P["scatter"] if planned else 0):
             continue
         talked = bool(K.get("air")) and U._fac_sees(d, us, field, b, h)
         key = (not talked, -threat_score(d, _nearest(ours, e["pos"]), e, e), j)
         if best is None or key < best[0]:
             best = (key, (j, list(h), planned))
     return None if best is None else best[1]
+
+
+def _clear_shot(d: Data, uof: tuple, bk: tuple, h, extra: int) -> bool:
+    """Battery b reaches hex h, with none of the side's men within the burst and scatter (and extra)."""
+    us, ours, field = uof
+    b, K = bk
+    return U.in_reach(d, b, h) and not _too_near(d, ours, h, K["radius"] + _air_scatter(d, us, field, bk, h) + extra)
 
 
 def _aim_at(d: Data, us: list, sfk: tuple, je: tuple, plan: bool) -> tuple:
