@@ -44,7 +44,7 @@ The wounded could not be flown out while the fight went on. At about 07:30 Carte
 - **The attackers.** The investigation and both citations give about 300. The *American Legion* magazine gives nearly 350; the Long War Journal more than 350.
 - **The defenders.** Wikipedia's infobox gives 53 Americans, 42 Afghan soldiers and 2 Latvians; the Army's 2013 article 50 Americans and 2 Latvians, with 19 Americans at Fritsche; the *American Legion* fewer than 60 cavalrymen; Abbas about 50 Americans and 90 Afghan police.
 - **The losses.** All give 8 Americans killed. The investigation gives 22 wounded, all but three back on duty; Wikipedia 27, the number of Purple Hearts awarded; Abbas 24. Wikipedia gives 8 Afghan soldiers and 2 guards wounded; the Associated Press and the Long War Journal up to 7 Afghans killed. The AP says the Taliban took 15 Afghan police, among them the police chief. The investigation gives at least 150 fighters killed; Wikipedia and the *American Legion* 150 to 200.
-- **The helicopters.** The Long War Journal, after an American officer, has them overhead about 45 minutes in; Wikipedia has them by the afternoon.
+- **The helicopters.** The Army's account of Romesha's Medal of Honor has the air support, Apaches and several kinds of fixed-wing aircraft, arrive when barely an hour had passed since the attack began shortly before 06:00. The Long War Journal, after an American officer, has them overhead about 45 minutes in; *Air Force Magazine* has four F-15Es and several Apaches over the outpost by 08:00, and says the military would not say when air power first arrived; Wikipedia has them by the afternoon. The game follows the Army: they come about an hour in.
 - **How long it lasted.** The Army's 2013 article says about 10 hours, the *American Legion* about 12, the Romesha page 13. The game runs until about 17:10, when the last fighters were cleared from the outpost.
 - **Where they broke in.** The Defense Media Network has the west side breached first; Wikipedia names the gate, the east side and the latrines.
 - **The Taliban's account.** The Taliban, in *Al-Sumud*, called Keating one of the biggest American bases, which Abbas thinks overstated. Zabiullah Mujahid claimed the attack and said the Americans had destroyed the bases and would not come back.
@@ -61,6 +61,8 @@ The wounded could not be flown out while the fight went on. At about 07:30 Carte
     the Medal of Honor in 2013.
 
 ### Sources
+- US Army, "Medal of Honor nominee Romesha leads charge to retake COP Keating", army.mil (2013): https://www.army.mil/article/95866/Medal_of_Honor_nominee_Romesha_leads_charge_to_retake_COP_Keating/
+- A. McCullough, "Saving Outpost Keating", *Air Force Magazine* (October 2010): https://www.airandspaceforces.com/PDF/MagazineArchive/Documents/2010/October%202010/1010keating.pdf
 - Army Regulation 15-6 investigation into the attack on COP Keating, executive summary (released February 2010), as quoted by B. Roggio, "Army releases report on battle at Combat Outpost Keating", *Long War Journal* (6 February 2010): https://www.longwarjournal.org/?p=31984
 - "COP Keating Report Complete", Military.com DefenseTech (5 February 2010), quoting the ISAF release: https://www.military.com/defensetech/2010/02/05/cop-keating-report-complete
 - Medal of Honor citation of Staff Sergeant Clinton L. Romesha, army.mil: https://www.army.mil/medalofhonor/romesha/citation.html, and the Romesha pages: https://www.army.mil/medalofhonor/romesha/

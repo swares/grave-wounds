@@ -791,27 +791,27 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 2.76
+      "ratio": 2.13
      },
      "drew": 0.0,
-     "lost_share": 0.61,
+     "lost_share": 0.651,
      "side": "Coalition",
      "stance": "hold",
-     "won": 0.75
+     "won": 0.58
     },
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.37
+      "ratio": 0.51
      },
      "drew": 0.0,
-     "lost_share": 0.4,
+     "lost_share": 0.406,
      "side": "Insurgents",
      "stance": "attack",
-     "won": 0.25
+     "won": 0.42
     }
    ],
-   "stamp": "72e77b3cc441"
+   "stamp": "dd087256d93b"
   },
   "khesanh-1968": {
    "runs": 12,

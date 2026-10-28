@@ -24,6 +24,12 @@ keating-2009:
       options:
         - {label: "About 300", source: "the investigation and both Medal of Honor citations"}
         - {label: "More than 350", source: "the Long War Journal; the American Legion magazine: nearly 350", changes: [{side: 1, scale: 1.15}]}
+    - id: air
+      question: "When did the Apaches and the jets arrive?"
+      options:
+        - {label: "About an hour in", source: "the Army's account of Romesha's Medal of Honor"}
+        - {label: "About 45 minutes in", source: "the Long War Journal, after an American officer", changes: [{phase: "Air support arrives", at: 46}]}
+        - {label: "By the afternoon", source: "Wikipedia", changes: [{phase: "Air support arrives", at: 361}]}
 
 foxhill-1950:
     - id: chinese
