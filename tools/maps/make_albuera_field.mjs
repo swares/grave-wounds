@@ -55,6 +55,11 @@ writeField({
   travel: { map: "albuera-1811", place: "La Albuera", within: 2, sides: ["Allies", "France"] },
   weather: "{cond: overcast, wind: breeze, ground: {mud: 0, snow: 0}}",
   grid, units,
+  phases: [   // the squall on an event: no source gives its time; Oman, Fortescue and Napier put it at the end of Colborne's fire-fight (claude/albuera-times-research)
+    { name: "Soult's flank attack", at: 1, note: "Girard's and Gazan's divisions come up onto the heights in heavy columns; Zayas's Spaniards turn to face them." },
+    { name: "The squall", at: 90, when: { fires: "Colborne's brigade", wait: 6 }, weather: { cond: "storm", wind: "strong" }, note: "A squall of rain and hail blows in from the north at the end of Colborne's fire-fight, and in it the Vistula Lancers and the 2nd Hussars come round the open flank (six exchanges after Colborne's brigade first fires, or at 90 at the latest: our reading, no source gives the time)." },
+    { name: "The storm clears", at: 102, when: { after: 12 }, weather: { cond: "overcast", wind: "breeze" }, note: "After a time the storm clears off (Fortescue): about 12 exchanges, our estimate." },
+  ],
   header: [
     `The field of Albuera, 16 May 1811 (Gregorian), at 10 m a hex: ${COLS} x ${ROWS} hexes, about 1500 m`,
     "east to west and 2000 m north to south, north at the top: from the village south over the",
@@ -70,8 +75,8 @@ writeField({
     "came up on their right and was caught in line by the Polish lancers and hussars in a sudden",
     "hailstorm and nearly destroyed. Hoghton's and Abercrombie's brigades took the Spaniards'",
     "place and stood exchanging volleys at short range until most of their men were down; Cole's",
-    "division, coming up on the right, drove the French off the heights. The hailstorm is not",
-    "set: the GM can bring it in (storm) for the lancers' charge. The guns: 20 French with the",
+    "division, coming up on the right, drove the French off the heights. The hailstorm comes",
+    "in a phase, six exchanges after Colborne's brigade first fires, and clears 12 later. The guns: 20 French with the",
     "columns and 12 allied on the heights (round figures).",
   ],
 });

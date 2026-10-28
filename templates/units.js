@@ -3975,11 +3975,25 @@ function lightOfPhase(B, st, out){                 // a phase that sets the ligh
   B.field.weather = { ...B.field.weather, light: st.light };
   (out.light || (out.light = {}))[B.stageNo] = FD.weather.light.levels[st.light].name;
 }
+function phaseDue(B, st){                          // a phase's time has come: its exchange (at the latest), or sooner on an event: when {fires: a unit's name, wait} that many exchanges after the unit first fired; when {after} that many after the phase before began (as battle._phase_due)
+  if (st.at <= B.exchange) return true;
+  const on = st.when;
+  if (on?.fires){ const f = B.fired?.[on.fires]; return f !== undefined && f + (on.wait || 0) <= B.exchange }
+  if (on?.after !== undefined){ const s = B.stageBegan?.[B.stageNo]; return s !== undefined && s + on.after <= B.exchange }
+  return false;
+}
+function noteFired(B, log){                         // the exchange each unit first fired a volley (B.fired: {name: exchange}), for phases that begin on it (as battle._note_fired)
+  for (const l of log || []){
+    const n = l.kind === "volley" ? B.units[l.att]?.name : null;
+    if (n && !(n in (B.fired || (B.fired = {})))) B.fired[n] = B.exchange;
+  }
+}
 function advanceStages(B){                         // at the start of an exchange: begin each phase whose exchange has come, and bring on its units (any with no room wait for the next exchange): {begun: [phase index], came: [unit index], flying: [{name, left}], onCall: [name]} (as battle.advance_stages)
   const out = { begun: [], came: [], flying: [], onCall: [] };
   if (!B.stages) return out;
-  while (B.stageNo + 1 < B.stages.length && B.stages[B.stageNo + 1].at <= B.exchange){
+  while (B.stageNo + 1 < B.stages.length && phaseDue(B, B.stages[B.stageNo + 1])){
     B.stageNo += 1;
+    (B.stageBegan || (B.stageBegan = {}))[B.stageNo] = B.exchange;
     out.begun.push(B.stageNo);
     lightOfPhase(B, B.stages[B.stageNo], out);
   }
@@ -4043,6 +4057,7 @@ function endMove(B, rng){                          // the moving side's move is 
   }
   const lost = drifts(B, 1, rng), r = exchange(B.units, B.table, rng, B.field);
   B.units = r.units;
+  noteFired(B, r.log);
   B.exchange += 1;
   const stages = advanceStages(B);
   return { lost, log: r.log, stages, ran: startPhase(B, 0) };

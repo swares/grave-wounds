@@ -2163,6 +2163,12 @@ def _field_marker_errors(d: Data, f: dict, where: str) -> list[str]:
     errors += _phase_errors(f, where)
     errors += [f"{where}: phase {i + 1} sets unknown light {st['light']!r}" for i, st in enumerate(f.get("phases") or [])
                if isinstance(st, dict) and "light" in st and st["light"] not in (d.weather.get("light") or {}).get("levels", {})]
+    units = {u.get("name") for u in f.get("units", [])}
+    for i, st in enumerate(f.get("phases") or []):
+        on = st.get("when") if isinstance(st, dict) else None
+        if on is not None and not (isinstance(on, dict) and ((set(on) <= {"fires", "wait"} and on.get("fires") in units and isinstance(on.get("wait", 0), int))
+                                                              or (set(on) == {"after"} and isinstance(on["after"], int) and i > 0))):
+            errors.append(f"{where}: phase {i + 1} begins when {{fires: a unit of the field, wait: exchanges}} or {{after: exchanges after the phase before}}")
     winds = {w["id"] for w in d.weather.get("winds", [])}
     errors += [f"{where}: phase {i + 1} sets the weather as cond (a weather.yaml condition) and wind, both optional" for i, st in enumerate(f.get("phases") or [])
                if isinstance(st, dict) and "weather" in st and not (isinstance(st["weather"], dict) and set(st["weather"]) <= {"cond", "wind"}

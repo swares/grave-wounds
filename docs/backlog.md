@@ -68,9 +68,6 @@ When an item is done, delete it here and note it in the pull request that closes
   medieval retinue runs through the Rules), worked by `gravewounds/book_examples.py` and
   `rulebook_later.example`. Still to come: the pictures' files, and Sources and Methods.
   To come back to from the worked examples (#372):
-  - **Albuera's hailstorm.** The field opens overcast, and the example has the GM switch the
-    weather to a storm when the lancers come. A field cannot change its weather in a phase yet;
-    one that could would put the squall in the battlefield itself.
   - **The Apaches at Keating.** The accounts differ on when they came (about 45 minutes in, by
     the Long War Journal; by the afternoon, by Wikipedia), so the example gives no time. Settle it
     if a better source turns up, and give the field's support a time.

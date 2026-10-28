@@ -198,14 +198,39 @@ def place_arrival(d: Data, bt: dict, u: dict, k: int) -> dict | None:
     return None
 
 
+def _phase_due(bt: dict, st: dict) -> bool:
+    """A phase's time has come: its exchange (at the latest), or sooner on an event: when {fires: a
+    unit's name, wait} that many exchanges after the unit first fired; when {after} that many after
+    the phase before began."""
+    if st["at"] <= bt["exchange"]:
+        return True
+    on = st.get("when") or {}
+    if on.get("fires"):
+        f = (bt.get("fired") or {}).get(on["fires"])
+        return f is not None and f + on.get("wait", 0) <= bt["exchange"]
+    if "after" in on:
+        s = (bt.get("stageBegan") or {}).get(bt["stageNo"])
+        return s is not None and s + on["after"] <= bt["exchange"]
+    return False
+
+
+def _note_fired(bt: dict, log: list) -> None:
+    """The exchange each unit first fired a volley (bt.fired: {name: exchange}), for phases that begin on it."""
+    fired = bt.setdefault("fired", {})
+    for line in log or []:
+        if line.get("kind") == "volley" and line.get("att") is not None and line["att"] < len(bt["units"]):
+            fired.setdefault(bt["units"][line["att"]]["name"], bt["exchange"])
+
+
 def advance_stages(d: Data, bt: dict) -> dict:
     """At the start of an exchange: begin each phase whose exchange has come, and bring on its
     units (any with no room wait for the next exchange)."""
     out = {"begun": [], "came": [], "flying": [], "onCall": []}
     if not bt.get("stages"):
         return out
-    while bt["stageNo"] + 1 < len(bt["stages"]) and bt["stages"][bt["stageNo"] + 1]["at"] <= bt["exchange"]:
+    while bt["stageNo"] + 1 < len(bt["stages"]) and _phase_due(bt, bt["stages"][bt["stageNo"] + 1]):
         bt["stageNo"] += 1
+        bt.setdefault("stageBegan", {})[bt["stageNo"]] = bt["exchange"]
         out["begun"].append(bt["stageNo"])
         _light_of_phase(d, bt, bt["stages"][bt["stageNo"]], out)
     keep = []
@@ -317,6 +342,7 @@ def end_move(d: Data, bt: dict, rng) -> dict:
         return {"lost": lost, "log": None, "stages": None, "ran": start_phase(d, bt, 1)}
     lost = drifts(d, bt, 1, rng)
     bt["units"], log = U.exchange(d, bt["units"], bt["table"], rng, bt["field"])
+    _note_fired(bt, log)
     bt["exchange"] += 1
     stages = advance_stages(d, bt)
     return {"lost": lost, "log": log, "stages": stages, "ran": start_phase(d, bt, 0)}
