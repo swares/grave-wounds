@@ -1491,6 +1491,48 @@ const coldOf = field => FD.weather?.cold?.levels?.[field?.weather?.cold || ""] |
 function inTheCold(field, weapon, out){            // automatic weapons jam more in hard cold
   const L = coldOf(field);
   if (L && !out.blocked && FD.weather.cold.jams.includes(weapon)) out.misfire = Math.min(100, out.misfire + L.jam);
+  return stopped(field, weapon, out);
+}
+const RELY = () => UD.reliability || {};
+function stoppageOf(war, weapon){                  // % of an automatic weapon's fire lost to stoppages in this war (units.yaml reliability.stoppage), 0 if none (as units.stoppage_of)
+  const S = RELY().stoppage, W = S?.by_war?.[war];
+  return W && S.weapons.includes(weapon) ? (W[weapon] ?? W.all ?? 0) : 0;
+}
+function stopped(field, weapon, out){              // stoppages on top of the weather's misfires (field.war, set as the battle begins)
+  const p = out.blocked ? 0 : stoppageOf(field?.war, weapon);
+  if (p) out.misfire = Math.min(100, out.misfire + p);
+  return out;
+}
+function unfitVehicles(B, rng){                    // as a battle begins, each vehicle unfit at its unit's unfit %, else reliability.unfit % (by war) is left out with its crew, a unit keeping at least one: [{unit, unfit}] (as battle.unfit_vehicles)
+  const war = RELY().unfit?.[B.field.war] || 0, out = [];
+  if (!rng) return out;
+  B.units.forEach((u, i) => {
+    const K = vehicleKind(u), n = vehiclesLeft(u), pct = u.unfit ?? war;   // a battlefield's own figure for its vehicles (unfit), else the war's
+    if (!K || n < 1 || !pct) return;
+    let k = 0;
+    for (let j = 0; j < n; j++) if (rng.randint(1, 100) <= pct) k++;
+    k = Math.min(k, n - 1);
+    if (!k) return;
+    u.men = Math.max(K.crew, u.men - k * K.crew);
+    out.push({ unit: i, unfit: k });
+  });
+  return out;
+}
+function breakdowns(B, k, rng){                    // a war's vehicles that moved this phase break down (immobilised) at reliability.per_hex % a hex moved: [{unit, broke}] (as battle.breakdowns)
+  const p = RELY().per_hex?.[B.field.war] || 0, out = [];
+  if (!p) return out;
+  B.units.forEach((u, i) => {
+    const was = B.start?.[i];
+    if (u.side !== B.sides[k] || !u.vehicle || !was || !u.pos || !was.pos) return;
+    const hexes = hdist(was.pos, u.pos), n = vehiclesLeft(u) - (u.immobile || 0);
+    if (!hexes || n < 1) return;
+    const q = Math.floor((1 - (1 - p / 100) ** hexes) * 10000 + 0.5);
+    let broke = 0;
+    for (let j = 0; j < n; j++) if (rng.randint(1, 10000) <= q) broke++;
+    if (!broke) return;
+    u.immobile = (u.immobile || 0) + broke;
+    out.push({ unit: i, broke });
+  });
   return out;
 }
 function lightOf(field){                          // the field's light (weather.light), or null by day
@@ -3887,7 +3929,7 @@ function makeUnit(o, id, table){                   // a new unit as the GM or a 
 function unitMarks(o){                             // a drawn unit's optional marks, copied as given
   return { ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.armour ? { armour: o.armour } : {}),
     ...(o.via?.length ? { via: o.via.map(h => [...h]) } : {}), ...unitOrders(o), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}),
-    ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}), ...(o.fights_on ? { fights_on: true } : {}) };
+    ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}), ...(o.fights_on ? { fights_on: true } : {}), ...(o.unfit != null ? { unfit: o.unfit } : {}) };
 }
 const unitOrders = o => ({ ...(o.hold ? { hold: true } : {}), ...(o.withdraw ? { withdraw: { ...o.withdraw } } : {}) });   // its orders from the accounts
 function ensureTags(B){                            // each unit's number on its side, kept for the battle (B3 stays B3) (as battle.ensure_tags)
@@ -4044,24 +4086,26 @@ function realignStarts(B){                         // B.start by unit id, after 
   const was = B.start || [];
   B.start = B.units.map(u => { const s = was.find(x => x.id === u.id); return s && s.riders?.id === u.riders?.id ? s : { ...u } });
 }
-function beginBattle(B){                           // set-up done: the first exchange begins, side 0 to move: {stages, ran} (as battle.begin)
+function beginBattle(B, rng = null){               // set-up done: the first exchange begins, side 0 to move: {stages, ran, unfit} (as battle.begin)
   B.exchange = 1;
+  B.field.war = B.table ? FD.tables[B.table]?.battle ?? null : null;   // the war of its wound table: stoppages and breakdowns (reliability)
+  const unfit = unfitVehicles(B, rng);
   const stages = advanceStages(B);
   markStarts(B);
   B.field.located = B.units.filter(u => u.pos).map(u => [u.side, [...u.pos]]);   // where each unit stood when the battle began: located before it, for planned fire (indirect.planned)
-  return { stages, ran: startPhase(B, 0) };
+  return { stages, ran: startPhase(B, 0), unfit };
 }
 function endMove(B, rng){                          // the moving side's move is done: after side 0, side 1 moves; after side 1, the exchange is fought and the next begins: {lost, log, stages, ran} (as battle.end_move)
   if (B.phase === 0){
-    const lost = drifts(B, 0, rng);
-    return { lost, log: null, stages: null, ran: startPhase(B, 1) };
+    const lost = drifts(B, 0, rng), broke = breakdowns(B, 0, rng);
+    return { lost, broke, log: null, stages: null, ran: startPhase(B, 1) };
   }
-  const lost = drifts(B, 1, rng), r = exchange(B.units, B.table, rng, B.field);
+  const lost = drifts(B, 1, rng), broke = breakdowns(B, 1, rng), r = exchange(B.units, B.table, rng, B.field);
   B.units = r.units;
   noteFired(B, r.log);
   B.exchange += 1;
   const stages = advanceStages(B);
-  return { lost, log: r.log, stages, ran: startPhase(B, 0) };
+  return { lost, broke, log: r.log, stages, ran: startPhase(B, 0) };
 }
 function commanderMemory(B, M){                   // M {n, mem}: where a side's commander last saw each enemy unit (by index), forgotten when units joined or left the list since (as battle.commander_memory)
   if (M.n !== B.units.length){ M.mem = {}; M.n = B.units.length }
@@ -4163,7 +4207,7 @@ function endPoint(B, stop, all, after){            // the battle's end, as a tur
 }
 function selfPlay(fid, rng, stances = null){       // a battlefield played to its end by the commander on both sides (as battle.self_play): {battle, stop, orders, after, fates, points}
   const B = setUpBattle(fid), st = stances || playStances(fid), mem = [{ n: -1, mem: {} }, { n: -1, mem: {} }], held = { side: null, n: 0 };
-  const opening = beginBattle(B), points = [];
+  const opening = beginBattle(B, rng), points = [];
   let stop = null, orders = 0, base = pointsBase(B);
   const first = turningPoints(B, base, opening.stages, []);
   if (first.length) points.push({ exchange: 0, points: first });

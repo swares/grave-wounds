@@ -215,6 +215,7 @@ figure.pic .slot-box{border:1px dashed var(--line);background:var(--panel);paddi
 <li><a href="#modern-infantry">Modern infantry</a></li>
 <li><a href="#support">Fire support</a></li>
 <li><a href="#bunkers">Trenches and bunkers</a></li>
+<li><a href="#stoppages">Stoppages and breakdowns</a></li>
 <li><a href="#fixed-lines">Fixed lines</a></li>
 </ul>
 </li>
@@ -3312,8 +3313,8 @@ every hex. Heavy rain or a storm floods the fords for 2 days, counting that day.
 <p>Shooting <strong>with</strong> the wind lengthens the range bands of bows, crossbows, slings and thrown
 weapons; shooting <strong>into</strong> it shortens them, and rain or snow in a shooter's face halves how
 far he can see to aim. Into a strong wind they also lose 10%, into a gale
-20%. In the wet, a muzzle-loader can <strong>misfire</strong>, losing the shot
-(<a href="#misfire">Misfires</a>, in Black-powder guns).</p>
+20%. A muzzle-loader can <strong>misfire</strong>, losing the shot, and more often in the
+wet (<a href="#misfire">Misfires</a>, in Black-powder guns).</p>
 <p><strong>Cold.</strong> In hard frost (5 °F, -15 °C, or colder) machine guns, submachine
 guns and assault rifles misfire 10% more, as oil thickens and actions freeze; in
 bitter cold (-13 °F, -25 °C) 25% more, and every hex costs
@@ -3919,13 +3920,15 @@ or unlimbering takes an exchange; a battery that breaks loses its guns. Charged 
 fires one round of canister before the melee. The shot in full is in
 <a href="#guns-full">Batteries in full</a>.</p>
 <h2 id="misfire">Misfires</h2>
-<p>In the wet, a muzzle-loader can <strong>misfire</strong>, losing the shot. The chance depends on how it
-fires its charge: a slow match, a wheel-lock, a flint, or a percussion cap. A breech-loader's
-cartridge does not misfire in the rain.</p>
+<p>A muzzle-loader can <strong>misfire</strong>, losing the shot, and more often in the wet. The chance
+depends on how it fires its charge: a slow match, a wheel-lock, a flint, or a percussion cap.
+Even dry, a flintlock failed about one shot in six or seven in the British trials of 1834, and
+a percussion cap about one in 165. A breech-loader's cartridge does not misfire.</p>
 <table>
 <thead>
 <tr>
 <th>Ignition</th>
+<th>Dry</th>
 <th>Rain or snow</th>
 <th>Heavy rain, storm, blizzard</th>
 </tr>
@@ -3933,26 +3936,31 @@ cartridge does not misfire in the rain.</p>
 <tbody>
 <tr>
 <td>Match</td>
-<td>30%</td>
-<td>60%</td>
+<td>15%</td>
+<td>45%</td>
+<td>75%</td>
 </tr>
 <tr>
 <td>Wheel</td>
 <td>15%</td>
 <td>30%</td>
+<td>45%</td>
 </tr>
 <tr>
 <td>Flint</td>
 <td>15%</td>
 <td>30%</td>
+<td>45%</td>
 </tr>
 <tr>
 <td>Percussion</td>
+<td>0.6%</td>
 <td>5%</td>
 <td>10%</td>
 </tr>
 <tr>
 <td>Cartridge</td>
+<td>—</td>
 <td>—</td>
 <td>—</td>
 </tr>
@@ -4185,6 +4193,57 @@ close order are cut down. Spread out and gone to ground, they are hard to hit bu
 pinned half the time. Let the players find a way to move: smoke, a fire plan, a covered
 approach, or the dark.</p>
 </div>
+<h2 id="stoppages">Stoppages and breakdowns</h2>
+<p>Machine guns, submachine guns and assault rifles <strong>stop</strong> now and then: a jammed round, a
+broken part, a barrel to change. Each exchange they lose a share of their fire to it, by war,
+on top of any misfire in the wet or jam in the cold. As a battle begins, some of a side's
+<strong>vehicles</strong> have broken down on the approach or will not start: each is left out at its war's
+chance, its crew with it, unhurt and not counted as lost, a unit keeping at least one. A
+battlefield whose account gives its own figure uses that. First World War tanks also break
+down on the move: each hex moved, a small chance each vehicle is immobilised.</p>
+<table>
+<thead>
+<tr>
+<th>War</th>
+<th>Automatic fire lost to stoppages</th>
+<th>Vehicles unfit as the battle begins</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>WWI</td>
+<td>5%</td>
+<td>15%</td>
+</tr>
+<tr>
+<td>WWII</td>
+<td>3%</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Korea</td>
+<td>3%</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Vietnam</td>
+<td>3% (assault rifle (m16, ak) 10%)</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Late 20th century</td>
+<td>2%</td>
+<td>5%</td>
+</tr>
+<tr>
+<td>Iraq &amp; Afghanistan</td>
+<td>2%</td>
+<td>5%</td>
+</tr>
+</tbody>
+</table>
+<p>The Vietnam figure for assault rifles is the M16's of 1967: four in five of 1,585 men asked had
+had a stoppage. The rest are design estimates from the trials and surveys found.</p>
 <h2 id="fixed-lines">Fixed lines</h2>
 <p>Before dark a machine gun can be laid on a fixed line. In the dark, with
 no target it can see, it fires blind down the line at an enemy within 1
@@ -5537,7 +5596,7 @@ back in marsh country.</p>
 <p class="ix"><b>Stays</b>: <a href="#quick-turn">A turn</a></p>
 <p class="ix"><b>Steady, fails</b>: <a href="#morale">Morale and the rout</a></p>
 <p class="ix"><b>Steal</b>: <a href="#skills">Using skills</a></p>
-<p class="ix"><b>Stop</b>: <a href="#commander">The enemy commander</a>, <a href="#commander-full">The enemy commander</a></p>
+<p class="ix"><b>Stop</b>: <a href="#commander">The enemy commander</a>, <a href="#stoppages">Stoppages and breakdowns</a>, <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Stop check</b>: <a href="#turn">A fighter's turn</a></p>
 <p class="ix"><b>Storming in bounds</b>: <a href="#modern-infantry">Modern infantry</a></p>
 <p class="ix"><b>Storming works</b>: <a href="#commander-full">The enemy commander</a></p>
@@ -5589,7 +5648,7 @@ back in marsh country.</p>
 <p class="ix"><b>Units</b>: <a href="#battle">Battles of hundreds</a></p>
 <h3 class="ix-letter">V</h3>
 <p class="ix"><b>Vacant</b>: <a href="#rank">Rank, pay and loot</a></p>
-<p class="ix"><b>Vehicles</b>: <a href="#mines">Minefields</a></p>
+<p class="ix"><b>Vehicles</b>: <a href="#stoppages">Stoppages and breakdowns</a>, <a href="#mines">Minefields</a></p>
 <p class="ix"><b>Vulnerable</b>: <a href="#at-guns-full">Anti-tank guns in full</a></p>
 <h3 class="ix-letter">W</h3>
 <p class="ix"><b>Wall</b>: <a href="#works">Works</a></p>

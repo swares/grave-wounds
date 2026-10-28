@@ -145,15 +145,21 @@ shot lies to the wind: **with it** (the wind behind the shot, within 45 degrees 
 - North is at the top of the battle map and of most battlefields. A battlefield drawn
   otherwise says so (Sidon's has east at the top), and the page turns the wind to match.
 
-In the wet, a firearm can **misfire**. Rolled before the attack, it loses the shot. The
-chance depends on how the weapon is fired:
+A firearm can **misfire**, more often in the wet. Rolled before the attack, it loses the shot.
+The chance depends on how the weapon is fired:
 
-| Ignition | Rain, snow or heavy snow | Heavy rain, storm or blizzard |
-|---|---|---|
-| Matchlock | 30% | 60% |
-| Wheellock, flintlock | 15% | 30% |
-| Percussion cap | 5% | 10% |
-| Cartridge | – | – |
+| Ignition | Dry | Rain, snow or heavy snow | Heavy rain, storm or blizzard |
+|---|---|---|---|
+| Matchlock | 15% | 45% | 75% |
+| Wheellock, flintlock | 15% | 30% | 45% |
+| Percussion cap | 0.6% | 5% | 10% |
+| Cartridge | – | – | – |
+
+The dry figures are the Woolwich trials of 1834 (flint about 1 in 6.5, percussion about 1 in
+165; project doc "reliability-weapons-research"); no dry figure was found for the matchlock or
+the wheellock, which take the flintlock's. The wet steps are design estimates; the one figure
+found, about half of Austrian flintlocks failing in rain, is a single report. Automatic weapons
+also lose fire to stoppages on the field map (see units.md, *Reliability*).
 
 ## Light (the field map)
 

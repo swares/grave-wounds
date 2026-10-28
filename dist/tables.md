@@ -6708,10 +6708,10 @@ Penalties add up; each total is capped at -60%.
 
 | Ignition | Dry | Wet | Very wet |
 |---|---|---|---|
-| Match | 0% | 30% | 60% |
-| Wheel | 0% | 15% | 30% |
-| Flint | 0% | 15% | 30% |
-| Percussion | 0% | 5% | 10% |
+| Match | 15% | 45% | 75% |
+| Wheel | 15% | 30% | 45% |
+| Flint | 15% | 30% | 45% |
+| Percussion | 0.6% | 5% | 10% |
 | Cartridge | 0% | 0% | 0% |
 
 | Fatigue | Attack and defence | Marching speed |

@@ -162,11 +162,16 @@ march:
 battle:
   deep_step: 1
   string_wet: [0, 10, 20]     # % off bows and crossbows by wet level (wet strings)
-  misfire:                    # % chance a firearm fails to fire, by ignition and wet level
-    match:      [0, 30, 60]
-    wheel:      [0, 15, 30]
-    flint:      [0, 15, 30]
-    percussion: [0, 5, 10]
+  # % chance a firearm fails to fire, by ignition and wet level (dry, rain or snow, heavy). Dry:
+  # the Woolwich trials of 1834, flint about 1 in 6.5 (15%) and percussion about 1 in 165 (0.6%)
+  # (project doc "reliability-weapons-research"); no dry figure was found for match or wheel, so
+  # they take flint's (approx). Wet: design steps on top (approx); the one figure found, about
+  # half of Austrian flintlocks failing in rain, is a single report.
+  misfire:
+    match:      [15, 45, 75]
+    wheel:      [15, 30, 45]
+    flint:      [15, 30, 45]
+    percussion: [0.6, 5, 10]
     cartridge:  [0, 0, 0]
 
 # ---------- cold in battle ----------

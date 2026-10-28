@@ -109,6 +109,21 @@ are killed outright. A knocked-out bunker is a hex like any other.
     pinned half the time. Let the players find a way to move: smoke, a fire plan, a covered
     approach, or the dark.
 
+## Stoppages and breakdowns {#stoppages}
+
+Machine guns, submachine guns and assault rifles **stop** now and then: a jammed round, a
+broken part, a barrel to change. Each exchange they lose a share of their fire to it, by war,
+on top of any misfire in the wet or jam in the cold. As a battle begins, some of a side's
+**vehicles** have broken down on the approach or will not start: each is left out at its war's
+chance, its crew with it, unhurt and not counted as lost, a unit keeping at least one. A
+battlefield whose account gives its own figure uses that. First World War tanks also break
+down on the move: each hex moved, a small chance each vehicle is immobilised.
+
+{{table:reliability}}
+
+The Vietnam figure for assault rifles is the M16's of 1967: four in five of 1,585 men asked had
+had a stoppage. The rest are design estimates from the trials and surveys found.
+
 ## Fixed lines {#fixed-lines}
 
 Before dark a machine gun can be laid on a fixed line. In the dark, with

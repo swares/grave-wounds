@@ -57,6 +57,8 @@ def _unit_marks(o: dict) -> dict:
         out["hold"] = True
     if o.get("fights_on"):
         out["fights_on"] = True
+    if o.get("unfit") is not None:
+        out["unfit"] = o["unfit"]
     if o.get("withdraw"):
         out["withdraw"] = {"at": o["withdraw"]["at"], "to": o["withdraw"]["to"]}
     return out
@@ -325,27 +327,70 @@ def realign_starts(bt: dict) -> None:
     bt["start"] = out
 
 
-def begin(d: Data, bt: dict) -> dict:
+def unfit_vehicles(d: Data, bt: dict, rng) -> list:
+    """As a battle begins, each vehicle is unfit at its unit's `unfit` %, else units.yaml
+    reliability.unfit % (by war): left
+    out with its crew, unhurt, a unit keeping at least one. [{unit, unfit}]."""
+    war, out = ((d.units.get("reliability") or {}).get("unfit") or {}).get(bt["field"].get("war")) or 0, []
+    if rng is None:
+        return out
+    for i, u in enumerate(bt["units"]):
+        K, n = U.vehicle_kind(d, u), U.vehicles_left(d, u)
+        pct = u["unfit"] if u.get("unfit") is not None else war   # a battlefield's own figure for its vehicles (unfit), else the war's
+        if not K or n < 1 or not pct:
+            continue
+        k = min(sum(1 for _ in range(n) if rng.randint(1, 100) <= pct), n - 1)
+        if k:
+            u["men"] = max(K["crew"], u["men"] - k * K["crew"])
+            out.append({"unit": i, "unfit": k})
+    return out
+
+
+def breakdowns(d: Data, bt: dict, k: int, rng) -> list:
+    """A war's vehicles (units.yaml reliability.per_hex) that moved this phase break down
+    (immobilised) at that % for each hex moved. [{unit, broke}]."""
+    p, out = ((d.units.get("reliability") or {}).get("per_hex") or {}).get(bt["field"].get("war")) or 0, []
+    if not p:
+        return out
+    starts = bt.get("start") or []
+    for i, u in enumerate(bt["units"]):
+        was = starts[i] if i < len(starts) else None
+        if u["side"] != bt["sides"][k] or not u.get("vehicle") or not was or not u.get("pos") or not was.get("pos"):
+            continue
+        hexes, n = U.hdist(was["pos"], u["pos"]), U.vehicles_left(d, u) - (u.get("immobile") or 0)
+        if not hexes or n < 1:
+            continue
+        q = math.floor((1 - (1 - p / 100) ** hexes) * 10000 + 0.5)
+        broke = sum(1 for _ in range(n) if rng.randint(1, 10000) <= q)
+        if broke:
+            u["immobile"] = (u.get("immobile") or 0) + broke
+            out.append({"unit": i, "broke": broke})
+    return out
+
+
+def begin(d: Data, bt: dict, rng=None) -> dict:
     """Set-up done: the first exchange begins, side 0 to move."""
     bt["exchange"] = 1
+    bt["field"]["war"] = (d.tables.get(bt["table"]) or {}).get("battle") if bt.get("table") else None   # the war of its wound table: stoppages and breakdowns (reliability)
+    unfit = unfit_vehicles(d, bt, rng)
     stages = advance_stages(d, bt)
     mark_starts(bt)
     bt["field"]["located"] = [[u["side"], list(u["pos"])] for u in bt["units"] if u.get("pos")]   # where each unit stood when the battle began: located before it, for planned fire (indirect.planned)
-    return {"stages": stages, "ran": start_phase(d, bt, 0)}
+    return {"stages": stages, "ran": start_phase(d, bt, 0), "unfit": unfit}
 
 
 def end_move(d: Data, bt: dict, rng) -> dict:
     """The moving side's move is done: after side 0, side 1 moves; after side 1, the exchange is
     fought and the next begins."""
     if bt["phase"] == 0:
-        lost = drifts(d, bt, 0, rng)
-        return {"lost": lost, "log": None, "stages": None, "ran": start_phase(d, bt, 1)}
-    lost = drifts(d, bt, 1, rng)
+        lost, broke = drifts(d, bt, 0, rng), breakdowns(d, bt, 0, rng)
+        return {"lost": lost, "broke": broke, "log": None, "stages": None, "ran": start_phase(d, bt, 1)}
+    lost, broke = drifts(d, bt, 1, rng), breakdowns(d, bt, 1, rng)
     bt["units"], log = U.exchange(d, bt["units"], bt["table"], rng, bt["field"])
     _note_fired(bt, log)
     bt["exchange"] += 1
     stages = advance_stages(d, bt)
-    return {"lost": lost, "log": log, "stages": stages, "ran": start_phase(d, bt, 0)}
+    return {"lost": lost, "broke": broke, "log": log, "stages": stages, "ran": start_phase(d, bt, 0)}
 
 
 def commander_memory(bt: dict, memo: dict) -> dict:
@@ -540,7 +585,7 @@ def self_play(d: Data, fid: str, rng, how: list | None = None) -> dict:
     """A battlefield played to its end by the commander on both sides: {battle, stop, orders, after, fates, points}."""
     bt = set_up(d, fid)
     st, mem, held = how or stances(d, fid), [{"n": -1, "mem": {}}, {"n": -1, "mem": {}}], {"side": None, "n": 0}
-    opening = begin(d, bt)
+    opening = begin(d, bt, rng)
     points, stop, orders, base = [], None, 0, points_base(d, bt)
     first = turning_points(d, bt, base, opening["stages"], [])
     if first:

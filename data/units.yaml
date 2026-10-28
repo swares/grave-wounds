@@ -489,6 +489,31 @@ indirect:
 # morale; they move with the carriers and get down beside them on the carriers' move (they can
 # move the exchange after). When a carrier is knocked out, its share of the riders are each
 # struck at `riders_struck` %; when the last is, the riders get down where it stood.
+# ---------- reliability (project docs "reliability-weapons-research" and "reliability-vehicles-research") ----------
+# Stoppages: the automatic weapons (`weapons`) lose this % of an exchange's fire to stoppages,
+# by the war of the field's wound table (its `battle`), on top of any wet misfire and cold jam;
+# `all` for every one of them, a weapon's own figure where the war gives one. Design conversions
+# of the sources: the Lewis gun jamming about once in 900 rounds (1918, a single report; the
+# Vickers fired a million rounds on the Somme without a breakdown); the M16 in Vietnam, 80% of
+# 1,585 men surveyed in 1967 having had a stoppage and 3.4 malfunctions in 1,000 rounds in the 1968
+# Panama jungle test (Aberdeen); 26-30% of M249 and M9 users reporting a stoppage in combat in Iraq
+# and Afghanistan (CNA, 2006).
+# Unfit vehicles: as a battle begins each vehicle of a unit has `unfit` % (by war) of having broken
+# down on the approach or failed to start: it is left out, its crew with it, unhurt and not counted
+# as lost. Cambrai, 20 November 1917: 71 of about 476 tanks broke down on the first day (the British
+# official history); the rest are approx: Kursk's Panthers lost 16 of 200 before the attack began,
+# an outlier; the M1A1 in 1991 was over 90% combat ready (GAO); none found for Korea or Vietnam.
+# Breakdowns on the move: a vehicle of a war in `per_hex` breaks down (immobilised) at that % for
+# every hex it moves: Cambrai's day, 71 of 476 in some 6 km (our reading of the distance). The
+# later wars' 8-11% a hundred miles (21st Army Group, 1944) is too little to show in a battle.
+reliability:
+  stoppage:
+    weapons: [machine_gun, pistol_smg, rifle_assault]
+    by_war: {WWI: {all: 5}, WWII: {all: 3}, Korea: {all: 3}, Vietnam: {all: 3, rifle_assault: 10}, "Late 20th century": {all: 2}, "Iraq & Afghanistan": {all: 2}}
+  unfit: {WWI: 15, WWII: 5, Korea: 5, Vietnam: 5, "Late 20th century": 5, "Iraq & Afghanistan": 5}
+  per_hex: {WWI: 0.03}
+  approx: true
+
 vehicles:
   kinds:
     tank: {name: "Tanks", crew: 4, move: 12, armour: heavy, rides: 6, fc: true, gun: {range: 100, rate: 1, he: tank, hit: [[20, 75], [50, 50], [100, 25]]}}   # fc: its gun by its fire control (below)

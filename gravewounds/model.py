@@ -1070,7 +1070,28 @@ def _units_errors(d: Data) -> list[str]:
     errors += [f"units.yaml: modern_fire names unknown weapon {w}" for w in U.get("modern_fire", {}).get("weapons", []) if w not in d.weapons]
     if not isinstance(U.get("rout", {}).get("exchanges"), int):
         errors.append("units.yaml: rout.exchanges must be a whole number")
-    return errors + _units_extra_errors(d)
+    return errors + _units_extra_errors(d) + _reliability_errors(d)
+
+
+def _reliability_errors(d: Data) -> list[str]:
+    """units.yaml reliability: stoppages for known weapons and wars, unfit and per-hex chances
+    by known war, each a % from 0 to 100."""
+    R = d.units.get("reliability")
+    if not R:
+        return []
+    wars = {t.get("battle") for t in d.tables.values()}
+    pct = lambda v: isinstance(v, (int, float)) and 0 <= v <= 100
+    S, errors = R.get("stoppage") or {}, []
+    errors += [f"units.yaml: reliability.stoppage names unknown weapon {w}" for w in S.get("weapons", []) if w not in d.weapons]
+    for war, W in (S.get("by_war") or {}).items():
+        if war not in wars or not isinstance(W, dict) or not all(pct(v) for v in W.values()) \
+                or any(k != "all" and k not in S.get("weapons", []) for k in W):
+            errors.append(f"units.yaml: reliability.stoppage.by_war {war}: a known war, each its weapons' (or all) %")
+    for key in ("unfit", "per_hex"):
+        errors += [f"units.yaml: reliability.{key} {war}: a known war and a %" for war, v in (R.get(key) or {}).items() if war not in wars or not pct(v)]
+    if not R.get("approx") and not R.get("source"):
+        errors.append("units.yaml: reliability needs a source, or approx: true")
+    return errors
 
 
 def _units_extra_errors(d: Data) -> list[str]:
@@ -2351,6 +2372,8 @@ def _unit_spec_errors(d: Data, f: dict, where: str, u: dict) -> list[str]:
     U, errors = d.units, []
     if u.get("side") not in (0, 1) or not isinstance(u.get("men"), int) or u["men"] < 1:
         errors.append(f"{where}: unit {u.get('name')} needs side 0 or 1 and men")
+    if "unfit" in u and not (u.get("vehicle") and isinstance(u["unfit"], (int, float)) and 0 <= u["unfit"] <= 100):
+        errors.append(f"{where}: unit {u.get('name')}: unfit (its vehicles' % unfit as the battle begins) must be a % on a vehicle unit")
     if u.get("weapon") not in available_weapons(d, f["table"]) or u.get("kit") not in d.armor["kits"]:
         errors.append(f"{where}: unit {u.get('name')} has a weapon the {f['table']} tables do not offer, or an unknown kit")
     if u.get("quality") not in U["quality"] or u.get("formation") not in U["formations"]:

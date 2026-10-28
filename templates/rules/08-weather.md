@@ -23,8 +23,8 @@ Weather affects missiles, never close combat:
 Shooting **with** the wind lengthens the range bands of bows, crossbows, slings and thrown
 weapons; shooting **into** it shortens them, and rain or snow in a shooter's face halves how
 far he can see to aim. Into a strong wind they also lose {{w_into_strong}}%, into a gale
-{{w_into_gale}}%. In the wet, a muzzle-loader can **misfire**, losing the shot
-([Misfires](#misfire), in Black-powder guns).
+{{w_into_gale}}%. A muzzle-loader can **misfire**, losing the shot, and more often in the
+wet ([Misfires](#misfire), in Black-powder guns).
 
 **Cold.** In {{w_hard_name}} ({{w_hard_f}} °F, {{w_hard}} °C, or colder) machine guns, submachine
 guns and assault rifles misfire {{w_hard_jam}}% more, as oil thickens and actions freeze; in
