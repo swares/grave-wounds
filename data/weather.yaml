@@ -168,10 +168,10 @@ battle:
   # they take flint's (approx). Wet: design steps on top (approx); the one figure found, about
   # half of Austrian flintlocks failing in rain, is a single report.
   misfire:
-    match:      [15, 45, 75]
-    wheel:      [15, 30, 45]
-    flint:      [15, 30, 45]
-    percussion: [0.6, 5, 10]
+    match:      [0, 30, 60]
+    wheel:      [0, 15, 30]
+    flint:      [0, 15, 30]
+    percussion: [0, 5, 10]
     cartridge:  [0, 0, 0]
 
 # ---------- cold in battle ----------
