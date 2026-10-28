@@ -16,10 +16,10 @@
 // about 19 November. The hillside, the river, the bridge and the hahn are drawn by hand to her
 // account, not traced from any map; the companies, the Bulgarian battalions and the hours are ours,
 // with round numbers for play at her odds of four to one.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField, extended, mgTeam, alongLine } from "./field_lib.mjs";
+import { extended, mgTeam, alongLine, unit, writeField, groundGrid, patch, speckle, wobble, N, S } from "./field_lib.mjs";
 
-const COLS = 130, ROWS = 110;                 // 1300 m east to west, about 950 m north to south
-const ROAD_C = 66;                            // the road from Prilep (north) to Bitola (south)
+// 1300 m east to west, about 950 m north to south; the road from Prilep (north) to Bitola (south) down column ROAD_C
+const COLS = 130, ROWS = 110, ROAD_C = 66;
 const road = r => (r < 76 ? ROAD_C + Math.round(wobble(r / 6, 0.7, 2.2) * 1.2) : ROAD_C);   // straight down to the bridge
 // The hillside: a long low rise across the north of the map, its crest a wavy line, the trenches
 // dotted along its forward slope.
@@ -73,16 +73,15 @@ writeField({
   ],
   ends: { at: 571, why: "the trenches taken about midday, the Serbs gone at dusk (Sandes): 07:00 to about 16:30" },
   objective: { at: [road(crest(ROAD_C) - 3), crest(ROAD_C) - 3], side: 1, name: "the trenches across the road to Bitola", radius: 10 },
-  id: "topolcani-1915", name: "Topolčani, November 1915", sides: ["Serbians", "Bulgarians"], table: "wwi-1914-18-wounds",
-  travel: { map: "serbia-1915", place: "Topolčani", within: 1, sides: ["Serbia and Montenegro", "Central Powers"] },
-  weather: "{cond: blizzard, wind: gale, dir: N, ground: {mud: 0, snow: 2}}",
-  grid, units,
-  hexWorks: { trench },
-  support: [
-    { name: "Serbian mountain guns (a few, old)", side: 0, kind: "field", tubes: 2 },
-    { name: "Bulgarian field guns", side: 1, kind: "field", tubes: 8 },
-    { name: "Bulgarian big guns", side: 1, kind: "howitzer", tubes: 2 },
+  support: [   // Sandes: the Serbs' few little old cannon, the Bulgarians' big guns (the numbers are ours)
+    { tubes: 2, kind: "field", side: 0, name: "Serbian mountain guns (a few, old)" },
+    { tubes: 8, kind: "field", side: 1, name: "Bulgarian field guns" },
+    { tubes: 2, kind: "howitzer", side: 1, name: "Bulgarian big guns" },
   ],
+  grid, units, hexWorks: { trench },
+  weather: "{cond: blizzard, wind: gale, dir: N, ground: {mud: 0, snow: 2}}",
+  id: "topolcani-1915", name: "Topolčani, November 1915", table: "wwi-1914-18-wounds", sides: ["Serbians", "Bulgarians"],
+  travel: { map: "serbia-1915", place: "Topolčani", within: 1, sides: ["Serbia and Montenegro", "Central Powers"] },
   header: [
     `By Topolčani on the road from Prilep to Bitola, late November 1915, at 10 m a hex: ${COLS} x ${ROWS} hexes, about 1300 m`,
     "east to west and 950 m north to south, north at the top: the road comes down from Prilep over",
