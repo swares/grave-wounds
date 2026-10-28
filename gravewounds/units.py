@@ -1563,7 +1563,7 @@ def _field_support(d: Data, f: dict) -> list:
     """A battlefield's own fire support, each with its full stock of rounds and no mission yet."""
     K = d.units["indirect"]["kinds"]
     return [{"name": s["name"], "army": s["side"], "side": f["sides"][s["side"]], "kind": s["kind"], "tubes": s["tubes"],
-             "rounds": s["tubes"] * K[s["kind"]]["rounds"], "mission": None, **({"place": list(s["place"])} if s.get("place") else {})} for s in f["support"]]
+             "rounds": s["tubes"] * K[s["kind"]]["rounds"], "mission": None, **({"place": list(s["place"])} if s.get("place") else {}), **({"df": True} if s.get("df") else {})} for s in f["support"]]
 
 
 def fire_control_of(d: Data, o: dict, table: str) -> str | None:

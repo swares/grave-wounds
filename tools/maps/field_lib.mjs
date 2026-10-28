@@ -133,7 +133,7 @@ export function writeField(spec){
   const edgeText = edges.length ? "  edges:\n" + edges.map(edgeLine).join("\n") + "\n" : "";
   const worksText = hexText || edgeText ? "works:\n" + hexText + edgeText : "";
   const supText = (spec.support || []).length ? "# Batteries on call (off the map): loading the field fills the Fire support panel.\nsupport:\n"
-    + spec.support.map(s => `  - {name: ${yq(s.name)}, side: ${s.side}, kind: ${s.kind}, tubes: ${s.tubes}${s.place ? ", place: [" + s.place.join(", ") + "]" : ""}}`).join("\n") + "\n" : "";
+    + spec.support.map(s => `  - {name: ${yq(s.name)}, side: ${s.side}, kind: ${s.kind}, tubes: ${s.tubes}${s.place ? ", place: [" + s.place.join(", ") + "]" : ""}${s.df ? ", df: true" : ""}}`).join("\n") + "\n" : "";
   const t = spec.travel, upLine = spec.up ? "up: " + spec.up + "                       # the compass point at the top of the map\n" : "";
   const out = `${spec.header.map(l => ("# " + l).trimEnd()).join("\n")}
 id: ${spec.id}

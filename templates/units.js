@@ -3105,7 +3105,7 @@ function fireAim(us, side, field, known, b, K, attacking = false){   // [enemy i
   us.forEach((e, j) => {
     if (e.side === side || !ours.length) return;
     const seen = String(j) in known ? marksOf(e).find(x => spotted(us, field, side, x)) : undefined;
-    const planned = !seen && plan && (attacking ? nearLocated(field, e) : nearOwn(field, side, e));
+    const planned = !seen && plan && (attacking ? nearLocated(field, e) : !!b.df && nearOwn(field, side, e));
     const h = seen || (planned ? e.pos : undefined);
     if (!h || !inReach(b, h) || tooNear(ours, h, K.radius + airScatter(us, field, b, K, h) + (planned ? P.scatter : 0))) return;
     const u = ours.reduce((a, o) => (hdist(o.pos, e.pos) < hdist(a.pos, e.pos) ? o : a), ours[0]);
@@ -3114,7 +3114,7 @@ function fireAim(us, side, field, known, b, K, attacking = false){   // [enemy i
   });
   return best ? best[2] : null;
 }
-const nearOwn = (field, side, e) => e.men > 0 && !ROUTED.has(e.state) && (field?.located || []).some(([s, h]) => s === side && hdist(h, e.pos) <= UD.indirect.planned.defend);   // holding: an enemy within planned.defend hexes of a place its own side held when the battle began, in its defensive fire plan (as commander._near_own)
+const nearOwn = (field, side, e) => e.men > 0 && !ROUTED.has(e.state) && (field?.located || []).some(([s, h]) => s === side && hdist(h, e.pos) <= UD.indirect.planned.defend);   // holding, a battery with a defensive fire plan (df): an enemy within planned.defend hexes of a place its own side held when the battle began (as commander._near_own)
 const nearLocated = (field, e) => e.men > 0 && !ROUTED.has(e.state) && (field?.located || []).some(([s, h]) => s === e.side && hdist(h, e.pos) <= UD.indirect.planned.near);   // standing within planned.near hexes of a place its side held when the battle began (as commander._near_located)
 const airScatter = (us, field, b, K, h) => (K.air && field && facSees(us, field, b, h) ? Math.floor(K.scatter / UD.indirect.air.fac.scatter) : K.scatter);   // aircraft scatter at h: cut where a controller of their side sees it (as commander._air_scatter)
 const marksOf = e => { const rows = footprint(e); return [e.pos, ...(rows.length ? [rows[0][0], rows[0].at(-1)] : [])] };   // its middle hex, then either end of its front row

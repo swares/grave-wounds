@@ -400,12 +400,14 @@ indirect:
   #   night, so their 18 light guns never fired, and every run was lost; with planned fire, 4 wins,
   #   a draw and a loss in 6, near history's losses. Only on the very place (near 0) the defenders,
   #   shifting in their works, slipped out of it (1 win in 6); with more scatter, fewer wins. Design choice.
-  # defend: holding, a battery may be called, seen or not, on an enemy within `defend` hexes of a place
-  #   its own side held when the battle began: its defensive fire plan (SOS and DF tasks, the
-  #   "flash fire" boxes round an outpost, fired on a flare or a call), never nearer its own men than
-  #   the burst and scatter. Self-play: at Pork Chop the Chinese mortars broke E Company early and the
-  #   American guns, with no one left to see, fell nearly silent (4 of 12 as fought); with defend 12,
-  #   6 of 6 (8: 3 of 6). Design choice.
+  # defend: holding, a battery the battlefield marks with a defensive fire plan (df: true: the SOS and
+  #   DF tasks, Pork Chop's "flash fire" boxes round the outpost, fired on a flare or a call, where a
+  #   source gives one) may be called, seen or not, on an enemy within `defend` hexes of a place its
+  #   own side held when the battle began, never nearer its own men than the burst and scatter.
+  #   Self-play: at Pork Chop the Chinese mortars broke E Company early and the American guns, with no
+  #   one left to see, fell nearly silent (4 of 12 as fought); with defend 12, 12 of 12 (8: 3 of 6).
+  #   Given to every defender's guns it put Tumbledown back to 0 of 12 (the Argentine mortars again),
+  #   so it is the battlefield's to give. Design choice.
   planned: {scatter: 0, near: 3, defend: 12}
   displace_shift: 30
   weapon: mortar_artillery

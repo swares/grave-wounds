@@ -1020,7 +1020,7 @@ def _fire_aim(d: Data, us: list, side, field: dict | None, known: dict, bk: tupl
     for j, e in enumerate(us):
         if e["side"] == side:
             continue
-        h, planned = _aim_at(d, us, (side, field, known), (j, e), plan)
+        h, planned = _aim_at(d, us, (side, field, known), (j, e), plan if plan == "attack" or b.get("df") else None)
         if h is None or not _clear_shot(d, (us, ours, field), bk, h, P.get("scatter", 0) * planned):
             continue
         talked = bool(K.get("air")) and U._fac_sees(d, us, field, b, h)

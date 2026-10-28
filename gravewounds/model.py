@@ -2226,6 +2226,8 @@ def _field_shape_errors(d: Data, f: dict, where: str) -> list[str]:
     kinds = (d.units.get("indirect") or {}).get("kinds", {})
     errors += [f"{where}: support {s.get('name')} needs a side (0 or 1), a known kind and tubes" for s in f.get("support", [])
                if s.get("side") not in (0, 1) or s.get("kind") not in kinds or not isinstance(s.get("tubes"), int) or s["tubes"] < 1]
+    errors += [f"{where}: support {s.get('name')}: df (a defensive fire plan) is true, for guns or mortars only" for s in f.get("support", [])
+               if "df" in s and (s["df"] is not True or (kinds.get(s.get("kind")) or {}).get("air") or (kinds.get(s.get("kind")) or {}).get("direct"))]
     errors += [f"{where}: support {s.get('name')} place must be a hex [column, row] and its kind must have a range" for s in f.get("support", [])
                if "place" in s and not (isinstance(s["place"], list) and len(s["place"]) == 2 and all(isinstance(x, int) for x in s["place"])
                                         and (kinds.get(s.get("kind")) or {}).get("range"))]

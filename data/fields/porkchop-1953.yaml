@@ -171,9 +171,9 @@ works:
     - {type: wire, at: [[70, 42], [71, 42], [73, 42], [74, 42], [76, 42], [77, 42], [79, 42], [80, 42], [82, 42], [83, 42], [83, 43], [68, 44], [67, 45], [84, 45], [85, 46], [66, 47], [66, 48], [86, 48], [86, 49], [65, 50], [64, 51], [87, 51], [88, 52], [63, 53], [63, 54], [89, 54], [89, 55], [62, 56], [62, 57], [89, 57], [89, 58], [63, 59], [64, 60], [88, 60], [87, 61], [65, 62], [65, 63], [86, 63], [86, 64], [66, 65], [67, 66], [85, 66], [84, 67], [68, 68], [68, 69], [83, 69], [70, 70], [71, 70], [73, 70], [74, 70], [76, 70], [77, 70], [79, 70], [80, 70], [82, 70], [83, 70]]}
 # Batteries on call (off the map): loading the field fills the Fire support panel.
 support:
-  - {name: "7th Division artillery (105 mm, flash fire)", side: 0, kind: field, tubes: 36}
-  - {name: "155 mm and 8-inch howitzers", side: 0, kind: howitzer, tubes: 12}
-  - {name: "4.2-inch mortars", side: 0, kind: mortar, tubes: 8}
+  - {name: "7th Division artillery (105 mm, flash fire)", side: 0, kind: field, tubes: 36, df: true}
+  - {name: "155 mm and 8-inch howitzers", side: 0, kind: howitzer, tubes: 12, df: true}
+  - {name: "4.2-inch mortars", side: 0, kind: mortar, tubes: 8, df: true}
   - {name: "Chinese mortars", side: 1, kind: mortar, tubes: 16}
   - {name: "Chinese artillery", side: 1, kind: field, tubes: 12}
 units:

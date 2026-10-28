@@ -69,9 +69,9 @@ writeField({
   grid, units,
   hexWorks: { trench: trenchHexes, bunker: BUNKERS, wire: ring(TOP, 14).filter((_, i) => i % 3 !== 0) },
   support: [
-    { name: "7th Division artillery (105 mm, flash fire)", side: 0, kind: "field", tubes: 36 },
-    { name: "155 mm and 8-inch howitzers", side: 0, kind: "howitzer", tubes: 12 },
-    { name: "4.2-inch mortars", side: 0, kind: "mortar", tubes: 8 },
+    { name: "7th Division artillery (105 mm, flash fire)", side: 0, kind: "field", tubes: 36, df: true },   // the division's "on-call, pre-registered defensive fires called flash fire to defend its outposts", a box barrage round the outpost (Wikipedia, after Hermes): every American battery has the plan
+    { name: "155 mm and 8-inch howitzers", side: 0, kind: "howitzer", tubes: 12, df: true },
+    { name: "4.2-inch mortars", side: 0, kind: "mortar", tubes: 8, df: true },
     { name: "Chinese mortars", side: 1, kind: "mortar", tubes: 16 },
     { name: "Chinese artillery", side: 1, kind: "field", tubes: 12 },
   ],
