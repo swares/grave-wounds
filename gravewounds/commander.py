@@ -1011,8 +1011,8 @@ def _fire_aim(d: Data, us: list, side, field: dict | None, known: dict, bk: tupl
     Attacking, a battery (not aircraft or tanks) may fire on an enemy standing near a place its side
     held when the battle began (_near_located), seen or not: planned fire."""
     b, K = bk
-    P = d.units["indirect"].get("planned")
-    plan = attacking and bool(P) and not K.get("air") and not K.get("direct")
+    P = d.units["indirect"].get("planned") or {}
+    plan = attacking and _plans(P, K)
     best = None
     ours = [u for u in us if u["side"] == side and u["men"] > 0 and u["state"] != "fled"]
     if not ours:
@@ -1021,13 +1021,18 @@ def _fire_aim(d: Data, us: list, side, field: dict | None, known: dict, bk: tupl
         if e["side"] == side:
             continue
         h, planned = _aim_at(d, us, (side, field, known), (j, e), plan)
-        if h is None or not _clear_shot(d, (us, ours, field), bk, h, P["scatter"] if planned else 0):
+        if h is None or not _clear_shot(d, (us, ours, field), bk, h, P.get("scatter", 0) * planned):
             continue
         talked = bool(K.get("air")) and U._fac_sees(d, us, field, b, h)
         key = (not talked, -threat_score(d, _nearest(ours, e["pos"]), e, e), j)
         if best is None or key < best[0]:
             best = (key, (j, list(h), planned))
     return None if best is None else best[1]
+
+
+def _plans(P: dict, K: dict) -> bool:
+    """Planned fire is on (indirect.planned) and the kind fires it: guns and mortars, not aircraft or tanks."""
+    return bool(P) and not K.get("air") and not K.get("direct")
 
 
 def _clear_shot(d: Data, uof: tuple, bk: tuple, h, extra: int) -> bool:
