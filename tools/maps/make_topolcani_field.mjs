@@ -16,7 +16,7 @@
 // about 19 November. The hillside, the river, the bridge and the hahn are drawn by hand to her
 // account, not traced from any map; the companies, the Bulgarian battalions and the hours are ours,
 // with round numbers for play at her odds of four to one.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, writeField, extended, mgTeam, alongLine } from "./field_lib.mjs";
 
 const COLS = 130, ROWS = 110;                 // 1300 m east to west, about 950 m north to south
 const ROAD_C = 66;                            // the road from Prilep (north) to Bitola (south)
@@ -44,12 +44,10 @@ function kind(c, r){
 }
 const grid = groundGrid(COLS, ROWS, kind);
 
-// ---------- the armies (pos is the middle of the front row) ----------
+// ---------- the armies ----------
 const SR = { side: 0, facing: N }, BG = { side: 1, facing: S };
-const SERB = { quality: "veteran", weapon: "rifle_service", kit: "none", formation: "extended", mounted: false, prone: true };
-const MG = { quality: "veteran", weapon: "machine_gun", kit: "none", formation: "mg", mounted: false, prone: true };
-const BULGAR = { quality: "regular", weapon: "rifle_service", kit: "none", formation: "extended", mounted: false };
-const forward = (w, c0) => [w, c0, Math.min(...Array.from({ length: w }, (_, i) => crest(c0 + i))) - 3];   // on the forward slope
+const SERB = extended("veteran", { prone: true }), MG = mgTeam("veteran", { prone: true }), BULGAR = extended("regular");
+const forward = alongLine(crest, 3);                                   // on the forward slope
 const units = [
   unit("2nd Regiment, a company west of the road", SR, 200, SERB, forward(24, 30)),
   unit("2nd Regiment, a company astride the road", SR, 200, SERB, forward(24, 56)),

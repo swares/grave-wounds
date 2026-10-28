@@ -159,11 +159,11 @@ support:
   - {name: "Bulgarian field guns", side: 1, kind: field, tubes: 8}
   - {name: "Bulgarian big guns", side: 1, kind: howitzer, tubes: 2}
 units:
-  - {name: "2nd Regiment, a company west of the road", side: 0, men: 200, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 24, pos: [41, 30], facing: 1, prone: true}
-  - {name: "2nd Regiment, a company astride the road", side: 0, men: 200, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 24, pos: [67, 28], facing: 1, prone: true}
-  - {name: "2nd Regiment machine guns", side: 0, men: 10, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [84, 27], facing: 1, prone: true}
-  - {name: "2nd Regiment, the company of reinforcements", side: 0, men: 200, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 24, pos: [65, 50], facing: 1}
-  - {name: "Bulgarian battalion down the road", side: 1, men: 850, quality: regular, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [67, 16], facing: 4}
-  - {name: "Bulgarian battalion on the west", side: 1, men: 850, quality: regular, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [27, 16], facing: 4}
-  - {name: "Bulgarian machine guns", side: 1, men: 20, quality: regular, weapon: machine_gun, kit: none, formation: mg, width: 4, pos: [90, 20], facing: 4}
-  - {name: "Bulgarian battalion on the east", side: 1, men: 850, quality: regular, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [107, 16], facing: 4}
+  - {name: "2nd Regiment, a company west of the road", side: 0, men: 200, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 24, pos: [41, 30], facing: 1, prone: true, size: company}
+  - {name: "2nd Regiment, a company astride the road", side: 0, men: 200, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 24, pos: [67, 28], facing: 1, prone: true, size: company}
+  - {name: "2nd Regiment machine guns", side: 0, men: 10, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [84, 27], facing: 1, prone: true, size: section}
+  - {name: "2nd Regiment, the company of reinforcements", side: 0, men: 200, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 24, pos: [65, 50], facing: 1, size: company}
+  - {name: "Bulgarian battalion down the road", side: 1, men: 850, quality: regular, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [67, 16], facing: 4, size: battalion}
+  - {name: "Bulgarian battalion on the west", side: 1, men: 850, quality: regular, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [27, 16], facing: 4, size: battalion}
+  - {name: "Bulgarian machine guns", side: 1, men: 20, quality: regular, weapon: machine_gun, kit: none, formation: mg, width: 4, pos: [90, 20], facing: 4, size: section}
+  - {name: "Bulgarian battalion on the east", side: 1, men: 850, quality: regular, weapon: rifle_service, kit: none, formation: extended, width: 30, pos: [107, 16], facing: 4, size: battalion}

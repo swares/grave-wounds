@@ -17,7 +17,7 @@
 // is drawn by hand to that shape, not traced from any map; the slice of the line, the companies,
 // the battalions and the times are ours, with round numbers for play, at the sourced odds of about
 // three to one.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, writeField, extended, mgTeam, alongLine } from "./field_lib.mjs";
 
 const COLS = 130, ROWS = 110;                 // 1300 m east to west, about 950 m north to south
 // The Bojna njiva: a long rise across the map, highest in the middle, falling to the Tara on the
@@ -46,12 +46,10 @@ function kind(c, r){
 }
 const grid = groundGrid(COLS, ROWS, kind);
 
-// ---------- the armies (pos is the middle of the front row) ----------
+// ---------- the armies ----------
 const MN = { side: 0, facing: N }, AH = { side: 1, facing: S };
-const MONTE = { quality: "veteran", weapon: "rifle_service", kit: "none", formation: "extended", mounted: false, prone: true };
-const MG = { quality: "veteran", weapon: "machine_gun", kit: "none", formation: "mg", mounted: false, prone: true };
-const LANDSTURM = { quality: "regular", weapon: "rifle_service", kit: "none", formation: "extended", mounted: false };
-const onBrow = (w, c0) => [w, c0, Math.min(...Array.from({ length: w }, (_, i) => brow(c0 + i))) - 1];   // just forward of the brow
+const MONTE = extended("veteran", { prone: true }), MG = mgTeam("veteran", { prone: true }), LANDSTURM = extended("regular");
+const onBrow = alongLine(brow, 1);                                     // just forward of the brow
 const units = [
   unit("Sandžak army, a company above the Tara", MN, 200, MONTE, onBrow(18, 12)),
   unit("Sandžak army, a company on the Bojna njiva", MN, 200, MONTE, onBrow(20, 52)),
