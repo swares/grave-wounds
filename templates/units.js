@@ -1677,6 +1677,9 @@ function pikeFront(u){                            // steady, in a pike formation
   const P = UD.melee.pikes;
   return u.state === "steady" && P.formations.includes(u.formation) && P.weapons.includes(meleeWeapon(u)) && !u.mounted;
 }
+function noteBraced(acc, s, a, b){                // struck hand to hand only by horse, at its front of pikes or bayonets (melee.pikes.holds)
+  if (!s.rout) acc.braced[s.dfd] = acc.braced[s.dfd] !== false && !!a.mounted && s.situation === "front" && pikeFront(b);
+}
 function strikeAll(us, table, rng, acc, log, field, thinned = null){   // thinned: men each unit lost to canister as it came in; its striking men cut in that share
   const struck = new Set(), dueled = new Set();
   for (let s of strikes(us, field)){
@@ -1689,7 +1692,7 @@ function strikeAll(us, table, rng, acc, log, field, thinned = null){   // thinne
     const t = takeHurt(b, melee(meleeSide(a, table), meleeSide(b, table), s.men, rng, opts));
     tallyLoss(acc, s, t);
     acc.flanked[s.dfd] = acc.flanked[s.dfd] || s.situation === "flank" || s.situation === "rear";
-    if (!s.rout) acc.braced[s.dfd] = acc.braced[s.dfd] !== false && !!a.mounted && s.situation === "front" && pikeFront(b);   // struck hand to hand only by horse, at its front of pikes or bayonets (melee.pikes.holds)
+    noteBraced(acc, s, a, b);
     log.push(...logged({ kind: s.rout ? "rout" : "melee", ...s }, t));
     if (struck.has(s.att)) continue;
     struck.add(s.att);
