@@ -508,7 +508,19 @@ def _travel_tables(d: Data) -> dict:
     return {"speeds": _md(["Force", "Road speed", "A day on the road"], sp), "terrain": _md(["Terrain", "Time against a road"], ter),
             "camps": _md(["Camp", "What it is", "Needs", "Surprise", "Rest"], camps),
             "diseases": _md(["Disease", "Caught from", "Shows after", "Deaths per case (records)"], dis),
-            "works": _md(["Work", "Cover", "Crossing", "Blocks close combat"], works), **_weather_tables(d)}
+            "works": _md(["Work", "Cover", "Crossing", "Blocks close combat"], works), **_weather_tables(d), **_reliability_tables(d)}
+
+
+def _reliability_tables(d: Data) -> dict:
+    """Stoppages and unfit vehicles by war (units.yaml reliability)."""
+    R = d.units.get("reliability") or {}
+    S, unfit = R.get("stoppage") or {}, R.get("unfit") or {}
+    def fire(rates):
+        own = [f"{d.weapons[w]['name'].lower()} {rates[w]}%" for w in S.get("weapons", []) if w in rates]
+        return f"{rates.get('all', 0)}%" + (f" ({'; '.join(own)})" if own else "")
+    wars = list(dict.fromkeys([*(S.get("by_war") or {}), *unfit]))
+    rows = [[w, fire((S.get("by_war") or {}).get(w) or {}), f"{unfit[w]}%" if w in unfit else "—"] for w in wars]
+    return {"reliability": _md(["War", "Automatic fire lost to stoppages", "Vehicles unfit as the battle begins"], rows)}
 
 
 def _weather_tables(d: Data) -> dict:
@@ -517,12 +529,12 @@ def _weather_tables(d: Data) -> dict:
     conds = [[c["name"], _sight(c.get("visibility")), _off(wet[c["wet"]])] for c in WX["conditions"].values()]
     winds = [[w["name"], _off(w["missile"]), _off(w["firearm"]), f"±{w['reach']}%" if w["reach"] else "—"] for w in WX["winds"]]
     mf = WX["battle"]["misfire"]
-    fire = [[k.capitalize(), *[f"{v}%" if v else "—" for v in mf[k][1:]]] for k in mf]
+    fire = [[k.capitalize(), *[f"{v}%" if v else "—" for v in mf[k]]] for k in mf]
     fat = [[f["name"], _off(f["penalty"]), f"{f['march']}%"] for f in WX["fatigue"]["levels"]]
     light = [[x["name"], _sight(x["sight"]), _off(x["aim"])] for x in WX["light"]["levels"].values()]
     return {"conditions": _md(["Weather", "Can aim to", "Bows and crossbows"], conds),
             "winds": _md(["Wind", "Bows, slings, thrown", "Firearms", "Range bands with or into it"], winds),
-            "misfire": _md(["Ignition", "Rain or snow", "Heavy rain, storm, blizzard"], fire),
+            "misfire": _md(["Ignition", "Dry", "Rain or snow", "Heavy rain, storm, blizzard"], fire),
             "fatigue": _md(["Fatigue", "Attack and defence", "Marching speed"], fat),
             "light": _md(["Light", "Can see to aim", "Aimed fire"], light)}
 

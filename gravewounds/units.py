@@ -2109,6 +2109,24 @@ def in_the_cold(d: Data, field: dict | None, weapon: str, out: dict) -> dict:
     L = cold_of(d, field)
     if L and not out["blocked"] and weapon in d.weather["cold"]["jams"]:
         out["misfire"] = min(100, out["misfire"] + L["jam"])
+    return stopped(d, field, weapon, out)
+
+
+def stoppage_of(d: Data, war, weapon: str):
+    """The % of an automatic weapon's fire lost to stoppages in this war (units.yaml
+    reliability.stoppage): the war's figure for the weapon, else its `all`; 0 if none."""
+    S = (d.units.get("reliability") or {}).get("stoppage") or {}
+    W = (S.get("by_war") or {}).get(war)
+    if not W or weapon not in S.get("weapons", []):
+        return 0
+    return W.get(weapon, W.get("all", 0))
+
+
+def stopped(d: Data, field: dict | None, weapon: str, out: dict) -> dict:
+    """Stoppages on top of the weather's misfires (field.war, set as the battle begins)."""
+    p = 0 if out["blocked"] else stoppage_of(d, (field or {}).get("war"), weapon)
+    if p:
+        out["misfire"] = min(100, out["misfire"] + p)
     return out
 
 

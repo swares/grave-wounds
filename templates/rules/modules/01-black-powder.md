@@ -16,9 +16,10 @@ fires one round of canister before the melee. The shot in full is in
 
 ## Misfires {#misfire}
 
-In the wet, a muzzle-loader can **misfire**, losing the shot. The chance depends on how it
-fires its charge: a slow match, a wheel-lock, a flint, or a percussion cap. A breech-loader's
-cartridge does not misfire in the rain.
+A muzzle-loader can **misfire**, losing the shot, and more often in the wet. The chance
+depends on how it fires its charge: a slow match, a wheel-lock, a flint, or a percussion cap.
+Even dry, a flintlock failed about one shot in six or seven in the British trials of 1834, and
+a percussion cap about one in 165. A breech-loader's cartridge does not misfire.
 
 {{table:misfire}}
 

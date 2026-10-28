@@ -77,6 +77,12 @@ jobs:
         run: |
           ls results/*.json | wc -l
           { echo '```'; python3 tools/selfplay/report.py winners results | tail -40; python3 tools/selfplay/targets.py results; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+      - name: The benchmark, readable through the API
+        # commander.json from these runs, gzipped and base64'd into one annotation (artifacts and logs
+        # are not always reachable where the results are read): run from the measured ref's own tools.
+        run: |
+          python3 tools/selfplay/commander.py results > /dev/null
+          echo "::notice title=commander.json (gzip, base64)::$(gzip -9c tools/selfplay/commander.json | base64 -w0)"
       - uses: actions/upload-artifact@v6
         with:
           name: selfplay-${{ inputs.label }}
