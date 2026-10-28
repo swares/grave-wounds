@@ -231,7 +231,13 @@ def advance_stages(d: Data, bt: dict) -> dict:
 
 def _light_of_phase(d: Data, bt: dict, st: dict, out: dict) -> None:
     """A phase that sets the light (light: a weather.yaml light level) changes the field's from
-    then on (sunset, dawn); out["light"]: {phase index: the level's name}."""
+    then on (sunset, dawn); one that sets the weather (weather: {cond, wind}) changes it (a squall);
+    out["light"], out["weather"]: {phase index: its name}."""
+    if st.get("weather"):
+        W = st["weather"]
+        bt["field"]["weather"] = {**(bt["field"].get("weather") or {}), **W}
+        wind = (", " + next(w["name"] for w in d.weather["winds"] if w["id"] == W["wind"]).lower()) if W.get("wind") else ""
+        out.setdefault("weather", {})[bt["stageNo"]] = (d.weather["conditions"][W["cond"]]["name"] if W.get("cond") else "") + wind
     if not st.get("light"):
         return
     bt["field"]["weather"] = {**(bt["field"].get("weather") or {}), "light": st["light"]}
@@ -299,6 +305,7 @@ def begin(d: Data, bt: dict) -> dict:
     bt["exchange"] = 1
     stages = advance_stages(d, bt)
     mark_starts(bt)
+    bt["field"]["located"] = [[u["side"], list(u["pos"])] for u in bt["units"] if u.get("pos")]   # where each unit stood when the battle began: located before it, for planned fire (indirect.planned)
     return {"stages": stages, "ran": start_phase(d, bt, 0)}
 
 
@@ -478,8 +485,8 @@ def _side_points(bt: dict, base: dict, commits: list) -> list:
 def turning_points(d: Data, bt: dict, base: dict, stages: dict | None, commits: list) -> list:
     """Since base: phases begun (and who came on), units broken or fled by side, objectives taken
     or lost, reserves committed (ids by side)."""
-    lights = (stages or {}).get("light") or {}
-    out = [{"kind": "phase", "stage": i, "came": [bt["units"][k]["id"] for k in stages.get("came", [])], **({"light": lights[i]} if i in lights else {})}
+    lights, skies = (stages or {}).get("light") or {}, (stages or {}).get("weather") or {}
+    out = [{"kind": "phase", "stage": i, "came": [bt["units"][k]["id"] for k in stages.get("came", [])], **({"light": lights[i]} if i in lights else {}), **({"weather": skies[i]} if i in skies else {})}
            for i in (stages or {}).get("begun", [])]
     out += _side_points(bt, base, commits)
     for i, o in enumerate(U.objective_held(d, bt["units"], bt["field"])):

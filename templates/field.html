@@ -916,8 +916,12 @@ function fireRefused(b, K, h, fire){              // why battery b cannot fire `
   if (run?.from && S.field.year && S.field.year < run.from) return `Napalm was first dropped in ${run.from}: not at a battle of ${S.field.year}.`;
   if (K.air && fire === "smoke") return `${K.name} drop no smoke.`;
   if (!inReach(b, h)) return `${b.name} cannot reach ${hexName(h)} from where they stand (${nOf(reachOf(b), "hex", "hexes")}).`;
-  if (fire !== "illum" && !spotted(S.units, S.field, b.side, h)) return `No unit of ${b.side} can see ${hexName(h)}: fire can only be called where someone sees it fall (not through woods or smoke).`;
+  if (fire !== "illum" && !spotted(S.units, S.field, b.side, h) && !plannedOn(b, K, h)) return `No unit of ${b.side} can see ${hexName(h)}: fire can only be called where someone sees it fall (not through woods or smoke), or, high explosive from guns and mortars, on the enemy's positions located before the battle.`;
   return "";
+}
+function plannedOn(b, K, h){                      // planned fire: guns or mortars on a hex within indirect.planned.near of a place the enemy held when the battle began
+  const P = FD.units.indirect.planned;
+  return !!P && !K.air && !K.direct && $("#sel-sup-fire").value === "he" && (S.field.located || []).some(([s, x]) => s !== b.side && hdist(x, h) <= P.near);
 }
 function callFire(i, h){                          // the mission, if a unit of its side can see the hex
   const b = supports()[i], K = FD.units.indirect.kinds[b.kind], fire = $("#sel-sup-fire").value;
@@ -925,6 +929,7 @@ function callFire(i, h){                          // the mission, if a unit of i
   const no = fireRefused(b, K, h, fire);
   if (no){ S.msg = no; return render() }
   const by = Number($("#sel-sup-creep").value), m = { hex: h, wait: K.delay, repeat: by > 0 || $("#chk-sup-repeat").checked };
+  if (!spotted(S.units, S.field, b.side, h) && plannedOn(b, K, h)) m.planned = true;   // unseen: on the located place, the wider scatter
   if (fire === "smoke") m.smoke = true;
   if (fire === "illum") m.illum = true;
   if (fire === "strafe" || fire === "napalm") Object.assign(m, { attack: fire, dir: creepDir(b.side) });
@@ -1345,7 +1350,7 @@ function stagesNote(st){                          // the phases begun and the un
   const notes = [];
   for (const i of st.begun){
     const p = S.stages[i];
-    const light = st.light?.[i] ? ` The light: ${st.light[i]}.` : "";
+    const light = (st.light?.[i] ? ` The light: ${st.light[i]}.` : "") + (st.weather?.[i] ? ` The weather: ${st.weather[i]}.` : "");
     S.log.unshift({ cls: "head", text: `Phase ${i + 1} of ${S.stages.length}: ${p.name}.${p.note ? " " + p.note : ""}${light}` });
     notes.push(`Phase ${i + 1}: ${p.name}.${light}`);
   }
@@ -1537,7 +1542,7 @@ const POINT_TEXT = {                              // a turning point in plain wo
 function phasePointText(p){
   const st = S.stages?.[p.stage];
   if (!st) return "";
-  const came = namesOf(p.came), note = st.note ? " " + st.note : "", coming = came ? ` Coming on: ${came}.` : "", light = p.light ? ` The light: ${p.light}.` : "";
+  const came = namesOf(p.came), note = st.note ? " " + st.note : "", coming = came ? ` Coming on: ${came}.` : "", light = (p.light ? ` The light: ${p.light}.` : "") + (p.weather ? ` The weather: ${p.weather}.` : "");
   return `Phase ${p.stage + 1} of ${S.stages.length}: ${st.name}.${note}${light}${coming}`;
 }
 function objectivePointText(p){

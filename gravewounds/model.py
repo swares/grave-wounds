@@ -2163,6 +2163,10 @@ def _field_marker_errors(d: Data, f: dict, where: str) -> list[str]:
     errors += _phase_errors(f, where)
     errors += [f"{where}: phase {i + 1} sets unknown light {st['light']!r}" for i, st in enumerate(f.get("phases") or [])
                if isinstance(st, dict) and "light" in st and st["light"] not in (d.weather.get("light") or {}).get("levels", {})]
+    winds = {w["id"] for w in d.weather.get("winds", [])}
+    errors += [f"{where}: phase {i + 1} sets the weather as cond (a weather.yaml condition) and wind, both optional" for i, st in enumerate(f.get("phases") or [])
+               if isinstance(st, dict) and "weather" in st and not (isinstance(st["weather"], dict) and set(st["weather"]) <= {"cond", "wind"}
+                                                                    and st["weather"].get("cond", "fair") in d.weather.get("conditions", {}) and st["weather"].get("wind", winds and next(iter(winds))) in winds)]
     for u in f.get("units", []):
         if "type" in u and u["type"] not in M.get("types", {}):
             errors.append(f"{where}: unit {u.get('name')}: type must be one of {', '.join(M.get('types', {}))}")
