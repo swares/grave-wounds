@@ -201,14 +201,15 @@ When an item is done, delete it here and note it in the pull request that closes
   over a whole exchange is told (a unit that broke and rallied within one is missed), no rally or hero turning points, no narration on the travel map, no streamed or
   regenerated passages. The GM can pick the voice for a battle (the war's by default); passages already written are
   not retold in a new voice.
-- **Tumbledown, a known miss** (the rules audit, 26 October 2026). The Scots Guards lose every
-  self-play run. Traced: the companies break under mortar fire and fire they cannot answer long
-  before they close. Tried and not adopted: less lethal shellfire on dug-in men, location error
-  and planned fire (`indirect.shelter`, `error`, `planned`, branch `shellfire-test`); going to
-  ground after a mission's first salvo (`indirect.go_to_ground`, branch `go-to-ground`); a shaken
-  unit breaking only for a heavy cause (3 of 6 at Tumbledown, but Mons, Wanat and Cowpens flip:
-  189 of 276 against 198). Adopted: a failed rally leaves a unit shaken (202 of 276). Still to
-  find: a narrower cause, such as how a night attack's men see and answer the defenders.
+- **Tumbledown, fixed by planned fire; Pork Chop, the new miss** (27 October 2026). Traced in the
+  second Tumbledown study (claude/tumbledown-study-2): the Scots Guards never saw an Argentine unit
+  all night, so their guns never fired. Adopted: planned fire (`indirect.planned`): an attacker's
+  guns may fire, unseen, within 3 hexes of a place the defenders held when the battle began.
+  Tumbledown 8 of 12 as fought (from 0). The full benchmark rerun (with Albuera's squall): 392 of
+  552 runs match the battle as fought, from 394. Gained: Tumbledown +8, Babuna and Goose Green +1.
+  Lost: Pork Chop -5 (9 to 4: the Chinese mortars break E Company early and the American guns,
+  with no one left to see, fall nearly silent), Albuera -3 (the squall), Chipyong-ni -2, Dak To
+  and Khe Sanh -1. Still to study: Pork Chop's defensive fire.
 - **Self-play against the battles as fought, first review** (`docs/selfplay-review.md`). Every
   battlefield was played with the commander on both sides and set against what happened; what has
   been changed since, and what was measured and not built, is in the review. To do, from the
