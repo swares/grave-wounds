@@ -1358,3 +1358,26 @@ battlefields with a plan changing, and the morale targets unchanged.
 - **Next:** Goose Green (pin and envelop), and Osan and Mons as a test of `withdraw_if` (their
   timed withdrawals started by `outflanked` and `lost` instead).
 
+## Plans: 73 Easting, Goose Green, Mons and the June Redan, 29 October 2026
+
+Four more battlefields given plans, from the commander misses tagged by cause (project doc
+"battlefield-misses-tags"). Measured on 12 runs of every battlefield (labels plans1 and plans2):
+**452 to 462 of 576**, only these four changing; the morale targets moved by a point at most.
+
+| Battlefield | Plan | Runs matched | Losses (first side / second) | Exchanges |
+|---|---|---|---|---|
+| 73 Easting | the tank platoons shoot the position from the crest, then go through | 8 to 11 | 6.2%/31.9% to 8.1%/33.8% | 44 to 23 |
+| Goose Green | A and B Companies hold and fire until shortly before noon; the machine guns pin the Argentine guns | 1 to 3 | 57.2%/15.9% to 34.8%/30.5% | 255 to 282 |
+| Mons | the Fusiliers fall back when outflanked or a quarter down | 10 to 12 | 46.0%/14.6% to 33.3%/14.9% | 136 to 84 |
+| The June Redan | the attack called off at exchange 25 or a third down | 7 to 10 | 56.0%/6.9% to 32.0%/3.2% | 59 to 37 |
+
+- **73 Easting** now runs about as long as the account's 23 minutes. The troop still loses about
+  8% against none in fact.
+- **Goose Green** (traced, 4 seeds): the Argentine trench platoons break and flee, but the
+  10-man machine-gun nest on the crest stays steady and holds the objective, while A and D
+  Companies, the headquarters and the machine guns flee at about a quarter to a third down: the
+  constant morale drain on a long fight, a rule (the backlog), not the plan.
+- **The June Redan** now loses fewer British than the account (32% against 1,400 of 2,940, 48%):
+  the attack is called off sooner than it was in fact, or the columns get less far.
+- **Osan** was left as it is: it matched 12 of 12 with sourced, timed withdrawals.
+
