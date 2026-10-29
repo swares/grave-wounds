@@ -483,27 +483,27 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 14.22
+      "ratio": 9.29
      },
      "drew": 0.0,
-     "lost_share": 0.062,
+     "lost_share": 0.081,
      "side": "Coalition",
      "stance": "attack",
-     "won": 0.67
+     "won": 0.92
     },
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.13
+      "ratio": 0.11
      },
      "drew": 0.0,
-     "lost_share": 0.319,
+     "lost_share": 0.338,
      "side": "Iraqis",
      "stance": "hold",
-     "won": 0.33
+     "won": 0.08
     }
    ],
-   "stamp": "bbc2daa40188"
+   "stamp": "af7b270a2636"
   },
   "fallujah-2004": {
    "runs": 12,
@@ -595,27 +595,27 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.19
+      "ratio": 0.62
      },
      "drew": 0.0,
-     "lost_share": 0.572,
+     "lost_share": 0.348,
      "side": "British",
      "stance": "attack",
-     "won": 0.08
+     "won": 0.25
     },
     {
      "bar": {
       "outcome": "win",
-      "ratio": 6.26
+      "ratio": 1.66
      },
      "drew": 0.0,
-     "lost_share": 0.159,
+     "lost_share": 0.305,
      "side": "Argentines",
      "stance": "hold",
-     "won": 0.92
+     "won": 0.75
     }
    ],
-   "stamp": "3d71178e995c"
+   "stamp": "3d4d9d2cf4cf"
   },
   "grozny-1995": {
    "runs": 12,
@@ -959,27 +959,27 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.92
+      "ratio": 1.22
      },
      "drew": 0.0,
-     "lost_share": 0.46,
+     "lost_share": 0.333,
      "side": "British",
      "stance": "hold",
-     "won": 0.17
+     "won": 0.0
     },
     {
      "bar": {
       "outcome": "win",
-      "ratio": 1.12
+      "ratio": 0.85
      },
      "drew": 0.0,
-     "lost_share": 0.146,
+     "lost_share": 0.149,
      "side": "Germans",
      "stance": "attack",
-     "won": 0.83
+     "won": 1.0
     }
    ],
-   "stamp": "27c0493ed5c5"
+   "stamp": "b5464828a27c"
   },
   "osan-1950": {
    "runs": 12,
@@ -1071,27 +1071,27 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.23
+      "ratio": 0.16
      },
      "drew": 0.0,
-     "lost_share": 0.56,
+     "lost_share": 0.32,
      "side": "British",
      "stance": "attack",
-     "won": 0.42
+     "won": 0.17
     },
     {
      "bar": {
       "outcome": "win",
-      "ratio": 4.33
+      "ratio": 6.5
      },
      "drew": 0.0,
-     "lost_share": 0.069,
+     "lost_share": 0.032,
      "side": "Russians",
      "stance": "hold",
-     "won": 0.58
+     "won": 0.83
     }
    ],
-   "stamp": "f989e6371fbb"
+   "stamp": "2a8f3d362350"
   },
   "sidon-1253": {
    "runs": 12,
