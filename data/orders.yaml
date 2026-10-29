@@ -80,6 +80,11 @@ cassino-poles-1944:
   source: "https://en.wikipedia.org/wiki/Battle_of_Monte_Cassino"
   hold:
     - "Germans in the abbey's ruins"
+    - "German paratroops on Phantom Ridge"   # bunkers "fully manned"; the Germans ended the day holding the ridge (project doc point593-counterattacks: DR, WAWER, DZ)
+    - "German machine guns (Phantom Ridge)"   # a bunker firing along the ridge after others fell (kresyfamily memoir; low)
+    - "German paratroops on Point 444"   # no source says it was attacked or lost on 12 May: held as its posts (our reading)
+    - "German machine guns (Point 593)"   # not described separately; held as a bunker post (our reading). Without these four, the
+                                          # garrisons left their sangars and bunkers by exchange 5 and were shelled in the open
 cassino-town-1944:
   source: "https://www.historyofwar.org/articles/battles_cassino_3rd.html;"
   hold:
