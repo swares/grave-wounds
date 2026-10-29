@@ -2774,11 +2774,14 @@ hollow of Snipe, west of the Kidney feature at El Alamein.
 How it is drawn: the hollow to the accounts' size, the ridges, its depth and the guns' places
 inside their sectors ours; the attacks the accounts number at those numbers, the rest ours, with
 round numbers. The British artillery (its observer lost at 04:00) and the friendly fire are not
-played. In self-play the battalion does not hold: all three runs end about 10:30 with every
-British unit gone (0 of 3 matched), the British losing about 40% of their men to the Axis 14%,
-where in fact 72 of under 300 were hit and some 32 tanks and 5 SP guns were left burnt out round
-the hollow. The guns break and run under the dawn and morning attacks; how the anti-tank guns,
-their crews' morale and the tanks' fire on dug-in guns play is a lead for the self-play review. It
+played. The guns and riflemen stand in the gun pits and slit trenches dug before dawn (a trench
+under each section), and the six-pounders fire armour-piercing only (`he: false`: no high-explosive
+round until 1943). In self-play the battalion holds in 3 of 12 runs, the British losing about 37%
+of their men to the Axis 16%, where in fact 72 of under 300 were hit and some 32 tanks and 5 SP guns
+were left burnt out round the hollow. Without the trenches' cut against shellfire every run ended
+about 10:30, the men in their pits struck by the tanks' high explosive as if lying in the open; the
+losses left come mostly from Rommel's evening tanks driving into the hollow, where in fact they drew
+back to 800 yards and fired until dark (project doc "snipe-study"). It
 is drawn by `tools/maps/make_snipe_field.mjs`.
 
 **Hill 700, Bougainville, 8-12 March 1944** (`data/fields/bougainville-1944.yaml`). The field
