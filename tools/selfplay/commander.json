@@ -343,10 +343,10 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 1.52
+      "ratio": 1.69
      },
      "drew": 0.0,
-     "lost_share": 0.224,
+     "lost_share": 0.231,
      "side": "Americans",
      "stance": "hold",
      "won": 1.0
@@ -354,16 +354,16 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.66
+      "ratio": 0.64
      },
      "drew": 0.0,
-     "lost_share": 0.446,
+     "lost_share": 0.512,
      "side": "British",
      "stance": "attack",
      "won": 0.0
     }
    ],
-   "stamp": "9889ddde4534"
+   "stamp": "623016a98030"
   },
   "crecy-1346": {
    "runs": 12,

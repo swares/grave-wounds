@@ -961,12 +961,14 @@ steps; the log says when one starts or ends and why ("Plan: Washington's horse g
 British left; About-face and bayonets has begun").
 
 **The battlefields with a plan.**
-- **Cowpens:** Washington's horse goes round the east of the fight when the Continentals face
-  about (`envelop` on the phase *About-face and bayonets*) and strikes the 7th Fusiliers in the
-  flank. **Left out:** the militia and riflemen falling back behind the Continentals and coming
-  back round the other flank. A unit cannot pass through its own side's units, and the militia
-  line (50 hexes wide) cannot go round the Continentals' (28) on this 120-hex map; that needs a
-  rule for passing through one's own lines first.
+- **Cowpens:** the militia fall back round the Continentals' left (east, for a line facing
+  south) when the phase *The militia fall back* begins or a sixth are down (`withdraw_if`, ours).
+  When the Continentals face about (*About-face and bayonets*), Washington's horse go round the
+  east of the fight and strike the 7th Fusiliers in the flank, and the militia come back round the
+  west onto the 71st (`envelop`). The routes and hexes are ours. The riflemen skirmishing in front
+  have no plan. A unit still cannot pass through its own side's units, but the militia's line,
+  one row deep, gets past the end of the Continentals' as it moves; no rule for passing through
+  was needed.
 - **Snipe:** Rommel's evening German tanks, once they have lost a tenth of their men (our
   figure), keep C Company's six-pounders under fire from as far off as they can hit them (`pin`)
   instead of driving into the hollow. The account has them draw back to 800 yards and fire until

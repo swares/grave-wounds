@@ -87,8 +87,7 @@ When an item is done, delete it here and note it in the pull request that closes
   for riflemen who stop at range. Its foot units ride its carriers up and get down once an enemy is in reach. Its aircraft prefer a target its air controllers see and come closer there. Holding, by day or at dusk, it lays its machine guns' fixed lines on the nearest enemy it knows of in reach, or else ahead toward one (or along its facing), shifting a line laid ahead once onto an enemy that comes into reach. It digs its foot units in where they stand when safe: at the objective, holding with none, and in reserve. Attacking, an air controller with nothing better to do moves up to see a target for its aircraft (up to three moves away; holding, it stays). An attacking air controller with nothing better to do goes up to three moves to see a target, preferring a spot out of reach, and not while it has a fight of its own. Still left out: a controller moving past three moves, fixed lines across its front or interlocking with each other, and works other than digging in (no field works are built during a battle); any plan beyond two
   objectives (phase lines across the front, feints, scouting; no battlefield marks a second;
   plans give phase lines, pinning, envelopments, reserves and withdrawals on a trigger where a
-  battlefield's plan says so: units.md, *Plans*; only Cowpens and Snipe have one so far, and no
-  unit can pass through its own lines, which Cowpens' militia need); ladders only where the GM or a battlefield marks them (the Great Redan's ladder parties are marked, but ladders do nothing on its ditch and bank). It does
+  battlefield's plan says so: units.md, *Plans*; six battlefields have one so far); ladders only where the GM or a battlefield marks them (the Great Redan's ladder parties are marked, but ladders do nothing on its ditch and bank). It does
   not play the travel map. Later, by the choice made: an optional narrator, using a model
   with a key the player supplies, to explain its orders in prose.
 
@@ -237,8 +236,7 @@ When an item is done, delete it here and note it in the pull request that closes
     attackers' objective;
   - Grozny: the Chechen ambush (the breakout 25 hours on is beyond a run) and its strengths (one
     witness);
-  - Cowpens' militia falling back behind the Continentals and returning (a unit cannot pass
-    through its own lines), and the American rush on the guns at Lundy's Lane (the guns still hold);
+  - the American rush on the guns at Lundy's Lane (the guns still hold);
   - Point 593: the paratroops now hold sangars and bunkers (the Monastery 0 to 3 of 12); May's
     counter-attacks are on the map with strengths of our own (none sourced) and are too weak to
     throw the Poles off (0 of 12); the Allied guns still put down hundreds of paratroops over the
