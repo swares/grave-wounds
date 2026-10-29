@@ -253,6 +253,14 @@ melee:
 # shield counts through the hit-location tables. Tuned so 100 archers with longbows at
 # medium range hit about 8 unarmoured men a minute.
 missile:
+  # closing_volley: foot armed with one of `weapons` charging home fire one volley at the enemy
+  # next to them first, before the melee, as a battery's canister does (artillery.closing): its
+  # hits thin the defenders' fighting men and count in their losses. British wins over columns
+  # were usually one close volley, then the charge (Griffith); at Maida 1806 the third volley,
+  # at about 20 yards, broke the French 1st Light; at Lundy's Lane Miller's 21st fired from about
+  # 15 yards and charged the guns (project doc "closing-volley-research"). The range bands give
+  # the close volley its weight, with no multiplier.
+  closing_volley: {weapons: [matchlock_musket, musket_smoothbore, rifle_musket]}
   tempo: 0.033
   rate:                     # shots a minute, by weapon (design estimates)
     aa_gun: 150
