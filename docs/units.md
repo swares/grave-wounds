@@ -873,7 +873,7 @@ What it does not do yet:
 
 ### Plans
 
-*Designed and built 29 October 2026; two battlefields have a plan so far (below).* The commander orders
+*Designed and built 29 October 2026; six battlefields have a plan so far (below).* The commander orders
 unit by unit: each unit goes for its target or the objective, and the reserve, routes and the
 orders from the accounts are the only coordination it has. A **plan** gives a side's units tasks
 in steps, each started and ended by what happens on the field, so a side can pin an enemy and go
@@ -973,9 +973,22 @@ British left; About-face and bayonets has begun").
   dark (project doc "snipe-research", B3), so `pin`, not the `withdraw_if` at dusk first planned.
   Their guns reach 100 hexes (about 1,100 yards), so in daylight they stand off a little further
   than the account's 800.
-- **Next:** Goose Green (fire and movement: one company pins Darwin Hill while another works
-  round; to be checked against the accounts first), and Osan and Mons as a test of `withdraw_if`
-  (their timed withdrawals in `orders.yaml` started by `outflanked` and `lost` instead).
+- **73 Easting:** each of Eagle Troop's tank platoons comes up onto the rise above its half of the
+  position (`advance_to`) and shoots the dug-in T-72s from the crest, then goes through once the
+  T-72s in front of it break, or at exchange 12 at the latest (ours).
+- **Goose Green:** A Company in the gorse gully and B Company on the open slope hold where they
+  are and fire (`advance_to` their own ground) until the advance resumes shortly before noon (the
+  battlefield's phase, 11:55), then storm in bounds as before; 2 Para's machine guns pin the
+  Argentine machine guns from the start. `pin` was not used for the companies: it would draw A
+  Company out of the gully to the furthest hex in range, whatever the cover.
+- **Mons:** the Royal Fusiliers' three companies fall back off the south edge (`withdraw_if`) when
+  outflanked or a quarter down (ours); their sourced 13:40 withdrawal in `orders.yaml` stays as the
+  latest.
+- **The June Redan:** the attack is called off: all eight British units go back off the south
+  edge (`withdraw_if`) at exchange 25 or once the side is a third down (both ours; the battlefield's
+  phase at 15 has the attack failing and soon called off).
+- **Osan** keeps its sourced, timed withdrawals: it matched 12 of 12 already, and starting them by
+  conditions instead would trade sourced times for estimates.
 
 **Checked and measured.** Python and the page play Cowpens and Snipe move for move the same on the
 same dice (seed 101: the stop, the exchanges, the orders and every unit at the end). On 12 runs of
@@ -983,7 +996,12 @@ every battlefield against main (labels main-6955b23 and plans1), only those two 
 452 of 576** runs matched. Snipe 3 to 6 of 12 (British lost 37.5% to 34.9%, the Axis 16.4% to
 17.3%); Cowpens stays 12 of 12, the British losing 44.6% instead of 30.6% (the Americans 22.4%
 instead of 20.2%), nearer the account, where the British line and the 71st were taken. The morale
-targets did not move. The browser test `tools/field/plans.py` checks the box, the strip and the
+targets did not move. The four plans after them (73 Easting, Goose Green, Mons, the June Redan;
+labels plans1 and plans2): **452 to 462 of 576**, only those four changing: 73 Easting 8 to 11
+(over in 23 exchanges instead of 44, the account's 23 minutes), Goose Green 1 to 3 (British losses
+57% to 35%), Mons 10 to 12, the June Redan 7 to 10 (British losses 56% to 32%, now under the
+account's 48%). The morale targets moved by a point at most. Python and the page play all four
+the same at seed 101. The browser test `tools/field/plans.py` checks the box, the strip and the
 log on Cowpens.
 
 ### Both sides (self-play)

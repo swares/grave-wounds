@@ -42,3 +42,71 @@ snipe-1942:
         do: pin
         target: "C Company's six-pounders (south-west)"
         when: {lost: 10}
+
+easting73-1991:
+  source: "https://thestrategybridge.org/the-bridge/2016/2/26/eagle-troop-at-the-battle-of-73-easting (H. R. McMaster, the troop commander)"
+  note: >-
+    Eagle Troop's tanks come up onto the rise and shoot the dug-in T-72s from the crest (16:18 to
+    16:22 on the battlefield's phases), then go through the position. Each platoon holds the crest
+    above its own half until the T-72s in front of it break, or until exchange 12 at the latest
+    (ours). The crest hexes are ours, on the rise as drawn.
+  sides:
+    0:
+      - units: ["Eagle Troop's tanks (the troop commander and the north platoon)"]
+        do: advance_to
+        to: [81, 50]
+        until: [{broken: "Tawakalna T-72s dug in behind the rise (north)"}, {exchange: 12}]
+      - units: ["Eagle Troop's tanks (the south platoon)"]
+        do: advance_to
+        to: [81, 72]
+        until: [{broken: "Tawakalna T-72s dug in behind the rise (south)"}, {exchange: 12}]
+
+goosegreen-1982:
+  source: "https://en.wikipedia.org/wiki/Battle_of_Goose_Green; project doc hold-or-give-way (goosegreen-1982); docs/selfplay-review.md (Goose Green)"
+  note: >-
+    A Company, pinned in the gorse gully below Darwin Hill, and B Company on the open slope hold
+    where they are and fire, as they did all morning, until the advance resumes shortly before
+    noon (the battlefield's phase, 11:55); then they go in as before, storming in bounds. 2 Para's
+    machine guns keep the Argentine machine guns under fire from the start (the accounts have the
+    trenches suppressed by machine guns, Milan and 66 mm rockets before the break-in).
+  sides:
+    0:
+      - units: ["A Company, 2 Para (in the gorse gully)"]
+        do: advance_to
+        to: [100, 38]
+        until: {phase: "Shortly before noon"}
+      - units: ["B Company, 2 Para (on the open slope)"]
+        do: advance_to
+        to: [44, 30]
+        until: {phase: "Shortly before noon"}
+      - units: ["2 Para's machine guns"]
+        do: pin
+        target: "Argentine machine guns"
+
+mons-1914:
+  source: "https://visitmons.co.uk/see-do/top-sights/mons-the-first-the-last/battlefields-guide/3-the-rail-bridge"
+  note: >-
+    The Royal Fusiliers fall back from the canal when the Germans are round their flank or they
+    have lost a quarter of their men (ours), as the account has them fall back by the afternoon;
+    orders.yaml keeps the battalion's sourced 13:40 withdrawal as the latest.
+  sides:
+    0:
+      - units: ["4th Royal Fusiliers (C Coy, the railway bridge)", "4th Royal Fusiliers (B Coy, the road bridge)", "4th Royal Fusiliers (A and D Coys, Nimy)"]
+        do: withdraw_if
+        to: S
+        when: [{outflanked: true}, {lost: 25}]
+
+redan-1855-june:
+  source: "https://weekend.rambler.ru/read/56631399-kak-byl-otbit-pervyy-shturm-sevastopolya-v-krymskuyu-voynu/"
+  note: >-
+    The attack is called off: the columns go back to their trenches (off the south edge) once the
+    side has lost a third of its men, or by exchange 25 (both ours; the battlefield's phase at
+    exchange 15 has the attack failing and soon called off). The account gives some 1,400 British
+    lost of the 2,940 on this map.
+  sides:
+    0:
+      - units: ["Right column (Yea): covering riflemen (Rifle Brigade)", "Right column (Yea): ladders and wool-bags (sailors and soldiers)", "Right column (Yea): storming party", "Right column (Yea): supports",
+                "Left column (Campbell): covering riflemen (Rifle Brigade)", "Left column (Campbell): ladders and wool-bags (sailors and soldiers)", "Left column (Campbell): storming party", "Left column (Campbell): supports"]
+        do: withdraw_if
+        to: S
+        when: [{exchange: 25}, {lost: 33, side: true}]
