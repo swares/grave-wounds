@@ -860,9 +860,104 @@ What it does not do yet:
 - Its reserve holds until committed; then a unit sent to plug a gap goes there, and others
   fight. Reserve units ignore the objective until committed.
 - It has at most two objectives, taken (or held) in turn: no third or more, no phase lines
-  across the whole front, no feints or scouting. Battlefields mark only one. Victory is still the GM's call; the objective
+  across the whole front, no feints or scouting (designed, not built: see *Plans*, below).
+  Battlefields mark only one. Victory is still the GM's call; the objective
   line in the log only says who stands on it.
 - It plays only on the field map, not the travel map.
+
+### Plans (designed, not built)
+
+*This is the design, agreed 29 October 2026; nothing below is built yet.* The commander orders
+unit by unit: each unit goes for its target or the objective, and the reserve, routes and the
+orders from the accounts are the only coordination it has. A **plan** gives a side's units tasks
+in steps, each started and ended by what happens on the field, so a side can pin an enemy and go
+round it, advance to a line and wait, or give way when outflanked. It needs no AI: a plan is
+data, written from the accounts, and the commander carries it out with the same dice and the same
+rules, so self-play stays seeded and the Python and the page stay move for move the same.
+
+**Where plans live.** `data/plans.yaml`, by battlefield, apart from `data/orders.yaml`: the
+orders are what the sources say a unit did, a plan is our reading of what each side meant to do.
+Each battlefield's plan has a `source` and a `note`, and each side its steps:
+
+```yaml
+cowpens-1781:
+  source: "<the account the plan is read from>"
+  note: "Morgan's three lines; the militia fire and fall back; the wings close in"
+  sides:
+    0:                                   # the Americans (the battlefield's first side)
+      - units: ["Militia line (Pickens)"]
+        do: withdraw_if
+        to: [40, 28]                     # behind Howard's line, its left
+        when: [{lost: 10}, {phase: "The militia fall back"}]   # whichever comes first
+      - units: ["Washington's horse"]
+        do: envelop
+        via: [[85, 30], [85, 70]]
+        target: "71st Highlanders (reserve)"
+        when: {phase: "About-face and bayonets"}
+```
+
+(The hexes in the example are for illustration; the plan written for Cowpens takes them from the
+account and the map.)
+
+**A step** names its `units` (by name, as the orders do), the task (`do`, with the task's own
+keys), when it starts (`when`; from the first exchange if left out) and, optionally, when it ends
+(`until`; else when the task is done). A unit has at most one step running; a later step for the
+same unit replaces it when it starts. The steps of a side are read in order every move.
+
+**The tasks, first cut.**
+- **advance_to** `{to}`: goes to a hex (a phase line or a start line) as to an objective, fighting
+  on the way only as a unit going to an objective does, then halts there and holds, digging in
+  where it can, until the step ends.
+- **pin** `{target}`: keeps the named enemy unit under fire from the furthest hex it can hit it
+  from, taking cover where there is any, and never closes to contact. A unit with no missile
+  weapon stands just beyond the enemy's charge reach in sight of it.
+- **envelop** `{via, target}`: goes by the waypoints (as a route does), then attacks the target,
+  or the objective if none is named, from where the route brings it.
+- **commit** `{to}` (optional): releases a reserve unit; with `to` it goes there to plug or exploit,
+  as a unit plugging a gap does; without, it fights as any committed unit.
+- **withdraw_if** `{to}`: when its step starts, falls back to a hex (and holds it) or to a map
+  edge (and leaves), as a withdrawal on orders does. It is the account's `withdraw`, started by
+  what happens instead of by the clock.
+
+**The triggers, first cut.** `when` and `until` take one trigger, or a list of them: a step
+starts when any one is true (a list inside `all: [...]` needs every one).
+- **exchange** `n`: from the nth exchange on.
+- **phase** `name`: once the battlefield's phase of that name has begun.
+- **light** `dusk` or `night`: once the light is that or darker.
+- **pinned** `name`: the named enemy unit was hit by a pinning unit of ours last exchange and is
+  shaken, gone to ground or in cover.
+- **broken** `name`: the named unit, either side's, has broken, fled or is gone.
+- **lost** `p`: the step's units (or with `side: true`, the whole side) have lost p% of their
+  starting men.
+- **outflanked**: a steady enemy unit stands off the flank or in the rear of one of the step's
+  units, by the same test as the flank morale check.
+
+**Where it sits in the commander's orders.** A unit with a running step takes its step's order
+where a route's order comes now: after withdrawing on orders, ammunition and the reserve, and
+before the default move. A unit in contact fights as now, and the tasks give no orders to guns,
+sappers or riders, which keep their own. A unit with no step, and every unit of a battlefield
+with no plan, is ordered exactly as before.
+
+**On the page.** A plan applies with *the armies as drawn up*, as phases do (not to forces from
+the travel map), and to every side the commander plays, self-play or not. A box per side,
+*Follow the battlefield's plan*, is ticked by default. The phase strip shows each side's running
+steps; the log says when one starts or ends and why ("Plan: Washington's horse go round the
+British left; About-face and bayonets has begun").
+
+**First battlefields, and how they are measured.**
+- **Cowpens:** the militia fire and fall back (`withdraw_if` on losses or the phase), and
+  Washington's horse goes round onto the British (`envelop`), as in the example.
+- **Snipe:** Rommel's evening tanks draw back at dusk to about 800 yards (`withdraw_if` on
+  `light`; project doc "snipe-study"), instead of driving into the hollow.
+- **Goose Green:** fire and movement over hours: one company pins Darwin Hill's trenches while
+  another works round (`pin`, `envelop` on `pinned`). To be checked against the accounts before
+  it is written.
+- **Osan and Mons:** already withdraw on the clock (`orders.yaml`). As a test of `withdraw_if`,
+  their withdrawals are started by `outflanked` and `lost` instead of the time, and should still
+  match.
+
+Each is measured on 12 runs of every battlefield against main. Only the battlefields with a plan
+should change; any other change is a fault in the executor.
 
 ### Both sides (self-play)
 
