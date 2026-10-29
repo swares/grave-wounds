@@ -3083,7 +3083,8 @@ def _strike_all(d: Data, us: list, table: str, rng, acc: tuple, flanked: list, f
         opts = _melee_opts(d, a, b, s)
         t = _take_hurt(b, melee(d, _side(a, table, d), _side(b, table, d), s["men"], rng, **opts))
         _tally(*acc, s, t)
-        flanked[s["dfd"]] = flanked[s["dfd"]] or s["situation"] in ("flank", "rear")
+        if s["situation"] in ("flank", "rear"):
+            flanked[s["dfd"]] = (flanked[s["dfd"]] or 0) + s["men"]   # men striking its flank or rear (morale.flank_share)
         if braced is not None and not s["rout"]:   # struck hand to hand only by horse, at its front of pikes or bayonets (melee.pikes.holds)
             braced[s["dfd"]] = braced[s["dfd"]] is not False and bool(a.get("mounted")) and s["situation"] == "front" and pike_front(d, b)
         log += _logged({"kind": "rout" if s["rout"] else "melee", **s}, t)
@@ -4084,6 +4085,11 @@ def _shelter_at(d: Data, field: dict | None, h) -> float:
     return (100 - w.get("cover_here", 0)) / 100 if it["type"] in d.units["assault"]["works"] else 1
 
 
+def _flanked_by(d: Data, n, men: int) -> bool:
+    """Struck in flank or rear by at least morale.flank_share of its men standing."""
+    return bool(n) and n >= (d.units["morale"].get("flank_share") or 0) * men
+
+
 def _shell_cut(d: Data, field: dict | None, h, prone) -> float:
     """What shellfire's struck % is multiplied by for men in hex h: in woods, tree bursts (no
     cover, more struck, going to ground helps less); elsewhere going to ground and the ground's cover."""
@@ -4326,7 +4332,7 @@ def _morale_all(d: Data, us: list, occ: dict, before: list, acc: tuple, rng, tab
         near = _adjacent_units(d, us, occ, i)
         down, lost_now = _vehicle_losses(d, u, before[i], lost[i])
         unit = {"quality": u["quality"], "start": u["start"], "down": down, "lost": lost_now, "dealt": dealt[i],
-                "men": before[i], "state": u["state"], "leader": leader_state(u), "flanked": flanked[i],
+                "men": before[i], "state": u["state"], "leader": leader_state(u), "flanked": _flanked_by(d, flanked[i], before[i]),
                 "contact": any(us[j]["side"] != u["side"] for j in near),
                 "friends": any(us[j]["side"] == u["side"] and us[j]["state"] == "steady" for j in near),
                 "dug": low(u) or in_bunker(d, field, u), "no_ammo": ammo_state(d, u) == "out",

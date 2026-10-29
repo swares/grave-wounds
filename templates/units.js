@@ -634,6 +634,7 @@ function moraleMods(mods, u){
   m -= Math.min(mods.losing_cap, mods.losing_per_man * Math.max(0, (u.lost || 0) - (u.dealt || 0)));
   return m;
 }
+const flankedBy = (n, men) => !!n && n >= (UD.morale.flank_share || 0) * men;   // struck in flank or rear by at least flank_share of its men standing (as units._flanked_by)
 function failedState(mo, u, by, rallying = false){   // a failed check; a failed rally (rallying) leaves it shaken
   if (u.state === "shaken") return rallying ? "shaken" : "broken";
   const hard = u.flanked || u.down >= u.start / 2;
@@ -1697,7 +1698,7 @@ function strikeAll(us, table, rng, acc, log, field, thinned = null){   // thinne
     const opts = { situation: s.situation, charge, shaken: a.state === "shaken", rout: s.rout, exposed: exposure(b, s.rout), penalty: (s.penalty || 0) - vsHorse };
     const t = takeHurt(b, melee(meleeSide(a, table), meleeSide(b, table), s.men, rng, opts));
     tallyLoss(acc, s, t);
-    acc.flanked[s.dfd] = acc.flanked[s.dfd] || s.situation === "flank" || s.situation === "rear";
+    if (s.situation === "flank" || s.situation === "rear") acc.flanked[s.dfd] = (acc.flanked[s.dfd] || 0) + s.men;   // men striking its flank or rear (morale.flank_share)
     noteBraced(acc, s, a, b);
     log.push(...logged({ kind: s.rout ? "rout" : "melee", ...s }, t));
     if (struck.has(s.att)) continue;
@@ -2325,7 +2326,7 @@ function moraleAll(us, occ, before, acc, rng, table, field = null){
     const near = adjacentUnits(us, occ, i);
     const [down, lost] = vehicleLosses(u, before[i], acc.lost[i]);
     const unit = { quality: u.quality, start: u.start, down, lost, dealt: acc.dealt[i], men: before[i], state: u.state,
-      leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u), no_ammo: ammoState(u) === "out",
+      leader: leaderState(u), flanked: flankedBy(acc.flanked[i], before[i]), contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u), no_ammo: ammoState(u) === "out",
       holds: !!M.posture && !!u.holding && holdsPosition(us, i, field), hand_lost: acc.hand.lost[i], hand_dealt: acc.hand.dealt[i], braced: !!UD.melee.pikes.holds && acc.braced[i] === true };
     const m = morale(unit, rng.randint(1, 100));
     if (m.check) log.push({ kind: "morale", unit: i, target: m.target, from: u.state, state: m.state });

@@ -829,6 +829,11 @@ morale:
   #   broke the next exchange). Measured on 24 runs of every battlefield: 766 of 1,056 from 763 (Keating 18 to
   #   19, Chipyong-ni 21 to 23, Mogadishu 17 to 18; Goose Green 5 to 3). false: the old rule.
   posture_flank: true
+  # flank_share: a unit counts as struck in flank or rear (the flank -20, a check, and a bad failure
+  #   breaking it at once) only when the men striking its flank or rear that exchange are at least
+  #   this share of its men standing. At Tumbledown three Argentine engineers at its side broke Left
+  #   Flank (83 men) outright. Design estimate; 0: any enemy at its flank, as before.
+  flank_share: 0.1
   shaken_by: 20
   mods:
     leader: 10                # a named leader with the unit, up and fighting
