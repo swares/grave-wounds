@@ -158,6 +158,9 @@ export const UNIT_SIZES = {
     "Germans in the abbey's ruins": "company",
     "German machine guns (Point 593)": "section",
     "German machine guns (Phantom Ridge)": "section",
+    "I./FJR 3, a counter-attack party from Point 569 (first light)": "platoon",
+    "I./FJR 3, a second party from Point 569 (morning)": "platoon",
+    "14th Company and 22 men of the reserve (evening)": "platoon",
   },
   "cassino-town-1944": {
     "25th New Zealand Battalion (into the town from the north)": "battalion",

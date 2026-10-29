@@ -11,7 +11,7 @@
 // map, and approximate; the deployment is the attack going in, in our own words, with round
 // numbers for play.
 import { N, S, unit, writeField, at } from "./field_lib.mjs";
-import { COLS, ROWS, P593, P444, ABBEY, massif, MASSIF_NOTES, heldSnakeshead, PARA, MG, GERMAN_MORTARS, SIZE_LINE } from "./cassino_massif.mjs";
+import { COLS, ROWS, P593, P444, ABBEY, massif, MASSIF_NOTES, heldSnakeshead, posts, PARA, MG, GERMAN_MORTARS, SIZE_LINE } from "./cassino_massif.mjs";
 
 const grid = massif();
 const AL = { side: 0, facing: S }, DE = { side: 1, facing: N };
@@ -40,6 +40,7 @@ writeField({
   travel: { map: "cassino-1944", place: "Point 593 (Monte Calvario)", within: 1, sides: ["Allies", "Germans"] },
   weather: "{cond: fair, wind: breeze, dir: N, light: night, ground: {mud: 1, snow: 0}}",
   grid, units,
+  hexWorks: posts(units),
   support: [
     { name: "Field guns (25-pounders)", side: 0, kind: "field", tubes: 24 },
     { name: "Medium guns", side: 0, kind: "howitzer", tubes: 8 },

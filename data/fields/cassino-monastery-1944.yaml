@@ -188,6 +188,10 @@ ground: |
   orrorrrorrrrrrororrrrororrorrrrrrrrrrrrrorrrrrrrrororooorrrrorrrrrororoororroororroroorrrrororrooorrorrorrororrorrorrroorrororrrorrrrrrrrroroorrorrrrrrrorrrorroooroorroorrrrrrrrrorrrrorrrororrrrrrrrrr
   rorororrrrrrrrrrororrrroroorrorororrrrorrorrrorrorrrrrrroorrrrrorrrrrrrrorroorrrrrrrorrorrrrrorrrrrrrrrrrroorrrroroorrororrorrorrororoooorrrrorroororroroorrrrrorrrrorororrrrrroroorrrorrorrorrorrrorrrr
   rrorrrrororrrorrorrrrrrrororrorrorrrrrrrorrrrrrororrrrrorrrorrorrororrrroroorrrrrorrorrorrooorrrrrrrrorrororrrrrorrrooororororooooorrorrorrrrrrrorrrorrrorrrorrrororrrrorrrroooorrrrrooorrroorrororoorrr
+works:
+  hexes:
+    - {type: trench, at: [[56, 36], [55, 37], [55, 38], [54, 39], [57, 36], [56, 37], [56, 38], [55, 39], [58, 36], [57, 37], [57, 38], [56, 39], [59, 36], [58, 37], [58, 38], [57, 39], [60, 36], [59, 37], [59, 38], [58, 39], [61, 36], [60, 37], [60, 38], [59, 39], [62, 36], [61, 37], [61, 38], [60, 39], [63, 36], [62, 37], [62, 38], [61, 39], [64, 36], [63, 37], [63, 38], [62, 39], [65, 36], [64, 37], [64, 38], [63, 39], [108, 73], [108, 74], [107, 75], [107, 76], [109, 73], [109, 74], [108, 75], [108, 76], [110, 73], [110, 74], [109, 75], [109, 76], [111, 73], [111, 74], [110, 75], [110, 76], [112, 73], [112, 74], [111, 75], [111, 76], [113, 73], [113, 74], [112, 75], [112, 76], [114, 73], [114, 74], [113, 75], [113, 76], [115, 73], [115, 74], [114, 75], [114, 76], [116, 73], [116, 74], [115, 75], [115, 76], [117, 73], [117, 74], [116, 75], [116, 76]]}
+    - {type: bunker, at: [[68, 38], [69, 38], [135, 111], [136, 110], [136, 109]]}
 # Batteries on call (off the map): loading the field fills the Fire support panel.
 support:
   - {name: "Field guns (25-pounders)", side: 0, kind: field, tubes: 24}
