@@ -1236,3 +1236,97 @@ buildings): to look at. Measured again once rebased on main after #308 (44 battl
 rolls per hit): 766 of 1,056 from 763; Keating 18 to 19, Chipyong-ni 21 to 23, Mogadishu 17 to 18,
 the Monastery 1 to 2, Goose Green 5 to 3. With #309 Keating gains less (main is now 18); its
 remaining misses are not traced yet.
+
+## Playing time, 29 October 2026
+
+How long each battlefield takes at the table, estimated from one self-play run of every
+battlefield (seed 101, main at #410, `tools/selfplay/run.sh 1`). The length of each battle, in
+exchanges, and the orders the commander gave are measured. The time a person takes is not:
+there has been no table playtest yet, so the rates below are guesses to be replaced once one
+is timed.
+
+- **Watch:** the commander on both sides with **Run**: the run's computing time plus 0.7
+  seconds a move, two moves an exchange.
+- **Assisted:** players run one side, mostly taking the commander's orders (**Give its
+  orders**) and nudging a few: 10 seconds an exchange to read the log and press *done*, plus 4
+  seconds an order on that side, plus the computing time.
+- **Hands-on:** players move every unit of their side themselves: 10 seconds an exchange plus
+  15 seconds an order on that side, plus the computing time.
+
+A side's orders are half the run's (the count covers both sides). Each battlefield's line in
+[units.md](units.md#battlefields) gives the assisted and hands-on times rounded, and the time
+to watch.
+
+| Battlefield | Exchanges | Ended by | Orders a side an exchange | Watch | Assisted | Hands-on |
+|---|---|---|---|---|---|---|
+| Visby, 27 July 1361 | 20 | a side gone | 1.1 | 1 min | 5 min | 9 min |
+| Hill 875, Dak To, 19 November 1967 | 17 | a side gone | 2.1 | 0 min | 5 min | 12 min |
+| Hamburger Hill (Dong Ap Bia), 20 May 1969 | 19 | a side gone | 2.0 | 0 min | 6 min | 13 min |
+| Towton, 29 March 1461 | 32 | a side gone | 0.9 | 1 min | 8 min | 13 min |
+| The Debecka crossroads, 6 April 2003 | 27 | a side gone | 1.7 | 1 min | 8 min | 16 min |
+| Task Force Smith at Osan, 5 July 1950 | 23 | a side gone | 2.9 | 1 min | 8 min | 21 min |
+| The Great Redan, 8 September 1855 | 36 | a side gone | 1.0 | 1 min | 9 min | 15 min |
+| 73 Easting: Eagle Troop crests the rise, 26 February 1991 | 47 | the objective taken and held | 1.2 | 1 min | 12 min | 22 min |
+| Agincourt, 25 October 1415 | 58 | a side gone | 0.5 | 1 min | 12 min | 17 min |
+| Grozny: the railway station, 31 December 1994 | 31 | the objective taken and held | 3.3 | 1 min | 12 min | 31 min |
+| Sidon, 1253 | 60 | the run's length reached (no decision) | 0.7 | 2 min | 13 min | 21 min |
+| Landing zone X-Ray, 14 November 1965 | 40 | a side gone | 2.6 | 1 min | 14 min | 33 min |
+| Hill 700, Bougainville, 8-12 March 1944 | 52 | a side gone | 1.5 | 1 min | 14 min | 29 min |
+| Fallujah: into the Jolan, 9 November 2004 | 46 | a side gone | 2.2 | 1 min | 14 min | 33 min |
+| Hill 931 on Heartbreak Ridge, October 1951 | 46 | a side gone | 2.4 | 1 min | 15 min | 36 min |
+| The Great Redan, 18 June 1855 | 60 | the run's length reached (no decision) | 1.4 | 2 min | 16 min | 31 min |
+| Cowpens, 17 January 1781 | 91 | the run's length reached (no decision) | 0.5 | 2 min | 19 min | 28 min |
+| Cassino town and Castle Hill, 15 March 1944 | 71 | a side gone | 1.8 | 2 min | 20 min | 44 min |
+| Albuera, 16 May 1811 | 72 | the run's length reached (no decision) | 1.9 | 2 min | 22 min | 47 min |
+| The Fetterman Fight, 21 December 1866 | 91 | the run's length reached (no decision) | 1.3 | 2 min | 23 min | 44 min |
+| Jacob's Ford, 30 August 1179 (the storm of the castle) | 121 | the run's length reached (no decision) | 0.4 | 3 min | 24 min | 33 min |
+| Aljubarrota, 14 August 1385 (the plateau of São Jorge) | 106 | the run's length reached (no decision) | 1.0 | 3 min | 25 min | 45 min |
+| Mons, 23 August 1914 (the Nimy salient) | 99 | a side gone | 1.6 | 2 min | 27 min | 56 min |
+| Hill 861A, Khe Sanh, 5 February 1968 | 161 | the run's length reached (no decision) | 0.8 | 4 min | 36 min | 60 min |
+| Darwin Hill, Goose Green, 28 May 1982 | 137 | a side gone | 1.5 | 3 min | 36 min | 73 min |
+| First Bull Run, 21 July 1861 | 151 | the run's length reached (no decision) | 1.2 | 4 min | 38 min | 73 min |
+| The Rangers at Cisterna, 30 January 1944 | 188 | a side gone | 0.5 | 6 min | 39 min | 57 min |
+| Hill 504 and the valley at Kapyong, 23-24 April 1951 | 173 | a side gone | 1.2 | 4 min | 43 min | 81 min |
+| Beaumont-Hamel, 1 July 1916 (the Newfoundland Park) | 231 | the run's length reached (no decision) | 0.4 | 8 min | 48 min | 65 min |
+| Snipe, 27 October 1942 (El Alamein) | 274 | a side gone | 0.3 | 7 min | 51 min | 64 min |
+| Fox Hill at Toktong Pass, 27-28 November 1950 | 271 | the run's length reached (no decision) | 0.4 | 6 min | 53 min | 75 min |
+| Wanat: the patrol base and the observation post, 13 July 2008 | 271 | the run's length reached (no decision) | 0.5 | 6 min | 54 min | 77 min |
+| Lundy's Lane, 25 July 1814 | 271 | the run's length reached (no decision) | 0.7 | 6 min | 57 min | 91 min |
+| Dornach, 22 July 1499 (the fields below Dorneck) | 283 | the run's length reached (no decision) | 0.6 | 7 min | 58 min | 87 min |
+| The Wagon Box Fight, 2 August 1867 | 226 | the run's length reached (no decision) | 1.5 | 6 min | 61 min | 125 min |
+| Crécy, 26 August 1346 (the Vallée des Clercs) | 241 | the run's length reached (no decision) | 2.1 | 8 min | 76 min | 168 min |
+| Snakeshead Ridge and the abbey, 17-18 February 1944 | 418 | the run's length reached (no decision) | 0.3 | 10 min | 80 min | 105 min |
+| Lützen, 16 November 1632 | 424 | the objective taken and held | 0.5 | 17 min | 92 min | 132 min |
+| Pork Chop Hill, 16-17 April 1953 | 553 | the objective taken and held | 0.2 | 13 min | 101 min | 125 min |
+| Topolčani, November 1915 | 547 | the objective taken and held | 0.3 | 15 min | 104 min | 136 min |
+| Mojkovac, 6 January 1916 | 571 | the run's length reached (no decision) | 0.3 | 14 min | 107 min | 139 min |
+| Mount Tumbledown, 13-14 June 1982 | 601 | the run's length reached (no decision) | 0.8 | 14 min | 131 min | 215 min |
+| Mogadishu: the crash sites, 3 October 1993 | 783 | the run's length reached (no decision) | 0.5 | 19 min | 155 min | 220 min |
+| Combat Outpost Keating, 3 October 2009 | 671 | the run's length reached (no decision) | 1.2 | 16 min | 167 min | 318 min |
+| The Babuna pass, November 1915 | 933 | a side gone | 0.2 | 23 min | 170 min | 209 min |
+| Hue: the new city, 4-6 February 1968 | 1,200 | cut at the 1,200-exchange cap | 0.3 | 29 min | 227 min | 300 min |
+| The Poles at Point 593 and Phantom Ridge, 12 May 1944 | 1,111 | the objective taken and held | 2.0 | 29 min | 336 min | 745 min |
+| The perimeter at Chipyong-ni, 14-15 February 1951 | 1,186 | the run's length reached (no decision) | 2.3 | 36 min | 387 min | 884 min |
+
+What the figures show:
+
+- **Length, not size, sets the time.** Towton (48,500 men) is over in 32 exchanges; the Babuna
+  pass (about 4,500) runs 933. Seventeen battlefields take under 20 minutes assisted, seventeen
+  under an hour, eleven one to three hours, and three (Hue, the Poles at Cassino, Chipyong-ni)
+  nearly four to six and a half hours, or a day or more by hand.
+- **Orders an exchange multiply it.** Chipyong-ni and the Poles at Cassino give more than two
+  orders a side an exchange for over 1,100 exchanges, which is why their hands-on times reach
+  12 to 15 hours.
+- **Many long runs end on length, not a decision.** Twenty-three runs stop because the run's
+  length (the 60-exchange limit, 30 past the last phase, or the account's `ends`) was
+  reached; Hue reaches the 1,200-exchange cap and Chipyong-ni stops just short of it, at 1,186. At the table a GM may stop sooner
+  or play to a decision.
+
+Not yet known:
+
+- **One run each.** A battle that ends when a side is gone varies from run to run, so read
+  these as within about a third to a half either way.
+- **Quiet exchanges are probably quicker than 10 seconds.** Long approaches and night waits
+  are likely 2 or 3 seconds an exchange with nothing to order, which would shorten the long
+  battles most. A way to run quiet exchanges on until contact or the next phase would save
+  more table time on those than any cut to the rules.
