@@ -1381,3 +1381,14 @@ Four more battlefields given plans, from the commander misses tagged by cause (p
   the attack is called off sooner than it was in fact, or the columns get less far.
 - **Osan** was left as it is: it matched 12 of 12 with sourced, timed withdrawals.
 
+
+## The flank check by share, measured and not built, 29 October 2026
+
+At Tumbledown, three Argentine engineers at Left Flank's side counted as flanking an 83-man company: the flank's −20, and a failure by more than 20 broke it at once. The test: a unit counts as struck in flank or rear only when the men striking its flank or rear that exchange are at least a share of its own men standing (`morale.flank_share`, a design estimate). Against a fresh baseline of main (470 of 576), 12 runs of every battlefield:
+
+| Share | Runs matched | Moved |
+|---|---|---|
+| 10% | 465 | Agincourt 7 to 4, Tumbledown 6 to 4, Jacob's Ford 8 to 6, Chipyong-ni 12 to 11; Dornach, Lützen and Lundy's Lane +1 |
+| 25% | 464 | the same, without Lundy's Lane |
+
+Tumbledown got worse, so the instant break by a handful wasn't the main cause of its misses. Agincourt, which the losing check was meant to help, got worse too. Nothing was built. The narrower losing check for large units (counting the men in contact) was not tried.
