@@ -1919,7 +1919,7 @@ function gunAtVehicle(us, shot, G, ctx){          // a main gun's rounds at a ve
   for (let s = 0; s < rounds; s++) if (rng.randint(1, 100) <= chanceAt(G.hit, dist)) hits++;
   const p = killChance(us[j], "gun", h, t);
   for (let s = 0; s < hits; s++) if (rng.randint(1, 100) <= p) kills++;
-  const k = knockOut(us, j, kills, table, rng, acc), hm = harm(us[j], hits - k.knocked, acc.lost[j], rng);
+  const k = knockOut(us, j, kills, table, rng, acc), hm = harm(us[j], p === 0 ? 0 : hits - k.knocked, acc.lost[j], rng);   // proof armour (kill 0: composite from the front) takes no harm either
   acc.dealt[i] += k.crew;
   log.push(...logged({ kind: "tankfire", att: i, dfd: j, dist, rounds, hit: hits, knocked: k.knocked, crew: k.crew, struck: k.struck, kill: p, ...harmLine(hm), ...ridersLine(k) }, k.tally));
 }

@@ -1886,7 +1886,8 @@ crews (4 a tank, 3 an infantry fighting vehicle or carrier).
   rolls a wound as one hit by shellfire; the rest have bailed out. Vehicle units check morale
   like any other, but count whole vehicles lost, not crewmen hit in vehicles still fighting.
 - **Composite armour** (`armour: composite` on a battlefield's unit: the M1A1s at 73 Easting
-  and Fallujah): as heavy, but a main gun's round from its front does not knock one out. The
+  and Fallujah): as heavy, but a main gun's round from its front does not knock one out, nor
+  immobilise one or put its gun out (it does not get through). The
   GAO found no T-72 round reported through an M1A1's front, even from 2,000 m, and no Abrams
   destroyed by enemy fire in the war. From the flank or rear it is heavy armour.
 - **Riders.** Infantry fighting vehicles carry 7 men each and carriers 10. A foot unit of the
