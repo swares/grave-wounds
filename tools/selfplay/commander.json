@@ -231,27 +231,27 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 2.23
+      "ratio": 0.47
      },
      "drew": 0.0,
-     "lost_share": 0.097,
+     "lost_share": 0.194,
      "side": "Allies",
      "stance": "attack",
-     "won": 1.0
+     "won": 0.67
     },
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.45
+      "ratio": 2.64
      },
      "drew": 0.0,
-     "lost_share": 0.744,
+     "lost_share": 0.312,
      "side": "Germans",
      "stance": "hold",
-     "won": 0.0
+     "won": 0.33
     }
    ],
-   "stamp": "615deeaeb5b5"
+   "stamp": "9b6034f0a1b0"
   },
   "cassino-town-1944": {
    "runs": 12,

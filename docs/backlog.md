@@ -200,7 +200,7 @@ When an item is done, delete it here and note it in the pull request that closes
   battlefield marks with a defensive fire plan (`df: true`) may fire, unseen, within 12 hexes of
   its own side's start positions (Pork Chop's flash fire: 4 to 12 of 12). Given to every
   defender, the fire plan put Tumbledown back to 0 (and Grozny 2 to 7, Hue and Chipyong-ni -1), so
-  it is marked by battlefield where a source gives one. 470 of 576 runs now match the battle as
+  it is marked by battlefield where a source gives one. 474 of 576 runs now match the battle as
   fought (Mojkovac and Topolčani added; reliability, 423 to 422; a bayonet front against horse,
   Albuera 7 to 12, Lundy's Lane 1 to 0; a closing volley before a charge home, both Redans +1;
   Cassino's sangars, the Monastery 0 to 3; trenches against shellfire at a fifth of lying, after
@@ -211,7 +211,8 @@ When an item is done, delete it here and note it in the pull request that closes
   to 449: Tumbledown 3 to 6, Dornach 7 to 10, Chipyong-ni 10 to 12, Agincourt and Mogadishu -1; plans, Snipe's evening
   German tanks pinning from range, 449 to 452: Snipe 3 to 6; plans for 73 Easting, Goose Green, Mons and the June Redan,
   452 to 462: 73 Easting 8 to 11, Goose Green 1 to 3, Mons 10 to 12, the June Redan 7 to 10; Jacob's Ford's storming
-  column as four parties a breach wide, 462 to 470: Jacob's Ford 0 to 8). Still behind: Snipe 6 of 12 (the evening Italian tanks
+  column as four parties a breach wide, 462 to 470: Jacob's Ford 0 to 8; the Germans' posts on the massif held
+  in May, 470 to 474: the Poles 0 to 4). Still behind: Snipe 6 of 12 (the evening Italian tanks
   have no plan: the account names only the Germans drawing back; not traced since); Tumbledown 6 of 12, Left Flank walking
   into contact upright in the dark and broken at once by a handful at its flank (the flank check
   counts three men as a flanking force); Lundy's Lane 0, studied (project doc "lundys-lane-study"):
@@ -239,9 +240,10 @@ When an item is done, delete it here and note it in the pull request that closes
     witness);
   - the American rush on the guns at Lundy's Lane (the guns still hold);
   - Point 593: the paratroops now hold sangars and bunkers (the Monastery 0 to 3 of 12); May's
-    counter-attacks are on the map with strengths of our own (none sourced) and are too weak to
-    throw the Poles off (0 of 12); the Allied guns still put down hundreds of paratroops over the
-    day's eighteen hours, against "sat out the bombardment under cover";
+    counter-attacks are on the map with strengths of our own (none sourced); with the posts held,
+    the Poles are thrown off in 4 of 12. The sourced Polish withdrawals (Kresowa 13:10, the 1st
+    Battalion 15:00, Anders's order at 14:00) are not on the map: a shaken unit does not obey a
+    withdraw order, and most are shaken by then;
   - Goose Green (3 of 12 with its plan: the trench platoons break, but the Argentine machine-gun
     nest, 10 men, holds the crest, while 2 Para's companies flee at about a quarter to a third
     down, the constant morale drain), Keating (traced: not the bounds;

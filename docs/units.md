@@ -3179,8 +3179,12 @@ rough) and gullies lie between.
 - May's counter-attacks on 593: two parties of I./FJR 3 from Point 569 about 05:00 and 06:00
   (a series "shortly after daylight", five in quick succession in the morning) and the 14th
   Company with 22 men of the reserve about 19:00; the parties' strengths (30, 30 and 80) are
-  ours, as no source gives them. They are too few: the Poles still hold 593 to the end in every
-  run (0 of 12).
+  ours, as no source gives them. The Phantom Ridge and Point 444 garrisons and both machine-gun
+  sections hold their posts (data/orders.yaml; the ridge's bunkers "fully manned", the Germans
+  holding it at the day's end; 444 and the 593 guns our reading): without that they left their
+  sangars and bunkers by the fifth exchange and were shelled in the open (the Germans lost 400 to
+  570 of 765, the Poles 7 to 9%, and the Poles held 593 in every run). Now the Germans lose about
+  31%, the Poles about 19%, and the Germans hold 593 at the end in 4 of 12 runs.
 - Fire support on both sides; the wound tables are the Second World War's (Owens).
 
 *Playing time:* February, about 1½ hours with the commander's orders taken and adjusted, about 2 hours moving every unit by hand, about 10 minutes to watch with **Run** (self-play: 418 exchanges, stopped at the run's length, undecided); May, about 5½ hours with the commander's orders taken and adjusted, about 12½ hours moving every unit by hand, about 29 minutes to watch with **Run** (self-play: 1,111 exchanges, ended with the objective taken and held). See [selfplay-review.md](selfplay-review.md#playing-time-29-october-2026).
