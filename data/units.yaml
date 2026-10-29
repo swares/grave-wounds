@@ -606,7 +606,8 @@ vehicles:
 # indirect kind `he`. It does not shoot small arms. Its crews are men: rifles, machine guns and
 # shells strike them; hand to hand they fight with `crew_weapon`. Design estimates, from the
 # towed guns of 1939-53 (the British 6-pounder and the US 57 mm, the German Pak 38 and 40, the
-# Soviet and North Korean 45 mm, the Japanese 47 mm).
+# Soviet and North Korean 45 mm, the Japanese 47 mm). A battlefield unit marked `he: false` has no
+# high-explosive round (the British 6-pounder until 1943) and fires only at vehicles.
 anti_tank_guns:
   weapons: [at_gun]
   crew: 5

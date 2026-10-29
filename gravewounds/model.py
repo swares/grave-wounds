@@ -2376,6 +2376,8 @@ def _unit_spec_errors(d: Data, f: dict, where: str, u: dict) -> list[str]:
     U, errors = d.units, []
     if u.get("side") not in (0, 1) or not isinstance(u.get("men"), int) or u["men"] < 1:
         errors.append(f"{where}: unit {u.get('name')} needs side 0 or 1 and men")
+    if "he" in u and u["he"] is not False:
+        errors.append(f"{where}: unit {u.get('name')}: he can only be false (its guns have no HE round)")
     if "unfit" in u and not (u.get("vehicle") and isinstance(u["unfit"], (int, float)) and 0 <= u["unfit"] <= 100):
         errors.append(f"{where}: unit {u.get('name')}: unfit (its vehicles' % unfit as the battle begins) must be a % on a vehicle unit")
     if u.get("weapon") not in available_weapons(d, f["table"]) or u.get("kit") not in d.armor["kits"]:

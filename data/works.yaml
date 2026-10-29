@@ -89,6 +89,8 @@ edge_works:
 #   cover_here  - % off missile attacks at a man standing in the hex
 #   cover_behind - % off missile attacks at a man in the next hex beyond it
 #   no_horse    - true: horses cannot be ridden into it (for mounted rules later)
+#   shell       - % of shellfire's struck % left for the men in it (on top of lying down); a bunker
+#                 without it gets its cover_here
 #   breach      - man-rounds to clear it (null: cannot be cleared)
 hex_works:
   stakes:  {name: "Stakes",            each: 1,  haul: 0.5, enter: 1,    no_horse: true, breach: 2}
@@ -101,7 +103,7 @@ hex_works:
             note: "Belts of barbed wire on stakes (from the 1900s): slow to cross, cut by hand."}
   bunker:  {name: "Bunker",            each: 30, enter: 1,    cover_here: 50, no_horse: true, breach: null,
             note: "A log-and-earth pillbox or dugout with firing slits (the 20th century)."}
-  trench:  {name: "Trench",            each: 6, enter: 1,    cover_here: 40, hides: true, no_horse: true, breach: null,
+  trench:  {name: "Trench",            each: 6, enter: 1,    cover_here: 40, shell: 20, hides: true, no_horse: true, breach: null,
             note: "A fire trench or communication trench, dug chest-deep (the 20th century): the men in it are hard to see and harder to hit."}
   wreck:   {name: "Downed helicopter", each: 0, enter: 2, cover_here: 30, no_horse: true, breach: null,
             note: "A helicopter brought down on the field: its hull is cover for the men in its hex."}

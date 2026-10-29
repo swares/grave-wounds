@@ -8,6 +8,9 @@
 # Panzers play as heavy armour, the Italian M13s, M14s and Semoventi as light. The British artillery
 # is not on call (the observer was lost at 04:00), and the friendly fire is not played. Clock: GMT+3.
 # The camelthorn is not drawn: the rules' scrub would keep tanks out of it, and it stopped none here.
+# The guns and riflemen are in the gun pits and slit trenches dug before dawn (a trench under each
+# section, drawn to the units, not to any plan). The six-pounders fire armour-piercing only: there
+# was no high-explosive round for them in October 1942.
 #
 # What happened, briefly: the 2nd Rifle Brigade went out from the Kidney feature on the night of
 # 26/27 October with 239 Battery's six-pounders and dug in at Snipe, short of the intended spot,
@@ -205,15 +208,18 @@ ground: |
   ..........................ssshhhsss.........................................................................................................................................ssshhhsss...................
   ..........................ssshhhsss.........................................................................................................................................ssshhhsss...................
   .........................ssshhhsss..........................................................................................................................................ssshhhsss...................
+works:
+  hexes:
+    - {type: trench, at: [[125, 47], [126, 48], [126, 49], [127, 50], [127, 51], [128, 52], [84, 61], [85, 60], [85, 59], [86, 58], [75, 109], [75, 108], [74, 107], [74, 106], [119, 98], [118, 99], [118, 100], [117, 101], [117, 102], [90, 70], [90, 69], [91, 68], [91, 67], [92, 66], [92, 65], [93, 64], [93, 63], [94, 62], [94, 61], [84, 106], [83, 105], [83, 104], [82, 103], [82, 102], [81, 101], [81, 100], [80, 99], [80, 98], [79, 97], [116, 90], [115, 91], [115, 92], [114, 93], [114, 94], [113, 95], [113, 96], [112, 97], [112, 98], [111, 99], [100, 86], [101, 86], [102, 86], [103, 86]]}
 # Batteries on call (off the map): loading the field fills the Fire support panel.
 support:
   - {name: "German guns and 88s", side: 1, kind: field, tubes: 8}
   - {name: "Stukas (the attack before Rommel's counter-stroke)", side: 1, kind: fighter_bomber, tubes: 20}
 units:
-  - {name: "239 Battery's six-pounders (north and north-east)", side: 0, men: 30, quality: veteran, weapon: at_gun, kit: ww2_rifleman, formation: at_gun, width: 6, pos: [126, 49], facing: 0, prone: true, size: battery}
-  - {name: "A Company's six-pounders (north-west and north)", side: 0, men: 20, quality: veteran, weapon: at_gun, kit: ww2_rifleman, formation: at_gun, width: 4, pos: [85, 60], facing: 2, prone: true, size: platoon}
-  - {name: "C Company's six-pounders (south-west)", side: 0, men: 20, quality: veteran, weapon: at_gun, kit: ww2_rifleman, formation: at_gun, width: 4, pos: [75, 108], facing: 3, prone: true, size: platoon}
-  - {name: "B Company's six-pounders (south-east)", side: 0, men: 25, quality: veteran, weapon: at_gun, kit: ww2_rifleman, formation: at_gun, width: 5, pos: [118, 100], facing: 5, prone: true, size: platoon}
+  - {name: "239 Battery's six-pounders (north and north-east)", side: 0, men: 30, quality: veteran, weapon: at_gun, kit: ww2_rifleman, formation: at_gun, width: 6, pos: [126, 49], facing: 0, prone: true, size: battery, he: false}
+  - {name: "A Company's six-pounders (north-west and north)", side: 0, men: 20, quality: veteran, weapon: at_gun, kit: ww2_rifleman, formation: at_gun, width: 4, pos: [85, 60], facing: 2, prone: true, size: platoon, he: false}
+  - {name: "C Company's six-pounders (south-west)", side: 0, men: 20, quality: veteran, weapon: at_gun, kit: ww2_rifleman, formation: at_gun, width: 4, pos: [75, 108], facing: 3, prone: true, size: platoon, he: false}
+  - {name: "B Company's six-pounders (south-east)", side: 0, men: 25, quality: veteran, weapon: at_gun, kit: ww2_rifleman, formation: at_gun, width: 5, pos: [118, 100], facing: 5, prone: true, size: platoon, he: false}
   - {name: "A Company's riflemen", side: 0, men: 30, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [92, 66], facing: 2, prone: true, size: platoon}
   - {name: "C Company's riflemen", side: 0, men: 30, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [82, 102], facing: 3, prone: true, size: platoon}
   - {name: "B Company's riflemen", side: 0, men: 30, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [114, 94], facing: 5, prone: true, size: platoon}

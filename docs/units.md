@@ -1502,8 +1502,13 @@ get its cover (−50%) against shellfire while it stands.
 
 **Trenches.** A trench (a hex work, from the 20th century: **Clicking the map: Trench**, ≡)
 is dug chest-deep. The men in its hex get 40% cover and are hidden (as men gone to ground),
-it costs +1 movement to enter, and horses cannot go into it. Unlike a bunker, it does not
-stop blows hand to hand: men in a trench fight as usual and can be fought.
+it costs +1 movement to enter, and horses cannot go into it. Against shellfire (shells,
+mortar bombs, bombs and tanks' high explosive) the men in it are struck at a fifth of the rate
+for men lying in the open (`shell: 20` in `data/works.yaml`): from Evans, *British Artillery in
+World War II*, which puts the risk from ground bursts at 1 for a man standing, 1/3 lying (the
+rules' going to ground) and 1/15 to 1/50 for a man firing from an open fire trench (the safe end
+taken). Unlike a bunker, it does not stop blows hand to hand: men in a trench fight as usual and
+can be fought.
 
 **Storming bunkers.** A bunker (a hex work, from the 20th century) shelters the men in it:
 −50% to shots and to shellfire at them, and no one can strike them hand to hand, nor they
@@ -1905,7 +1910,9 @@ the Japanese 47 mm (`anti_tank_guns` in `data/units.yaml`).
   and in front, vehicles first.
   - At a vehicle it hits at 70%, 45% or 20% by range, and the hit knocks the vehicle out at
     its armour's main-gun %.
-  - At men its high explosive bursts as a tank's round does.
+  - At men its high explosive bursts as a tank's round does. A battlefield can mark a gun unit
+    `he: false` where its guns had no high-explosive round (the British 6-pounder until 1943):
+    it then fires only at vehicles, and keeps its rounds for them.
 - **Crews.** The crews are men. Rifles, machine guns and shells strike them, and hand to
   hand they fight with bayonets.
 - **Gun shields.** Anti-tank and anti-aircraft guns have shields: small arms (rifles, machine
