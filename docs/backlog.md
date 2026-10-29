@@ -198,13 +198,14 @@ When an item is done, delete it here and note it in the pull request that closes
   battlefield marks with a defensive fire plan (`df: true`) may fire, unseen, within 12 hexes of
   its own side's start positions (Pork Chop's flash fire: 4 to 12 of 12). Given to every
   defender, the fire plan put Tumbledown back to 0 (and Grozny 2 to 7, Hue and Chipyong-ni -1), so
-  it is marked by battlefield where a source gives one. 426 of 576 runs now match the battle as
+  it is marked by battlefield where a source gives one. 428 of 576 runs now match the battle as
   fought (Mojkovac and Topolčani added; reliability, 423 to 422; a bayonet front against horse,
-  Albuera 7 to 12, Lundy's Lane 1 to 0). Still behind: Chipyong-ni 10 of 12; Lundy's Lane 0, studied (project doc "lundys-lane-study"):
+  Albuera 7 to 12, Lundy's Lane 1 to 0; a closing volley before a charge home, both Redans +1). Still behind: Chipyong-ni 10 of 12; Lundy's Lane 0, studied (project doc "lundys-lane-study"):
   Ripley's brigade stops 140 m off the guns and trades fire ("a shooter never charges"); made to
   storm them, it breaks 7 men down to the per-man rule for losing the exchange, and capping that
-  rule by share cost Agincourt more than it gained. A closing volley at a few yards before a
-  charge home (the 21st's, which killed most of the gunners) is the likely fix, not yet designed.
+  rule by share cost Agincourt more than it gained. A closing volley before a charge home is
+  now in (missile.closing_volley), but with the storm order it still gives 1 of 12: Ripley's
+  brigade still loses the melee by the per-man rule.
 - **Self-play against the battles as fought, first review** (`docs/selfplay-review.md`). Every
   battlefield was played with the commander on both sides and set against what happened; what has
   been changed since, and what was measured and not built, is in the review. To do, from the

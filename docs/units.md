@@ -394,6 +394,14 @@ each side is the flank; the two behind are the rear.
   about 1% down, losing 10 men a minute to the 6 they put down, and Cole's division went the
   same way. Measured on 12 runs of every battlefield: 426 of 576 from 422 (Albuera 7 to 12, its
   losses 19% and 30% against the battle's 17% and 29%; Lundy's Lane 1 to 0).
+- **A closing volley:** foot with a matchlock, musket or rifle-musket charging home fire one
+  volley at the enemy next to them first, before the melee, as a battery's canister does
+  (`missile.closing_volley`): its hits thin the defenders' fighting men and count in their
+  losses. British wins over columns were usually one close volley, then the charge; at Maida
+  in 1806 the third volley, at about 20 yards, broke the French 1st Light; at Lundy's Lane
+  Miller's 21st fired from about 15 yards (project doc "closing-volley-research"). The range
+  bands give it its weight. Measured on 12 runs of every battlefield: 428 of 576 from 426 (both
+  Redans +1); black-powder foot seldom charge in self-play (a shooter charges only works).
 - **Pursuit:** contact with a broken unit is a charge like any other, and every man of the
   pursuing unit strikes the fleeing.
 
