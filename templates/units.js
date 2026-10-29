@@ -2618,6 +2618,7 @@ function orderSide(units, side, [size, field, rng, exchange], { stance, memory, 
   { const h = hookUp(us, side, [goal, known, exchange, stance]); us = h.units; orders.push(...h.orders) }
   { const r = ridersAi(us, side, [goal, known, exchange, stance], orders); us = r.units; orders.splice(0, orders.length, ...r.orders) }
   holdBack(us, side, known);
+  orders.push(...planSteps(us, side, [field, known, exchange]));
   orders.push(...commitReserve(us, side, known, mem, stance));
   if (stance === "hold") orders.push(...fixLines(us, side, [field, known, exchange]));
   for (let i = 0; i < us.length; i++){
@@ -3284,8 +3285,9 @@ function seesFrom(field, u, ranked, foes){        // [rank, enemy, facing] of th
   return null;
 }
 const unsteady = (us, i, t) => (!us[i].prone && !us[i].vehicle && underFire(us, i) ? { act: "ground", target: t } : null);   // a shaken unit holds, going to ground under missile fire (not vehicles) (as commander._unsteady)
-function unitOrder(us, i, ctx, roll){            // one unit's order, or null (it holds); ctx [size, field, stance, known, exchange]
-  const u = us[i], C = UD.commander, obj = objectiveOf(ctx[1]), t = aiTarget(us, i, ctx[3], ctx[1]);
+function unitOrder(us, i, ctx, roll){            // one unit's order, or null (it holds); ctx [size, field, stance, known, exchange]; a unit gone round on a plan's envelopment attacks, whatever its side's stance
+  if (enveloping(us[i])) ctx = [ctx[0], ctx[1], "attack", ctx[3], ctx[4]];
+  const u = us[i], C = UD.commander, obj = objectiveOf(ctx[1]), t = focusOf(us, i, ctx[3], aiTarget(us, i, ctx[3], ctx[1]));
   if (u.state !== "steady") return unsteady(us, i, t);
   const away = withdrawOrder(us, i, ctx);
   if (away) return away;
@@ -3299,6 +3301,8 @@ function unitOrder(us, i, ctx, roll){            // one unit's order, or null (i
   if (sap) return sap;
   const route = routeOrder(us, i, ctx);
   if (route) return route;
+  const task = taskOrder(us, i, t, ctx);
+  if (task) return task[0];
   if ((obj !== null || ctx[2] === "hold") && digs(us, i, ctx)) return { act: "dig", target: t };
   if (t === null && obj === null) return search(us, i, ctx);
   if (roll <= (C.hesitate[u.quality] ?? 0)) return { act: "hesitate", target: t, roll };
@@ -3309,6 +3313,144 @@ function downUnderFire(us, i, o, stance, table){   // attacking, in a war of fir
   const t = o?.target ?? null;
   if (!(UD.commander.bounds_all || []).includes(FD.tables[table]?.battle) || stance !== "attack" || !o || (o.act !== "move" && o.act !== "advance") || !bounding(us, i, t)) return o;
   return us[i].prone ? null : { act: "ground", target: t };
+}
+// ---------- plans (data/plans.yaml; docs/units.md, Plans) (as commander's plans) ----------
+const TASK_KEYS = ["task", "focus", "goal"];      // what a running step puts on its unit
+function planSteps(us, side, ctx){                  // start and end the side's plan steps for each of their units standing (a step starts when its `when` fires, at once without one, and ends when its `until` fires or its task is done; one step at a time, a later one replacing it; each starts once for a unit, kept in its `steps`); ctx [field, known, exchange]: orders [{unit, act: plan, step, do, start, why}] (as commander.plan_steps)
+  const out = [];
+  (ctx[0]?.plan?.[side] || []).forEach((st, k) => {
+    for (let i = 0; i < us.length; i++){
+      const u = us[i];
+      if (u.side !== side || !st.units.includes(u.name) || u.men <= 0 || ROUTED.has(u.state)) continue;
+      const run = u.task;
+      if (run && run.step === k){
+        const why = taskDone(us, i, run) || (st.until ? fires(us, [i, st], st.until, ctx) : null);
+        if (why){ endTask(us, i); out.push({ unit: i, act: "plan", step: k, do: st.do, start: false, why }) }
+        continue;
+      }
+      if ((u.steps || []).includes(k)) continue;
+      const why = st.when ? fires(us, [i, st], st.when, ctx) : { start: true };
+      if (why){
+        if (run) endTask(us, i);
+        startTask(us, i, k, st, ctx[2]);
+        out.push({ unit: i, act: "plan", step: k, do: st.do, start: true, why });
+      }
+    }
+  });
+  return out;
+}
+function startTask(us, i, k, st, exchange){        // step k's task on unit i (any but withdraw_if takes it out of the reserve) (as commander._start_task)
+  const u = us[i], d = st.do;
+  u.steps = [...(u.steps || []), k];
+  if (d !== "withdraw_if") u.reserve = false;
+  if (d === "commit"){ if (st.to) u.plug = [...st.to]; return }
+  u.task = { step: k, do: d };
+  if (d === "withdraw_if") u.withdraw = { at: exchange ?? 0, to: typeof st.to === "string" ? st.to : [...st.to] };
+  else if (d === "envelop") u.via = st.via.map(h => [...h]);
+  else if (d === "advance_to") u.goal = [...st.to];
+  if (st.target && (d === "envelop" || d === "pin")) u.focus = st.target;
+}
+function endTask(us, i){                            // unit i's running step ends: its task, target and line go (an envelopment's route, a withdrawal not yet done) (as commander._end_task)
+  const u = us[i], d = u.task.do;
+  TASK_KEYS.forEach(key => { delete u[key] });
+  if (d === "envelop") delete u.via;
+  else if (d === "withdraw_if") delete u.withdraw;
+}
+function taskDone(us, i, run){                      // why unit i's running task is done, or null (as commander._task_done)
+  const u = us[i];
+  if (run.do === "withdraw_if" && !u.withdraw) return { done: true };
+  if (u.focus && namedUnit(us, u.focus, u.side, false) === null) return { broken: u.focus };
+  if (run.do === "envelop" && !u.focus && !u.via) return { done: true };
+  return null;
+}
+function namedUnit(us, name, side, ours){         // the index of the standing unit of that name, of side (ours) or not; or null (as commander._named)
+  const j = us.findIndex(e => e.name === name && (e.side === side) === ours && e.men > 0 && !ROUTED.has(e.state));
+  return j < 0 ? null : j;
+}
+function fires(us, ist, w, ctx){                    // the trigger that fires for unit i of step st, or null: a trigger, a list (the first that fires) or {all: [...]} (as commander._fires)
+  if (Array.isArray(w)) return w.find(x => fires(us, ist, x, ctx)) ?? null;
+  if ("all" in w) return w.all.every(x => fires(us, ist, x, ctx)) ? w : null;
+  return planTrigger(us, ist, w, ctx) ? w : null;
+}
+function planTrigger(us, [i, st], w, [field, known, exchange]){   // one trigger for unit i of step st (as commander._trigger)
+  const u = us[i];
+  if ("exchange" in w) return (exchange ?? 0) >= w.exchange;
+  if ("phase" in w) return (field?.begun || []).includes(w.phase);
+  if ("light" in w){ const order = Object.keys(FD.weather.light.levels); return order.indexOf(field?.weather?.light || "day") >= order.indexOf(w.light) }
+  if ("broken" in w) return us.some(e => e.name === w.broken && (e.men <= 0 || ROUTED.has(e.state)));
+  if ("pinned" in w){
+    const j = namedUnit(us, w.pinned, u.side, false);
+    const pinning = us.some(x => x.side === u.side && x.task?.do === "pin" && x.focus === w.pinned);
+    return j !== null && pinning && !!(us[j].state === "shaken" || us[j].prone || us[j].hit || us[j].pinned);
+  }
+  if ("lost" in w){
+    const mine = us.filter(e => e.side === u.side && (w.side || st.units.includes(e.name)));
+    const start = mine.reduce((a, e) => a + e.start, 0);
+    return start > 0 && 100 * mine.reduce((a, e) => a + e.start - Math.max(0, e.men), 0) >= w.lost * start;
+  }
+  if ("outflanked" in w){
+    const reach = UD.commander.plans.flank;
+    return Object.entries(known || {}).some(([k, m]) => /^\d+$/.test(k) && Number(k) < us.length && us[Number(k)].side !== u.side && us[Number(k)].state === "steady" && us[Number(k)].men > 0
+      && arc(u.facing, bearing(u.pos, m.pos)) !== "front" && unitGap(u, knownAt(us, Number(k), known)) <= reach);
+  }
+  return false;
+}
+const enveloping = u => u.task?.do === "envelop" && !u.via;   // on a plan's envelopment, its route done (as commander._enveloping)
+function focusOf(us, i, known, t){                  // the plan's target for unit i (focus, by name) if it stands and its side knows of it, else t (as commander._focus)
+  const name = us[i].focus;
+  if (!name) return t;
+  const j = namedUnit(us, name, us[i].side, false);
+  return j !== null && (known === null || known === undefined || String(j) in known) ? j : t;
+}
+function taskOrder(us, i, t, ctx){                  // [order or null] for a unit on a plan's advance_to or pin; null for any other (as commander._task_order)
+  const u = us[i], d = u.task?.do;
+  if (d === "advance_to"){
+    const [size, field, stance, known, exchange] = ctx;
+    if (hdist(u.pos, u.goal) > UD.commander.route.reach){
+      const o = toward(us, i, t, [size, { ...(field || {}), objective: u.goal, objective_radius: null }, stance, known, exchange], "advance");
+      if (o) return [{ ...o, line: true }];
+    }
+    return [holdLine(us, i, t, known)];
+  }
+  if (d === "pin") return t === null ? [null] : [pinOrder(us, i, t, ctx)];
+  return null;
+}
+function holdLine(us, i, t, known){                 // staying where it is, facing its target if any (as commander._hold_line)
+  if (t === null) return null;
+  const u = us[i], shooter = "range" in FD.weapons[u.weapon] || !!gunOf(u);
+  return stayOrder(us, i, t, keepFront(u, bearing(u.pos, knownAt(us, t, known).pos)), shooter);
+}
+function pinOrder(us, i, t, [size, field, stance, known, exchange]){   // pinning target t: a shooter goes to the hex it can reach furthest from t from which it can still hit it (drawing back if closer), none in reach it moves nearer; a unit that cannot shoot stands just beyond t's charge, nearest it, in sight; never into contact (as commander._pin_order)
+  const u = us[i], tu = knownAt(us, t, known), shooter = "range" in FD.weapons[u.weapon] || !!gunOf(u);
+  if (u.lost || u.immobile || u.emplaced) return holdLine(us, i, t, known);
+  const free = u.prone ? { ...u, prone: false } : u, base = us.map((x, k) => (k === i ? free : x));
+  const occ = occupancy(base), foes = new Set(Object.keys(occ).filter(k => base[occ[k]].side !== u.side)), allow = allowance(free);
+  const keep = allowance(tu) + 1, cands = [];
+  for (const [h0, c] of reachable(base, i, size, allow, field).values()){
+    const h = [...h0], dist = hdist(h, tu.pos);
+    let ok, rank;
+    if (shooter){
+      ok = dist >= 1 && ((fieldRange(u.weapon, dist) !== null && seesTo(field, u, [h, tu.pos, dist])) || gunInRange(field, u, [h, tu.pos, dist])) && clearSight(field, h, tu.pos, dist);
+      rank = -dist;                                 // furthest first
+    } else {
+      ok = unitGap({ ...u, pos: h }, tu) > keep && clearSight(field, h, tu.pos, dist);
+      rank = dist;                                  // nearest first
+    }
+    if (ok) cands.push([rank, c, h[1], h[0]]);
+  }
+  cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3]);
+  for (const [, c, row, col] of cands){
+    const h = [col, row];
+    if (h[0] === u.pos[0] && h[1] === u.pos[1]) return holdLine(us, i, t, known);
+    const f = bearing(h, tu.pos);
+    const fs = facingsFor(f, u.facing).filter(g => c + Math.min(mod6(g - u.facing), mod6(u.facing - g)) * turnCost(free) <= allow && !touches({ ...u, pos: h, facing: g }, foes));
+    if (!fs.length) continue;
+    const [m, g] = legalFacing(base, i, [h, fs[0], c, false], [size, field, foes]);
+    if (m.ok) return { act: "move", target: t, pos: h, facing: g, cost: m.cost, pin: true, ...(u.prone ? { up: true } : {}) };
+  }
+  if (cands.length) return holdLine(us, i, t, known);
+  const o = toward(us, i, t, [size, { ...(field || {}), objective: [...tu.pos], objective_radius: null }, stance, known, exchange], "advance");
+  return o ? { ...o, pin: true } : holdLine(us, i, t, known);
 }
 function withdrawOrder(us, i, ctx){               // orders from the account (data/orders.yaml withdraw {at, to}): from exchange at it falls back to hex to, and holds it once there, or to map edge to, and leaves the field there (as commander._withdraw_order)
   const u = us[i], W = u.withdraw;
@@ -3559,6 +3701,7 @@ function support(us, i){                          // men times attack % of the s
 }
 function mayCharge(u, t, stance = "attack", storm = false, backing = 0){   // men without missiles (or storming works), steady, with the odds its quality wants in its stance, counting the friends touching it
   if (("range" in FD.weapons[u.weapon] && !storm) || u.state !== "steady") return false;
+  if (enveloping(u) && arc(t.facing, bearing(t.pos, u.pos)) !== "front") return true;   // gone round on a plan: it charges a flank or rear at any odds
   const mine = u.men * quality(u.quality).attack + backing, theirs = t.men * quality(t.quality).attack;
   return 100 * mine >= (UD.commander.charge_odds[stance][u.quality] ?? 100) * theirs;
 }
@@ -3989,9 +4132,16 @@ function setUpBattle(fid){                         // a battlefield with its arm
   const B = { sides: F.sides.slice(), table: F.table, units: [], field: structuredClone(F.field), exchange: 0, phase: "setup", stages: null, stageNo: -1, waiting: [], start: null, entry: F.entry || null, seq: 1, ends: F.ends || null };
   B.size = B.field.size.slice();
   B.field.lifts = [];
+  const plan = sidePlan(F);
+  if (plan) B.field.plan = plan;
   F.units.forEach(u => standOrFly(B, makeUnit({ ...u, side: F.sides[u.side], asFought: true }, B.seq++, B.table), u.lands));
   holdForStages(B, F.phases);
   return B;
+}
+function sidePlan(F, off = []){                    // a battlefield's plan (data/plans.yaml) for its armies as drawn up, by side name: {side: [steps]}, leaving out the sides in off (indices the GM switched off); or null (as battle.side_plan)
+  const out = {};
+  for (const [k, steps] of Object.entries(F.plan?.sides || {})) if (!off.includes(Number(k)) && steps?.length) out[F.sides[Number(k)]] = steps;
+  return Object.keys(out).length ? out : null;
 }
 const fielded = (B, k) => B.units.some(u => sideIndex(B, u) === k && u.men > 0 && u.state !== "fled");
 function sideFacing(B, k){                         // the way most of a side's men face (its starting edge's way if it has none left) (as battle.side_facing)
@@ -4063,6 +4213,7 @@ function advanceStages(B){                         // at the start of an exchang
   while (B.stageNo + 1 < B.stages.length && phaseDue(B, B.stages[B.stageNo + 1])){
     B.stageNo += 1;
     (B.stageBegan || (B.stageBegan = {}))[B.stageNo] = B.exchange;
+    B.field.begun = [...(B.field.begun || []), B.stages[B.stageNo].name];   // for plans' phase triggers
     out.begun.push(B.stageNo);
     lightOfPhase(B, B.stages[B.stageNo], out);
   }

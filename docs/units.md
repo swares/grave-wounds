@@ -865,15 +865,15 @@ What it does not do yet:
   riflemen who stop at range.
 - Its reserve holds until committed; then a unit sent to plug a gap goes there, and others
   fight. Reserve units ignore the objective until committed.
-- It has at most two objectives, taken (or held) in turn: no third or more, no phase lines
-  across the whole front, no feints or scouting (designed, not built: see *Plans*, below).
-  Battlefields mark only one. Victory is still the GM's call; the objective
+- It has at most two objectives, taken (or held) in turn: no third or more. Phase lines,
+  envelopments and the like come only from a battlefield's plan (see *Plans*, below); it makes
+  none of its own, and has no feints or scouting. Battlefields mark only one objective. Victory is still the GM's call; the objective
   line in the log only says who stands on it.
 - It plays only on the field map, not the travel map.
 
-### Plans (designed, not built)
+### Plans
 
-*This is the design, agreed 29 October 2026; nothing below is built yet.* The commander orders
+*Designed and built 29 October 2026; two battlefields have a plan so far (below).* The commander orders
 unit by unit: each unit goes for its target or the objective, and the reserve, routes and the
 orders from the accounts are the only coordination it has. A **plan** gives a side's units tasks
 in steps, each started and ended by what happens on the field, so a side can pin an enemy and go
@@ -910,37 +910,47 @@ keys), when it starts (`when`; from the first exchange if left out) and, optiona
 (`until`; else when the task is done). A unit has at most one step running; a later step for the
 same unit replaces it when it starts. The steps of a side are read in order every move.
 
-**The tasks, first cut.**
-- **advance_to** `{to}`: goes to a hex (a phase line or a start line) as to an objective, fighting
-  on the way only as a unit going to an objective does, then halts there and holds, digging in
-  where it can, until the step ends.
-- **pin** `{target}`: keeps the named enemy unit under fire from the furthest hex it can hit it
-  from, taking cover where there is any, and never closes to contact. A unit with no missile
-  weapon stands just beyond the enemy's charge reach in sight of it.
+**The tasks, first cut.** Every task but `withdraw_if` takes its unit out of the reserve when it
+starts. While a unit has a target from its plan (`pin`, `envelop`), it goes for that one whenever
+its side knows where it is, instead of choosing its own.
+- **advance_to** `{to}`: goes to a hex (a phase line or a start line) as to an objective, until its
+  middle hex is within `commander.route.reach` (3) hexes of it, then stays there facing its target
+  (going to ground under fire as any unit) until the step ends. It has no end of its own.
+- **pin** `{target}`: a unit that shoots, by its weapon or its main gun, goes to the hex it can
+  reach that is furthest from the target from which it can still hit it (in range and in sight),
+  and stays there firing; closer than that, it draws back to it. With no such hex in reach, it
+  moves nearer. A unit with no missile weapon stands as near as it can while out of the target's
+  charge (the target's move and a hex, between their nearest hexes), in sight of it. It never
+  moves into contact. Done when the target breaks or is gone.
 - **envelop** `{via, target}`: goes by the waypoints (as a route does), then attacks the target,
-  or the objective if none is named, from where the route brings it.
-- **commit** `{to}` (optional): releases a reserve unit; with `to` it goes there to plug or exploit,
-  as a unit plugging a gap does; without, it fights as any committed unit.
+  or the objective if none is named. A unit that has gone round is ordered as attacking, whatever
+  its side's stance, and **charges the target's flank or rear at any odds** (a rule choice: striking
+  a flank or rear is the point of going round; from the front it still wants its quality's odds).
+  Done when the target breaks or is gone, or, with no target, once round.
+- **commit** `{to}` (optional): releases a reserve unit; with `to` it goes there, as a unit plugging
+  a gap does; without, it fights as any committed unit. It is done at once.
 - **withdraw_if** `{to}`: when its step starts, falls back to a hex (and holds it) or to a map
   edge (and leaves), as a withdrawal on orders does. It is the account's `withdraw`, started by
-  what happens instead of by the clock.
+  what happens instead of by the clock. Done when it is there.
 
 **The triggers, first cut.** `when` and `until` take one trigger, or a list of them: a step
 starts when any one is true (a list inside `all: [...]` needs every one).
 - **exchange** `n`: from the nth exchange on.
 - **phase** `name`: once the battlefield's phase of that name has begun.
 - **light** `dusk` or `night`: once the light is that or darker.
-- **pinned** `name`: the named enemy unit was hit by a pinning unit of ours last exchange and is
-  shaken, gone to ground or in cover.
+- **pinned** `name`: one of our units is pinning the named enemy unit, and that unit is shaken, on
+  the ground, lost men last exchange or is pinned by fire.
 - **broken** `name`: the named unit, either side's, has broken, fled or is gone.
 - **lost** `p`: the step's units (or with `side: true`, the whole side) have lost p% of their
   starting men.
-- **outflanked**: a steady enemy unit stands off the flank or in the rear of one of the step's
-  units, by the same test as the flank morale check.
+- **outflanked**: a steady enemy unit the side knows of stands off the unit's flank or in its
+  rear (by its facing, as the flank morale check reads it), within `commander.plans.flank` (12)
+  hexes of it between their nearest hexes. A design estimate, the reserve's 12.
 
-**Where it sits in the commander's orders.** A unit with a running step takes its step's order
-where a route's order comes now: after withdrawing on orders, ammunition and the reserve, and
-before the default move. A unit in contact fights as now, and the tasks give no orders to guns,
+**Where it sits in the commander's orders.** At the start of each of its side's moves, after the
+reserve is held back, the commander starts and ends the side's steps (`commander.plan_steps`,
+`units.js planSteps`). A unit with a running step takes its step's order just after a route's:
+after withdrawing on orders, ammunition, the reserve and pursuit, and before the default move. A unit in contact fights as now, and the tasks give no orders to guns,
 sappers or riders, which keep their own. A unit with no step, and every unit of a battlefield
 with no plan, is ordered exactly as before.
 
@@ -950,20 +960,27 @@ the travel map), and to every side the commander plays, self-play or not. A box 
 steps; the log says when one starts or ends and why ("Plan: Washington's horse go round the
 British left; About-face and bayonets has begun").
 
-**First battlefields, and how they are measured.**
-- **Cowpens:** the militia fire and fall back (`withdraw_if` on losses or the phase), and
-  Washington's horse goes round onto the British (`envelop`), as in the example.
-- **Snipe:** Rommel's evening tanks draw back at dusk to about 800 yards (`withdraw_if` on
-  `light`; project doc "snipe-study"), instead of driving into the hollow.
-- **Goose Green:** fire and movement over hours: one company pins Darwin Hill's trenches while
-  another works round (`pin`, `envelop` on `pinned`). To be checked against the accounts before
-  it is written.
-- **Osan and Mons:** already withdraw on the clock (`orders.yaml`). As a test of `withdraw_if`,
-  their withdrawals are started by `outflanked` and `lost` instead of the time, and should still
-  match.
+**The battlefields with a plan.**
+- **Cowpens:** Washington's horse goes round the east of the fight when the Continentals face
+  about (`envelop` on the phase *About-face and bayonets*) and strikes the 7th Fusiliers in the
+  flank. **Left out:** the militia and riflemen falling back behind the Continentals and coming
+  back round the other flank. A unit cannot pass through its own side's units, and the militia
+  line (50 hexes wide) cannot go round the Continentals' (28) on this 120-hex map; that needs a
+  rule for passing through one's own lines first.
+- **Snipe:** Rommel's evening German tanks, once they have lost a tenth of their men (our
+  figure), keep C Company's six-pounders under fire from as far off as they can hit them (`pin`)
+  instead of driving into the hollow. The account has them draw back to 800 yards and fire until
+  dark (project doc "snipe-research", B3), so `pin`, not the `withdraw_if` at dusk first planned.
+  Their guns reach 100 hexes (about 1,100 yards), so in daylight they stand off a little further
+  than the account's 800.
+- **Next:** Goose Green (fire and movement: one company pins Darwin Hill while another works
+  round; to be checked against the accounts first), and Osan and Mons as a test of `withdraw_if`
+  (their timed withdrawals in `orders.yaml` started by `outflanked` and `lost` instead).
 
-Each is measured on 12 runs of every battlefield against main. Only the battlefields with a plan
-should change; any other change is a fault in the executor.
+**Checked.** Python and the page play Cowpens and Snipe move for move the same on the same dice
+(seed 101: stop, exchanges, orders and every unit's end). Every other battlefield plays exactly as
+on main at that seed. The browser test `tools/field/plans.py` checks the box, the strip and the
+log on Cowpens.
 
 ### Both sides (self-play)
 

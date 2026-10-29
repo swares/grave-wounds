@@ -1107,6 +1107,10 @@ commander:
   # `reach` hexes; it turns aside only for an enemy in contact or one it knows of across its way
   # within its move, and then fights as any other unit. Design choice.
   route: {reach: 3}
+  # plans (data/plans.yaml; docs/units.md, Plans): a step's outflanked trigger is a steady enemy
+  # it knows of off the flank or in the rear of one of the step's units, within `flank` hexes of
+  # it (between their nearest hexes). Design estimate: the reserve's 12, close enough to matter.
+  plans: {flank: 12}
   # sappers (units marked sappers: mines.sappers): holding, or at the objective, out of contact
   # and with no enemy it knows of within `clear_of` hexes, they lay mines in the
   # row ahead (mixed if the enemy it knows of has vehicles, else anti-personnel), where it is
