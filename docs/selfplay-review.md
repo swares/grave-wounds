@@ -1354,7 +1354,8 @@ battlefields with a plan changing, and the morale targets unchanged.
 - **Left out at Cowpens:** the militia and riflemen falling back behind the Continentals and
   coming back round the other flank. No unit can pass through its own side's units, and the
   militia line (50 hexes) cannot go round the Continentals' (28) on this map. A rule for passing
-  through one's own lines would come first.
+  through one's own lines would come first. *(Wrong, as it turned out: see "The militia at
+  Cowpens", below. The one-row militia line gets past the end of the Continentals' as it moves.)*
 - **Next:** Goose Green (pin and envelop), and Osan and Mons as a test of `withdraw_if` (their
   timed withdrawals started by `outflanked` and `lost` instead).
 
@@ -1381,6 +1382,23 @@ Four more battlefields given plans, from the commander misses tagged by cause (p
   the attack is called off sooner than it was in fact, or the columns get less far.
 - **Osan** was left as it is: it matched 12 of 12 with sourced, timed withdrawals.
 
+## The militia at Cowpens, 29 October 2026
+
+The militia's part of Morgan's plan, left out earlier on the reading that no unit can pass
+through its own lines and the militia line was too wide to go round the Continentals'. That
+reading was never tested, and it was wrong: traced (seed 101), the militia fall back from their
+line to the east of the Continentals' left end at their full 50-hex width, in five moves, the
+Continentals' line being one row deep. A rule for narrowing a withdrawing unit to get past was
+written for it and taken out again: it never came into play, and an untried rule was not kept.
+
+The plan's militia steps: fall back round the Continentals' left when the phase *The militia
+fall back* begins or a sixth are down; at *About-face and bayonets*, come back round the west
+onto the 71st, as Washington's horse go round the east. Measured locally on the benchmark's 12
+seeds (main reproduces the benchmark's figures exactly): Cowpens 12 to 12 of 12, the British
+losing 51.2% instead of 44.6% (the Americans 23.1% instead of 22.4%). Only Cowpens' stamp
+changed, so the benchmark's Cowpens entry was refreshed from these runs. In the traced run the
+militia, back on the west, mostly hesitate at range from the 71st (riflemen do not charge), and
+Washington's horse were destroyed; the British line was not taken.
 
 ## The flank check by share, measured and not built, 29 October 2026
 

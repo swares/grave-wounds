@@ -4,8 +4,9 @@
 
 Lays out Cowpens with its armies as drawn up: the plan box shows for the side with a plan and not
 for the other, the strip lists the plan, unticking the box takes the plan off the field and ticking
-it puts it back. Then, with the commander on both sides, runs the battle until the plan's step
-starts and checks the log says so and the strip shows it running. Needs Python's playwright with
+it puts it back. Then, with the commander on both sides and seeded dice, runs the battle until
+the horse's step starts and checks the log says when the militia fell back and the horse went
+round, and the strip shows a step running. Needs Python's playwright with
 Chromium and a built site. Exits non-zero on any failure.
 """
 import sys
@@ -14,6 +15,7 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[2]
 PAGE = (ROOT / "dist" / "field.html").as_uri()
+SEED = 202                                         # dice on which the horse live to go round (checked: on 101 and 303 they are destroyed first)
 failures = []
 
 
@@ -43,14 +45,26 @@ with sync_playwright() as p:
 
     pg.select_option("#sel-ai0", index=2)          # holding, as fought
     pg.select_option("#sel-ai1", index=1)          # attacking, as fought
+    # seeded dice (as the self-play tools'): with real dice the horse are sometimes destroyed
+    # before the about-face, and their step never starts
+    pg.evaluate("() => { const sd = new SeededDice(SEED); dice.randint = (a, b) => sd.randint(a, b); dice.random = () => sd.random() }".replace("SEED", str(SEED)))
     pg.click("#btn-next")
     check(pg.is_disabled("#chk-plan0"), "the plan is chosen in set-up only")
+    plan_lines = "() => S.log.filter(l => l.text.startsWith('Plan: ')).map(l => l.text)"
+    # the log keeps its newest 400 lines: each step is checked as soon as it shows
     pg.click("#btn-run")
-    pg.wait_for_function("() => S.log.some(l => l.text.startsWith('Plan: '))", timeout=600000)
+    pg.wait_for_function("() => S.log.some(l => l.text.startsWith('Plan: Militia line')) || S.exchange > 30 || S.phase === 'over'", timeout=600000)
     pg.evaluate("() => stopRun()")
-    line = pg.evaluate("() => S.log.find(l => l.text.startsWith('Plan: ')).text")
-    check(line == "Plan: Washington's horse (Americans) go round to strike 7th Fusiliers in the flank (About-face and bayonets has begun).",
-          f"the log says when the plan's step starts and why ({line})")
+    lines = pg.evaluate(plan_lines)
+    check("Plan: Militia line (Pickens) (Americans) fall back, as planned (The militia fall back has begun)." in lines
+          or "Plan: Militia line (Pickens) (Americans) fall back, as planned (they have lost 15% of their men)." in lines,
+          f"the log says when the militia fall back and why ({lines})")
+    pg.click("#btn-run")
+    pg.wait_for_function("() => S.log.some(l => l.text.startsWith(\"Plan: Washington's horse\")) || S.exchange > 50 || S.phase === 'over'", timeout=600000)
+    pg.evaluate("() => stopRun()")
+    lines = pg.evaluate(plan_lines)
+    check("Plan: Washington's horse (Americans) go round to strike 7th Fusiliers in the flank (About-face and bayonets has begun)." in lines,
+          f"the log says when the horse go round and why ({lines})")
     pg.evaluate("() => render()")
     stage = pg.inner_text("#stage")
     check("Plans running:" in stage and "Washington's horse going round" in stage, "the strip shows the step running")
