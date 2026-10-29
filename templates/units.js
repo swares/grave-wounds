@@ -2584,7 +2584,9 @@ function ranThrough(units, i, after){             // indices of the friendly uni
 function cornered(units, i, after){               // broken unit i cannot run (it would stand where it is) with an enemy touching it, and its side gives up (rout.surrender; not fights_on) (as units.cornered)
   const u = units[i];
   if (!UD.rout.surrender || u.fights_on || after.state === "fled" || after.pos[0] !== u.pos[0] || after.pos[1] !== u.pos[1]) return false;
-  return inContact(units, occupancy(units), i);
+  const foes = adjacentUnits(units, occupancy(units), i).filter(j => units[j].side !== u.side);
+  if (!foes.length) return false;
+  return !UD.rout.outnumbered || foes.filter(j => !out_(units[j])).reduce((n, j) => n + units[j].men, 0) >= u.men;   // only when the enemy touching it is at least as many as it has standing (rout.outnumbered)
 }
 function surrender(u, quarter){                   // a cornered unit gives up: quarter % of its men standing taken prisoner, the rest killed; heroes on their feet taken -> {unit, taken, killed} (as units.surrender)
   const taken = Math.floor(u.men * quarter / 100), killed = u.men - taken;

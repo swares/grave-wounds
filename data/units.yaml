@@ -869,6 +869,12 @@ rout:
   through: 3
   jostle: 0.5
   surrender: true
+  # outnumbered: a cornered unit gives up only when the enemy units touching it (not broken) have
+  #   at least as many men as it has standing; otherwise it stands broken and is struck. At
+  #   Tumbledown Left Flank (83 men) gave itself up to three Argentine engineers at its flank;
+  #   attackers almost never lose men as prisoners (TDI capture-rate study: 0.04% of strength),
+  #   and the Rangers at Cisterna, who did, were surrounded by more men. Design estimate.
+  outnumbered: true
 
 # ---------- after the battle ----------
 # Every wounded man is remembered by his wound's severity, its untreated time to death
