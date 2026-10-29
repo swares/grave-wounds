@@ -833,7 +833,7 @@ morale:
   #   breaking it at once) only when the men striking its flank or rear that exchange are at least
   #   this share of its men standing. At Tumbledown three Argentine engineers at its side broke Left
   #   Flank (83 men) outright. Design estimate; 0: any enemy at its flank, as before.
-  flank_share: 0.1
+  flank_share: 0.25
   shaken_by: 20
   mods:
     leader: 10                # a named leader with the unit, up and fighting
