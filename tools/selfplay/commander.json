@@ -27,7 +27,7 @@
      "won": 0.42
     }
    ],
-   "stamp": "3cff4ef0ce3e"
+   "stamp": "f65127ebcba9"
   },
   "albuera-1811": {
    "runs": 12,
@@ -55,7 +55,7 @@
      "won": 0.0
     }
    ],
-   "stamp": "6cea516c309f"
+   "stamp": "79a7087236f5"
   },
   "aljubarrota-1385": {
    "runs": 12,
@@ -83,7 +83,7 @@
      "won": 0.17
     }
    ],
-   "stamp": "f486e0cf5ae9"
+   "stamp": "b5b1a2c020d1"
   },
   "babuna-1915": {
    "runs": 12,
@@ -111,7 +111,7 @@
      "won": 0.17
     }
    ],
-   "stamp": "fd83d589e810"
+   "stamp": "5a44ce36df29"
   },
   "beaumont-hamel-1916": {
    "runs": 12,
@@ -139,7 +139,7 @@
      "won": 1.0
     }
    ],
-   "stamp": "704fa106b924"
+   "stamp": "7bc3c7094498"
   },
   "bougainville-1944": {
    "runs": 12,
@@ -167,7 +167,7 @@
      "won": 0.0
     }
    ],
-   "stamp": "7b1276ccd4d9"
+   "stamp": "1a57be75984d"
   },
   "bull-run-1861": {
    "runs": 12,
@@ -195,7 +195,7 @@
      "won": 0.0
     }
    ],
-   "stamp": "1a996fe7f73b"
+   "stamp": "819ced3bc11d"
   },
   "cassino-monastery-1944": {
    "runs": 12,
@@ -223,7 +223,7 @@
      "won": 0.5
     }
    ],
-   "stamp": "5e3a2ff86304"
+   "stamp": "9ace44eb901c"
   },
   "cassino-poles-1944": {
    "runs": 12,
@@ -251,7 +251,7 @@
      "won": 0.0
     }
    ],
-   "stamp": "65acc104ecbf"
+   "stamp": "615deeaeb5b5"
   },
   "cassino-town-1944": {
    "runs": 12,
@@ -279,7 +279,7 @@
      "won": 0.0
     }
    ],
-   "stamp": "a5fdd1d948cf"
+   "stamp": "2bc3c556dda5"
   },
   "chipyong-1951": {
    "runs": 12,
@@ -307,7 +307,7 @@
      "won": 0.0
     }
    ],
-   "stamp": "3e4095185cb1"
+   "stamp": "18cce49b5a37"
   },
   "cisterna-1944": {
    "runs": 12,
@@ -335,7 +335,7 @@
      "won": 0.83
     }
    ],
-   "stamp": "eba86e85e0f9"
+   "stamp": "4ed4158d6536"
   },
   "cowpens-1781": {
    "runs": 12,
@@ -343,10 +343,10 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 1.22
+      "ratio": 1.52
      },
      "drew": 0.0,
-     "lost_share": 0.202,
+     "lost_share": 0.224,
      "side": "Americans",
      "stance": "hold",
      "won": 1.0
@@ -354,16 +354,16 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.84
+      "ratio": 0.66
      },
      "drew": 0.0,
-     "lost_share": 0.306,
+     "lost_share": 0.446,
      "side": "British",
      "stance": "attack",
      "won": 0.0
     }
    ],
-   "stamp": "7fac803f7e2c"
+   "stamp": "9889ddde4534"
   },
   "crecy-1346": {
    "runs": 12,
@@ -391,7 +391,7 @@
      "won": 0.0
     }
    ],
-   "stamp": "523b4877d78e"
+   "stamp": "66e19ec33ed5"
   },
   "dakto-1967": {
    "runs": 12,
@@ -419,7 +419,7 @@
      "won": 1.0
     }
    ],
-   "stamp": "466efd196ebe"
+   "stamp": "27bbc22d581f"
   },
   "debecka-2003": {
    "runs": 12,
@@ -447,7 +447,7 @@
      "won": 0.08
     }
    ],
-   "stamp": "41e446171e93"
+   "stamp": "2459df3769eb"
   },
   "dornach-1499": {
    "runs": 12,
@@ -475,7 +475,7 @@
      "won": 0.17
     }
    ],
-   "stamp": "10e869398b0e"
+   "stamp": "1b6bafb09176"
   },
   "easting73-1991": {
    "runs": 12,
@@ -503,7 +503,7 @@
      "won": 0.33
     }
    ],
-   "stamp": "d4c1298b1e97"
+   "stamp": "bbc2daa40188"
   },
   "fallujah-2004": {
    "runs": 12,
@@ -531,7 +531,7 @@
      "won": 0.0
     }
    ],
-   "stamp": "76ae02a9b1ae"
+   "stamp": "72fee202e3b5"
   },
   "fetterman-1866": {
    "runs": 12,
@@ -559,7 +559,7 @@
      "won": 1.0
     }
    ],
-   "stamp": "b672ba6bc5db"
+   "stamp": "2c55a8ba2083"
   },
   "foxhill-1950": {
    "runs": 12,
@@ -587,7 +587,7 @@
      "won": 0.0
     }
    ],
-   "stamp": "59a9ba6a3005"
+   "stamp": "ba58f88e3230"
   },
   "goosegreen-1982": {
    "runs": 12,
@@ -615,7 +615,7 @@
      "won": 0.92
     }
    ],
-   "stamp": "12f30549c308"
+   "stamp": "3d71178e995c"
   },
   "grozny-1995": {
    "runs": 12,
@@ -643,7 +643,7 @@
      "won": 0.5
     }
    ],
-   "stamp": "84a68c083479"
+   "stamp": "de35e7749504"
   },
   "hamburger-1969": {
    "runs": 12,
@@ -671,7 +671,7 @@
      "won": 0.0
     }
    ],
-   "stamp": "06b83093fb7d"
+   "stamp": "f7421238f2b4"
   },
   "heartbreak-1951": {
    "runs": 12,
@@ -699,7 +699,7 @@
      "won": 0.0
     }
    ],
-   "stamp": "75e541afb649"
+   "stamp": "163ba5c94293"
   },
   "hue-1968": {
    "runs": 12,
@@ -727,7 +727,7 @@
      "won": 0.92
     }
    ],
-   "stamp": "dc6d4c6b7ba2"
+   "stamp": "02a87429f1d4"
   },
   "jacobsford-1179": {
    "runs": 12,
@@ -755,7 +755,7 @@
      "won": 0.0
     }
    ],
-   "stamp": "2d4ca9ac779f"
+   "stamp": "0ac56a0cf3ca"
   },
   "kapyong-1951": {
    "runs": 12,
@@ -783,7 +783,7 @@
      "won": 0.0
     }
    ],
-   "stamp": "0e09e9172147"
+   "stamp": "0baa35bde5f5"
   },
   "keating-2009": {
    "runs": 12,
@@ -811,7 +811,7 @@
      "won": 0.33
     }
    ],
-   "stamp": "727cbf11527f"
+   "stamp": "0507a0951367"
   },
   "khesanh-1968": {
    "runs": 12,
@@ -839,7 +839,7 @@
      "won": 0.0
     }
    ],
-   "stamp": "e24800aadb45"
+   "stamp": "ba67187dc18f"
   },
   "lundys-lane-1814": {
    "runs": 12,
@@ -867,7 +867,7 @@
      "won": 1.0
     }
    ],
-   "stamp": "255a263c1c62"
+   "stamp": "7993d3357815"
   },
   "lutzen-1632": {
    "runs": 12,
@@ -895,7 +895,7 @@
      "won": 0.25
     }
    ],
-   "stamp": "341ff9ae1a71"
+   "stamp": "8154d6bc4f05"
   },
   "mogadishu-1993": {
    "runs": 12,
@@ -923,7 +923,7 @@
      "won": 0.08
     }
    ],
-   "stamp": "6dc64a799206"
+   "stamp": "8c5b1a515f6a"
   },
   "mojkovac-1916": {
    "runs": 12,
@@ -951,7 +951,7 @@
      "won": 0.0
     }
    ],
-   "stamp": "3e779f87aa6a"
+   "stamp": "e14832fd4086"
   },
   "mons-1914": {
    "runs": 12,
@@ -979,7 +979,7 @@
      "won": 0.83
     }
    ],
-   "stamp": "60ff9e7be69a"
+   "stamp": "27c0493ed5c5"
   },
   "osan-1950": {
    "runs": 12,
@@ -1007,7 +1007,7 @@
      "won": 1.0
     }
    ],
-   "stamp": "4e69a9f8ce1c"
+   "stamp": "516afcd13f02"
   },
   "porkchop-1953": {
    "runs": 12,
@@ -1035,7 +1035,7 @@
      "won": 0.0
     }
    ],
-   "stamp": "0832b81139ab"
+   "stamp": "8292f71d8790"
   },
   "redan-1855": {
    "runs": 12,
@@ -1063,7 +1063,7 @@
      "won": 1.0
     }
    ],
-   "stamp": "2922a50b1ee9"
+   "stamp": "559323d63dc2"
   },
   "redan-1855-june": {
    "runs": 12,
@@ -1091,7 +1091,7 @@
      "won": 0.58
     }
    ],
-   "stamp": "b8ee191d7400"
+   "stamp": "f989e6371fbb"
   },
   "sidon-1253": {
    "runs": 12,
@@ -1119,35 +1119,35 @@
      "won": 1.0
     }
    ],
-   "stamp": "558c02c9a689"
+   "stamp": "18d88cafa398"
   },
   "snipe-1942": {
    "runs": 12,
    "sides": [
     {
      "bar": {
-      "outcome": "loss",
-      "ratio": 0.78
+      "outcome": "win",
+      "ratio": 0.74
      },
      "drew": 0.0,
-     "lost_share": 0.375,
+     "lost_share": 0.349,
      "side": "British",
      "stance": "hold",
-     "won": 0.25
+     "won": 0.5
     },
     {
      "bar": {
       "outcome": "win",
-      "ratio": 1.38
+      "ratio": 1.08
      },
      "drew": 0.0,
-     "lost_share": 0.164,
+     "lost_share": 0.173,
      "side": "Germans and Italians",
      "stance": "attack",
-     "won": 0.75
+     "won": 0.5
     }
    ],
-   "stamp": "35a7b47855a8"
+   "stamp": "ff5532b0b744"
   },
   "topolcani-1915": {
    "runs": 12,
@@ -1175,7 +1175,7 @@
      "won": 0.92
     }
    ],
-   "stamp": "a4d814488c9d"
+   "stamp": "9143f551fc7d"
   },
   "towton-1461": {
    "runs": 12,
@@ -1203,7 +1203,7 @@
      "won": 0.0
     }
    ],
-   "stamp": "fa56eabf4e82"
+   "stamp": "839ff1cde547"
   },
   "tumbledown-1982": {
    "runs": 12,
@@ -1231,7 +1231,7 @@
      "won": 0.5
     }
    ],
-   "stamp": "334b686e89a0"
+   "stamp": "afb457b04619"
   },
   "visby-1361": {
    "runs": 12,
@@ -1259,7 +1259,7 @@
      "won": 1.0
     }
    ],
-   "stamp": "f449c845f852"
+   "stamp": "902b9872265b"
   },
   "wagon-box-1867": {
    "runs": 12,
@@ -1287,7 +1287,7 @@
      "won": 0.0
     }
    ],
-   "stamp": "51ee39416c17"
+   "stamp": "239566a826d8"
   },
   "wanat-2008": {
    "runs": 12,
@@ -1315,7 +1315,7 @@
      "won": 0.33
     }
    ],
-   "stamp": "4c74231b0714"
+   "stamp": "4470156ca586"
   },
   "xray-1965": {
    "runs": 12,
@@ -1343,7 +1343,7 @@
      "won": 0.25
     }
    ],
-   "stamp": "559a65ce6bda"
+   "stamp": "365a98ab7b5a"
   }
  },
  "updated": "2026-10-29"

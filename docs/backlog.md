@@ -86,7 +86,9 @@ When an item is done, delete it here and note it in the pull request that closes
   row by row along their straight way, one lane as wide as their front; the other units are not held back for it. Its creeping barrages start on the enemy and lift a fixed 3 lines, and it plans none
   for riflemen who stop at range. Its foot units ride its carriers up and get down once an enemy is in reach. Its aircraft prefer a target its air controllers see and come closer there. Holding, by day or at dusk, it lays its machine guns' fixed lines on the nearest enemy it knows of in reach, or else ahead toward one (or along its facing), shifting a line laid ahead once onto an enemy that comes into reach. It digs its foot units in where they stand when safe: at the objective, holding with none, and in reserve. Attacking, an air controller with nothing better to do moves up to see a target for its aircraft (up to three moves away; holding, it stays). An attacking air controller with nothing better to do goes up to three moves to see a target, preferring a spot out of reach, and not while it has a fight of its own. Still left out: a controller moving past three moves, fixed lines across its front or interlocking with each other, and works other than digging in (no field works are built during a battle); any plan beyond two
   objectives (phase lines across the front, feints, scouting; no battlefield marks a second;
-  a plan layer is designed, not built: units.md, *Plans*); ladders only where the GM or a battlefield marks them (the Great Redan's ladder parties are marked, but ladders do nothing on its ditch and bank). It does
+  plans give phase lines, pinning, envelopments, reserves and withdrawals on a trigger where a
+  battlefield's plan says so: units.md, *Plans*; only Cowpens and Snipe have one so far, and no
+  unit can pass through its own lines, which Cowpens' militia need); ladders only where the GM or a battlefield marks them (the Great Redan's ladder parties are marked, but ladders do nothing on its ditch and bank). It does
   not play the travel map. Later, by the choice made: an optional narrator, using a model
   with a key the player supplies, to explain its orders in prose.
 
@@ -199,7 +201,7 @@ When an item is done, delete it here and note it in the pull request that closes
   battlefield marks with a defensive fire plan (`df: true`) may fire, unseen, within 12 hexes of
   its own side's start positions (Pork Chop's flash fire: 4 to 12 of 12). Given to every
   defender, the fire plan put Tumbledown back to 0 (and Grozny 2 to 7, Hue and Chipyong-ni -1), so
-  it is marked by battlefield where a source gives one. 449 of 576 runs now match the battle as
+  it is marked by battlefield where a source gives one. 452 of 576 runs now match the battle as
   fought (Mojkovac and Topolčani added; reliability, 423 to 422; a bayonet front against horse,
   Albuera 7 to 12, Lundy's Lane 1 to 0; a closing volley before a charge home, both Redans +1;
   Cassino's sangars, the Monastery 0 to 3; trenches against shellfire at a fifth of lying, after
@@ -207,8 +209,9 @@ When an item is done, delete it here and note it in the pull request that closes
   Monastery 3 to 6, Pork Chop 10 to 12, Mojkovac 11 to 12, but Tumbledown 8 to 3 and 73 Easting 4
   to 0; project doc "snipe-study"; proof armour takes no harm, a T-72's frontal hit neither
   immobilising an M1A1 nor putting its gun out, 435 to 443: 73 Easting 0 to 8; a cornered unit surrenders only to as many men as it has, 443
-  to 449: Tumbledown 3 to 6, Dornach 7 to 10, Chipyong-ni 10 to 12, Agincourt and Mogadishu -1). Still behind: Snipe 3 of 12, Rommel's evening tanks driving
-  into the hollow (in fact they drew back to 800 yards); Tumbledown 6 of 12, Left Flank walking
+  to 449: Tumbledown 3 to 6, Dornach 7 to 10, Chipyong-ni 10 to 12, Agincourt and Mogadishu -1; plans, Snipe's evening
+  German tanks pinning from range, 449 to 452: Snipe 3 to 6). Still behind: Snipe 6 of 12 (the evening Italian tanks
+  have no plan: the account names only the Germans drawing back; not traced since); Tumbledown 6 of 12, Left Flank walking
   into contact upright in the dark and broken at once by a handful at its flank (the flank check
   counts three men as a flanking force); Lundy's Lane 0, studied (project doc "lundys-lane-study"):
   Ripley's brigade stops 140 m off the guns and trades fire ("a shooter never charges"); made to

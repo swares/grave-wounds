@@ -100,6 +100,7 @@ class Data:
     units: dict = field(default_factory=dict)       # units.yaml: unit combat on the field map
     fields: dict = field(default_factory=dict)      # battlefield id -> battlefield (data/fields), `rows` = ground rows
     orders: dict = field(default_factory=dict)      # battlefield id -> the defenders' orders from the accounts (data/orders.yaml): hold, withdraw
+    plans: dict = field(default_factory=dict)       # battlefield id -> each side's plan for the enemy commander (data/plans.yaml): steps of tasks and triggers
     teams: dict = field(default_factory=dict)       # era id -> character generation tables (data/teams)
     equipment: dict = field(default_factory=dict)   # era id -> coins, a Day's pay and priced kit (data/equipment)
     money: dict = field(default_factory=dict)       # money.yaml: purse per career term, pay for a day's work
@@ -171,6 +172,10 @@ def load(root: str | Path = "data") -> Data:
     fields = _read_dir(root / "fields", "ground")
     orders = _optional(root / "orders.yaml", {})
     _apply_orders(fields, orders)
+    plans = _optional(root / "plans.yaml", {})
+    for fid, p in (plans or {}).items():
+        if fid in fields:
+            fields[fid]["plan"] = p
     _apply_accounts(fields, _optional(root / "accounts.yaml", {}))
     teams = _read_dir(root / "teams")
     equipment = _read_dir(root / "equipment")
@@ -217,6 +222,7 @@ def load(root: str | Path = "data") -> Data:
         units=units,
         fields=fields,
         orders=orders,
+        plans=plans or {},
         teams=teams,
         equipment=equipment,
         money=money,
@@ -1104,7 +1110,7 @@ def _units_extra_errors(d: Data) -> list[str]:
         errors.append("units.yaml: ground needs open, and a whole-number move of 1 or more for each kind")
     if "heroes" in U and not all(isinstance(U["heroes"].get(k), (int, float)) and U["heroes"][k] > 0 for k in ("tempo", "exposure")):
         errors.append("units.yaml: heroes.tempo and heroes.exposure must be positive")
-    errors += _limb_errors(d) + _commander_errors(d) + _self_play_errors(d) + _narrator_errors(d) + _orders_errors(d)
+    errors += _limb_errors(d) + _commander_errors(d) + _self_play_errors(d) + _narrator_errors(d) + _orders_errors(d) + _plans_errors(d)
     saved = U.get("aftermath", {}).get("saved", {})
     if saved and set(saved.get("hours", {})) != set(d.disease.get("recovery", {}).get("care", {})):
         errors.append("units.yaml: aftermath.saved.hours needs every care level")
@@ -1301,6 +1307,87 @@ def _withdraw_errors(fid: str, w: dict, size: list) -> list[str]:
     if not (to in ("N", "S", "E", "W") or on_map):
         errors.append(f"orders.yaml: {fid} {w.get('unit')!r}: to must be a hex on the map or N, S, E or W")
     return errors
+
+
+PLAN_TASKS = {"advance_to": ("to",), "pin": ("target",), "envelop": ("via",), "commit": (), "withdraw_if": ("to",)}
+PLAN_TRIGGERS = ("exchange", "phase", "light", "pinned", "broken", "lost", "outflanked")
+
+
+def _plans_errors(d: Data) -> list[str]:
+    """data/plans.yaml: each battlefield exists and has a source; each side is 0 or 1; each step
+    names units of its side, a known task with its keys (hexes on the map, enemy units by name),
+    and triggers that exist (phases by name, light levels, units by name)."""
+    flank = ((d.units.get("commander") or {}).get("plans") or {}).get("flank")
+    errors = [] if d.plans is None or not d.plans or (isinstance(flank, int) and flank >= 1) else ["units.yaml: commander.plans.flank must be a whole number of 1 or more"]
+    for fid, p in (d.plans or {}).items():
+        F = d.fields.get(fid)
+        if F is None:
+            errors.append(f"plans.yaml: no battlefield {fid}")
+            continue
+        if not (p or {}).get("source"):
+            errors.append(f"plans.yaml: {fid} needs a source")
+        for k, steps in ((p or {}).get("sides") or {}).items():
+            if k not in (0, 1):
+                errors.append(f"plans.yaml: {fid} side {k!r} must be 0 or 1")
+                continue
+            for n, st in enumerate(steps or []):
+                errors += _step_errors(d, F, k, st or {}, f"plans.yaml: {fid} side {k} step {n + 1}")
+    return errors
+
+
+def _names_of(F: dict, side: int | None) -> set:
+    """The names of a battlefield's units (of one side, or either)."""
+    return {u["name"] for u in F.get("units", []) if side is None or u["side"] == side}
+
+
+def _on_map(h, size: list) -> bool:
+    return isinstance(h, list) and len(h) == 2 and all(isinstance(x, int) for x in h) and 0 <= h[0] < size[0] and 0 <= h[1] < size[1]
+
+
+def _step_errors(d: Data, F: dict, side: int, st: dict, where: str) -> list[str]:
+    """One plan step: its units, its task and its triggers."""
+    errors, mine, theirs, do = [], _names_of(F, side), _names_of(F, 1 - side), st.get("do")
+    units = st.get("units")
+    if not (isinstance(units, list) and units):
+        errors.append(f"{where}: units must be a list of names")
+    errors += [f"{where}: no unit {n!r} on its side" for n in units or [] if n not in mine]
+    if do not in PLAN_TASKS:
+        return errors + [f"{where}: do must be one of {', '.join(PLAN_TASKS)}"]
+    errors += [f"{where}: {do} needs {k}" for k in PLAN_TASKS[do] if k not in st]
+    for k in ("to",):
+        v = st.get(k)
+        if v is not None and not (_on_map(v, F["size"]) or (do == "withdraw_if" and v in ("N", "S", "E", "W"))):
+            errors.append(f"{where}: {k} must be a hex on the map" + (" or N, S, E or W" if do == "withdraw_if" else ""))
+    if "via" in st and not (isinstance(st["via"], list) and st["via"] and all(_on_map(h, F["size"]) for h in st["via"])):
+        errors.append(f"{where}: via must be a list of hexes on the map")
+    if st.get("target") is not None and st["target"] not in theirs:
+        errors.append(f"{where}: target {st['target']!r} is not an enemy unit")
+    for key in ("when", "until"):
+        if key in st:
+            errors += _trigger_errors(d, F, st[key], f"{where} {key}")
+    return errors
+
+
+def _trigger_errors(d: Data, F: dict, w, where: str) -> list[str]:
+    """A trigger, a list of them (any), or {all: [...]} (every one)."""
+    if isinstance(w, list):
+        return [e for x in w for e in _trigger_errors(d, F, x, where)] if w else [f"{where}: an empty list"]
+    if not isinstance(w, dict):
+        return [f"{where}: must be a trigger, a list of them or all: [...]"]
+    if "all" in w:
+        return _trigger_errors(d, F, w["all"], where) if isinstance(w["all"], list) and len(w) == 1 else [f"{where}: all takes a list, alone"]
+    keys = [k for k in w if k in PLAN_TRIGGERS]
+    if len(keys) != 1 or any(k not in PLAN_TRIGGERS and k != "side" for k in w) or ("side" in w and keys != ["lost"]):
+        return [f"{where}: one of {', '.join(PLAN_TRIGGERS)} (side only with lost)"]
+    k, v = keys[0], w[keys[0]]
+    ok = {"exchange": lambda: isinstance(v, int) and v >= 1,
+          "phase": lambda: v in {p["name"] for p in F.get("phases") or []},
+          "light": lambda: v in (d.weather.get("light") or {}).get("levels", {}) and v != "day",
+          "pinned": lambda: isinstance(v, str),
+          "broken": lambda: v in _names_of(F, None),
+          "lost": lambda: isinstance(v, (int, float)) and 0 < v <= 100,
+          "outflanked": lambda: v is True}[k]()
+    return [] if ok else [f"{where}: {k} {v!r} is not valid"]
 
 
 def _pursuit_errors(commander: dict) -> list[str]:

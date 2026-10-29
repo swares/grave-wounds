@@ -1,0 +1,44 @@
+# Each side's plan for the enemy commander, by battlefield (docs/units.md, Plans): our reading of
+# what each side meant to do, from the accounts, kept apart from orders.yaml (what the sources say
+# a unit did). A plan applies to the armies as drawn up, to every side the commander plays.
+#   source: where the plan is read from; note: the plan in a line.
+#   sides: {0 or 1 (the battlefield's sides, in order): [steps]}. A step:
+#     units: names of the side's units; do: the task, with its keys:
+#       advance_to {to: hex}: to a line, then hold it;
+#       pin {target: enemy unit}: keep it under fire from as far off as it can, never closing;
+#       envelop {via: [hexes], target (optional)}: go round by the waypoints, then attack;
+#       commit {to (optional): hex}: out of the reserve (to that hex, as plugging a gap);
+#       withdraw_if {to: hex or N, S, E, W}: fall back there (hold it) or leave by that edge.
+#     when: when it starts (from the first exchange if left out); until (optional): when it ends.
+#     A trigger: {exchange: n}, {phase: name}, {light: dusk or night}, {pinned: enemy unit},
+#     {broken: unit}, {lost: % of the step's units' starting men (side: true, the whole side's)},
+#     {outflanked: true}; a list of them (any), or {all: [...]} (every one).
+# Hexes and loss shares are ours unless the note says the account gives them.
+
+cowpens-1781:
+  source: "https://npplan.com/parks-by-state/south-carolina-national-parks/park-at-a-glance-cowpens-national-battlefield/the-battle-of-cowpens-cowpens-national-battlefield/"
+  note: >-
+    The double envelopment: as the Continentals turn and charge, Washington's horse come in from
+    behind the rise onto the British line (the militia's return round the other flank is left out:
+    a unit cannot pass through its own lines, and the militia line is too wide to go round the
+    Continentals on this map). The route east of the fight is ours.
+  sides:
+    0:
+      - units: ["Washington's horse"]
+        do: envelop
+        via: [[100, 24], [100, 72]]
+        target: "7th Fusiliers"
+        when: {phase: "About-face and bayonets"}
+
+snipe-1942:
+  source: "project doc snipe-research, B3: Rommel's evening attack withdrew to 800 yd and fired until dark ([S]: Miskimon, Warfare History Network)"
+  note: >-
+    Rommel's evening tanks, once the guns have hurt them, draw back and fire from range until
+    dark rather than driving into the hollow. Sourced for the German tanks only. The loss that
+    turns them (a tenth) is ours; the account gives 9 knocked out by 239 Battery before they drew back.
+  sides:
+    1:
+      - units: ["German tanks of the evening attack, from the south-west"]
+        do: pin
+        target: "C Company's six-pounders (south-west)"
+        when: {lost: 10}

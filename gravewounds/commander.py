@@ -45,6 +45,7 @@ def _command(d: Data, units: list, side, where: tuple, stance: str, memory: dict
     us, orders = _hook_up(d, us, side, (goal, known, exchange, stance))
     us, orders = _riders(d, us, side, (goal, known, exchange, stance), orders)
     _hold_back(d, us, side, known)
+    orders += plan_steps(d, us, side, (field, known, exchange))
     orders += _commit(d, us, side, known, memory, stance)
     if stance == "hold":
         orders += _fix_lines(d, us, side, (field, known, exchange))
@@ -1130,10 +1131,13 @@ def _seen(d: Data, us: list, side, field: dict | None, e: dict) -> bool:
 
 
 def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
-    """One unit's order, or None (it holds). ctx: (size, field, stance, known, exchange)."""
+    """One unit's order, or None (it holds). ctx: (size, field, stance, known, exchange). A unit
+    that has gone round on a plan's envelopment attacks, whatever its side's stance."""
     u, C = us[i], d.units["commander"]
+    if _enveloping(u):
+        ctx = (ctx[0], ctx[1], "attack", ctx[3], ctx[4])
     obj = objective(ctx[1])
-    t = target(d, us, i, ctx[3], ctx[1])
+    t = _focus(us, i, ctx[3], target(d, us, i, ctx[3], ctx[1]))
     if u["state"] != "steady":
         return _unsteady(d, us, i, t)
     away = _withdraw_order(d, us, i, ctx)
@@ -1149,6 +1153,9 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
     first = _pursuit(d, us, i, ctx) or _sapper_order(d, us, i, t, ctx) or _route_order(d, us, i, ctx)   # in that order
     if first is not None:
         return first
+    task = _task_order(d, us, i, t, ctx)
+    if task is not None:
+        return task[0]
     if (obj is not None or ctx[2] == "hold") and _digs(d, us, i, ctx):
         return {"act": "dig", "target": t}
     if t is None and obj is None:
@@ -1192,6 +1199,219 @@ def _move_order(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> dict | 
     o0 = _best(d, us, i, t, ctx) if objective(ctx[1]) is None else _for_objective(d, us, i, t, ctx)
     o = _narrowed(d, us, i, t, ctx, o0) or o0
     return o if t is None else _last_seen(o, ctx[3], t, ctx[4])
+
+
+# ---------- plans (data/plans.yaml; docs/units.md, Plans) ----------
+TASK_KEYS = ("task", "focus", "goal")             # what a running step puts on its unit
+
+
+def plan_steps(d: Data, us: list, side, ctx: tuple) -> list:
+    """Start and end the side's plan steps (field plan: {side: [steps]}), in order, for each of
+    their units standing: a step starts when its `when` fires (at once without one) and ends when
+    its `until` fires or its task is done; a unit runs one step at a time, a later one replacing
+    it. A step starts once for each unit (its index kept in the unit's `steps`). ctx: (field,
+    known, exchange). -> orders [{unit, act: plan, step, do, start, why}] for the log."""
+    field = ctx[0]
+    out = []
+    for k, st in enumerate(((field or {}).get("plan") or {}).get(side) or []):
+        for i in range(len(us)):
+            u = us[i]
+            if u["side"] != side or u["name"] not in st["units"] or u["men"] <= 0 or u["state"] in ROUTED:
+                continue
+            run = u.get("task")
+            if run and run["step"] == k:
+                why = _task_done(us, i, run) or (_fires(d, us, (i, st), st["until"], ctx) if st.get("until") else None)
+                if why:
+                    _end_task(us, i)
+                    out.append({"unit": i, "act": "plan", "step": k, "do": st["do"], "start": False, "why": why})
+                continue
+            if k in (u.get("steps") or []):
+                continue
+            why = _fires(d, us, (i, st), st["when"], ctx) if st.get("when") else {"start": True}
+            if why:
+                if run:
+                    _end_task(us, i)
+                _start_task(us, i, k, st, ctx[2])
+                out.append({"unit": i, "act": "plan", "step": k, "do": st["do"], "start": True, "why": why})
+    return out
+
+
+def _start_task(us: list, i: int, k: int, st: dict, exchange) -> None:
+    """Step k's task on unit i: withdraw_if gives it the account's withdrawal from now; envelop
+    a route and its target; pin its target; advance_to its line; commit releases it from the
+    reserve (to: the hex it goes to, as a unit plugging a gap). Any task but withdraw_if takes
+    it out of the reserve."""
+    u, do = us[i], st["do"]
+    u["steps"] = [*(u.get("steps") or []), k]
+    if do != "withdraw_if":
+        u["reserve"] = False
+    if do == "commit":
+        if st.get("to"):
+            u["plug"] = list(st["to"])
+        return
+    u["task"] = {"step": k, "do": do}
+    if do == "withdraw_if":
+        u["withdraw"] = {"at": exchange or 0, "to": st["to"] if isinstance(st["to"], str) else list(st["to"])}
+    elif do == "envelop":
+        u["via"] = [list(h) for h in st["via"]]
+    elif do == "advance_to":
+        u["goal"] = list(st["to"])
+    if st.get("target") and do in ("envelop", "pin"):
+        u["focus"] = st["target"]
+
+
+def _end_task(us: list, i: int) -> None:
+    """Unit i's running step ends: its task, target and line go (an envelopment's route and a
+    withdrawal not yet done with it)."""
+    u = us[i]
+    do = u["task"]["do"]
+    for key in TASK_KEYS:
+        u.pop(key, None)
+    if do == "envelop":
+        u.pop("via", None)
+    elif do == "withdraw_if":
+        u.pop("withdraw", None)
+
+
+def _task_done(us: list, i: int, run: dict) -> dict | None:
+    """Why unit i's running task is done, or None: a withdrawal is over (at its hex, holding),
+    its target has broken or is gone, an envelopment with no target has gone round."""
+    u = us[i]
+    if run["do"] == "withdraw_if" and not u.get("withdraw"):
+        return {"done": True}
+    if u.get("focus") and _named(us, u["focus"], u["side"], False) is None:
+        return {"broken": u["focus"]}
+    if run["do"] == "envelop" and not u.get("focus") and not u.get("via"):
+        return {"done": True}
+    return None
+
+
+def _named(us: list, name: str, side, ours: bool) -> int | None:
+    """The index of the unit of that name, of side (ours) or not, still standing; or None."""
+    return next((j for j, e in enumerate(us) if e["name"] == name and (e["side"] == side) == ours and e["men"] > 0 and e["state"] not in ROUTED), None)
+
+
+def _fires(d: Data, us: list, ist: tuple, w, ctx: tuple) -> dict | None:
+    """The trigger that fires for unit i of step st, or None: w is a trigger, a list of them (the
+    first that fires) or {all: [...]} (every one)."""
+    if isinstance(w, list):
+        return next((x for x in w if _fires(d, us, ist, x, ctx)), None)
+    if "all" in w:
+        return w if all(_fires(d, us, ist, x, ctx) for x in w["all"]) else None
+    return w if _trigger(d, us, ist, w, ctx) else None
+
+
+def _trigger(d: Data, us: list, ist: tuple, w: dict, ctx: tuple) -> bool:
+    """One trigger for unit i of step st. ctx: (field, known, exchange)."""
+    (i, st), (field, known, exchange) = ist, ctx
+    u = us[i]
+    if "exchange" in w:
+        return (exchange or 0) >= w["exchange"]
+    if "phase" in w:
+        return w["phase"] in ((field or {}).get("begun") or [])
+    if "light" in w:
+        order = list(d.weather["light"]["levels"])
+        return order.index(((field or {}).get("weather") or {}).get("light") or "day") >= order.index(w["light"])
+    if "broken" in w:
+        return any(e["name"] == w["broken"] and (e["men"] <= 0 or e["state"] in ROUTED) for e in us)
+    if "pinned" in w:
+        j = _named(us, w["pinned"], u["side"], False)
+        pinning = any(x["side"] == u["side"] and (x.get("task") or {}).get("do") == "pin" and x.get("focus") == w["pinned"] for x in us)
+        return j is not None and pinning and bool(us[j]["state"] == "shaken" or us[j].get("prone") or us[j].get("hit") or us[j].get("pinned"))
+    if "lost" in w:
+        mine = [e for e in us if e["side"] == u["side"] and (w.get("side") or e["name"] in st["units"])]
+        start = sum(e["start"] for e in mine)
+        return start > 0 and 100 * sum(e["start"] - max(0, e["men"]) for e in mine) >= w["lost"] * start
+    if "outflanked" in w:
+        reach = d.units["commander"]["plans"]["flank"]
+        return any(k.isdigit() and int(k) < len(us) and us[int(k)]["side"] != u["side"] and us[int(k)]["state"] == "steady" and us[int(k)]["men"] > 0
+                   and U.arc(u["facing"], U.bearing(u["pos"], m["pos"])) != "front" and U.unit_gap(d, u, _where(us, int(k), known)) <= reach
+                   for k, m in (known or {}).items())
+    return False
+
+
+def _enveloping(u: dict) -> bool:
+    """On a plan's envelopment, its route done."""
+    return (u.get("task") or {}).get("do") == "envelop" and not u.get("via")
+
+
+def _focus(us: list, i: int, known: dict | None, t: int | None) -> int | None:
+    """The plan's target for unit i (focus, by name) if it stands and its side knows of it, else t."""
+    name = us[i].get("focus")
+    if not name:
+        return t
+    j = _named(us, name, us[i]["side"], False)
+    return j if j is not None and (known is None or str(j) in known) else t
+
+
+def _task_order(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> tuple | None:
+    """(order or None) for a unit on a plan's advance_to or pin; None for any other unit (the
+    rest of the chain orders it). advance_to: to its line (within commander.route.reach), then
+    it stays there facing its target. pin: see _pin_order."""
+    u = us[i]
+    do = (u.get("task") or {}).get("do")
+    if do == "advance_to":
+        size, field, stance, known, exchange = ctx
+        if U.hdist(u["pos"], u["goal"]) > d.units["commander"]["route"]["reach"]:
+            o = _toward(d, us, i, t, (size, {**(field or {}), "objective": u["goal"], "objective_radius": None}, stance, known, exchange), "advance")
+            if o is not None:
+                return ({**o, "line": True},)
+        return (_hold_line(d, us, i, t, known),)
+    if do == "pin":
+        return (None,) if t is None else (_pin_order(d, us, i, t, ctx),)
+    return None
+
+
+def _hold_line(d: Data, us: list, i: int, t: int | None, known: dict | None) -> dict | None:
+    """Staying where it is, facing its target if any (going to ground under fire as any unit)."""
+    if t is None:
+        return None
+    u = us[i]
+    shooter = "range" in d.weapons[u["weapon"]] or bool(U._gun_of(d, u))
+    return _stay(d, us, i, t, keep_front(u, U.bearing(u["pos"], _where(us, t, known)["pos"])), shooter)
+
+
+def _pin_order(d: Data, us: list, i: int, t: int, ctx: tuple) -> dict | None:
+    """Pinning target t: a unit that shoots (its weapon or main gun) goes to the hex it can reach
+    furthest from t from which it can still hit it, and stays there firing (drawing back if it
+    is closer); none in reach, it moves nearer. A unit that cannot shoot stands just beyond t's
+    charge (t's move and a hex), nearest it, in sight of it. It never closes to contact."""
+    size, field, stance, known, exchange = ctx
+    u, tu = us[i], _where(us, t, known)
+    shooter = "range" in d.weapons[u["weapon"]] or bool(U._gun_of(d, u))
+    if _stuck(u):
+        return _hold_line(d, us, i, t, known)
+    free = {**u, "prone": False} if u.get("prone") else u
+    base = [free if k == i else x for k, x in enumerate(us)]
+    foes = {k for k, j in U.occupancy(d, base).items() if base[j]["side"] != u["side"]}
+    keep = U.allowance(d, tu) + 1
+    cands = []
+    for h, c in reachable(d, base, i, size, U.allowance(d, free), field).items():
+        h, dist = list(h), U.hdist(list(h), tu["pos"])
+        if shooter:
+            ok = dist >= 1 and ((U.field_range(d, u["weapon"], dist) is not None and _sees_to(d, field, u, (h, tu["pos"], dist)))
+                                or _gun_in_range(d, field, u, (h, tu["pos"], dist))) and U.clear_sight(d, field, h, tu["pos"], dist)
+            rank = -dist                          # furthest first
+        else:
+            ok = U.unit_gap(d, {**u, "pos": h}, tu) > keep and U.clear_sight(d, field, h, tu["pos"], dist)
+            rank = dist                           # nearest first
+        if ok:
+            cands.append((rank, c, h[1], h[0]))
+    for _, c, row, col in sorted(cands):
+        h = [col, row]
+        if h == list(u["pos"]):
+            return _hold_line(d, us, i, t, known)
+        f = U.bearing(h, tu["pos"])
+        fs = [g for g in _facings(f, u["facing"]) if c + _turning(d, free, g) <= U.allowance(d, free) and not _touches(d, {**u, "pos": h, "facing": g}, foes)]
+        if not fs:
+            continue
+        m, g = _legal_facing(d, base, i, (h, fs[0], c, False), (size, field, foes))
+        if m["ok"]:
+            return _rising(u, {"act": "move", "target": t, "pos": h, "facing": g, "cost": m["cost"], "pin": True})
+    if cands:
+        return _hold_line(d, us, i, t, known)
+    o = _toward(d, us, i, t, (size, {**(field or {}), "objective": list(tu["pos"]), "objective_radius": None}, stance, known, exchange), "advance")
+    return {**o, "pin": True} if o is not None else _hold_line(d, us, i, t, known)
 
 
 def _withdraw_order(d: Data, us: list, i: int, ctx: tuple) -> dict | None:
@@ -1805,6 +2025,8 @@ def may_charge(d: Data, u: dict, t: dict, stance: str = "attack", storm: bool = 
     stance (charge_odds), counting the friends touching it (backing: their men times attack %)."""
     if ("range" in d.weapons[u["weapon"]] and not storm) or u["state"] != "steady":
         return False
+    if _enveloping(u) and U.arc(t["facing"], U.bearing(t["pos"], u["pos"])) != "front":
+        return True                               # gone round on a plan: it charges a flank or rear at any odds
     mine = u["men"] * U.quality(d, u["quality"])["attack"] + backing
     theirs = t["men"] * U.quality(d, t["quality"])["attack"]
     return 100 * mine >= d.units["commander"]["charge_odds"][stance].get(u["quality"], 100) * theirs

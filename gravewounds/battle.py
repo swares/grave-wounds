@@ -118,12 +118,23 @@ def set_up(d: Data, fid: str) -> dict:
          "stageNo": -1, "waiting": [], "start": None, "entry": F.get("entry") or None, "seq": 1, "ends": F.get("ends") or None}
     bt["size"] = list(field["size"])
     field["lifts"] = []
+    plan = side_plan(F)
+    if plan:
+        field["plan"] = plan
     for u in F.get("units", []):
         unit = make_unit(d, {**u, "side": F["sides"][u["side"]], "asFought": True}, bt["seq"], bt["table"])
         bt["seq"] += 1
         stand_or_fly(bt, unit, u.get("lands"))
     hold_for_stages(bt, F.get("phases"))
     return bt
+
+
+def side_plan(F: dict, off: tuple = ()) -> dict | None:
+    """A battlefield's plan (data/plans.yaml) for its armies as drawn up, by side name: {side:
+    [steps]}, leaving out the sides in off (indices whose plan the GM has switched off)."""
+    sides = ((F.get("plan") or {}).get("sides") or {})
+    out = {F["sides"][int(k)]: steps for k, steps in sides.items() if int(k) not in off and steps}
+    return out or None
 
 
 def _fielded(bt: dict, k: int) -> bool:
@@ -237,6 +248,7 @@ def advance_stages(d: Data, bt: dict) -> dict:
     while bt["stageNo"] + 1 < len(bt["stages"]) and _phase_due(bt, bt["stages"][bt["stageNo"] + 1]):
         bt["stageNo"] += 1
         bt.setdefault("stageBegan", {})[bt["stageNo"]] = bt["exchange"]
+        bt["field"]["begun"] = [*(bt["field"].get("begun") or []), bt["stages"][bt["stageNo"]]["name"]]   # for plans' phase triggers
         out["begun"].append(bt["stageNo"])
         _light_of_phase(d, bt, bt["stages"][bt["stageNo"]], out)
     keep = []

@@ -237,8 +237,10 @@ legend{padding:0}
         <span>Enemy commander:</span>
         <label for="sel-ai0" id="ai-label0">First side</label>
         <select class="small" id="sel-ai0" style="width:auto" title="A scripted commander moves this side at the start of its move, by its units' quality: attacking, it closes with the enemy; holding, it stands and only charges what it can reach"></select>
+        <label class="check" id="lbl-plan0" hidden title="The battlefield's plan for this side (data/plans.yaml): the commander gives its units the plan's tasks when their triggers come, as the accounts have the side meaning to fight"><input type="checkbox" id="chk-plan0" checked> follow the plan</label>
         <label for="sel-ai1" id="ai-label1">Second side</label>
         <select class="small" id="sel-ai1" style="width:auto" title="A scripted commander moves this side at the start of its move, by its units' quality: attacking, it closes with the enemy; holding, it stands and only charges what it can reach"></select>
+        <label class="check" id="lbl-plan1" hidden title="The battlefield's plan for this side (data/plans.yaml): the commander gives its units the plan's tasks when their triggers come, as the accounts have the side meaning to fight"><input type="checkbox" id="chk-plan1" checked> follow the plan</label>
         <button class="small" id="btn-run" hidden title="With the commander on both sides: let it play on, a move at a time, until you stop it or the battle ends (a side with nothing left standing, the objective held a while, or the exchange limit)">Run</button>
         <button class="small" id="btn-ai-undo" hidden title="Put its units back where they began this move, to move them yourself">Undo its orders</button>
         <button class="small" id="btn-ai-go" hidden title="Let the commander order its side for this move">Give its orders</button>
@@ -552,6 +554,8 @@ function drawUp(B, fid){                           // the battlefield's armies a
   A.units.forEach(u => standOrFly(S, newUnit({ ...u, side: B.sides[u.side], asFought: true }), u.lands));   // as fought: no breakdown roll unless the battlefield gives one (reliability)
   const crowded = A.chosen.length ? refit() : [];
   holdForStages(S, A.phases);
+  const plan = sidePlan(B, S.planOff || []);
+  if (plan) S.field.plan = plan; else delete S.field.plan;
   S.drawnUp = fid;                                  // the armies as drawn up: Beat history scores this battle
   S.drawnAccount = A.chosen.length ? A.chosen.join("; ") : null;   // another account than the game's own: history is scored, not the commander's bar
   S.sel = S.units[0]?.id ?? null;
@@ -1401,6 +1405,7 @@ function aiMemory(k){                             // side k's commander's memory
 }
 function moveText(who, them, o, up){              // a move order's line: stepping aside for formed men, or toward the target
   if (o.why === "give_way") return `${who} ${up}step aside ${nOf(o.cost, "hex", "hexes")} to let the formed men behind them through.`;
+  if (o.pin) return `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} to keep ${them} under fire from as far off as they can.`;
   let past = "";
   if (o.through_screen) past = ", past their own skirmishers";
   else if (o.pursue) past = ", in pursuit";
@@ -1408,11 +1413,33 @@ function moveText(who, them, o, up){              // a move order's line: steppi
   return `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} toward ${them}${past}.`;
 }
 const COMMIT_WHY = { broke: "one of its units has broken", gap: "the enemy is close", exploit: "to exploit an enemy unit that broke", stall: "the attack has stalled" };
+function triggerText(w){                          // why a plan step started or ended
+  if (Array.isArray(w)) return w.map(triggerText).join(" or ");
+  if (w.all) return w.all.map(triggerText).join(" and ");
+  if (w.start) return "from the start";
+  if (w.done) return "its task is done";
+  if ("exchange" in w) return `exchange ${w.exchange} has come`;
+  if ("phase" in w) return `${w.phase} has begun`;
+  if ("light" in w) return `it is ${FD.weather.light.levels[w.light].name.toLowerCase()}`;
+  if ("broken" in w) return `${w.broken} have broken or are gone`;
+  if ("pinned" in w) return `${w.pinned} are pinned`;
+  if ("lost" in w) return `${w.side ? "the side has" : "they have"} lost ${w.lost}% of their men`;
+  if ("outflanked" in w) return "the enemy is round their flank";
+  return "";
+}
+function planOrderText(who, o){                   // a plan step starting or ending
+  const st = S.field?.plan?.[S.units[o.unit]?.side]?.[o.step] || {};
+  if (!o.start) return `Plan: ${who} have done with their task (${triggerText(o.why)}).`;
+  const what = { advance_to: `advance to their line at ${hexName(st.to || [0, 0])}`, pin: `keep ${st.target} under fire from as far off as they can`,
+    envelop: st.target ? `go round to strike ${st.target} in the flank` : "go round by their route", commit: "are released from the reserve", withdraw_if: "fall back, as planned" }[o.do];
+  return `Plan: ${who} ${what} (${triggerText(o.why)}).`;
+}
 const ORDER_TEXT = {                              // (who, them, o, up, facing) -> the order's line
+  plan: (who, them, o) => planOrderText(who, o),
   commit: (who, them, o) => `${who} are committed from the reserve: ${COMMIT_WHY[o.why] || o.why}${o.at ? "; they go to plug the gap at " + hexName(o.at) + ", where it stood" : ""}.`,
   charge: (who, them, o, up) => `${who} ${up}charge ${them}${throughText(o)}.`,
   move: (who, them, o, up) => moveText(who, them, o, up),
-  advance: (who, them, o, up, facing) => (o.gap ? `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} to plug the gap${facing}.` : `${who} ${up}advance ${nOf(o.cost, "hex", "hexes")} on the objective${facing}.`),
+  advance: (who, them, o, up, facing) => (o.gap ? `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} to plug the gap${facing}.` : o.line ? `${who} ${up}advance ${nOf(o.cost, "hex", "hexes")} toward their line, as planned${facing}.` : o.pin ? `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} nearer ${them}, to bring them under fire.` : `${who} ${up}advance ${nOf(o.cost, "hex", "hexes")} on the objective${facing}.`),
   leave: (who) => `${who} withdraw off the field, as ordered.`,
   fall_back: (who, them, o, up, facing) => (o.gap ? `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} to plug the gap${facing}.` : `${who} ${up}fall back ${nOf(o.cost, "hex", "hexes")} toward the objective${facing}.`),
   search: (who, them, o, up) => `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} forward to find the enemy (none in sight, no objective).`,
@@ -1486,6 +1513,14 @@ function setAi(k, v){                             // side k: "" (the GM moves it
   if (bothAi()) S.msg += " The commander now plays both sides: press Next for each move, or Run to let it play on.";
   render();
 }
+function setPlan(k, on){                          // set-up: side k follows the battlefield's plan, or not
+  if (S.phase !== "setup" || !S.drawnUp) return;
+  S.planOff = (S.planOff || []).filter(x => x !== k).concat(on ? [] : [k]);
+  const plan = sidePlan(FD.fields[S.drawnUp], S.planOff);
+  if (plan) S.field.plan = plan; else delete S.field.plan;
+  S.msg = on ? `The commander will follow the battlefield's plan for ${S.sides[k]}.` : `The commander will not follow the battlefield's plan for ${S.sides[k]}.`;
+  render();
+}
 function renderAi(){
   const fought = S.fieldId ? playStances(S.fieldId) : null, asFought = (k, st) => (fought && (FD.fields[S.fieldId]?.objective || FD.fields[S.fieldId]?.stances) && fought[k] === st ? " (as fought)" : "");
   [0, 1].forEach(k => {
@@ -1494,6 +1529,10 @@ function renderAi(){
     el.innerHTML = opts.map(([v, t]) => `<option value="${v}">${esc(t)}</option>`).join("");
     el.value = aiOf(k) || "";
     el.disabled = S.phase === "over";
+    const has = !!(S.drawnUp && FD.fields[S.drawnUp]?.plan?.sides?.[k]?.length);
+    $("#lbl-plan" + k).hidden = !has;
+    $("#chk-plan" + k).checked = !(S.planOff || []).includes(k);
+    $("#chk-plan" + k).disabled = S.phase !== "setup";
   });
   const undo = aiMoving() && aiThisMove() && !!S.aiDone.undo;
   $("#btn-ai-undo").hidden = !undo;
@@ -2632,7 +2671,7 @@ function renderMap(){
   $("#map-scale").textContent = `${SIZE[0]} × ${SIZE[1]} hexes · ${fmtM(FD.units.hex_m)} a hex · an exchange is about a minute`;
   $("#hex-size").textContent = fmtM(FD.units.hex_m);
   $("#unit-legend").innerHTML = unitLegend();
-  const stage = stageText();
+  const stage = [stageText(), planText()].filter(Boolean).join("<br>");
   $("#stage").hidden = !stage; $("#stage").innerHTML = stage;
   const M = marks();
   const sized = S.units.some(u => u.size);          // size marks need a unit with a size: say so rather than tick a box that draws nothing
@@ -3368,6 +3407,15 @@ function stageText(){                             // the strip above the map: th
   const next = nx ? ` <span class="muted">${esc(nextText)}</span>` : "";
   return `<b>Phase ${i + 1} of ${list.length}: ${esc(st.name)}.</b> ${esc(st.note || "")}${late}${next}`;
 }
+const TASK_WORD = { advance_to: "to their line", pin: "pinning", envelop: "going round", commit: "committed", withdraw_if: "falling back" };
+function planText(){                              // the strip: each side's plan, in set-up its steps, in the battle the steps running
+  const P = S.field?.plan;
+  if (!P) return "";
+  const sides = Object.keys(P);
+  if (S.phase === "setup") return "<b>Plans:</b> " + esc(sides.map(s => `${s}, ${nOf(P[s].length, "step")}: ` + P[s].map(st => `${st.units.join(", ")} ${TASK_WORD[st.do]}${st.target ? " (" + st.target + ")" : ""}`).join("; ")).join(" · "));
+  const running = S.units.filter(u => u.task && u.men > 0 && u.state !== "fled").map(u => `${u.name} ${TASK_WORD[u.task.do]}${u.focus ? " (" + u.focus + ")" : ""}`);
+  return running.length ? "<b>Plans running:</b> " + esc(running.join("; ")) : "";
+}
 function bringOn(u, k){                           // a unit joining during the battle: at its side's entry edge, facing into the map; it moves next exchange
   const facing = EDGE_FACING[entryEdge(T(), k)];
   for (const width of entryWidths(SIZE, u.width)){         // as wide as asked, else narrower and deeper until it fits
@@ -3412,7 +3460,9 @@ function newBattle(){                            // back to set-up: the travel m
     if (fid !== (S.from.battlefield || null)) loadBattlefield(fid || "", false);
   }
   else {
+    const off = S.planOff;                          // which sides' plans the GM switched off stays so
     freshState();
+    S.planOff = off;
     if (fid) loadBattlefield(fid, true);
   }
   S.voice = null;                                 // a new battle's narrator writes as its war again
@@ -3568,6 +3618,8 @@ function init(){
   $("#sel-sap").onchange = e => setSap(e.target.value);
   $("#sel-ai0").onchange = e => setAi(0, e.target.value);
   $("#sel-ai1").onchange = e => setAi(1, e.target.value);
+  $("#chk-plan0").onchange = e => setPlan(0, e.target.checked);
+  $("#chk-plan1").onchange = e => setPlan(1, e.target.checked);
   $("#btn-run").onclick = runToggle;
   $("#btn-ai-undo").onclick = aiUndo;
   $("#btn-ai-go").onclick = aiAgain;
