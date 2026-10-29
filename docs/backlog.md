@@ -198,17 +198,16 @@ When an item is done, delete it here and note it in the pull request that closes
   battlefield marks with a defensive fire plan (`df: true`) may fire, unseen, within 12 hexes of
   its own side's start positions (Pork Chop's flash fire: 4 to 12 of 12). Given to every
   defender, the fire plan put Tumbledown back to 0 (and Grozny 2 to 7, Hue and Chipyong-ni -1), so
-  it is marked by battlefield where a source gives one. 435 of 576 runs now match the battle as
+  it is marked by battlefield where a source gives one. 443 of 576 runs now match the battle as
   fought (Mojkovac and Topolčani added; reliability, 423 to 422; a bayonet front against horse,
   Albuera 7 to 12, Lundy's Lane 1 to 0; a closing volley before a charge home, both Redans +1;
   Cassino's sangars, the Monastery 0 to 3; trenches against shellfire at a fifth of lying, after
   Evans, and Snipe's six-pounders with no HE round, 431 to 435: Snipe 0 to 3, Babuna 6 to 10, the
   Monastery 3 to 6, Pork Chop 10 to 12, Mojkovac 11 to 12, but Tumbledown 8 to 3 and 73 Easting 4
-  to 0; project doc "snipe-study"). Still behind: Snipe 3 of 12, Rommel's evening tanks driving
+  to 0; project doc "snipe-study"; proof armour takes no harm, a T-72's frontal hit neither
+  immobilising an M1A1 nor putting its gun out, 435 to 443: 73 Easting 0 to 8). Still behind: Snipe 3 of 12, Rommel's evening tanks driving
   into the hollow (in fact they drew back to 800 yards); Tumbledown 3, the Argentines in their
-  trenches outlasting the British guns, and their mortars then hitting the Guards; 73 Easting 0,
-  the Iraqi infantry in trenches outlasting the Bradleys' and tanks' fire (in fact the position
-  fell in 23 minutes); Chipyong-ni 10 of 12; Lundy's Lane 0, studied (project doc "lundys-lane-study"):
+  trenches outlasting the British guns, and their mortars then hitting the Guards; Chipyong-ni 10 of 12; Lundy's Lane 0, studied (project doc "lundys-lane-study"):
   Ripley's brigade stops 140 m off the guns and trades fire ("a shooter never charges"); made to
   storm them, it breaks 7 men down to the per-man rule for losing the exchange, and capping that
   rule by share cost Agincourt more than it gained. A closing volley before a charge home is

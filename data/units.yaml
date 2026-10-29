@@ -563,7 +563,8 @@ vehicles:
   # A vehicle unit's morale checks count whole vehicles lost (knocked out or abandoned), not
   # crewmen hit in vehicles still fighting: its losses are its crews in vehicles gone. Design choice.
   # A battlefield may give a vehicle unit its own armour (`armour`). Composite armour (the M1A1
-  # Abrams): as heavy, but a tank gun's round from its front does not knock one out (`front`):
+  # Abrams): as heavy, but a tank gun's round from its front does not knock one out (`front`), nor
+  # immobilise one or put its gun out (a round that cannot get through does no harm):
   # the GAO found no T-72 round reported through an M1A1's front, even from 2,000 m, and no
   # Abrams destroyed by enemy fire in the Gulf War (NSIAD-92-94). Flank and rear as heavy.
   armour:

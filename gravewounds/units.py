@@ -3460,7 +3460,7 @@ def _gun_at_vehicle(d: Data, us: list, shot: tuple, gun: dict, ctx: tuple) -> li
     p = kill_chance(d, us[j], "gun", h, t)
     kills = sum(1 for _ in range(hits) if rng.randint(1, 100) <= p)
     k = knock_out(d, us, j, kills, (table, rng), acc)
-    harm = _harm(d, us[j], hits - k["knocked"], acc[0][j], rng)
+    harm = _harm(d, us[j], 0 if p == 0 else hits - k["knocked"], acc[0][j], rng)   # proof armour (composite from the front) takes no harm either
     acc[2][i] += k["crew"]
     line = {"kind": "tankfire", "att": i, "dfd": j, "dist": dist, "rounds": rounds, "hit": hits, "knocked": k["knocked"], "crew": k["crew"], "struck": k["struck"], "kill": p,
             **_harm_line(harm), **_riders_line(k)}

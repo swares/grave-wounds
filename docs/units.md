@@ -1886,7 +1886,8 @@ crews (4 a tank, 3 an infantry fighting vehicle or carrier).
   rolls a wound as one hit by shellfire; the rest have bailed out. Vehicle units check morale
   like any other, but count whole vehicles lost, not crewmen hit in vehicles still fighting.
 - **Composite armour** (`armour: composite` on a battlefield's unit: the M1A1s at 73 Easting
-  and Fallujah): as heavy, but a main gun's round from its front does not knock one out. The
+  and Fallujah): as heavy, but a main gun's round from its front does not knock one out, nor
+  immobilise one or put its gun out (it does not get through). The
   GAO found no T-72 round reported through an M1A1's front, even from 2,000 m, and no Abrams
   destroyed by enemy fire in the war. From the flank or rear it is heavy armour.
 - **Riders.** Infantry fighting vehicles carry 7 men each and carriers 10. A foot unit of the
@@ -3254,7 +3255,10 @@ from about 72.2 to 74.2 Easting on the military grid.
 - A **sandstorm**: sight cut to 440 yards (400 m), but thermal sights see to about 985 yards
   (900 m) through it; a strong north-westerly; no aircraft fly. Daylight, late afternoon.
 - Eagle Troop's M1A1s have the thermal fire control and **composite armour**; the T-72s the
-  war's laser rangefinder.
+  war's laser rangefinder. Their rounds strike the M1A1s' fronts and do no harm: in self-play,
+  before that, 19 hits at 390 m immobilised five tanks and put three guns out, and the troop
+  broke in four exchanges (0 of 12); now 8 of 12 match, the troop losing about 6% to the
+  Iraqis' 32%.
 - Coalition (veteran, thermal sights): Eagle Troop of the 2nd Armored Cavalry Regiment, its
   nine M1A1 **tanks** in two groups at the front and its M3 Bradleys (**infantry fighting
   vehicles**) in two scout platoons on the flanks behind.
