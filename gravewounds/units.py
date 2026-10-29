@@ -1371,7 +1371,12 @@ def cornered(d: Data, units: list, i: int, after: dict) -> bool:
     u = units[i]
     if not d.units["rout"].get("surrender") or u.get("fights_on") or after["state"] == "fled" or list(after["pos"]) != list(u["pos"]):
         return False
-    return in_contact(d, units, occupancy(d, units), i)
+    foes = [j for j in _adjacent_units(d, units, occupancy(d, units), i) if units[j]["side"] != u["side"]]
+    if not foes:
+        return False
+    if not d.units["rout"].get("outnumbered"):
+        return True
+    return sum(units[j]["men"] for j in foes if not _out(units[j])) >= u["men"]   # the enemy touching it at least as many as it has standing
 
 
 def surrender(u: dict, quarter_pct: int) -> dict:

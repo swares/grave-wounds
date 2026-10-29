@@ -211,7 +211,13 @@ defeated sides at Towton and Agincourt lost far more men in flight than in the p
 
 **Cornered** (`rout.surrender`). A broken unit that cannot run (no clear ground back, so it
 would stand where it is) with an enemy touching it gives up at the start of the exchange,
-rather than being struck again and again. The war's quarter % of its men standing
+rather than being struck again and again, but only when the enemy units touching it (not
+broken) have at least as many men as it has standing (`rout.outnumbered`); otherwise it stands
+broken and is struck. At Tumbledown Left Flank (83 men) gave itself up to three Argentine
+engineers at its flank; attackers almost never lose men as prisoners (the capture-rate study:
+0.04% of strength), and the Rangers at Cisterna, who did, were surrounded by more men. Measured
+on 12 runs of every battlefield: 443 to 449 of 576 (Tumbledown 3 to 6, Dornach 7 to 10,
+Chipyong-ni 10 to 12; Agincourt and Mogadishu -1). The war's quarter % of its men standing
 (`heroes.quarter`, the same figure as for a man found lying out) are taken prisoner and the
 rest killed; its heroes on their feet are taken. The log says so, *After the battle* counts
 the prisoners, and a team's side offers the enemy it took to the team builder's captives, as
