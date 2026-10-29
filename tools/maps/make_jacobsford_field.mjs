@@ -12,7 +12,7 @@
 // garrison is al-Qadi al-Fadil's (80 knights with their squires, 15 chiefs with 50 men each,
 // craftsmen, who are not on the field); no source gives Saladin's numbers, so the attackers are ours, with round numbers.
 // The tell, the river, the breach and the camp are drawn to those figures, not traced from a plan.
-import { N, S, wobble, patch, speckle, groundGrid, unit, stepHex, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, at, stepHex, writeField } from "./field_lib.mjs";
 
 const COLS = 40, ROWS = 70;                   // 400 m east to west, about 600 m north to south
 const C0 = 14, C1 = 18, R0 = 22, R1 = 38;     // the castle's hexes: 50 m by about 150 m
@@ -67,21 +67,26 @@ const CROSSBOWS = { quality: "regular", weapon: "crossbow", kit: "gambeson", for
 const STORMERS = { quality: "veteran", weapon: "sword", kit: "hauberk", formation: "close", mounted: false };
 const ARCHERS = { quality: "veteran", weapon: "bow", kit: "gambeson", formation: "open", mounted: false };
 const VOLUNTEERS = { quality: "green", weapon: "spear", kit: "gambeson", formation: "close", mounted: false };
+// The storming column and the second wave go in as parties queued on the breach, a breach's width
+// (3 hexes) each: units move as rigid blocks, and one column 9 ranks deep slid off the breach onto
+// the standing wall, or caught its rear ranks on it, and never reached the garrison (0 of 12 in
+// self-play). The numbers are ours, as before; the totals are unchanged.
+const PARTIES = ["first", "second", "third", "fourth"], WAVE = ["first", "second", "third"], SE = 5;
 const units = [
   unit("Templar knights and their squires", TP, 160, KNIGHTS, [3, 15, 26]),
   unit("Sergeants (the fifteen companies)", TP, 450, SERGEANTS, [4, C0 + 1, 29]),
   unit("Crossbowmen and archers", TP, 300, CROSSBOWS, [3, C0 + 2, 33]),
-  unit("The storming column (Farrukh-Shah)", AY, 1000, STORMERS, [3, 16, 20]),
+  ...PARTIES.map((p, j) => at(`The storming column (Farrukh-Shah), ${p} party`, AY, 250, STORMERS, 3, [16, 20 - 5 * j], SE)),
   unit("Archers north of the castle", AY, 600, ARCHERS, [10, 2, 20]),
   unit("Archers across the river", AY, 400, ARCHERS, [5, 33, 36]),
-  unit("Volunteers and foot (the second wave)", AY, 1500, VOLUNTEERS, [6, 15, 8]),
+  ...WAVE.map((p, j) => at(`Volunteers and foot (the second wave), ${p} party`, AY, 500, VOLUNTEERS, 3, [20 + 4 * j, 10], SE)),
 ];
 
 writeField({
   phases: [   // an exchange is about a minute; sunrise 05:35 local solar time on 30 August 1179 (project doc "jacobsford-research")
     { name: "The wall falls", at: 1, note: "Sunrise: the second mine's fire brings down the north-east corner; the timber wall behind it catches fire in the wind, and the storming column goes in." },
     { name: "Full light", at: 25, note: "The sun is up over the Golan.", light: "day" },
-    { name: "The second wave", at: 31, note: "The volunteers and the rest of the foot come up to the breach (when is our reading).", arrive: ["Volunteers and foot (the second wave)"] },
+    { name: "The second wave", at: 31, note: "The volunteers and the rest of the foot come up to the breach (when is our reading).", arrive: WAVE.map(p => `Volunteers and foot (the second wave), ${p} party`) },
   ],
   ends: { at: 121, why: "the storm and the killing after it, a morning's work: two hours from sunrise (our reading; no source gives its length)" },
   objective: { at: [16, 30], side: 1, name: "the castle at Jacob's Ford", radius: 4 },

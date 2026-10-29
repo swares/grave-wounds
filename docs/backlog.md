@@ -200,7 +200,7 @@ When an item is done, delete it here and note it in the pull request that closes
   battlefield marks with a defensive fire plan (`df: true`) may fire, unseen, within 12 hexes of
   its own side's start positions (Pork Chop's flash fire: 4 to 12 of 12). Given to every
   defender, the fire plan put Tumbledown back to 0 (and Grozny 2 to 7, Hue and Chipyong-ni -1), so
-  it is marked by battlefield where a source gives one. 462 of 576 runs now match the battle as
+  it is marked by battlefield where a source gives one. 470 of 576 runs now match the battle as
   fought (Mojkovac and Topolčani added; reliability, 423 to 422; a bayonet front against horse,
   Albuera 7 to 12, Lundy's Lane 1 to 0; a closing volley before a charge home, both Redans +1;
   Cassino's sangars, the Monastery 0 to 3; trenches against shellfire at a fifth of lying, after
@@ -210,7 +210,8 @@ When an item is done, delete it here and note it in the pull request that closes
   immobilising an M1A1 nor putting its gun out, 435 to 443: 73 Easting 0 to 8; a cornered unit surrenders only to as many men as it has, 443
   to 449: Tumbledown 3 to 6, Dornach 7 to 10, Chipyong-ni 10 to 12, Agincourt and Mogadishu -1; plans, Snipe's evening
   German tanks pinning from range, 449 to 452: Snipe 3 to 6; plans for 73 Easting, Goose Green, Mons and the June Redan,
-  452 to 462: 73 Easting 8 to 11, Goose Green 1 to 3, Mons 10 to 12, the June Redan 7 to 10). Still behind: Snipe 6 of 12 (the evening Italian tanks
+  452 to 462: 73 Easting 8 to 11, Goose Green 1 to 3, Mons 10 to 12, the June Redan 7 to 10; Jacob's Ford's storming
+  column as four parties a breach wide, 462 to 470: Jacob's Ford 0 to 8). Still behind: Snipe 6 of 12 (the evening Italian tanks
   have no plan: the account names only the Germans drawing back; not traced since); Tumbledown 6 of 12, Left Flank walking
   into contact upright in the dark and broken at once by a handful at its flank (the flank check
   counts three men as a flanking force); Lundy's Lane 0, studied (project doc "lundys-lane-study"):
@@ -367,8 +368,10 @@ When an item is done, delete it here and note it in the pull request that closes
   breach; the mine's place at the north-east corner rests on secondary sources; Raphael's full
   excavation report (the siege, the bones, the arrowheads) and Mitchell, Nagar and Ellenblum's
   paper were not read in full; the Ayyubid ranks (amir, mamluk, halqa) are not a ladder of their
-  own; Kurdish and Persian are new tongues with estimated shares. In self-play the storming column
-  does not go in through the breach.
+  own; Kurdish and Persian are new tongues with estimated shares. The storming column goes in as
+  four parties a breach wide (8 of 12 in self-play): as one column nine ranks deep it never got
+  through. Still left out: units move as rigid blocks, so a deep unit cannot file through a gap
+  narrower than its depth (a movement rule to study).
 - **Snipe and Italy, first cut.** The El Alamein map of the northern sector (1 km, from 26 October
   1942), the Snipe battlefield (27 October, first light to dark, the 19 six-pounders by company
   sector against the German and Italian armour, 24th Armoured Brigade coming and going), a new
