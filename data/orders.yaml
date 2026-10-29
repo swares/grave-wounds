@@ -6,6 +6,8 @@
 #   fight_on: the sides (0, 1) the accounts show fighting to the end: their cornered units do not
 #     surrender (rout.surrender) but are struck as before. From the sourced ratios of killed to
 #     prisoners (the project's surrender notes); sides with no figure are left out.
+#   storm: attackers the accounts have storm one enemy unit: from exchange `at` it goes for `target`
+#     and closes and charges it (as against works), firing as it goes.
 #   withdraw: units that gave way on orders at a known time: from exchange `at` (a minute each, from the
 #     field's first) they fall back to `to`, a hex (then hold it) or a map edge (N, S, E, W: they leave
 #     the field there).
@@ -214,6 +216,8 @@ lundys-lane-1814:
   source: "https://en.wikipedia.org/wiki/Battle_of_Lundy%27s_Lane"
   hold:
     - "British guns on the crest"
+  storm:   # Miller's 21st "deployed within a few yards of the British artillery", fired a volley that "killed most of the gunners and followed up with a bayonet charge" (Wikipedia; the American Battlefield Trust): from about 21:30, our reading of the hour
+    - {unit: "Ripley's brigade (21st, 23rd, coming up)", target: "British guns on the crest", at: 150}
 lutzen-1632:
   source: "https://en.wikipedia.org/wiki/Battle_of_L%C3%BCtzen_(1632"
   hold:

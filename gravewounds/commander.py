@@ -1133,7 +1133,9 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
     """One unit's order, or None (it holds). ctx: (size, field, stance, known, exchange)."""
     u, C = us[i], d.units["commander"]
     obj = objective(ctx[1])
-    t = target(d, us, i, ctx[3], ctx[1])
+    t = _storm_target(d, us, i, ctx)
+    if t is None:
+        t = target(d, us, i, ctx[3], ctx[1])
     if u["state"] != "steady":
         return _unsteady(d, us, i, t)
     away = _withdraw_order(d, us, i, ctx)
@@ -1784,10 +1786,26 @@ def bounding(d: Data, us: list, i: int, t: int) -> bool:
     return bool(u.get("hit") or u.get("pinned") or u.get("fired_on")) and (t is None or not us[t].get("pinned"))   # fired on, even if no one fell
 
 
-def storming(d: Data, u: dict, t: dict, field: dict | None, stance: str) -> bool:
+def _storm_due(u: dict, ex) -> bool:
+    """Its storm order from the account (data/orders.yaml storm) is due at exchange ex."""
+    return bool(u.get("storm")) and (ex or 0) >= u["storm"]["at"]
+
+
+def storming(d: Data, u: dict, t: dict, field: dict | None, stance: str, ex=None) -> bool:
     """Attacking, a unit armed for storming (commander.storm: black powder with the bayonet)
-    whose target holds works (units.holds_works): it closes and charges rather than firing."""
+    whose target holds works (units.holds_works), or the target its account has it storm (its
+    storm order, due): it closes and charges rather than firing."""
+    if stance == "attack" and _storm_due(u, ex) and t["name"] == u["storm"]["target"]:
+        return True
     return stance == "attack" and u["weapon"] in d.units["commander"]["storm"] and U.holds_works(d, field, u["pos"], t)
+
+
+def _storm_target(d: Data, us: list, i: int, ctx: tuple) -> int | None:
+    """Its storm order (data/orders.yaml) due: the unit it is to storm, while it stands, or None."""
+    u = us[i]
+    if ctx[2] != "attack" or not _storm_due(u, ctx[4]):
+        return None
+    return next((j for j, e in enumerate(us) if e["side"] != u["side"] and e["name"] == u["storm"]["target"] and e["men"] > 0 and e["state"] not in ROUTED), None)
 
 
 def support(d: Data, us: list, i: int) -> int:
@@ -1815,11 +1833,11 @@ def _best(d: Data, us: list, i: int, t: int, ctx: tuple) -> dict | None:
     going to ground where it stands, or None (it holds). Holding, it only charges, else stays.
     If no hex it likes is in reach (facing away, the turn alone eats its move), it turns
     where it stands toward the target, as far as its move allows (_turn_toward)."""
-    (size, field, stance, known, _), u = ctx, us[i]
+    (size, field, stance, known, ex), u = ctx, us[i]
     tu, hold = _where(us, t, known), stance == "hold"
     free = {**u, "prone": False} if u.get("prone") else u
     base = [free if k == i else x for k, x in enumerate(us)]
-    storm = storming(d, u, tu, field, stance)
+    storm = storming(d, u, tu, field, stance, ex)
     shooter, charge = "range" in d.weapons[u["weapon"]] and not storm, may_charge(d, u, tu, stance, storm, support(d, us, i))
     best = _first_move(d, base, i, tu, (size, field), (charge, hold, shooter, storm))
     if storm and not (best and best[2]["charge"]) and bounding(d, us, i, t):   # storming in bounds: down and firing after a bound that drew fire

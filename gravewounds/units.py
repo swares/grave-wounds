@@ -1067,6 +1067,16 @@ def _holding(unit: dict) -> bool:
     return bool(unit.get("holds")) and not unit.get("flanked")
 
 
+def _losing_off(mods: dict, unit: dict) -> int:
+    """What losing the exchange costs: losing_per_man a man more lost than it put down, but no
+    more than losing_per_pct a whole 1% of its men (a big unit a few men behind is not beaten),
+    at most losing_cap."""
+    behind = max(0, unit.get("lost", 0) - unit.get("dealt", 0))
+    by_men = mods["losing_per_man"] * behind
+    by_share = by_men if mods.get("losing_per_pct") is None else mods["losing_per_pct"] * (100 * behind // max(1, unit.get("men") or 0))
+    return min(mods["losing_cap"], by_men, by_share)
+
+
 def _losing(mo: dict, unit: dict) -> bool:
     """Lost the exchange in contact: more men down than it put down; holding a position
     (morale.posture_hand), only by its losses hand to hand. A front of pikes or bayonets struck
@@ -1112,7 +1122,7 @@ def _morale_mods(mods: dict, unit: dict) -> int:
         m += mods.get("dug_in", 0)
     if unit.get("no_ammo"):
         m += mods.get("no_ammo", 0)
-    m -= min(mods["losing_cap"], mods["losing_per_man"] * max(0, unit.get("lost", 0) - unit.get("dealt", 0)))
+    m -= _losing_off(mods, unit)
     return m
 
 

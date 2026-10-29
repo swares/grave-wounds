@@ -631,8 +631,13 @@ function moraleMods(mods, u){
   if (u.state === "steady") m += mods.in_order;
   if (u.dug) m += mods.dug_in || 0;
   if (u.no_ammo) m += mods.no_ammo || 0;
-  m -= Math.min(mods.losing_cap, mods.losing_per_man * Math.max(0, (u.lost || 0) - (u.dealt || 0)));
+  m -= losingOff(mods, u);
   return m;
+}
+function losingOff(mods, u){                      // what losing the exchange costs: losing_per_man a man more lost than it put down, but no more than losing_per_pct a whole 1% of its men (a big unit a few men behind is not beaten), at most losing_cap (as units._losing_off)
+  const behind = Math.max(0, (u.lost || 0) - (u.dealt || 0));
+  const byMen = mods.losing_per_man * behind, byShare = mods.losing_per_pct == null ? byMen : mods.losing_per_pct * Math.floor(100 * behind / Math.max(1, u.men || 0));
+  return Math.min(mods.losing_cap, byMen, byShare);
 }
 function failedState(mo, u, by, rallying = false){   // a failed check; a failed rally (rallying) leaves it shaken
   if (u.state === "shaken") return rallying ? "shaken" : "broken";
@@ -3263,7 +3268,7 @@ function seesFrom(field, u, ranked, foes){        // [rank, enemy, facing] of th
 }
 const unsteady = (us, i, t) => (!us[i].prone && !us[i].vehicle && underFire(us, i) ? { act: "ground", target: t } : null);   // a shaken unit holds, going to ground under missile fire (not vehicles) (as commander._unsteady)
 function unitOrder(us, i, ctx, roll){            // one unit's order, or null (it holds); ctx [size, field, stance, known, exchange]
-  const u = us[i], C = UD.commander, obj = objectiveOf(ctx[1]), t = aiTarget(us, i, ctx[3], ctx[1]);
+  const u = us[i], C = UD.commander, obj = objectiveOf(ctx[1]), t = stormTarget(us, i, ctx) ?? aiTarget(us, i, ctx[3], ctx[1]);
   if (u.state !== "steady") return unsteady(us, i, t);
   const away = withdrawOrder(us, i, ctx);
   if (away) return away;
@@ -3491,6 +3496,12 @@ function lastSeen(o, known, t, exchange){        // the order, with the exchange
   const last = known?.[String(t)]?.ex;
   return o && last !== undefined && last !== (exchange ?? 0) ? { ...o, last } : o;
 }
+function stormTarget(us, i, ctx){                  // its storm order (data/orders.yaml) due: the unit it is to storm, while it stands, or null (as commander._storm_target)
+  const u = us[i];
+  if (ctx[2] !== "attack" || !stormDue(u, ctx[4])) return null;
+  const j = us.findIndex(e => e.side !== u.side && e.name === u.storm.target && e.men > 0 && !ROUTED.has(e.state));
+  return j < 0 ? null : j;
+}
 function aiTarget(us, i, known = null, field = null){   // the enemy unit it goes for among those its side knows of (null: every one standing), by threatScore (the first of equals), or null; with an objective, more for one guarding it
   const u = us[i];
   let best = null;
@@ -3528,7 +3539,9 @@ function bounding(us, i, t){                     // storming in bounds (commande
   if (!C.bounds || u.vehicle || !C.ground_with.includes(u.weapon) || (C.cover[u.quality] ?? 0) <= 0) return false;
   return !!(u.hit || u.pinned || u.fired_on) && (t === null || !us[t].pinned);   // fired on, even if no one fell: a bound drew fire
 }
-function storming(u, t, field, stance){           // attacking, armed for storming (black powder with the bayonet), its target holding works: it closes and charges (as commander.storming)
+const stormDue = (u, ex) => !!u.storm && (ex ?? 0) >= u.storm.at;   // its storm order from the account (data/orders.yaml storm) is due
+function storming(u, t, field, stance, ex = null){ // attacking, armed for storming (black powder with the bayonet), its target holding works, or the target its account has it storm: it closes and charges (as commander.storming)
+  if (stance === "attack" && stormDue(u, ex) && t.name === u.storm.target) return true;
   return stance === "attack" && UD.commander.storm.includes(u.weapon) && holdsWorks(field, u.pos, t);
 }
 function support(us, i){                          // men times attack % of the steady friendly units (not guns or vehicles) touching unit i: they go in with it (as commander.support)
@@ -3548,10 +3561,11 @@ function turnToward(base, i, f, [size, field]){    // the facing nearest f, turn
   }
   return right === 0 && moveUnit(base, i, u.pos, f, size, field).ok ? f : null;
 }
-function bestOrder(us, i, t, [size, field, stance, known]){   // the best-scoring hex it can legally reach, facing the target (where last seen); holding, it only charges, else stays
+function bestOrder(us, i, t, ctx){
+  const [size, field, stance, known] = ctx;   // the best-scoring hex it can legally reach, facing the target (where last seen); holding, it only charges, else stays
   const u = us[i], tu = knownAt(us, t, known), hold = stance === "hold";
   const free = u.prone ? { ...u, prone: false } : u, base = us.map((x, k) => (k === i ? free : x));
-  const storm = storming(u, tu, field, stance);
+  const storm = storming(u, tu, field, stance, ctx[4]);
   const shooter = "range" in FD.weapons[u.weapon] && !storm, charge = mayCharge(u, tu, stance, storm, support(us, i));
   const best = firstMove(base, i, tu, [size, field], [charge, hold, shooter, storm]);
   if (storm && !best?.[2].charge && bounding(us, i, t)) return u.prone ? null : { act: "ground", target: t };   // storming in bounds: down and firing after a bound that drew fire
@@ -3935,7 +3949,7 @@ function unitMarks(o){                             // a drawn unit's optional ma
     ...(o.via?.length ? { via: o.via.map(h => [...h]) } : {}), ...unitOrders(o), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}),
     ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}), ...(o.fights_on ? { fights_on: true } : {}), ...(o.unfit != null ? { unfit: o.unfit } : {}), ...(o.asFought ? { asFought: true } : {}) };
 }
-const unitOrders = o => ({ ...(o.hold ? { hold: true } : {}), ...(o.withdraw ? { withdraw: { ...o.withdraw } } : {}) });   // its orders from the accounts
+const unitOrders = o => ({ ...(o.hold ? { hold: true } : {}), ...(o.withdraw ? { withdraw: { ...o.withdraw } } : {}), ...(o.storm ? { storm: { ...o.storm } } : {}) });   // its orders from the accounts
 function ensureTags(B){                            // each unit's number on its side, kept for the battle (B3 stays B3) (as battle.ensure_tags)
   for (const u of [...B.units].sort((a, b) => a.id - b.id)) if (!u.n){
     const k = sideIndex(B, u);

@@ -828,6 +828,10 @@ morale:
     veteran_friends: 10       # a steady friendly unit next to it
     in_order: 20              # still steady: ranks closed, men backing each other
     losing_per_man: 5         # off for each man more it lost than it put down this exchange
+    # losing_per_pct: but no more than this for each whole 1% of its men it is behind: a brigade
+    # 6 men behind is not beaten. Counted in men alone, 900 Americans storming the guns at
+    # Lundy's Lane broke 7 men down, and 4,000 Spaniards in line at Albuera to lancers at 1%.
+    losing_per_pct: 5
     losing_cap: 30
     dug_in: 10                # gone to ground or in a bunker: men in holes stay put
     no_ammo: -10              # out of ammunition (ammunition, below)

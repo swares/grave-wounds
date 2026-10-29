@@ -492,7 +492,7 @@ def _field_tables(d: Data) -> dict:
     forms = [[f["name"], f["per_hex"], f["abreast"], f["ranks"], f["move"], f"×{f['missile_factor']:g}"] for k, f in U["formations"].items() if k not in ("armour",)]
     mods = [["Still steady, ranks closed", f"+{M['in_order']}"], ["A named leader with it, up", f"+{M['leader']}"], ["Its leader down", _sign(M["leader_down"])],
             ["Half its men down", _sign(M["heavy"])], ["Struck in flank or rear", _sign(M["flank"])], ["A steady friendly unit beside it", f"+{M['veteran_friends']}"],
-            ["Dug in: gone to ground or in a bunker", f"+{M['dug_in']}"], ["Lost the exchange", f"−{M['losing_per_man']} a man more lost than it put down (at most −{M['losing_cap']})"]]
+            ["Dug in: gone to ground or in a bunker", f"+{M['dug_in']}"], ["Lost the exchange", f"−{M['losing_per_man']} a man more lost than it put down, but no more than −{M.get('losing_per_pct', M['losing_per_man'])} a whole 1% of its men (at most −{M['losing_cap']})"]]
     return {"formations": _md(["Formation", "Men a hex", "Abreast", "Ranks", "Move (hexes)", "Shots at it count"], forms),
             "morale": _md(["Modifier", ""], mods)}
 

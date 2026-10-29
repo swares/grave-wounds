@@ -1270,6 +1270,9 @@ def _mark_orders(units: dict, o: dict) -> None:
     for w in o.get("withdraw") or []:
         if w.get("unit") in units:
             units[w["unit"]]["withdraw"] = {"at": w["at"], "to": w["to"]}
+    for w in o.get("storm") or []:                # an attacker the accounts have storm one enemy unit from exchange `at`
+        if w.get("unit") in units:
+            units[w["unit"]]["storm"] = {"at": w["at"], "target": w["target"]}
 
 
 def _orders_errors(d: Data) -> list[str]:
@@ -1287,6 +1290,20 @@ def _orders_errors(d: Data) -> list[str]:
         for w in o.get("withdraw") or []:
             errors += _withdraw_errors(fid, w, F["size"])
         errors += [f"orders.yaml: {fid} fight_on side {k!r} must be 0 or 1" for k in o.get("fight_on") or [] if k not in (0, 1)]
+        errors += _storm_errors(fid, o.get("storm") or [], {u["name"]: u for u in F.get("units", [])})
+    return errors
+
+
+def _storm_errors(fid: str, storms: list, units: dict) -> list[str]:
+    """Storm orders: a unit of the battlefield, an enemy unit of it to storm, and a whole-number
+    exchange of 1 or more."""
+    errors = []
+    for w in storms:
+        u, t = units.get(w.get("unit")), units.get(w.get("target"))
+        if u is None or t is None or u.get("side") == t.get("side"):
+            errors.append(f"orders.yaml: {fid} storm {w.get('unit')!r}: a unit of the battlefield and an enemy unit of it to storm")
+        if not (isinstance(w.get("at"), int) and w["at"] >= 1):
+            errors.append(f"orders.yaml: {fid} storm {w.get('unit')!r}: at must be a whole number of 1 or more")
     return errors
 
 

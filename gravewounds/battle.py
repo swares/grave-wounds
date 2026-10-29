@@ -63,6 +63,8 @@ def _unit_marks(o: dict) -> dict:
         out["asFought"] = True
     if o.get("withdraw"):
         out["withdraw"] = {"at": o["withdraw"]["at"], "to": o["withdraw"]["to"]}
+    if o.get("storm"):
+        out["storm"] = {"at": o["storm"]["at"], "target": o["storm"]["target"]}
     return out
 
 
