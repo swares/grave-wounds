@@ -977,9 +977,13 @@ British left; About-face and bayonets has begun").
   round; to be checked against the accounts first), and Osan and Mons as a test of `withdraw_if`
   (their timed withdrawals in `orders.yaml` started by `outflanked` and `lost` instead).
 
-**Checked.** Python and the page play Cowpens and Snipe move for move the same on the same dice
-(seed 101: stop, exchanges, orders and every unit's end). Every other battlefield plays exactly as
-on main at that seed. The browser test `tools/field/plans.py` checks the box, the strip and the
+**Checked and measured.** Python and the page play Cowpens and Snipe move for move the same on the
+same dice (seed 101: the stop, the exchanges, the orders and every unit at the end). On 12 runs of
+every battlefield against main (labels main-6955b23 and plans1), only those two changed: **449 to
+452 of 576** runs matched. Snipe 3 to 6 of 12 (British lost 37.5% to 34.9%, the Axis 16.4% to
+17.3%); Cowpens stays 12 of 12, the British losing 44.6% instead of 30.6% (the Americans 22.4%
+instead of 20.2%), nearer the account, where the British line and the 71st were taken. The morale
+targets did not move. The browser test `tools/field/plans.py` checks the box, the strip and the
 log on Cowpens.
 
 ### Both sides (self-play)

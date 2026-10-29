@@ -1330,3 +1330,31 @@ Not yet known:
   are likely 2 or 3 seconds an exchange with nothing to order, which would shorten the long
   battles most. A way to run quiet exchanges on until contact or the next phase would save
   more table time on those than any cut to the rules.
+
+## Plans: Cowpens and Snipe, 29 October 2026
+
+The enemy commander can now follow a battlefield's plan (`data/plans.yaml`; units.md, *Plans*):
+steps of tasks (advance to a line, pin, envelop, commit, withdraw) started and ended by triggers.
+Two battlefields have one. Measured on 12 runs of every battlefield (labels main-6955b23 and
+plans1, compared by the selfplay-compare workflow): **449 to 452 of 576**, only the two
+battlefields with a plan changing, and the morale targets unchanged.
+
+| Battlefield | Plan | Runs matched | Losses (first side / second) |
+|---|---|---|---|
+| Snipe | Rommel's evening German tanks, once they have lost a tenth of their men, pin C Company's six-pounders from as far off as they can hit them | 3 to 6 of 12 | 37.5%/16.4% to 34.9%/17.3% |
+| Cowpens | Washington's horse go round the east of the fight at the about-face and strike the 7th Fusiliers' flank | 12 to 12 of 12 | 20.2%/30.6% to 22.4%/44.6% |
+
+- **Snipe.** In the one run traced (seed 101) the Axis side is gone at exchange 661 and the
+  British hold, with about 19% lost; the evening German tanks were shot to pieces while pinning
+  (8 of 120 left), harder than the account's 9 tanks knocked out before they drew back. Their
+  guns reach 100 hexes, past the account's 800 yards, so they stand off further in daylight.
+- **Cowpens** matched already; the plan is for the shape of the battle. The British now lose
+  nearly half their men instead of under a third, nearer the account, where the line and the 71st
+  surrendered.
+- **Left out at Cowpens:** the militia and riflemen falling back behind the Continentals and
+  coming back round the other flank. No unit can pass through its own side's units, and the
+  militia line (50 hexes) cannot go round the Continentals' (28) on this map. A rule for passing
+  through one's own lines would come first.
+- **Next:** Goose Green (pin and envelop), and Osan and Mons as a test of `withdraw_if` (their
+  timed withdrawals started by `outflanked` and `lost` instead).
+
