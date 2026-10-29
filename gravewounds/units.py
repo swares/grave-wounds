@@ -2507,6 +2507,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     _toil_going(d, us, field)
     log += _mines_all(d, us, table, rng, acc, field)
     log += _closing_all(d, us, table, rng, acc, field)
+    log += _closing_volleys(d, us, table, rng, acc, field)
     lost0, dealt0 = list(lost), list(dealt)
     braced = [None] * len(us)
     struck = _strike_all(d, us, table, rng, acc, flanked, field, lost0, braced)
@@ -3033,6 +3034,27 @@ def _closing_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | N
     log = []
     for c in closing_fire(d, us, field):
         log += _fire_battery(d, us, table, rng, acc, c)
+    return log
+
+
+def _closing_volleys(d: Data, us: list, table: str, rng, acc: tuple, field: dict | None = None) -> list:
+    """Black-powder foot charging home (missile.closing_volley) fire one volley at the enemy next
+    to them first: its hits thin the defenders before the melee."""
+    W, occ, log = (d.units["missile"].get("closing_volley") or {}).get("weapons", []), occupancy(d, us), []
+    for i, u in enumerate(us):
+        if not u.get("charged") or _out(u) or u["weapon"] not in W or ammo_state(d, u) == "out" or not in_contact(d, us, occ, i):
+            continue
+        vs = _volley_of(d, us, occ, field, i)
+        if not vs or vs[0]["dist"] > 1 or us[vs[0]["dfd"]].get("vehicle"):
+            continue
+        v = vs[0]
+        _spend(d, us, v)
+        b = us[v["dfd"]]
+        opts = {"factor": form(d, b)["missile_factor"] * (100 - v["misfire"]) / 100 * v["seen"], "exposed": _exposure(d, b, False, True),
+                "penalty": v["cover"] + v["penalty"] + v["over"], "reach": v["reach"]}
+        t = _take_hurt(b, volley(d, _shooter_side(d, _shooter(us, v), table), _side(b, table), v["men"], v["dist"], rng, **opts))
+        _tally(*acc, v, t)
+        log += _logged({"kind": "volley", "closing": True, **v}, t)
     return log
 
 

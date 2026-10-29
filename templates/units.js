@@ -1792,6 +1792,19 @@ function airDrops(field, rng){                     // end of the exchange: each 
   }
   return out;
 }
+function closingVolleys(us, table, rng, acc, log, field){   // black-powder foot charging home (missile.closing_volley) fire one volley at the enemy next to them first: its hits thin the defenders before the melee (as units._closing_volleys)
+  const W = UD.missile.closing_volley?.weapons || [], occ = occupancy(us);
+  us.forEach((u, i) => {
+    if (!u.charged || out_(u) || !W.includes(u.weapon) || ammoState(u) === "out" || !inContact(us, occ, i)) return;
+    const v = volleyOf(us, occ, field, i)[0];
+    if (!v || v.dist > 1 || us[v.dfd].vehicle) return;
+    spend(us, v);
+    const b = us[v.dfd], mf = form(b).missile_factor;
+    const t = takeHurt(b, volley(sideOfUnit(shooterOf(us, v), table), sideOfUnit(b, table), v.men, v.dist, rng, { factor: mf * (100 - v.misfire) / 100 * v.seen, exposed: exposure(b, false, true), penalty: v.cover + v.penalty + v.over, reach: v.reach }));
+    tallyLoss(acc, v, t);
+    log.push(...logged({ kind: "volley", closing: true, ...v }, t));
+  });
+}
 function shootAll(us, table, rng, acc, log, field, under = null){
   for (const v of volleys(us, field)){
     markMg(us, v, under);
@@ -1998,6 +2011,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   const under = new Array(n).fill(false);          // under shellfire or machine-gun fire this exchange (suppression)
   minesAll(us, table, rng, acc, log, field);
   for (const c of closingFire(us, field)) fireBattery(us, table, rng, acc, log, c);
+  closingVolleys(us, table, rng, acc, log, field);
   const from = log.length, lost0 = [...acc.lost], dealt0 = [...acc.dealt];
   strikeAll(us, table, rng, acc, log, field, lost0);
   acc.hand = { lost: acc.lost.map((x, i) => x - lost0[i]), dealt: acc.dealt.map((x, i) => x - dealt0[i]) };   // hand to hand this exchange (morale.posture_hand)

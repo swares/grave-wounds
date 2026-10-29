@@ -1068,6 +1068,8 @@ def _units_errors(d: Data) -> list[str]:
     order = d.wounds["vocabulary"]["lethal"]["order"]
     errors += [f"units.yaml: dead_if names unknown lethality {x}" for x in U.get("dead_if", []) if x not in order]
     errors += [f"units.yaml: modern_fire names unknown weapon {w}" for w in U.get("modern_fire", {}).get("weapons", []) if w not in d.weapons]
+    errors += [f"units.yaml: missile.closing_volley names {w}, not a weapon that shoots" for w in (U.get("missile", {}).get("closing_volley") or {}).get("weapons", [])
+               if "range" not in d.weapons.get(w, {})]
     if not isinstance(U.get("rout", {}).get("exchanges"), int):
         errors.append("units.yaml: rout.exchanges must be a whole number")
     return errors + _units_extra_errors(d) + _reliability_errors(d)
