@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-28",
+ "generated": "2026-10-29",
  "coins": {
   "civil_war": {
    "currencies": {
@@ -25665,6 +25665,7 @@
     "each": 6,
     "enter": 1,
     "cover_here": 40,
+    "shell": 20,
     "hides": true,
     "no_horse": true,
     "breach": null,

@@ -1502,8 +1502,13 @@ get its cover (−50%) against shellfire while it stands.
 
 **Trenches.** A trench (a hex work, from the 20th century: **Clicking the map: Trench**, ≡)
 is dug chest-deep. The men in its hex get 40% cover and are hidden (as men gone to ground),
-it costs +1 movement to enter, and horses cannot go into it. Unlike a bunker, it does not
-stop blows hand to hand: men in a trench fight as usual and can be fought.
+it costs +1 movement to enter, and horses cannot go into it. Against shellfire (shells,
+mortar bombs, bombs and tanks' high explosive) the men in it are struck at a fifth of the rate
+for men lying in the open (`shell: 20` in `data/works.yaml`): from Evans, *British Artillery in
+World War II*, which puts the risk from ground bursts at 1 for a man standing, 1/3 lying (the
+rules' going to ground) and 1/15 to 1/50 for a man firing from an open fire trench (the safe end
+taken). Unlike a bunker, it does not stop blows hand to hand: men in a trench fight as usual and
+can be fought.
 
 **Storming bunkers.** A bunker (a hex work, from the 20th century) shelters the men in it:
 −50% to shots and to shellfire at them, and no one can strike them hand to hand, nor they
@@ -1905,7 +1910,9 @@ the Japanese 47 mm (`anti_tank_guns` in `data/units.yaml`).
   and in front, vehicles first.
   - At a vehicle it hits at 70%, 45% or 20% by range, and the hit knocks the vehicle out at
     its armour's main-gun %.
-  - At men its high explosive bursts as a tank's round does.
+  - At men its high explosive bursts as a tank's round does. A battlefield can mark a gun unit
+    `he: false` where its guns had no high-explosive round (the British 6-pounder until 1943):
+    it then fires only at vehicles, and keeps its rounds for them.
 - **Crews.** The crews are men. Rifles, machine guns and shells strike them, and hand to
   hand they fight with bayonets.
 - **Gun shields.** Anti-tank and anti-aircraft guns have shields: small arms (rifles, machine
@@ -2813,11 +2820,14 @@ hollow of Snipe, west of the Kidney feature at El Alamein.
 How it is drawn: the hollow to the accounts' size, the ridges, its depth and the guns' places
 inside their sectors ours; the attacks the accounts number at those numbers, the rest ours, with
 round numbers. The British artillery (its observer lost at 04:00) and the friendly fire are not
-played. In self-play the battalion does not hold: all three runs end about 10:30 with every
-British unit gone (0 of 3 matched), the British losing about 40% of their men to the Axis 14%,
-where in fact 72 of under 300 were hit and some 32 tanks and 5 SP guns were left burnt out round
-the hollow. The guns break and run under the dawn and morning attacks; how the anti-tank guns,
-their crews' morale and the tanks' fire on dug-in guns play is a lead for the self-play review. It
+played. The guns and riflemen stand in the gun pits and slit trenches dug before dawn (a trench
+under each section), and the six-pounders fire armour-piercing only (`he: false`: no high-explosive
+round until 1943). In self-play the battalion holds in 3 of 12 runs, the British losing about 37%
+of their men to the Axis 16%, where in fact 72 of under 300 were hit and some 32 tanks and 5 SP guns
+were left burnt out round the hollow. Without the trenches' cut against shellfire every run ended
+about 10:30, the men in their pits struck by the tanks' high explosive as if lying in the open; the
+losses left come mostly from Rommel's evening tanks driving into the hollow, where in fact they drew
+back to 800 yards and fired until dark (project doc "snipe-study"). It
 is drawn by `tools/maps/make_snipe_field.mjs`.
 
 **Hill 700, Bougainville, 8-12 March 1944** (`data/fields/bougainville-1944.yaml`). The field

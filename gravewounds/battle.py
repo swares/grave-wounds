@@ -59,6 +59,8 @@ def _unit_marks(o: dict) -> dict:
         out["fights_on"] = True
     if o.get("unfit") is not None:
         out["unfit"] = o["unfit"]
+    if o.get("he") is False:
+        out["he"] = False
     if o.get("asFought"):
         out["asFought"] = True
     if o.get("withdraw"):

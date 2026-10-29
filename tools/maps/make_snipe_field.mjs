@@ -16,7 +16,7 @@
 // Axis attack but those the accounts number are ours, with round numbers. The clock is Egyptian
 // summer time (GMT+3), which the sources' first light at 06:15 and last round at 19:40 fit; whether
 // the armies moved their clocks back at midnight on 26/27 October is not known.
-import { N, S, wobble, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, groundGrid, unit, writeField, allRows } from "./field_lib.mjs";
 
 const COLS = 200, ROWS = 160;                 // 2000 m west to east, about 1390 m north to south
 const C = [100, 80];                          // the middle of the hollow
@@ -33,7 +33,7 @@ const grid = groundGrid(COLS, ROWS, kind);
 
 // ---------- the armies (pos is the middle of the front row) ----------
 const RB = { side: 0, facing: N }, AX = { side: 1, facing: S };
-const SIX_PDR = { quality: "veteran", weapon: "at_gun", kit: "ww2_rifleman", formation: "at_gun", mounted: false, prone: true };   // dug in by 03:45
+const SIX_PDR = { quality: "veteran", weapon: "at_gun", kit: "ww2_rifleman", formation: "at_gun", mounted: false, prone: true, he: false };   // dug in by 03:45; armour-piercing only (no HE round for the 6-pounder until 1943: project doc "snipe-research", F2)
 const RIFLES = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true };
 const CARRIERS = { quality: "veteran", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "apc" };   // Universal Carriers with their Brens
 const SHERMANS = { quality: "regular", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank" };
@@ -69,6 +69,11 @@ const waves = { 76: ["47th RTR (Shermans and Crusaders)", "41st RTR", "Long-gunn
   406: ["Italian tanks over the western ridge (Capitano Preve)"],
   646: ["Panzer IIIs against the north-west", "German tanks of the evening attack, from the south-west", "Italian tanks of the evening attack", "Stukas (the attack before Rommel's counter-stroke)"] };
 
+// The gun pits and slit trenches dug between 00:15 and 03:45 (project doc "snipe-research": the guns
+// "dug in" by 03:45, the pits dug in the dark in soft sand, one gun "sunk into the sand"): a
+// trench under every gun and rifle section of the battalion. Drawn to the units, not to any plan.
+const pits = units.filter(u => u.side === 0 && u.prone).flatMap(u => allRows(u, 6));
+
 writeField({
   phases: [   // an exchange is about a minute; Egyptian summer time (GMT+3): first light 06:15, sunrise 07:15, sunset 18:21 (project doc "snipe-research")
     { name: "First light", at: 1, note: "06:15: the German and Italian tank groups leave their leaguers and pass across the front; the guns engage them broadside at about 800 yards." },
@@ -89,6 +94,7 @@ writeField({
   travel: { map: "snipe-1942", place: "Snipe (the battlefield)", within: 1, sides: ["Eighth Army", "Axis"] },
   weather: "{cond: fair, wind: calm, dir: NW, light: dusk, ground: {mud: 0, snow: 0}}",
   grid, units,
+  hexWorks: { trench: pits },
   support: [
     { name: "German guns and 88s", side: 1, kind: "field", tubes: 8 },
     { name: "Stukas (the attack before Rommel's counter-stroke)", side: 1, kind: "fighter_bomber", tubes: 20 },
@@ -104,6 +110,9 @@ writeField({
     "Panzers play as heavy armour, the Italian M13s, M14s and Semoventi as light. The British artillery",
     "is not on call (the observer was lost at 04:00), and the friendly fire is not played. Clock: GMT+3.",
     "The camelthorn is not drawn: the rules' scrub would keep tanks out of it, and it stopped none here.",
+  "The guns and riflemen are in the gun pits and slit trenches dug before dawn (a trench under each",
+  "section, drawn to the units, not to any plan). The six-pounders fire armour-piercing only: there",
+  "was no high-explosive round for them in October 1942.",
     "",
     "What happened, briefly: the 2nd Rifle Brigade went out from the Kidney feature on the night of",
     "26/27 October with 239 Battery's six-pounders and dug in at Snipe, short of the intended spot,",

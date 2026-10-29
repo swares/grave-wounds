@@ -36,7 +36,7 @@ with sync_playwright() as p:
     text = pg.inner_text("#beat")
     check(pg.is_visible("#beat"), "a battlefield with its armies as drawn up shows Beat history")
     check("As fought: British won" in text, "the panel gives the battle as fought")
-    check("British win 0%" in text and "To beat it:" in text, "the panel gives the commander's odds and the bar")
+    check("British win 25%" in text and "To beat it:" in text, "the panel gives the commander's odds and the bar")
     check("older rules" not in text, "the benchmark was run under these rules")
 
     pg.select_option("#sel-ai1", index=1)

@@ -1368,9 +1368,15 @@ function shellStruckUnit(field, u, bursts, kind, rng){   // men of u struck by t
   if (quick && near) struck = quickDown(tries, tries > 0 ? mean / tries : 0, rng);   // one d100 on the curve for this fire on this unit (as units._shell_struck_unit)
   return near ? struck : null;
 }
+function shelterAt(field, h){                     // shellfire's struck % times this for the works in hex h: a work's `shell` %, else a bunker's cover (as units._shelter_at)
+  const it = field?.works?.hexes?.[`${h[0]},${h[1]}`];
+  if (!it || !intact("hex", it)) return 1;
+  const W = WK.hex_works[it.type];
+  if (W.shell != null) return W.shell / 100;
+  return UD.assault.works.includes(it.type) ? (100 - (W.cover_here || 0)) / 100 : 1;
+}
 function shellCut(field, h, prone){               // shellfire's struck % times this: tree bursts in woods; else going to ground and the ground's cover
-  const I = UD.indirect, TB = I.tree_burst, bk = bunkerAt(field, h);
-  const shelter = bk ? (100 - (WK.hex_works[bk.type].cover_here || 0)) / 100 : 1;   // a bunker's men get its cover against shell too
+  const I = UD.indirect, TB = I.tree_burst, shelter = shelterAt(field, h);
   if (TB.ground.includes(field?.ground?.[`${h[0]},${h[1]}`] || "open")) return TB.factor * (prone ? TB.prone : 1) * shelter;
   return (prone ? I.prone : 1) * (100 - (groundAt(field, h).cover || 0)) / 100 * shelter;
 }
@@ -1922,7 +1928,7 @@ function gunTarget(us, i, field, G){              // [dist, index, gun hex, targ
   const u = us[i], occ = occupancy(us), front = footprint(u)[0], fv = fvec(u.facing);
   let best = null;
   us.forEach((e, j) => {
-    if (e.side === u.side || e.men <= 0 || e.state === "fled") return;
+    if (e.side === u.side || e.men <= 0 || e.state === "fled" || (u.he === false && !e.vehicle)) return;   // he: false: no HE round, so only vehicles
     const clear = clearFn(us, occ, field, i, j);
     for (const t of footprint(e).flat()) for (const h of front){
       const dist = hdist(h, t), key = [e.vehicle ? 0 : 1, dist];
@@ -3947,7 +3953,7 @@ function makeUnit(o, id, table){                   // a new unit as the GM or a 
 function unitMarks(o){                             // a drawn unit's optional marks, copied as given
   return { ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.armour ? { armour: o.armour } : {}),
     ...(o.via?.length ? { via: o.via.map(h => [...h]) } : {}), ...unitOrders(o), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}),
-    ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}), ...(o.fights_on ? { fights_on: true } : {}), ...(o.unfit != null ? { unfit: o.unfit } : {}), ...(o.asFought ? { asFought: true } : {}) };
+    ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}), ...(o.fights_on ? { fights_on: true } : {}), ...(o.unfit != null ? { unfit: o.unfit } : {}), ...(o.he === false ? { he: false } : {}), ...(o.asFought ? { asFought: true } : {}) };
 }
 const unitOrders = o => ({ ...(o.hold ? { hold: true } : {}), ...(o.withdraw ? { withdraw: { ...o.withdraw } } : {}) });   // its orders from the accounts
 function ensureTags(B){                            // each unit's number on its side, kept for the battle (B3 stays B3) (as battle.ensure_tags)

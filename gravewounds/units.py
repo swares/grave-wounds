@@ -3473,8 +3473,8 @@ def _gun_target(d: Data, us: list, i: int, field: dict | None, gun: dict):
     u, occ = us[i], occupancy(d, us)
     front, fv, best = footprint(d, u)[0], _fvec(u["facing"]), None
     for j, e in enumerate(us):
-        if e["side"] == u["side"] or e["men"] <= 0 or e["state"] == "fled":
-            continue
+        if e["side"] == u["side"] or e["men"] <= 0 or e["state"] == "fled" or (u.get("he") is False and not e.get("vehicle")):
+            continue   # he: false: the gun has no HE round, so only vehicles
         clear = _clear_fn(d, us, occ, field, i, j)
         for t, h in ((x, h) for row in footprint(d, e) for x in row for h in front):
             dist = hdist(h, t)
@@ -4066,13 +4066,25 @@ def _in_room(d: Data, field: dict | None, h) -> bool:
     return ground in (d.units["indirect"].get("room_ground") or [])
 
 
+def _shelter_at(d: Data, field: dict | None, h) -> float:
+    """Shellfire's struck % times this for the works in hex h: the work's `shell` %, else a
+    bunker's cover against shell too (trench: Evans, British Artillery in World War II)."""
+    hexes = ((_works(field) or {}).get("hexes") or {})
+    it = hexes.get(f"{h[0]},{h[1]}") if hexes else None
+    if not it or not C.intact(d, "hex", it):
+        return 1
+    w = d.works["hex_works"][it["type"]]
+    if w.get("shell") is not None:
+        return w["shell"] / 100
+    return (100 - w.get("cover_here", 0)) / 100 if it["type"] in d.units["assault"]["works"] else 1
+
+
 def _shell_cut(d: Data, field: dict | None, h, prone) -> float:
     """What shellfire's struck % is multiplied by for men in hex h: in woods, tree bursts (no
     cover, more struck, going to ground helps less); elsewhere going to ground and the ground's cover."""
     I = d.units["indirect"]
     TB = I["tree_burst"]
-    bk = bunker_at(d, field, h)
-    shelter = (100 - d.works["hex_works"][bk["type"]].get("cover_here", 0)) / 100 if bk else 1
+    shelter = _shelter_at(d, field, h)
     if ((field or {}).get("ground") or {}).get(f"{h[0]},{h[1]}", "open") in TB["ground"]:
         return TB["factor"] * (TB["prone"] if prone else 1) * shelter
     return (I["prone"] if prone else 1) * (100 - ground_at(d, field, h).get("cover", 0)) / 100 * shelter
