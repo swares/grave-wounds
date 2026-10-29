@@ -33,7 +33,7 @@ ends: 121
 phases:
   - {name: "The wall falls", at: 1, note: "Sunrise: the second mine's fire brings down the north-east corner; the timber wall behind it catches fire in the wind, and the storming column goes in."}
   - {name: "Full light", at: 25, note: "The sun is up over the Golan.", light: day}
-  - {name: "The second wave", at: 31, note: "The volunteers and the rest of the foot come up to the breach (when is our reading).", arrive: ["Volunteers and foot (the second wave)"]}
+  - {name: "The second wave", at: 31, note: "The volunteers and the rest of the foot come up to the breach (when is our reading).", arrive: ["Volunteers and foot (the second wave), first party", "Volunteers and foot (the second wave), second party", "Volunteers and foot (the second wave), third party"]}
 ground: |
   oo.......o...o.o............oowwwo..oooo
   .o....o..............o......o.wwwoo..o.o
@@ -113,7 +113,12 @@ units:
   - {name: "Templar knights and their squires", side: 0, men: 160, quality: veteran, weapon: sword, kit: hauberk, formation: close, width: 3, pos: [16, 26], facing: 1, size: company}
   - {name: "Sergeants (the fifteen companies)", side: 0, men: 450, quality: regular, weapon: spear, kit: hauberk, formation: close, width: 4, pos: [16, 29], facing: 1, size: battalion}
   - {name: "Crossbowmen and archers", side: 0, men: 300, quality: regular, weapon: crossbow, kit: gambeson, formation: open, width: 3, pos: [17, 33], facing: 1, size: battalion}
-  - {name: "The storming column (Farrukh-Shah)", side: 1, men: 1000, quality: veteran, weapon: sword, kit: hauberk, formation: close, width: 3, pos: [17, 20], facing: 4, size: battalion}
+  - {name: "The storming column (Farrukh-Shah), first party", side: 1, men: 250, quality: veteran, weapon: sword, kit: hauberk, formation: close, width: 3, pos: [16, 20], facing: 5, size: company}
+  - {name: "The storming column (Farrukh-Shah), second party", side: 1, men: 250, quality: veteran, weapon: sword, kit: hauberk, formation: close, width: 3, pos: [16, 15], facing: 5, size: company}
+  - {name: "The storming column (Farrukh-Shah), third party", side: 1, men: 250, quality: veteran, weapon: sword, kit: hauberk, formation: close, width: 3, pos: [16, 10], facing: 5, size: company}
+  - {name: "The storming column (Farrukh-Shah), fourth party", side: 1, men: 250, quality: veteran, weapon: sword, kit: hauberk, formation: close, width: 3, pos: [16, 5], facing: 5, size: company}
   - {name: "Archers north of the castle", side: 1, men: 600, quality: veteran, weapon: bow, kit: gambeson, formation: open, width: 10, pos: [7, 20], facing: 4, size: battalion}
   - {name: "Archers across the river", side: 1, men: 400, quality: veteran, weapon: bow, kit: gambeson, formation: open, width: 5, pos: [35, 36], facing: 4, size: battalion}
-  - {name: "Volunteers and foot (the second wave)", side: 1, men: 1500, quality: green, weapon: spear, kit: gambeson, formation: close, width: 6, pos: [18, 8], facing: 4, size: regiment}
+  - {name: "Volunteers and foot (the second wave), first party", side: 1, men: 500, quality: green, weapon: spear, kit: gambeson, formation: close, width: 3, pos: [20, 10], facing: 5, size: battalion}
+  - {name: "Volunteers and foot (the second wave), second party", side: 1, men: 500, quality: green, weapon: spear, kit: gambeson, formation: close, width: 3, pos: [24, 10], facing: 5, size: battalion}
+  - {name: "Volunteers and foot (the second wave), third party", side: 1, men: 500, quality: green, weapon: spear, kit: gambeson, formation: close, width: 3, pos: [28, 10], facing: 5, size: battalion}
