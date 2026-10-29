@@ -200,7 +200,8 @@ When an item is done, delete it here and note it in the pull request that closes
   defender, the fire plan put Tumbledown back to 0 (and Grozny 2 to 7, Hue and Chipyong-ni -1), so
   it is marked by battlefield where a source gives one. 428 of 576 runs now match the battle as
   fought (Mojkovac and Topolčani added; reliability, 423 to 422; a bayonet front against horse,
-  Albuera 7 to 12, Lundy's Lane 1 to 0; a closing volley before a charge home, both Redans +1). Still behind: Chipyong-ni 10 of 12; Lundy's Lane 0, studied (project doc "lundys-lane-study"):
+  Albuera 7 to 12, Lundy's Lane 1 to 0; a closing volley before a charge home, both Redans +1;
+  Cassino's sangars, the Monastery 0 to 3). Still behind: Chipyong-ni 10 of 12; Lundy's Lane 0, studied (project doc "lundys-lane-study"):
   Ripley's brigade stops 140 m off the guns and trades fire ("a shooter never charges"); made to
   storm them, it breaks 7 men down to the per-man rule for losing the exchange, and capping that
   rule by share cost Agincourt more than it gained. A closing volley before a charge home is
@@ -225,8 +226,10 @@ When an item is done, delete it here and note it in the pull request that closes
     witness);
   - an envelopment plan (Cowpens), and the American rush on the guns at Lundy's Lane (the guns
     still hold);
-  - Point 593: the German fire and counter-attacks (no sourced figures yet), why small units take
-    it so easily in February, and why its paratroops alone lose to the Rajputana;
+  - Point 593: the paratroops now hold sangars and bunkers (the Monastery 0 to 3 of 12); May's
+    counter-attacks are on the map with strengths of our own (none sourced) and are too weak to
+    throw the Poles off (0 of 12); the Allied guns still put down hundreds of paratroops over the
+    day's eighteen hours, against "sat out the bombardment under cover";
   - Goose Green (bounds still go in before the guns are pinned), Keating (traced: not the bounds;
     and the Americans retaking the outpost, researched but with no clock times in the sources) and
     Wanat (no single fix; within the runs' spread);

@@ -34,8 +34,11 @@ phases:
   - {name: "The advance", at: 1, note: "01:00 on 12 May, after the bombardment: the 1st Battalion goes for Albaneta and the Kresowa for Phantom Ridge."}
   - {name: "For Point 593", at: 31, note: "01:30: the 2nd Battalion sets off for Point 593.", arrive: ["1st Carpathian Rifle Brigade, 2nd Battalion, company 1 (for Point 593)", "1st Carpathian Rifle Brigade, 2nd Battalion, company 2 (for Point 593)", "1st Carpathian Rifle Brigade, 2nd Battalion, company 3 (for Point 593)", "1st Carpathian Rifle Brigade, 2nd Battalion, company 4 (for Point 593)"]}
   - {name: "Point 593 taken", at: 61, note: "About 02:00 to 02:30: Point 593 is taken, then held against counter-attack after counter-attack."}
+  - {name: "Counter-attacks at first light", at: 241, note: "About 05:00: paratroops of I./FJR 3 come up from Point 569 (the hour and the party's strength are ours; 'shortly after daylight').", arrive: ["I./FJR 3, a counter-attack party from Point 569 (first light)"]}
+  - {name: "Another counter-attack", at: 301, note: "About 06:00: a second party from 569; five attacks in quick succession in the morning (IPN).", arrive: ["I./FJR 3, a second party from Point 569 (morning)"]}
   - {name: "Forced off 593", at: 461, note: "About 08:40 the Poles are forced off 593 by the fifth German attack (one source)."}
   - {name: "Abandon 593", at: 721, note: "After 13:00 the decision is taken to abandon 593; at 15:00 the 1st Battalion is ordered back."}
+  - {name: "The evening attack", at: 1081, note: "About 19:00: the 14th Company and 22 men of the reserve overrun the last Polish garrison on 593 (two weak sources).", arrive: ["14th Company and 22 men of the reserve (evening)"]}
   - {name: "The last men leave", at: 1111, note: "19:30: the last men of 4th Company leave 593."}
 ground: |
   oorrorrrrorrrooororrrrrrrororrrrorroroorrororrrrrorrorrrooorrooooorrrrororroororrororrorrrrrrrrooorrorrrrooorroroorrrrooorrroroorrorrrrorrorrrorrrrrrrrrrrrrroroororrroorrrrrrorrorrrroorrorrorrorrrrrrr
@@ -188,6 +191,10 @@ ground: |
   orrorrrorrrrrrororrrrororrorrrrrrrrrrrrrorrrrrrrrororooorrrrorrrrrororoororroororroroorrrrororrooorrorrorrororrorrorrroorrororrrorrrrrrrrroroorrorrrrrrrorrrorroooroorroorrrrrrrrrorrrrorrrororrrrrrrrrr
   rorororrrrrrrrrrororrrroroorrorororrrrorrorrrorrorrrrrrroorrrrrorrrrrrrrorroorrrrrrrorrorrrrrorrrrrrrrrrrroorrrroroorrororrorrorrororoooorrrrorroororroroorrrrrorrrrorororrrrrroroorrrorrorrorrorrrorrrr
   rrorrrrororrrorrorrrrrrrororrorrorrrrrrrorrrrrrororrrrrorrrorrorrororrrroroorrrrrorrorrorrooorrrrrrrrorrororrrrrorrrooororororooooorrorrorrrrrrrorrrorrrorrrorrrororrrrorrrroooorrrrrooorrroorrororoorrr
+works:
+  hexes:
+    - {type: trench, at: [[56, 36], [55, 37], [55, 38], [54, 39], [54, 40], [57, 36], [56, 37], [56, 38], [55, 39], [55, 40], [58, 36], [57, 37], [57, 38], [56, 39], [56, 40], [59, 36], [58, 37], [58, 38], [57, 39], [57, 40], [60, 36], [59, 37], [59, 38], [58, 39], [58, 40], [61, 36], [60, 37], [60, 38], [59, 39], [59, 40], [62, 36], [61, 37], [61, 38], [60, 39], [60, 40], [63, 36], [62, 37], [62, 38], [61, 39], [61, 40], [64, 36], [63, 37], [63, 38], [62, 39], [62, 40], [65, 36], [64, 37], [64, 38], [63, 39], [63, 40], [19, 62], [18, 63], [18, 64], [17, 65], [17, 66], [20, 62], [19, 63], [19, 64], [18, 65], [18, 66], [21, 62], [20, 63], [20, 64], [19, 65], [19, 66], [22, 62], [21, 63], [21, 64], [20, 65], [20, 66], [23, 62], [22, 63], [22, 64], [21, 65], [21, 66], [24, 62], [23, 63], [23, 64], [22, 65], [22, 66], [25, 62], [24, 63], [24, 64], [23, 65], [23, 66], [26, 62], [25, 63], [25, 64], [24, 65], [24, 66], [27, 62], [26, 63], [26, 64], [25, 65], [25, 66], [28, 62], [27, 63], [27, 64], [26, 65], [26, 66], [29, 62], [28, 63], [28, 64], [27, 65], [27, 66], [30, 62], [29, 63], [29, 64], [28, 65], [28, 66], [108, 73], [108, 74], [107, 75], [107, 76], [109, 73], [109, 74], [108, 75], [108, 76], [110, 73], [110, 74], [109, 75], [109, 76], [111, 73], [111, 74], [110, 75], [110, 76], [112, 73], [112, 74], [111, 75], [111, 76], [113, 73], [113, 74], [112, 75], [112, 76], [114, 73], [114, 74], [113, 75], [113, 76], [115, 73], [115, 74], [114, 75], [114, 76], [116, 73], [116, 74], [115, 75], [115, 76], [117, 73], [117, 74], [116, 75], [116, 76]]}
+    - {type: bunker, at: [[67, 38], [68, 38], [69, 38], [34, 66], [35, 66]]}
 # Batteries on call (off the map): loading the field fills the Fire support panel.
 support:
   - {name: "Polish and British field guns", side: 0, kind: field, tubes: 36}
@@ -214,3 +221,6 @@ units:
   - {name: "Germans in the abbey's ruins", side: 1, men: 200, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 18, pos: [150, 108], facing: 1, prone: true, size: company}
   - {name: "German machine guns (Point 593)", side: 1, men: 15, quality: veteran, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 3, pos: [68, 38], facing: 1, prone: true, size: section}
   - {name: "German machine guns (Phantom Ridge)", side: 1, men: 10, quality: veteran, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [34, 66], facing: 1, prone: true, size: section}
+  - {name: "I./FJR 3, a counter-attack party from Point 569 (first light)", side: 1, men: 30, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 6, pos: [72, 56], facing: 1, size: platoon}
+  - {name: "I./FJR 3, a second party from Point 569 (morning)", side: 1, men: 30, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 6, pos: [56, 64], facing: 1, size: platoon}
+  - {name: "14th Company and 22 men of the reserve (evening)", side: 1, men: 80, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [86, 64], facing: 1, size: platoon}

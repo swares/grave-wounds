@@ -11,7 +11,7 @@
 // drawn by hand, not traced from any map, and approximate; the deployment is the attack going in,
 // in our own words, with round numbers for play.
 import { N, S, unit, writeField, at } from "./field_lib.mjs";
-import { COLS, ROWS, P593, P444, ABBEY, PHANTOM, massif, MASSIF_NOTES, heldSnakeshead, PARA, MG, GERMAN_MORTARS, SIZE_LINE } from "./cassino_massif.mjs";
+import { COLS, ROWS, P593, P444, ABBEY, PHANTOM, massif, MASSIF_NOTES, heldSnakeshead, posts, PARA, MG, GERMAN_MORTARS, SIZE_LINE } from "./cassino_massif.mjs";
 
 const grid = massif();
 const PL = { side: 0, facing: S }, DE = { side: 1, facing: N };
@@ -28,6 +28,13 @@ const units = [
   ...heldSnakeshead(),
   at("German machine guns (Point 593)", DE, 15, MG, 3, [P593[0] + 8, P593[1] + 4], N),
   at("German machine guns (Phantom Ridge)", DE, 10, MG, 2, [PHANTOM[0] + 12, PHANTOM[1] + 6], N),
+  // The counter-attacks on 593 (project doc "point593-counterattacks"): I./FJR 3 from the 569 side
+  // to the south-east, "a series ... shortly after daylight" (Fisher), five in quick succession in
+  // the morning (IPN), parties a platoon strong (Dookola Rzeszy); and at about 19:00 the 14th
+  // Company with 22 men of the reserve. The parties' strengths are ours.
+  at("I./FJR 3, a counter-attack party from Point 569 (first light)", DE, 30, { ...PARA, prone: false }, 6, [P593[0] + 12, P593[1] + 22], N),
+  at("I./FJR 3, a second party from Point 569 (morning)", DE, 30, { ...PARA, prone: false }, 6, [P593[0] - 4, P593[1] + 30], N),
+  at("14th Company and 22 men of the reserve (evening)", DE, 80, { ...PARA, prone: false }, 10, [P593[0] + 26, P593[1] + 30], N),
 ];
 
 writeField({
@@ -35,8 +42,11 @@ writeField({
     { name: "The advance", at: 1, note: "01:00 on 12 May, after the bombardment: the 1st Battalion goes for Albaneta and the Kresowa for Phantom Ridge." },
     { name: "For Point 593", at: 31, note: "01:30: the 2nd Battalion sets off for Point 593.", arrive: [1, 2, 3, 4].map(k => `1st Carpathian Rifle Brigade, 2nd Battalion, company ${k} (for Point 593)`) },
     { name: "Point 593 taken", at: 61, note: "About 02:00 to 02:30: Point 593 is taken, then held against counter-attack after counter-attack." },
+    { name: "Counter-attacks at first light", at: 241, note: "About 05:00: paratroops of I./FJR 3 come up from Point 569 (the hour and the party's strength are ours; 'shortly after daylight').", arrive: ["I./FJR 3, a counter-attack party from Point 569 (first light)"] },
+    { name: "Another counter-attack", at: 301, note: "About 06:00: a second party from 569; five attacks in quick succession in the morning (IPN).", arrive: ["I./FJR 3, a second party from Point 569 (morning)"] },
     { name: "Forced off 593", at: 461, note: "About 08:40 the Poles are forced off 593 by the fifth German attack (one source)." },
     { name: "Abandon 593", at: 721, note: "After 13:00 the decision is taken to abandon 593; at 15:00 the 1st Battalion is ordered back." },
+    { name: "The evening attack", at: 1081, note: "About 19:00: the 14th Company and 22 men of the reserve overrun the last Polish garrison on 593 (two weak sources).", arrive: ["14th Company and 22 men of the reserve (evening)"] },
     { name: "The last men leave", at: 1111, note: "19:30: the last men of 4th Company leave 593." },
   ],
   objective: { at: P593, side: 0, name: "Point 593", radius: 4 },
@@ -44,6 +54,7 @@ writeField({
   travel: { map: "cassino-1944", place: "Phantom Ridge", within: 1, sides: ["Allies", "Germans"] },
   weather: "{cond: fair, wind: calm, light: night, ground: {mud: 0, snow: 0}}",
   grid, units,
+  hexWorks: posts(units),
   support: [
     { name: "Polish and British field guns", side: 0, kind: "field", tubes: 36 },
     { name: "Medium and heavy guns", side: 0, kind: "howitzer", tubes: 12 },

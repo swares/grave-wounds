@@ -62,6 +62,12 @@ export function frontRow(u){
   const start = stepHex(u.pos, u.facing + 2, Math.floor((u.width - 1) / 2));
   return Array.from({ length: u.width }, (_, i) => stepHex(start, u.facing + 5, i));
 }
+// Every hex a unit stands on: its front row and the ranks behind it, `perHex` men a hex (its
+// formation's per_hex in units.yaml), for works that cover the whole unit.
+export function allRows(u, perHex){
+  const depth = Math.max(1, Math.ceil(u.men / (u.width * perHex)));
+  return frontRow(u).flatMap(h => Array.from({ length: depth }, (_, k) => stepHex(h, u.facing + 3, k)));
+}
 // The first column of a unit's front row (facing north).
 export const firstCol = u => u.pos[0] - Math.floor((u.width - 1) / 2);
 
