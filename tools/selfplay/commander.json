@@ -203,27 +203,27 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 3.17
+      "ratio": 1.27
      },
      "drew": 0.0,
-     "lost_share": 0.059,
+     "lost_share": 0.111,
      "side": "Allies",
      "stance": "attack",
-     "won": 1.0
+     "won": 0.75
     },
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.35
+      "ratio": 0.8
      },
      "drew": 0.0,
-     "lost_share": 0.627,
+     "lost_share": 0.538,
      "side": "Germans",
      "stance": "hold",
-     "won": 0.0
+     "won": 0.25
     }
    ],
-   "stamp": "5fbfe3f551d9"
+   "stamp": "561279ed7829"
   },
   "cassino-poles-1944": {
    "runs": 12,
@@ -231,10 +231,10 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 3.39
+      "ratio": 1.88
      },
      "drew": 0.0,
-     "lost_share": 0.059,
+     "lost_share": 0.105,
      "side": "Allies",
      "stance": "attack",
      "won": 1.0
@@ -242,16 +242,16 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.38
+      "ratio": 0.54
      },
      "drew": 0.0,
-     "lost_share": 0.747,
+     "lost_share": 0.726,
      "side": "Germans",
      "stance": "hold",
      "won": 0.0
     }
    ],
-   "stamp": "efbea70dcd70"
+   "stamp": "66d674b16008"
   },
   "cassino-town-1944": {
    "runs": 12,

@@ -2955,6 +2955,17 @@ rough) and gullies lie between.
   route to Phantom Ridge first (the 1st Battalion's Albaneta is not on this map, so it goes for
   593); the February battalions stay
   whole (see `docs/selfplay-review.md`).
+- The paratroops' posts on 593, 444 and Phantom Ridge are stone **sangars** (trenches: cover,
+  hidden), their machine guns in **bunkers**: they "sat out the bombardment under cover" in
+  sangars placed where the guns could not reach (Anders's report), with bunkers on 593 and on
+  Phantom Ridge (project doc "point593-counterattacks"). Without them the Allied guns put down
+  about 700 paratroops in three runs before the infantry arrived. Measured on 12 runs of every
+  battlefield: 431 of 576 from 428, the Monastery 0 to 3.
+- May's counter-attacks on 593: two parties of I./FJR 3 from Point 569 about 05:00 and 06:00
+  (a series "shortly after daylight", five in quick succession in the morning) and the 14th
+  Company with 22 men of the reserve about 19:00; the parties' strengths (30, 30 and 80) are
+  ours, as no source gives them. They are too few: the Poles still hold 593 to the end in every
+  run (0 of 12).
 - Fire support on both sides; the wound tables are the Second World War's (Owens).
 
 **Cassino town and Castle Hill, 15 March 1944** (`data/fields/cassino-town-1944.yaml`). The
