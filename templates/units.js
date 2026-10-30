@@ -3438,7 +3438,7 @@ function planFor(us, side, [field, known, exchange, stance, table], rng){   // t
     if (mobile.length >= 2 && flanks.length === 2 && ours >= P.double * theirs) cands.push(["double", W.double]);
   } else {
     if (mine.some(i => us[i].reserve)) cands.push(["counter", W.counter]);
-    if (theirs >= P.delay * ours) cands.push(["delay", W.delay]);
+    if (theirs >= P.delay * ours && !planGarrison(us, mine, field, P)) cands.push(["delay", W.delay]);
     cands.push(["stand", W.stand]);
   }
   if (!cands.length) return { template: "stand", steps: [] };
@@ -3449,6 +3449,12 @@ function planFor(us, side, [field, known, exchange, stance, table], rng){   // t
     for (const [name, w] of cands){ total += w; if (roll <= total){ pick = name; break } }
   }
   return planTemplate(us, [pick, mine, foes, seen, roles], [front, flanks, mobile], [exchange, modern, P]);
+}
+function planGarrison(us, mine, field, P){        // planner.position % or more of the side's men hold a position or stand on the objective: a garrison, which holds rather than delays (as commander._garrison)
+  const obj = objectiveOf(field), r = obj !== null ? objectiveRadii(field)[0] : 0;
+  const held = mine.filter(i => holdsPosition(us, i, field) || (obj !== null && offObjective(us[i], obj) <= r)).reduce((a, i) => a + us[i].men, 0);
+  const total = mine.reduce((a, i) => a + us[i].men, 0);
+  return total > 0 && 100 * held >= P.position * total;
 }
 function planFront(us, mine, foes, seen){          // the axis to the known enemy, the lateral (left of it) and the enemy units at each end (as commander._front)
   const so = [0, 1, 2].map(k => mine.reduce((a, i) => a + cube(us[i].pos)[k], 0)), se = [0, 1, 2].map(k => foes.reduce((a, j) => a + cube(seen.get(j).pos)[k], 0));

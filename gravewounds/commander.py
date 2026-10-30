@@ -1419,7 +1419,7 @@ def plan_for(d: Data, us: list, side, ctx: tuple, rng) -> dict:
     else:
         if any(us[i].get("reserve") for i in mine):
             cands.append(("counter", W["counter"]))
-        if theirs >= P["delay"] * ours:
+        if theirs >= P["delay"] * ours and not _garrison(d, us, mine, field, P):
             cands.append(("delay", W["delay"]))
         cands.append(("stand", W["stand"]))
     if not cands:
@@ -1433,6 +1433,16 @@ def plan_for(d: Data, us: list, side, ctx: tuple, rng) -> dict:
                 pick = name
                 break
     return _template(d, us, (pick, mine, foes, seen, roles), (front, flanks, mobile), (exchange, modern, P))
+
+
+def _garrison(d: Data, us: list, mine: list, field: dict | None, P: dict) -> bool:
+    """planner.position % or more of the side's men hold a position (units.holds_position) or
+    stand on the objective (within its radius): a garrison, which holds rather than delays."""
+    obj = objective(field)
+    r = U.objective_radii(d, field)[0] if obj is not None else 0
+    held = sum(us[i]["men"] for i in mine if U.holds_position(d, us, i, field) or (obj is not None and U.off_objective(d, us[i], obj) <= r))
+    total = sum(us[i]["men"] for i in mine)
+    return total > 0 and 100 * held >= P["position"] * total
 
 
 def _front(us: list, mine: list, foes: list, seen: dict) -> dict:

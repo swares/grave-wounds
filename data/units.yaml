@@ -1116,9 +1116,11 @@ commander:
   # other enemy it knows of, and its ground costs on average no more than `going` times open ground.
   # Assault units wait at a start line `start` hexes short of the enemy unit opposite them until it
   # is pinned (fire and movement) or `wait` exchanges have gone. A double envelopment wants the odds
-  # at `double` to 1 or better; a delay is chosen at `delay` to 1 against or worse. `weights`: how
+  # at `double` to 1 or better; a delay is chosen at `delay` to 1 against or worse, but never while
+  # `position` % or more of the side's men hold a position (works, dug in, a bunker, cover) or stand
+  # on the objective: a garrison holds. `weights`: how
   # much each template that fits is favoured when one is picked by the dice. Design estimates.
-  planner: {flank_gap: 12, going: 2, start: 12, wait: 10, double: 2, delay: 3, weights: {assault: 1, single: 2, double: 2, counter: 2, delay: 3, stand: 1}}
+  planner: {flank_gap: 12, going: 2, start: 12, wait: 10, double: 2, delay: 3, position: 50, weights: {assault: 1, single: 2, double: 2, counter: 2, delay: 3, stand: 1}}
   # sappers (units marked sappers: mines.sappers): holding, or at the objective, out of contact
   # and with no enemy it knows of within `clear_of` hexes, they lay mines in the
   # row ahead (mixed if the enemy it knows of has vehicles, else anti-personnel), where it is
