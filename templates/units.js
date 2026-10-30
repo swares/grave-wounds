@@ -1989,6 +1989,17 @@ function breachAll(us, field, log){               // units ordered to breach hac
     });
   });
 }
+function laddersAll(us, field, log){              // units with ladders put them down into any deep ditch on the sides of their hexes: crossed at its cross from then on, by anyone (works updated in place; as units._ladders_all)
+  const edges = field?.works?.edges;
+  if (!edges) return;
+  us.forEach((u, i) => {
+    if (!hasLadders(u) || out_(u)) return;
+    let n = 0;
+    for (const h of footprint(u).flat()) for (let dirn = 0; dirn < 6; dirn++)
+      for (const it of edges[edgeKey(h, step(h, dirn))] || []) if (it.deep && !it.laddered){ it.laddered = true; n++ }
+    if (n) log.push({ kind: "ladders", unit: i, sides: n });
+  });
+}
 const offObjective = (u, obj) => Math.min(1e6, ...footprint(u).flat().map(h => hdist(h, obj)));   // hexes from its nearest hex to the objective (1e6 with no hexes)
 function objectiveRadii(field){                    // [radius, hold, guard] of the field's objective: commander.objective's, widened by its own objective_radius (as units.objective_radii)
   const R = UD.commander.objective, r = field?.objective_radius || R.radius;
@@ -2027,6 +2038,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   assaultAll(us, table, rng, acc, log, field);
   if (field) field.blast = !!blastWeapon(table);   // demolition charges on this table (walls)
   breachAll(us, field, log);
+  laddersAll(us, field, log);
   const occ = occupancy(us), before = us.map(u => u.men), fired = firedOn(log);
   us.forEach((u, i) => {
     if (fired.has(i)) u.fired_on = true; else delete u.fired_on;   // shot at this exchange, hit or not: for storming in bounds

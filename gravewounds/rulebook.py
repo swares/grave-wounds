@@ -566,7 +566,8 @@ def _sight(hexes) -> str:
 def _cross(x, w: dict | None = None) -> str:
     """How a work is crossed: its movement cost, or how it is opened when it cannot be."""
     if x is not None:
-        return f"+{x} movement" if x else "free"
+        deep = (w or {}).get("deep")
+        return (f"+{x} movement" if x else "free") + (f" (+{deep} where marked deep, without ladders)" if deep else "")
     w = w or {}
     if w.get("breach"):
         return "cannot be crossed (breach it)"

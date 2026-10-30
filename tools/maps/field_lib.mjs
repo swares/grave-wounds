@@ -125,7 +125,8 @@ export const alongLine = (line, ahead) => (w, c0) => [w, c0, Math.min(...Array.f
 
 // Writes the battlefield file. spec: {id, script, header (comment lines), name, sides, table,
 // travel {map, place, within, sides}, weather (YAML flow text), grid, hexWorks {type: [hexes]},
-// edgeWorks {type: [[hex, hex], ...]} (the first hex of each pair the high or inner side), units,
+// edgeWorks {type: [[hex, hex], ...]} (the first hex of each pair the high or inner side), deep (the
+// edge work types drawn deep: a siege ditch that needs ladders, works.yaml `deep`), units,
 // up (the compass point at the top of the map, if not north), support (each side's batteries on
 // call: [{name, side (0 or 1), kind (units.yaml indirect.kinds), tubes}]), lz (landing zones,
 // hexes; a unit with `lands: k` comes in by air at the k-th), dumps (supply dumps placed before the battle:
@@ -141,7 +142,7 @@ export function writeField(spec){
   const { grid } = spec, works = Object.entries(spec.hexWorks || {});
   const edges = Object.entries(spec.edgeWorks || {});
   const workLine = ([type, hs]) => `    - {type: ${type}, at: [${hexList(hs)}]}`;
-  const edgeLine = ([type, pairs]) => `    - {type: ${type}, at: [${pairs.map(pr => "[" + hexList(pr) + "]").join(", ")}]}`;
+  const edgeLine = ([type, pairs]) => `    - {type: ${type}${(spec.deep || []).includes(type) ? ", deep: true" : ""}, at: [${pairs.map(pr => "[" + hexList(pr) + "]").join(", ")}]}`;
   const hexText = works.length ? "  hexes:\n" + works.map(workLine).join("\n") + "\n" : "";
   const edgeText = edges.length ? "  edges:\n" + edges.map(edgeLine).join("\n") + "\n" : "";
   const worksText = hexText || edgeText ? "works:\n" + hexText + edgeText : "";

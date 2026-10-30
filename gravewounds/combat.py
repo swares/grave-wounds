@@ -905,11 +905,13 @@ def step_cost(d: Data, works, a, b, ground=None, climb: int | None = None) -> in
     """Movement to step from hex a to the next hex b: 1, plus crossing the works on the
     edge and entering the works in b, plus its ground and any climb. None if a work stops him.
     climb: with ladders, a work that cannot be crossed (a wall, a palisade, a barred gate) costs
-    this instead."""
+    this instead, and a deep ditch only its `cross` (as one with ladders already down in it)."""
     cost = 1 + ground_step(d, ground, a, b)
     for it in _edge_items(d, works, a, b):
         s = _spec(d, "edge", it)
         c = None if s.get("gate") else s.get("cross")      # open gates are already left out
+        if it.get("deep") and not it.get("laddered") and climb is None:
+            c = s["deep"]
         if c is None:
             c = climb
         if c is None:

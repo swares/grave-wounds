@@ -14,11 +14,12 @@ function hexItem(works, h){
   const it = works?.hexes?.[hkey(h)];
   return it && intact("hex", it) ? it : null;
 }
-function stepCost(works, a, b, climb = null){   // climb: with ladders, what a wall, palisade or barred gate costs instead of stopping him
+function stepCost(works, a, b, climb = null){   // climb: with ladders, what a wall, palisade or barred gate costs instead of stopping him (and a deep ditch only its cross)
   let cost = 1;
   for (const it of edgeItems(works, a, b)){
     const s = specOf("edge", it);
     let c = s.gate ? null : s.cross;
+    if (it.deep && !it.laddered && (climb === null || climb === undefined)) c = s.deep;   // a deep ditch without ladders down in it
     if (c === null || c === undefined) c = climb;
     if (c === null || c === undefined) return null;
     cost += c;

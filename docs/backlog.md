@@ -307,14 +307,16 @@ When an item is done, delete it here and note it in the pull request that closes
   - on the Great Redan battlefields, the siege guns of both sides, the French attack on the
     Malakhov and the flanking fire of the batteries further along the line (only the guns in
     the work and, on 18 June, a battery either side are on the map);
-  - a deep ditch that needs ladders: the Redan's ladder parties are marked, but the ditch
-    (15 to 20 feet deep) and its bank are crossed without them, as no figures were found for
-    how much slower or costlier it was to get in without ladders.
+  - a deep ditch that needs ladders: done (units.md, *A deep ditch*), with the cost without
+    ladders our reading, as no figures were found for how much slower it was without them.
 - **Sieges and ladders: to look at** (asked 29 October 2026). Gathered from the notes above and
   below; not yet studied as one subject.
-  - **Ladders** work only as escalade over a wall, palisade or barred gate (units.md, *Escalade*).
-    On a ditch and bank (the Great Redan, both battlefields) the marked ladder parties change
-    nothing, for want of figures on how much slower or costlier the ditch was without them.
+  - **Ladders** work as escalade over a wall, palisade or barred gate (units.md, *Escalade*), and
+    go down into a deep ditch (*A deep ditch*: the Great Redan, both battlefields; 30 October 2026).
+    Surveyed (claude/sieges-ladders-survey.md in the project): still to do, what is behind a
+    breach (a drop, a retrenchment, a mine: San Sebastián, Badajoz; Jacob's Ford's burning timber
+    wall), ladders too short (Burgos), the siege guns on the Redans, and a siege phase on the
+    travel map.
   - **The siege before the storm** is off every field map. Jacob's Ford's map starts at the
     storm (its mine, the outer wall and the days before are not played); the Redan's battlefields
     leave out both sides' siege guns and the batteries along the line.

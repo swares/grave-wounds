@@ -1561,6 +1561,8 @@ def _field_works(d: Data, fw: dict) -> dict:
                 it["high"] = C.hkey(a)
             if w["type"] == "gate":
                 it.update({"open": False, "inside": C.hkey(a)})
+            if w.get("deep"):
+                it["deep"] = True
             works["edges"].setdefault(C.edge_key(a, b), []).append(it)
     return works
 
@@ -2525,6 +2527,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     if field is not None:
         field["blast"] = blast_weapon(d, table) is not None   # demolition charges on this table (walls)
     log += _breach_all(d, us, field)
+    log += _ladders_all(d, us, field)
     occ = occupancy(d, us)
     before = [u["men"] for u in us]
     fired = _fired_on(log)
@@ -4210,6 +4213,29 @@ def _breach_all(d: Data, us: list, field: dict | None) -> list:
     for i, u in enumerate(us):
         if u.get("breach") and not _out(u):
             log += _unit_breach(d, field, i, u, per)
+    return log
+
+
+def _ladders_all(d: Data, us: list, field: dict | None) -> list:
+    """Units with ladders put them down into any deep ditch on the sides of their hexes: from then
+    on it is crossed at its `cross`, by anyone (works updated in place). One log line a unit that
+    put some down."""
+    works = _works(field) if field else None
+    if not works:
+        return []
+    log = []
+    for i, u in enumerate(us):
+        if not has_ladders(u) or _out(u):
+            continue
+        n = 0
+        for h in (x for row in footprint(d, u) for x in row):
+            for dirn in range(6):
+                for it in works.get("edges", {}).get(C.edge_key(h, step(h, dirn)), []):
+                    if it.get("deep") and not it.get("laddered"):
+                        it["laddered"] = True
+                        n += 1
+        if n:
+            log.append({"kind": "ladders", "unit": i, "sides": n})
     return log
 
 

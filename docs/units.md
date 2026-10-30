@@ -2075,9 +2075,19 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   Stepping over the work costs 4 hexes of movement (`escalade.cross`), into hexes clear of
   the enemy. Mounted units and guns cannot use ladders. Without ladders, a unit still stops at
   the foot, and only reach-2 weapons strike over. The GM marks the units that carried them.
-  The ladder parties on the two Great Redan battlefields are marked, as in the accounts, but
-  there the ladders change nothing: the Redan is a ditch and an earth bank, which men cross
-  and fight over without them (no figures were found for how much the ladders helped).
+- **A deep ditch** (`deep: true` on a battlefield's ditch; the two Great Redan battlefields):
+  a siege ditch too deep to jump down into. Without ladders, crossing a side of it costs 4 hexes
+  of movement (works.yaml `deep`) instead of a ditch's 2, so with the bank behind it a step
+  over takes all of a close-order move. A unit marked **Ladders** crosses it at the ordinary
+  cost, and at the end of each exchange it puts its ladders down into the deep ditch on every
+  side of its hexes ("X put their ladders down into the deep ditch"): from then on everyone
+  crosses there at the ordinary cost. The sources (sieges-ladders survey, 30 October 2026):
+  at Delhi in 1857 the ditch was 16 to 20 feet deep, the time went on letting the ladders
+  down ("for ten minutes it was impossible to let down the ladders"), and once they were down
+  climbing the far side was "the work of an instant"; at the Redan on 8 September Simpson's
+  ladder party of 320 went ahead of the stormers, "the ladders placed, the men immediately
+  stormed the parapet". How much slower the ditch was without ladders is not in any source
+  found: the 4 is our reading (6 would stop men without ladders altogether, but for a charge).
 
 **The weather** (set under *Weather*, or brought from the travel map) works as on the
 battle map: no shooting beyond what can be seen (fog 5 hexes, heavy rain 15), wet strings
@@ -2863,7 +2873,7 @@ It is drawn by `tools/maps/make_lundys_lane_field.mjs`.
 **The Great Redan, Sevastopol, 8 September 1855** (`data/fields/redan-1855.yaml`). The field
 is 100 × 80 hexes, about 1,090 yards (1,000 m) east to west and 750 yards (690 m) north to
 south, north at the top: the Redan's point toward the British trench at the bottom.
-- The Redan: two faces meeting in a salient, each with a **ditch** and an **earth bank** (the
+- The Redan: two faces meeting in a salient, each with a **deep ditch** (see *A deep ditch*) and an **earth bank** (the
   parapet) along it, joined to the Russian line running off either side of the map. The back
   (the gorge) is open, with a **breastwork** (an earth bank) across it. What is left of the
   **abatis** lies in scattered hexes in front of the faces.
@@ -2872,7 +2882,7 @@ south, north at the top: the Redan's point toward the British trench at the bott
   sides; the shelled ruins of the Karabelnaya suburb (rubble and buildings) behind the Redan.
 - Fair and cold, with a strong north wind.
 - Just after noon: the covering party of riflemen and the ladder party (marked with ladders,
-  which do nothing on an earthwork; see *Escalade*) out in front, the
+  which go down into the deep ditch where it reaches it; see *A deep ditch*) out in front, the
   stormers of the Light and 2nd Divisions in the trench, and green supports behind.
 - The Russians: the Vladimirski Regiment at the salient and behind the breastwork, guns at
   each shoulder, riflemen on the line to the west, and the Iakutski and Selenginski regiments
@@ -2904,8 +2914,7 @@ of the faces) and fewer shell holes.
 - Daybreak, fair and calm, light enough to see across the open ground (the columns were
   under fire as soon as they left the trenches).
 - Two British columns, each with covering riflemen of the Rifle Brigade, a ladder and
-  wool-bag party of sailors and soldiers (marked with ladders, which do nothing on an
-  earthwork), a storming party and green supports: the right
+  wool-bag party of sailors and soldiers (marked with ladders, for the deep ditch), a storming party and green supports: the right
   column (Yea) facing the Redan's left face, the left column (Campbell) the right face and
   the angle beyond it. The centre column, meant to follow against the salient, never left the
   trenches (Engels, writing in 1855; the losses fell almost all in the flank columns'
