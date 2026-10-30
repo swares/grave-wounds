@@ -6,7 +6,9 @@
 #     units: names of the side's units; do: the task, with its keys:
 #       advance_to {to: hex}: to a line, then hold it;
 #       pin {target: enemy unit}: keep it under fire from as far off as it can, never closing;
-#       envelop {via: [hexes], target (optional)}: go round by the waypoints, then attack;
+#       envelop {via: [hexes], target (optional), stall (optional)}: go round by the waypoints, then
+#         attack; with stall, give up after that many moves coming no nearer (back to the reserve if
+#         it was held there);
 #       commit {to (optional): hex}: out of the reserve (to that hex, as plugging a gap);
 #       withdraw_if {to: hex or N, S, E, W}: fall back there (hold it) or leave by that edge.
 #     when: when it starts (from the first exchange if left out); until (optional): when it ends.

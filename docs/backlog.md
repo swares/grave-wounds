@@ -89,8 +89,9 @@ When an item is done, delete it here and note it in the pull request that closes
   plans give phase lines, pinning, envelopments, reserves and withdrawals on a trigger where a
   battlefield's plan says so: units.md, *Plans*; six battlefields have one so far; a procedural planner writes
   the commander's own plan for battles with no account, once, from five templates: units.md,
-  *The procedural planner*; measured one side at a time, a plan helps its side (25 sides better, 14 worse
-  of 90); to trace: the attacks it made worse (Jacob's Ford, Keating's insurgents, Sidon, Aljubarrota);
+  *The procedural planner*; measured one side at a time, a plan helps holding sides (14 better, 5 worse of 43);
+  the attacks it made worse were traced and fixed (the plan left units in reserve alone), which also
+  took away most attacking gains: when a plan should send the reserve in is open;
   still to come: re-planning when a plan fails, feints and scouting); ladders only where the GM or a battlefield marks them (the Great Redan's ladder parties are marked, but ladders do nothing on its ditch and bank). It does
   not play the travel map. Later, by the choice made: an optional narrator, using a model
   with a key the player supplies, to explain its orders in prose.

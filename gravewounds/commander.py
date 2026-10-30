@@ -1221,9 +1221,9 @@ def plan_steps(d: Data, us: list, side, ctx: tuple) -> list:
                 continue
             run = u.get("task")
             if run and run["step"] == k:
-                why = _task_done(us, i, run) or (_fires(d, us, (i, st), st["until"], ctx) if st.get("until") else None)
+                why = _task_done(us, i, run) or _gave_up(us, i, st) or (_fires(d, us, (i, st), st["until"], ctx) if st.get("until") else None)
                 if why:
-                    _end_task(us, i)
+                    _end_task(us, i, back=bool(why.get("stalled")))
                     out.append({"unit": i, "act": "plan", "step": k, "do": st["do"], "start": False, "why": why})
                 continue
             if k in (u.get("steps") or []):
@@ -1244,13 +1244,14 @@ def _start_task(us: list, i: int, k: int, st: dict, exchange) -> None:
     it out of the reserve."""
     u, do = us[i], st["do"]
     u["steps"] = [*(u.get("steps") or []), k]
+    was = bool(u.get("reserve"))
     if do != "withdraw_if":
         u["reserve"] = False
     if do == "commit":
         if st.get("to"):
             u["plug"] = list(st["to"])
         return
-    u["task"] = {"step": k, "do": do}
+    u["task"] = {"step": k, "do": do, **({"reserve": True} if was else {})}
     if do == "withdraw_if":
         u["withdraw"] = {"at": exchange or 0, "to": st["to"] if isinstance(st["to"], str) else list(st["to"])}
     elif do == "envelop":
@@ -1261,11 +1262,14 @@ def _start_task(us: list, i: int, k: int, st: dict, exchange) -> None:
         u["focus"] = st["target"]
 
 
-def _end_task(us: list, i: int) -> None:
+def _end_task(us: list, i: int, back: bool = False) -> None:
     """Unit i's running step ends: its task, target and line go (an envelopment's route and a
-    withdrawal not yet done with it)."""
+    withdrawal not yet done with it). back: it gave up, and goes back to the reserve if it was held
+    there when the step began."""
     u = us[i]
     do = u["task"]["do"]
+    if back and u["task"].get("reserve"):
+        u["reserve"] = True
     for key in TASK_KEYS:
         u.pop(key, None)
     if do == "envelop":
@@ -1285,6 +1289,30 @@ def _task_done(us: list, i: int, run: dict) -> dict | None:
     if run["do"] == "envelop" and not u.get("focus") and not u.get("via"):
         return {"done": True}
     return None
+
+
+def _gave_up(us: list, i: int, st: dict) -> dict | None:
+    """An envelopment with a `stall` that has come no nearer its next waypoint (or, round, its
+    target) for that many moves gives up: {stalled: True}, else None. The nearest it has come is
+    kept on its task (best, still), a new task each move so a copy of the unit taken before does not
+    change with it."""
+    u, run = us[i], us[i]["task"]
+    if run["do"] != "envelop" or not st.get("stall"):
+        return None
+    if u.get("via"):
+        to = list(u["via"][0])
+    else:
+        j = _named(us, u["focus"], u["side"], False) if u.get("focus") else None
+        if j is None:
+            return None
+        to = list(us[j]["pos"])
+    dist = U.hdist(u["pos"], to)
+    if run.get("to") != to or dist < run.get("best", 10**9):
+        u["task"] = {**run, "to": to, "best": dist, "still": 0}
+        return None
+    still = run.get("still", 0) + 1
+    u["task"] = {**run, "still": still}
+    return {"stalled": True} if still >= st["stall"] else None
 
 
 def _named(us: list, name: str, side, ours: bool) -> int | None:
@@ -1409,7 +1437,7 @@ def plan_for(d: Data, us: list, side, ctx: tuple, rng) -> dict:
     seen = {j: _where(us, j, known) for j in foes}
     force = lambda ix, w: sum(w(j)["men"] * U.quality(d, w(j)["quality"])["attack"] for j in ix)
     ours, theirs = force(mine, lambda j: us[j]), force(foes, lambda j: seen[j])
-    roles = {i: _roles(d, us[i], modern) for i in mine}
+    roles = {i: (set() if us[i].get("reserve") else _roles(d, us[i], modern)) for i in mine}   # a unit held in reserve is left to the reserve's own rules
     front = _front(us, mine, foes, seen)
     flanks = [f for f in (_flank(d, us, field, (front, +1), (mine, foes, seen)), _flank(d, us, field, (front, -1), (mine, foes, seen))) if f]
     flanks.sort(key=lambda f: f["cost"])
@@ -1504,13 +1532,11 @@ def _flank(d: Data, us: list, field: dict | None, fs: tuple, sides: tuple) -> di
     cost, keys = 0, {k: g for k, g in d.units["ground"].items()}
     for x in path:
         kind = ((field or {}).get("ground") or {}).get(f"{x[0]},{x[1]}", "open")
-        if keys[kind].get("impassable"):
-            return None
+        if keys[kind].get("impassable") or keys[kind]["move"] > P["going"] * keys["open"]["move"]:
+            return None                          # every hex of the way, not the average, within the going
         cost += keys[kind]["move"]
         if any(j != end and U.hdist(x, seen[j]["pos"]) < P["flank_gap"] for j in foes):
             return None
-    if cost > P["going"] * len(path):
-        return None
     return {"sgn": sgn, "end": end, "via": [list(w1), list(w2)], "cost": cost * 1000 // len(path)}
 
 
@@ -1534,18 +1560,32 @@ def _template(d: Data, us: list, who: tuple, ground: tuple, when: tuple) -> dict
         return {"template": "counter", "steps": steps}
     going = {"single": flanks[:1], "double": flanks[:2]}.get(pick, [])
     movers = set(mobile) if going else set()
+    pinned = []                                  # the enemy units the plan's fire units pin
     for i in mine:
-        if i in movers:
+        if i not in movers and "fire" in roles[i]:
+            t = nearest(i)
+            steps.append({"units": [name(i)], "do": "pin", "target": name(t)})
+            if t not in pinned:
+                pinned.append(t)
+    reach, used = d.units["commander"]["route"]["reach"], set()
+    for i in mine:                               # assault units wait at a start line only for fire that is coming, and only in fire and movement
+        if i in movers or "fire" in roles[i] or "assault" not in roles[i] or not modern or not pinned:
             continue
         t = nearest(i)
-        if "fire" in roles[i]:
-            steps.append({"units": [name(i)], "do": "pin", "target": name(t)})
-        elif "assault" in roles[i] and U.hdist(us[i]["pos"], seen[t]["pos"]) > P["start"] + d.units["commander"]["route"]["reach"]:
-            line = U.ray(seen[t]["pos"], us[i]["pos"], P["start"])[-1]
-            until = [{"exchange": (exchange or 0) + P["wait"]}]
-            if modern:
-                until = [{"pinned": name(t)}] + until
-            steps.append({"units": [name(i)], "do": "advance_to", "to": list(line), "until": until})
+        if U.hdist(us[i]["pos"], seen[t]["pos"]) <= P["start"] + reach:
+            continue
+        line = None
+        for k in range(reach + 1):               # two in column do not share one hex: the one behind halts further back
+            h = U.ray(seen[t]["pos"], us[i]["pos"], P["start"] + k)[-1]
+            if tuple(h) not in used:
+                line = h
+                break
+        if line is None:
+            continue
+        used.add(tuple(line))
+        pt = min(pinned, key=lambda j: (U.hdist(us[i]["pos"], seen[j]["pos"]), j))
+        steps.append({"units": [name(i)], "do": "advance_to", "to": list(line),
+                      "until": [{"pinned": name(pt)}, {"exchange": (exchange or 0) + P["wait"]}]})
     if going:
         lat = front["lat"]
         order = sorted(movers, key=lambda i: (-_dot(_cube_of(us[i]["pos"]), lat), i))   # leftmost first
@@ -1554,7 +1594,8 @@ def _template(d: Data, us: list, who: tuple, ground: tuple, when: tuple) -> dict
             going = [going[1], going[0]]           # the left flank's force is the leftmost half
         for f, grp in zip(going, groups):
             if grp:
-                steps.append({"units": [name(i) for i in grp], "do": "envelop", "via": f["via"], "target": name(f["end"])})
+                steps.append({"units": [name(i) for i in grp], "do": "envelop", "via": f["via"], "target": name(f["end"]),
+                              "stall": d.units["commander"]["stall"]["moves"]})
         by = going[0]["via"][-1]
     return {"template": pick, "steps": steps, **({"by": by} if by else {})}
 
