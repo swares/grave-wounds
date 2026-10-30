@@ -1989,6 +1989,17 @@ function breachAll(us, field, log){               // units ordered to breach hac
     });
   });
 }
+function laddersAll(us, field, log){              // units with ladders put them down into any deep ditch on the sides of their hexes: crossed at its cross from then on, by anyone (works updated in place; as units._ladders_all)
+  const edges = field?.works?.edges;
+  if (!edges) return;
+  us.forEach((u, i) => {
+    if (!hasLadders(u) || out_(u)) return;
+    let n = 0;
+    for (const h of footprint(u).flat()) for (let dirn = 0; dirn < 6; dirn++)
+      for (const it of edges[edgeKey(h, step(h, dirn))] || []) if (it.deep && !it.laddered){ it.laddered = true; n++ }
+    if (n) log.push({ kind: "ladders", unit: i, sides: n });
+  });
+}
 const offObjective = (u, obj) => Math.min(1e6, ...footprint(u).flat().map(h => hdist(h, obj)));   // hexes from its nearest hex to the objective (1e6 with no hexes)
 function objectiveRadii(field){                    // [radius, hold, guard] of the field's objective: commander.objective's, widened by its own objective_radius (as units.objective_radii)
   const R = UD.commander.objective, r = field?.objective_radius || R.radius;
@@ -2027,6 +2038,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   assaultAll(us, table, rng, acc, log, field);
   if (field) field.blast = !!blastWeapon(table);   // demolition charges on this table (walls)
   breachAll(us, field, log);
+  laddersAll(us, field, log);
   const occ = occupancy(us), before = us.map(u => u.men), fired = firedOn(log);
   us.forEach((u, i) => {
     if (fired.has(i)) u.fired_on = true; else delete u.fired_on;   // shot at this exchange, hit or not: for storming in bounds
@@ -2454,6 +2466,7 @@ const STEPS = [];                                  // while a commander orders i
 function moverOf(u){                               // what a step's movement depends on in the unit: vehicle, horse, ladders or foot (as units._mover)
   if (u.vehicle) return "v";
   if (u.mounted) return "m";
+  if (u.no_deep) return "d";                       // a charge without ladders: a deep ditch stops it
   return hasLadders(u) ? "l" : "f";
 }
 function unitStepCost(field, u, a, b){            // movement for the middle hex from a to b: works, ground, deep going; null if it cannot; remembered while a commander orders its side (as units.step_cost)
@@ -2466,7 +2479,7 @@ function unitStepCost(field, u, a, b){            // movement for the middle hex
 }
 function stepOf(field, u, a, b){                  // unitStepCost, worked out (as units._step_cost)
   if (!canEnter(field, u, b)) return null;
-  const c = stepCost(field.works, a, b, hasLadders(u) ? UD.escalade.cross : null);
+  const c = stepCost(field.works, a, b, hasLadders(u) ? UD.escalade.cross : null, !!u.no_deep);
   if (c === null) return null;
   const going = u.vehicle ? UD.vehicles.ground[groundKey(field, b)] : groundAt(field, b).move;
   return c + going - 1 + deepGoing(field.weather?.ground) + (coldOf(field)?.move || 0) + (lightOf(field)?.move || 0);
@@ -2531,12 +2544,17 @@ function moveUnit(units, i, pos, facing, size, field = null){   // {ok, cost, ch
   const rooted = (pos[0] !== u.pos[0] || pos[1] !== u.pos[1]) && rootedWhy(u);
   if (rooted) return { ok: false, why: rooted };
   const turns = Math.min(mod6(facing - u.facing), mod6(u.facing - facing)), most = allowance(u) * UD.charge_move;
-  const [steps, through] = chargePath(units, i, pos, size, most, field);
+  let [steps, through] = chargePath(units, i, pos, size, most, field);
   if (steps === null) return { ok: false, why: "too far, or no way through" };
   const moved = { ...u, pos: pos.slice(), facing: mod6(facing) };
   if (!fits(units, i, moved, size, field)) return { ok: false, why: "no room there" };
-  const cost = steps + turns * turnCost(u) + (turns ? sweepCost(field, { ...u, pos: pos.slice() }, moved) : 0), after = units.map((x, k) => (k === i ? moved : x));
-  return moveVerdict(units, i, pos, { cost, steps, most, through, contact: inContact(after, occupancy(after), i) });
+  const after = units.map((x, k) => (k === i ? moved : x)), contact = inContact(after, occupancy(after), i);
+  if (contact && steps > 0 && !hasLadders(u) && openDeep(field)){   // no charge across a deep ditch without ladders down in it
+    [steps, through] = chargePath(units.map((x, k) => (k === i ? { ...x, no_deep: true } : x)), i, pos, size, most, field);
+    if (steps === null) return { ok: false, why: "it cannot charge across a deep ditch without ladders down in it" };
+  }
+  const cost = steps + turns * turnCost(u) + (turns ? sweepCost(field, { ...u, pos: pos.slice() }, moved) : 0);
+  return moveVerdict(units, i, pos, { cost, steps, most, through, contact });
 }
 function moveVerdict(units, i, pos, { cost, steps, most, through, contact }){   // {ok, cost, charge, through?, why} for a move whose path, cost and contact are known (as the end of units.move)
   const u = units[i];
@@ -2546,6 +2564,7 @@ function moveVerdict(units, i, pos, { cost, steps, most, through, contact }){   
   if (contact && u.state === "steady" && cost <= most) return { ok: true, cost, charge: true, ...passed };
   return { ok: false, why: "too far" };
 }
+const openDeep = field => !!field && Object.values(field.works?.edges || {}).some(its => its.some(it => it.deep && !it.laddered));   // a deep ditch on the field with no ladders down in it somewhere (as units._open_deep)
 function chargePath(units, i, pos, size, most, field){   // [least movement, passing through friends]: round them, else (a steady unit, for a charge) through them (as units._charge_path)
   const steps = pathLen(units, i, pos, size, most, field);
   if (steps !== null || units[i].state !== "steady") return [steps, false];

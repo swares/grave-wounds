@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-29",
+ "generated": "2026-10-30",
  "coins": {
   "civil_war": {
    "currencies": {
@@ -25563,7 +25563,8 @@
     "cross": 2,
     "cover": 0,
     "height": 10,
-    "breach": null
+    "breach": null,
+    "deep": 4
    },
    "bank": {
     "name": "Earth bank",

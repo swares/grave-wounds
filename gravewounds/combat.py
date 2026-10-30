@@ -901,15 +901,20 @@ def clear_ground(ground: dict, centre, radius: int, cols: int, rows: int) -> Non
                 ground["levels"].pop(k, None)
 
 
-def step_cost(d: Data, works, a, b, ground=None, climb: int | None = None) -> int | None:
+def step_cost(d: Data, works, a, b, ground=None, climb: int | None = None, deep_stops: bool = False) -> int | None:
     """Movement to step from hex a to the next hex b: 1, plus crossing the works on the
     edge and entering the works in b, plus its ground and any climb. None if a work stops him.
     climb: with ladders, a work that cannot be crossed (a wall, a palisade, a barred gate) costs
-    this instead."""
+    this instead, and a deep ditch only its `cross` (as one with ladders already down in it).
+    deep_stops: a deep ditch with no ladders down in it stops him (a charge without ladders)."""
     cost = 1 + ground_step(d, ground, a, b)
     for it in _edge_items(d, works, a, b):
         s = _spec(d, "edge", it)
         c = None if s.get("gate") else s.get("cross")      # open gates are already left out
+        if it.get("deep") and not it.get("laddered") and climb is None:
+            if deep_stops:
+                return None
+            c = s["deep"]
         if c is None:
             c = climb
         if c is None:
@@ -987,7 +992,8 @@ def missile_cover(d: Data, works, attacker, target, cols: int, rows: int) -> dic
 
 
 def melee_across(d: Data, works, attacker, target, reach: int, cols: int, rows: int) -> dict:
-    """A close-combat attack across works: {blocked (only reach 2+ strikes over it),
+    """A close-combat attack across works: {blocked (only reach 2+ strikes over it: a wall,
+    palisade or gate, or a deep ditch with no ladders down in it),
     penalty (% off for attacking up at a man on the high side), work}."""
     cands = [list(attacker)] if hex_distance(attacker, target) == 1 else facing(target, attacker, cols, rows)
     blocked, penalty, what = False, 0, None
@@ -995,8 +1001,8 @@ def melee_across(d: Data, works, attacker, target, reach: int, cols: int, rows: 
         pen = 0
         for e in _edge_items(d, works, target, n):
             s = _spec(d, "edge", e)
-            if s.get("blocks_melee") and reach < 2 and hex_distance(attacker, target) == 1:
-                blocked, what = True, e["type"]
+            if (s.get("blocks_melee") or (e.get("deep") and not e.get("laddered"))) and reach < 2 and hex_distance(attacker, target) == 1:
+                blocked, what = True, e["type"]      # a wall, or a deep ditch with no ladders down in it
             if s.get("height") and e.get("high") == hkey(target):
                 pen += s["height"]
                 what = what or e["type"]

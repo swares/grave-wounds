@@ -1561,6 +1561,8 @@ def _field_works(d: Data, fw: dict) -> dict:
                 it["high"] = C.hkey(a)
             if w["type"] == "gate":
                 it.update({"open": False, "inside": C.hkey(a)})
+            if w.get("deep"):
+                it["deep"] = True
             works["edges"].setdefault(C.edge_key(a, b), []).append(it)
     return works
 
@@ -2525,6 +2527,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     if field is not None:
         field["blast"] = blast_weapon(d, table) is not None   # demolition charges on this table (walls)
     log += _breach_all(d, us, field)
+    log += _ladders_all(d, us, field)
     occ = occupancy(d, us)
     before = [u["men"] for u in us]
     fired = _fired_on(log)
@@ -4213,6 +4216,29 @@ def _breach_all(d: Data, us: list, field: dict | None) -> list:
     return log
 
 
+def _ladders_all(d: Data, us: list, field: dict | None) -> list:
+    """Units with ladders put them down into any deep ditch on the sides of their hexes: from then
+    on it is crossed at its `cross`, by anyone (works updated in place). One log line a unit that
+    put some down."""
+    works = _works(field) if field else None
+    if not works:
+        return []
+    log = []
+    for i, u in enumerate(us):
+        if not has_ladders(u) or _out(u):
+            continue
+        n = 0
+        for h in (x for row in footprint(d, u) for x in row):
+            for dirn in range(6):
+                for it in works.get("edges", {}).get(C.edge_key(h, step(h, dirn)), []):
+                    if it.get("deep") and not it.get("laddered"):
+                        it["laddered"] = True
+                        n += 1
+        if n:
+            log.append({"kind": "ladders", "unit": i, "sides": n})
+    return log
+
+
 def _unit_breach(d: Data, field: dict, i: int, u: dict, per: float) -> list:
     log, rows, men = [], footprint(d, u), men_by_hex(d, u)
     for k, h in enumerate(rows[0] if rows else []):
@@ -4467,6 +4493,8 @@ def _mover(u: dict) -> str:
         return "v"
     if u.get("mounted"):
         return "m"
+    if u.get("no_deep"):
+        return "d"                                  # a charge without ladders: a deep ditch stops it
     return "l" if has_ladders(u) else "f"
 
 
@@ -4488,7 +4516,7 @@ def _step_cost(d: Data, field: dict, u: dict, a, b) -> int | None:
     """step_cost, worked out."""
     if not _can_enter(d, field, u, b):
         return None
-    c = C.step_cost(d, _works(field), a, b, climb=d.units["escalade"]["cross"] if has_ladders(u) else None)
+    c = C.step_cost(d, _works(field), a, b, climb=d.units["escalade"]["cross"] if has_ladders(u) else None, deep_stops=bool(u.get("no_deep")))
     if c is None:
         return None
     wx = field.get("weather") or {}
@@ -4566,9 +4594,13 @@ def move(d: Data, units: list, i: int, pos, facing: int, size: tuple, field: dic
     moved = {**u, "pos": list(pos), "facing": facing % 6}
     if not _fits(d, units, i, moved, size, field):
         return {"ok": False, "why": "no room there"}
-    cost = steps + turns * turn_cost(d, u) + (sweep_cost(d, field, {**u, "pos": list(pos)}, moved) if turns else 0)
     after = [moved if k == i else x for k, x in enumerate(units)]
     contact = in_contact(d, after, occupancy(d, after), i)
+    if contact and steps > 0 and not has_ladders(u) and _open_deep(field):
+        steps, through = _charge_path(d, [{**x, "no_deep": True} if k == i else x for k, x in enumerate(units)], i, pos, (size, most, field))
+        if steps is None:
+            return {"ok": False, "why": "it cannot charge across a deep ditch without ladders down in it"}
+    cost = steps + turns * turn_cost(d, u) + (sweep_cost(d, field, {**u, "pos": list(pos)}, moved) if turns else 0)
     if through and not contact:
         return {"ok": False, "why": "it can pass through its own men only to charge"}
     passed = {"through": passed_through(d, units, i, pos)} if through else {}
@@ -4577,6 +4609,11 @@ def move(d: Data, units: list, i: int, pos, facing: int, size: tuple, field: dic
     if contact and u["state"] == "steady" and cost <= most:
         return {"ok": True, "cost": cost, "charge": True, **passed}
     return {"ok": False, "why": "too far"}
+
+
+def _open_deep(field: dict | None) -> bool:
+    """A deep ditch on the field with no ladders down in it somewhere."""
+    return any(it.get("deep") and not it.get("laddered") for its in ((_works(field) or {}).get("edges") or {}).values() for it in its) if field else False
 
 
 def _charge_path(d: Data, units: list, i: int, pos, how: tuple) -> tuple:

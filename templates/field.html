@@ -62,6 +62,8 @@ button:disabled{opacity:.45;cursor:default}
 .hx.g-rough{fill:var(--g-rough)}.hx.g-woods{fill:var(--g-woods)}.hx.g-scrub{fill:var(--g-scrub)}.hx.g-marsh{fill:var(--g-marsh)}.hx.g-slope{fill:var(--g-slope)}.hx.g-high{fill:var(--g-high)}.hx.g-buildings{fill:var(--g-buildings)}.hx.g-tall{fill:var(--g-tall)}.hx.g-rubble{fill:var(--g-rubble)}.hx.g-water{fill:var(--g-water)}
 .wk{fill:none;pointer-events:none;stroke-linecap:round}
 .wk.ditch{stroke:var(--w-earth);stroke-width:1.6;stroke-dasharray:2 1.5}
+.wk.ditch.deep{stroke-width:2.6}
+.wk.ditch.deep.laddered{stroke-dasharray:1 1}
 .wk.bank{stroke:var(--w-earth);stroke-width:2.4}
 .wk.palisade{stroke:var(--w-timber);stroke-width:2.2}
 .wk.wall{stroke:var(--w-stone);stroke-width:3}
@@ -317,7 +319,7 @@ legend{padding:0}
         <button class="small" id="btn-reserve" hidden title="Held in the enemy commander's reserve: it holds until the commander commits it (when a unit breaks or the enemy comes close). Marking any unit takes the choice of reserves from the commander.">Hold in reserve</button>
         <button class="small" id="btn-sappers" hidden title="Engineers or pioneers: during the battle they can lay a hidden minefield in the row of hexes ahead of their front, or lift a lane through a known one">Sappers</button>
         <label class="sr" for="sel-sap">Sapper work</label><select class="small" id="sel-sap" hidden style="width:auto" title="On their own move, before moving and out of contact: lay mines in the row ahead of their front, or lift the known minefield there. They neither move nor fire while they work."></select>
-        <button class="small" id="btn-ladders" hidden title="Scaling ladders: across a wall, palisade or barred gate a few men a hex fight from the ladders, and the unit can climb over it">Ladders</button>
+        <button class="small" id="btn-ladders" hidden title="Scaling ladders: across a wall, palisade or barred gate a few men a hex fight from the ladders, and the unit can climb over it; at a deep ditch they go down into it for everyone">Ladders</button>
         <button class="small" id="btn-fac" hidden title="A forward air controller talks aircraft onto a target he can see: they scatter less, and may attack close to their own men">Air controller</button>
         <label class="sr" for="sel-medics">Medics</label><select class="small" id="sel-medics" hidden style="width:auto" title="Medics with the unit (followers of a healing career, chosen before the battle): they give its heroes first aid at their quality's chance"></select>
         <label class="sr" for="sel-ammo">Ammunition</label><select class="small" id="sel-ammo" hidden style="width:auto" title="How much ammunition the unit has (set before the battle; in play it runs down as the unit shoots)"></select>
@@ -1153,6 +1155,7 @@ function sickText(h){                            // " · sick (dysentery), defen
 }
 const OTHER_LINES = {                            // kind: (line, nm) => {cls, text} (null: nothing to show)
   breach: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)} break through the ${(WK.edge_works[l.work] || WK.hex_works[l.work]).name.toLowerCase()}.` }),
+  ladders: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)} put their ladders down into the deep ditch (${l.sides} hex side${l.sides === 1 ? "" : "s"}): it is crossed as an ordinary ditch there.` }),
   morale: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` }),
   herohit: l => ({ cls: "hero", text: heroHitText(l) }),
   pinned: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)} are pinned down (rolled ${l.roll}, needed ${l.target} or less): no move and half their fire next exchange.` }),
@@ -2662,7 +2665,7 @@ function worksSvg(){                              // edge works along hex sides,
     const mx = (A[0] + B[0]) / 2, my = (A[1] + B[1]) / 2, len = Math.hypot(B[0] - A[0], B[1] - A[1]);
     const px = -(B[1] - A[1]) / len * R / 2, py = (B[0] - A[0]) / len * R / 2;
     for (const it of items){
-      const cls = `wk ${it.type}${it.open ? " open" : ""}${intact("edge", it) ? "" : " breached"}`;
+      const cls = `wk ${it.type}${it.deep ? " deep" : ""}${it.laddered ? " laddered" : ""}${it.open ? " open" : ""}${intact("edge", it) ? "" : " breached"}`;
       g += `<line class="${cls}" x1="${(mx + px).toFixed(1)}" y1="${(my + py).toFixed(1)}" x2="${(mx - px).toFixed(1)}" y2="${(my - py).toFixed(1)}"/>`;
     }
   }
@@ -3075,8 +3078,8 @@ function toggleSappers(){                          // set-up only: mark (or unma
   S.msg = u.sappers ? `${u.name} are sappers: during the battle they can lay mines ahead of them or lift a lane through a known minefield.` : `${u.name} are no longer sappers.`;
   render();
 }
-const hasWalls = () => Object.values(S.field?.works?.edges || {}).flat().some(it => specOf("edge", it).blocks_melee);   // a work that blocks hand-to-hand fighting on this field
-function renderLadders(u, setup){                 // Ladders: on a unit on foot, chosen before the battle, on a field with walls, palisades or gates
+const hasWalls = () => Object.values(S.field?.works?.edges || {}).flat().some(it => specOf("edge", it).blocks_melee || it.deep);   // a work that blocks hand-to-hand fighting, or a deep ditch, on this field
+function renderLadders(u, setup){                 // Ladders: on a unit on foot, chosen before the battle, on a field with walls, palisades, gates or a deep ditch
   const b = $("#btn-ladders");
   b.hidden = !u || !!u.vehicle || !!u.mounted || isGun(u.weapon) || !hasWalls();
   if (b.hidden) return;
@@ -3088,7 +3091,7 @@ function toggleLadders(){
   const u = selUnit(); if (!u || S.phase !== "setup") return;
   if (u.ladders) delete u.ladders; else u.ladders = true;
   const E = FD.units.escalade;
-  S.msg = u.ladders ? `${u.name} carry scaling ladders: across a wall, palisade or barred gate ${Math.round(100 * E.share)}% of the front rank fight from the ladders at −${E.penalty}%, and they can climb over it (${nOf(E.cross, "hex", "hexes")} of movement).` : `${u.name} have no ladders.`;
+  S.msg = u.ladders ? `${u.name} carry scaling ladders: across a wall, palisade or barred gate ${Math.round(100 * E.share)}% of the front rank fight from the ladders at −${E.penalty}%, and they can climb over it (${nOf(E.cross, "hex", "hexes")} of movement); at a deep ditch they put them down into it, and it is crossed there as an ordinary ditch.` : `${u.name} have no ladders.`;
   render();
 }
 function renderFac(u, setup){                     // forward air controller: on a unit on foot, chosen before the battle, while aircraft are on call
