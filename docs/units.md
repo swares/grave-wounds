@@ -1006,6 +1006,75 @@ account's 48%). The morale targets moved by a point at most. Python and the page
 the same at seed 101. The browser test `tools/field/plans.py` checks the box, the strip and the
 log on Cowpens.
 
+### The procedural planner (designed, not built)
+
+*The design, agreed 29 October 2026; nothing below is built yet.* A battlefield's plan
+(`data/plans.yaml`) is written from its account. A battle with no account behind it (a fight from
+the travel map, open ground, a set-up of the GM's own) has none, and its commander fights unit by
+unit. The planner fills that gap: the commander writes a plan for its own side, from what it
+knows, out of a few doctrine templates, in the same plan language (the same tasks, the same
+triggers), and the executor above carries it out. It needs no AI.
+
+**When it plans.** At the first of a side's moves on which the commander plays that side, the side
+has no plan, and it knows of at least one enemy unit (by its units' sight, as every order). It
+plans once; a side that never sees the enemy goes on searching as now. Re-planning when a plan
+fails (the assault stalls, the flank force is destroyed) is the next step, not this one.
+
+**Where it plans.**
+- **A fight from the travel map, open ground, a set-up of the GM's own:** always, for every side
+  the commander plays.
+- **A battlefield with its armies as drawn up:** only with **The commander plans for sides with no
+  written plan** ticked in set-up, off by default, so the benchmark is the same as without it. A
+  side with a written plan follows that plan.
+- **In self-play** the same box, as a choice (`selfplay --planner`, `play.js ... planner`): playing
+  every battlefield with the planner on, for the sides with no written plan, against the benchmark
+  is the planner's own test: do its plans match the battles as fought more or less often than no
+  plan at all?
+
+**What it reads.** Only what the side knows: its own units, the enemy units it knows of (where
+last seen), the ground, its stance (attack or hold) and the objective, if any.
+- **The odds:** the side's standing men times their quality's attack %, against the same for the
+  enemy units it knows of.
+- **The period:** fire and movement where the wound table's war is in `commander.bounds_all`
+  (1939 on), else the older way.
+- **Roles:** *fire* units shoot (a missile weapon, a battery, a vehicle with a gun) and are not in
+  close order; *assault* units fight hand to hand in close order, or, in fire and movement, are
+  foot with a modern weapon (`commander.ground_with`); *mobile* units are horse or vehicles. A
+  unit can be fire and mobile at once (a tank); a battery stays with the guns' own orders.
+- **The enemy's front:** the axis from the side's centre to the known enemy's centre, and the
+  enemy units at each end of its front across that axis.
+- **An open flank:** a way round each end, by two waypoints (out from the side's own flank to
+  `planner.flank_gap` hexes beyond the enemy's end, then level with it), on the map, with no known
+  enemy within `planner.flank_gap` of it but the end unit, and ground that costs no more than
+  `planner.going` times the open to cross. Of two open flanks, the cheaper is the more open.
+
+**The templates.** Each that fits is weighted by how well it fits; one is picked by the battle's
+own dice, so the same set-up need not get the same plan, and self-play stays seeded.
+
+| Template | Fits | Steps |
+|---|---|---|
+| **Fire and assault** | attacking, always | each fire unit `pin`s the nearest known enemy front unit; each assault unit `advance_to` its start line (`planner.start` hexes short of the enemy front, on the axis from it), until the enemy unit opposite it is `pinned` or `planner.wait` exchanges have gone (in the older way, the wait only), then goes in as now |
+| **Single envelopment** | attacking, a mobile unit, an open flank | as fire and assault, and the mobile units `envelop` round the more open flank onto the enemy's end unit there |
+| **Double envelopment** | attacking, at `planner.double` to 1 or better, two mobile units or more, both flanks open | as fire and assault, the mobile units split between the flanks |
+| **Hold and counter-attack** | holding, with a reserve held back | the reserve is `commit`ted when a known enemy unit breaks (each known unit's `broken`), as well as by the reserve's own rules |
+| **Delay** | holding, at `planner.delay` to 1 or worse | every unit `withdraw_if` outflanked or a quarter down, off its own side's edge |
+| **Stand** | holding, no better choice | no plan: the commander holds as now |
+
+The weights (`planner.weights`) and every number in `planner` are design estimates.
+
+**What the page shows.** A plan the commander wrote shows as **the commander has a plan** on the
+strip while the GM plays the other side, so the strip does not give its intentions away; its steps
+show in the log as they start, as its orders do. With the commander on both sides, the strip shows
+both plans' steps. The log's first line for a side says which template it chose ("The commander
+plans a single envelopment round the left").
+
+**Python and the page.** Mirrored, as every rule: `commander.plan_for` and `units.js planFor`, the
+same plan from the same dice, checked by playing battlefields with the planner on in both.
+
+**The first cut, and what comes after.** The five templates above, made once. After: re-planning
+when a plan fails; feints and scouting (no task for them yet); a reserve sent to a named place; plans
+on the travel map.
+
 ### Both sides (self-play)
 
 With the commander on both sides the GM only watches, steps in or ends it. **Next** steps a move
