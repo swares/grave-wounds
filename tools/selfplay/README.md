@@ -18,6 +18,7 @@ Python 3, and nothing else. The page's rules are written once as a module to `.c
 | `report.py winners <dir>` | Each battlefield's runs against the battle as fought (`actual.json`), and the total. |
 | `report.py diff <before> <after>` | The battlefields whose results changed between two runs, and both totals. |
 | `report.py quality <dir>` | The commander report, by battlefield and side. |
+| `odds.js [page] [seeds]` | The procedural planner on open ground at set odds (1 to 4 to 1, medieval and Second World War): the attacker's share of runs won with its own plan and without. A check away from the battlefields the planner is measured on; it switches the planner itself (no `PLANNER`). |
 | `actual.json` | Each battlefield's winner as fought, and the losses, in brief. |
 | `times.txt` | Milliseconds a run took on each battlefield (only orders the jobs). |
 
