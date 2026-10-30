@@ -2087,7 +2087,10 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   contact may not cross it ("it cannot charge across a deep ditch without ladders down in
   it"); men may still cross it with an ordinary move where no enemy is waiting on the far
   side, and shoot across it. Nobody charges down a 16-foot drop: in self-play the stormers
-  otherwise crossed it in a charge (twice a move), and the ditch held no one up. The sources (sieges-ladders survey, 30 October 2026):
+  otherwise crossed it in a charge (twice a move), and the ditch held no one up. Measured on
+  the benchmark (12 runs a battlefield, planner off): only the two Redans change. On 18 June
+  the British win 1 run of 12 (2 before; the real columns never reached the ditch), on
+  8 September none (none before), the Russians losing 12% of their men there (15% before). The sources (sieges-ladders survey, 30 October 2026):
   at Delhi in 1857 the ditch was 16 to 20 feet deep, the time went on letting the ladders
   down ("for ten minutes it was impossible to let down the ladders"), and once they were down
   climbing the far side was "the work of an instant"; at the Redan on 8 September Simpson's
