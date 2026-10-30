@@ -1437,8 +1437,7 @@ def plan_for(d: Data, us: list, side, ctx: tuple, rng) -> dict:
     seen = {j: _where(us, j, known) for j in foes}
     force = lambda ix, w: sum(w(j)["men"] * U.quality(d, w(j)["quality"])["attack"] for j in ix)
     ours, theirs = force(mine, lambda j: us[j]), force(foes, lambda j: seen[j])
-    keep = stance != "attack" or ours >= P["all_in"] * theirs   # attacking at long odds, the reserve is kept; at shorter, it goes in with the rest
-    roles = {i: (set() if keep and us[i].get("reserve") else _roles(d, us[i], modern)) for i in mine}
+    roles = {i: (set() if us[i].get("reserve") else _roles(d, us[i], modern)) for i in mine}   # a unit held in reserve is left to the reserve's own rules
     front = _front(us, mine, foes, seen)
     flanks = [f for f in (_flank(d, us, field, (front, +1), (mine, foes, seen)), _flank(d, us, field, (front, -1), (mine, foes, seen))) if f]
     flanks.sort(key=lambda f: f["cost"])
@@ -1468,13 +1467,7 @@ def plan_for(d: Data, us: list, side, ctx: tuple, rng) -> dict:
             if roll <= total:
                 pick = name
                 break
-    p = _template(d, us, (pick, mine, foes, seen, roles), (front, flanks, mobile), (exchange, modern, P))
-    if not keep and p["steps"]:                  # all in: a reserve unit the plan gave no task goes in with the rest
-        named = {n for st in p["steps"] for n in st["units"]}
-        rest = [us[i]["name"] for i in mine if us[i].get("reserve") and us[i]["name"] not in named]
-        if rest:
-            p["steps"].append({"units": rest, "do": "commit"})
-    return p
+    return _template(d, us, (pick, mine, foes, seen, roles), (front, flanks, mobile), (exchange, modern, P))
 
 
 def _garrison(d: Data, us: list, mine: list, field: dict | None, P: dict) -> bool:

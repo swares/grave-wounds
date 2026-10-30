@@ -1,17 +1,15 @@
-// node odds.js [page] [seeds]: the planner's all_in threshold tested on open ground at set odds, away
-// from the battlefields it was chosen on (docs/units.md, The procedural planner). A holding side of four
-// regular companies against an attacking side of 1, 2, 3 or 4 times as many (as many units again in
-// rows behind), medieval (bills and longbows, Towton's tables) and Second World War (riflemen and a
-// machine gun, Owens), in fair weather on open ground. The attacker plans for itself, three ways:
-// never sending its reserve in with the plan (all_in 0), always (all_in 99), and at the threshold
-// (units.yaml commander.planner.all_in). For each, the attacker's share of runs won: the holders gone, or
-// at the run's end the holders having lost the larger share. One line a case, JSON.
+// node odds.js [page] [seeds]: the procedural planner on open ground at set odds, away from the
+// battlefields (docs/units.md, The procedural planner): does an attacker's own plan help it? A holding
+// side of four regular companies against an attacking side of 1, 2, 3 or 4 times as many (as many units
+// again in rows behind), medieval (bills and longbows, Towton's tables) and Second World War (riflemen
+// and a machine gun, Owens), in fair weather on open ground. Each case is played with the attacker
+// planning for itself and without; for each, the attacker's share of runs won: the holders gone, or at
+// the run's end the holders having lost the larger share. One line a case, JSON.
 "use strict";
 const { load } = require("./page.js");
 const [pageArg, seedsArg] = process.argv.slice(2);
 const seeds = Number(seedsArg || 12);
 const { FD, api } = load(pageArg || null, []);
-const P = FD.units.commander.planner, AT = P.all_in;
 const ERAS = {
   medieval: { table: "towton-1461-all-hits", kit: "jack_sallet", front: [["bill", "close", 5], ["longbow", "open", 10]] },
   ww2: { table: "owens-wwii", kit: "ww2_rifleman", front: [["rifle_service", "extended", 20], ["machine_gun", "mg", 2]] },
@@ -33,16 +31,14 @@ for (const era of Object.keys(ERAS)) for (const odds of [1, 2, 3, 4]){
   const fid = `odds-${era}-${odds}`;
   FD.fields[fid] = field(era, odds);
   const out = { era, odds };
-  for (const [label, v] of [["keep", 0], ["all_in", 99], ["rule", AT]]){
-    P.all_in = v;
+  for (const [label, planner] of [["no_plan", false], ["plan", 1]]){
     let won = 0;
     for (let s = 1; s <= seeds; s++){
-      const r = api.selfPlay(fid, new api.SeededDice(s * 101), null, 1), B = r.battle;
+      const r = api.selfPlay(fid, new api.SeededDice(s * 101), null, planner), B = r.battle;
       const gone = r.stop.why === "gone" && (r.stop.sides || []).includes(0);   // stop.sides: the indices of the sides gone
       if (gone || (r.stop.why !== "gone" && share(B, "Holders") > share(B, "Attackers"))) won++;
     }
     out[label] = Math.round(1000 * won / seeds) / 1000;
   }
-  P.all_in = AT;
   console.log(JSON.stringify(out));
 }

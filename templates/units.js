@@ -3445,8 +3445,7 @@ function planFor(us, side, [field, known, exchange, stance, table], rng){   // t
   const foes = planFoes(us, side, known), seen = new Map(foes.map(j => [j, knownAt(us, j, known)]));
   const force = (ix, w) => ix.reduce((a, j) => a + w(j).men * quality(w(j).quality).attack, 0);
   const ours = force(mine, j => us[j]), theirs = force(foes, j => seen.get(j));
-  const keep = stance !== "attack" || ours >= P.all_in * theirs;   // attacking at long odds, the reserve is kept; at shorter, it goes in with the rest
-  const roles = new Map(mine.map(i => [i, keep && us[i].reserve ? new Set() : planRoles(us[i], modern)]));
+  const roles = new Map(mine.map(i => [i, us[i].reserve ? new Set() : planRoles(us[i], modern)]));   // a unit held in reserve is left to the reserve's own rules
   const front = planFront(us, mine, foes, seen);
   const flanks = [planFlank(us, field, [front, 1], [mine, foes, seen]), planFlank(us, field, [front, -1], [mine, foes, seen])].filter(Boolean);
   flanks.sort((a, b) => a.cost - b.cost);
@@ -3467,13 +3466,7 @@ function planFor(us, side, [field, known, exchange, stance, table], rng){   // t
     let total = 0;
     for (const [name, w] of cands){ total += w; if (roll <= total){ pick = name; break } }
   }
-  const p = planTemplate(us, [pick, mine, foes, seen, roles], [front, flanks, mobile], [exchange, modern, P]);
-  if (!keep && p.steps.length){                     // all in: a reserve unit the plan gave no task goes in with the rest
-    const named = new Set(p.steps.flatMap(st => st.units));
-    const rest = mine.filter(i => us[i].reserve && !named.has(us[i].name)).map(i => us[i].name);
-    if (rest.length) p.steps.push({ units: rest, do: "commit" });
-  }
-  return p;
+  return planTemplate(us, [pick, mine, foes, seen, roles], [front, flanks, mobile], [exchange, modern, P]);
 }
 function planGarrison(us, mine, field, P){        // planner.position % or more of the side's men hold a position or stand on the objective: a garrison, which holds rather than delays (as commander._garrison)
   const obj = objectiveOf(field), r = obj !== null ? objectiveRadii(field)[0] : 0;
