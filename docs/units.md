@@ -1175,6 +1175,14 @@ one breach at Jacob's Ford, an outpost in the hills at Keating, the ridges at Ca
 plan leaves the reserve to the reserve's own rules. When to send it in likely turns on the ground (a
 narrow approach, works to storm), which is open.
 
+`odds.js` stays as a standing check on the planner away from the battlefields: each case is played
+with the attacker planning for itself and without (12 seeds). On open ground the plan does not help
+the attacker, and at the lower odds it costs it: medieval 1 to 1, 0.58 of runs won without a plan
+against 0.42 with one; 2 to 1, 1.00 against 0.83; Second World War 1 to 1, 0.25 both; 2 to 1, 0.83
+both; at 3 and 4 to 1 every run won either way. Why is not measured; likely a bare field gives a
+plan no flank or line to use, and holding the reserve back weighs most when the odds are even. A
+change to the planner should not make these figures worse.
+
 **The first cut, and what comes after.** The five templates above, made once. After: re-planning
 when a plan fails; feints and scouting (no task for them yet); a reserve sent to a named place; plans
 on the travel map.
