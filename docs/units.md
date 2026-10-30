@@ -1071,7 +1071,7 @@ own dice, so the same set-up need not get the same plan, and self-play stays see
 | **Single envelopment** | attacking, a mobile unit, an open flank | as fire and assault, and the mobile units `envelop` round the more open flank onto the enemy's end unit there |
 | **Double envelopment** | attacking, at `planner.double` to 1 or better, two mobile units or more, both flanks open | as fire and assault, the mobile units split between the flanks |
 | **Hold and counter-attack** | holding, with a reserve held back | the reserve is `commit`ted when a known enemy unit breaks (each known unit's `broken`), as well as by the reserve's own rules |
-| **Delay** | holding, at `planner.delay` to 1 or worse | every unit `withdraw_if` outflanked or a quarter down, off its own side's edge |
+| **Delay** | holding, at `planner.delay` to 1 or worse, and not a garrison (below) | every unit `withdraw_if` outflanked or a quarter down, off its own side's edge |
 | **Stand** | holding, no better choice | no plan: the commander holds as now |
 
 The weights (`planner.weights`) and every number in `planner` are design estimates.
@@ -1081,6 +1081,10 @@ The weights (`planner.weights`) and every number in `planner` are design estimat
   itself, `start` hexes from it. Two assault units in column, one behind the other, get the same
   line: the one behind halts behind the first. In an envelopment the mobile units go round
   instead (in a double one, the left-hand half by the left), and pin or assault no longer.
+- **A garrison holds.** A holding side with `planner.position` (50) % or more of its men holding a
+  position (works, dug in, a bunker, gone to ground in cover: `units.holds_position`, as morale reads
+  it) or standing on the objective never delays, however long the odds. Without this the defenders
+  of X-Ray, Keating and the wagon boxes left the field, the opposite of their famous stands.
 - **Delay** sends every unit off the edge behind it: west for an axis east, south for north-east
   and north-west, east for west, north for south-west and south-east.
 
@@ -1094,6 +1098,15 @@ plans a single envelopment: fire and assault in front, its mobile troops round t
 **Python and the page.** Mirrored, as every rule: `commander.plan_for` and `units.js planFor`, the
 same plan from the same dice, checked by playing battlefields with the planner on in both. The
 browser test `tools/field/plans.py` checks the box, the log line and the strip's fog.
+
+**Measured against the battles as fought** (12 runs of every battlefield, the planner on for every
+side with no written plan; labels planner-no, planner-yes, planner-yes2). With the planner off,
+every battlefield plays exactly as before. With it on: 437 of 576 matched (474 off); with the
+garrison rule, **447**. Most of the gap is attackers who now fight better than history's did:
+Towton 12 to 7, Babuna 10 to 1, Agincourt 7 to 2 (the French go round a flank, which they did not
+do), X-Ray's Americans losing 72% to a fire-and-assault plan. Matching history rewards repeating
+its mistakes, so this is not the planner's measure; whether its plans help the side that uses them
+is (*the planner, one side at a time*, next).
 
 **The first cut, and what comes after.** The five templates above, made once. After: re-planning
 when a plan fails; feints and scouting (no task for them yet); a reserve sent to a named place; plans
