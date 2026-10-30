@@ -922,11 +922,13 @@ its side knows where it is, instead of choosing its own.
   moves nearer. A unit with no missile weapon stands as near as it can while out of the target's
   charge (the target's move and a hex, between their nearest hexes), in sight of it. It never
   moves into contact. Done when the target breaks or is gone.
-- **envelop** `{via, target}`: goes by the waypoints (as a route does), then attacks the target,
+- **envelop** `{via, target, stall}`: goes by the waypoints (as a route does), then attacks the target,
   or the objective if none is named. A unit that has gone round is ordered as attacking, whatever
   its side's stance, and **charges the target's flank or rear at any odds** (a rule choice: striking
   a flank or rear is the point of going round; from the front it still wants its quality's odds).
-  Done when the target breaks or is gone, or, with no target, once round.
+  Done when the target breaks or is gone, or, with no target, once round. With `stall` (optional, a
+  whole number of moves), it gives up after that many moves coming no nearer its next waypoint, or
+  round, its target, and goes back to ordinary orders (and to the reserve if it was held there).
 - **commit** `{to}` (optional): releases a reserve unit; with `to` it goes there, as a unit plugging
   a gap does; without, it fights as any committed unit. It is done at once.
 - **withdraw_if** `{to}`: when its step starts, falls back to a hex (and holds it) or to a map
@@ -1048,8 +1050,10 @@ last seen), the ground, its stance (attack or hold) and the objective, if any.
   enemy units at each end of its front across that axis.
 - **An open flank:** a way round each end, by two waypoints (out from the side's own flank to
   `planner.flank_gap` hexes beyond the enemy's end, then level with it), on the map, with no known
-  enemy within `planner.flank_gap` of it but the end unit, and ground that costs no more than
-  `planner.going` times the open to cross. Of two open flanks, the cheaper is the more open.
+  enemy within `planner.flank_gap` of it but the end unit, and no hex on it that costs more than
+  `planner.going` times the open to cross (every hex, not the average: a way whose average passed
+  ended in Aljubarrota's marshy valleys, where the riders stuck). Of two open flanks, the cheaper on
+  average is the more open.
 
 **How the ground is read.** Every measure is in whole numbers on the hexes' cube coordinates, whose
 dot products go with true distance on the map, so Python and the page read the same front.
@@ -1067,7 +1071,7 @@ own dice, so the same set-up need not get the same plan, and self-play stays see
 
 | Template | Fits | Steps |
 |---|---|---|
-| **Fire and assault** | attacking, always | each fire unit `pin`s the nearest known enemy front unit; each assault unit `advance_to` its start line (`planner.start` hexes short of the enemy front, on the axis from it), until the enemy unit opposite it is `pinned` or `planner.wait` exchanges have gone (in the older way, the wait only), then goes in as now |
+| **Fire and assault** | attacking, always | each fire unit `pin`s the nearest known enemy unit; in fire and movement, each assault unit `advance_to` its start line (`planner.start` hexes short of the enemy unit nearest it), until the pinned enemy unit nearest it is `pinned` or `planner.wait` exchanges have gone, then goes in as now. Before fire and movement, or with no fire unit pinning, assault units go straight in: the fire covers the advance, it does not halt it |
 | **Single envelopment** | attacking, a mobile unit, an open flank | as fire and assault, and the mobile units `envelop` round the more open flank onto the enemy's end unit there |
 | **Double envelopment** | attacking, at `planner.double` to 1 or better, two mobile units or more, both flanks open | as fire and assault, the mobile units split between the flanks |
 | **Hold and counter-attack** | holding, with a reserve held back | the reserve is `commit`ted when a known enemy unit breaks (each known unit's `broken`), as well as by the reserve's own rules |
@@ -1078,9 +1082,14 @@ The weights (`planner.weights`) and every number in `planner` are design estimat
 - **Who does what.** Batteries and anti-tank guns are left to the guns' own orders. In fire and
   assault, a fire unit pins the known enemy unit nearest it; an assault unit further than its start
   line (and a route's reach) from the enemy unit nearest it waits on the line from that unit to
-  itself, `start` hexes from it. Two assault units in column, one behind the other, get the same
-  line: the one behind halts behind the first. In an envelopment the mobile units go round
-  instead (in a double one, the left-hand half by the left), and pin or assault no longer.
+  itself, `start` hexes from it; its `pinned` trigger names the pinned enemy unit nearest it, one the
+  plan's own fire units are pinning (it once named its own target, which no unit might be pinning,
+  so the wait never ended early). Two in column, one behind the other, do not share a hex: the one
+  behind halts up to a route's reach further back. In an envelopment the mobile units go round
+  instead (in a double one, the left-hand half by the left), and pin or assault no longer; their
+  step has `stall` (`commander.stall.moves`, 5): an envelopment that comes no nearer its next
+  waypoint, or round its target, for that many moves gives up, and the unit goes back to ordinary
+  orders, and to the reserve if it was held there when it set out.
 - **A garrison holds.** A holding side with `planner.position` (50) % or more of its men holding a
   position (works, dug in, a bunker, gone to ground in cover: `units.holds_position`, as morale reads
   it) or standing on the objective never delays, however long the odds. Without this the defenders
