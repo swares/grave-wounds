@@ -1338,7 +1338,7 @@ def _plan_if_needed(d: Data, us: list, side, ctx: tuple, rng) -> list:
     the template chosen). -> [the order that says so, for the log], or []. ctx: (field, known,
     exchange, stance, table)."""
     field, known = ctx[0], ctx[1]
-    if not (field or {}).get("planner") or side in ((field.get("plan") or {})) or side in (field.get("planned") or {}):
+    if not _plans_for(field, side) or side in ((field.get("plan") or {})) or side in (field.get("planned") or {}):
         return []
     if not _known_foes(us, side, known):
         return []
@@ -1347,6 +1347,13 @@ def _plan_if_needed(d: Data, us: list, side, ctx: tuple, rng) -> list:
     if p["steps"]:
         field["plan"] = {**(field.get("plan") or {}), side: p["steps"]}
     return [{"act": "planned", "side": side, "template": p["template"], **({"by": p["by"]} if p.get("by") else {})}]
+
+
+def _plans_for(field: dict | None, side) -> bool:
+    """The planner is on for this side: field planner True (every side), or that side's name (the
+    planner on one side only: self-play's test of whether a plan helps its side)."""
+    p = (field or {}).get("planner")
+    return p is True or (isinstance(p, str) and p == side)
 
 
 def _known_foes(us: list, side, known: dict | None) -> list:
