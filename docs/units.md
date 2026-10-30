@@ -1006,9 +1006,9 @@ account's 48%). The morale targets moved by a point at most. Python and the page
 the same at seed 101. The browser test `tools/field/plans.py` checks the box, the strip and the
 log on Cowpens.
 
-### The procedural planner (designed, not built)
+### The procedural planner
 
-*The design, agreed 29 October 2026; nothing below is built yet.* A battlefield's plan
+*Designed and built 29 October 2026 (`commander.plan_for`, `units.js planFor`).* A battlefield's plan
 (`data/plans.yaml`) is written from its account. A battle with no account behind it (a fight from
 the travel map, open ground, a set-up of the GM's own) has none, and its commander fights unit by
 unit. The planner fills that gap: the commander writes a plan for its own side, from what it
@@ -1023,13 +1023,16 @@ fails (the assault stalls, the flank force is destroyed) is the next step, not t
 **Where it plans.**
 - **A fight from the travel map, open ground, a set-up of the GM's own:** always, for every side
   the commander plays.
-- **A battlefield with its armies as drawn up:** only with **The commander plans for sides with no
-  written plan** ticked in set-up, off by default, so the benchmark is the same as without it. A
-  side with a written plan follows that plan.
-- **In self-play** the same box, as a choice (`selfplay --planner`, `play.js ... planner`): playing
-  every battlefield with the planner on, for the sides with no written plan, against the benchmark
-  is the planner's own test: do its plans match the battles as fought more or less often than no
-  plan at all?
+- **A battlefield with its armies as drawn up:** only with **the commander plans for sides with no
+  written plan** ticked in set-up (beside the commander's choices), off by default, so the benchmark
+  is the same as without it, and kept across *New battle*. A side with a written plan follows that
+  plan; one whose written plan the GM has switched off (its *follow the plan* box) has none, so the
+  planner plans for it.
+- **In self-play** the same choice: `python -m gravewounds selfplay --planner`, `PLANNER=1` in the
+  environment for `tools/selfplay/play.js` and `targets.js`, and the selfplay workflow's `planner`
+  input. Playing every battlefield with the planner on, for the sides with no written plan, against
+  the benchmark is the planner's own test: do its plans match the battles as fought more or less
+  often than no plan at all?
 
 **What it reads.** Only what the side knows: its own units, the enemy units it knows of (where
 last seen), the ground, its stance (attack or hold) and the objective, if any.
@@ -1048,6 +1051,17 @@ last seen), the ground, its stance (attack or hold) and the objective, if any.
   enemy within `planner.flank_gap` of it but the end unit, and ground that costs no more than
   `planner.going` times the open to cross. Of two open flanks, the cheaper is the more open.
 
+**How the ground is read.** Every measure is in whole numbers on the hexes' cube coordinates, whose
+dot products go with true distance on the map, so Python and the page read the same front.
+- **The axis** is the hex direction nearest the line from the side's units to the known enemy's
+  (their sums), as `units.bearing` picks one; **left** of it lie the two directions after it (the
+  directions run E, NE, NW, W, SW, SE).
+- **The enemy's ends:** the known enemy units furthest to the left and to the right of the axis.
+- **A way round** an end: from it, `flank_gap` hexes out sideways (alternately in the two
+  directions either side of the perpendicular, which average to a right angle) is the second
+  waypoint; the first is level with it, out from the side's own unit furthest that way. The way
+  is the straight lines from that unit to the first waypoint and on to the second.
+
 **The templates.** Each that fits is weighted by how well it fits; one is picked by the battle's
 own dice, so the same set-up need not get the same plan, and self-play stays seeded.
 
@@ -1061,15 +1075,25 @@ own dice, so the same set-up need not get the same plan, and self-play stays see
 | **Stand** | holding, no better choice | no plan: the commander holds as now |
 
 The weights (`planner.weights`) and every number in `planner` are design estimates.
+- **Who does what.** Batteries and anti-tank guns are left to the guns' own orders. In fire and
+  assault, a fire unit pins the known enemy unit nearest it; an assault unit further than its start
+  line (and a route's reach) from the enemy unit nearest it waits on the line from that unit to
+  itself, `start` hexes from it. Two assault units in column, one behind the other, get the same
+  line: the one behind halts behind the first. In an envelopment the mobile units go round
+  instead (in a double one, the left-hand half by the left), and pin or assault no longer.
+- **Delay** sends every unit off the edge behind it: west for an axis east, south for north-east
+  and north-west, east for west, north for south-west and south-east.
 
 **What the page shows.** A plan the commander wrote shows as **the commander has a plan** on the
 strip while the GM plays the other side, so the strip does not give its intentions away; its steps
 show in the log as they start, as its orders do. With the commander on both sides, the strip shows
-both plans' steps. The log's first line for a side says which template it chose ("The commander
-plans a single envelopment round the left").
+both plans' steps. The log says which template it chose, when it chose it ("For Danes the commander
+plans a single envelopment: fire and assault in front, its mobile troops round the flank (round by
+13,41)").
 
 **Python and the page.** Mirrored, as every rule: `commander.plan_for` and `units.js planFor`, the
-same plan from the same dice, checked by playing battlefields with the planner on in both.
+same plan from the same dice, checked by playing battlefields with the planner on in both. The
+browser test `tools/field/plans.py` checks the box, the log line and the strip's fog.
 
 **The first cut, and what comes after.** The five templates above, made once. After: re-planning
 when a plan fails; feints and scouting (no task for them yet); a reserve sent to a named place; plans
