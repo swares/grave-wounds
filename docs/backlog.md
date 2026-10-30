@@ -87,7 +87,8 @@ When an item is done, delete it here and note it in the pull request that closes
   for riflemen who stop at range. Its foot units ride its carriers up and get down once an enemy is in reach. Its aircraft prefer a target its air controllers see and come closer there. Holding, by day or at dusk, it lays its machine guns' fixed lines on the nearest enemy it knows of in reach, or else ahead toward one (or along its facing), shifting a line laid ahead once onto an enemy that comes into reach. It digs its foot units in where they stand when safe: at the objective, holding with none, and in reserve. Attacking, an air controller with nothing better to do moves up to see a target for its aircraft (up to three moves away; holding, it stays). An attacking air controller with nothing better to do goes up to three moves to see a target, preferring a spot out of reach, and not while it has a fight of its own. Still left out: a controller moving past three moves, fixed lines across its front or interlocking with each other, and works other than digging in (no field works are built during a battle); any plan beyond two
   objectives (phase lines across the front, feints, scouting; no battlefield marks a second;
   plans give phase lines, pinning, envelopments, reserves and withdrawals on a trigger where a
-  battlefield's plan says so: units.md, *Plans*; six battlefields have one so far); ladders only where the GM or a battlefield marks them (the Great Redan's ladder parties are marked, but ladders do nothing on its ditch and bank). It does
+  battlefield's plan says so: units.md, *Plans*; six battlefields have one so far; a procedural planner for
+  battles with no account is designed, not built: units.md, *The procedural planner*); ladders only where the GM or a battlefield marks them (the Great Redan's ladder parties are marked, but ladders do nothing on its ditch and bank). It does
   not play the travel map. Later, by the choice made: an optional narrator, using a model
   with a key the player supplies, to explain its orders in prose.
 
@@ -303,6 +304,21 @@ When an item is done, delete it here and note it in the pull request that closes
   - a deep ditch that needs ladders: the Redan's ladder parties are marked, but the ditch
     (15 to 20 feet deep) and its bank are crossed without them, as no figures were found for
     how much slower or costlier it was to get in without ladders.
+- **Sieges and ladders: to look at** (asked 29 October 2026). Gathered from the notes above and
+  below; not yet studied as one subject.
+  - **Ladders** work only as escalade over a wall, palisade or barred gate (units.md, *Escalade*).
+    On a ditch and bank (the Great Redan, both battlefields) the marked ladder parties change
+    nothing, for want of figures on how much slower or costlier the ditch was without them.
+  - **The siege before the storm** is off every field map. Jacob's Ford's map starts at the
+    storm (its mine, the outer wall and the days before are not played); the Redan's battlefields
+    leave out both sides' siege guns and the batteries along the line.
+  - **No siege phase**: no sapping, mining, breaching by bombardment over days, or investment and
+    hunger, on the field map or the travel map; a siege is a battle at the moment of assault.
+  - **Wound tables:** the Crimean siege table is the only siege table (the Siege warfare tables
+    item above).
+  - To start: list the sieges and storms the game already touches (the two Redans, Jacob's Ford,
+    Visby's walls, Cassino town, the towns of the travel map), what each needs that the rules lack,
+    and the sources for ladders against ditches and banks.
 - **Guns, still simplified.** The Thirty Years' War still borrows the Peninsula's gun wounds,
   because no 1618-48 artillery wound counts were found.
 - **Character generation, beyond the first cut.** The medieval tables are a first draft for
