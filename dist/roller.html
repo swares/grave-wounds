@@ -3042,12 +3042,15 @@ function hexItem(works, h){
   const it = works?.hexes?.[hkey(h)];
   return it && intact("hex", it) ? it : null;
 }
-function stepCost(works, a, b, climb = null){   // climb: with ladders, what a wall, palisade or barred gate costs instead of stopping him (and a deep ditch only its cross)
+function stepCost(works, a, b, climb = null, deepStops = false){   // climb: with ladders, what a wall, palisade or barred gate costs instead of stopping him (and a deep ditch only its cross); deepStops: a deep ditch with no ladders down in it stops him (a charge without ladders)
   let cost = 1;
   for (const it of edgeItems(works, a, b)){
     const s = specOf("edge", it);
     let c = s.gate ? null : s.cross;
-    if (it.deep && !it.laddered && (climb === null || climb === undefined)) c = s.deep;   // a deep ditch without ladders down in it
+    if (it.deep && !it.laddered && (climb === null || climb === undefined)){   // a deep ditch without ladders down in it
+      if (deepStops) return null;
+      c = s.deep;
+    }
     if (c === null || c === undefined) c = climb;
     if (c === null || c === undefined) return null;
     cost += c;
@@ -3167,7 +3170,7 @@ function meleeAcross(works, attacker, target, reach, cols, rows){
     let pen = 0;
     for (const e of edgeItems(works, target, n)){
       const s = specOf("edge", e);
-      if (s.blocks_melee && reach < 2 && d1){ blocked = true; what = e.type }
+      if ((s.blocks_melee || (e.deep && !e.laddered)) && reach < 2 && d1){ blocked = true; what = e.type }   // a wall, or a deep ditch with no ladders down in it
       if (s.height && e.high === hkey(target)){ pen += s.height; what = what || e.type }
     }
     penalty = Math.max(penalty, pen);
