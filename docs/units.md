@@ -1106,7 +1106,24 @@ garrison rule, **447**. Most of the gap is attackers who now fight better than h
 Towton 12 to 7, Babuna 10 to 1, Agincourt 7 to 2 (the French go round a flank, which they did not
 do), X-Ray's Americans losing 72% to a fire-and-assault plan. Matching history rewards repeating
 its mistakes, so this is not the planner's measure; whether its plans help the side that uses them
-is (*the planner, one side at a time*, next).
+is (*the planner, one side at a time*, below).
+
+**The planner, one side at a time** (`selfplay --planner 0|1`, `PLANNER=side0|side1`, the workflow's
+`planner: side0|side1`): each battlefield played 12 times with only one side planning, against no
+plan (labels planner-side0, planner-side1, planner-no); every side without a written plan, 90 in all.
+Does a side's own plan help it?
+
+| | Sides | Better | Worse | Same | Mean share of runs won | Enemy lost for each own |
+|---|---|---|---|---|---|---|
+| Attacking | 47 | 11 | 9 | 27 | 0.371 to 0.391 | 1.81 to 1.91 |
+| Holding | 43 | 14 | 5 | 24 | 0.645 to 0.683 | 2.65 to 2.73 |
+
+A plan helps, holding sides most. The largest gains: Babuna's Bulgarians 0.17 to 1.00, Agincourt's
+French 0.42 to 0.75, X-Ray's North Vietnamese 0.25 to 0.50 (and its Americans 0.75 to 1.00),
+Mogadishu's militia 0.08 to 0.33, Keating's Coalition 0.67 to 0.92. Where a plan hurt: Jacob's
+Ford's Ayyubids 0.67 to 0.33, Keating's insurgents 0.33 to 0.08, Sidon's Damascenes 1.00 to 0.75,
+Aljubarrota's Castilians 0.17 to 0.00: not yet traced; the likeliest cause is fire and assault
+holding assault troops at a start line that the commander alone sent straight in.
 
 **The first cut, and what comes after.** The five templates above, made once. After: re-planning
 when a plan fails; feints and scouting (no task for them yet); a reserve sent to a named place; plans
