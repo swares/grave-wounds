@@ -1036,6 +1036,13 @@ fails (the assault stalls, the flank force is destroyed) is the next step, not t
   the benchmark is the planner's own test: do its plans match the battles as fought more or less
   often than no plan at all?
 
+**Units in reserve.** A unit the commander holds in reserve (`_hold_back`, at its first move, before
+it plans) gets no task from the plan: it is left to the reserve's own rules, and only mobile units
+outside the reserve go round a flank. Taking the reserve out for the plan's tasks was the main
+cause of the attacks a plan made worse (Jacob's Ford's archers across the river and Keating's
+Urmul insurgents and machine guns, held back and committed later without a plan; project doc
+"planner-four-attacks-trace").
+
 **What it reads.** Only what the side knows: its own units, the enemy units it knows of (where
 last seen), the ground, its stance (attack or hold) and the objective, if any.
 - **The odds:** the side's standing men times their quality's attack %, against the same for the
@@ -1127,12 +1134,33 @@ Does a side's own plan help it?
 | Attacking | 47 | 11 | 9 | 27 | 0.371 to 0.391 | 1.81 to 1.91 |
 | Holding | 43 | 14 | 5 | 24 | 0.645 to 0.683 | 2.65 to 2.73 |
 
-A plan helps, holding sides most. The largest gains: Babuna's Bulgarians 0.17 to 1.00, Agincourt's
+A plan helps, holding sides most (the first cut, PR #424). The largest gains: Babuna's Bulgarians 0.17 to 1.00, Agincourt's
 French 0.42 to 0.75, X-Ray's North Vietnamese 0.25 to 0.50 (and its Americans 0.75 to 1.00),
 Mogadishu's militia 0.08 to 0.33, Keating's Coalition 0.67 to 0.92. Where a plan hurt: Jacob's
 Ford's Ayyubids 0.67 to 0.33, Keating's insurgents 0.33 to 0.08, Sidon's Damascenes 1.00 to 0.75,
 Aljubarrota's Castilians 0.17 to 0.00: not yet traced; the likeliest cause is fire and assault
 holding assault troops at a start line that the commander alone sent straight in.
+
+**After tracing those four** (project doc "planner-four-attacks-trace"), three fixes: an assault waits at
+a start line only for fire that is coming, and only in fire and movement; a way round is open only if
+every hex on it is within the going, and an envelopment that comes no nearer gives up (`stall`); and
+the plan leaves units in reserve alone. The first two alone changed nothing at Jacob's Ford or
+Keating: the trace had found the start-line wait, but the cause was the reserve. Measured again one
+side at a time (labels fix3-side0, fix3-side1, fix3-no):
+
+| | Sides | Better | Worse | Same | Mean share of runs won | Enemy lost for each own |
+|---|---|---|---|---|---|---|
+| Attacking, first cut | 47 | 11 | 9 | 27 | 0.371 to 0.391 | 1.81 to 1.91 |
+| Attacking, with the fixes | 47 | 5 | 6 | 36 | 0.371 to 0.390 | 1.81 to **2.05** |
+| Holding (unchanged by the fixes) | 43 | 14 | 5 | 24 | 0.645 to 0.683 | 2.65 to 2.73 |
+
+The harm is gone: Sidon 0.75 to 1.00, Keating 0.08 to 0.33 and Jacob's Ford 0.33 to 0.58 (against
+1.00, 0.33 and 0.67 with no plan); Aljubarrota's Castilians stay at 0.00 (0.17 with no plan). But so
+are most attacking gains: X-Ray's North Vietnamese 0.50 to 0.25, Lützen's Swedes 0.92 to 0.75,
+Dornach's Swiss 1.00 to 0.83, Agincourt's French 0.75 to 0.67, each back to or near no plan. Those
+attacks had won by sending the reserve in at once. Attacking plans now win as often as no plan, and
+cost the enemy more men for each of their own; whether to let a plan send the reserve in where it
+helps is open.
 
 **The first cut, and what comes after.** The five templates above, made once. After: re-planning
 when a plan fails; feints and scouting (no task for them yet); a reserve sent to a named place; plans
