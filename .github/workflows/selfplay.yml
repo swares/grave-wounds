@@ -26,6 +26,10 @@ on:
         description: "First seed"
         required: true
         default: "1"
+      planner:
+        description: "The commander plans for itself on sides with no written plan (yes or no)"
+        required: false
+        default: "no"
 
 permissions:
   contents: read
@@ -52,6 +56,7 @@ jobs:
           SHARD: ${{ matrix.shard }}
           SEEDS: ${{ inputs.seeds }}
           FIRST: ${{ inputs.first }}
+          PLANNER: ${{ inputs.planner == 'yes' && '1' || '' }}
         run: |
           mkdir -p out
           python3 tools/selfplay/shard.py "$SHARD" 16 "$SEEDS" "$FIRST" subject/data/fields > jobs.txt

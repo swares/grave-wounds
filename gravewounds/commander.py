@@ -45,6 +45,7 @@ def _command(d: Data, units: list, side, where: tuple, stance: str, memory: dict
     us, orders = _hook_up(d, us, side, (goal, known, exchange, stance))
     us, orders = _riders(d, us, side, (goal, known, exchange, stance), orders)
     _hold_back(d, us, side, known)
+    orders += _plan_if_needed(d, us, side, (field, known, exchange, stance, table), rng)
     orders += plan_steps(d, us, side, (field, known, exchange))
     orders += _commit(d, us, side, known, memory, stance)
     if stance == "hold":
@@ -1328,6 +1329,233 @@ def _trigger(d: Data, us: list, ist: tuple, w: dict, ctx: tuple) -> bool:
                    and U.arc(u["facing"], U.bearing(u["pos"], m["pos"])) != "front" and U.unit_gap(d, u, _where(us, int(k), known)) <= reach
                    for k, m in (known or {}).items())
     return False
+
+
+# ---------- the procedural planner (docs/units.md, The procedural planner) ----------
+def _plan_if_needed(d: Data, us: list, side, ctx: tuple, rng) -> list:
+    """With the planner on (field planner), for a side with no plan that has not planned yet and
+    knows of an enemy: the commander writes its plan (plan_for) onto the field (plan, and planned:
+    the template chosen). -> [the order that says so, for the log], or []. ctx: (field, known,
+    exchange, stance, table)."""
+    field, known = ctx[0], ctx[1]
+    if not (field or {}).get("planner") or side in ((field.get("plan") or {})) or side in (field.get("planned") or {}):
+        return []
+    if not _known_foes(us, side, known):
+        return []
+    p = plan_for(d, us, side, ctx, rng)
+    field["planned"] = {**(field.get("planned") or {}), side: p["template"]}
+    if p["steps"]:
+        field["plan"] = {**(field.get("plan") or {}), side: p["steps"]}
+    return [{"act": "planned", "side": side, "template": p["template"], **({"by": p["by"]} if p.get("by") else {})}]
+
+
+def _known_foes(us: list, side, known: dict | None) -> list:
+    """The indices of the enemy units the side knows of, standing (in index order)."""
+    return [int(k) for k in (known or {}) if k.isdigit() and int(k) < len(us) and us[int(k)]["side"] != side
+            and us[int(k)]["men"] > 0 and us[int(k)]["state"] not in ROUTED]
+
+
+def _cube_of(h) -> tuple:
+    q = h[0] - (h[1] - (h[1] & 1)) // 2
+    return q, h[1], -q - h[1]
+
+
+def _dot(a: tuple, b: tuple) -> int:
+    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
+
+
+def _dir_cube(k: int) -> tuple:
+    q, r = U.AX[k % 6]
+    return q, r, -q - r
+
+
+def _roles(d: Data, u: dict, modern: bool) -> set:
+    """What a unit is for in a plan: fire, assault, mobile (a set, maybe empty)."""
+    out, shoots = set(), "range" in d.weapons[u["weapon"]]
+    if u.get("vehicle") or u.get("mounted"):
+        out.add("mobile")
+    if u.get("vehicle"):
+        if U._gun_of(d, u) or shoots:
+            out.add("fire")
+        return out
+    if modern and u["weapon"] in d.units["commander"]["ground_with"] and u["weapon"] != "machine_gun" and not u.get("mounted"):
+        out.add("assault")
+    elif shoots:
+        out.add("fire")
+    elif u.get("formation") == "close" or u.get("mounted"):
+        out.add("assault")
+    return out
+
+
+def plan_for(d: Data, us: list, side, ctx: tuple, rng) -> dict:
+    """The commander's own plan for side: {template, steps, by (the flank waypoint, if any)}. It reads
+    the odds, the period, its units' roles, the known enemy's front and the open flanks, weighs the
+    templates that fit (planner.weights) and picks one by the dice. ctx: (field, known, exchange,
+    stance, table)."""
+    field, known, exchange, stance, table = ctx
+    P = d.units["commander"]["planner"]
+    war = (d.tables.get(table) or {}).get("battle") if table else None
+    modern = war in (d.units["commander"].get("bounds_all") or [])
+    mine = [i for i, u in enumerate(us) if u["side"] == side and u["men"] > 0 and u["state"] not in ROUTED
+            and not U.is_battery(d, u) and not U.is_at_gun(d, u)]
+    foes = _known_foes(us, side, known)
+    seen = {j: _where(us, j, known) for j in foes}
+    force = lambda ix, w: sum(w(j)["men"] * U.quality(d, w(j)["quality"])["attack"] for j in ix)
+    ours, theirs = force(mine, lambda j: us[j]), force(foes, lambda j: seen[j])
+    roles = {i: _roles(d, us[i], modern) for i in mine}
+    front = _front(us, mine, foes, seen)
+    flanks = [f for f in (_flank(d, us, field, (front, +1), (mine, foes, seen)), _flank(d, us, field, (front, -1), (mine, foes, seen))) if f]
+    flanks.sort(key=lambda f: f["cost"])
+    mobile = [i for i in mine if "mobile" in roles[i]]
+    W = P["weights"]
+    cands = []
+    if stance == "attack":
+        if any(roles[i] & {"fire", "assault"} for i in mine):
+            cands.append(("assault", W["assault"]))
+        if mobile and flanks:
+            cands.append(("single", W["single"]))
+        if len(mobile) >= 2 and len(flanks) == 2 and ours >= P["double"] * theirs:
+            cands.append(("double", W["double"]))
+    else:
+        if any(us[i].get("reserve") for i in mine):
+            cands.append(("counter", W["counter"]))
+        if theirs >= P["delay"] * ours and not _garrison(d, us, mine, field, P):
+            cands.append(("delay", W["delay"]))
+        cands.append(("stand", W["stand"]))
+    if not cands:
+        return {"template": "stand", "steps": []}
+    pick = cands[0][0]
+    if len(cands) > 1:
+        roll, total = rng.randint(1, sum(w for _, w in cands)), 0
+        for name, w in cands:
+            total += w
+            if roll <= total:
+                pick = name
+                break
+    return _template(d, us, (pick, mine, foes, seen, roles), (front, flanks, mobile), (exchange, modern, P))
+
+
+def _garrison(d: Data, us: list, mine: list, field: dict | None, P: dict) -> bool:
+    """planner.position % or more of the side's men hold a position (units.holds_position) or
+    stand on the objective (within its radius): a garrison, which holds rather than delays."""
+    obj = objective(field)
+    r = U.objective_radii(d, field)[0] if obj is not None else 0
+    held = sum(us[i]["men"] for i in mine if U.holds_position(d, us, i, field) or (obj is not None and U.off_objective(d, us[i], obj) <= r))
+    total = sum(us[i]["men"] for i in mine)
+    return total > 0 and 100 * held >= P["position"] * total
+
+
+def _front(us: list, mine: list, foes: list, seen: dict) -> dict:
+    """The axis from the side to the known enemy (a hex direction, as units.bearing picks it), the
+    lateral (left of the axis, as the two directions after it), and the enemy units at each end."""
+    so = [sum(_cube_of(us[i]["pos"])[k] for i in mine) for k in range(3)]
+    se = [sum(_cube_of(seen[j]["pos"])[k] for j in foes) for k in range(3)]
+    v = tuple(len(mine) * se[k] - len(foes) * so[k] for k in range(3))
+    dots = [_dot(v, _dir_cube(k)) for k in range(6)]
+    axis = dots.index(max(dots))
+    lat = tuple(a + b for a, b in zip(_dir_cube(axis + 1), _dir_cube(axis + 2)))
+    p = {j: _dot(_cube_of(seen[j]["pos"]), lat) for j in foes}
+    left = min(foes, key=lambda j: (-p[j], j))
+    right = min(foes, key=lambda j: (p[j], j))
+    return {"axis": axis, "lat": lat, "ends": {+1: left, -1: right}}
+
+
+def _walk(h, axis: int, sgn: int, n: int, size) -> list | None:
+    """n steps sideways from h (left of the axis for sgn +1, right for -1), alternating the two hex
+    directions either side of the perpendicular; None if it leaves the map."""
+    dirs = (axis + 1, axis + 2) if sgn > 0 else (axis - 1, axis - 2)
+    h = list(h)
+    for k in range(n):
+        h = U.step(h, dirs[k % 2] % 6)
+        if not (0 <= h[0] < size[0] and 0 <= h[1] < size[1]):
+            return None
+    return h
+
+
+def _flank(d: Data, us: list, field: dict | None, fs: tuple, sides: tuple) -> dict | None:
+    """The way round the enemy's end on one side (sgn +1 its left of our axis, -1 its right):
+    {sgn, end (its end unit), via [W1, W2], cost (average going)}, or None if it is not open."""
+    (front, sgn), (mine, foes, seen) = fs, sides
+    P, size = d.units["commander"]["planner"], (field or {}).get("size") or [60, 40]
+    end, lat = front["ends"][sgn], front["lat"]
+    w2 = _walk(seen[end]["pos"], front["axis"], sgn, P["flank_gap"], size)
+    if w2 is None:
+        return None
+    ours = min(mine, key=lambda i: (-sgn * _dot(_cube_of(us[i]["pos"]), lat), i))
+    level = sgn * _dot(_cube_of(w2), lat)
+    w1, h = None, list(us[ours]["pos"])
+    for _ in range(size[0] + size[1]):
+        if sgn * _dot(_cube_of(h), lat) >= level:
+            w1 = h
+            break
+        h = _walk(h, front["axis"], sgn, 1, size)
+        if h is None:
+            return None
+    if w1 is None:
+        return None
+    path = [x for a, b in ((us[ours]["pos"], w1), (w1, w2)) for x in U.ray(a, b, U.hdist(a, b))]
+    cost, keys = 0, {k: g for k, g in d.units["ground"].items()}
+    for x in path:
+        kind = ((field or {}).get("ground") or {}).get(f"{x[0]},{x[1]}", "open")
+        if keys[kind].get("impassable"):
+            return None
+        cost += keys[kind]["move"]
+        if any(j != end and U.hdist(x, seen[j]["pos"]) < P["flank_gap"] for j in foes):
+            return None
+    if cost > P["going"] * len(path):
+        return None
+    return {"sgn": sgn, "end": end, "via": [list(w1), list(w2)], "cost": cost * 1000 // len(path)}
+
+
+def _template(d: Data, us: list, who: tuple, ground: tuple, when: tuple) -> dict:
+    """The chosen template's steps. who: (template, mine, foes, seen, roles); ground: (front,
+    flanks, mobile); when: (exchange, modern, planner settings)."""
+    pick, mine, foes, seen, roles = who
+    front, flanks, mobile = ground
+    exchange, modern, P = when
+    name = lambda j: us[j]["name"]
+    nearest = lambda i: min(foes, key=lambda j: (U.hdist(us[i]["pos"], seen[j]["pos"]), j))
+    steps, by = [], None
+    if pick == "stand":
+        return {"template": "stand", "steps": []}
+    if pick == "delay":
+        edge = _behind(front["axis"])
+        steps.append({"units": [name(i) for i in mine], "do": "withdraw_if", "to": edge, "when": [{"outflanked": True}, {"lost": 25}]})
+        return {"template": "delay", "steps": steps}
+    if pick == "counter":
+        steps.append({"units": [name(i) for i in mine if us[i].get("reserve")], "do": "commit", "when": [{"broken": name(j)} for j in foes]})
+        return {"template": "counter", "steps": steps}
+    going = {"single": flanks[:1], "double": flanks[:2]}.get(pick, [])
+    movers = set(mobile) if going else set()
+    for i in mine:
+        if i in movers:
+            continue
+        t = nearest(i)
+        if "fire" in roles[i]:
+            steps.append({"units": [name(i)], "do": "pin", "target": name(t)})
+        elif "assault" in roles[i] and U.hdist(us[i]["pos"], seen[t]["pos"]) > P["start"] + d.units["commander"]["route"]["reach"]:
+            line = U.ray(seen[t]["pos"], us[i]["pos"], P["start"])[-1]
+            until = [{"exchange": (exchange or 0) + P["wait"]}]
+            if modern:
+                until = [{"pinned": name(t)}] + until
+            steps.append({"units": [name(i)], "do": "advance_to", "to": list(line), "until": until})
+    if going:
+        lat = front["lat"]
+        order = sorted(movers, key=lambda i: (-_dot(_cube_of(us[i]["pos"]), lat), i))   # leftmost first
+        groups = [order] if len(going) == 1 else [order[:(len(order) + 1) // 2], order[(len(order) + 1) // 2:]]
+        if len(going) == 2 and going[0]["sgn"] < 0:
+            going = [going[1], going[0]]           # the left flank's force is the leftmost half
+        for f, grp in zip(going, groups):
+            if grp:
+                steps.append({"units": [name(i) for i in grp], "do": "envelop", "via": f["via"], "target": name(f["end"])})
+        by = going[0]["via"][-1]
+    return {"template": pick, "steps": steps, **({"by": by} if by else {})}
+
+
+def _behind(axis: int) -> str:
+    """The map edge behind a side whose axis to the enemy is that hex direction: E: W; NE and NW
+    (leaning north): S; W: E; SW and SE (leaning south): N."""
+    return {0: "W", 1: "S", 2: "S", 3: "E", 4: "N", 5: "N"}[axis % 6]
 
 
 def _enveloping(u: dict) -> bool:

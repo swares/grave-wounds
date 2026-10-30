@@ -2618,6 +2618,7 @@ function orderSide(units, side, [size, field, rng, exchange], { stance, memory, 
   { const h = hookUp(us, side, [goal, known, exchange, stance]); us = h.units; orders.push(...h.orders) }
   { const r = ridersAi(us, side, [goal, known, exchange, stance], orders); us = r.units; orders.splice(0, orders.length, ...r.orders) }
   holdBack(us, side, known);
+  orders.push(...planIfNeeded(us, side, [field, known, exchange, stance, table], rng));
   orders.push(...planSteps(us, side, [field, known, exchange]));
   orders.push(...commitReserve(us, side, known, mem, stance));
   if (stance === "hold") orders.push(...fixLines(us, side, [field, known, exchange]));
@@ -3395,6 +3396,137 @@ function planTrigger(us, [i, st], w, [field, known, exchange]){   // one trigger
   }
   return false;
 }
+// ---------- the procedural planner (docs/units.md, The procedural planner) (as commander's planner) ----------
+const lexLess = (a, b) => { for (let k = 0; k < a.length; k++) if (a[k] !== b[k]) return a[k] < b[k]; return false };
+const argMin = (xs, key) => xs.reduce((best, x) => (best === null || lexLess(key(x), key(best)) ? x : best), null);   // the first of the least, by an array key
+function planIfNeeded(us, side, ctx, rng){         // with the planner on (field.planner), for a side with no plan that has not planned and knows of an enemy: the commander writes its plan onto the field; [the order that says so] or [] (as commander._plan_if_needed)
+  const field = ctx[0], known = ctx[1];
+  if (!field?.planner || (field.plan && side in field.plan) || (field.planned && side in field.planned)) return [];
+  if (!planFoes(us, side, known).length) return [];
+  const p = planFor(us, side, ctx, rng);
+  field.planned = { ...(field.planned || {}), [side]: p.template };
+  if (p.steps.length) field.plan = { ...(field.plan || {}), [side]: p.steps };
+  return [{ act: "planned", side, template: p.template, ...(p.by ? { by: p.by } : {}) }];
+}
+const planFoes = (us, side, known) => Object.keys(known || {}).filter(k => /^\d+$/.test(k)).map(Number)
+  .filter(j => j < us.length && us[j].side !== side && us[j].men > 0 && !ROUTED.has(us[j].state)).sort((a, b) => a - b);   // (as commander._known_foes)
+const cdot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+const dirCube = k => { const [q, r] = AX[mod6(k)]; return [q, r, -q - r] };
+function planRoles(u, modern){                      // what a unit is for in a plan: fire, assault, mobile (as commander._roles)
+  const out = new Set(), shoots = "range" in FD.weapons[u.weapon];
+  if (u.vehicle || u.mounted) out.add("mobile");
+  if (u.vehicle){ if (gunOf(u) || shoots) out.add("fire"); return out }
+  if (modern && UD.commander.ground_with.includes(u.weapon) && u.weapon !== "machine_gun" && !u.mounted) out.add("assault");
+  else if (shoots) out.add("fire");
+  else if (u.formation === "close" || u.mounted) out.add("assault");
+  return out;
+}
+function planFor(us, side, [field, known, exchange, stance, table], rng){   // the commander's own plan: {template, steps, by} (as commander.plan_for)
+  const P = UD.commander.planner, modern = (UD.commander.bounds_all || []).includes(FD.tables[table]?.battle);
+  const mine = us.map((u, i) => i).filter(i => us[i].side === side && us[i].men > 0 && !ROUTED.has(us[i].state) && !isBattery(us[i]) && !isAtGun(us[i]));
+  const foes = planFoes(us, side, known), seen = new Map(foes.map(j => [j, knownAt(us, j, known)]));
+  const force = (ix, w) => ix.reduce((a, j) => a + w(j).men * quality(w(j).quality).attack, 0);
+  const ours = force(mine, j => us[j]), theirs = force(foes, j => seen.get(j));
+  const roles = new Map(mine.map(i => [i, planRoles(us[i], modern)]));
+  const front = planFront(us, mine, foes, seen);
+  const flanks = [planFlank(us, field, [front, 1], [mine, foes, seen]), planFlank(us, field, [front, -1], [mine, foes, seen])].filter(Boolean);
+  flanks.sort((a, b) => a.cost - b.cost);
+  const mobile = mine.filter(i => roles.get(i).has("mobile")), W = P.weights, cands = [];
+  if (stance === "attack"){
+    if (mine.some(i => roles.get(i).has("fire") || roles.get(i).has("assault"))) cands.push(["assault", W.assault]);
+    if (mobile.length && flanks.length) cands.push(["single", W.single]);
+    if (mobile.length >= 2 && flanks.length === 2 && ours >= P.double * theirs) cands.push(["double", W.double]);
+  } else {
+    if (mine.some(i => us[i].reserve)) cands.push(["counter", W.counter]);
+    if (theirs >= P.delay * ours && !planGarrison(us, mine, field, P)) cands.push(["delay", W.delay]);
+    cands.push(["stand", W.stand]);
+  }
+  if (!cands.length) return { template: "stand", steps: [] };
+  let pick = cands[0][0];
+  if (cands.length > 1){
+    const roll = rng.randint(1, cands.reduce((a, [, w]) => a + w, 0));
+    let total = 0;
+    for (const [name, w] of cands){ total += w; if (roll <= total){ pick = name; break } }
+  }
+  return planTemplate(us, [pick, mine, foes, seen, roles], [front, flanks, mobile], [exchange, modern, P]);
+}
+function planGarrison(us, mine, field, P){        // planner.position % or more of the side's men hold a position or stand on the objective: a garrison, which holds rather than delays (as commander._garrison)
+  const obj = objectiveOf(field), r = obj !== null ? objectiveRadii(field)[0] : 0;
+  const held = mine.filter(i => holdsPosition(us, i, field) || (obj !== null && offObjective(us[i], obj) <= r)).reduce((a, i) => a + us[i].men, 0);
+  const total = mine.reduce((a, i) => a + us[i].men, 0);
+  return total > 0 && 100 * held >= P.position * total;
+}
+function planFront(us, mine, foes, seen){          // the axis to the known enemy, the lateral (left of it) and the enemy units at each end (as commander._front)
+  const so = [0, 1, 2].map(k => mine.reduce((a, i) => a + cube(us[i].pos)[k], 0)), se = [0, 1, 2].map(k => foes.reduce((a, j) => a + cube(seen.get(j).pos)[k], 0));
+  const v = [0, 1, 2].map(k => mine.length * se[k] - foes.length * so[k]);
+  const dots = [0, 1, 2, 3, 4, 5].map(k => cdot(v, dirCube(k)));
+  const axis = dots.indexOf(Math.max(...dots));
+  const lat = [0, 1, 2].map(k => dirCube(axis + 1)[k] + dirCube(axis + 2)[k]);
+  const p = new Map(foes.map(j => [j, cdot(cube(seen.get(j).pos), lat)]));
+  return { axis, lat, ends: { 1: argMin(foes, j => [-p.get(j), j]), [-1]: argMin(foes, j => [p.get(j), j]) } };
+}
+function planWalk(h, axis, sgn, n, size){          // n steps sideways from h, alternating the two directions either side of the perpendicular; null off the map (as commander._walk)
+  const dirs = sgn > 0 ? [axis + 1, axis + 2] : [axis - 1, axis - 2];
+  let x = [...h];
+  for (let k = 0; k < n; k++){
+    x = step(x, mod6(dirs[k % 2]));
+    if (!(x[0] >= 0 && x[0] < size[0] && x[1] >= 0 && x[1] < size[1])) return null;
+  }
+  return x;
+}
+function planFlank(us, field, [front, sgn], [mine, foes, seen]){   // the way round the enemy's end on one side: {sgn, end, via, cost}, or null if not open (as commander._flank)
+  const P = UD.commander.planner, size = field?.size || [60, 40], end = front.ends[sgn], lat = front.lat;
+  const w2 = planWalk(seen.get(end).pos, front.axis, sgn, P.flank_gap, size);
+  if (!w2) return null;
+  const ours = argMin(mine, i => [-sgn * cdot(cube(us[i].pos), lat), i]);
+  const level = sgn * cdot(cube(w2), lat);
+  let w1 = null, h = [...us[ours].pos];
+  for (let n = 0; n < size[0] + size[1]; n++){
+    if (sgn * cdot(cube(h), lat) >= level){ w1 = h; break }
+    h = planWalk(h, front.axis, sgn, 1, size);
+    if (!h) return null;
+  }
+  if (!w1) return null;
+  const path = [[us[ours].pos, w1], [w1, w2]].flatMap(([a, b]) => ray(a, b, hdist(a, b)));
+  let cost = 0;
+  for (const x of path){
+    const kind = field?.ground?.[`${x[0]},${x[1]}`] || "open";
+    if (UD.ground[kind].impassable) return null;
+    cost += UD.ground[kind].move;
+    if (foes.some(j => j !== end && hdist(x, seen.get(j).pos) < P.flank_gap)) return null;
+  }
+  if (cost > P.going * path.length) return null;
+  return { sgn, end, via: [[...w1], [...w2]], cost: Math.floor(cost * 1000 / path.length) };
+}
+function planTemplate(us, [pick, mine, foes, seen, roles], [front, flanks, mobile], [exchange, modern, P]){   // the chosen template's steps (as commander._template)
+  const name = j => us[j].name, nearest = i => argMin(foes, j => [hdist(us[i].pos, seen.get(j).pos), j]), steps = [];
+  if (pick === "stand") return { template: "stand", steps: [] };
+  if (pick === "delay") return { template: "delay", steps: [{ units: mine.map(name), do: "withdraw_if", to: planBehind(front.axis), when: [{ outflanked: true }, { lost: 25 }] }] };
+  if (pick === "counter") return { template: "counter", steps: [{ units: mine.filter(i => us[i].reserve).map(name), do: "commit", when: foes.map(j => ({ broken: name(j) })) }] };
+  let going = { single: flanks.slice(0, 1), double: flanks.slice(0, 2) }[pick] || [];
+  const movers = new Set(going.length ? mobile : []);
+  for (const i of mine){
+    if (movers.has(i)) continue;
+    const t = nearest(i);
+    if (roles.get(i).has("fire")) steps.push({ units: [name(i)], do: "pin", target: name(t) });
+    else if (roles.get(i).has("assault") && hdist(us[i].pos, seen.get(t).pos) > P.start + UD.commander.route.reach){
+      const line = ray(seen.get(t).pos, us[i].pos, P.start).at(-1);
+      let until = [{ exchange: (exchange ?? 0) + P.wait }];
+      if (modern) until = [{ pinned: name(t) }, ...until];
+      steps.push({ units: [name(i)], do: "advance_to", to: [...line], until });
+    }
+  }
+  let by = null;
+  if (going.length){
+    const order = [...movers].sort((a, b) => (lexLess([-cdot(cube(us[a].pos), front.lat), a], [-cdot(cube(us[b].pos), front.lat), b]) ? -1 : 1));   // leftmost first
+    const half = Math.floor((order.length + 1) / 2), groups = going.length === 1 ? [order] : [order.slice(0, half), order.slice(half)];
+    if (going.length === 2 && going[0].sgn < 0) going = [going[1], going[0]];   // the left flank's force is the leftmost half
+    going.forEach((f, k) => { if (groups[k].length) steps.push({ units: groups[k].map(name), do: "envelop", via: f.via, target: name(f.end) }) });
+    by = going[0].via.at(-1);
+  }
+  return { template: pick, steps, ...(by ? { by } : {}) };
+}
+const planBehind = axis => ({ 0: "W", 1: "S", 2: "S", 3: "E", 4: "N", 5: "N" })[mod6(axis)];   // the map edge behind a side whose axis to the enemy is that direction (as commander._behind)
 const enveloping = u => u.task?.do === "envelop" && !u.via;   // on a plan's envelopment, its route done (as commander._enveloping)
 function focusOf(us, i, known, t){                  // the plan's target for unit i (focus, by name) if it stands and its side knows of it, else t (as commander._focus)
   const name = us[i].focus;
@@ -4127,9 +4259,10 @@ function holdForStages(B, phases){                 // the battlefield's phases; 
     else if (b){ B.waiting.push({ stage: i, unit: { name: b.name }, support: b }); B.field.support = fieldSupport(B).filter(x => x !== b) }   // a battery or aircraft: on call from its phase
   }));
 }
-function setUpBattle(fid){                         // a battlefield with its armies as drawn up, before the battle starts (as battle.set_up)
+function setUpBattle(fid, planner = false){        // a battlefield with its armies as drawn up, before the battle starts; planner: the commander plans for itself on a side with no written plan (as battle.set_up)
   const F = FD.fields[fid];
   const B = { sides: F.sides.slice(), table: F.table, units: [], field: structuredClone(F.field), exchange: 0, phase: "setup", stages: null, stageNo: -1, waiting: [], start: null, entry: F.entry || null, seq: 1, ends: F.ends || null };
+  if (planner) B.field.planner = true;
   B.size = B.field.size.slice();
   B.field.lifts = [];
   const plan = sidePlan(F);
@@ -4382,8 +4515,8 @@ function endPoint(B, stop, all, after){            // the battle's end, as a tur
   });
   return { kind: "end", exchanges: B.exchange - 1, stop, sides, held: objectiveHeld(B.units, B.field).map(o => o.held) };
 }
-function selfPlay(fid, rng, stances = null){       // a battlefield played to its end by the commander on both sides (as battle.self_play): {battle, stop, orders, after, fates, points}
-  const B = setUpBattle(fid), st = stances || playStances(fid), mem = [{ n: -1, mem: {} }, { n: -1, mem: {} }], held = { side: null, n: 0 };
+function selfPlay(fid, rng, stances = null, planner = false){   // a battlefield played to its end by the commander on both sides (as battle.self_play): {battle, stop, orders, after, fates, points}; planner: it plans for itself on a side with no written plan
+  const B = setUpBattle(fid, planner), st = stances || playStances(fid), mem = [{ n: -1, mem: {} }, { n: -1, mem: {} }], held = { side: null, n: 0 };
   const opening = beginBattle(B, rng), points = [];
   let stop = null, orders = 0, base = pointsBase(B);
   const first = turningPoints(B, base, opening.stages, []);

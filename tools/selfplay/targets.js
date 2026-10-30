@@ -29,7 +29,7 @@ const hook = (B, r) => {
   for (const x of r.ran || []) noteRan(B, x);
 };
 const { FD, api } = load(htmlPath, ["secured"], hook);
-const t0 = Date.now(), r = api.selfPlay(fid, new api.SeededDice(Number(seed) * 101)), F = FD.fields[fid];
+const t0 = Date.now(), r = api.selfPlay(fid, new api.SeededDice(Number(seed) * 101), null, !!process.env.PLANNER), F = FD.fields[fid];
 const B = r.battle, end = r.points.at(-1).points[0];
 const run = { seed: Number(seed) * 101, ms: Date.now() - t0, stop: r.stop, exchanges: B.exchange - 1, orders: r.orders, sides: end.sides, held: end.held, secured: F.objective && end.held[0] ? api.secured(B, end.held[0]) : null,
   units: B.units.map(u => ({ name: u.name, side: u.side, start: u.start, men: u.men, state: u.state, dead: u.dead || 0, down: u.down || 0, pos: u.pos })),
