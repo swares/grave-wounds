@@ -304,6 +304,21 @@ When an item is done, delete it here and note it in the pull request that closes
   - a deep ditch that needs ladders: the Redan's ladder parties are marked, but the ditch
     (15 to 20 feet deep) and its bank are crossed without them, as no figures were found for
     how much slower or costlier it was to get in without ladders.
+- **Sieges and ladders: to look at** (asked 29 October 2026). Gathered from the notes above and
+  below; not yet studied as one subject.
+  - **Ladders** work only as escalade over a wall, palisade or barred gate (units.md, *Escalade*).
+    On a ditch and bank (the Great Redan, both battlefields) the marked ladder parties change
+    nothing, for want of figures on how much slower or costlier the ditch was without them.
+  - **The siege before the storm** is off every field map. Jacob's Ford's map starts at the
+    storm (its mine, the outer wall and the days before are not played); the Redan's battlefields
+    leave out both sides' siege guns and the batteries along the line.
+  - **No siege phase**: no sapping, mining, breaching by bombardment over days, or investment and
+    hunger, on the field map or the travel map; a siege is a battle at the moment of assault.
+  - **Wound tables:** the Crimean siege table is the only siege table (the Siege warfare tables
+    item above).
+  - To start: list the sieges and storms the game already touches (the two Redans, Jacob's Ford,
+    Visby's walls, Cassino town, the towns of the travel map), what each needs that the rules lack,
+    and the sources for ladders against ditches and banks.
 - **Guns, still simplified.** The Thirty Years' War still borrows the Peninsula's gun wounds,
   because no 1618-48 artillery wound counts were found.
 - **Character generation, beyond the first cut.** The medieval tables are a first draft for
