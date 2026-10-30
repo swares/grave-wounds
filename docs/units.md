@@ -1162,6 +1162,19 @@ attacks had won by sending the reserve in at once. Attacking plans now win as of
 cost the enemy more men for each of their own; whether to let a plan send the reserve in where it
 helps is open.
 
+**Sending the reserve in by the odds: tried and not kept** (30 October 2026). On the battlefields, the
+attacks that gained from sending the reserve in at once were at even odds or 2 to 1 or so (Agincourt
+2.2, X-Ray 2.1, Lützen, Dornach, Cowpens, Visby, Towton, about 1), and those it hurt at 3 to 1 or more
+(Jacob's Ford, Keating, Sidon, both Cassinos), so a rule was tried: attacking below 2.5 to 1, the plan
+sends the reserve in with the rest. Tested away from the battlefields, on open ground at set odds
+(`tools/selfplay/odds.js`, 12 seeds), it did the opposite of what it was for: at 1 to 1 the attacker
+won 0.42 of runs keeping its reserve against 0.17 sending it in (medieval), 0.25 against 0.00
+(Second World War); at 2 to 1, 0.83 against 1.00 (medieval), the same (Second World War); at 3 and 4
+to 1 the attacker won every run either way. The battlefield pattern was the ground, not the odds:
+one breach at Jacob's Ford, an outpost in the hills at Keating, the ridges at Cassino. Not kept: a
+plan leaves the reserve to the reserve's own rules. When to send it in likely turns on the ground (a
+narrow approach, works to storm), which is open.
+
 **The first cut, and what comes after.** The five templates above, made once. After: re-planning
 when a plan fails; feints and scouting (no task for them yet); a reserve sent to a named place; plans
 on the travel map.
