@@ -3445,7 +3445,8 @@ function planFor(us, side, [field, known, exchange, stance, table], rng){   // t
   const foes = planFoes(us, side, known), seen = new Map(foes.map(j => [j, knownAt(us, j, known)]));
   const force = (ix, w) => ix.reduce((a, j) => a + w(j).men * quality(w(j).quality).attack, 0);
   const ours = force(mine, j => us[j]), theirs = force(foes, j => seen.get(j));
-  const roles = new Map(mine.map(i => [i, us[i].reserve ? new Set() : planRoles(us[i], modern)]));   // a unit held in reserve is left to the reserve's own rules
+  const keep = stance !== "attack" || ours >= P.all_in * theirs;   // attacking at long odds, the reserve is kept; at shorter, it goes in with the rest
+  const roles = new Map(mine.map(i => [i, keep && us[i].reserve ? new Set() : planRoles(us[i], modern)]));
   const front = planFront(us, mine, foes, seen);
   const flanks = [planFlank(us, field, [front, 1], [mine, foes, seen]), planFlank(us, field, [front, -1], [mine, foes, seen])].filter(Boolean);
   flanks.sort((a, b) => a.cost - b.cost);
