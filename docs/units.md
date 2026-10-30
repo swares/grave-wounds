@@ -2081,7 +2081,13 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   over takes all of a close-order move. A unit marked **Ladders** crosses it at the ordinary
   cost, and at the end of each exchange it puts its ladders down into the deep ditch on every
   side of its hexes ("X put their ladders down into the deep ditch"): from then on everyone
-  crosses there at the ordinary cost. The sources (sieges-ladders survey, 30 October 2026):
+  crosses there at the ordinary cost. Until then, **no one without ladders charges across it**:
+  hand to hand across a deep ditch with no ladders down in it is blocked as across a wall (only
+  reach-2 weapons strike over, in the front rank), and a move without ladders that ends in
+  contact may not cross it ("it cannot charge across a deep ditch without ladders down in
+  it"); men may still cross it with an ordinary move where no enemy is waiting on the far
+  side, and shoot across it. Nobody charges down a 16-foot drop: in self-play the stormers
+  otherwise crossed it in a charge (twice a move), and the ditch held no one up. The sources (sieges-ladders survey, 30 October 2026):
   at Delhi in 1857 the ditch was 16 to 20 feet deep, the time went on letting the ladders
   down ("for ten minutes it was impossible to let down the ladders"), and once they were down
   climbing the far side was "the work of an instant"; at the Redan on 8 September Simpson's

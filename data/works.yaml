@@ -80,7 +80,9 @@ camps:
 #                 without ladders; with ladders, or where a ladder party has put its ladders
 #                 down into it, `cross` (units.md, *Escalade*). Our reading: no source measures it.
 #                 4: with the bank behind it, a step across takes all of a close-order move (6),
-#                 so men without ladders still get over, slowly; 6 would stop them but for a charge
+#                 so men without ladders still get over, slowly; 6 would stop them but for a charge.
+#                 Without ladders down in it, no hand to hand across it (as `blocks_melee`) and no
+#                 charge across it
 edge_works:
   ditch:    {name: "Ditch",         per_metre: 2.5,  cross: 2,    cover: 0,  height: 10, breach: null, deep: 4}
   bank:     {name: "Earth bank",    per_metre: 1.0,  cross: 1,    cover: 20, cover_side: high, height: 10, breach: null}
