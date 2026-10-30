@@ -1437,7 +1437,8 @@ def plan_for(d: Data, us: list, side, ctx: tuple, rng) -> dict:
     seen = {j: _where(us, j, known) for j in foes}
     force = lambda ix, w: sum(w(j)["men"] * U.quality(d, w(j)["quality"])["attack"] for j in ix)
     ours, theirs = force(mine, lambda j: us[j]), force(foes, lambda j: seen[j])
-    roles = {i: (set() if us[i].get("reserve") else _roles(d, us[i], modern)) for i in mine}   # a unit held in reserve is left to the reserve's own rules
+    keep = stance != "attack" or _behind_works(d, us, field, (mine, foes, seen)) * 100 >= P["works"] * sum(seen[j]["men"] for j in foes)
+    roles = {i: (set() if keep and us[i].get("reserve") else _roles(d, us[i], modern)) for i in mine}   # attacking an enemy in the open the reserve goes in; else it is left to the reserve's own rules
     front = _front(us, mine, foes, seen)
     flanks = [f for f in (_flank(d, us, field, (front, +1), (mine, foes, seen)), _flank(d, us, field, (front, -1), (mine, foes, seen))) if f]
     flanks.sort(key=lambda f: f["cost"])
@@ -1467,7 +1468,22 @@ def plan_for(d: Data, us: list, side, ctx: tuple, rng) -> dict:
             if roll <= total:
                 pick = name
                 break
-    return _template(d, us, (pick, mine, foes, seen, roles), (front, flanks, mobile), (exchange, modern, P))
+    p = _template(d, us, (pick, mine, foes, seen, roles), (front, flanks, mobile), (exchange, modern, P))
+    if not keep and p["steps"]:                  # all in: a reserve unit the plan gave no task goes in with the rest
+        named = {n for st in p["steps"] for n in st["units"]}
+        rest = [us[i]["name"] for i in mine if us[i].get("reserve") and us[i]["name"] not in named]
+        if rest:
+            p["steps"].append({"units": rest, "do": "commit"})
+    return p
+
+
+def _behind_works(d: Data, us: list, field: dict | None, sides: tuple) -> int:
+    """The known enemy's men who hold works (units.holds_works) against the nearest of the side's units."""
+    mine, foes, seen = sides
+    if not mine:
+        return 0
+    near = lambda t: min(mine, key=lambda i: (U.hdist(us[i]["pos"], t["pos"]), i))
+    return sum(seen[j]["men"] for j in foes if U.holds_works(d, field, us[near(seen[j])]["pos"], seen[j]))
 
 
 def _garrison(d: Data, us: list, mine: list, field: dict | None, P: dict) -> bool:
