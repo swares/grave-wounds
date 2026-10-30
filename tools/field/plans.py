@@ -68,6 +68,41 @@ with sync_playwright() as p:
     pg.evaluate("() => render()")
     stage = pg.inner_text("#stage")
     check("Plans running:" in stage and "Washington's horse going round" in stage, "the strip shows the step running")
+
+    # the procedural planner: always in a battle of the GM's own set-up
+    pg.click("#btn-reset")
+    pg.click("#chk-armies")                        # the ground alone, the units the GM's own
+    pg.click("#btn-field")
+    check(pg.is_hidden("#lbl-planner"), "no planner box without a battlefield's armies (the planner is always on)")
+    pg.select_option("#sel-ai0", index=1)
+    pg.select_option("#sel-ai1", index=1)
+    for _ in range(8):
+        if pg.evaluate("() => Object.keys(S.field.planned || {}).length === 2"):
+            break
+        pg.click("#btn-next")
+    planned = pg.evaluate("() => S.field.planned || {}")
+    check(len(planned) == 2 and set(planned.values()) <= {"assault", "single", "double", "counter", "delay", "stand"},
+          f"with no battlefield's armies the commander plans for each side it plays ({planned})")
+    lines = pg.evaluate("() => S.log.filter(l => l.text.startsWith('For ') && l.text.includes(' the commander plans ')).map(l => l.text)")
+    check(len(lines) == 2, f"the log says what each side's commander plans ({lines})")
+
+    # on a battlefield only with the box, and hidden from the GM playing the other side
+    pg.click("#btn-reset")
+    pg.click("#chk-armies")                        # the armies as drawn up again (set-up only)
+    pg.select_option("#sel-field", "visby-1361")
+    pg.click("#btn-field")
+    check(pg.is_visible("#lbl-planner") and not pg.is_checked("#chk-planner"), "a battlefield's armies show the planner box, unticked")
+    pg.click("#chk-planner")
+    pg.select_option("#sel-ai0", index=0)          # the GM plays the Gotlanders
+    pg.select_option("#sel-ai1", index=1)
+    for _ in range(8):
+        if pg.evaluate("() => !!S.field.planned?.Danes"):
+            break
+        pg.click("#btn-next")
+    check(pg.evaluate("() => !!S.field.planned?.Danes && !S.field.planned?.Gotlanders"), "with the box ticked the commander plans for the side it plays")
+    stage = pg.inner_text("#stage")
+    check("Danes: the commander has a plan" in stage and "Danish crossbowmen pinning" not in stage,
+          f"its plan is hidden on the strip from the GM playing the other side ({stage})")
     check(not errors, f"no page errors {errors}")
     browser.close()
 

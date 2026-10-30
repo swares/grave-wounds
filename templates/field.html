@@ -240,6 +240,7 @@ legend{padding:0}
         <label class="check" id="lbl-plan0" hidden title="The battlefield's plan for this side (data/plans.yaml): the commander gives its units the plan's tasks when their triggers come, as the accounts have the side meaning to fight"><input type="checkbox" id="chk-plan0" checked> follow the plan</label>
         <label for="sel-ai1" id="ai-label1">Second side</label>
         <select class="small" id="sel-ai1" style="width:auto" title="A scripted commander moves this side at the start of its move, by its units' quality: attacking, it closes with the enemy; holding, it stands and only charges what it can reach"></select>
+        <label class="check" id="lbl-planner" hidden title="On a battlefield with its armies as drawn up, the commander writes its own plan for a side with no written plan (docs/units.md, The procedural planner); in a battle of your own set-up, or from the travel map, it always does"><input type="checkbox" id="chk-planner"> the commander plans for sides with no written plan</label>
         <label class="check" id="lbl-plan1" hidden title="The battlefield's plan for this side (data/plans.yaml): the commander gives its units the plan's tasks when their triggers come, as the accounts have the side meaning to fight"><input type="checkbox" id="chk-plan1" checked> follow the plan</label>
         <button class="small" id="btn-run" hidden title="With the commander on both sides: let it play on, a move at a time, until you stop it or the battle ends (a side with nothing left standing, the objective held a while, or the exchange limit)">Run</button>
         <button class="small" id="btn-ai-undo" hidden title="Put its units back where they began this move, to move them yourself">Undo its orders</button>
@@ -1388,6 +1389,7 @@ function aiMove(){                                // at the start of a side's mo
   commanderMemory(T(), M);
   const mem = structuredClone(M.mem), sup = supports().map(b => (b.mission ? structuredClone(b.mission) : null));
   const onward = aims(S.units, side, S.field, stance, structuredClone(M.mem))[1] !== S.field ? aimText(stance) : "";
+  S.field.planner = S.drawnUp ? !!S.plannerOn : true;   // its own plan: always in a battle of the GM's own set-up or from the travel map; on a battlefield only with the box
   const before = S.units.map(copyUnit), start = S.start, orders = commandMove(T(), stance, M, dice);
   const commits = commitsOf(S, orders);
   S.commits = [...(S.commits || []), ...commits];
@@ -1413,6 +1415,13 @@ function moveText(who, them, o, up){              // a move order's line: steppi
   return `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} toward ${them}${past}.`;
 }
 const COMMIT_WHY = { broke: "one of its units has broken", gap: "the enemy is close", exploit: "to exploit an enemy unit that broke", stall: "the attack has stalled" };
+const TEMPLATE_TEXT = { assault: "fire and assault: its shooters pin the enemy's front while its assault troops wait at their start lines, then go in",
+  single: "a single envelopment: fire and assault in front, its mobile troops round the flank", double: "a double envelopment: fire and assault in front, its mobile troops round both flanks",
+  counter: "to hold and counter-attack: its reserve goes in when an enemy unit breaks", delay: "to delay: its units fall back off their own edge when outflanked or a quarter down",
+  stand: "to stand where its men are" };
+function plannedText(o){                          // the commander's own plan, the move it makes it
+  return `For ${o.side} the commander plans ${TEMPLATE_TEXT[o.template] || o.template}${o.by ? ` (round by ${hexName(o.by)})` : ""}.`;
+}
 function triggerText(w){                          // why a plan step started or ended
   if (Array.isArray(w)) return w.map(triggerText).join(" or ");
   if (w.all) return w.all.map(triggerText).join(" and ");
@@ -1474,6 +1483,7 @@ function orderText(o){                            // "Billmen (Yorkists) move 4 
   const t = S.units[o.target];
   let them = "the enemy";
   if (t) them = o.last ? `where ${unitName(t)} were last seen (exchange ${o.last})` : unitName(t);
+  if (o.act === "planned") return plannedText(o);
   if (o.act === "fire") return `${supports()[o.battery]?.name || "A battery"} are called on ${them} at ${hexName(o.hex)}${airRunText(o.attack)}${facText(o)}.`;
   if (o.act === "displace") return `${supports()[o.battery]?.name || "A battery"} displace${o.to ? " to " + hexName(o.to) : ""}: ${supports()[o.by]?.name || "enemy guns"} have them under counter-battery fire (silent for ${nOf(FD.units.indirect.kinds[supports()[o.battery]?.kind]?.displace || 1, "exchange")}, then no longer located).`;
   if (o.act === "illum") return `${supports()[o.battery]?.name || "A battery"} are called to fire illumination over ${hexName(o.hex)}, where ${them} were last seen.`;
@@ -1534,6 +1544,9 @@ function renderAi(){
     $("#chk-plan" + k).checked = !(S.planOff || []).includes(k);
     $("#chk-plan" + k).disabled = S.phase !== "setup";
   });
+  $("#lbl-planner").hidden = !S.drawnUp;
+  $("#chk-planner").checked = !!S.plannerOn;
+  $("#chk-planner").disabled = S.phase !== "setup";
   const undo = aiMoving() && aiThisMove() && !!S.aiDone.undo;
   $("#btn-ai-undo").hidden = !undo;
   $("#btn-ai-go").hidden = !aiMoving() || undo;
@@ -3408,13 +3421,19 @@ function stageText(){                             // the strip above the map: th
   return `<b>Phase ${i + 1} of ${list.length}: ${esc(st.name)}.</b> ${esc(st.note || "")}${late}${next}`;
 }
 const TASK_WORD = { advance_to: "to their line", pin: "pinning", envelop: "going round", commit: "committed", withdraw_if: "falling back" };
+function hiddenPlan(side){                        // a plan the commander wrote for itself, while the GM plays the other side: not shown on the strip
+  const k = S.sides.indexOf(side);
+  return !!S.field?.planned?.[side] && k >= 0 && !aiOf(1 - k);
+}
 function planText(){                              // the strip: each side's plan, in set-up its steps, in the battle the steps running
   const P = S.field?.plan;
   if (!P) return "";
-  const sides = Object.keys(P);
+  const sides = Object.keys(P), hidden = sides.filter(hiddenPlan);
   if (S.phase === "setup") return "<b>Plans:</b> " + esc(sides.map(s => `${s}, ${nOf(P[s].length, "step")}: ` + P[s].map(st => `${st.units.join(", ")} ${TASK_WORD[st.do]}${st.target ? " (" + st.target + ")" : ""}`).join("; ")).join(" · "));
-  const running = S.units.filter(u => u.task && u.men > 0 && u.state !== "fled").map(u => `${u.name} ${TASK_WORD[u.task.do]}${u.focus ? " (" + u.focus + ")" : ""}`);
-  return running.length ? "<b>Plans running:</b> " + esc(running.join("; ")) : "";
+  const running = S.units.filter(u => u.task && u.men > 0 && u.state !== "fled" && !hidden.includes(u.side)).map(u => `${u.name} ${TASK_WORD[u.task.do]}${u.focus ? " (" + u.focus + ")" : ""}`);
+  const secret = hidden.map(s => `${s}: the commander has a plan`);
+  const parts = [...(running.length ? ["<b>Plans running:</b> " + esc(running.join("; "))] : []), ...(secret.length ? [esc(secret.join("; ")) + "."] : [])];
+  return parts.join(" ");
 }
 function bringOn(u, k){                           // a unit joining during the battle: at its side's entry edge, facing into the map; it moves next exchange
   const facing = EDGE_FACING[entryEdge(T(), k)];
@@ -3460,9 +3479,9 @@ function newBattle(){                            // back to set-up: the travel m
     if (fid !== (S.from.battlefield || null)) loadBattlefield(fid || "", false);
   }
   else {
-    const off = S.planOff;                          // which sides' plans the GM switched off stays so
+    const off = S.planOff, own = S.plannerOn;       // which sides' plans the GM switched off, and the planner box, stay so
     freshState();
-    S.planOff = off;
+    S.planOff = off; S.plannerOn = own;
     if (fid) loadBattlefield(fid, true);
   }
   S.voice = null;                                 // a new battle's narrator writes as its war again
@@ -3620,6 +3639,7 @@ function init(){
   $("#sel-ai1").onchange = e => setAi(1, e.target.value);
   $("#chk-plan0").onchange = e => setPlan(0, e.target.checked);
   $("#chk-plan1").onchange = e => setPlan(1, e.target.checked);
+  $("#chk-planner").onchange = e => { if (S.phase === "setup"){ S.plannerOn = e.target.checked; S.msg = S.plannerOn ? "The commander will write its own plan for a side with no written plan." : "The commander will plan only where the battlefield gives a plan." } render() };
   $("#btn-run").onclick = runToggle;
   $("#btn-ai-undo").onclick = aiUndo;
   $("#btn-ai-go").onclick = aiAgain;
