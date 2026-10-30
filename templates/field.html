@@ -1427,6 +1427,7 @@ function triggerText(w){                          // why a plan step started or 
   if (w.all) return w.all.map(triggerText).join(" and ");
   if (w.start) return "from the start";
   if (w.done) return "its task is done";
+  if (w.stalled) return "they could get no nearer, and give it up";
   if ("exchange" in w) return `exchange ${w.exchange} has come`;
   if ("phase" in w) return `${w.phase} has begun`;
   if ("light" in w) return `it is ${FD.weather.light.levels[w.light].name.toLowerCase()}`;

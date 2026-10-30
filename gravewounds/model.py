@@ -1360,6 +1360,8 @@ def _step_errors(d: Data, F: dict, side: int, st: dict, where: str) -> list[str]
             errors.append(f"{where}: {k} must be a hex on the map" + (" or N, S, E or W" if do == "withdraw_if" else ""))
     if "via" in st and not (isinstance(st["via"], list) and st["via"] and all(_on_map(h, F["size"]) for h in st["via"])):
         errors.append(f"{where}: via must be a list of hexes on the map")
+    if "stall" in st and not (st.get("do") == "envelop" and isinstance(st["stall"], int) and st["stall"] >= 1):
+        errors.append(f"{where}: stall is for an envelopment, a whole number of moves of 1 or more")
     if st.get("target") is not None and st["target"] not in theirs:
         errors.append(f"{where}: target {st['target']!r} is not an enemy unit")
     for key in ("when", "until"):

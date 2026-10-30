@@ -3325,8 +3325,8 @@ function planSteps(us, side, ctx){                  // start and end the side's 
       if (u.side !== side || !st.units.includes(u.name) || u.men <= 0 || ROUTED.has(u.state)) continue;
       const run = u.task;
       if (run && run.step === k){
-        const why = taskDone(us, i, run) || (st.until ? fires(us, [i, st], st.until, ctx) : null);
-        if (why){ endTask(us, i); out.push({ unit: i, act: "plan", step: k, do: st.do, start: false, why }) }
+        const why = taskDone(us, i, run) || gaveUp(us, i, st) || (st.until ? fires(us, [i, st], st.until, ctx) : null);
+        if (why){ endTask(us, i, !!why.stalled); out.push({ unit: i, act: "plan", step: k, do: st.do, start: false, why }) }
         continue;
       }
       if ((u.steps || []).includes(k)) continue;
@@ -3343,16 +3343,18 @@ function planSteps(us, side, ctx){                  // start and end the side's 
 function startTask(us, i, k, st, exchange){        // step k's task on unit i (any but withdraw_if takes it out of the reserve) (as commander._start_task)
   const u = us[i], d = st.do;
   u.steps = [...(u.steps || []), k];
+  const was = !!u.reserve;
   if (d !== "withdraw_if") u.reserve = false;
   if (d === "commit"){ if (st.to) u.plug = [...st.to]; return }
-  u.task = { step: k, do: d };
+  u.task = { step: k, do: d, ...(was ? { reserve: true } : {}) };
   if (d === "withdraw_if") u.withdraw = { at: exchange ?? 0, to: typeof st.to === "string" ? st.to : [...st.to] };
   else if (d === "envelop") u.via = st.via.map(h => [...h]);
   else if (d === "advance_to") u.goal = [...st.to];
   if (st.target && (d === "envelop" || d === "pin")) u.focus = st.target;
 }
-function endTask(us, i){                            // unit i's running step ends: its task, target and line go (an envelopment's route, a withdrawal not yet done) (as commander._end_task)
+function endTask(us, i, back = false){             // unit i's running step ends: its task, target and line go (an envelopment's route, a withdrawal not yet done); back: it gave up, and goes back to the reserve if it was held there (as commander._end_task)
   const u = us[i], d = u.task.do;
+  if (back && u.task.reserve) u.reserve = true;
   TASK_KEYS.forEach(key => { delete u[key] });
   if (d === "envelop") delete u.via;
   else if (d === "withdraw_if") delete u.withdraw;
@@ -3363,6 +3365,22 @@ function taskDone(us, i, run){                      // why unit i's running task
   if (u.focus && namedUnit(us, u.focus, u.side, false) === null) return { broken: u.focus };
   if (run.do === "envelop" && !u.focus && !u.via) return { done: true };
   return null;
+}
+function gaveUp(us, i, st){                         // an envelopment with a stall that has come no nearer its next waypoint (or its target) for that many moves: {stalled: true}, else null; a new task each move (as commander._gave_up)
+  const u = us[i], run = u.task;
+  if (run.do !== "envelop" || !st.stall) return null;
+  let to;
+  if (u.via?.length) to = [...u.via[0]];
+  else {
+    const j = u.focus ? namedUnit(us, u.focus, u.side, false) : null;
+    if (j === null) return null;
+    to = [...us[j].pos];
+  }
+  const dist = hdist(u.pos, to), same = run.to && run.to[0] === to[0] && run.to[1] === to[1];
+  if (!same || dist < (run.best ?? 1e9)){ u.task = { ...run, to, best: dist, still: 0 }; return null }
+  const still = (run.still ?? 0) + 1;
+  u.task = { ...run, still };
+  return still >= st.stall ? { stalled: true } : null;
 }
 function namedUnit(us, name, side, ours){         // the index of the standing unit of that name, of side (ours) or not; or null (as commander._named)
   const j = us.findIndex(e => e.name === name && (e.side === side) === ours && e.men > 0 && !ROUTED.has(e.state));
@@ -3491,11 +3509,10 @@ function planFlank(us, field, [front, sgn], [mine, foes, seen]){   // the way ro
   let cost = 0;
   for (const x of path){
     const kind = field?.ground?.[`${x[0]},${x[1]}`] || "open";
-    if (UD.ground[kind].impassable) return null;
+    if (UD.ground[kind].impassable || UD.ground[kind].move > P.going * UD.ground.open.move) return null;   // every hex of the way, not the average, within the going
     cost += UD.ground[kind].move;
     if (foes.some(j => j !== end && hdist(x, seen.get(j).pos) < P.flank_gap)) return null;
   }
-  if (cost > P.going * path.length) return null;
   return { sgn, end, via: [[...w1], [...w2]], cost: Math.floor(cost * 1000 / path.length) };
 }
 function planTemplate(us, [pick, mine, foes, seen, roles], [front, flanks, mobile], [exchange, modern, P]){   // the chosen template's steps (as commander._template)
@@ -3504,24 +3521,34 @@ function planTemplate(us, [pick, mine, foes, seen, roles], [front, flanks, mobil
   if (pick === "delay") return { template: "delay", steps: [{ units: mine.map(name), do: "withdraw_if", to: planBehind(front.axis), when: [{ outflanked: true }, { lost: 25 }] }] };
   if (pick === "counter") return { template: "counter", steps: [{ units: mine.filter(i => us[i].reserve).map(name), do: "commit", when: foes.map(j => ({ broken: name(j) })) }] };
   let going = { single: flanks.slice(0, 1), double: flanks.slice(0, 2) }[pick] || [];
-  const movers = new Set(going.length ? mobile : []);
+  const movers = new Set(going.length ? mobile : []), pinned = [];   // pinned: the enemy units the plan's fire units pin
   for (const i of mine){
-    if (movers.has(i)) continue;
+    if (movers.has(i) || !roles.get(i).has("fire")) continue;
     const t = nearest(i);
-    if (roles.get(i).has("fire")) steps.push({ units: [name(i)], do: "pin", target: name(t) });
-    else if (roles.get(i).has("assault") && hdist(us[i].pos, seen.get(t).pos) > P.start + UD.commander.route.reach){
-      const line = ray(seen.get(t).pos, us[i].pos, P.start).at(-1);
-      let until = [{ exchange: (exchange ?? 0) + P.wait }];
-      if (modern) until = [{ pinned: name(t) }, ...until];
-      steps.push({ units: [name(i)], do: "advance_to", to: [...line], until });
+    steps.push({ units: [name(i)], do: "pin", target: name(t) });
+    if (!pinned.includes(t)) pinned.push(t);
+  }
+  const reach = UD.commander.route.reach, used = new Set();
+  for (const i of mine){                            // assault units wait at a start line only for fire that is coming, and only in fire and movement
+    if (movers.has(i) || roles.get(i).has("fire") || !roles.get(i).has("assault") || !modern || !pinned.length) continue;
+    const t = nearest(i);
+    if (hdist(us[i].pos, seen.get(t).pos) <= P.start + reach) continue;
+    let line = null;
+    for (let k = 0; k <= reach; k++){               // two in column do not share one hex: the one behind halts further back
+      const h = ray(seen.get(t).pos, us[i].pos, P.start + k).at(-1);
+      if (!used.has(hk(h))){ line = h; break }
     }
+    if (!line) continue;
+    used.add(hk(line));
+    const pt = argMin(pinned, j => [hdist(us[i].pos, seen.get(j).pos), j]);
+    steps.push({ units: [name(i)], do: "advance_to", to: [...line], until: [{ pinned: name(pt) }, { exchange: (exchange ?? 0) + P.wait }] });
   }
   let by = null;
   if (going.length){
     const order = [...movers].sort((a, b) => (lexLess([-cdot(cube(us[a].pos), front.lat), a], [-cdot(cube(us[b].pos), front.lat), b]) ? -1 : 1));   // leftmost first
     const half = Math.floor((order.length + 1) / 2), groups = going.length === 1 ? [order] : [order.slice(0, half), order.slice(half)];
     if (going.length === 2 && going[0].sgn < 0) going = [going[1], going[0]];   // the left flank's force is the leftmost half
-    going.forEach((f, k) => { if (groups[k].length) steps.push({ units: groups[k].map(name), do: "envelop", via: f.via, target: name(f.end) }) });
+    going.forEach((f, k) => { if (groups[k].length) steps.push({ units: groups[k].map(name), do: "envelop", via: f.via, target: name(f.end), stall: UD.commander.stall.moves }) });
     by = going[0].via.at(-1);
   }
   return { template: pick, steps, ...(by ? { by } : {}) };
