@@ -3401,7 +3401,7 @@ const lexLess = (a, b) => { for (let k = 0; k < a.length; k++) if (a[k] !== b[k]
 const argMin = (xs, key) => xs.reduce((best, x) => (best === null || lexLess(key(x), key(best)) ? x : best), null);   // the first of the least, by an array key
 function planIfNeeded(us, side, ctx, rng){         // with the planner on (field.planner), for a side with no plan that has not planned and knows of an enemy: the commander writes its plan onto the field; [the order that says so] or [] (as commander._plan_if_needed)
   const field = ctx[0], known = ctx[1];
-  if (!field?.planner || (field.plan && side in field.plan) || (field.planned && side in field.planned)) return [];
+  if (!(field?.planner === true || field?.planner === side) || (field.plan && side in field.plan) || (field.planned && side in field.planned)) return [];   // true: every side; a side's name: that side only
   if (!planFoes(us, side, known).length) return [];
   const p = planFor(us, side, ctx, rng);
   field.planned = { ...(field.planned || {}), [side]: p.template };
@@ -4262,7 +4262,8 @@ function holdForStages(B, phases){                 // the battlefield's phases; 
 function setUpBattle(fid, planner = false){        // a battlefield with its armies as drawn up, before the battle starts; planner: the commander plans for itself on a side with no written plan (as battle.set_up)
   const F = FD.fields[fid];
   const B = { sides: F.sides.slice(), table: F.table, units: [], field: structuredClone(F.field), exchange: 0, phase: "setup", stages: null, stageNo: -1, waiting: [], start: null, entry: F.entry || null, seq: 1, ends: F.ends || null };
-  if (planner) B.field.planner = true;
+  if (planner === true) B.field.planner = true;
+  else if (Number.isInteger(planner) && F.sides[planner]) B.field.planner = F.sides[planner];   // a side's index: the planner on that side only
   B.size = B.field.size.slice();
   B.field.lifts = [];
   const plan = sidePlan(F);

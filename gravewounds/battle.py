@@ -110,13 +110,16 @@ def hold_for_stages(bt: dict, phases) -> None:
                 bt["field"]["support"] = [x for x in _support(bt) if x is not b]
 
 
-def set_up(d: Data, fid: str, planner: bool = False) -> dict:
+def set_up(d: Data, fid: str, planner: bool | int = False) -> dict:
     """A battlefield with its armies as drawn up, before the battle starts. planner: the commander
-    plans for itself on a side with no written plan (docs/units.md, The procedural planner)."""
+    plans for itself on a side with no written plan (docs/units.md, The procedural planner): True
+    for every side, or a side's index (0 or 1) for that side only."""
     F = d.fields[fid]
     field = U.battlefield(d, fid)
-    if planner:
+    if planner is True:
         field["planner"] = True
+    elif planner is not False and planner in (0, 1):
+        field["planner"] = F["sides"][planner]
     bt = {"sides": list(F["sides"]), "table": F["table"], "units": [], "field": field, "exchange": 0, "phase": "setup", "stages": None,
          "stageNo": -1, "waiting": [], "start": None, "entry": F.get("entry") or None, "seq": 1, "ends": F.get("ends") or None}
     bt["size"] = list(field["size"])
@@ -614,7 +617,7 @@ def end_point(d: Data, bt: dict, stop: dict | None, every: list, after: list) ->
             "held": [o["held"] for o in U.objective_held(d, bt["units"], bt["field"])]}
 
 
-def self_play(d: Data, fid: str, rng, how: list | None = None, planner: bool = False) -> dict:
+def self_play(d: Data, fid: str, rng, how: list | None = None, planner: bool | int = False) -> dict:
     """A battlefield played to its end by the commander on both sides: {battle, stop, orders, after, fates, points};
     planner: it plans for itself on a side with no written plan."""
     bt = set_up(d, fid, planner)

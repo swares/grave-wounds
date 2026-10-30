@@ -85,7 +85,7 @@ def _main(argv=None) -> int:
     sp.add_argument("-n", type=int, default=1, help="number of battles")
     sp.add_argument("--seed", type=int, default=1, help="the first battle's dice; each next battle the next seed")
     sp.add_argument("--story", action="store_true", help="also print each battle's turning points")
-    sp.add_argument("--planner", action="store_true", help="the commander plans for itself on a side with no written plan (docs/units.md, The procedural planner)")
+    sp.add_argument("--planner", nargs="?", const="both", default=None, choices=["both", "0", "1"], help="the commander plans for itself on a side with no written plan (docs/units.md, The procedural planner): both sides, or only side 0 or 1")
 
     a = p.parse_args(argv)
     try:
@@ -106,7 +106,7 @@ def _main(argv=None) -> int:
             return 2
         print(f"{d.fields[a.field]['name']}: {d.fields[a.field]['sides'][0]} {how[0]}ing, {d.fields[a.field]['sides'][1]} {how[1]}ing.")
         for k in range(a.n):
-            r = self_play(d, a.field, SeededDice(a.seed + k), how, a.planner)
+            r = self_play(d, a.field, SeededDice(a.seed + k), how, {None: False, "both": True}.get(a.planner, int(a.planner or 0)))
             print(f"Battle {k + 1} (seed {a.seed + k}): " + "\n".join(summary(d, r)))
             if a.story:
                 print("\n".join(points_text(r)))
