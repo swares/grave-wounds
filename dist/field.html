@@ -4411,7 +4411,13 @@ function planFor(us, side, [field, known, exchange, stance, table], rng){   // t
     let total = 0;
     for (const [name, w] of cands){ total += w; if (roll <= total){ pick = name; break } }
   }
-  return planTemplate(us, [pick, mine, foes, seen, roles], [front, flanks, mobile], [exchange, modern, P]);
+  const p = planTemplate(us, [pick, mine, foes, seen, roles], [front, flanks, mobile], [exchange, modern, P]);
+  if (!keep && p.steps.length){                     // all in: a reserve unit the plan gave no task goes in with the rest
+    const named = new Set(p.steps.flatMap(st => st.units));
+    const rest = mine.filter(i => us[i].reserve && !named.has(us[i].name)).map(i => us[i].name);
+    if (rest.length) p.steps.push({ units: rest, do: "commit" });
+  }
+  return p;
 }
 function planGarrison(us, mine, field, P){        // planner.position % or more of the side's men hold a position or stand on the objective: a garrison, which holds rather than delays (as commander._garrison)
   const obj = objectiveOf(field), r = obj !== null ? objectiveRadii(field)[0] : 0;

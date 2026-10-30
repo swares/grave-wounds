@@ -1468,7 +1468,13 @@ def plan_for(d: Data, us: list, side, ctx: tuple, rng) -> dict:
             if roll <= total:
                 pick = name
                 break
-    return _template(d, us, (pick, mine, foes, seen, roles), (front, flanks, mobile), (exchange, modern, P))
+    p = _template(d, us, (pick, mine, foes, seen, roles), (front, flanks, mobile), (exchange, modern, P))
+    if not keep and p["steps"]:                  # all in: a reserve unit the plan gave no task goes in with the rest
+        named = {n for st in p["steps"] for n in st["units"]}
+        rest = [us[i]["name"] for i in mine if us[i].get("reserve") and us[i]["name"] not in named]
+        if rest:
+            p["steps"].append({"units": rest, "do": "commit"})
+    return p
 
 
 def _garrison(d: Data, us: list, mine: list, field: dict | None, P: dict) -> bool:
