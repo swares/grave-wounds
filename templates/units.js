@@ -4263,7 +4263,7 @@ function setUpBattle(fid, planner = false){        // a battlefield with its arm
   const F = FD.fields[fid];
   const B = { sides: F.sides.slice(), table: F.table, units: [], field: structuredClone(F.field), exchange: 0, phase: "setup", stages: null, stageNo: -1, waiting: [], start: null, entry: F.entry || null, seq: 1, ends: F.ends || null };
   if (planner === true) B.field.planner = true;
-  else if (planner === 0 || planner === 1) B.field.planner = F.sides[planner];   // the planner on one side only
+  else if (Number.isInteger(planner) && F.sides[planner]) B.field.planner = F.sides[planner];   // a side's index: the planner on that side only
   B.size = B.field.size.slice();
   B.field.lifts = [];
   const plan = sidePlan(F);

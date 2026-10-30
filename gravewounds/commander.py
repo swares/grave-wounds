@@ -1338,7 +1338,7 @@ def _plan_if_needed(d: Data, us: list, side, ctx: tuple, rng) -> list:
     the template chosen). -> [the order that says so, for the log], or []. ctx: (field, known,
     exchange, stance, table)."""
     field, known = ctx[0], ctx[1]
-    if not _plans_for(field, side) or side in ((field.get("plan") or {})) or side in (field.get("planned") or {}):
+    if not _plans_for(field, side) or side in (field.get("plan") or {}) or side in (field.get("planned") or {}):
         return []
     if not _known_foes(us, side, known):
         return []
