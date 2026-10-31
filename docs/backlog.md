@@ -97,7 +97,8 @@ When an item is done, delete it here and note it in the pull request that closes
   whether the enemy holds works was tried too and not kept: its gains were on the battlefields it
   was drawn from, units.md);
   pinning from the medium band was tried and not kept (no modern side gained, medieval storms
-  lost); still to come: re-planning when a plan fails, feints and scouting); ladders only where the GM or a battlefield marks them (the Great Redan's ladder parties are marked, but ladders do nothing on its ditch and bank). It does
+  lost); planning again when a plan fails was tried and not kept (5 sides better, 7 worse);
+  still to come: feints and scouting); ladders only where the GM or a battlefield marks them (the Great Redan's ladder parties put them down into its deep ditch: units.md, *A deep ditch*). It does
   not play the travel map. Later, by the choice made: an optional narrator, using a model
   with a key the player supplies, to explain its orders in prose.
 

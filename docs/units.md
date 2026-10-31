@@ -1202,6 +1202,20 @@ to 0.00, Sidon's Damascenes 1.00 to 0.67); the mean share won 0.397 to 0.376, en
 own 3.82 to 2.43. Without the planner only Snipe's written pin moved, slightly. Not kept: pinning
 stays at the furthest hex in range.
 
+**Planning again when a plan fails: tried and not kept** (31 October 2026). Attacking, a side
+whose own plan had run out (every step started for each of its units standing, none with a task
+left) or whose attack had stalled since it planned (the reserve's stall) planned once more, by the
+dice, for the units still standing. Measured one side at a time on all 51 attacking sides (12
+runs each, against the plan without it): 12 sides changed, 5 better (Agincourt's French 0.67 to
+0.92, Lützen's Swedes, Lundy's Lane's Americans, Chipyong's Chinese, Topolčani's Bulgarians) and
+7 worse (Sidon's Damascenes 1.00 to 0.67, Mogadishu's militia 0.33 to 0.17, Dornach's Swiss,
+X-Ray's North Vietnamese, Keating's and Wanat's insurgents, the British at the Redan); the mean
+share won 0.397 to 0.388, enemy lost for each own 3.82 to 3.36. On open ground (`odds.js`) worse
+in the Second World War (1 to 1, 0.25 to 0.00; 2 to 1, 0.83 to 0.75), better at medieval 2 to 1
+(0.83 to 0.92). The stall fired early (Jacob's Ford's Ayyubids planned again at exchange 8). Not
+kept. The measurement also found that a side with only guns left must not plan (Fetterman); the
+self-play workflow now reports a run that fails, with the end of its error, as an annotation.
+
 `odds.js` stays as a standing check on the planner away from the battlefields: each case is played
 with the attacker planning for itself and without (12 seeds). On open ground the plan does not help
 the attacker, and at the lower odds it costs it: medieval 1 to 1, 0.58 of runs won without a plan
