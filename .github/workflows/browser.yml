@@ -48,6 +48,8 @@ jobs:
         run: python3 tools/campaign/team.py
       - name: The quick start, played by the coach's words
         run: python3 tools/campaign/quick.py
+      - name: The GM's coached first session (the start page's link to campaign.html#gmstart)
+        run: python3 tools/campaign/gmstart.py
       - name: A hero's papers and his epilogue in the team builder
         run: python3 tools/campaign/papers.py
       - name: Presence and followers
