@@ -1192,6 +1192,30 @@ to 0.33, Wanat's insurgents 0.33 to 0.25), and on open ground at even odds it di
 (`odds.js`: medieval 0.42 to 0.17, Second World War 0.25 to 0.00). Not kept. Works against an enemy
 in the open stays a lead for when to send the reserve in, not a rule.
 
+**Pinning from effective range: tried and not kept** (31 October 2026). A `pin` unit takes the
+furthest hex from which it can still hit its target, at the end of its long band (−40%); the trace
+of Keating found the machine gun pinning from there. Tried: the furthest hex in the medium band
+(−20%), the long band only if none. Measured one side at a time on all 51 attacking sides (12 runs
+each, against the plan without it): no modern side changed, Keating included; the medieval storms
+got worse, their archers coming into the garrison's crossbow range (Jacob's Ford's Ayyubids 0.58
+to 0.00, Sidon's Damascenes 1.00 to 0.67); the mean share won 0.397 to 0.376, enemy lost for each
+own 3.82 to 2.43. Without the planner only Snipe's written pin moved, slightly. Not kept: pinning
+stays at the furthest hex in range.
+
+**Planning again when a plan fails: tried and not kept** (31 October 2026). Attacking, a side
+whose own plan had run out (every step started for each of its units standing, none with a task
+left) or whose attack had stalled since it planned (the reserve's stall) planned once more, by the
+dice, for the units still standing. Measured one side at a time on all 51 attacking sides (12
+runs each, against the plan without it): 12 sides changed, 5 better (Agincourt's French 0.67 to
+0.92, Lützen's Swedes, Lundy's Lane's Americans, Chipyong's Chinese, Topolčani's Bulgarians) and
+7 worse (Sidon's Damascenes 1.00 to 0.67, Mogadishu's militia 0.33 to 0.17, Dornach's Swiss,
+X-Ray's North Vietnamese, Keating's and Wanat's insurgents, the British at the Redan); the mean
+share won 0.397 to 0.388, enemy lost for each own 3.82 to 3.36. On open ground (`odds.js`) worse
+in the Second World War (1 to 1, 0.25 to 0.00; 2 to 1, 0.83 to 0.75), better at medieval 2 to 1
+(0.83 to 0.92). The stall fired early (Jacob's Ford's Ayyubids planned again at exchange 8). Not
+kept. The measurement also found that a side with only guns left must not plan (Fetterman); the
+self-play workflow now reports a run that fails, with the end of its error, as an annotation.
+
 `odds.js` stays as a standing check on the planner away from the battlefields: each case is played
 with the attacker planning for itself and without (12 seeds). On open ground the plan does not help
 the attacker, and at the lower odds it costs it: medieval 1 to 1, 0.58 of runs won without a plan
@@ -1200,15 +1224,8 @@ both; at 3 and 4 to 1 every run won either way. Why is not measured; likely a ba
 plan no flank or line to use, and holding the reserve back weighs most when the odds are even. A
 change to the planner should not make these figures worse.
 
-**Planning again** (`planner.replan`, 1; 31 October 2026). Attacking, a side whose own plan has
-failed plans once more: when the plan has run out (every step has started for each of its units
-still standing, and none of them has a task left), or when its attack has stalled since it
-planned (the reserve's stall: `stall.moves` of its moves in a row without putting enemy men down or
-coming nearer). Its running tasks end, and the commander plans afresh by the dice for the units
-still standing ("the commander plans again (the first plan failed): ..."). A written plan
-(data/plans.yaml) is never replaced, and a holding side does not plan again.
-
-**The first cut, and what comes after.** The five templates above. After: feints and scouting (no task for them yet); a reserve sent to a named place; plans
+**The first cut, and what comes after.** The five templates above, made once. After: re-planning
+when a plan fails; feints and scouting (no task for them yet); a reserve sent to a named place; plans
 on the travel map.
 
 ### Both sides (self-play)

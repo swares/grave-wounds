@@ -45,7 +45,7 @@ def _command(d: Data, units: list, side, where: tuple, stance: str, memory: dict
     us, orders = _hook_up(d, us, side, (goal, known, exchange, stance))
     us, orders = _riders(d, us, side, (goal, known, exchange, stance), orders)
     _hold_back(d, us, side, known)
-    orders += _plan_if_needed(d, us, side, (field, known, exchange, stance, table), rng, memory)
+    orders += _plan_if_needed(d, us, side, (field, known, exchange, stance, table), rng)
     orders += plan_steps(d, us, side, (field, known, exchange))
     orders += _commit(d, us, side, known, memory, stance)
     if stance == "hold":
@@ -240,7 +240,6 @@ def _stalled(d: Data, us: list, side, known: dict, plan: dict) -> bool:
     if mark["quiet"] < S["moves"]:
         return False
     plan["mark"] = {"down": down, "near": near, "quiet": 0}
-    plan["stalls"] = plan.get("stalls", 0) + 1     # for re-planning (_replan)
     return True
 
 
@@ -1361,67 +1360,21 @@ def _trigger(d: Data, us: list, ist: tuple, w: dict, ctx: tuple) -> bool:
 
 
 # ---------- the procedural planner (docs/units.md, The procedural planner) ----------
-def _plan_if_needed(d: Data, us: list, side, ctx: tuple, rng, memory: dict | None = None) -> list:
+def _plan_if_needed(d: Data, us: list, side, ctx: tuple, rng) -> list:
     """With the planner on (field planner), for a side with no plan that has not planned yet and
     knows of an enemy: the commander writes its plan (plan_for) onto the field (plan, and planned:
-    the template chosen). A side that planned for itself may plan again (_replan). -> [the order
-    that says so, for the log], or []. ctx: (field, known, exchange, stance, table). memory: the
-    side's commander memory (its stalls, for re-planning)."""
+    the template chosen). -> [the order that says so, for the log], or []. ctx: (field, known,
+    exchange, stance, table)."""
     field, known = ctx[0], ctx[1]
-    if not _plans_for(field, side):
+    if not _plans_for(field, side) or side in (field.get("plan") or {}) or side in (field.get("planned") or {}):
         return []
-    if side in (field.get("planned") or {}):
-        return _replan(d, us, side, (ctx, memory or {}), rng)
-    if side in (field.get("plan") or {}) or not _known_foes(us, side, known):
+    if not _known_foes(us, side, known):
         return []
-    stalls = ((memory or {}).get("plan") or {}).get("stalls", 0)
-    field["replans"] = {**(field.get("replans") or {}), side: {"n": 0, "stalls": stalls}}
-    return _write_plan(d, us, side, ctx, rng)
-
-
-def _write_plan(d: Data, us: list, side, ctx: tuple, rng, again: bool = False) -> list:
-    """plan_for, written onto the field (plan, planned). -> [the order that says so]."""
-    field = ctx[0]
     p = plan_for(d, us, side, ctx, rng)
     field["planned"] = {**(field.get("planned") or {}), side: p["template"]}
     if p["steps"]:
         field["plan"] = {**(field.get("plan") or {}), side: p["steps"]}
-    elif side in (field.get("plan") or {}):
-        field["plan"] = {k: v for k, v in field["plan"].items() if k != side}
-    return [{"act": "planned", "side": side, "template": p["template"], **({"by": p["by"]} if p.get("by") else {}), **({"again": True} if again else {})}]
-
-
-def _replan(d: Data, us: list, side, how: tuple, rng) -> list:
-    """Attacking, a side whose own plan has failed plans again, at most planner.replan times: its
-    plan has run out (every step started for each of its units standing, and none of them has a
-    task left), or its attack has stalled (_stalled) since it last planned. Its running tasks end;
-    the new plan, by the dice, is for the units still standing. how: (ctx, memory)."""
-    ctx, memory = how
-    field, known, stance = ctx[0], ctx[1], ctx[3]
-    R = (field.get("replans") or {}).get(side)
-    if not R or stance != "attack" or R["n"] >= d.units["commander"]["planner"]["replan"] or not _known_foes(us, side, known):
-        return []
-    stalls = (memory.get("plan") or {}).get("stalls", 0)
-    if not (_ran_out(us, side, (field.get("plan") or {}).get(side)) or stalls > R["stalls"]):
-        return []
-    for i, u in enumerate(us):
-        if u["side"] == side:
-            if u.get("task"):
-                _end_task(us, i)
-            u.pop("steps", None)
-    field["replans"] = {**field["replans"], side: {"n": R["n"] + 1, "stalls": stalls}}
-    return _write_plan(d, us, side, ctx, rng, again=True)
-
-
-def _ran_out(us: list, side, steps: list | None) -> bool:
-    """The side's plan has run out: it has steps, every one has started for each of its units
-    standing, and none of them has a task running."""
-    if not steps:
-        return False
-    up = [u for u in us if u["side"] == side and u["men"] > 0 and u["state"] not in ROUTED]
-    if any(u.get("task") for u in up):
-        return False
-    return all(k in (u.get("steps") or []) for k, st in enumerate(steps) for u in up if u["name"] in st["units"])
+    return [{"act": "planned", "side": side, "template": p["template"], **({"by": p["by"]} if p.get("by") else {})}]
 
 
 def _plans_for(field: dict | None, side) -> bool:
