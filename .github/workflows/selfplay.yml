@@ -61,7 +61,8 @@ jobs:
           mkdir -p out
           python3 tools/selfplay/shard.py "$SHARD" 16 "$SEEDS" "$FIRST" subject/data/fields > jobs.txt
           wc -l < jobs.txt
-          xargs -P "$(nproc)" -L 1 sh -c 'node tools/selfplay/targets.js "$0" "$1" subject/dist/field.html > "out/$0.s$1.json" || echo "$0 s$1 FAILED"' < jobs.txt
+          # a run that fails says so as an annotation, with the end of its error (logs are not always reachable)
+          xargs -P "$(nproc)" -L 1 sh -c 'node tools/selfplay/targets.js "$0" "$1" subject/dist/field.html > "out/$0.s$1.json" 2> "err.$0.s$1.txt" || { rm -f "out/$0.s$1.json"; echo "::error title=run failed: $0 s$1::$(tail -c 600 "err.$0.s$1.txt" | tr "\n" " ")"; }' < jobs.txt
       - uses: actions/upload-artifact@v6
         with:
           name: shard-${{ matrix.shard }}
