@@ -1175,6 +1175,23 @@ one breach at Jacob's Ford, an outpost in the hills at Keating, the ridges at Ca
 plan leaves the reserve to the reserve's own rules. When to send it in likely turns on the ground (a
 narrow approach, works to storm), which is open.
 
+**Sending the reserve in unless the enemy holds works: tried and not kept** (31 October 2026).
+The attacks the plan helped by sending the reserve in at once (Agincourt, X-Ray, Lützen, Dornach,
+Cowpens, Visby, Towton) were against an enemy in the open: at most 11% of his men held works
+(Lützen's road ditch). Those it hurt were against works: 82 to 100% (Jacob's Ford, Keating, the
+three Cassinos); Sidon, at 0%, is the exception, its wall barely fought for. Room on the front
+(the enemy's open hexes against the attackers' width) and height did not separate them. So a
+rule was tried: attacking, the plan sends its reserve in unless half or more of the known enemy's
+men hold works. Measured one side at a time on all 51 attacking sides (12 runs each, against the
+plan without it): 9 sides changed, 7 better and 2 worse; the mean share won 0.397 to 0.412, enemy
+lost for each own 3.82 to 4.20; holding sides and play without the planner unchanged. But six of
+the seven gains were battlefields the rule was drawn from (Agincourt 0.67 to 0.75, X-Ray 0.25 to
+0.50, Dornach 0.83 to 1.00, Lützen 0.75 to 0.83, Towton 0.92 to 1.00, Cowpens 0.00 to 0.08); on
+the rest it was one better (Chipyong's Chinese 0.00 to 0.17) and two worse (Grozny's Chechens 0.42
+to 0.33, Wanat's insurgents 0.33 to 0.25), and on open ground at even odds it did worse
+(`odds.js`: medieval 0.42 to 0.17, Second World War 0.25 to 0.00). Not kept. Works against an enemy
+in the open stays a lead for when to send the reserve in, not a rule.
+
 `odds.js` stays as a standing check on the planner away from the battlefields: each case is played
 with the attacker planning for itself and without (12 seeds). On open ground the plan does not help
 the attacker, and at the lower odds it costs it: medieval 1 to 1, 0.58 of runs won without a plan
