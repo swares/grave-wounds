@@ -3598,7 +3598,7 @@ function holdLine(us, i, t, known){                 // staying where it is, faci
   const u = us[i], shooter = "range" in FD.weapons[u.weapon] || !!gunOf(u);
   return stayOrder(us, i, t, keepFront(u, bearing(u.pos, knownAt(us, t, known).pos)), shooter);
 }
-function pinOrder(us, i, t, [size, field, stance, known, exchange]){   // pinning target t: a shooter goes to the hex it can reach furthest from t from which its fire is effective (medium band or nearer; the long band only if none) (drawing back if closer), none in reach it moves nearer; a unit that cannot shoot stands just beyond t's charge, nearest it, in sight; never into contact (as commander._pin_order)
+function pinOrder(us, i, t, [size, field, stance, known, exchange]){   // pinning target t: a shooter goes to the hex it can reach furthest from t from which it can still hit it (drawing back if closer), none in reach it moves nearer; a unit that cannot shoot stands just beyond t's charge, nearest it, in sight; never into contact (as commander._pin_order)
   const u = us[i], tu = knownAt(us, t, known), shooter = "range" in FD.weapons[u.weapon] || !!gunOf(u);
   if (u.lost || u.immobile || u.emplaced) return holdLine(us, i, t, known);
   const free = u.prone ? { ...u, prone: false } : u, base = us.map((x, k) => (k === i ? free : x));
@@ -3609,8 +3609,7 @@ function pinOrder(us, i, t, [size, field, stance, known, exchange]){   // pinnin
     let ok, rank;
     if (shooter){
       ok = dist >= 1 && ((fieldRange(u.weapon, dist) !== null && seesTo(field, u, [h, tu.pos, dist])) || gunInRange(field, u, [h, tu.pos, dist])) && clearSight(field, h, tu.pos, dist);
-      const band = fieldRange(u.weapon, dist);
-      rank = (band && band.band === "long" ? 100000 : 0) - dist;   // furthest first within the medium band (effective fire), the long band only if none
+      rank = -dist;                                 // furthest first
     } else {
       ok = unitGap({ ...u, pos: h }, tu) > keep && clearSight(field, h, tu.pos, dist);
       rank = dist;                                  // nearest first

@@ -917,11 +917,8 @@ its side knows where it is, instead of choosing its own.
   middle hex is within `commander.route.reach` (3) hexes of it, then stays there facing its target
   (going to ground under fire as any unit) until the step ends. It has no end of its own.
 - **pin** `{target}`: a unit that shoots, by its weapon or its main gun, goes to the hex it can
-  reach that is furthest from the target from which its fire is effective (in its weapon's medium
-  band or nearer, at no more than −20%, and in sight), else the furthest from which it can still
-  hit it (the long band, −40%) if it can reach no such hex, and stays there firing (31 October
-  2026: before, it took the furthest hex in range, where its fire did least: the trace of
-  Keating found the machine gun pinning from the end of its reach); closer than that, it draws back to it. With no such hex in reach, it
+  reach that is furthest from the target from which it can still hit it (in range and in sight),
+  and stays there firing; closer than that, it draws back to it. With no such hex in reach, it
   moves nearer. A unit with no missile weapon stands as near as it can while out of the target's
   charge (the target's move and a hex, between their nearest hexes), in sight of it. It never
   moves into contact. Done when the target breaks or is gone.
@@ -1194,6 +1191,16 @@ the rest it was one better (Chipyong's Chinese 0.00 to 0.17) and two worse (Groz
 to 0.33, Wanat's insurgents 0.33 to 0.25), and on open ground at even odds it did worse
 (`odds.js`: medieval 0.42 to 0.17, Second World War 0.25 to 0.00). Not kept. Works against an enemy
 in the open stays a lead for when to send the reserve in, not a rule.
+
+**Pinning from effective range: tried and not kept** (31 October 2026). A `pin` unit takes the
+furthest hex from which it can still hit its target, at the end of its long band (−40%); the trace
+of Keating found the machine gun pinning from there. Tried: the furthest hex in the medium band
+(−20%), the long band only if none. Measured one side at a time on all 51 attacking sides (12 runs
+each, against the plan without it): no modern side changed, Keating included; the medieval storms
+got worse, their archers coming into the garrison's crossbow range (Jacob's Ford's Ayyubids 0.58
+to 0.00, Sidon's Damascenes 1.00 to 0.67); the mean share won 0.397 to 0.376, enemy lost for each
+own 3.82 to 2.43. Without the planner only Snipe's written pin moved, slightly. Not kept: pinning
+stays at the furthest hex in range.
 
 `odds.js` stays as a standing check on the planner away from the battlefields: each case is played
 with the attacker planning for itself and without (12 seeds). On open ground the plan does not help
