@@ -1216,6 +1216,17 @@ in the Second World War (1 to 1, 0.25 to 0.00; 2 to 1, 0.83 to 0.75), better at 
 kept. The measurement also found that a side with only guns left must not plan (Fetterman); the
 self-play workflow now reports a run that fails, with the end of its error, as an annotation.
 
+**Scouting and feints: measured first, not built** (31 October 2026). *Scouting*, at its ceiling:
+for a test only, the planner was let see every enemy unit standing when it planned, as if its scouts
+had seen everything. Against the plan as it is (one side at a time, 12 runs each), attacking sides
+won 0.399 of runs against 0.397 (3 better, 1 worse), holding sides 0.668 against 0.676: knowing
+everything barely helps the plans, so a scouting task could not. *Feints*: `pin` already does what
+a demonstration does (close to range, fire, never charge); what a feint wins is the enemy sending
+its reserve the wrong way, which is the enemy's own reserve rule. Tried at Albuera as a written plan,
+Godinot's brigade pinning Alten's Germans in the village (12 runs): almost no change; Alten's men
+were not hit and the allied reserve did not move toward the village (Colborne's losses 45% to 57%).
+Not kept. Neither is in the planner; the planner work pauses here.
+
 `odds.js` stays as a standing check on the planner away from the battlefields: each case is played
 with the attacker planning for itself and without (12 seeds). On open ground the plan does not help
 the attacker, and at the lower odds it costs it: medieval 1 to 1, 0.58 of runs won without a plan
@@ -1225,7 +1236,7 @@ plan no flank or line to use, and holding the reserve back weighs most when the 
 change to the planner should not make these figures worse.
 
 **The first cut, and what comes after.** The five templates above, made once. After: re-planning
-when a plan fails; feints and scouting (no task for them yet); a reserve sent to a named place; plans
+when a plan fails; feints and scouting (measured first and not built: below); a reserve sent to a named place; plans
 on the travel map.
 
 ### Both sides (self-play)
