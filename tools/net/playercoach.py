@@ -54,7 +54,7 @@ try:
         pl.locator("#p-force .propose button[data-propose='to']").first.click()
         pl.wait_for_timeout(500)
         check(not pl.is_visible(COACH), "once he has proposed, the coach has nothing more to say")
-        pl.evaluate("() => pgFight({ t: 'screen' })")   # a fight comes to him (its screens are twopages.py's to test)
+        pl.evaluate("() => { document.querySelector('#p-fight').hidden = false; pgCoach() }")   # his fight panel shown, as a fight coming to him shows it (the fight itself is twopages.py's to test)
         check("Your fight" in coach(pl) and "Next fighter" in coach(pl), "a fight coming to him shows its own step")
         pl.click(f"{COACH} button[data-pc='fight']")
         pl.reload(); pl.wait_for_function(CONNECTED, timeout=45000); pl.wait_for_timeout(1500)
