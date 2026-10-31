@@ -10,6 +10,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 failures = []
+# The tests' dice: Park-Miller from the seed, in place of the browser's crypto (never for anything secret).
+DICE = """(() => { let s = Math.max(1, %d * 7919 %% 2147483647);
+  crypto.getRandomValues = a => { for (let i = 0; i < a.length; i++){ s = (s * 16807) %% 2147483647; a[i] = s } return a } })();"""
 
 
 def check(ok, what):

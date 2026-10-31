@@ -11,12 +11,10 @@ playwright with Chromium and a built site. Exits non-zero on any failure.
 import sys
 import time
 from playwright.sync_api import sync_playwright
-from harness import ROOT, check, failures, serve
+from harness import DICE, ROOT, check, failures, serve
 
 BASE, server = serve()
 SEED = int(sys.argv[1]) if len(sys.argv) > 1 else 1
-DICE = """(() => { let s = Math.max(1, %d * 7919 %% 2147483647);
-  crypto.getRandomValues = a => { for (let i = 0; i < a.length; i++){ s = (s * 16807) %% 2147483647; a[i] = s } return a } })();"""   # seeded, as loop.py's
 RULES = (ROOT / "dist" / "rules.html").read_text(encoding="utf-8")
 
 with sync_playwright() as p:

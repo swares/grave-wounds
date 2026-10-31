@@ -733,27 +733,25 @@ async function gmStart(){
 function gmForce(){                                   // Edward's army on the Towton map, as the travel map holds it
   try { return (JSON.parse(localStorage.getItem("gravewounds-travel") || "null")?.forces?.[GM_MAP] || []).find(f => f.id === GM_FORCE) || null } catch { return null }
 }
-function coachText(st){                               // what to press next in the coached session, or null
-  if (!REC.quick) return null;
-  const ph = REC.phase, done = ' <button type="button" class="small" data-coach="done">Done with the coach</button>';
-  if (ph === "muster"){
-    if (!st.named.withForce) return "Setting up: the retinue from the Rules' examples is being made in the team builder and added on the roller, below.";
-    return `<b>1.</b> The retinue (${esc(st.team.men.join(", "))}) marches with Edward's army on the Towton map. Players on their own computers? Under <b>Players online</b>, below, add each one and tick his man; players at your table need nothing. Then press <b>Done: on to march</b>.`;
-  }
-  if (ph === "march"){
+const COACH_BY_PHASE = {                              // the coached session's next press, by phase
+  muster: st => (st.named.withForce
+    ? `<b>1.</b> The retinue (${esc(st.team.men.join(", "))}) marches with Edward's army on the Towton map. Players on their own computers? Under <b>Players online</b>, below, add each one and tick his man; players at your table need nothing. Then press <b>Done: on to march</b>.`
+    : "Setting up: the retinue from the Rules' examples is being made in the team builder and added on the roller, below."),
+  march: () => {
     const f = gmForce();
     if (f && !(f.waypoints || []).length && f.order !== "march") return "<b>2.</b> Under <b>Run the march</b>: press <b>Orders</b> on Edward's army, choose Towton as the place, and press <b>Set the route</b>.";
-    if (!$("#c-march .fights li")) return "<b>3.</b> Press <b>Until something happens</b>, as often as it asks: the clock runs until the army meets the enemy.";
-    return "<b>4.</b> The army has met the enemy. Under <b>Fights on offer</b>: set <b>Fight it on</b> to the wound roller (man by man), and press <b>Set up the fight</b>.";
-  }
-  if (ph === "fight"){
+    return $("#c-march .fights li") ? "<b>4.</b> The army has met the enemy. Under <b>Fights on offer</b>: set <b>Fight it on</b> to the wound roller (man by man), and press <b>Set up the fight</b>."
+      : "<b>3.</b> Press <b>Until something happens</b>, as often as it asks: the clock runs until the army meets the enemy.";
+  },
+  fight: st => {
     if (st.fight.sent) return "<b>5.</b> On the roller, below, press <b>Set up the fight</b> to take the fight in.";
-    if (!FIGHT?.on) return "<b>6.</b> Under <b>The fight</b>, press <b>Run the fight</b>: the GM's script plays the Lancastrians.";
-    return "<b>7.</b> <b>Play to my turn</b> lets the script play until one of the retinue acts. On his turn, on the roller: click his token, then a hex to move him; click an enemy in reach and press <b>Roll the hit</b>, then <b>Apply hit to defender</b>; bind a bleeding man from the wound on his card. Then <b>End</b> his turn here. When one side stands, mark it the winner.";
-  }
-  if (ph === "aftermath") return "<b>8.</b> On the roller: first aid, then <b>After the fight</b> (deeds, loot, prisoners), <b>To camp</b> on each named man, and <b>Send the result to the travel map</b>. Then press <b>Done: on to downtime</b>.";
-  return `<b>9.</b> Downtime, in the team builder: work, kit, and the end of the season. Press <b>Save the game to a file</b> to keep tonight's game; next session, march on from here.${done}`;
-}
+    return FIGHT?.on ? "<b>7.</b> <b>Play to my turn</b> lets the script play until one of the retinue acts. On his turn, on the roller: click his token, then a hex to move him; click an enemy in reach and press <b>Roll the hit</b>, then <b>Apply hit to defender</b>; bind a bleeding man from the wound on his card. Then <b>End</b> his turn here. When one side stands, mark it the winner."
+      : "<b>6.</b> Under <b>The fight</b>, press <b>Run the fight</b>: the GM's script plays the Lancastrians.";
+  },
+  aftermath: () => "<b>8.</b> On the roller: first aid, then <b>After the fight</b> (deeds, loot, prisoners), <b>To camp</b> on each named man, and <b>Send the result to the travel map</b>. Then press <b>Done: on to downtime</b>.",
+  downtime: () => "<b>9.</b> Downtime, in the team builder: work, kit, and the end of the season. Press <b>Save the game to a file</b> to keep tonight's game; next session, march on from here. <button type=\"button\" class=\"small\" data-coach=\"done\">Done with the coach</button>",
+};
+const coachText = st => (REC.quick ? (COACH_BY_PHASE[REC.phase] || COACH_BY_PHASE.downtime)(st) : null);   // what to press next in the coached session, or null
 function renderCoach(st){
   const el = $("#c-coach"), t = coachText(st);
   el.hidden = !t;
@@ -1346,9 +1344,10 @@ if (PLAYER_PAGE){
 } else {
   loadRecord();
   render();
-  if (location.hash === "#gmstart") gmStart();
+  const gmLink = () => gmStart().catch(e => { $("#c-notice").textContent = `The coached session could not start: ${e.message || e}`; $("#c-notice").hidden = false });
+  if (location.hash === "#gmstart") gmLink();
   else show(phaseOf(REC.phase).page);
-  window.addEventListener("hashchange", () => { if (location.hash === "#gmstart") gmStart() });   // the link followed again in this tab
+  window.addEventListener("hashchange", () => { if (location.hash === "#gmstart") gmLink() });   // the link followed again in this tab
   if (roomServer()) for (const pl of players().filter(x => x.room)) playerConnect(pl);   // (it catches its own failures)   // through their rooms, his players are invited again by themselves
   IDB.all().then(x => { SLOTS = x; renderSlots() }).catch(() => { $("#c-slots").innerHTML = '<p class="muted" style="margin:0">This browser keeps no campaigns side by side (IndexedDB is off): save to a file instead.</p>' });
 }
