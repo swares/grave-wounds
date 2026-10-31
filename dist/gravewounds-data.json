@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-30",
+ "generated": "2026-10-31",
  "coins": {
   "civil_war": {
    "currencies": {
@@ -6557,6 +6557,7 @@
    ],
    "aljubarrota-1385": "portuguese",
    "albuera-1811": "spanish",
+   "badajoz-1812": "spanish",
    "anzio-1944": "italian",
    "beaumont-hamel-1916": [
     "picard",
