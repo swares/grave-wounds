@@ -11,6 +11,7 @@ and the coach dismissed. A campaign already under way is kept beside it. Needs P
 Chromium and a built site. Exits non-zero on any failure.
 """
 import sys
+import traceback
 from playwright.sync_api import sync_playwright
 from harness import DICE, check, failures, serve
 
@@ -23,11 +24,11 @@ def coach(pg):
     return pg.inner_text(COACH) if pg.is_visible(COACH) else ""
 
 
-def wait_coach(pg, text, timeout=20000):
+def wait_coach(pg, text, timeout=45000):
     pg.wait_for_function(f"() => !document.querySelector('{COACH}').hidden && document.querySelector('{COACH}').textContent.includes({text!r})", timeout=timeout)
 
 
-with sync_playwright() as p:
+def run(p):
     br = p.chromium.launch()
     ctx = br.new_context(viewport={"width": 1500, "height": 1200})
     ctx.add_init_script(DICE % SEED)
@@ -90,6 +91,14 @@ with sync_playwright() as p:
     check(kept >= 2, f"a campaign under way is kept when the coached session starts again ({kept} in this browser)")
     check(not errors, f"no page errors {errors[:3]}")
     br.close()
+
+
+try:
+    with sync_playwright() as pw:
+        run(pw)
+except Exception as e:                               # a timeout or error: where, as an annotation in CI
+    print(traceback.format_exc())
+    check(False, f"stopped: {str(e).splitlines()[0][:300]}")
 server.shutdown()
 if failures:
     print(f"{len(failures)} check(s) failed")

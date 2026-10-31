@@ -15,10 +15,15 @@ DICE = """(() => { let s = Math.max(1, %d * 7919 %% 2147483647);
   crypto.getRandomValues = a => { for (let i = 0; i < a.length; i++){ s = (s * 16807) %% 2147483647; a[i] = s } return a } })();"""
 
 
+CI = bool(__import__("os").environ.get("GITHUB_ACTIONS"))
+
+
 def check(ok, what):
     print(("ok   " if ok else "FAIL ") + what)
     if not ok:
         failures.append(what)
+        if CI:                                       # an annotation on the run, readable without the log
+            print(f"::error title=check failed::{what}")
 
 
 class Quiet(http.server.SimpleHTTPRequestHandler):
