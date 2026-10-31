@@ -917,8 +917,11 @@ its side knows where it is, instead of choosing its own.
   middle hex is within `commander.route.reach` (3) hexes of it, then stays there facing its target
   (going to ground under fire as any unit) until the step ends. It has no end of its own.
 - **pin** `{target}`: a unit that shoots, by its weapon or its main gun, goes to the hex it can
-  reach that is furthest from the target from which it can still hit it (in range and in sight),
-  and stays there firing; closer than that, it draws back to it. With no such hex in reach, it
+  reach that is furthest from the target from which its fire is effective (in its weapon's medium
+  band or nearer, at no more than −20%, and in sight), else the furthest from which it can still
+  hit it (the long band, −40%) if it can reach no such hex, and stays there firing (31 October
+  2026: before, it took the furthest hex in range, where its fire did least: the trace of
+  Keating found the machine gun pinning from the end of its reach); closer than that, it draws back to it. With no such hex in reach, it
   moves nearer. A unit with no missile weapon stands as near as it can while out of the target's
   charge (the target's move and a hex, between their nearest hexes), in sight of it. It never
   moves into contact. Done when the target breaks or is gone.

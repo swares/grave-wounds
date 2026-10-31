@@ -1649,8 +1649,9 @@ def _hold_line(d: Data, us: list, i: int, t: int | None, known: dict | None) -> 
 
 def _pin_order(d: Data, us: list, i: int, t: int, ctx: tuple) -> dict | None:
     """Pinning target t: a unit that shoots (its weapon or main gun) goes to the hex it can reach
-    furthest from t from which it can still hit it, and stays there firing (drawing back if it
-    is closer); none in reach, it moves nearer. A unit that cannot shoot stands just beyond t's
+    furthest from t from which its fire is effective (its weapon's medium band or nearer; the long
+    band only if it can reach no such hex), and stays there firing (drawing back if it is closer);
+    none in reach, it moves nearer. A unit that cannot shoot stands just beyond t's
     charge (t's move and a hex), nearest it, in sight of it. It never closes to contact."""
     size, field, stance, known, exchange = ctx
     u, tu = us[i], _where(us, t, known)
@@ -1667,7 +1668,8 @@ def _pin_order(d: Data, us: list, i: int, t: int, ctx: tuple) -> dict | None:
         if shooter:
             ok = dist >= 1 and ((U.field_range(d, u["weapon"], dist) is not None and _sees_to(d, field, u, (h, tu["pos"], dist)))
                                 or _gun_in_range(d, field, u, (h, tu["pos"], dist))) and U.clear_sight(d, field, h, tu["pos"], dist)
-            rank = -dist                          # furthest first
+            band = U.field_range(d, u["weapon"], dist)
+            rank = (100000 if band and band["band"] == "long" else 0) - dist   # furthest first within the medium band (effective fire), the long band only if none
         else:
             ok = U.unit_gap(d, {**u, "pos": h}, tu) > keep and U.clear_sight(d, field, h, tu["pos"], dist)
             rank = dist                           # nearest first
