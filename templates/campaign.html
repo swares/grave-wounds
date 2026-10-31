@@ -1123,9 +1123,11 @@ function pgFight(m){                                  // his fight: the roller's
   if (m.t === "nofight"){
     PG.frame?.remove(); PG.frame = null; PG.ready = false; PG.queue = [];
     $("#p-fight").hidden = true;
+    pgCoach();
     return;
   }
   $("#p-fight").hidden = false;
+  pgCoach();
   if (!PG.frame){
     if (m.part) return;                             // a change to a fight this page never had: the whole one comes when it rejoins
     PG.frame = document.createElement("iframe");
@@ -1145,6 +1147,7 @@ function pgLayout(){
   document.title = "Grave Wounds: player";
   document.querySelector(".wrap").innerHTML = `<header><div><h1 id="p-title">Campaign</h1><p class="sub" id="p-who"></p></div></header>
     <p id="p-status" aria-live="polite" style="margin:0"></p>
+    <p class="notice coach" id="p-coach" hidden aria-live="polite"></p>
     <section class="panel" id="p-join"></section>
     <section class="panel" id="p-fight" hidden aria-labelledby="h-pfight"><h2 id="h-pfight">Your fight</h2></section>
     <div class="top"><section class="panel" aria-labelledby="h-pmen"><h2 id="h-pmen">Your men</h2><div id="p-men"></div></section>
@@ -1163,6 +1166,29 @@ function pgShow(m, changed = null){
   $("#p-title").textContent = m.campaign || "Campaign";
   $("#p-who").textContent = `${m.name}, playing · ${m.phase}`;
   if (!changed || changed.includes("map")) pgMap(m.map);
+  pgCoach();
+}
+/* The player's coach: on his first games, a line above the panels says what each is and what to press,
+   a step at a time (joining, his panels, proposing orders, his turn in a fight); each step, once he has
+   done it or pressed Got it, is not shown again in this browser. */
+const PC_KEY = "gravewounds-player-coach";
+const pcDone = () => { try { return JSON.parse(localStorage.getItem(PC_KEY) || "{}") } catch { return {} } };
+function pcMark(step){ try { localStorage.setItem(PC_KEY, JSON.stringify({ ...pcDone(), [step]: true })) } catch { /* storage off: the coach shows again */ } pgCoach() }
+function pgCoachStep(){                               // [step, text] for what to show now, or null
+  const done = pcDone();
+  if (done.off) return null;
+  if (!$("#p-fight").hidden && !done.fight)
+    return ["fight", "<b>Your fight.</b> On your turn: click a hex to move your man, click an enemy in reach to strike, choose your aim and roll (you may type your own dice), give first aid with <b>Bind</b> and the like, and press <b>Next fighter</b> when you are done. The GM, or the pages, play the rest."];
+  if (!PG.screen) return $("#p-code") && !done.join ? ["join", "<b>Joining.</b> Type the room code the GM gave you (like WOLF-OAK-42) and press <b>Join</b>. With the link he sent, just open it."] : null;
+  if (!done.look) return ["look", "<b>You're in.</b> <b>Your men</b>: how each of your men is, the force he is with, his purse. <b>Your force</b>: its orders, where it is, how many are fit, how tired. <b>Your map</b>: your side's forces, and of the enemy only what your side can see (ringed red) or last saw (faded)."];
+  if (!done.propose && $("#p-force .propose")) return ["propose", "<b>Your orders.</b> To suggest where your force goes, choose a place under <b>Propose its orders</b> and press <b>Propose this route</b> (or click a hex on your map). The GM accepts or declines; your force's panel says which."];
+  return null;
+}
+function pgCoach(){
+  const el = $("#p-coach"); if (!el) return;
+  const s = pgCoachStep();
+  el.hidden = !s;
+  if (s) el.innerHTML = `${s[1]} <button type="button" class="small" data-pc="${s[0]}">Got it</button> <button type="button" class="small" data-pc="off">No more tips</button>`;
 }
 const PM = { frame: null, ready: false, view: null };   // his map: the travel map's page in a frame, drawing only what it is sent
 function pgMap(view){
@@ -1194,6 +1220,7 @@ function pgPropose(e){                                // his proposal: the order
   const arg = pick ? box.querySelector(`select[data-pick="${pick}"]`)?.value ?? null : null;
   PG.send({ t: "propose", force: +box.dataset.force, what, arg });
   $("#p-status").textContent = "Your proposal has gone to the GM.";
+  pcMark("propose");
 }
 function pgKeep(seat, m){ try { sessionStorage.setItem(PG_KEY, JSON.stringify({ seat, m })) } catch { /* storage off: a rejoin starts blank */ } }
 function pgKept(seat){ try { const k = JSON.parse(sessionStorage.getItem(PG_KEY) || "null"); return k?.seat === seat ? k.m : null } catch { return null } }
@@ -1265,6 +1292,7 @@ function pgRoomForm(said = ""){                        // a room code to type
     <span class="toolbar"><button type="button" class="small primary" id="p-code-go">Join</button></span>`;
   $("#p-code-go").onclick = () => { const v = $("#p-code").value.trim().toUpperCase(); if (v) location.hash = `#room=${v}${PR.server && PR.server !== CD.room_server ? "&s=" + encodeURIComponent(PR.server) : ""}` };
   pgStatus(said || "Type your room's code.");
+  pgCoach();
 }
 function pgRoomArgs(){                                // #room=CODE&s=SERVER -> {code, server}
   const q = new URLSearchParams(location.hash.slice(1));
@@ -1310,6 +1338,7 @@ async function pgRoom(){
 
 if (PLAYER_PAGE){
   pgLayout();
+  $("#p-coach").addEventListener("click", e => { const s = e.target.dataset?.pc; if (s) pcMark(s) });
   $("#p-force").addEventListener("click", pgPropose);
   const go = () => (location.hash.startsWith("#room") ? pgRoom() : pgJoin()).catch(e => pgStatus(String(e.message || e)));
   window.addEventListener("hashchange", () => { if (/^#(join=|room)/.test(location.hash)) go() });   // a new invitation or room opened in this tab

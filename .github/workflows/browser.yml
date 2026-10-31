@@ -36,6 +36,8 @@ jobs:
         run: python3 tools/net/console.py
       - name: Players joining by room codes (the room Worker's own code, run locally)
         run: python3 tools/net/rooms.py
+      - name: The player's coach (joining by room code, his panels, proposing, his fight)
+        run: python3 tools/net/playercoach.py
       - name: The GM's script against itself
         run: python3 tools/gm/selfplay.py
       - name: The field page's End the battle and Beat history panel
