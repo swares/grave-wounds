@@ -3436,7 +3436,10 @@ function planTrigger(us, [i, st], w, [field, known, exchange]){   // one trigger
 // ---------- the procedural planner (docs/units.md, The procedural planner) (as commander's planner) ----------
 const lexLess = (a, b) => { for (let k = 0; k < a.length; k++) if (a[k] !== b[k]) return a[k] < b[k]; return false };
 const argMin = (xs, key) => xs.reduce((best, x) => (best === null || lexLess(key(x), key(best)) ? x : best), null);   // the first of the least, by an array key
-function planIfNeeded(us, side, ctx, rng){         // with the planner on (field.planner), for a side with no plan that has not planned and knows of an enemy: the commander writes its plan onto the field; [the order that says so] or [] (as commander._plan_if_needed)
+function planIfNeeded(us, side, ctx0, rng){         // with the planner on (field.planner), for a side with no plan that has not planned and knows of an enemy: the commander writes its plan onto the field; [the order that says so] or [] (as commander._plan_if_needed)
+  // TEST ONLY (scouting ceiling, not a rule): planner.sees_all: the planner knows every enemy unit standing, where it is
+  const all = UD.commander.planner.sees_all ? Object.fromEntries(us.flatMap((u, j) => (u.side !== side && u.men > 0 && !ROUTED.has(u.state) ? [[String(j), { pos: [...u.pos], facing: u.facing }]] : []))) : null;
+  const ctx = all ? [ctx0[0], all, ...ctx0.slice(2)] : ctx0;
   const field = ctx[0], known = ctx[1];
   if (!(field?.planner === true || field?.planner === side) || (field.plan && side in field.plan) || (field.planned && side in field.planned)) return [];   // true: every side; a side's name: that side only
   if (!planFoes(us, side, known).length) return [];
