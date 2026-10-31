@@ -1423,7 +1423,7 @@ const TEMPLATE_TEXT = { assault: "fire and assault: its shooters pin the enemy's
   counter: "to hold and counter-attack: its reserve goes in when an enemy unit breaks", delay: "to delay: its units fall back off their own edge when outflanked or a quarter down",
   stand: "to stand where its men are" };
 function plannedText(o){                          // the commander's own plan, the move it makes it
-  return `For ${o.side} the commander plans ${TEMPLATE_TEXT[o.template] || o.template}${o.by ? ` (round by ${hexName(o.by)})` : ""}.`;
+  return `For ${o.side} the commander ${o.again ? "plans again (the first plan failed): " : "plans "}${TEMPLATE_TEXT[o.template] || o.template}${o.by ? ` (round by ${hexName(o.by)})` : ""}.`;
 }
 function triggerText(w){                          // why a plan step started or ended
   if (Array.isArray(w)) return w.map(triggerText).join(" or ");

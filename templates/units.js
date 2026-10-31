@@ -2637,7 +2637,7 @@ function orderSide(units, side, [size, field, rng, exchange], { stance, memory, 
   { const h = hookUp(us, side, [goal, known, exchange, stance]); us = h.units; orders.push(...h.orders) }
   { const r = ridersAi(us, side, [goal, known, exchange, stance], orders); us = r.units; orders.splice(0, orders.length, ...r.orders) }
   holdBack(us, side, known);
-  orders.push(...planIfNeeded(us, side, [field, known, exchange, stance, table], rng));
+  orders.push(...planIfNeeded(us, side, [field, known, exchange, stance, table], rng, mem));
   orders.push(...planSteps(us, side, [field, known, exchange]));
   orders.push(...commitReserve(us, side, known, mem, stance));
   if (stance === "hold") orders.push(...fixLines(us, side, [field, known, exchange]));
@@ -2745,6 +2745,7 @@ function stalled(us, side, known, plan){           // attacking: moves in a row 
   mark.quiet++;
   if (mark.quiet < S.moves) return false;
   plan.mark = { down, near, quiet: 0 };
+  plan.stalls = (plan.stalls || 0) + 1;            // for re-planning (replan)
   return true;
 }
 function commitReserve(us, side, known, memory, stance = "attack"){   // one reserve unit committed when one of its units broke, an enemy is within gap of a reserve unit, (veterans) an enemy broke, or (attacking) the attack has stalled (as commander._commit)
@@ -3436,14 +3437,39 @@ function planTrigger(us, [i, st], w, [field, known, exchange]){   // one trigger
 // ---------- the procedural planner (docs/units.md, The procedural planner) (as commander's planner) ----------
 const lexLess = (a, b) => { for (let k = 0; k < a.length; k++) if (a[k] !== b[k]) return a[k] < b[k]; return false };
 const argMin = (xs, key) => xs.reduce((best, x) => (best === null || lexLess(key(x), key(best)) ? x : best), null);   // the first of the least, by an array key
-function planIfNeeded(us, side, ctx, rng){         // with the planner on (field.planner), for a side with no plan that has not planned and knows of an enemy: the commander writes its plan onto the field; [the order that says so] or [] (as commander._plan_if_needed)
+function planIfNeeded(us, side, ctx, rng, memory = {}){   // with the planner on (field.planner), for a side with no plan that has not planned and knows of an enemy: the commander writes its plan onto the field; a side that planned for itself may plan again (replan); [the order that says so] or [] (as commander._plan_if_needed)
   const field = ctx[0], known = ctx[1];
-  if (!(field?.planner === true || field?.planner === side) || (field.plan && side in field.plan) || (field.planned && side in field.planned)) return [];   // true: every side; a side's name: that side only
-  if (!planFoes(us, side, known).length) return [];
-  const p = planFor(us, side, ctx, rng);
+  if (!(field?.planner === true || field?.planner === side)) return [];   // true: every side; a side's name: that side only
+  if (field.planned && side in field.planned) return replan(us, side, [ctx, memory || {}], rng);
+  if ((field.plan && side in field.plan) || !planFoes(us, side, known).length) return [];
+  field.replans = { ...(field.replans || {}), [side]: { n: 0, stalls: memory?.plan?.stalls || 0 } };
+  return writePlan(us, side, ctx, rng);
+}
+function writePlan(us, side, ctx, rng, again = false){   // planFor, written onto the field (plan, planned) (as commander._write_plan)
+  const field = ctx[0], p = planFor(us, side, ctx, rng);
   field.planned = { ...(field.planned || {}), [side]: p.template };
   if (p.steps.length) field.plan = { ...(field.plan || {}), [side]: p.steps };
-  return [{ act: "planned", side, template: p.template, ...(p.by ? { by: p.by } : {}) }];
+  else if (field.plan && side in field.plan) field.plan = Object.fromEntries(Object.entries(field.plan).filter(([k]) => k !== side));
+  return [{ act: "planned", side, template: p.template, ...(p.by ? { by: p.by } : {}), ...(again ? { again: true } : {}) }];
+}
+function replan(us, side, [ctx, memory], rng){     // attacking, a side whose own plan failed (ran out, or its attack stalled since it planned) plans again, at most planner.replan times (as commander._replan)
+  const field = ctx[0], known = ctx[1], stance = ctx[3], R = field.replans?.[side];
+  if (!R || stance !== "attack" || R.n >= UD.commander.planner.replan || !planFoes(us, side, known).length) return [];
+  const stalls = memory.plan?.stalls || 0;
+  if (!(ranOut(us, side, field.plan?.[side]) || stalls > R.stalls)) return [];
+  us.forEach((u, i) => {
+    if (u.side !== side) return;
+    if (u.task) endTask(us, i);
+    delete u.steps;
+  });
+  field.replans = { ...field.replans, [side]: { n: R.n + 1, stalls } };
+  return writePlan(us, side, ctx, rng, true);
+}
+function ranOut(us, side, steps){                  // the side's plan has run out: steps, each started for each of its units standing, none with a task running (as commander._ran_out)
+  if (!steps?.length) return false;
+  const up = us.filter(u => u.side === side && u.men > 0 && !ROUTED.has(u.state));
+  if (up.some(u => u.task)) return false;
+  return steps.every((st, k) => up.every(u => !st.units.includes(u.name) || (u.steps || []).includes(k)));
 }
 const planFoes = (us, side, known) => Object.keys(known || {}).filter(k => /^\d+$/.test(k)).map(Number)
   .filter(j => j < us.length && us[j].side !== side && us[j].men > 0 && !ROUTED.has(us[j].state)).sort((a, b) => a - b);   // (as commander._known_foes)

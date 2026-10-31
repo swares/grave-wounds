@@ -1200,8 +1200,15 @@ both; at 3 and 4 to 1 every run won either way. Why is not measured; likely a ba
 plan no flank or line to use, and holding the reserve back weighs most when the odds are even. A
 change to the planner should not make these figures worse.
 
-**The first cut, and what comes after.** The five templates above, made once. After: re-planning
-when a plan fails; feints and scouting (no task for them yet); a reserve sent to a named place; plans
+**Planning again** (`planner.replan`, 1; 31 October 2026). Attacking, a side whose own plan has
+failed plans once more: when the plan has run out (every step has started for each of its units
+still standing, and none of them has a task left), or when its attack has stalled since it
+planned (the reserve's stall: `stall.moves` of its moves in a row without putting enemy men down or
+coming nearer). Its running tasks end, and the commander plans afresh by the dice for the units
+still standing ("the commander plans again (the first plan failed): ..."). A written plan
+(data/plans.yaml) is never replaced, and a holding side does not plan again.
+
+**The first cut, and what comes after.** The five templates above. After: feints and scouting (no task for them yet); a reserve sent to a named place; plans
 on the travel map.
 
 ### Both sides (self-play)
