@@ -122,3 +122,16 @@ redan-1855-june:
         do: withdraw_if
         to: S
         when: [{exchange: 25}, {lost: 33, side: true}]
+
+albuera-1811:
+  source: "https://www.historyofwar.org/articles/battles_albuera.html"
+  note: >-
+    Soult's feint: Godinot's brigade threatens the village from the east, and its attack "appeared to
+    confirm Beresford's assumptions" while the main attack came round the south. It keeps
+    Alten's Germans in the village under fire and never closes (pin); the main attack goes in as the
+    commander orders it.
+  sides:
+    1:
+      - units: ["Godinot's brigade (feint at the village)"]
+        do: pin
+        target: "Alten's Germans in the village"
