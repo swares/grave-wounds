@@ -2125,7 +2125,10 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   hex fights, at least one man (`escalade.share`), at −20% (`escalade.penalty`) besides the
   climb up a wall's height; the defenders' front rank strikes back at the men on the ladders.
   Stepping over the work costs 4 hexes of movement (`escalade.cross`), into hexes clear of
-  the enemy. Mounted units and guns cannot use ladders. Without ladders, a unit still stops at
+  the enemy. While it climbs, its ranks may stand on both sides of the work (its front over, the
+  rest on the ladders); a unit without ladders may never stand with a palisade, wall or barred
+  gate between its own hexes, so before this (31 October 2026) only a unit one rank deep could
+  climb at all (found building Badajoz, where the 3rd Division stopped at the castle's foot). Mounted units and guns cannot use ladders. Without ladders, a unit still stops at
   the foot, and only reach-2 weapons strike over. The GM marks the units that carried them.
 - **A deep ditch** (`deep: true` on a battlefield's ditch; the two Great Redan battlefields):
   a siege ditch too deep to jump down into. Without ladders, crossing a side of it costs 4 hexes

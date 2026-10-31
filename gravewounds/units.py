@@ -4434,10 +4434,15 @@ def _fits(d: Data, units: list, i: int, u: dict, size: tuple, field: dict | None
 
 
 def _stands(d: Data, field: dict, u: dict, hexes: list) -> bool:
+    """Ground it can stand on, and no palisade, wall or barred gate between its own hexes, unless it
+    carries ladders (escalade): then its ranks may stand on both sides of the work it is climbing."""
     keys = {f"{h[0]},{h[1]}" for h in hexes}
+    climbs = has_ladders(u)
     for h in hexes:
         if not _can_enter(d, field, u, h):
             return False
+        if climbs:
+            continue
         for dirn in range(6):
             x = step(h, dirn)
             if f"{x[0]},{x[1]}" in keys and _wall_between(d, field, h, x):
