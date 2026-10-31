@@ -49,6 +49,7 @@ button:disabled{opacity:.45;cursor:default}
 .status dt{color:var(--muted)}
 .status dd{margin:0}
 .notice{border-left:4px solid var(--warn);background:var(--blood-soft);padding:8px 12px;border-radius:0 3px 3px 0;margin:0}
+.notice.coach{border-left-color:var(--blood);font-size:1.02rem}
 .log{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px;max-height:16rem;overflow-y:auto;font-size:.9rem}
 .log li{border-left:3px solid var(--line);padding:2px 0 2px 8px}
 .log li b{font-family:var(--mono);font-size:.78rem;color:var(--muted);margin-right:6px}
@@ -91,6 +92,7 @@ iframe{display:block;width:100%;height:82vh;border:0;background:var(--bg)}
           <label class="muted">Map <select id="c-map" style="width:auto;max-width:22em" title="The travel map the campaign marches on (each map keeps its own forces and clock)"></select></label></span>
       </div>
       <ol class="phases" id="c-phases" aria-label="Phases"></ol>
+      <p class="notice coach" id="c-coach" hidden aria-live="polite"></p>
       <p class="notice" id="c-notice" hidden aria-live="polite"></p>
       <div id="c-guide"></div>
       <div class="march" id="c-march" hidden aria-labelledby="h-march"></div>
@@ -550,6 +552,7 @@ function render(){
     <span style="flex:1"></span><button type="button" id="c-next">Done: on to ${phaseOf(NEXT[ph.id]).name.toLowerCase()}</button>`;
   renderMarch();
   renderFight();
+  renderCoach(st);
   if (ph.id === "fight"){ tellRoller("status"); tellField("status") }   // and the page answers with its fight as it stands
   $("#c-status").innerHTML = statusRows(st);
   playersFollow();
@@ -705,6 +708,56 @@ $("#c-slots").addEventListener("click", e => {
   else if (what === "switch") switchTo(b.dataset.id);
   else if (what === "drop") dropSlot(b.dataset.id);
 });
+
+/* ---------- the GM's coached first session (the start page's link to campaign.html#gmstart) ----------
+   A new campaign on the Towton map, 1461: the team builder makes the Rules' example retinue and the
+   roller adds it and puts it with Edward's army (team.html#gmstart, roller.html#gmstart); then the coach
+   above the phase's guide says what to press next, phase by phase, until the GM is done with it. */
+const GM_MAP = "towton-1461", GM_FORCE = 1;          // Edward's army (York)
+async function gmStart(){
+  history.replaceState(null, "", location.pathname);
+  const st = CAMPAIGN.status(CAMPAIGN.read(localStorage), CD);
+  if (st.team.men.length || st.named.men){          // a campaign under way: kept, and the coached one started beside it
+    if (!confirm("The coached first session starts a new campaign. The one here is kept: switch back to it under Campaigns in this browser, below. Go on?")) return show(phaseOf(REC.phase).page);
+    if (!await keepSlot()) return show(phaseOf(REC.phase).page);
+    swapIn({});
+    REC = freshRecord(); REC.slot = `c${Date.now()}`;
+  }
+  REC.name = "The road to Towton"; REC.quick = true; saveRecord();
+  newDay().setMap(GM_MAP);
+  note("A coached first session: a retinue on the road to Towton, March 1461");
+  render();
+  show("team.html#gmstart");
+  keepSlot();                                         // kept from the start, as any new campaign is
+}
+function gmForce(){                                   // Edward's army on the Towton map, as the travel map holds it
+  try { return (JSON.parse(localStorage.getItem("gravewounds-travel") || "null")?.forces?.[GM_MAP] || []).find(f => f.id === GM_FORCE) || null } catch { return null }
+}
+const COACH_BY_PHASE = {                              // the coached session's next press, by phase
+  muster: st => (st.named.withForce
+    ? `<b>1.</b> The retinue (${esc(st.team.men.join(", "))}) marches with Edward's army on the Towton map. Players on their own computers? Under <b>Players online</b>, below, add each one and tick his man; players at your table need nothing. Then press <b>Done: on to march</b>.`
+    : "Setting up: the retinue from the Rules' examples is being made in the team builder and added on the roller, below."),
+  march: () => {
+    const f = gmForce();
+    if (f && !(f.waypoints || []).length && f.order !== "march") return "<b>2.</b> Under <b>Run the march</b>: press <b>Orders</b> on Edward's army, choose Towton as the place, and press <b>Set the route</b>.";
+    return $("#c-march .fights li") ? "<b>4.</b> The army has met the enemy. Under <b>Fights on offer</b>: set <b>Fight it on</b> to the wound roller (man by man), and press <b>Set up the fight</b>."
+      : "<b>3.</b> Press <b>Until something happens</b>, as often as it asks: the clock runs until the army meets the enemy.";
+  },
+  fight: st => {
+    if (st.fight.sent) return "<b>5.</b> On the roller, below, press <b>Set up the fight</b> to take the fight in.";
+    return FIGHT?.on ? "<b>7.</b> <b>Play to my turn</b> lets the script play until one of the retinue acts. On his turn, on the roller: click his token, then a hex to move him; click an enemy in reach and press <b>Roll the hit</b>, then <b>Apply hit to defender</b>; bind a bleeding man from the wound on his card. Then <b>End</b> his turn here. When one side stands, mark it the winner."
+      : "<b>6.</b> Under <b>The fight</b>, press <b>Run the fight</b>: the GM's script plays the Lancastrians.";
+  },
+  aftermath: () => "<b>8.</b> On the roller: first aid, then <b>After the fight</b> (deeds, loot, prisoners), <b>To camp</b> on each named man, and <b>Send the result to the travel map</b>. Then press <b>Done: on to downtime</b>.",
+  downtime: () => "<b>9.</b> Downtime, in the team builder: work, kit, and the end of the season. Press <b>Save the game to a file</b> to keep tonight's game; next session, march on from here. <button type=\"button\" class=\"small\" data-coach=\"done\">Done with the coach</button>",
+};
+const coachText = st => (REC.quick ? (COACH_BY_PHASE[REC.phase] || COACH_BY_PHASE.downtime)(st) : null);   // what to press next in the coached session, or null
+function renderCoach(st){
+  const el = $("#c-coach"), t = coachText(st);
+  el.hidden = !t;
+  if (t) el.innerHTML = t;
+}
+$("#c-coach").addEventListener("click", e => { if (e.target.dataset?.coach === "done"){ REC.quick = false; saveRecord(); note("The coach is done"); render() } });
 
 /* ---------- the whole game as a file ---------- */
 $("#c-save").addEventListener("click", () => {
@@ -1068,9 +1121,11 @@ function pgFight(m){                                  // his fight: the roller's
   if (m.t === "nofight"){
     PG.frame?.remove(); PG.frame = null; PG.ready = false; PG.queue = [];
     $("#p-fight").hidden = true;
+    pgCoach();
     return;
   }
   $("#p-fight").hidden = false;
+  pgCoach();
   if (!PG.frame){
     if (m.part) return;                             // a change to a fight this page never had: the whole one comes when it rejoins
     PG.frame = document.createElement("iframe");
@@ -1090,6 +1145,7 @@ function pgLayout(){
   document.title = "Grave Wounds: player";
   document.querySelector(".wrap").innerHTML = `<header><div><h1 id="p-title">Campaign</h1><p class="sub" id="p-who"></p></div></header>
     <p id="p-status" aria-live="polite" style="margin:0"></p>
+    <p class="notice coach" id="p-coach" hidden aria-live="polite"></p>
     <section class="panel" id="p-join"></section>
     <section class="panel" id="p-fight" hidden aria-labelledby="h-pfight"><h2 id="h-pfight">Your fight</h2></section>
     <div class="top"><section class="panel" aria-labelledby="h-pmen"><h2 id="h-pmen">Your men</h2><div id="p-men"></div></section>
@@ -1108,6 +1164,29 @@ function pgShow(m, changed = null){
   $("#p-title").textContent = m.campaign || "Campaign";
   $("#p-who").textContent = `${m.name}, playing · ${m.phase}`;
   if (!changed || changed.includes("map")) pgMap(m.map);
+  pgCoach();
+}
+/* The player's coach: on his first games, a line above the panels says what each is and what to press,
+   a step at a time (joining, his panels, proposing orders, his turn in a fight); each step, once he has
+   done it or pressed Got it, is not shown again in this browser. */
+const PC_KEY = "gravewounds-player-coach";
+const pcDone = () => { try { return JSON.parse(localStorage.getItem(PC_KEY) || "{}") } catch { return {} } };
+function pcMark(step){ try { localStorage.setItem(PC_KEY, JSON.stringify({ ...pcDone(), [step]: true })) } catch { /* storage off: the coach shows again */ } pgCoach() }
+function pgCoachStep(){                               // [step, text] for what to show now, or null
+  const done = pcDone();
+  if (done.off) return null;
+  if (!$("#p-fight").hidden && !done.fight)
+    return ["fight", "<b>Your fight.</b> On your turn: click a hex to move your man, click an enemy in reach to strike, choose your aim and roll (you may type your own dice), give first aid with <b>Bind</b> and the like, and press <b>Next fighter</b> when you are done. The GM, or the pages, play the rest."];
+  if (!PG.screen) return $("#p-code") && !done.join ? ["join", "<b>Joining.</b> Type the room code the GM gave you (like WOLF-OAK-42) and press <b>Join</b>. With the link he sent, just open it."] : null;
+  if (!done.look) return ["look", "<b>You're in.</b> <b>Your men</b>: how each of your men is, the force he is with, his purse. <b>Your force</b>: its orders, where it is, how many are fit, how tired. <b>Your map</b>: your side's forces, and of the enemy only what your side can see (ringed red) or last saw (faded)."];
+  if (!done.propose && $("#p-force .propose")) return ["propose", "<b>Your orders.</b> To suggest where your force goes, choose a place under <b>Propose its orders</b> and press <b>Propose this route</b> (or click a hex on your map). The GM accepts or declines; your force's panel says which."];
+  return null;
+}
+function pgCoach(){
+  const el = $("#p-coach"); if (!el) return;
+  const s = pgCoachStep();
+  el.hidden = !s;
+  if (s) el.innerHTML = `${s[1]} <button type="button" class="small" data-pc="${s[0]}">Got it</button> <button type="button" class="small" data-pc="off">No more tips</button>`;
 }
 const PM = { frame: null, ready: false, view: null };   // his map: the travel map's page in a frame, drawing only what it is sent
 function pgMap(view){
@@ -1139,6 +1218,7 @@ function pgPropose(e){                                // his proposal: the order
   const arg = pick ? box.querySelector(`select[data-pick="${pick}"]`)?.value ?? null : null;
   PG.send({ t: "propose", force: +box.dataset.force, what, arg });
   $("#p-status").textContent = "Your proposal has gone to the GM.";
+  pcMark("propose");
 }
 function pgKeep(seat, m){ try { sessionStorage.setItem(PG_KEY, JSON.stringify({ seat, m })) } catch { /* storage off: a rejoin starts blank */ } }
 function pgKept(seat){ try { const k = JSON.parse(sessionStorage.getItem(PG_KEY) || "null"); return k?.seat === seat ? k.m : null } catch { return null } }
@@ -1210,6 +1290,7 @@ function pgRoomForm(said = ""){                        // a room code to type
     <span class="toolbar"><button type="button" class="small primary" id="p-code-go">Join</button></span>`;
   $("#p-code-go").onclick = () => { const v = $("#p-code").value.trim().toUpperCase(); if (v) location.hash = `#room=${v}${PR.server && PR.server !== CD.room_server ? "&s=" + encodeURIComponent(PR.server) : ""}` };
   pgStatus(said || "Type your room's code.");
+  pgCoach();
 }
 function pgRoomArgs(){                                // #room=CODE&s=SERVER -> {code, server}
   const q = new URLSearchParams(location.hash.slice(1));
@@ -1255,6 +1336,7 @@ async function pgRoom(){
 
 if (PLAYER_PAGE){
   pgLayout();
+  $("#p-coach").addEventListener("click", e => { const s = e.target.dataset?.pc; if (s) pcMark(s) });
   $("#p-force").addEventListener("click", pgPropose);
   const go = () => (location.hash.startsWith("#room") ? pgRoom() : pgJoin()).catch(e => pgStatus(String(e.message || e)));
   window.addEventListener("hashchange", () => { if (/^#(join=|room)/.test(location.hash)) go() });   // a new invitation or room opened in this tab
@@ -1262,7 +1344,10 @@ if (PLAYER_PAGE){
 } else {
   loadRecord();
   render();
-  show(phaseOf(REC.phase).page);
+  const gmLink = () => gmStart().catch(e => { $("#c-notice").textContent = `The coached session could not start: ${e.message || e}`; $("#c-notice").hidden = false });
+  if (location.hash === "#gmstart") gmLink();
+  else show(phaseOf(REC.phase).page);
+  window.addEventListener("hashchange", () => { if (location.hash === "#gmstart") gmLink() });   // the link followed again in this tab
   if (roomServer()) for (const pl of players().filter(x => x.room)) playerConnect(pl);   // (it catches its own failures)   // through their rooms, his players are invited again by themselves
   IDB.all().then(x => { SLOTS = x; renderSlots() }).catch(() => { $("#c-slots").innerHTML = '<p class="muted" style="margin:0">This browser keeps no campaigns side by side (IndexedDB is off): save to a file instead.</p>' });
 }

@@ -9,33 +9,13 @@ types her room's code; both connect with nothing passed back by hand. A wrong co
 player's page reloaded, and then the console reloaded, both come back by themselves. Needs Node,
 Python's playwright with Chromium and a built site. Exits non-zero on any failure.
 """
-import functools, http.server, subprocess, threading
 from pathlib import Path
 from playwright.sync_api import sync_playwright
+from roomharness import CONNECTED, campaign_with, check, failures, serve
 
-ROOT = Path(__file__).resolve().parents[2]
 MAP = "towton-1461"
-CONNECTED = "() => document.querySelector('#p-status').textContent.startsWith('Connected')"
 PANEL, CODE = "#c-players", "#p-code"
-failures = []
-
-
-def check(ok, what):
-    print(("ok   " if ok else "FAIL ") + what)
-    if not ok:
-        failures.append(what)
-
-
-class Quiet(http.server.SimpleHTTPRequestHandler):
-    def log_message(self, format, *args):
-        return None
-
-
-server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), functools.partial(Quiet, directory=str(ROOT)))
-threading.Thread(target=server.serve_forever, daemon=True).start()
-BASE = f"http://127.0.0.1:{server.server_port}/dist/"
-rooms = subprocess.Popen(["node", str(ROOT / "tools" / "net" / "fakerooms.mjs")], stdout=subprocess.PIPE, text=True)
-ROOMS = rooms.stdout.readline().strip()
+_, BASE, ROOMS, stop = serve()
 
 
 def men_of(page):
@@ -55,11 +35,7 @@ try:
             pg.on("dialog", lambda d: d.accept())
         watch(gm)
         # the campaign: a map, two named men with the first force; the room server chosen in this browser
-        gm.goto(BASE + "travel.html"); gm.evaluate("() => localStorage.clear()"); gm.reload()
-        gm.wait_for_function("() => typeof forcesHere === 'function'", timeout=15000)
-        gm.evaluate(f"""() => {{ S.mapId = {MAP!r}; S.clock = {{}}; save(); const a = forcesHere()[0];
-          const man = name => ({{ name, map: {MAP!r}, force: a.id, pid: 'pid-' + name, endurance: 50, log: [], health: {{ cases: [], immune: {{}}, had: {{}}, dead: 0 }} }});
-          localStorage.setItem('gravewounds-named', JSON.stringify({{ u1: man('Hal Ashby'), u2: man('Ann Fenwick') }})) }}""")
+        campaign_with(gm, BASE, MAP, {"u1": "Hal Ashby", "u2": "Ann Fenwick"})
         gm.goto(BASE + "campaign.html")
         gm.wait_for_selector("#pl-room", state="attached", timeout=15000)
         gm.click(PANEL + " details summary")
@@ -116,7 +92,7 @@ try:
         check(not errors, f"no page errors {errors[:3]}")
         br.close()
 finally:
-    rooms.terminate()
+    stop()
 
 print(f"{'all checks passed' if not failures else str(len(failures)) + ' failed'}")
 raise SystemExit(1 if failures else 0)

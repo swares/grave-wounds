@@ -4102,13 +4102,17 @@ function fillWeapons(){
    here with #quickstart: the fight is set up against Lancastrian billmen, regulars, as in the Rules' "The
    retinue: the arrow"; the GM's script plays them, and the coach above the map says what to press next. */
 const QUICK = { foes: 3, side: "Lancastrians", kit: "jack_sallet", weapon: "bill" };
-function quickSetup(){
+function freshWithTeam(){                         // the quick starts: an empty fight on an empty map, and the team from the team builder added (false: no team came)
   history.replaceState(null, "", location.pathname);
-  if (!S.teamIn) return;
+  if (!S.teamIn) return false;
   Object.assign(S, { chars: [], events: [], log: [], pending: [], round: 1, turn: null, tm: null, free: [], broken: {}, attacker: -1, active: 0, hit: null, handoff: null,
     works: { edges: {}, hexes: {} }, ground: { kinds: {}, levels: {} }, map: { cols: MOVE.map.cols, rows: MOVE.map.rows }, gm: null });
   newFightMarks();
   addTeam();
+  return true;
+}
+function quickSetup(){
+  if (!freshWithTeam()) return;
   for (let i = 1; i <= QUICK.foes; i++){
     const c = newChar(`Lancastrian billman ${i}`, QUICK.kit, QUICK.weapon, {}, QUICK.side);
     c.nerve = DATA.quality.regular.nerve;
@@ -4120,6 +4124,20 @@ function quickSetup(){
   S.gm.auto = true;
   S.quick = true;
   S.mapMsg = "The quick start: the retinue from the Rules' examples on the road to Towton, against three Lancastrian billmen. Follow the coach above the map.";
+  save();
+}
+/* The GM's coached first session (campaign.html#gmstart): the team builder sends the same retinue here
+   with #gmstart; it is added as named men and put with Edward's army on the Towton map, which the
+   campaign page has already chosen. The campaign page coaches the rest. */
+const GM_START = { force: "towton-1461:1" };     // Edward's army (York)
+function gmQuickSetup(){
+  if (!freshWithTeam()) return;
+  const team = S.chars.find(c => c.team && c.uid)?.team;
+  if (team && travelForces().some(o => o.value === GM_START.force)){
+    S.chars.filter(c => c.team === team && c.uid).forEach(c => attachNamed(c, GM_START.force));
+    const side = forceSide(GM_START.force);
+    if (side) S.chars.filter(c => c.team === team).forEach(c => { c.side = side });
+  }
   save();
 }
 function coachText(){                              // what to press next in the quick start, or null
@@ -4250,6 +4268,7 @@ function init(){
   else startExamples();
   applyFieldHeroes();
   if (location.hash === "#quickstart") quickSetup();
+  if (location.hash === "#gmstart") gmQuickSetup();
   unitToggle($("#units-toggle"), () => { renderResult(); renderChars() });
   lethalToggle($("#lethal-toggle"), () => {      // a new lethality: an unhurt player character's Blood is his new pool; a hurt one keeps what he has, up to it
     for (const c of S.chars.filter(isPC)) c.blood = c.wounds.length ? Math.min(c.blood, poolOf(c)) : poolOf(c);
