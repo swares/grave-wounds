@@ -93,7 +93,9 @@ When an item is done, delete it here and note it in the pull request that closes
   the attacks it made worse were traced and fixed (the plan left units in reserve alone), which also
   took away most attacking gains: when a plan should send the reserve in is open (by the odds was
   tried and refuted on open ground, tools/selfplay/odds.js: it likely turns on the ground; on that open ground a plan
-  wins no more than no plan, and less at even odds, a figure the planner should not make worse);
+  wins no more than no plan, and less at even odds, a figure the planner should not make worse; by
+  whether the enemy holds works was tried too and not kept: its gains were on the battlefields it
+  was drawn from, units.md);
   still to come: re-planning when a plan fails, feints and scouting); ladders only where the GM or a battlefield marks them (the Great Redan's ladder parties are marked, but ladders do nothing on its ditch and bank). It does
   not play the travel map. Later, by the choice made: an optional narrator, using a model
   with a key the player supplies, to explain its orders in prose.
