@@ -43,8 +43,10 @@ export const UNIT_SIZES = {
     "Light Division, first brigade": "brigade",
     "Light Division, second brigade": "brigade",
     "3rd Division storming party (with ladders)": "battalion",
-    "3rd Division, first brigade": "brigade",
-    "3rd Division, second brigade": "brigade",
+    "3rd Division, first brigade (right half)": "battalion",
+    "3rd Division, first brigade (left half)": "battalion",
+    "3rd Division, second brigade (right half)": "battalion",
+    "3rd Division, second brigade (left half)": "battalion",
   },
   "burgos-1812": {
     "Guns in San Miguel (seven 4- and 6-pounders)": "battery",

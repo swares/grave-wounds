@@ -124,8 +124,12 @@ const units = [
   unit("Light Division, second brigade", AL, 1000, { ...LIGHT, via: CURTAIN }, [8, 45, 75]),
   // the 3rd Division escaladed the castle as a division: every unit of it carries ladders
   at("3rd Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", via: CASTLE }, 5, [84, 18], 2),
-  at("3rd Division, first brigade", AL, 1250, { ...LADDERS, via: CASTLE }, 5, [87, 9], N),
-  at("3rd Division, second brigade", AL, 1250, { ...LADDERS, via: CASTLE }, 5, [87, 0], N),
+  // each brigade in two halves of about 625 (5 wide, 4 deep): a 1,250-man block 7 deep had no room to
+  // turn inside the outwork (7 hexes wide) to face the garrison, and stood there all night (ours)
+  at("3rd Division, first brigade (right half)", AL, 625, { ...LADDERS, via: CASTLE }, 5, [87, 12], N),
+  at("3rd Division, first brigade (left half)", AL, 625, { ...LADDERS, via: CASTLE }, 5, [87, 8], N),
+  at("3rd Division, second brigade (right half)", AL, 625, { ...LADDERS, via: CASTLE }, 5, [87, 4], N),
+  at("3rd Division, second brigade (left half)", AL, 625, { ...LADDERS, via: CASTLE }, 5, [87, 0], N),
 ];
 
 writeField({
