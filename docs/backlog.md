@@ -329,10 +329,10 @@ When an item is done, delete it here and note it in the pull request that closes
     the hornwork of San Miguel at Burgos as a battlefield, a first cut). Building it found that
     men touching across a wall no one fights over neither fought nor shot; they now shoot, with
     no cover at the foot of a wall against men on top of it (units.md, *Who shoots*).
-  - **Enemy inside a work, behind its defenders** (found at Burgos, 31 October 2026): the light
-    companies get over the gorge's palisade and stand behind the 34th, which never turns and does
-    not run, where the battalion ran for the postern. Enemy behind a unit does not shake it.
-    Needs sources (garrisons that broke when the enemy got in behind them) before a rule.
+  - **Enemy inside a work, behind its defenders** (found at Burgos, 31 October 2026): done (31
+    October 2026) without a new morale rule. The light companies' gorge attack is the battlefield's
+    plan (an envelopment), and bayonet-armed units that have gone round on a plan charge a flank or
+    rear at any odds; the existing rear-attack rules then break the half of the 34th they strike.
   - **The siege before the storm** is off every field map. Jacob's Ford's map starts at the
     storm (its mine, the outer wall and the days before are not played); the Redan's battlefields
     leave out the British siege guns, which were silent during both assaults.

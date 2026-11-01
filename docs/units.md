@@ -563,7 +563,11 @@ general. All its numbers are in units.yaml `commander`.
 - **Storming works.** Attacking, a unit armed with a smoothbore musket, a rifle-musket, a
   breech-loader, a modern service or assault rifle or a sub-machine gun (`commander.storm`)
   whose target holds works
-  does not stop at range. The target holds works if it is dug in or emplaced where it
+  does not stop at range. So armed, a unit that has gone round on a plan (an envelopment, its
+  route done) and has its target's flank or rear goes in the same way, at any odds and whatever
+  its side's stance (31 October 2026; before, only men without missiles did: the light companies
+  at Burgos stood inside the gorge and traded fire). Measured on 12 runs of every battlefield:
+  only Burgos changed (the Allies take it in 12 of 12, from 2). The target holds works if it is dug in or emplaced where it
   stands, if any of its hexes has cover from works toward the attacker (a bank, trench, wall,
   palisade or the like), or if it stands in buildings, tall buildings or rubble. The unit
   scores hexes as men without missiles do, taking no account of cover on the way, and
@@ -2969,15 +2973,16 @@ doc "burgos-research"; Oman, *A History of the Peninsular War*, vol. 6, ch. II).
   with ladders), sent by a route round the east flank, over the palisade and in.
 - The wound tables are the Peninsular War's. It is not on any travel map yet.
 
-How it plays, a first cut (12 runs, the commander on both sides: the Allies take it in 2, and
-lose 59% of their men against the French 9%): the front attack fails as it did. The Portuguese stop at the foot of the escarp with their short ladders and are shot down
-from the parapet, and with the firing party they lose a quarter to a third of their men and run
-(the Allies lost 421, 204 of them in the 1/42nd and 113 Portuguese: ours are too many Portuguese
-and too few Highlanders). The light companies get over the palisade and stand inside the gorge,
-but the 34th, facing the front, never turns on them, and 140 men do not attack 500, so the
-hornwork is mostly not taken and the French lose little, where in fact they ran for the postern and
-lost 198 with 60 prisoners. What the battalion did when enemy appeared behind it inside its own
-work is not in the rules (enemy behind a unit does not shake it).
+How it plays (12 runs, the commander on both sides): the Allies take the hornwork in all 12, as
+they did. The front attack fails: the Portuguese stop at the foot of the escarp with their short
+ladders and are shot down from the parapet, and with the firing party they lose a quarter to a
+third of their men and run. The light companies, on the battlefield's plan (data/plans.yaml: an
+envelopment, as Oman has it, a false attack made real), go round, over the palisade and in with
+the bayonet on the 34th's rear (see *Storming works*), and the half of the battalion they strike
+runs. The Allies lose 55% of their men in the median run and the French 46%, against 421 and 198
+in fact (about a third each): too many Allied losses, most of them Portuguese, where the account
+puts more on the 1/42nd. Before the light companies went in with the bayonet (31 October 2026) they
+stood inside the gorge and traded fire, and the Allies took it in 2 of 12.
 
 It is drawn by `tools/maps/make_burgos_field.mjs`.
 

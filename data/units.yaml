@@ -1154,7 +1154,8 @@ commander:
   # still fires as it goes. Black powder with the bayonet; and modern infantry rifles and
   # sub-machine guns, which took trenches, bunkers and houses by closing in with grenades and
   # the bayonet (fire alone rarely shifted men under cover: self-play showed attacks stalled
-  # trading fire at range). Design choice.
+  # trading fire at range). So armed, a unit gone round on a plan (an envelopment) with its
+  # target's flank or rear goes in too, at any odds (Burgos 1812). Design choice.
   storm: [musket_smoothbore, rifle_musket, breechloader, rifle_service, rifle_assault, pistol_smg]
   # bounds: storming in bounds. A storming unit with a modern weapon (ground_with) that heeds cover
   # (regulars and better) and was fired on (hit or not: a unit lying under fire that lost no one

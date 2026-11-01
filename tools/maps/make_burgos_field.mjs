@@ -71,7 +71,8 @@ const AL = { side: 0, facing: S }, FR = { side: 1, facing: N };
 const LINE = { quality: "regular", weapon: "musket_smoothbore", kit: "none", formation: "close", mounted: false };
 const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", formation: "battery", mounted: false };   // ten crew to a gun
 const WEST = [[36, 18]], EAST = [[54, 18]];      // the two Portuguese columns, to the foot of each demi-bastion
-const GORGE_ROUTE = [[66, 22], [66, 42], [50, 42], [46, 33]];   // the light companies: round the east flank, up the back slope, over the palisade and in
+// The light companies' route round the east flank, up the back slope, over the palisade and in, is
+// the battlefield's plan (data/plans.yaml: an envelopment onto the 34th's rear), not a unit route.
 const units = [
   unit("Guns in San Miguel (seven 4- and 6-pounders)", FR, 70, { ...GUNS, emplaced: true }, [4, 43, FRONT]),   // emplaced: in their embrasures, they stay put
   // the battalion on the parapet either side of the guns
@@ -81,7 +82,7 @@ const units = [
   unit("1/42nd, the firing party", AL, 300, LINE, [8, 41, 7]),
   unit("Pack's Portuguese, west column (short ladders)", AL, 400, { ...LINE, ladders: "short", via: WEST }, [5, 33, 6]),
   unit("Pack's Portuguese, east column (short ladders)", AL, 400, { ...LINE, ladders: "short", via: EAST }, [5, 53, 6]),
-  unit("Light companies of the 1/42nd, 1/24th and 1/79th (Cocks)", AL, 140, { ...LINE, quality: "veteran", formation: "open", ladders: true, via: GORGE_ROUTE }, [4, 66, 10]),
+  unit("Light companies of the 1/42nd, 1/24th and 1/79th (Cocks)", AL, 140, { ...LINE, quality: "veteran", formation: "open", ladders: true }, [4, 66, 10]),
 ];
 
 writeField({
