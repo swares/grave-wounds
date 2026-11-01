@@ -2387,9 +2387,9 @@ function canEnter(field, u, h){                  // no wagons or water; for hors
   return !groundAt(field, h).no_horse && !(it && specOf("hex", it).no_horse);
 }
 const wallBetween = (field, a, b) => edgeItems(field.works, a, b).some(it => { const s = specOf("edge", it); return s.cross === null || s.cross === undefined || !!s.gate });
-function stands(field, u, hexes){                 // ground it can stand on, and no palisade or wall running through it
-  const keys = new Set(hexes.map(hk));
-  return hexes.every(h => canEnter(field, u, h) && [0, 1, 2, 3, 4, 5].every(dn => { const x = step(h, dn); return !keys.has(hk(x)) || !wallBetween(field, h, x) }));
+function stands(field, u, hexes){                 // ground it can stand on, and no palisade or wall running through it, unless it carries ladders (escalade: its ranks on both sides of the work it climbs) (as units._stands)
+  const keys = new Set(hexes.map(hk)), climbs = hasLadders(u);
+  return hexes.every(h => canEnter(field, u, h) && (climbs || [0, 1, 2, 3, 4, 5].every(dn => { const x = step(h, dn); return !keys.has(hk(x)) || !wallBetween(field, h, x) })));
 }
 const leavesDisabled = u => !!UD.commander.leave_disabled && !!u.vehicle && (u.immobile || 0) > 0 && vehiclesLeft(u) > u.immobile;   // attacking, a vehicle unit with some vehicles that can still move leaves its immobilised ones (commander.leave_disabled) (as commander._leaves_disabled)
 function abandonImmobile(u){                       // a vehicle unit leaves its immobilised vehicles: their crews leave the fight unhurt (bailed)

@@ -2125,7 +2125,10 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   hex fights, at least one man (`escalade.share`), at −20% (`escalade.penalty`) besides the
   climb up a wall's height; the defenders' front rank strikes back at the men on the ladders.
   Stepping over the work costs 4 hexes of movement (`escalade.cross`), into hexes clear of
-  the enemy. Mounted units and guns cannot use ladders. Without ladders, a unit still stops at
+  the enemy. While it climbs, its ranks may stand on both sides of the work (its front over, the
+  rest on the ladders); a unit without ladders may never stand with a palisade, wall or barred
+  gate between its own hexes, so before this (31 October 2026) only a unit one rank deep could
+  climb at all (found building Badajoz, where the 3rd Division stopped at the castle's foot). Mounted units and guns cannot use ladders. Without ladders, a unit still stops at
   the foot, and only reach-2 weapons strike over. The GM marks the units that carried them.
 - **A deep ditch** (`deep: true` on a battlefield's ditch; the two Great Redan battlefields):
   a siege ditch too deep to jump down into. Without ladders, crossing a side of it costs 4 hexes
@@ -2889,6 +2892,45 @@ allied line north of the village is off the map.
 *Playing time:* about 20 minutes with the commander's orders taken and adjusted, about 45 minutes moving every unit by hand, about 2 minutes to watch with **Run** (self-play: 72 exchanges, stopped at the run's length, undecided). See [selfplay-review.md](selfplay-review.md#playing-time-29-october-2026).
 
 It is drawn by `tools/maps/make_albuera_field.mjs`.
+
+**Badajoz, 6-7 April 1812** (`data/fields/badajoz-1812.yaml`). The field is 90 × 80 hexes, about
+980 by 760 yards (900 by 690 m), north at the top: the storm of the breaches and the castle
+(project doc "badajoz-research").
+- The town behind its south face, with the Santa Maria (left) and Trinidad (right) bastions and
+  three breaches: in each bastion and in the curtain between them, 80 m wide (ours). Each breach
+  is rubble with spiked planks (stakes) on its slope and the sword blades across its top (a
+  palisade edge); a deep ditch runs outside every wall (*A deep ditch*), flooded before the
+  Trinidad from the dammed Rivillas, which spreads east of the town as the inundation. An
+  unfinished ravelin stands before the curtain.
+- The castle on its hill at the top right, walled, above the Rivillas, crossed by a dyke under two
+  feet of water; its gate into the town, which Wellington had blown, is left open (the rules blow
+  no gates).
+- A dark night: the moon rose after two in the morning (worked out for the place and day); the
+  fireballs and burning hay that lit the ditch are not played.
+- The garrison on this front (ours, of Philippon's 5,000): 600 at the Trinidad breach, 400 at the
+  curtain, 600 at the Santa Maria with guns on that bastion, 450 in the castle, 500 in reserve.
+- The storm, each division's storming party 500 with ladders (as the plan of attack gave it), then
+  its two brigades (ours): the 4th Division on the Trinidad and the curtain, the Light Division on
+  the Santa Maria and the curtain, the 3rd Division (every unit with ladders) over the Rivillas to
+  the castle. Each goes by its route (`via`): walls stand between every column and the town.
+- The wound tables are the Peninsular War's. The 5th Division's escalade of San Vicente, about a
+  kilometre west, is off the map.
+
+*Playing time* (estimated from its 150-exchange runs, by the battlefields of the same length): about
+30 minutes with the commander's orders taken and adjusted, about 45 minutes moving every unit by
+hand, about 4 minutes to watch with **Run**.
+
+How it plays, a first cut (12 runs, the commander on both sides): the Allies take the town in 5 of
+12, as they did (the castle carried, its open gate into the town). The losses are the wrong way
+round: the Allies lose a median 7% of their men and the French 41%, where the Allies lost about
+4,700 and the French about 1,400 killed and wounded. The stormers do not fight their way onto the
+breaches: rubble, spiked planks, the sword-blade line and the dark cost more than a move, and
+with no French standing on a breach there is no charge across it, so the columns wait at the ditch,
+unseen in the dark. Lit by the moon instead, the French saw them coming and they took the town in
+none of 12. The slaughter in the breaches is not played yet. Building it found that a unit more than
+one rank deep could not escalade at all (*Escalade*).
+
+It is drawn by `tools/maps/make_badajoz_field.mjs`.
 
 **Cowpens, 17 January 1781** (`data/fields/cowpens-1781.yaml`). The field is 120 × 100 hexes,
 about 1,310 yards (1,200 m) east to west and 950 yards (870 m) north to south, with north at the

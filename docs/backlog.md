@@ -318,7 +318,10 @@ When an item is done, delete it here and note it in the pull request that closes
   below; not yet studied as one subject.
   - **Ladders** work as escalade over a wall, palisade or barred gate (units.md, *Escalade*), and
     go down into a deep ditch (*A deep ditch*: the Great Redan, both battlefields; 30 October 2026).
-    Surveyed (claude/sieges-ladders-survey.md in the project): still to do, what is behind a
+    Badajoz 1812, the breaches and the castle, is a battlefield (a first cut: the town falls in 5 of
+    12, by the castle, as it did, but the stormers wait at the ditch rather than dying in the breaches,
+    so the losses are the wrong way round: units.md). Surveyed (claude/sieges-ladders-survey.md in
+    the project): still to do, what is behind a
     breach (a drop, a retrenchment, a mine: San Sebastián, Badajoz; Jacob's Ford's burning timber
     wall), ladders too short (Burgos), the siege guns on the Redans, and a siege phase on the
     travel map.
