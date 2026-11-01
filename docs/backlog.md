@@ -335,16 +335,12 @@ When an item is done, delete it here and note it in the pull request that closes
     October 2026) without a new morale rule. The light companies' gorge attack is the battlefield's
     plan (an envelopment), and bayonet-armed units that have gone round on a plan charge a flank or
     rear at any odds; the existing rear-attack rules then break the half of the 34th they strike.
-  - **Deep columns that cannot turn** (found at Badajoz, 1 November 2026; a general commander issue,
-    not Badajoz's). The 3rd Division's first brigade (1,250 men, 7 ranks) climbing to the castle
-    saw the garrison across its route; the route gave way to ordinary orders, which turned it
-    toward the garrison the long way (north, east, then south-east). Turning a column that deep
-    costs more than a move, so it went on up and over the wall sideways, still facing south-east.
-    Inside the outwork its next waypoint lay behind the garrison (route blocked), the turn to face
-    the garrison cost more than a move, and the commander ordered nothing for the rest of the
-    night. To look at: turn part of the way when the whole turn is out of reach (`_turn_toward`
-    should already; the trace shows None), and why the first turn went the long way. Traced with
-    the scratch tools; Badajoz is left as it is (the castle falls in 1 of 12).
+  - **Deep columns at Badajoz's castle** (1 November 2026): traced further, it was not turn cost.
+    The brigade turned toward the flank guns 30 hexes off behind the walls (a battery scores high as
+    a threat), and inside the outwork a 5-wide, 7-deep column had no room to turn to face the
+    garrison. Fixed in data: the 3rd Division's brigades in halves of about 625; the castle falls in
+    4 of 12 (from 1). Not changed: a unit on a route still turns aside for a far target it cannot
+    reach.
   - **The siege before the storm** is off every field map. Jacob's Ford's map starts at the
     storm (its mine, the outer wall and the days before are not played); the Redan's battlefields
     leave out the British siege guns, which were silent during both assaults.
