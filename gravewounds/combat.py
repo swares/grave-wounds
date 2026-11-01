@@ -907,7 +907,8 @@ def step_cost(d: Data, works, a, b, ground=None, climb: int | None = None, deep_
     climb: with ladders, a work that cannot be crossed (a wall, a palisade, a barred gate) costs
     this instead, and a deep ditch only its `cross` (as one with ladders already down in it).
     deep_stops: a deep ditch with no ladders down in it stops him (a charge without ladders).
-    short: his ladders are short: a tall work (a wall) still stops him."""
+    short: his ladders are short: a tall work (a wall) still stops him. A work no ladders get over
+    (no_ladders: chevaux de frise) stops him with any."""
     cost = 1 + ground_step(d, ground, a, b)
     for it in _edge_items(d, works, a, b):
         s = _spec(d, "edge", it)
@@ -917,7 +918,7 @@ def step_cost(d: Data, works, a, b, ground=None, climb: int | None = None, deep_
                 return None
             c = s["deep"]
         if c is None:
-            c = None if short and s.get("tall") else climb
+            c = None if (short and s.get("tall")) or s.get("no_ladders") else climb
         if c is None:
             return None
         cost += c

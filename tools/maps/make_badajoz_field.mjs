@@ -21,10 +21,14 @@ import { N, S, wobble, patch, speckle, groundGrid, unit, at, stepHex, writeField
 
 const COLS = 90, ROWS = 80;                    // 900 m east to west, about 690 m north to south
 const EF = 70, SF = 50;                        // the east face's column and the south face's row
-const inCastle = (c, r) => c >= 50 && c <= EF && r >= 2 && r <= 20;   // the castle walls are the enclosure's on the east
+// The castle: its walls are the enclosure's on the east, with an outwork east of them (cols 71-77) whose
+// south face runs east-west above the slope to the Rivillas. The 3rd Division climbs that face: a column's
+// whole front can stand against a wall that runs east-west, where against a north-south one (the hexes
+// stand in columns that zigzag) only a hex or two of it touches the wall. Ours, for the map's sake.
+const inCastle = (c, r) => (c >= 50 && c <= EF && r >= 2 && r <= 20) || (c >= 71 && c <= 77 && r >= 2 && r <= 14);
 const inTrinidad = (c, r) => c >= 63 && c <= 74 && r >= 44 && r <= 56 && Math.abs(c - 68.5) + Math.abs(r - 50) * 0.8 <= 7.5;
 const inSantaMaria = (c, r) => c >= 33 && c <= 45 && r >= 46 && r <= 58 && Math.abs(c - 39) + Math.abs(r - 52) * 0.8 <= 7.5;
-const inside = (c, r) => (c <= EF && r <= SF) || inTrinidad(c, r) || inSantaMaria(c, r);
+const inside = (c, r) => (c <= EF && r <= SF) || inCastle(c, r) || inTrinidad(c, r) || inSantaMaria(c, r);
 const inTown = (c, r) => inside(c, r) && !inCastle(c, r);
 // the breaches: a slope of rubble 8 hexes (80 m) wide in each, on its outer face (ours: no source
 // reached gives their widths; units move as blocks, and a column wider than its breach cannot get in)
@@ -38,7 +42,7 @@ const ravelin = (c, r) => r >= 54 && r <= 60 && Math.abs(c - 54.5) <= (60 - r) *
 
 function kind(c, r){
   if (breach(c, r)) return "x";
-  if (inCastle(c, r)) return speckle(c, r, 4) ? "T" : "h";        // the Alcazaba on the Cerro de la Muela
+  if (inCastle(c, r)) return c > EF ? "h" : speckle(c, r, 4) ? "T" : "h";   // the Alcazaba on the Cerro de la Muela (its outwork open ground: a column climbing in pays the worst of its hexes, and buildings there would cost more than a move)
   if (inTown(c, r)){
     if (r >= SF - 4 || inTrinidad(c, r) || inSantaMaria(c, r)) return ".";   // the ramparts and the ground behind them
     return c % 7 === 0 || r % 6 === 0 ? "." : "T";                 // streets and houses
@@ -55,10 +59,10 @@ const grid = groundGrid(COLS, ROWS, kind);
 // ---------- works ----------
 // The walls on every side between the place and the ground outside it (none on a breach), the
 // castle walled all round but for its gate into the town (blown, so left open); the deep ditch outside the town's
-// walls and in front of the breaches; the sword blades (a palisade edge) across the top of each
+// walls and in front of the breaches; the sword blades (chevaux de frise: no ladders get over them) across the top of each
 // breach, the spiked planks (stakes) on its slope; the trenches the columns go in from.
-const wall = [], ditch = [], palisade = [], stakes = [], trench = [];
-const CASTLE_GATE = [[59, 20], [60, 20]];   // the gate into the town, which Wellington had blown: left open (the rules have no blowing of a gate)
+const wall = [], ditch = [], chevaux = [], stakes = [], trench = [];
+const CASTLE_GATE = [[57, 20], [58, 20], [59, 20], [60, 20], [61, 20], [62, 20]];   // the gate into the town, which Wellington had blown: left open (the rules have no blowing of a gate)
 for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++){
   if (!inside(c, r)) continue;
   for (let d = 0; d < 6; d++){
@@ -77,11 +81,15 @@ for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++){
     stakes.push([c, r]);
     for (let d = 0; d < 6; d++){
       const o = stepHex([c, r], d);
-      if (inTown(o[0], o[1]) && !breach(o[0], o[1])) palisade.push([o, [c, r]]);
+      if (inTown(o[0], o[1]) && !breach(o[0], o[1])) chevaux.push([o, [c, r]]);
     }
   }
 }
 for (let c = 30; c <= 74; c++) if (!speckle(c, 71, 5)) trench.push([c, 71]);
+
+// Fireballs and burning hay thrown into the ditch lit it and the breaches as the storm went in: each
+// breach and the ditch before it lit all battle (lit: the radii are ours).
+const FIRES = [{ at: [68, 56], radius: 7 }, { at: [55, 52], radius: 6 }, { at: [44, 53], radius: 7 }];
 
 // ---------- the armies (pos is the middle of the front row) ----------
 const AL = { side: 0, facing: N }, FR = { side: 1, facing: S };
@@ -90,7 +98,7 @@ const LIGHT = { ...LINE, quality: "veteran" };
 const LADDERS = { ...LINE, ladders: true };
 const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", formation: "battery", mounted: false };   // ten crew to a gun
 const TRINIDAD = [[68, 60], [68, 52]], CURTAIN = [[55, 56], [55, 48]], SANTA_MARIA = [[50, 53], [45, 52]];   // to the foot of each breach, then over its top
-const CASTLE = [[79, 24], [72, 14], [62, 12], [60, 22]];   // over the Rivillas by the dyke, up the hill, over the east wall, out by the gate
+const CASTLE = [[79, 24], [74, 21], [74, 16], [66, 10], [60, 22]];   // over the Rivillas by the dyke, up the hill to the outwork's south face, over it, through the castle, out by the gate
 const units = [
   // the garrison on this front (ours: Philippon's 5,000 held the whole circuit and San Cristobal)
   unit("French at the Trinidad breach", FR, 600, LINE, [6, 65, 53]),
@@ -121,13 +129,17 @@ writeField({
     { name: "The breaches given up", at: 120, note: "About midnight: some forty attacks on the breaches have failed (historyofwar; another account says eleven); the castle is carried. Wellington's order to fall back from the breaches came about two." },
   ],
   ends: { at: 150, why: "about two and a half hours: the breaches assaulted for about two hours (Wikipedia), the castle carried in that time (our reading)" },
-  objective: { at: [56, 38], side: 0, name: "the town of Badajoz", radius: 8 },
+  // The castle is the objective: the breaches held all night, and the town fell because the 3rd
+  // Division took the castle and held it until morning, when Philippon gave up (the 5th Division's
+  // entry at San Vicente is off the map). The French at the breaches hold there (orders.yaml).
+  objective: { at: [60, 11], side: 0, name: "the castle of Badajoz", radius: 6 },
   id: "badajoz-1812", name: "Badajoz, 6-7 April 1812 (the breaches and the castle)", sides: ["Allies", "French"], table: "peninsular-1808-14-all-hits",
   travel: { map: "albuera-1811", place: "Badajoz", within: 1, sides: ["Allies", "France"] },
   weather: "{cond: fair, wind: calm, light: night, ground: {mud: 0, snow: 0}}",
   grid, units, deep: ["ditch"],
   hexWorks: { stakes, trench },
-  edgeWorks: { wall, ditch, palisade },
+  edgeWorks: { wall, ditch, chevaux },
+  lit: FIRES,
   header: [
     `The storm of Badajoz, 6-7 April 1812, the breaches and the castle, at 10 m a hex: ${COLS} x ${ROWS} hexes, about 900 m east to`,
     "west and 690 m north to south, north at the top: the town behind its south face, the Santa Maria",
@@ -136,7 +148,7 @@ writeField({
     "Generated by tools/maps/make_badajoz_field.mjs: edit that file and re-run it rather than this one.",
     "Schematic, drawn by hand to the accounts (project doc badajoz-research), not traced from a plan.",
     "The walls are stone-wall edges with a deep ditch outside them (ladders go down into it); each",
-    "breach is rubble with spiked planks (stakes) on its slope and the sword blades (a palisade edge)",
+    "breach is rubble with spiked planks (stakes) on its slope and the sword blades (chevaux de frise)",
     "across its top; the ditch before the Trinidad is flooded. Wall heights, the ditch's depth, the",
     "breaches' widths, the divisions' strengths and the garrison's split are ours: no source reached",
     "gives them. Each storming party is 500 with ladders, as the plan of attack gave it.",

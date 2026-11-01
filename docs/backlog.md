@@ -321,7 +321,7 @@ When an item is done, delete it here and note it in the pull request that closes
     go down into a deep ditch (*A deep ditch*: the Great Redan, both battlefields; 30 October 2026).
     Badajoz 1812, the breaches and the castle, is a battlefield (a first cut: the town falls in 5 of
     12, by the castle, as it did, but the stormers wait at the ditch rather than dying in the breaches,
-    so the losses are the wrong way round: units.md). Surveyed (claude/sieges-ladders-survey.md in
+    so the losses are the wrong way round: units.md). Second cut (1 November 2026): fires light the breaches, the sword blades are chevaux de frise, escalade gains a footing, the castle is the objective; the breaches hold and the castle falls in 2 of 12. Still open: the brigades never come into the fight, so Allied losses are far too low (9% against nearly half). Surveyed (claude/sieges-ladders-survey.md in
     the project): still to do, what is behind a
     breach (a drop, a retrenchment, a mine: San Sebastián, Badajoz; Jacob's Ford's burning timber
     wall), and a siege phase on the travel map. The siege guns on the Redans: done (31 October

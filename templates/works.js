@@ -23,7 +23,7 @@ function stepCost(works, a, b, climb = null, deepStops = false, short = false){ 
       if (deepStops) return null;
       c = s.deep;
     }
-    if (c === null || c === undefined) c = short && s.tall ? null : climb;
+    if (c === null || c === undefined) c = (short && s.tall) || s.no_ladders ? null : climb;   // chevaux de frise: no ladders get over
     if (c === null || c === undefined) return null;
     cost += c;
   }

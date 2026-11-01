@@ -66,6 +66,7 @@ button:disabled{opacity:.45;cursor:default}
 .wk.ditch.deep.laddered{stroke-dasharray:1 1}
 .wk.bank{stroke:var(--w-earth);stroke-width:2.4}
 .wk.palisade{stroke:var(--w-timber);stroke-width:2.2}
+.wk.chevaux{stroke:var(--w-stone);stroke-width:2.2;stroke-dasharray:1.2 1.2}
 .wk.wall{stroke:var(--w-stone);stroke-width:3}
 .wk.gate{stroke:var(--warn);stroke-width:2.6}.wk.gate.open{stroke-dasharray:1.5 1.5}
 .wk.breached{opacity:.35;stroke-dasharray:1 2}
@@ -319,7 +320,7 @@ legend{padding:0}
         <button class="small" id="btn-reserve" hidden title="Held in the enemy commander's reserve: it holds until the commander commits it (when a unit breaks or the enemy comes close). Marking any unit takes the choice of reserves from the commander.">Hold in reserve</button>
         <button class="small" id="btn-sappers" hidden title="Engineers or pioneers: during the battle they can lay a hidden minefield in the row of hexes ahead of their front, or lift a lane through a known one">Sappers</button>
         <label class="sr" for="sel-sap">Sapper work</label><select class="small" id="sel-sap" hidden style="width:auto" title="On their own move, before moving and out of contact: lay mines in the row ahead of their front, or lift the known minefield there. They neither move nor fire while they work."></select>
-        <button class="small" id="btn-ladders" hidden title="Scaling ladders: across a wall, palisade or barred gate a few men a hex fight from the ladders, and the unit can climb over it; at a deep ditch they go down into it for everyone. Press again for short ladders, which do not reach the top of a wall">Ladders</button>
+        <button class="small" id="btn-ladders" hidden title="Scaling ladders: across a wall, palisade or barred gate the front rank fights from the ladders, and the unit can climb over it; at a deep ditch they go down into it for everyone. Press again for short ladders, which do not reach the top of a wall">Ladders</button>
         <button class="small" id="btn-fac" hidden title="A forward air controller talks aircraft onto a target he can see: they scatter less, and may attack close to their own men">Air controller</button>
         <label class="sr" for="sel-medics">Medics</label><select class="small" id="sel-medics" hidden style="width:auto" title="Medics with the unit (followers of a healing career, chosen before the battle): they give its heroes first aid at their quality's chance"></select>
         <label class="sr" for="sel-ammo">Ammunition</label><select class="small" id="sel-ammo" hidden style="width:auto" title="How much ammunition the unit has (set before the battle; in play it runs down as the unit shoots)"></select>
@@ -1155,6 +1156,7 @@ function sickText(h){                            // " · sick (dysentery), defen
 }
 const OTHER_LINES = {                            // kind: (line, nm) => {cls, text} (null: nothing to show)
   breach: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)} break through the ${(WK.edge_works[l.work] || WK.hex_works[l.work]).name.toLowerCase()}.` }),
+  giveway: (l, nm) => ({ cls: "morale", text: `${nm(l.by)} win a footing on the wall from their ladders: ${nm(l.unit)} give way a hex.` }),
   ladders: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)} put their ladders down into the deep ditch (${l.sides} hex side${l.sides === 1 ? "" : "s"}): it is crossed as an ordinary ditch there.` }),
   morale: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` }),
   herohit: l => ({ cls: "hero", text: heroHitText(l) }),
@@ -2096,7 +2098,7 @@ function fillTools(){
   $("#sel-cold").innerHTML = `<option value="">Not freezing hard</option>` + Object.entries(WXD.cold?.levels || {}).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#sel-light").innerHTML = Object.entries(WXD.light?.levels || { day: { name: "Daylight" } }).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   $("#legend").innerHTML = Object.entries(FD.units.ground).filter(([k]) => k !== "open").map(([k, v]) => `<span><i class="g-${k}" style="background:var(--g-${k})"></i>${esc(v.name)}</span>`).join("")
-    + `<span>Ditch, bank, palisade, gate, wall: lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker, \u2261 trench, \u2708 downed helicopter</span><span><i class="smoke-key" style="background:none;border:1px dashed #2b5d8a"></i>H: landing zone</span><span><i class="smoke-key" style="background:none;border:1.5px solid #8a1f1f;border-radius:50%"></i>O: the enemy commander's objective (2: its second)</span><span>\u2193 gone to ground; \u25e0 emplaced or dug in (a dashed parapet across its front)</span><span>AP: aid post; \u21a9 a hero going back; \u25bc a hero lying out</span><span>\u2739 fired in the dark, seen by its muzzle flashes; \u2726 fired by an infrared searchlight, seen by enemy infrared sets and intensifiers</span><span><i class="smoke-key" style="background:#e9d3cc;border:1px dashed #7a2a1a"></i>a.p., a.t., mix: minefield (hidden ones faint, for the GM)</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare or illumination</span>`;
+    + `<span>Ditch, bank, palisade, gate, wall, chevaux de frise (dotted): lines on the hex sides; \u2715 stakes, \u2733 felled trees, \u25ad wagon, \u25ae pavise, \u2a33 barbed wire, \u25a3 bunker, \u2261 trench, \u2708 downed helicopter</span><span><i class="smoke-key" style="background:none;border:1px dashed #2b5d8a"></i>H: landing zone</span><span><i class="smoke-key" style="background:none;border:1.5px solid #8a1f1f;border-radius:50%"></i>O: the enemy commander's objective (2: its second)</span><span>\u2193 gone to ground; \u25e0 emplaced or dug in (a dashed parapet across its front)</span><span>AP: aid post; \u21a9 a hero going back; \u25bc a hero lying out</span><span>\u2739 fired in the dark, seen by its muzzle flashes; \u2726 fired by an infrared searchlight, seen by enemy infrared sets and intensifiers</span><span><i class="smoke-key" style="background:#e9d3cc;border:1px dashed #7a2a1a"></i>a.p., a.t., mix: minefield (hidden ones faint, for the GM)</span><span><i class="smoke-key" style="background:#9a9a9a;opacity:.55"></i>Smoke</span><span><i class="smoke-key" style="background:#ffe680;opacity:.6"></i>Lit by a flare, illumination or fires</span>`;
 }
 function clickSide(e, h){                         // the neighbour across the hex side nearest the click
   const svg = $("#map svg"), pt = svg.createSVGPoint();

@@ -44,6 +44,13 @@ babuna-1915:
     - {unit: "2nd Regiment, a company on the east spur", at: 931, to: S}   # the retreat ordered at ten that night (Sandes), down the road to Prilep
     - {unit: "2nd Regiment machine guns (the saddle)", at: 931, to: S}   # the retreat ordered at ten that night (Sandes), down the road to Prilep
     - {unit: "2nd Regiment, a company behind the saddle", at: 931, to: S}   # the retreat ordered at ten that night (Sandes), down the road to Prilep
+badajoz-1812:
+  source: "project doc badajoz-research (historyofwar; Wikipedia): some forty attacks on the breaches failed, and the French held them until the castle had fallen"
+  hold:
+    - "French at the Trinidad breach"
+    - "French at the curtain breach"
+    - "French at the Santa Maria breach"
+    - "Guns on the Santa Maria bastion"
 beaumont-hamel-1916:
   source: "https://www.veterans.gc.ca/eng/remembrance/battles-and-stages/battle-of-beaumont-hamel"
   hold:

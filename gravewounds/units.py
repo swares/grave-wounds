@@ -1486,6 +1486,49 @@ def in_bunker(d: Data, field: dict | None, u: dict) -> bool:
     return bool(field) and any(bunker_at(d, field, h) for row in footprint(d, u) for h in row)
 
 
+def _give_way_all(d: Data, us: list, field: dict | None, struck: list) -> list:
+    """Escalade: men on ladders who put down more of the defenders across the work they climb than
+    they lose to them in an exchange win a footing on it. The defending unit gives way a hex away
+    from them (keeping its facing) if it can stand there, and the stormers may climb over into the ground
+    it left. Not a broken, fled, emplaced or vehicle unit; once an exchange. A design estimate
+    (Badajoz 1812: Picton's escalade "appeared to be failing" until Ridge got a footing on the wall)."""
+    if not field:
+        return []
+    down = {}
+    for l in struck:
+        if l["kind"] == "melee" and not l.get("rout"):
+            down[(l["att"], l["dfd"])] = down.get((l["att"], l["dfd"]), 0) + l.get("down", 0)
+    occ, size, log, moved = occupancy(d, us), _size(d, field), [], set()
+    for i, u in enumerate(us):
+        if not has_ladders(u) or _out(u):
+            continue
+        for j in _adjacent_units(d, us, occ, i):
+            e = us[j]
+            if j in moved or e["side"] == u["side"] or _out(e) or e.get("emplaced") or e.get("vehicle"):
+                continue
+            if down.get((i, j), 0) <= down.get((j, i), 0) or not _climbs_at(d, field, u, e):
+                continue
+            back = step(e["pos"], bearing(u["pos"], e["pos"]))   # a hex away from the stormers
+            if _fits(d, us, j, {**e, "pos": back}, size, field):
+                e["pos"] = back
+                moved.add(j)
+                log.append({"kind": "giveway", "unit": j, "by": i})
+    return log
+
+
+def _climbs_at(d: Data, field: dict, u: dict, e: dict) -> bool:
+    """Unit u is on its ladders against enemy e: touching it across a work that blocks hand to
+    hand, which u's ladders get it up."""
+    theirs = {f"{h[0]},{h[1]}" for row in footprint(d, e) for h in row}
+    for row in footprint(d, u):
+        for h in row:
+            for dirn in range(6):
+                x = step(h, dirn)
+                if f"{x[0]},{x[1]}" in theirs and _across(d, field, u, h, x, 1)[0] and ladders_reach(d, field, u, h, x):
+                    return True
+    return False
+
+
 def _out(u: dict) -> bool:
     """Broken, fled or with no men: out of the fight for striking and shooting."""
     return u["state"] in ("broken", "fled") or u["men"] <= 0
@@ -1575,6 +1618,8 @@ def battlefield(d: Data, fid: str) -> dict:
             out["objective_radius"] = f["objective"]["radius"]
     if f.get("support"):
         out["support"] = _field_support(d, f)
+    if f.get("lit"):
+        out["lit"] = [{"at": list(x["at"]), "radius": x["radius"], "fires": True} for x in f["lit"]]   # lit by fires all battle
     return out
 
 
@@ -2575,6 +2620,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
             u.pop("hit", None)
     log += _morale_all(d, us, occ, before, (lost, dealt, flanked, hand, braced), rng, table, field)
     log += _suppress_all(d, us, under, rng)
+    log += _give_way_all(d, us, field, struck)
     log += _heroes_after(d, us, rng, [not lost[i] and not under[i] and not in_contact(d, us, occ, i) for i in range(len(us))], cauterises(d, table), posts_moving(field))
     log += _parties_after(d, us, field)
     log += _lying_after(d, us, table, rng)
@@ -3981,9 +4027,10 @@ def _light_up(d: Data, field: dict, at, radius: int, late: int = 0) -> None:
 
 
 def _lit_fades(field: dict | None) -> None:
-    """Flares and illumination burn one exchange less; gone at none."""
+    """Flares and illumination burn one exchange less; gone at none. A battlefield's fires (its
+    `lit`, marked fires) burn all battle."""
     if (field or {}).get("lit"):
-        field["lit"] = [{**x, "left": x["left"] - 1} for x in field["lit"] if x["left"] > 1]
+        field["lit"] = [x if x.get("fires") else {**x, "left": x["left"] - 1} for x in field["lit"] if x.get("fires") or x["left"] > 1]
 
 
 def _lay_smoke(d: Data, field: dict, bursts: list) -> None:
@@ -4468,15 +4515,12 @@ def _stands(d: Data, field: dict, u: dict, hexes: list) -> bool:
     """Ground it can stand on, and no palisade, wall or barred gate between its own hexes, unless it
     carries ladders (escalade): then its ranks may stand on both sides of the work it is climbing."""
     keys = {f"{h[0]},{h[1]}" for h in hexes}
-    climbs, short = has_ladders(u), short_ladders(u)
     for h in hexes:
         if not _can_enter(d, field, u, h):
             return False
-        if climbs and not short:
-            continue
         for dirn in range(6):
             x = step(h, dirn)
-            if f"{x[0]},{x[1]}" in keys and _wall_between(d, field, h, x) and not (climbs and not _tall_between(d, field, h, x)):
+            if f"{x[0]},{x[1]}" in keys and _wall_between(d, field, h, x) and not ladders_reach(d, field, u, h, x):
                 return False
     return True
 
@@ -4505,14 +4549,22 @@ def short_ladders(u: dict) -> bool:
 
 
 def ladders_reach(d: Data, field: dict | None, u: dict, a, b) -> bool:
-    """Unit u's ladders get it up the work between hexes a and b: it has ladders, and they are not
-    short against a tall work (Burgos 1812)."""
-    return has_ladders(u) and not (short_ladders(u) and _tall_between(d, field, a, b))
+    """Unit u's ladders get it up the work between hexes a and b: it has ladders, they are not
+    short against a tall work (Burgos 1812), and the work is not one no ladders get over (chevaux
+    de frise: Badajoz 1812)."""
+    if not has_ladders(u):
+        return False
+    return not (short_ladders(u) and _tall_between(d, field, a, b)) and not _edge_has(d, field, a, b, "no_ladders")
 
 
 def _tall_between(d: Data, field: dict | None, a, b) -> bool:
     """A tall work (works.yaml `tall`: a wall) between hexes a and b."""
-    return bool(field) and any(C._spec(d, "edge", it).get("tall") for it in C._edge_items(d, _works(field), a, b))
+    return _edge_has(d, field, a, b, "tall")
+
+
+def _edge_has(d: Data, field: dict | None, a, b, key: str) -> bool:
+    """A work between hexes a and b whose works.yaml spec has `key` set."""
+    return bool(field) and any(C._spec(d, "edge", it).get(key) for it in C._edge_items(d, _works(field), a, b))
 
 
 def _wall_between(d: Data, field: dict, a, b) -> bool:

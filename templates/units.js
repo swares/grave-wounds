@@ -2035,6 +2035,26 @@ function firedOn(log){                            // the units fired on in an ex
   log.forEach(l => { if (l.dfd !== undefined && l.dfd !== null && (FIRE.has(l.kind) || (l.kind === "hero" && l.dist !== undefined))) out.add(l.dfd) });
   return out;
 }
+function giveWayAll(us, field, logged){            // escalade: men on ladders who put down more of the defenders across the work they climb than they lose to them win a footing; the defenders give way a hex straight back if they can stand there (as units._give_way_all)
+  if (!field) return [];
+  const down = new Map(), out = [], moved = new Set(), occ = occupancy(us), size = fieldSize(field);
+  for (const l of logged) if (l.kind === "melee" && !l.rout) down.set(l.att + "|" + l.dfd, (down.get(l.att + "|" + l.dfd) || 0) + (l.down || 0));
+  us.forEach((u, i) => {
+    if (!hasLadders(u) || out_(u)) return;
+    for (const j of adjacentUnits(us, occ, i)){
+      const e = us[j];
+      if (moved.has(j) || e.side === u.side || out_(e) || e.emplaced || e.vehicle) continue;
+      if ((down.get(i + "|" + j) || 0) <= (down.get(j + "|" + i) || 0) || !climbsAt(field, u, e)) continue;
+      const back = step(e.pos, bearing(u.pos, e.pos));   // a hex away from the stormers
+      if (fits(us, j, { ...e, pos: back }, size, field)){ e.pos = back; moved.add(j); out.push({ kind: "giveway", unit: j, by: i }) }
+    }
+  });
+  return out;
+}
+function climbsAt(field, u, e){                    // u is on its ladders against e: touching it across a work that blocks hand to hand, which u's ladders get it up (as units._climbs_at)
+  const theirs = new Set(footprint(e).flat().map(hk));
+  return footprint(u).flat().some(h => [0, 1, 2, 3, 4, 5].some(dn => { const x = step(h, dn); return theirs.has(hk(x)) && across(field, u, h, x, 1)[0] && laddersReach(field, u, h, x) }));
+}
 function exchange(units, table, rng, field = null){   // -> {units, log}; works being breached are updated in field
   const us = units.map(copyUnit), n = us.length, log = [];
   const acc = { lost: new Array(n).fill(0), dead: new Array(n).fill(0), dealt: new Array(n).fill(0), flanked: new Array(n).fill(false), braced: new Array(n).fill(null) };
@@ -2060,7 +2080,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
     if (cut > 0) u.hit = true; else delete u.hit;   // it lost men this exchange: under fire, for the next moves
   });
-  log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table), postsMoving(field)),
+  log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...giveWayAll(us, field, log.slice(from)), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table), postsMoving(field)),
     ...partiesAfter(us, field), ...lyingAfter(us, table, rng), ...postsAfter(us, field, table, rng), ...digAll(us), ...sappersAll(us, field));
   postsSettle(field);
   toilFought(us, fought);
@@ -2293,7 +2313,7 @@ function afterExchange(us, field, log = []){        // charges spent, batteries 
   log.push(...displaceAll(field), ...overrunAll(us, field));
   if (field?.smoke) field.smoke = Object.fromEntries(Object.entries(field.smoke).filter(([, n]) => n > 1).map(([h, n]) => [h, n - 1]));   // smoke thins
   smokeDrifts(field);
-  if (field?.lit?.length) field.lit = field.lit.filter(x => x.left > 1).map(x => ({ ...x, left: x.left - 1 }));   // flares burn down
+  if (field?.lit?.length) field.lit = field.lit.filter(x => x.fires || x.left > 1).map(x => (x.fires ? x : { ...x, left: x.left - 1 }));   // flares burn down; a battlefield's fires burn all battle
 }
 function displaceAll(field){                      // displacing batteries count down; one that has moved is no longer located, missions on it end
   const sup = field?.support || [], log = [];
@@ -2402,8 +2422,8 @@ function canEnter(field, u, h){                  // no wagons or water; for hors
 }
 const wallBetween = (field, a, b) => edgeItems(field.works, a, b).some(it => { const s = specOf("edge", it); return s.cross === null || s.cross === undefined || !!s.gate });
 function stands(field, u, hexes){                 // ground it can stand on, and no palisade or wall running through it, unless it carries ladders (escalade: its ranks on both sides of the work it climbs) (as units._stands)
-  const keys = new Set(hexes.map(hk)), climbs = hasLadders(u), short = shortLadders(u);
-  return hexes.every(h => canEnter(field, u, h) && ((climbs && !short) || [0, 1, 2, 3, 4, 5].every(dn => { const x = step(h, dn); return !keys.has(hk(x)) || !wallBetween(field, h, x) || (climbs && !tallBetween(field, h, x)) })));
+  const keys = new Set(hexes.map(hk));
+  return hexes.every(h => canEnter(field, u, h) && [0, 1, 2, 3, 4, 5].every(dn => { const x = step(h, dn); return !keys.has(hk(x)) || !wallBetween(field, h, x) || laddersReach(field, u, h, x) }));
 }
 const leavesDisabled = u => !!UD.commander.leave_disabled && !!u.vehicle && (u.immobile || 0) > 0 && vehiclesLeft(u) > u.immobile;   // attacking, a vehicle unit with some vehicles that can still move leaves its immobilised ones (commander.leave_disabled) (as commander._leaves_disabled)
 function abandonImmobile(u){                       // a vehicle unit leaves its immobilised vehicles: their crews leave the fight unhurt (bailed)
@@ -2477,8 +2497,9 @@ function fits(units, i, u, size, field = null){
 }
 const hasLadders = u => !!u.ladders && !u.mounted && !u.vehicle;   // a unit on foot marked with ladders, long or short (as units.has_ladders)
 const shortLadders = u => hasLadders(u) && u.ladders === "short";   // they do not reach the top of a tall work, a wall (as units.short_ladders)
-const tallBetween = (field, a, b) => !!field && edgeItems(field.works, a, b).some(it => !!specOf("edge", it).tall);   // a tall work (works.yaml tall: a wall) between a and b (as units._tall_between)
-const laddersReach = (field, u, a, b) => hasLadders(u) && !(shortLadders(u) && tallBetween(field, a, b));   // u's ladders get it up the work between a and b (as units.ladders_reach)
+const edgeHas = (field, a, b, key) => !!field && edgeItems(field.works, a, b).some(it => !!specOf("edge", it)[key]);   // a work between a and b whose spec has key set (as units._edge_has)
+const tallBetween = (field, a, b) => edgeHas(field, a, b, "tall");   // a tall work (works.yaml tall: a wall) between a and b (as units._tall_between)
+const laddersReach = (field, u, a, b) => hasLadders(u) && !(shortLadders(u) && tallBetween(field, a, b)) && !edgeHas(field, a, b, "no_ladders");   // u's ladders get it up the work between a and b: not short against a wall, not chevaux de frise (as units.ladders_reach)
 const STEPS = [];                                  // while a commander orders its side (command): Map field -> Map "mover a>b" -> movement; nothing it orders changes the works, ground or weather (as units._STEPS)
 function moverOf(u){                               // what a step's movement depends on in the unit: vehicle, horse, ladders or foot (as units._mover)
   if (u.vehicle) return "v";

@@ -78,6 +78,10 @@ function dumpsLine(ds){                          // the supply dumps' line (and 
   const one = m => "{at: [" + m.at.join(", ") + "], side: " + m.side + "}";
   return `\n# Supply dumps placed before the battle (side 0 or 1): its units within ammunition.reach of one can resupply there.\ndumps: [${ds.map(one).join(", ")}]`;
 }
+function litLine(fires){                          // the fires that light hexes all battle (and their comment), or ""
+  if (!fires?.length) return "";
+  return `\n# Lit by fires all battle (as by a flare that never burns down): the hexes within radius of each.\nlit: [${fires.map(x => "{at: [" + x.at.join(", ") + "], radius: " + x.radius + "}").join(", ")}]`;
+}
 function objLine(o){                              // the objective's line (and its comment), or ""
   if (!o) return "";
   const radius = o.radius ? ", radius: " + o.radius : "";
@@ -158,7 +162,7 @@ ${t ? `# On the travel map: a fight within \`within\` hexes of this place offers
 # the travel-map sides that stand where each army stands here (${spec.sides[0]} first).
 travel: {map: ${t.map}, place: ${yq(t.place)}, within: ${t.within}, sides: [${t.sides.map(yq).join(", ")}]}
 ` : "# Not on any travel map yet.\n"}size: [${grid[0].length}, ${grid.length}]
-${upLine}weather: ${spec.weather}${spec.lz ? "\n" : ""}${spec.lz ? "lz: [" + hexList(spec.lz) + "]               # landing zones (units with `lands` come in by air at that one)" : ""}${dumpsLine(spec.dumps)}${objLine(spec.objective)}${stancesLine(spec.stances)}${endsLine(spec.ends)}${markersLine(spec.markers)}${phasesText(spec.phases)}
+${upLine}weather: ${spec.weather}${spec.lz ? "\n" : ""}${spec.lz ? "lz: [" + hexList(spec.lz) + "]               # landing zones (units with `lands` come in by air at that one)" : ""}${dumpsLine(spec.dumps)}${litLine(spec.lit)}${objLine(spec.objective)}${stancesLine(spec.stances)}${endsLine(spec.ends)}${markersLine(spec.markers)}${phasesText(spec.phases)}
 ground: |
 ${grid.map(row => "  " + row.join("")).join("\n")}
 ${worksText}${supText}units:

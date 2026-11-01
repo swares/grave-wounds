@@ -112,7 +112,7 @@ breach_share: 0.5
 # must be clear of the enemy). Design estimates. `ladders: short`: ladders that do not reach the
 # top of a tall work (works.yaml `tall`: a wall); against one the unit is as if it had none, but
 # they still serve over a palisade or gate and down into a deep ditch (Burgos 1812).
-escalade: {share: 0.25, penalty: 20, cross: 4}
+escalade: {share: 1.0, penalty: 20, cross: 4}   # share: the whole front rank fights from the ladders (0.25 until 1 November 2026: escalades never got a footing)
 
 # ---------- guns ----------
 # A battery is a unit whose weapon is a gun (listed in `guns`), in the battery formation. Its

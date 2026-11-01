@@ -75,6 +75,8 @@ camps:
 #   shelled     - true: a shell or bomb bursting in a hex beside it opens a gap at the firing
 #                 kind's `knock` % (as it knocks out a bunker: heavy howitzers, tanks, bombs)
 #   gate        - true: can be opened (crossed freely) or barred (as a palisade)
+#   no_ladders  - true: ladders get no one over it, long or short (chevaux de frise: a beam set with
+#                 blades or spikes, which a ladder cannot be planted against or carried over)
 #   tall        - true: short ladders (`ladders: short`) do not reach the top of it (units.md,
 #                 *Escalade*: Burgos 1812, the escarp of San Miguel and the outer wall)
 #   deep        - extra movement to cross it where a battlefield marks it deep (`deep: true`, a
@@ -89,6 +91,8 @@ edge_works:
   ditch:    {name: "Ditch",         per_metre: 2.5,  cross: 2,    cover: 0,  height: 10, breach: null, deep: 4}
   bank:     {name: "Earth bank",    per_metre: 1.0,  cross: 1,    cover: 20, cover_side: high, height: 10, breach: null}
   palisade: {name: "Palisade",      per_metre: 1.5,  haul: 1.0,   cross: null, cover: 40, cover_side: both, blocks_melee: true, breach: 12}
+  chevaux:  {name: "Chevaux de frise", per_metre: 2.0, haul: 1.0, cross: null, cover: 10, cover_side: both, blocks_melee: true, breach: 24, no_ladders: true,
+             note: "A beam set with sword blades or spikes, chained across a breach (Badajoz 1812). Ladders get no one over it; axes clear it slowly (breach: ours, twice a palisade)."}
   gate:     {name: "Gate",          each: 6,         cross: 0,    cover: 40, cover_side: both, blocks_melee: true, breach: 20, gate: true}
   wall:     {name: "Stone wall",    per_metre: null, cross: null, cover: 50, cover_side: both, height: 20, blocks_melee: true, breach: null, charge: 6, shelled: true, tall: true,
              note: "Town and castle walls: already there, not built in the field. No axe opens them: demolition charges or heavy shells do, and before those only ladders get men over."}

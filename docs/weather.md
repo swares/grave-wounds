@@ -182,6 +182,9 @@ applies: whichever is shorter counts.
   10 (about 100 m) for the next 2 exchanges. Mortars and guns can fire **Illumination**
   (see [Indirect fire](units.md#indirect-fire-and-suppression)). Lit ground shows pale
   yellow on the map.
+- **Fires.** A battlefield can mark hexes lit all battle by fires (`lit: [{at, radius}]` in its
+  file): lit as by a flare that never burns down. Badajoz: the fireballs and burning hay the
+  French threw into the ditch, at each breach (the radii ours).
 - **From the travel map**, a battle takes the hour's light. Within half an hour of sunrise
   or sunset it is dusk or dawn. At night it is moonlit if the moon is up, at least half lit,
   and the sky is clear (fair weather); otherwise it is dark. The moon is a simple model: it

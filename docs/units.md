@@ -2137,8 +2137,9 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   minute. A bank or ditch under a breached palisade stays.
 - **Escalade:** a unit on foot marked **Ladders** (set-up only, on a field with a wall,
   palisade or gate; or `ladders: true` in a battlefield file) fights across a palisade, wall
-  or barred gate and climbs over it. Across it only a quarter of the front rank of each front
-  hex fights, at least one man (`escalade.share`), at −20% (`escalade.penalty`) besides the
+  or barred gate and climbs over it. Across it the front rank of each front hex fights from the
+  ladders (`escalade.share`: all of it since 1 November 2026, a quarter before, when the fight
+  at a wall came to about a blow an exchange each way), at −20% (`escalade.penalty`) besides the
   climb up a wall's height; the defenders' front rank strikes back at the men on the ladders.
   Stepping over the work costs 4 hexes of movement (`escalade.cross`), into hexes clear of
   the enemy. While it climbs, its ranks may stand on both sides of the work (its front over, the
@@ -2146,6 +2147,24 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   gate between its own hexes, so before this (31 October 2026) only a unit one rank deep could
   climb at all (found building Badajoz, where the 3rd Division stopped at the castle's foot). Mounted units and guns cannot use ladders. Without ladders, a unit still stops at
   the foot, and only reach-2 weapons strike over. The GM marks the units that carried them.
+  - **A footing on the wall** (1 November 2026): when men on ladders put down more of the
+    defenders across the work they climb than they lose to those defenders in an exchange, the
+    defending unit gives way a hex away from the stormers (keeping its facing) if it can stand there, and
+    the stormers may then climb over into the ground it left ("X win a footing on the wall from
+    their ladders: Y give way a hex"). Not a broken, fled, emplaced or vehicle unit; once an
+    exchange. Before this, defenders standing right behind a wall could never be climbed past:
+    the stormers can step over only into hexes clear of the enemy, and at Badajoz the 3rd
+    Division stood at the castle wall for a hundred exchanges with four men down. A design
+    estimate (Badajoz: Picton's escalade "appeared to be failing" until Ridge got a footing).
+    Measured with the whole front rank on the ladders, the fires and the chevaux de frise on 12
+    runs of every battlefield: only Badajoz and the two Redans changed (the Redans by a run each
+    way: 8 September the British won none of 12, from 1; 18 June 1 of 12, from none).
+  - **Chevaux de frise** (works.yaml `chevaux`, `no_ladders`): a beam set with sword blades or
+    spikes, chained across a breach. It stops hand to hand and passage like a palisade, gives a
+    little cover (10%), and no ladders, long or short, get anyone over it: men stop at it and
+    shoot, or hack it open (twice a palisade's work, ours). Badajoz 1812, across the top of each
+    breach; until 1 November 2026 drawn there as a palisade, which the storming parties climbed
+    with their ladders.
   - **Short ladders** (`ladders: short` in a battlefield file; the GM presses **Ladders**
     twice). They get men over a palisade or barred gate and down into a deep ditch like any
     ladders, but they do not reach the top of a **tall** work (works.yaml `tall`: a wall), so
@@ -2923,21 +2942,28 @@ It is drawn by `tools/maps/make_albuera_field.mjs`.
 (project doc "badajoz-research").
 - The town behind its south face, with the Santa Maria (left) and Trinidad (right) bastions and
   three breaches: in each bastion and in the curtain between them, 80 m wide (ours). Each breach
-  is rubble with spiked planks (stakes) on its slope and the sword blades across its top (a
-  palisade edge); a deep ditch runs outside every wall (*A deep ditch*), flooded before the
-  Trinidad from the dammed Rivillas, which spreads east of the town as the inundation. An
-  unfinished ravelin stands before the curtain.
+  is rubble with spiked planks (stakes) on its slope and the sword blades across its top
+  (**chevaux de frise**: no ladders get over them; see *Escalade*); a deep ditch runs outside every
+  wall (*A deep ditch*), flooded before the Trinidad from the dammed Rivillas, which spreads east
+  of the town as the inundation. An unfinished ravelin stands before the curtain.
 - The castle on its hill at the top right, walled, above the Rivillas, crossed by a dyke under two
-  feet of water; its gate into the town, which Wellington had blown, is left open (the rules blow
-  no gates).
-- A dark night: the moon rose after two in the morning (worked out for the place and day); the
-  fireballs and burning hay that lit the ditch are not played.
+  feet of water, with an outwork on its east side whose south face (running east to west) the 3rd
+  Division climbs: a column's whole front can stand against a wall that runs east to west, where
+  against one running north to south only a hex or two touches it (the hexes stand in zigzag
+  columns). The outwork is ours, for the map's sake. Its gate into the town, which Wellington had
+  blown, is left open, six hexes wide so a column can pass (the rules blow no gates).
+- A dark night: the moon rose after two in the morning (worked out for the place and day). The
+  fireballs and burning hay the French threw into the ditch light each breach and the ditch before
+  it all battle (`lit`, the radii ours; see weather.md, *Fires*).
 - The garrison on this front (ours, of Philippon's 5,000): 600 at the Trinidad breach, 400 at the
   curtain, 600 at the Santa Maria with guns on that bastion, 450 in the castle, 500 in reserve.
+  The French at the breaches hold there (`data/orders.yaml`): they held them all night.
 - The storm, each division's storming party 500 with ladders (as the plan of attack gave it), then
   its two brigades (ours): the 4th Division on the Trinidad and the curtain, the Light Division on
   the Santa Maria and the curtain, the 3rd Division (every unit with ladders) over the Rivillas to
   the castle. Each goes by its route (`via`): walls stand between every column and the town.
+- The objective is **the castle** (6 hexes round its middle): the breaches held, and the town fell
+  because the 3rd Division took the castle and held it until morning, when Philippon gave up.
 - The wound tables are the Peninsular War's. The 5th Division's escalade of San Vicente, about a
   kilometre west, is off the map.
 
@@ -2945,15 +2971,18 @@ It is drawn by `tools/maps/make_albuera_field.mjs`.
 30 minutes with the commander's orders taken and adjusted, about 45 minutes moving every unit by
 hand, about 4 minutes to watch with **Run**.
 
-How it plays, a first cut (12 runs, the commander on both sides): the Allies take the town in 5 of
-12, as they did (the castle carried, its open gate into the town). The losses are the wrong way
-round: the Allies lose a median 7% of their men and the French 41%, where the Allies lost about
-4,700 and the French about 1,400 killed and wounded. The stormers do not fight their way onto the
-breaches: rubble, spiked planks, the sword-blade line and the dark cost more than a move, and
-with no French standing on a breach there is no charge across it, so the columns wait at the ditch,
-unseen in the dark. Lit by the moon instead, the French saw them coming and they took the town in
-none of 12. The slaughter in the breaches is not played yet. Building it found that a unit more than
-one rank deep could not escalade at all (*Escalade*).
+How it plays, a second cut (12 runs, the commander on both sides, 1 November 2026): the Allies take
+the castle in 2 of 12 (history: they took it), and lose 9% of their men against the French 57%
+(history: about 4,700 Allied killed and wounded, nearly half the stormers, and about 1,400 French).
+The breaches hold, as they did: the storming parties stop at the sword blades in the light of the
+fires and are shot down. The 3rd Division gets over the outwork's wall in about half the runs, but
+inside it breaks after losing a few dozen men, and its brigades never follow it up the ladders.
+Still open: the brigades behind each storming party wait on its route out of the fight (units move
+as blocks and cannot pass one another in the ditch), so the slaughter of the columns fed into the
+breaches is not played; the French at the breaches, standing in the firelight under orders to
+hold, lose more than they did. The first cut (31 October 2026) took the town in 5 of 12, but only
+because the breaches gave way and the castle's garrison ran with them; the castle was never taken
+by escalade then (the escalade fight came to a blow an exchange each way: *Escalade*).
 
 It is drawn by `tools/maps/make_badajoz_field.mjs`.
 
