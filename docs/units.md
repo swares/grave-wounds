@@ -426,7 +426,10 @@ of each front hex shoot. Shots at a unit in open order count 0.8.
   shooting down from its high (inner) side in the hex right above them; the men on top keep
   theirs, and shots from further off count the wall as before. Before this, men at the foot of a wall and the men on top of it
   neither fought nor shot: at Burgos 800 Portuguese stood under the hornwork for an hour and lost
-  1 to 4%, where the storm cost the Allies 421.
+  1 to 4%, where the storm cost the Allies 421. Measured on 12 runs of every battlefield: only
+  Burgos and the two Redans changed (8 September: the British won 1 of 12, against none, and lost
+  40% of their men against 48%). Badajoz, Sidon and Jacob's Ford did not move: their stormers
+  are not held at a wall touching its defenders, so their troubles lie elsewhere.
 
 **Line of fire.** A unit cannot shoot through another unit, friend or enemy, standing between
 it and its target: it shoots at the nearest enemy it has a clear line to. From high ground it
@@ -2966,13 +2969,13 @@ doc "burgos-research"; Oman, *A History of the Peninsular War*, vol. 6, ch. II).
   with ladders), sent by a route round the east flank, over the palisade and in.
 - The wound tables are the Peninsular War's. It is not on any travel map yet.
 
-How it plays, a first cut (6 test runs, the commander on both sides): the front attack fails as
-it did. The Portuguese stop at the foot of the escarp with their short ladders and are shot down
+How it plays, a first cut (12 runs, the commander on both sides: the Allies take it in 2, and
+lose 59% of their men against the French 9%): the front attack fails as it did. The Portuguese stop at the foot of the escarp with their short ladders and are shot down
 from the parapet, and with the firing party they lose a quarter to a third of their men and run
 (the Allies lost 421, 204 of them in the 1/42nd and 113 Portuguese: ours are too many Portuguese
 and too few Highlanders). The light companies get over the palisade and stand inside the gorge,
 but the 34th, facing the front, never turns on them, and 140 men do not attack 500, so the
-hornwork is not taken and the French lose about 2%, where in fact they ran for the postern and
+hornwork is mostly not taken and the French lose little, where in fact they ran for the postern and
 lost 198 with 60 prisoners. What the battalion did when enemy appeared behind it inside its own
 work is not in the rules (enemy behind a unit does not shake it).
 

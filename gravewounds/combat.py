@@ -987,6 +987,7 @@ def missile_cover(d: Data, works, attacker, target, cols: int, rows: int) -> dic
                 continue
             if list(n) == list(attacker) and e.get("high") == hkey(n):
                 continue                            # shot at from the top of the wall he stands under: no cover at its foot
+            if s.get("cover", 0) > best:
                 best, what = s["cover"], e["type"]
         if list(n) != list(attacker):
             it = _hex_item(d, works, n)
