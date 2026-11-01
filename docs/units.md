@@ -2988,12 +2988,15 @@ south, north at the top: the Redan's point toward the British trench at the bott
   which go down into the deep ditch where it reaches it; see *A deep ditch*) out in front, the
   stormers of the Light and 2nd Divisions in the trench, and green supports behind.
 - The Russians: the Vladimirski Regiment at the salient and behind the breastwork, guns at
-  each shoulder, riflemen on the line to the west, and the Iakutski and Selenginski regiments
-  in reserve in the suburb. The Russian infantry have smoothbore muskets, their riflemen and
+  each shoulder, riflemen and the Barrack Battery on the line to the west (Russell: the
+  stormers "were swept by the guns of the Barrack Battery and by several pieces on the proper
+  right of the Redan, loaded heavily with grape"), and the Iakutski and Selenginski regiments
+  in reserve in the suburb. The faces are named from inside the work, so the right face is
+  the west one. The Russian infantry have smoothbore muskets, their riflemen and
   the British rifle-muskets; the guns are smoothbore.
-- The wound tables are the Crimean War's. The siege guns on both sides, the French attack on
-  the Malakhov to the east and the flanking fire from the Russian batteries either side are
-  not on the map.
+- The wound tables are the Crimean War's. The British siege batteries are not on the map:
+  they ceased firing at noon, when the French went in. Nor is the French attack on the
+  Malakhov to the east, or any Russian battery further along the line to the east.
 - The point of the salient is drawn cut off square, 120 m across, so that units in line can
   reach the men in it; the real salient came to a sharper point.
 - The objective is the salient inside the parapet (3 hexes round its middle), so men in the
@@ -3025,8 +3028,11 @@ of the faces) and fewer shell holes.
 - The Russians, the works fully manned: infantry at the salient and behind the breastwork,
   guns at each shoulder, a battery and riflemen on the line either side, and a reserve in the
   suburb.
-- The wound tables are the Crimean War's. The French attack on the Malakhov, the siege guns
-  and the diversions on either flank are not on the map.
+- The wound tables are the Crimean War's. The French attack on the Malakhov and the
+  diversions on either flank are not on the map, nor are the British siege batteries: the
+  bombardment was not taken up again at dawn before the columns went out (until 31 October
+  2026 the two columns stood on the wrong sides; Raglan's despatch puts the right column
+  against the left face, the east one, as the faces are named from inside the work).
 - Played by the enemy commander, the columns cross the open under grape and musketry and
   storm the salient; in three test runs the British had a fifth to a quarter of their men
   down, most of the columns broke and ran, and in one run a few men got into the salient. The

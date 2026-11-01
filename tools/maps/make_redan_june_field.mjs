@@ -6,7 +6,8 @@
 // Household Narrative of Current Events, 1855) and the published histories. Columns of
 // detachments from the Light, 2nd and 4th Divisions were drawn up in the trenches: the right
 // (Colonel Yea's) against the Redan's left face, a centre column against the salient, the left
-// (Sir John Campbell's) against the angle where the right face meets the line to the east. When
+// (Sir John Campbell's) against the re-entering angle formed by the right face and flank of the
+// work, to the west (the faces are named from inside the work: the left face is the east one). When
 // the French attack on the Malakhov ran into heavy fire at daybreak the two flank columns went
 // out; the centre column never left the trenches (Engels, writing in 1855; and the losses fell
 // almost all in the two flank columns' brigades), so it is not on the map. Riflemen covered them; sailors carried the
@@ -35,11 +36,11 @@ const column = (label, col0) => [
   unit(`${label}: supports`, BRITISH, 800, { ...RIFLE, quality: "green", size: "battalion" }, [12, col0 - 1, 98]),
 ];
 const units = [
-  ...column("Right column (Yea)", 25),
-  ...column("Left column (Campbell)", 65),
+  ...column("Right column (Yea)", 65),        // Raglan: the right column against the left face (the east one: faces are named from inside the work)
+  ...column("Left column (Campbell)", 25),     // the left against the re-entering angle by the right face (the west one)
   unit("Russian infantry at the salient", RUSSIANS, 600, { ...MUSKET, size: "battalion" }, [12, 44, 45]),
-  unit("Guns on the left face", RUSSIANS, 40, { ...GUNS, size: "battery" }, [3, 35, 35]),
-  unit("Guns on the right face", RUSSIANS, 40, { ...GUNS, size: "battery" }, [3, 62, 35]),
+  unit("Guns on the right face", RUSSIANS, 40, { ...GUNS, size: "battery" }, [3, 35, 35]),
+  unit("Guns on the left face", RUSSIANS, 40, { ...GUNS, size: "battery" }, [3, 62, 35]),
   unit("Battery on the line to the west", RUSSIANS, 60, { ...GUNS, size: "battery" }, [4, 15, 34]),
   unit("Battery on the line to the east", RUSSIANS, 60, { ...GUNS, size: "battery" }, [4, 70, 33]),
   unit("Russian infantry behind the breastwork", RUSSIANS, 1600, { ...MUSKET, size: "regiment" }, [26, 37, 24]),

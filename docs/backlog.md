@@ -309,9 +309,10 @@ When an item is done, delete it here and note it in the pull request that closes
     `docs/hitloc-reference.md`);
   - the `behind_cover` modifier's torso and leg factors, which whole-army totals cannot set
     (the head factor of 1.5 agrees with the Crimean returns);
-  - on the Great Redan battlefields, the siege guns of both sides, the French attack on the
-    Malakhov and the flanking fire of the batteries further along the line (only the guns in
-    the work and, on 18 June, a battery either side are on the map);
+  - on the Great Redan battlefields, the French attack on the Malakhov (the siege guns: the
+    British batteries were silent during both assaults, so they stay off; the Russian guns in
+    the work, a battery either side on 18 June and the Barrack Battery on 8 September are on
+    the map: 31 October 2026);
   - a deep ditch that needs ladders: done (units.md, *A deep ditch*), with the cost without
     ladders our reading, as no figures were found for how much slower it was without them.
 - **Sieges and ladders: to look at** (asked 29 October 2026). Gathered from the notes above and
@@ -323,11 +324,12 @@ When an item is done, delete it here and note it in the pull request that closes
     so the losses are the wrong way round: units.md). Surveyed (claude/sieges-ladders-survey.md in
     the project): still to do, what is behind a
     breach (a drop, a retrenchment, a mine: San Sebastián, Badajoz; Jacob's Ford's burning timber
-    wall), ladders too short (Burgos), the siege guns on the Redans, and a siege phase on the
-    travel map.
+    wall), ladders too short (Burgos; the Redan on 8 September too, where the ditch was about
+    fifteen feet deep and some ladders did not reach the top), and a siege phase on the travel
+    map. The siege guns on the Redans: done (31 October 2026).
   - **The siege before the storm** is off every field map. Jacob's Ford's map starts at the
     storm (its mine, the outer wall and the days before are not played); the Redan's battlefields
-    leave out both sides' siege guns and the batteries along the line.
+    leave out the British siege guns, which were silent during both assaults.
   - **No siege phase**: no sapping, mining, breaching by bombardment over days, or investment and
     hunger, on the field map or the travel map; a siege is a battle at the moment of assault.
   - **Wound tables:** the Crimean siege table is the only siege table (the Siege warfare tables
