@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-31",
+ "generated": "2026-11-01",
  "coins": {
   "civil_war": {
    "currencies": {
@@ -25586,6 +25586,18 @@
     "cover_side": "both",
     "blocks_melee": true,
     "breach": 12
+   },
+   "chevaux": {
+    "name": "Chevaux de frise",
+    "per_metre": 2.0,
+    "haul": 1.0,
+    "cross": null,
+    "cover": 10,
+    "cover_side": "both",
+    "blocks_melee": true,
+    "breach": 24,
+    "no_ladders": true,
+    "note": "A beam set with sword blades or spikes, chained across a breach (Badajoz 1812). Ladders get no one over it; axes clear it slowly (breach: ours, twice a palisade)."
    },
    "gate": {
     "name": "Gate",
