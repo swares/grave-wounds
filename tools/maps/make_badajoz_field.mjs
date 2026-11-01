@@ -125,7 +125,10 @@ writeField({
     { name: "The breaches given up", at: 120, note: "About midnight: some forty attacks on the breaches have failed (historyofwar; another account says eleven); the castle is carried. Wellington's order to fall back from the breaches came about two." },
   ],
   ends: { at: 150, why: "about two and a half hours: the breaches assaulted for about two hours (Wikipedia), the castle carried in that time (our reading)" },
-  objective: { at: [56, 38], side: 0, name: "the town of Badajoz", radius: 8 },
+  // The castle is the objective: the breaches held all night, and the town fell because the 3rd
+  // Division took the castle and held it until morning, when Philippon gave up (the 5th Division's
+  // entry at San Vicente is off the map). The French at the breaches hold there (orders.yaml).
+  objective: { at: [60, 11], side: 0, name: "the castle of Badajoz", radius: 6 },
   id: "badajoz-1812", name: "Badajoz, 6-7 April 1812 (the breaches and the castle)", sides: ["Allies", "French"], table: "peninsular-1808-14-all-hits",
   travel: { map: "albuera-1811", place: "Badajoz", within: 1, sides: ["Allies", "France"] },
   weather: "{cond: fair, wind: calm, light: night, ground: {mud: 0, snow: 0}}",
