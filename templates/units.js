@@ -3001,6 +3001,7 @@ function screened(us, i, a){                        // a steady friendly unit (n
 }
 function pullBack(us, i, j, [size, field, , known]){   // under threat from enemy j: a battery in action limbers; one limbered (or a tractor) goes to the hex in its allowance furthest from the enemy, keeping its facing (as commander._pull_back)
   const u = us[i];
+  if (u.emplaced) return null;                     // emplaced: it stays in its pits
   if (isBattery(u) && !u.limbered) return { act: "limber", target: j, back: true };
   const foe = knownAt(us, j, known).pos, occ = occupancy(us), here = hdist(u.pos, foe);
   const foes = new Set(Object.keys(occ).filter(k => us[occ[k]].side !== u.side));
@@ -3020,6 +3021,7 @@ function pullBack(us, i, j, [size, field, , known]){   // under threat from enem
 }
 function gunOrder(us, i, [size, field, stance, known]){   // holding, or with an enemy in reach, it unlimbers (unhooks); else a battery in action limbers, and one limbered or a tractor moves (as commander._gun_order)
   const u = us[i], battery = isBattery(u), [t, goal, inr] = gunGoal(us, u, field, known);
+  if (u.emplaced) return null;                     // an emplaced battery stays in action where it is
   if (stance === "hold" || inr){
     if (battery) return u.limbered ? { act: "unlimber", target: t } : null;
     return { act: "unhook", target: t };
