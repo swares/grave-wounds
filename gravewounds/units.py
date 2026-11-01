@@ -1416,6 +1416,36 @@ def in_contact(d: Data, units: list, occ: dict, i: int) -> bool:
     return any(units[j]["side"] != units[i]["side"] for j in _adjacent_units(d, units, occ, i))
 
 
+def engaged(d: Data, units: list, occ: dict, i: int, field: dict | None = None) -> bool:
+    """In contact with an enemy it can fight hand to hand: touching it at least once with no
+    work between that no one fights across (walled_off). Men who touch the enemy only across a
+    wall, palisade or barred gate (or a deep ditch with no ladders down) that neither side can
+    strike over still shoot, and are shot at: the men at the foot of the walls at Burgos and
+    Badajoz stood under fire."""
+    if not field or not field.get("works"):
+        return in_contact(d, units, occ, i)
+    u = units[i]
+    for row in footprint(d, u):
+        for h in row:
+            for dirn in range(6):
+                x = step(h, dirn)
+                j = occ.get(f"{x[0]},{x[1]}")
+                if j is not None and j != i and units[j]["side"] != u["side"] and not walled_off(d, field, u, units[j], h, x):
+                    return True
+    return False
+
+
+def walled_off(d: Data, field: dict | None, u: dict, e: dict, h, x) -> bool:
+    """Touching hexes h (unit u's) and x (enemy e's) with a work between that blocks hand to
+    hand (a wall, palisade, barred gate, or deep ditch with no ladders down), when neither has
+    reach-2 weapons nor ladders that get up it: no one fights across it."""
+    if not field or not _across(d, field, u, h, x, 1)[0]:
+        return False
+    if any(d.weapons[melee_weapon(d, w)].get("reach", 1) >= 2 for w in (u, e)):
+        return False
+    return not (ladders_reach(d, field, u, h, x) or ladders_reach(d, field, e, x, h))
+
+
 def strikes(d: Data, units: list, field: dict | None = None) -> list:
     """Who strikes whom this exchange: [{att, dfd, men, situation, rout}], in a fixed order.
     Each front hex of a unit not broken strikes the enemy hex across its front (its first
@@ -1673,7 +1703,8 @@ def _fvec(facing: int) -> tuple:
 
 def volleys(d: Data, units: list, field: dict | None = None) -> list:
     """Who shoots at whom: [{att, dfd, men, dist, cover, penalty, misfire, reach, from, to,
-    over}]. A unit with a missile weapon, not broken and not in contact, shoots at the nearest
+    over}]. A unit with a missile weapon, not broken and not in contact (engaged: touching the
+    enemy only across a wall no one fights over is not), shoots at the nearest
     enemy unit in range (and in sight, in the weather, with a line of fire: see line_fire) in
     front of it (ties: the first listed); over: % off for loosing high over units between. Its front hexes'
     first `shoot_ranks` ranks shoot. cover: % off from the works and ground at the nearest
@@ -1682,8 +1713,8 @@ def volleys(d: Data, units: list, field: dict | None = None) -> list:
     for i, u in enumerate(units):
         if u["state"] in ("broken", "fled") or u["men"] <= 0 or busy_digging(u):
             continue
-        if in_contact(d, units, occ, i) and not in_bunker(d, field, u):
-            continue
+        if engaged(d, units, occ, i, field) and not in_bunker(d, field, u):
+            continue                                # in contact across a wall no one fights over, it still shoots
         if "range" in d.weapons[u["weapon"]] and ammo_state(d, u) != "out" and not (u.get("resupplying") and ammo_full(d, u)):
             out += _volley_of(d, units, occ, field, i)
         out += _rider_volley(d, units, occ, field, i)
@@ -5041,7 +5072,7 @@ def cannonades(d: Data, units: list, field: dict | None = None) -> list:
     gunners' fuse setting (shell)."""
     occ, out, A = occupancy(d, units), [], d.units.get("artillery")
     for i, u in enumerate(units):
-        if not A or not _can_fire(d, u) or in_contact(d, units, occ, i):
+        if not A or not _can_fire(d, u) or engaged(d, units, occ, i, field):
             continue
         best = _target(d, units, i, field, occ)
         if best is not None:

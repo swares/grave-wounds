@@ -418,6 +418,13 @@ puts its front rank in (10 men), or its first two ranks with reach-2 weapons.
 **Who shoots.** A unit with missile weapons that is not in contact shoots at the nearest
 enemy in range ahead of it (in the half of the field its front faces). The front two ranks
 of each front hex shoot. Shots at a unit in open order count 0.8.
+- **Across a wall** (31 October 2026): a unit that touches the enemy only across a work no
+  one fights over is not in contact for shooting, so it shoots and is shot at (as are batteries).
+  Such a work is a wall, palisade or barred gate, or a deep ditch with no ladders down, when
+  neither side has reach-2 weapons and neither has ladders that get up it. It still cannot move
+  away, as a unit in contact. Before this, men at the foot of a wall and the men on top of it
+  neither fought nor shot: at Burgos 800 Portuguese stood under the hornwork for an hour and lost
+  1 to 4%, where the storm cost the Allies 421.
 
 **Line of fire.** A unit cannot shoot through another unit, friend or enemy, standing between
 it and its target: it shoots at the nearest enemy it has a clear line to. From high ground it

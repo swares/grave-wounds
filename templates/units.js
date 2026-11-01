@@ -761,6 +761,20 @@ function adjacentUnits(units, occ, i){
   return [...out].sort((a, b) => a - b);
 }
 const inContact = (units, occ, i) => adjacentUnits(units, occ, i).some(j => units[j].side !== units[i].side);
+function engaged(units, occ, i, field){            // in contact with an enemy it can fight hand to hand: touching it at least once with no work between that no one fights across (as units.engaged)
+  if (!field?.works) return inContact(units, occ, i);
+  const u = units[i];
+  for (const row of footprint(u)) for (const h of row) for (let dn = 0; dn < 6; dn++){
+    const x = step(h, dn), j = occ[hk(x)];
+    if (j !== undefined && j !== i && units[j].side !== u.side && !walledOff(field, u, units[j], h, x)) return true;
+  }
+  return false;
+}
+function walledOff(field, u, e, h, x){            // touching hexes h (u's) and x (e's) across a work that blocks hand to hand, with neither reach-2 weapons nor ladders that get up it: no one fights across it (as units.walled_off)
+  if (!field || !across(field, u, h, x, 1)[0]) return false;
+  if ([u, e].some(w => (FD.weapons[meleeWeapon(w)].reach || 1) >= 2)) return false;
+  return !(laddersReach(field, u, h, x) || laddersReach(field, e, x, h));
+}
 const out_ = u => u.state === "broken" || u.state === "fled" || u.men <= 0;
 function struckHex(units, occ, u, h){            // [enemy index, direction] across the first of h's front sides with a standing enemy
   for (const dn of [u.facing, u.facing + 1]){
@@ -871,7 +885,7 @@ function nearestAhead(u, front, fv, hexes, field, clear = null){  // [distance, 
 function volleys(units, field = null){            // [{att, dfd, men, dist, cover, penalty, misfire, reach, from, to, over}]; riders shooting from vehicles too (riders: true)
   const occ = occupancy(units), out = [];
   units.forEach((u, i) => {
-    if (out_(u) || busyDigging(u) || (inContact(units, occ, i) && !inBunker(field, u))) return;   // a bunker's men shoot out even in contact
+    if (out_(u) || busyDigging(u) || (engaged(units, occ, i, field) && !inBunker(field, u))) return;   // a bunker's men shoot out even in contact; across a wall no one fights over, men shoot
     if ("range" in FD.weapons[u.weapon] && ammoState(u) !== "out" && !(u.resupplying && ammoFull(u))) out.push(...volleyOf(units, occ, field, i));
     out.push(...riderVolley(units, occ, field, i));
   });
@@ -4112,7 +4126,7 @@ const canFire = u => isBattery(u) && !out_(u) && !u.abandoned && !u.limbered && 
 function cannonades(units, field = null){         // [{att, dfd, guns, rounds, dist, shot, cover, penalty, named, graze, behind, beyond, fuse, section}]: a battery's fire, and its section's
   const occ = occupancy(units), out = [], A = UD.artillery;
   units.forEach((u, i) => {
-    if (!A || !canFire(u) || inContact(units, occ, i)) return;
+    if (!A || !canFire(u) || engaged(units, occ, i, field)) return;
     const best = target(units, i, field, occ);
     if (best) out.push(...batteryFires(units, occ, field, i, best));
   });
