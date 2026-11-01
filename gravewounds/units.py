@@ -1486,6 +1486,49 @@ def in_bunker(d: Data, field: dict | None, u: dict) -> bool:
     return bool(field) and any(bunker_at(d, field, h) for row in footprint(d, u) for h in row)
 
 
+def _give_way_all(d: Data, us: list, field: dict | None, struck: list) -> list:
+    """Escalade: men on ladders who put down more of the defenders across the work they climb than
+    they lose to them in an exchange win a footing on it. The defending unit gives way a hex straight
+    back (keeping its facing) if it can stand there, and the stormers may climb over into the ground
+    it left. Not a broken, fled, emplaced or vehicle unit; once an exchange. A design estimate
+    (Badajoz 1812: Picton's escalade "appeared to be failing" until Ridge got a footing on the wall)."""
+    if not field:
+        return []
+    down = {}
+    for l in struck:
+        if l["kind"] == "melee" and not l.get("rout"):
+            down[(l["att"], l["dfd"])] = down.get((l["att"], l["dfd"]), 0) + l.get("down", 0)
+    occ, size, log, moved = occupancy(d, us), _size(d, field), [], set()
+    for i, u in enumerate(us):
+        if not has_ladders(u) or _out(u):
+            continue
+        for j in _adjacent_units(d, us, occ, i):
+            e = us[j]
+            if j in moved or e["side"] == u["side"] or _out(e) or e.get("emplaced") or e.get("vehicle"):
+                continue
+            if down.get((i, j), 0) <= down.get((j, i), 0) or not _climbs_at(d, field, u, e):
+                continue
+            back = step(e["pos"], (e["facing"] + 3) % 6)
+            if _fits(d, us, j, {**e, "pos": back}, size, field):
+                e["pos"] = back
+                moved.add(j)
+                log.append({"kind": "giveway", "unit": j, "by": i})
+    return log
+
+
+def _climbs_at(d: Data, field: dict, u: dict, e: dict) -> bool:
+    """Unit u is on its ladders against enemy e: touching it across a work that blocks hand to
+    hand, which u's ladders get it up."""
+    theirs = {f"{h[0]},{h[1]}" for row in footprint(d, e) for h in row}
+    for row in footprint(d, u):
+        for h in row:
+            for dirn in range(6):
+                x = step(h, dirn)
+                if f"{x[0]},{x[1]}" in theirs and _across(d, field, u, h, x, 1)[0] and ladders_reach(d, field, u, h, x):
+                    return True
+    return False
+
+
 def _out(u: dict) -> bool:
     """Broken, fled or with no men: out of the fight for striking and shooting."""
     return u["state"] in ("broken", "fled") or u["men"] <= 0
@@ -2577,6 +2620,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
             u.pop("hit", None)
     log += _morale_all(d, us, occ, before, (lost, dealt, flanked, hand, braced), rng, table, field)
     log += _suppress_all(d, us, under, rng)
+    log += _give_way_all(d, us, field, struck)
     log += _heroes_after(d, us, rng, [not lost[i] and not under[i] and not in_contact(d, us, occ, i) for i in range(len(us))], cauterises(d, table), posts_moving(field))
     log += _parties_after(d, us, field)
     log += _lying_after(d, us, table, rng)

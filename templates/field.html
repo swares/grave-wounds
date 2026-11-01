@@ -1156,6 +1156,7 @@ function sickText(h){                            // " · sick (dysentery), defen
 }
 const OTHER_LINES = {                            // kind: (line, nm) => {cls, text} (null: nothing to show)
   breach: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)} break through the ${(WK.edge_works[l.work] || WK.hex_works[l.work]).name.toLowerCase()}.` }),
+  giveway: (l, nm) => ({ cls: "morale", text: `${nm(l.by)} win a footing on the wall from their ladders: ${nm(l.unit)} give way a hex.` }),
   ladders: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)} put their ladders down into the deep ditch (${l.sides} hex side${l.sides === 1 ? "" : "s"}): it is crossed as an ordinary ditch there.` }),
   morale: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` }),
   herohit: l => ({ cls: "hero", text: heroHitText(l) }),

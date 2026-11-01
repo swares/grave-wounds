@@ -2146,6 +2146,15 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   gate between its own hexes, so before this (31 October 2026) only a unit one rank deep could
   climb at all (found building Badajoz, where the 3rd Division stopped at the castle's foot). Mounted units and guns cannot use ladders. Without ladders, a unit still stops at
   the foot, and only reach-2 weapons strike over. The GM marks the units that carried them.
+  - **A footing on the wall** (1 November 2026): when men on ladders put down more of the
+    defenders across the work they climb than they lose to those defenders in an exchange, the
+    defending unit gives way a hex straight back (keeping its facing) if it can stand there, and
+    the stormers may then climb over into the ground it left ("X win a footing on the wall from
+    their ladders: Y give way a hex"). Not a broken, fled, emplaced or vehicle unit; once an
+    exchange. Before this, defenders standing right behind a wall could never be climbed past:
+    the stormers can step over only into hexes clear of the enemy, and at Badajoz the 3rd
+    Division stood at the castle wall for a hundred exchanges with four men down. A design
+    estimate (Badajoz: Picton's escalade "appeared to be failing" until Ridge got a footing).
   - **Chevaux de frise** (works.yaml `chevaux`, `no_ladders`): a beam set with sword blades or
     spikes, chained across a breach. It stops hand to hand and passage like a palisade, gives a
     little cover (10%), and no ladders, long or short, get anyone over it: men stop at it and

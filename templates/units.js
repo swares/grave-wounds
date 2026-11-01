@@ -2035,6 +2035,26 @@ function firedOn(log){                            // the units fired on in an ex
   log.forEach(l => { if (l.dfd !== undefined && l.dfd !== null && (FIRE.has(l.kind) || (l.kind === "hero" && l.dist !== undefined))) out.add(l.dfd) });
   return out;
 }
+function giveWayAll(us, field, logged){            // escalade: men on ladders who put down more of the defenders across the work they climb than they lose to them win a footing; the defenders give way a hex straight back if they can stand there (as units._give_way_all)
+  if (!field) return [];
+  const down = new Map(), out = [], moved = new Set(), occ = occupancy(us), size = fieldSize(field);
+  for (const l of logged) if (l.kind === "melee" && !l.rout) down.set(l.att + "|" + l.dfd, (down.get(l.att + "|" + l.dfd) || 0) + (l.down || 0));
+  us.forEach((u, i) => {
+    if (!hasLadders(u) || out_(u)) return;
+    for (const j of adjacentUnits(us, occ, i)){
+      const e = us[j];
+      if (moved.has(j) || e.side === u.side || out_(e) || e.emplaced || e.vehicle) continue;
+      if ((down.get(i + "|" + j) || 0) <= (down.get(j + "|" + i) || 0) || !climbsAt(field, u, e)) continue;
+      const back = step(e.pos, mod6(e.facing + 3));
+      if (fits(us, j, { ...e, pos: back }, size, field)){ e.pos = back; moved.add(j); out.push({ kind: "giveway", unit: j, by: i }) }
+    }
+  });
+  return out;
+}
+function climbsAt(field, u, e){                    // u is on its ladders against e: touching it across a work that blocks hand to hand, which u's ladders get it up (as units._climbs_at)
+  const theirs = new Set(footprint(e).flat().map(hk));
+  return footprint(u).flat().some(h => [0, 1, 2, 3, 4, 5].some(dn => { const x = step(h, dn); return theirs.has(hk(x)) && across(field, u, h, x, 1)[0] && laddersReach(field, u, h, x) }));
+}
 function exchange(units, table, rng, field = null){   // -> {units, log}; works being breached are updated in field
   const us = units.map(copyUnit), n = us.length, log = [];
   const acc = { lost: new Array(n).fill(0), dead: new Array(n).fill(0), dealt: new Array(n).fill(0), flanked: new Array(n).fill(false), braced: new Array(n).fill(null) };
@@ -2060,7 +2080,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
     if (cut > 0) u.hit = true; else delete u.hit;   // it lost men this exchange: under fire, for the next moves
   });
-  log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table), postsMoving(field)),
+  log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...suppressAll(us, under, rng), ...giveWayAll(us, field, log.slice(from)), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table), postsMoving(field)),
     ...partiesAfter(us, field), ...lyingAfter(us, table, rng), ...postsAfter(us, field, table, rng), ...digAll(us), ...sappersAll(us, field));
   postsSettle(field);
   toilFought(us, fought);
