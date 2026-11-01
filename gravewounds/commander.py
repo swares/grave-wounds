@@ -1745,7 +1745,7 @@ def _narrowed(d: Data, us: list, i: int, t: int | None, ctx: tuple, o: dict | No
         return None
     out = try_at(least)
     if out is None and d.units["commander"].get("narrow_works") and _works_ahead(d, ctx[1], u):
-        out = try_at(1)   # held up at a gap in works: narrower still (commander.narrow_works)
+        out = try_at(d.units["commander"].get("narrow_works_floor", 1))   # held up at a gap in works: narrower still (commander.narrow_works)
     return out
 
 

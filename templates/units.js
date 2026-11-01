@@ -3696,7 +3696,7 @@ function narrowed(us, i, t, ctx, o){               // commander.narrow: attackin
     }
     return null;
   };
-  return tryAt(least) || (UD.commander.narrow_works && worksAhead(ctx[1], u) ? tryAt(1) : null);   // held up at a gap in works: narrower still (commander.narrow_works)
+  return tryAt(least) || (UD.commander.narrow_works && worksAhead(ctx[1], u) ? tryAt(UD.commander.narrow_works_floor ?? 1) : null);   // held up at a gap in works: narrower still (commander.narrow_works)
 }
 function worksAhead(field, u){                     // an intact edge work (wall, ditch, bank, palisade, gate) within a move of the unit's front (as commander._works_ahead)
   const E = field?.works?.edges;
