@@ -658,7 +658,10 @@ general. All its numbers are in units.yaml `commander`.
   the 11-hex unfinished wall all battle and nobody fought for it. Measured on 12 runs of every
   battlefield, planner off: 489 of 600 to 488 (Aljubarrota 10 to 11, Jacob's Ford 8 to 6; Sidon
   still 12 of 12, the Franks now losing 26% where they lost 15%, though the Damascenes still lose
-  under 1%). The log says when a unit closes its front, and to how many hexes.
+  under 1%). It never goes below 3 hexes that way (`narrow_works_floor`): at 1, Jacob's Ford's
+  breach-wide parties filed along the outside of the castle's west wall, nearer by distance but
+  never in (8 of 12 to 6; with the floor, 8 again, 490 of 600). The log says when a unit closes
+  its front, and to how many hexes.
 - **Orders from the accounts** (`data/orders.yaml`, researched in the project's
   hold-or-give-way notes, each battlefield with its source). Two kinds, for named units:
   - **hold**: the sources say the unit held its ground to the end of the fight the set-up
