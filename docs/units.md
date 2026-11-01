@@ -2137,8 +2137,9 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   minute. A bank or ditch under a breached palisade stays.
 - **Escalade:** a unit on foot marked **Ladders** (set-up only, on a field with a wall,
   palisade or gate; or `ladders: true` in a battlefield file) fights across a palisade, wall
-  or barred gate and climbs over it. Across it only a quarter of the front rank of each front
-  hex fights, at least one man (`escalade.share`), at −20% (`escalade.penalty`) besides the
+  or barred gate and climbs over it. Across it the front rank of each front hex fights from the
+  ladders (`escalade.share`: all of it since 1 November 2026, a quarter before, when the fight
+  at a wall came to about a blow an exchange each way), at −20% (`escalade.penalty`) besides the
   climb up a wall's height; the defenders' front rank strikes back at the men on the ladders.
   Stepping over the work costs 4 hexes of movement (`escalade.cross`), into hexes clear of
   the enemy. While it climbs, its ranks may stand on both sides of the work (its front over, the
@@ -2148,7 +2149,7 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   the foot, and only reach-2 weapons strike over. The GM marks the units that carried them.
   - **A footing on the wall** (1 November 2026): when men on ladders put down more of the
     defenders across the work they climb than they lose to those defenders in an exchange, the
-    defending unit gives way a hex straight back (keeping its facing) if it can stand there, and
+    defending unit gives way a hex away from the stormers (keeping its facing) if it can stand there, and
     the stormers may then climb over into the ground it left ("X win a footing on the wall from
     their ladders: Y give way a hex"). Not a broken, fled, emplaced or vehicle unit; once an
     exchange. Before this, defenders standing right behind a wall could never be climbed past:

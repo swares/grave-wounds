@@ -1,6 +1,6 @@
 # Hit Location & Wound Tables
 
-Generated 2026-10-29 from the data folder. Roll d100 (00 = 100).
+Generated 2026-11-01 from the data folder. Roll d100 (00 = 100).
 
 © 2026 Scott Wares. All rights reserved.
 
@@ -6668,6 +6668,7 @@ Penalties add up; each total is capped at -60%.
 | Ditch | edge | 2.5 man-h/m | +2 | - | -10% attacking up | - |
 | Earth bank | edge | 1 man-h/m | +1 | -20% (high side) | -10% attacking up | - |
 | Palisade | edge | 1.5 man-h/m (+1 hauled) | blocks | -40% | reach 2 only | 12 man-rounds |
+| Chevaux de frise | edge | 2 man-h/m (+1 hauled) | blocks | -10% | reach 2 only | 24 man-rounds |
 | Gate | edge | 6 man-h each | barred (open: free) | -40% | reach 2 only | 20 man-rounds |
 | Stone wall | edge | not built in the field | blocks | -50% | -20% attacking up; reach 2 only | - |
 | Stakes | hex | 1 man-h (+0.5 hauled) | +1 | - | no horses | 2 man-rounds |

@@ -2045,7 +2045,7 @@ function giveWayAll(us, field, logged){            // escalade: men on ladders w
       const e = us[j];
       if (moved.has(j) || e.side === u.side || out_(e) || e.emplaced || e.vehicle) continue;
       if ((down.get(i + "|" + j) || 0) <= (down.get(j + "|" + i) || 0) || !climbsAt(field, u, e)) continue;
-      const back = step(e.pos, mod6(e.facing + 3));
+      const back = step(e.pos, bearing(u.pos, e.pos));   // a hex away from the stormers
       if (fits(us, j, { ...e, pos: back }, size, field)){ e.pos = back; moved.add(j); out.push({ kind: "giveway", unit: j, by: i }) }
     }
   });

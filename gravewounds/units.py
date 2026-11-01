@@ -1488,8 +1488,8 @@ def in_bunker(d: Data, field: dict | None, u: dict) -> bool:
 
 def _give_way_all(d: Data, us: list, field: dict | None, struck: list) -> list:
     """Escalade: men on ladders who put down more of the defenders across the work they climb than
-    they lose to them in an exchange win a footing on it. The defending unit gives way a hex straight
-    back (keeping its facing) if it can stand there, and the stormers may climb over into the ground
+    they lose to them in an exchange win a footing on it. The defending unit gives way a hex away
+    from them (keeping its facing) if it can stand there, and the stormers may climb over into the ground
     it left. Not a broken, fled, emplaced or vehicle unit; once an exchange. A design estimate
     (Badajoz 1812: Picton's escalade "appeared to be failing" until Ridge got a footing on the wall)."""
     if not field:
@@ -1508,7 +1508,7 @@ def _give_way_all(d: Data, us: list, field: dict | None, struck: list) -> list:
                 continue
             if down.get((i, j), 0) <= down.get((j, i), 0) or not _climbs_at(d, field, u, e):
                 continue
-            back = step(e["pos"], (e["facing"] + 3) % 6)
+            back = step(e["pos"], bearing(u["pos"], e["pos"]))   # a hex away from the stormers
             if _fits(d, us, j, {**e, "pos": back}, size, field):
                 e["pos"] = back
                 moved.add(j)

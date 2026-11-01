@@ -87,7 +87,7 @@ strike, from the front rank, and striking up a bank or ditch costs its height. M
 cannot enter stakes, felled trees, wagons, wire, trenches, bunkers or wrecks.
 
 On the field map, men on foot the GM marks with **ladders** can escalade a palisade, wall or
-barred gate instead: a few men a hex fight from the ladders at {{f_esc_pen}}, the defenders
+barred gate instead: the front rank fights from the ladders at {{f_esc_pen}}, the defenders
 strike back at them, and once the far side is clear the unit can climb over at a cost of
 {{f_esc_cross}} hexes of movement. Ladders can be **short**: they still get men over a
 palisade or gate and down into a deep ditch, but they do not reach the top of a wall, and men
