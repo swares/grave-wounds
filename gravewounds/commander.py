@@ -1158,6 +1158,9 @@ def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
     first = _pursuit(d, us, i, ctx) or _sapper_order(d, us, i, t, ctx) or _route_order(d, us, i, ctx)   # in that order
     if first is not None:
         return first
+    b = _route_blocker(d, us, i, ctx[3])
+    if b is not None:
+        t = b                                       # its way on blocked: it goes for the enemy across it, not one elsewhere
     task = _task_order(d, us, i, t, ctx)
     if task is not None:
         return task[0]
@@ -1831,6 +1834,23 @@ def _route_order(d: Data, us: list, i: int, ctx: tuple) -> dict | None:
         return None
     size, field, stance, known, exchange = ctx
     return _toward(d, us, i, None, (size, {**(field or {}), "objective": via[0], "objective_radius": None}, stance, known, exchange), "advance")
+
+
+def _route_blocker(d: Data, us: list, i: int, known: dict | None) -> int | None:
+    """A unit on its route, out of contact, whose way on to its next waypoint is blocked: the
+    enemy it knows of across that way (within a hex of it, within its move), the nearest; else
+    None. Its target then, instead of the best-scoring enemy elsewhere (Badajoz: the 3rd Division
+    turned toward guns 30 hexes off behind the walls while the castle's garrison stood across its
+    way)."""
+    u = us[i]
+    if not u.get("via") or U.in_contact(d, us, U.occupancy(d, us), i):
+        return None
+    w = u["via"][0]
+    way = U.ray(u["pos"], w, U.hdist(u["pos"], w))[1:U.allowance(d, u) + 1]
+    on = [(U.hdist(u["pos"], m["pos"]), int(k)) for k, m in (known or {}).items()
+          if k.isdigit() and any(U.hdist(h, m["pos"]) <= 1 for h in way)]
+    on = [(dist, j) for dist, j in on if us[j]["side"] != u["side"] and us[j]["state"] not in ROUTED and us[j]["men"] > 0]
+    return min(on)[1] if on else None
 
 
 def _route_blocked(d: Data, us: list, i: int, w, known: dict | None) -> bool:

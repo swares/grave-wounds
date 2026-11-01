@@ -529,7 +529,10 @@ general. All its numbers are in units.yaml `commander`.
     (3) hexes of it. It shoots at what it can reach as it goes, as every unit does, but turns
     aside only for an enemy in contact with it or one it knows of across its way within its
     move (a hex either side of the straight line to the waypoint); then it fights as any other
-    unit, and takes up its route again when the way is clear. With no waypoints left it is
+    unit, with that enemy across its way as its target (the nearest, if more than one; 1 November
+    2026: before, it went for the best-scoring enemy anywhere, and at Badajoz the 3rd Division
+    turned toward guns 30 hexes off behind the walls while the castle's garrison stood across its
+    way), and takes up its route again when the way is clear. With no waypoints left it is
     ordered as any other. A unit with a route is never held back in reserve. Design choice:
     the battlefield says where the flank march went, so the commander does not guess.
   - Of hexes that score the same and cost the same, it takes the one nearest the straight

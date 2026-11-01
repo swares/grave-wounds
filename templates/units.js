@@ -3347,7 +3347,8 @@ function seesFrom(field, u, ranked, foes){        // [rank, enemy, facing] of th
 const unsteady = (us, i, t) => (!us[i].prone && !us[i].vehicle && underFire(us, i) ? { act: "ground", target: t } : null);   // a shaken unit holds, going to ground under missile fire (not vehicles) (as commander._unsteady)
 function unitOrder(us, i, ctx, roll){            // one unit's order, or null (it holds); ctx [size, field, stance, known, exchange]; a unit gone round on a plan's envelopment attacks, whatever its side's stance
   if (enveloping(us[i])) ctx = [ctx[0], ctx[1], "attack", ctx[3], ctx[4]];
-  const u = us[i], C = UD.commander, obj = objectiveOf(ctx[1]), t = focusOf(us, i, ctx[3], aiTarget(us, i, ctx[3], ctx[1]));
+  const u = us[i], C = UD.commander, obj = objectiveOf(ctx[1]);
+  let t = focusOf(us, i, ctx[3], aiTarget(us, i, ctx[3], ctx[1]));
   if (u.state !== "steady") return unsteady(us, i, t);
   const away = withdrawOrder(us, i, ctx);
   if (away) return away;
@@ -3361,6 +3362,8 @@ function unitOrder(us, i, ctx, roll){            // one unit's order, or null (i
   if (sap) return sap;
   const route = routeOrder(us, i, ctx);
   if (route) return route;
+  const b = routeBlocker(us, i, ctx[3]);
+  if (b !== null) t = b;                           // its way on blocked: it goes for the enemy across it, not one elsewhere
   const task = taskOrder(us, i, t, ctx);
   if (task) return task[0];
   if ((obj !== null || ctx[2] === "hold") && digs(us, i, ctx)) return { act: "dig", target: t };
@@ -3745,6 +3748,14 @@ function routeOrder(us, i, ctx){                   // a unit on its route (via: 
   if (!via.length || routeBlocked(us, i, via[0], ctx[3])) return null;
   const [size, field, stance, known, exchange] = ctx;
   return toward(us, i, null, [size, { ...field, objective: via[0], objective_radius: null }, stance, known, exchange], "advance");
+}
+function routeBlocker(us, i, known){               // a unit on its route, out of contact, whose way on is blocked: the nearest enemy it knows of across that way (within a hex of it, within its move), else null; its target then (as commander._route_blocker)
+  const u = us[i];
+  if (!u.via?.length || inContact(us, occupancy(us), i)) return null;
+  const w = u.via[0], way = ray(u.pos, w, hdist(u.pos, w)).slice(1, allowance(u) + 1);
+  const on = Object.entries(known || {}).filter(([k, m]) => /^\d+$/.test(k) && way.some(h => hdist(h, m.pos) <= 1)).map(([k, m]) => [hdist(u.pos, m.pos), Number(k)])
+    .filter(([, j]) => us[j].side !== u.side && !ROUTED.has(us[j].state) && us[j].men > 0).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  return on.length ? on[0][1] : null;
 }
 function routeBlocked(us, i, w, known){            // in contact, or an enemy it knows of within its move of the straight way to waypoint w (within a hex of it) (as commander._route_blocked)
   const u = us[i];
