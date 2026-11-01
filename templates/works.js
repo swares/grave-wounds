@@ -113,11 +113,12 @@ function facing(target, attacker, cols, rows){
   const best = Math.min(...ns.map(n => hexDistance(n, attacker)));
   return ns.filter(n => hexDistance(n, attacker) === best);
 }
-function edgeCover(works, target, n){              // [cover, type]: the best cover the works on this side give the target
+function edgeCover(works, target, n, foot = false){   // [cover, type]: the best cover the works on this side give the target; foot: the shooter stands at n, so a work whose high side is his (a wall he is on) covers no one at its foot
   let best = 0, what = null;
   for (const e of edgeItems(works, target, n)){
     const s = specOf("edge", e);
     if ((s.cover_side || "both") === "high" && e.high !== hkey(target)) continue;
+    if (foot && e.high === hkey(n)) continue;          // shot at from the top of the wall he stands under
     if ((s.cover || 0) > best){ best = s.cover; what = e.type }
   }
   return [best, what];
@@ -128,7 +129,7 @@ function missileCover(works, attacker, target, cols, rows){
   const it = hexItem(works, target);
   if (it) take(specOf("hex", it).cover_here || 0, it.type);
   for (const n of facing(target, attacker, cols, rows)){
-    take(...edgeCover(works, target, n));
+    take(...edgeCover(works, target, n, n[0] === attacker[0] && n[1] === attacker[1]));
     const h = n[0] === attacker[0] && n[1] === attacker[1] ? null : hexItem(works, n);
     if (h) take(specOf("hex", h).cover_behind || 0, h.type);
   }

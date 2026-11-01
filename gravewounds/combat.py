@@ -973,7 +973,9 @@ def facing(target, attacker, cols: int, rows: int) -> list:
 
 
 def missile_cover(d: Data, works, attacker, target, cols: int, rows: int) -> dict:
-    """Cover a target has against a missile attack: {cover (% off the attack), work}."""
+    """Cover a target has against a missile attack: {cover (% off the attack), work}. A man at
+    the foot of a wall (or bank) gets no cover from it against a man shooting down from its
+    high side, right above him."""
     best, what = 0, None
     it = _hex_item(d, works, target)
     if it and _spec(d, "hex", it).get("cover_here", 0) > best:
@@ -983,7 +985,8 @@ def missile_cover(d: Data, works, attacker, target, cols: int, rows: int) -> dic
             s = _spec(d, "edge", e)
             if s.get("cover_side", "both") == "high" and e.get("high") != hkey(target):
                 continue
-            if s.get("cover", 0) > best:
+            if list(n) == list(attacker) and e.get("high") == hkey(n):
+                continue                            # shot at from the top of the wall he stands under: no cover at its foot
                 best, what = s["cover"], e["type"]
         if list(n) != list(attacker):
             it = _hex_item(d, works, n)

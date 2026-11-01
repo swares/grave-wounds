@@ -422,7 +422,9 @@ of each front hex shoot. Shots at a unit in open order count 0.8.
   one fights over is not in contact for shooting, so it shoots and is shot at (as are batteries).
   Such a work is a wall, palisade or barred gate, or a deep ditch with no ladders down, when
   neither side has reach-2 weapons and neither has ladders that get up it. It still cannot move
-  away, as a unit in contact. Before this, men at the foot of a wall and the men on top of it
+  away, as a unit in contact. Men at the foot of a wall get no cover from it against men
+  shooting down from its high (inner) side in the hex right above them; the men on top keep
+  theirs, and shots from further off count the wall as before. Before this, men at the foot of a wall and the men on top of it
   neither fought nor shot: at Burgos 800 Portuguese stood under the hornwork for an hour and lost
   1 to 4%, where the storm cost the Allies 421.
 
