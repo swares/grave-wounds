@@ -42,7 +42,7 @@ const ravelin = (c, r) => r >= 54 && r <= 60 && Math.abs(c - 54.5) <= (60 - r) *
 
 function kind(c, r){
   if (breach(c, r)) return "x";
-  if (inCastle(c, r)) return speckle(c, r, 4) ? "T" : "h";        // the Alcazaba on the Cerro de la Muela
+  if (inCastle(c, r)) return c > EF ? "h" : speckle(c, r, 4) ? "T" : "h";   // the Alcazaba on the Cerro de la Muela (its outwork open ground: a column climbing in pays the worst of its hexes, and buildings there would cost more than a move)
   if (inTown(c, r)){
     if (r >= SF - 4 || inTrinidad(c, r) || inSantaMaria(c, r)) return ".";   // the ramparts and the ground behind them
     return c % 7 === 0 || r % 6 === 0 ? "." : "T";                 // streets and houses
