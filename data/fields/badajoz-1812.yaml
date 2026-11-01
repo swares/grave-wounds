@@ -131,7 +131,9 @@ units:
   - {name: "French at the Trinidad breach", side: 1, men: 600, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 6, pos: [68, 53], facing: 4, size: battalion}
   - {name: "French at the curtain breach", side: 1, men: 400, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 5, pos: [54, 48], facing: 4, size: battalion}
   - {name: "French at the Santa Maria breach", side: 1, men: 600, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 5, pos: [41, 51], facing: 0, size: battalion}
-  - {name: "Guns on the Santa Maria bastion", side: 1, men: 60, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 3, pos: [37, 55], facing: 5, size: battery}
+  - {name: "Guns on the Santa Maria bastion", side: 1, men: 60, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 3, pos: [37, 55], facing: 5, emplaced: true, size: battery}
+  - {name: "Guns on the Trinidad's flank", side: 1, men: 60, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 3, pos: [63, 49], facing: 4, emplaced: true, size: battery}
+  - {name: "Guns on the Santa Maria's flank", side: 1, men: 60, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 3, pos: [40, 47], facing: 5, emplaced: true, size: battery}
   - {name: "The castle's garrison (French and Hesse-Darmstadt)", side: 1, men: 450, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 6, pos: [68, 10], facing: 5, size: battalion}
   - {name: "Philippon's reserve in the town", side: 1, men: 500, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 6, pos: [55, 38], facing: 4, size: battalion}
   - {name: "4th Division storming party (with ladders)", side: 0, men: 500, quality: regular, weapon: musket_smoothbore, kit: none, formation: open, width: 7, pos: [65, 64], facing: 1, via: [[68, 60], [68, 52]], ladders: true, size: battalion}

@@ -2959,6 +2959,9 @@ It is drawn by `tools/maps/make_albuera_field.mjs`.
   it all battle (`lit`, the radii ours; see weather.md, *Fires*).
 - The garrison on this front (ours, of Philippon's 5,000): 600 at the Trinidad breach, 400 at the
   curtain, 600 at the Santa Maria with guns on that bastion, 450 in the castle, 500 in reserve.
+  Guns on the flank of each bastion (emplaced, as are those on the Santa Maria) sweep the ditch
+  with canister: "showers of grape from the flank swept the ditch" (Napier; where and how many
+  ours; project doc "siege-defences-research").
   The French at the breaches hold there (`data/orders.yaml`): they held them all night.
 - The storm, each division's storming party 500 with ladders (as the plan of attack gave it), then
   its two brigades (ours): the 4th Division on the Trinidad and the curtain, the Light Division on

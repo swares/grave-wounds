@@ -104,7 +104,11 @@ const units = [
   unit("French at the Trinidad breach", FR, 600, LINE, [6, 65, 53]),
   unit("French at the curtain breach", FR, 400, LINE, [5, 52, 48]),
   at("French at the Santa Maria breach", FR, 600, LINE, 5, [41, 51], 0),
-  at("Guns on the Santa Maria bastion", FR, 60, GUNS, 3, [37, 55], 5),
+  at("Guns on the Santa Maria bastion", FR, 60, { ...GUNS, emplaced: true }, 3, [37, 55], 5),
+  // "Showers of grape from the flank swept the ditch" (Napier): guns on each bastion's flank, firing
+  // canister along the ditch before the curtain and the breaches (where and how many: ours)
+  at("Guns on the Trinidad's flank", FR, 60, { ...GUNS, emplaced: true }, 3, [63, 49], 4),
+  at("Guns on the Santa Maria's flank", FR, 60, { ...GUNS, emplaced: true }, 3, [40, 47], 5),
   at("The castle's garrison (French and Hesse-Darmstadt)", FR, 450, LINE, 6, [68, 10], 5),
   unit("Philippon's reserve in the town", FR, 500, LINE, [6, 52, 38]),
   // the storm: each division's storming party (500 with 12 ladders), then its two brigades (ours)
