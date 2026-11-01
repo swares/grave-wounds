@@ -1410,3 +1410,18 @@ At Tumbledown, three Argentine engineers at Left Flank's side counted as flankin
 | 25% | 464 | the same, without Lundy's Lane |
 
 Tumbledown got worse, so the instant break by a handful wasn't the main cause of its misses. Agincourt, which the losing check was meant to help, got worse too. Nothing was built. The narrower losing check for large units (counting the men in contact) was not tried.
+
+## The losing check by a margin, measured and not built, 1 November 2026
+
+A unit in contact that loses more men than it deals in an exchange checks (−5 a man, at most −30), and a single man more is enough. At Sidon 500 sergeants broke over two men lost to a 3-hex column of horse. The test: the check fires only when the unit lost at least 2 more men than it dealt (`morale.losing_margin`). Planner off, 12 runs of every battlefield, against main (488 of 600):
+
+| | Runs matched |
+| --- | --- |
+| Main | 488 |
+| Margin of 2 | 469 |
+
+- **Worse:** Jacob's Ford 6 to 0, Dornach 10 to 3, Agincourt 7 to 3, Babuna 10 to 7, Mogadishu 11 to 9, and Badajoz, Keating and Snipe −1.
+- **Better:** Cisterna 10 to 12, Aljubarrota, the June Redan, Topolčani and Hue +1.
+- **Unchanged:** Towton, Lundy's Lane (0) and Sidon (12; the Damascenes now lose 3.8% where they lost 0.9%).
+
+The medieval storms and melees depend on the single-man check. With a margin, defenders hold too long and attackers stall. Nothing was built. With the per-1% scaling, dropping the check, and the flank by share, this is the fourth contact-scale variant measured and dropped.

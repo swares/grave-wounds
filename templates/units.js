@@ -3686,14 +3686,28 @@ function narrowed(us, i, t, ctx, o){               // commander.narrow: attackin
   if (o && AI_MOVES.has(o.act)) return null;
   const tu = knownAt(us, t, ctx[3]), now = unitGap(u, tu), obj = objectiveOf(ctx[1]);
   const least = Math.ceil((u.width0 ?? u.width) * UD.commander.narrow_to);   // never narrower than this share of the front it started with
-  for (const q of [3, 2, 1]){
-    const w = Math.max(least, 1, Math.ceil(u.width * q / 4));
-    if (w >= u.width) continue;
-    const trial = us.map((x, k) => (k === i ? { ...x, width: w } : x));
-    const o2 = obj === null ? bestOrder(trial, i, t, ctx) : forObjective(trial, i, t, ctx);
-    if (o2 && AI_MOVES.has(o2.act) && unitGap({ ...u, width: w, pos: o2.pos, facing: o2.facing }, tu) < now) return { ...o2, width: w, width0: u.width0 ?? u.width };
+  const tryAt = floor => {
+    for (const q of [3, 2, 1]){
+      const w = Math.max(floor, 1, Math.ceil(u.width * q / 4));
+      if (w >= u.width) continue;
+      const trial = us.map((x, k) => (k === i ? { ...x, width: w } : x));
+      const o2 = obj === null ? bestOrder(trial, i, t, ctx) : forObjective(trial, i, t, ctx);
+      if (o2 && AI_MOVES.has(o2.act) && unitGap({ ...u, width: w, pos: o2.pos, facing: o2.facing }, tu) < now) return { ...o2, width: w, width0: u.width0 ?? u.width };
+    }
+    return null;
+  };
+  return tryAt(least) || (UD.commander.narrow_works && worksAhead(ctx[1], u) ? tryAt(UD.commander.narrow_works_floor ?? 1) : null);   // held up at a gap in works: narrower still (commander.narrow_works)
+}
+function worksAhead(field, u){                     // an intact edge work (wall, ditch, bank, palisade, gate) within a move of the unit's front (as commander._works_ahead)
+  const E = field?.works?.edges;
+  if (!E) return false;
+  const front = footprint(u)[0] || [], r = allowance(u);
+  for (const [k, its] of Object.entries(E)){
+    if (!its.some(it => intact("edge", it))) continue;
+    const h = k.split("|")[0].split(",").map(Number);
+    if (front.some(f => hdist(f, h) <= r)) return true;
   }
-  return null;
+  return false;
 }
 function pursuit(us, i, ctx){                      // a steady unit that fights hand to hand goes after a broken enemy: horse one within a charge of it with no standing enemy as near, foot one within its move nearer than any standing enemy; veterans give it up after commander.pursuit.rally moves with a standing enemy in reach (as commander._pursuit)
   const u = us[i], P = UD.commander.pursuit;
