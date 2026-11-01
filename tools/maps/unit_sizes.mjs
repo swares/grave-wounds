@@ -44,6 +44,16 @@ export const UNIT_SIZES = {
     "3rd Division, first brigade": "brigade",
     "3rd Division, second brigade": "brigade",
   },
+  "burgos-1812": {
+    "Guns in San Miguel (seven 4- and 6-pounders)": "battery",
+    "1st battalion, 34th Line (west half)": "company",
+    "1st battalion, 34th Line (east half)": "company",
+    "Guns on the castle": "battery",
+    "1/42nd, the firing party": "company",
+    "Pack's Portuguese, west column (short ladders)": "battalion",
+    "Pack's Portuguese, east column (short ladders)": "battalion",
+    "Light companies of the 1/42nd, 1/24th and 1/79th (Cocks)": "company",
+  },
   "albuera-1811": {
     "Zayas's Spanish": "brigade",
     "Colborne's brigade": "brigade",

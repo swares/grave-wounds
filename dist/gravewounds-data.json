@@ -6558,6 +6558,7 @@
    "aljubarrota-1385": "portuguese",
    "albuera-1811": "spanish",
    "badajoz-1812": "spanish",
+   "burgos-1812": "spanish",
    "anzio-1944": "italian",
    "beaumont-hamel-1916": [
     "picard",
@@ -25607,6 +25608,7 @@
     "breach": null,
     "charge": 6,
     "shelled": true,
+    "tall": true,
     "note": "Town and castle walls: already there, not built in the field. No axe opens them: demolition charges or heavy shells do, and before those only ladders get men over."
    }
   },

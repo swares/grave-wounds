@@ -2497,10 +2497,12 @@ def _objective_errors(f: dict, where: str) -> list[str]:
 
 
 def _flag_errors(f: dict, where: str) -> list[str]:
-    """A battlefield's units' true-or-false marks: fac (a forward air controller), ladders."""
+    """A battlefield's units' true-or-false marks: fac (a forward air controller), ladders (or
+    `short`: ladders that do not reach the top of a wall)."""
     names = {"fac": "fac (a forward air controller)", "ladders": "ladders"}
-    return [f"{where}: unit {u.get('name')}: {names[k]} must be true or false" for u in f.get("units", []) for k in names
-            if k in u and not isinstance(u[k], bool)]
+    return [f"{where}: unit {u.get('name')}: {names[k]} must be true or false" + (" (or short)" if k == "ladders" else "")
+            for u in f.get("units", []) for k in names
+            if k in u and not isinstance(u[k], bool) and not (k == "ladders" and u[k] == "short")]
 
 
 def _fc_errors(d: Data, f: dict, where: str) -> list[str]:

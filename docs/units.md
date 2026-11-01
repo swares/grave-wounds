@@ -418,6 +418,18 @@ puts its front rank in (10 men), or its first two ranks with reach-2 weapons.
 **Who shoots.** A unit with missile weapons that is not in contact shoots at the nearest
 enemy in range ahead of it (in the half of the field its front faces). The front two ranks
 of each front hex shoot. Shots at a unit in open order count 0.8.
+- **Across a wall** (31 October 2026): a unit that touches the enemy only across a work no
+  one fights over is not in contact for shooting, so it shoots and is shot at (as are batteries).
+  Such a work is a wall, palisade or barred gate, or a deep ditch with no ladders down, when
+  neither side has reach-2 weapons and neither has ladders that get up it. It still cannot move
+  away, as a unit in contact. Men at the foot of a wall get no cover from it against men
+  shooting down from its high (inner) side in the hex right above them; the men on top keep
+  theirs, and shots from further off count the wall as before. Before this, men at the foot of a wall and the men on top of it
+  neither fought nor shot: at Burgos 800 Portuguese stood under the hornwork for an hour and lost
+  1 to 4%, where the storm cost the Allies 421. Measured on 12 runs of every battlefield: only
+  Burgos and the two Redans changed (8 September: the British won 1 of 12, against none, and lost
+  40% of their men against 48%). Badajoz, Sidon and Jacob's Ford did not move: their stormers
+  are not held at a wall touching its defenders, so their troubles lie elsewhere.
 
 **Line of fire.** A unit cannot shoot through another unit, friend or enemy, standing between
 it and its target: it shoots at the nearest enemy it has a clear line to. From high ground it
@@ -1678,7 +1690,7 @@ out. All of this is design estimates (`data/units.yaml`).
   the map marks it ◠ like an emplaced gun. Unlike guns it can get up and move, leaving its
   holes (coming back to them, it is dug in again). In set-up **Dig in** starts the unit dug
   in at once. Design estimates (`dig_in` in `data/units.yaml`).
-- **Emplaced guns**: in set-up only, **Emplace** digs in a gun unit (anti-tank guns,
+- **Emplaced guns** (`emplaced: true` in a battlefield file too): in set-up only, **Emplace** digs in a gun unit (anti-tank guns,
   anti-aircraft guns, machine-gun teams, batteries) for the battle. While it stands, it
   counts as gone to ground: shots at it lose 15%, it is hidden, shellfire strikes it less
   and it holds better. It cannot move all battle, though it can turn, and it cannot limber
@@ -2130,6 +2142,15 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   gate between its own hexes, so before this (31 October 2026) only a unit one rank deep could
   climb at all (found building Badajoz, where the 3rd Division stopped at the castle's foot). Mounted units and guns cannot use ladders. Without ladders, a unit still stops at
   the foot, and only reach-2 weapons strike over. The GM marks the units that carried them.
+  - **Short ladders** (`ladders: short` in a battlefield file; the GM presses **Ladders**
+    twice). They get men over a palisade or barred gate and down into a deep ditch like any
+    ladders, but they do not reach the top of a **tall** work (works.yaml `tall`: a wall), so
+    against a wall the unit stops at the foot as if it had none: no fighting from the ladders, no
+    climbing over, and its ranks may not stand across the wall. Burgos, 1812: at San Miguel
+    (19/20 September) the Portuguese laid their ladders against the 25-foot escarp and "they were
+    found somewhat short" (Oman, *A History of the Peninsular War*, vol. 6), and the attack
+    there failed while the light companies got in over the palisade at the open back. The game
+    draws no heights, so a ladder is long enough or short, and the battlefield or GM says which.
 - **A deep ditch** (`deep: true` on a battlefield's ditch; the two Great Redan battlefields):
   a siege ditch too deep to jump down into. Without ladders, crossing a side of it costs 4 hexes
   of movement (works.yaml `deep`) instead of a ditch's 2, so with the bank behind it a step
@@ -2931,6 +2952,34 @@ none of 12. The slaughter in the breaches is not played yet. Building it found t
 one rank deep could not escalade at all (*Escalade*).
 
 It is drawn by `tools/maps/make_badajoz_field.mjs`.
+
+**Burgos, 19-20 September 1812: the hornwork of San Miguel** (`data/fields/burgos-1812.yaml`).
+The field is 80 × 66 hexes, about 870 by 625 yards (800 by 570 m), north at the top (project
+doc "burgos-research"; Oman, *A History of the Peninsular War*, vol. 6, ch. II).
+- The hornwork on its hill: a front with a demi-bastion at each end, its escarp 25 feet of earth
+  drawn as wall edges (no axe opens it) with a ditch of 10 feet before it (not deep), and the
+  gorge at the back closed only by a palisade 7 feet high, with the postern (a gate) in it. The
+  corner of the castle's works is to the south-west, about 300 yards off across a ravine.
+- Bright moonlight.
+- The French: the 1st battalion of the 34th Line (500) on the parapet either side of the seven
+  field guns (emplaced, as are the castle's guns, which command the back slope).
+- The Allies: the firing party of the 1/42nd (300), two columns of Pack's Portuguese (400
+  each, ours: no source reached gives them) with **short ladders** (see *Escalade*) against the
+  demi-bastions, and Major Somers Cocks's light companies of the 1/42nd, 1/24th and 1/79th (140,
+  with ladders), sent by a route round the east flank, over the palisade and in.
+- The wound tables are the Peninsular War's. It is not on any travel map yet.
+
+How it plays, a first cut (12 runs, the commander on both sides: the Allies take it in 2, and
+lose 59% of their men against the French 9%): the front attack fails as it did. The Portuguese stop at the foot of the escarp with their short ladders and are shot down
+from the parapet, and with the firing party they lose a quarter to a third of their men and run
+(the Allies lost 421, 204 of them in the 1/42nd and 113 Portuguese: ours are too many Portuguese
+and too few Highlanders). The light companies get over the palisade and stand inside the gorge,
+but the 34th, facing the front, never turns on them, and 140 men do not attack 500, so the
+hornwork is mostly not taken and the French lose little, where in fact they ran for the postern and
+lost 198 with 60 prisoners. What the battalion did when enemy appeared behind it inside its own
+work is not in the rules (enemy behind a unit does not shake it).
+
+It is drawn by `tools/maps/make_burgos_field.mjs`.
 
 **Cowpens, 17 January 1781** (`data/fields/cowpens-1781.yaml`). The field is 120 × 100 hexes,
 about 1,310 yards (1,200 m) east to west and 950 yards (870 m) north to south, with north at the

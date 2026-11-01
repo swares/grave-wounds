@@ -572,7 +572,7 @@ def _cross(x, w: dict | None = None) -> str:
     if w.get("breach"):
         return "cannot be crossed (breach it)"
     if w.get("charge") or w.get("shelled"):
-        return "cannot be crossed (ladders; from 1914, charges or heavy shells)"
+        return "cannot be crossed (ladders" + (", not short ones" if w.get("tall") else "") + "; from 1914, charges or heavy shells)"
     return "cannot be crossed"
 
 

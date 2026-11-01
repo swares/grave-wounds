@@ -324,9 +324,15 @@ When an item is done, delete it here and note it in the pull request that closes
     so the losses are the wrong way round: units.md). Surveyed (claude/sieges-ladders-survey.md in
     the project): still to do, what is behind a
     breach (a drop, a retrenchment, a mine: San Sebastián, Badajoz; Jacob's Ford's burning timber
-    wall), ladders too short (Burgos; the Redan on 8 September too, where the ditch was about
-    fifteen feet deep and some ladders did not reach the top), and a siege phase on the travel
-    map. The siege guns on the Redans: done (31 October 2026).
+    wall), and a siege phase on the travel map. The siege guns on the Redans: done (31 October
+    2026). Ladders too short: done (31 October 2026: `ladders: short`, units.md *Escalade*, and
+    the hornwork of San Miguel at Burgos as a battlefield, a first cut). Building it found that
+    men touching across a wall no one fights over neither fought nor shot; they now shoot, with
+    no cover at the foot of a wall against men on top of it (units.md, *Who shoots*).
+  - **Enemy inside a work, behind its defenders** (found at Burgos, 31 October 2026): the light
+    companies get over the gorge's palisade and stand behind the 34th, which never turns and does
+    not run, where the battalion ran for the postern. Enemy behind a unit does not shake it.
+    Needs sources (garrisons that broke when the enemy got in behind them) before a rule.
   - **The siege before the storm** is off every field map. Jacob's Ford's map starts at the
     storm (its mine, the outer wall and the days before are not played); the Redan's battlefields
     leave out the British siege guns, which were silent during both assaults.

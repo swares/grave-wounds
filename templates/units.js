@@ -761,6 +761,20 @@ function adjacentUnits(units, occ, i){
   return [...out].sort((a, b) => a - b);
 }
 const inContact = (units, occ, i) => adjacentUnits(units, occ, i).some(j => units[j].side !== units[i].side);
+function engaged(units, occ, i, field){            // in contact with an enemy it can fight hand to hand: touching it at least once with no work between that no one fights across (as units.engaged)
+  if (!field?.works) return inContact(units, occ, i);
+  const u = units[i];
+  for (const row of footprint(u)) for (const h of row) for (let dn = 0; dn < 6; dn++){
+    const x = step(h, dn), j = occ[hk(x)];
+    if (j !== undefined && j !== i && units[j].side !== u.side && !walledOff(field, u, units[j], h, x)) return true;
+  }
+  return false;
+}
+function walledOff(field, u, e, h, x){            // touching hexes h (u's) and x (e's) across a work that blocks hand to hand, with neither reach-2 weapons nor ladders that get up it: no one fights across it (as units.walled_off)
+  if (!field || !across(field, u, h, x, 1)[0]) return false;
+  if ([u, e].some(w => (FD.weapons[meleeWeapon(w)].reach || 1) >= 2)) return false;
+  return !(laddersReach(field, u, h, x) || laddersReach(field, e, x, h));
+}
 const out_ = u => u.state === "broken" || u.state === "fled" || u.men <= 0;
 function struckHex(units, occ, u, h){            // [enemy index, direction] across the first of h's front sides with a standing enemy
   for (const dn of [u.facing, u.facing + 1]){
@@ -783,8 +797,8 @@ function unitGroups(units, occ, i, groups, field){   // unit i's front hexes' st
     const [j, dn] = hit;
     if (bunkerAt(field, h) || bunkerAt(field, step(h, dn))) return;   // no blows into or out of an intact bunker: it must be stormed
     const [blocked, pen0, stk] = across(field, u, h, step(h, dn), reach);
-    const climbing = blocked && reach < 2 && hasLadders(u), pen = pen0 + (climbing ? UD.escalade.penalty : 0);
-    const defends = blocked && reach < 2 && !climbing && hasLadders(units[j]);   // the defenders on the wall strike at the men on the ladders, a rank of them
+    const climbing = blocked && reach < 2 && laddersReach(field, u, h, step(h, dn)), pen = pen0 + (climbing ? UD.escalade.penalty : 0);
+    const defends = blocked && reach < 2 && !climbing && laddersReach(field, units[j], h, step(h, dn));   // the defenders on the wall strike at the men on the ladders, a rank of them
     let n = Math.min(defends ? abreast : per, men[k]);
     if (blocked && !defends) n = reach >= 2 ? Math.min(abreast, men[k]) : climbers(men[k], abreast, climbing);
     if (busy.has(k)) n = Math.max(0, n - Math.min(abreast, men[k]));   // the front rank is hacking at the works
@@ -871,7 +885,7 @@ function nearestAhead(u, front, fv, hexes, field, clear = null){  // [distance, 
 function volleys(units, field = null){            // [{att, dfd, men, dist, cover, penalty, misfire, reach, from, to, over}]; riders shooting from vehicles too (riders: true)
   const occ = occupancy(units), out = [];
   units.forEach((u, i) => {
-    if (out_(u) || busyDigging(u) || (inContact(units, occ, i) && !inBunker(field, u))) return;   // a bunker's men shoot out even in contact
+    if (out_(u) || busyDigging(u) || (engaged(units, occ, i, field) && !inBunker(field, u))) return;   // a bunker's men shoot out even in contact; across a wall no one fights over, men shoot
     if ("range" in FD.weapons[u.weapon] && ammoState(u) !== "out" && !(u.resupplying && ammoFull(u))) out.push(...volleyOf(units, occ, field, i));
     out.push(...riderVolley(units, occ, field, i));
   });
@@ -2388,8 +2402,8 @@ function canEnter(field, u, h){                  // no wagons or water; for hors
 }
 const wallBetween = (field, a, b) => edgeItems(field.works, a, b).some(it => { const s = specOf("edge", it); return s.cross === null || s.cross === undefined || !!s.gate });
 function stands(field, u, hexes){                 // ground it can stand on, and no palisade or wall running through it, unless it carries ladders (escalade: its ranks on both sides of the work it climbs) (as units._stands)
-  const keys = new Set(hexes.map(hk)), climbs = hasLadders(u);
-  return hexes.every(h => canEnter(field, u, h) && (climbs || [0, 1, 2, 3, 4, 5].every(dn => { const x = step(h, dn); return !keys.has(hk(x)) || !wallBetween(field, h, x) })));
+  const keys = new Set(hexes.map(hk)), climbs = hasLadders(u), short = shortLadders(u);
+  return hexes.every(h => canEnter(field, u, h) && ((climbs && !short) || [0, 1, 2, 3, 4, 5].every(dn => { const x = step(h, dn); return !keys.has(hk(x)) || !wallBetween(field, h, x) || (climbs && !tallBetween(field, h, x)) })));
 }
 const leavesDisabled = u => !!UD.commander.leave_disabled && !!u.vehicle && (u.immobile || 0) > 0 && vehiclesLeft(u) > u.immobile;   // attacking, a vehicle unit with some vehicles that can still move leaves its immobilised ones (commander.leave_disabled) (as commander._leaves_disabled)
 function abandonImmobile(u){                       // a vehicle unit leaves its immobilised vehicles: their crews leave the fight unhurt (bailed)
@@ -2461,13 +2475,16 @@ function fits(units, i, u, size, field = null){
   if (!hexes.every(h => onMap(h, size) && occ[hk(h)] === undefined)) return false;
   return !field || stands(field, u, hexes);
 }
-const hasLadders = u => !!u.ladders && !u.mounted && !u.vehicle;   // a unit on foot marked with ladders (as units.has_ladders)
+const hasLadders = u => !!u.ladders && !u.mounted && !u.vehicle;   // a unit on foot marked with ladders, long or short (as units.has_ladders)
+const shortLadders = u => hasLadders(u) && u.ladders === "short";   // they do not reach the top of a tall work, a wall (as units.short_ladders)
+const tallBetween = (field, a, b) => !!field && edgeItems(field.works, a, b).some(it => !!specOf("edge", it).tall);   // a tall work (works.yaml tall: a wall) between a and b (as units._tall_between)
+const laddersReach = (field, u, a, b) => hasLadders(u) && !(shortLadders(u) && tallBetween(field, a, b));   // u's ladders get it up the work between a and b (as units.ladders_reach)
 const STEPS = [];                                  // while a commander orders its side (command): Map field -> Map "mover a>b" -> movement; nothing it orders changes the works, ground or weather (as units._STEPS)
 function moverOf(u){                               // what a step's movement depends on in the unit: vehicle, horse, ladders or foot (as units._mover)
   if (u.vehicle) return "v";
   if (u.mounted) return "m";
   if (u.no_deep) return "d";                       // a charge without ladders: a deep ditch stops it
-  return hasLadders(u) ? "l" : "f";
+  return hasLadders(u) ? (shortLadders(u) ? "s" : "l") : "f";
 }
 function unitStepCost(field, u, a, b){            // movement for the middle hex from a to b: works, ground, deep going; null if it cannot; remembered while a commander orders its side (as units.step_cost)
   if (!field) return 1;
@@ -2479,7 +2496,7 @@ function unitStepCost(field, u, a, b){            // movement for the middle hex
 }
 function stepOf(field, u, a, b){                  // unitStepCost, worked out (as units._step_cost)
   if (!canEnter(field, u, b)) return null;
-  const c = stepCost(field.works, a, b, hasLadders(u) ? UD.escalade.cross : null, !!u.no_deep);
+  const c = stepCost(field.works, a, b, hasLadders(u) ? UD.escalade.cross : null, !!u.no_deep, shortLadders(u));
   if (c === null) return null;
   const going = u.vehicle ? UD.vehicles.ground[groundKey(field, b)] : groundAt(field, b).move;
   return c + going - 1 + deepGoing(field.weather?.ground) + (coldOf(field)?.move || 0) + (lightOf(field)?.move || 0);
@@ -2984,6 +3001,7 @@ function screened(us, i, a){                        // a steady friendly unit (n
 }
 function pullBack(us, i, j, [size, field, , known]){   // under threat from enemy j: a battery in action limbers; one limbered (or a tractor) goes to the hex in its allowance furthest from the enemy, keeping its facing (as commander._pull_back)
   const u = us[i];
+  if (u.emplaced) return null;                     // emplaced: it stays in its pits
   if (isBattery(u) && !u.limbered) return { act: "limber", target: j, back: true };
   const foe = knownAt(us, j, known).pos, occ = occupancy(us), here = hdist(u.pos, foe);
   const foes = new Set(Object.keys(occ).filter(k => us[occ[k]].side !== u.side));
@@ -3003,6 +3021,7 @@ function pullBack(us, i, j, [size, field, , known]){   // under threat from enem
 }
 function gunOrder(us, i, [size, field, stance, known]){   // holding, or with an enemy in reach, it unlimbers (unhooks); else a battery in action limbers, and one limbered or a tractor moves (as commander._gun_order)
   const u = us[i], battery = isBattery(u), [t, goal, inr] = gunGoal(us, u, field, known);
+  if (u.emplaced) return null;                     // an emplaced battery stays in action where it is
   if (stance === "hold" || inr){
     if (battery) return u.limbered ? { act: "unlimber", target: t } : null;
     return { act: "unhook", target: t };
@@ -4109,7 +4128,7 @@ const canFire = u => isBattery(u) && !out_(u) && !u.abandoned && !u.limbered && 
 function cannonades(units, field = null){         // [{att, dfd, guns, rounds, dist, shot, cover, penalty, named, graze, behind, beyond, fuse, section}]: a battery's fire, and its section's
   const occ = occupancy(units), out = [], A = UD.artillery;
   units.forEach((u, i) => {
-    if (!A || !canFire(u) || inContact(units, occ, i)) return;
+    if (!A || !canFire(u) || engaged(units, occ, i, field)) return;
     const best = target(units, i, field, occ);
     if (best) out.push(...batteryFires(units, occ, field, i, best));
   });
@@ -4275,7 +4294,7 @@ function makeUnit(o, id, table){                   // a new unit as the GM or a 
 }
 function unitMarks(o){                             // a drawn unit's optional marks, copied as given
   return { ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.armour ? { armour: o.armour } : {}),
-    ...(o.via?.length ? { via: o.via.map(h => [...h]) } : {}), ...unitOrders(o), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}),
+    ...(o.via?.length ? { via: o.via.map(h => [...h]) } : {}), ...unitOrders(o), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: o.ladders === "short" ? "short" : true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}),
     ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}), ...(o.fights_on ? { fights_on: true } : {}), ...(o.unfit != null ? { unfit: o.unfit } : {}), ...(o.he === false ? { he: false } : {}), ...(o.asFought ? { asFought: true } : {}) };
 }
 const unitOrders = o => ({ ...(o.hold ? { hold: true } : {}), ...(o.withdraw ? { withdraw: { ...o.withdraw } } : {}) });   // its orders from the accounts

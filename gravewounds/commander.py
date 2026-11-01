@@ -649,9 +649,11 @@ def _pull_back(d: Data, us: list, i: int, j: int, ctx: tuple) -> dict | None:
     """Gun unit i under threat from enemy j: a battery in action limbers; one limbered (or a
     tractor towing guns) goes to the hex in its allowance furthest from the enemy (where last
     seen), keeping its facing and touching no enemy (then the cheapest, then the lowest row and
-    column). None if it can get no further away."""
+    column). None if it can get no further away, or is emplaced (it stays in its pits)."""
     size, field, _, known, _ = ctx
     u = us[i]
+    if u.get("emplaced"):
+        return None
     if U.is_battery(d, u) and not u.get("limbered"):
         return {"act": "limber", "target": j, "back": True}
     foe = _where(us, j, known)["pos"]
@@ -677,9 +679,11 @@ def _pull_back(d: Data, us: list, i: int, j: int, ctx: tuple) -> dict | None:
 def _gun_order(d: Data, us: list, i: int, ctx: tuple) -> dict | None:
     """A battery or a tractor towing guns: holding, it unlimbers (or unhooks); attacking, with
     an enemy in reach it unlimbers (unhooks), else a battery in action limbers and one limbered
-    (or a tractor) moves toward its goal (_gun_move)."""
+    (or a tractor) moves toward its goal (_gun_move). An emplaced battery stays in action where it is."""
     size, field, stance, known, _ = ctx
     u = us[i]
+    if u.get("emplaced"):
+        return None
     battery = U.is_battery(d, u)
     t, goal, inr = _gun_goal(d, us, u, field, known)
     if stance == "hold" or inr:

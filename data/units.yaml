@@ -109,7 +109,9 @@ breach_share: 0.5
 # climbs over it. Across it only `share` of the front rank of each front hex fights (the men on
 # the ladders, at least one a hex), at `penalty` % off their attack besides any climb up at men
 # above; stepping over it costs `cross` hexes of movement (and, as any move, the hexes beyond
-# must be clear of the enemy). Design estimates.
+# must be clear of the enemy). Design estimates. `ladders: short`: ladders that do not reach the
+# top of a tall work (works.yaml `tall`: a wall); against one the unit is as if it had none, but
+# they still serve over a palisade or gate and down into a deep ditch (Burgos 1812).
 escalade: {share: 0.25, penalty: 20, cross: 4}
 
 # ---------- guns ----------

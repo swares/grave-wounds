@@ -901,12 +901,13 @@ def clear_ground(ground: dict, centre, radius: int, cols: int, rows: int) -> Non
                 ground["levels"].pop(k, None)
 
 
-def step_cost(d: Data, works, a, b, ground=None, climb: int | None = None, deep_stops: bool = False) -> int | None:
+def step_cost(d: Data, works, a, b, ground=None, climb: int | None = None, deep_stops: bool = False, short: bool = False) -> int | None:
     """Movement to step from hex a to the next hex b: 1, plus crossing the works on the
     edge and entering the works in b, plus its ground and any climb. None if a work stops him.
     climb: with ladders, a work that cannot be crossed (a wall, a palisade, a barred gate) costs
     this instead, and a deep ditch only its `cross` (as one with ladders already down in it).
-    deep_stops: a deep ditch with no ladders down in it stops him (a charge without ladders)."""
+    deep_stops: a deep ditch with no ladders down in it stops him (a charge without ladders).
+    short: his ladders are short: a tall work (a wall) still stops him."""
     cost = 1 + ground_step(d, ground, a, b)
     for it in _edge_items(d, works, a, b):
         s = _spec(d, "edge", it)
@@ -916,7 +917,7 @@ def step_cost(d: Data, works, a, b, ground=None, climb: int | None = None, deep_
                 return None
             c = s["deep"]
         if c is None:
-            c = climb
+            c = None if short and s.get("tall") else climb
         if c is None:
             return None
         cost += c
@@ -972,7 +973,9 @@ def facing(target, attacker, cols: int, rows: int) -> list:
 
 
 def missile_cover(d: Data, works, attacker, target, cols: int, rows: int) -> dict:
-    """Cover a target has against a missile attack: {cover (% off the attack), work}."""
+    """Cover a target has against a missile attack: {cover (% off the attack), work}. A man at
+    the foot of a wall (or bank) gets no cover from it against a man shooting down from its
+    high side, right above him."""
     best, what = 0, None
     it = _hex_item(d, works, target)
     if it and _spec(d, "hex", it).get("cover_here", 0) > best:
@@ -982,6 +985,8 @@ def missile_cover(d: Data, works, attacker, target, cols: int, rows: int) -> dic
             s = _spec(d, "edge", e)
             if s.get("cover_side", "both") == "high" and e.get("high") != hkey(target):
                 continue
+            if list(n) == list(attacker) and e.get("high") == hkey(n):
+                continue                            # shot at from the top of the wall he stands under: no cover at its foot
             if s.get("cover", 0) > best:
                 best, what = s["cover"], e["type"]
         if list(n) != list(attacker):
