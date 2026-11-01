@@ -8,10 +8,10 @@ name: strike
 
 on:
   pull_request:
-    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "templates/campaign.js", "templates/travelrules.js", "templates/travelday.js", "templates/ranks.js", "templates/purse.js", "templates/xp.js", "templates/events.js", "templates/camp.js", "templates/measure.js", "templates/lethality.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**", "tools/campaign/**", "tools/travel/**", "worker/**", "templates/**", "tools/guide/**"]
+    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "templates/campaign.js", "templates/travelrules.js", "templates/travelday.js", "templates/ranks.js", "templates/purse.js", "templates/xp.js", "templates/events.js", "templates/camp.js", "templates/measure.js", "templates/lethality.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**", "tools/campaign/**", "tools/travel/**", "worker/**", "templates/**", "tools/guide/**", ".github/workflows/strike.yml"]
   push:
     branches: [main]
-    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "templates/campaign.js", "templates/travelrules.js", "templates/travelday.js", "templates/ranks.js", "templates/purse.js", "templates/xp.js", "templates/events.js", "templates/camp.js", "templates/measure.js", "templates/lethality.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**", "tools/campaign/**", "tools/travel/**", "worker/**", "templates/**", "tools/guide/**"]
+    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "templates/campaign.js", "templates/travelrules.js", "templates/travelday.js", "templates/ranks.js", "templates/purse.js", "templates/xp.js", "templates/events.js", "templates/camp.js", "templates/measure.js", "templates/lethality.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**", "tools/campaign/**", "tools/travel/**", "worker/**", "templates/**", "tools/guide/**", ".github/workflows/strike.yml"]
   workflow_dispatch:
 
 permissions:
