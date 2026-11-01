@@ -12,7 +12,8 @@
 # What happened, briefly: after three days' bombardment the French stormed the Malakhov, east
 # of the Redan, at noon and held it. On their signal the British went over from the advanced
 # trench, about 200 yards out: a covering party of riflemen, the ladder party, then the
-# stormers of the Light and 2nd Divisions. Many fell crossing the open ground; the ladders were
+# stormers of the Light and 2nd Divisions. Many fell crossing the open ground, swept with grape
+# from the guns on the Redan's flank and from the Barrack Battery to the west; the ladders were
 # too few and some too short, but men got down into the ditch and up onto the salient. There
 # they stopped and fired from the parapet instead of pressing on, while the Russians fired back
 # from behind their breastwork and traverses and their reserves came up. The supports came
@@ -134,8 +135,9 @@ units:
   - {name: "2nd Division stormers (the Buffs, 41st and 62nd)", side: 0, men: 500, quality: green, weapon: rifle_musket, kit: none, formation: close, width: 16, pos: [57, 68], facing: 1, size: regiment}
   - {name: "Supports (7th, 23rd, 33rd, 34th and 77th)", side: 0, men: 1500, quality: green, weapon: rifle_musket, kit: none, formation: close, width: 30, pos: [49, 74], facing: 1, size: brigade}
   - {name: "Vladimirski Regiment, at the salient", side: 1, men: 400, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 12, pos: [50, 45], facing: 4, size: battalion}
-  - {name: "Guns on the left face", side: 1, men: 40, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 3, pos: [36, 35], facing: 4, size: battery}
-  - {name: "Guns on the right face", side: 1, men: 40, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 3, pos: [63, 35], facing: 4, size: battery}
+  - {name: "Guns on the right face", side: 1, men: 40, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 3, pos: [36, 35], facing: 4, size: battery}
+  - {name: "Guns on the left face", side: 1, men: 40, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 3, pos: [63, 35], facing: 4, size: battery}
   - {name: "Vladimirski Regiment, behind the breastwork", side: 1, men: 1400, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 26, pos: [50, 24], facing: 4, size: regiment}
-  - {name: "Riflemen on the line to the west", side: 1, men: 300, quality: regular, weapon: rifle_musket, kit: none, formation: open, width: 20, pos: [22, 34], facing: 4, size: company}
+  - {name: "Riflemen on the line to the west", side: 1, men: 300, quality: regular, weapon: rifle_musket, kit: none, formation: open, width: 10, pos: [11, 34], facing: 4, size: company}
+  - {name: "Barrack Battery, on the line to the west", side: 1, men: 60, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 4, pos: [18, 34], facing: 4, size: battery}
   - {name: "Iakutski and Selenginski regiments (reserve)", side: 1, men: 2000, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 40, pos: [50, 12], facing: 4, size: brigade}

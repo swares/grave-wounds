@@ -12,7 +12,9 @@
 // The point of the salient is drawn cut off square, a front of 12 hexes (120 m): a simplification
 // for the field map, whose units stand in straight lines and could not otherwise reach the men
 // in a sharp point. The Russian infantry are on smoothbore muskets (most of them still were), their riflemen on
-// rifles; the British on the rifle-musket. The siege guns on both sides are not on the map.
+// rifles; the British on the rifle-musket. The Barrack Battery, on the line to the west, is on the
+// map (Russell: it swept the stormers with grape). The British siege batteries are not: they ceased
+// firing at noon, when the French went in, and the Redan's own heavy guns are the guns on its faces.
 // The ditch is drawn deep (works.yaml `deep`): without ladders it costs most of a move to get
 // down into and out of; the ladder party marked as carrying ladders put them down into
 // it where they reach it, and from then on everyone crosses it there as an ordinary ditch (Delhi
@@ -33,10 +35,13 @@ const units = [
   unit("2nd Division stormers (the Buffs, 41st and 62nd)", BRITISH, 500, { ...RIFLE, quality: "green", size: "regiment" }, [16, 50, 68]),
   unit("Supports (7th, 23rd, 33rd, 34th and 77th)", BRITISH, 1500, { ...RIFLE, quality: "green", size: "brigade" }, [30, 35, 74]),
   unit("Vladimirski Regiment, at the salient", RUSSIANS, 400, { ...MUSKET, size: "battalion" }, [12, 44, 45]),
-  unit("Guns on the left face", RUSSIANS, 40, { ...GUNS, size: "battery" }, [3, 35, 35]),
-  unit("Guns on the right face", RUSSIANS, 40, { ...GUNS, size: "battery" }, [3, 62, 35]),
+  unit("Guns on the right face", RUSSIANS, 40, { ...GUNS, size: "battery" }, [3, 35, 35]),   // the faces named from inside the work: the right face is the west one
+  unit("Guns on the left face", RUSSIANS, 40, { ...GUNS, size: "battery" }, [3, 62, 35]),
   unit("Vladimirski Regiment, behind the breastwork", RUSSIANS, 1400, { ...MUSKET, size: "regiment" }, [26, 37, 24]),
-  unit("Riflemen on the line to the west", RUSSIANS, 300, { ...MUSKET, weapon: "rifle_musket", formation: "open", size: "company" }, [20, 12, 34]),
+  unit("Riflemen on the line to the west", RUSSIANS, 300, { ...MUSKET, weapon: "rifle_musket", formation: "open", size: "company" }, [10, 6, 34]),
+  // Russell: the stormers "were swept by the guns of the Barrack Battery and by several pieces on the
+  // proper right of the Redan, loaded heavily with grape"; the Barrack Battery stood on the line west of the Redan
+  unit("Barrack Battery, on the line to the west", RUSSIANS, 60, { ...GUNS, size: "battery" }, [4, 16, 34]),
   unit("Iakutski and Selenginski regiments (reserve)", RUSSIANS, 2000, { ...MUSKET, size: "brigade" }, [40, 30, 12]),
 ];
 
@@ -64,7 +69,8 @@ marked as carrying ladders, and where it reaches the ditch the ladders go down a
 What happened, briefly: after three days' bombardment the French stormed the Malakhov, east
 of the Redan, at noon and held it. On their signal the British went over from the advanced
 trench, about 200 yards out: a covering party of riflemen, the ladder party, then the
-stormers of the Light and 2nd Divisions. Many fell crossing the open ground; the ladders were
+stormers of the Light and 2nd Divisions. Many fell crossing the open ground, swept with grape
+from the guns on the Redan's flank and from the Barrack Battery to the west; the ladders were
 too few and some too short, but men got down into the ditch and up onto the salient. There
 they stopped and fired from the parapet instead of pressing on, while the Russians fired back
 from behind their breastwork and traverses and their reserves came up. The supports came
