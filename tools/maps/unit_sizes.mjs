@@ -46,7 +46,8 @@ export const UNIT_SIZES = {
   },
   "burgos-1812": {
     "Guns in San Miguel (seven 4- and 6-pounders)": "battery",
-    "1st battalion, 34th Line": "battalion",
+    "1st battalion, 34th Line (west half)": "company",
+    "1st battalion, 34th Line (east half)": "company",
     "Guns on the castle": "battery",
     "1/42nd, the firing party": "company",
     "Pack's Portuguese, west column (short ladders)": "battalion",

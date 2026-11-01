@@ -73,9 +73,11 @@ const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", 
 const WEST = [[36, 18]], EAST = [[54, 18]];      // the two Portuguese columns, to the foot of each demi-bastion
 const GORGE_ROUTE = [[66, 22], [66, 42], [50, 42], [46, 33]];   // the light companies: round the east flank, up the back slope, over the palisade and in
 const units = [
-  unit("Guns in San Miguel (seven 4- and 6-pounders)", FR, 70, GUNS, [4, 43, FRONT]),
-  unit("1st battalion, 34th Line", FR, 500, LINE, [12, 39, FRONT + 2]),
-  unit("Guns on the castle", FR, 60, GUNS, [3, 10, 58]),
+  unit("Guns in San Miguel (seven 4- and 6-pounders)", FR, 70, { ...GUNS, emplaced: true }, [4, 43, FRONT]),   // emplaced: in their embrasures, they stay put
+  // the battalion on the parapet either side of the guns
+  unit("1st battalion, 34th Line (west half)", FR, 250, LINE, [6, 36, FRONT]),
+  unit("1st battalion, 34th Line (east half)", FR, 250, LINE, [6, 49, FRONT]),
+  unit("Guns on the castle", FR, 60, { ...GUNS, emplaced: true }, [3, 10, 58]),
   unit("1/42nd, the firing party", AL, 300, LINE, [8, 41, 7]),
   unit("Pack's Portuguese, west column (short ladders)", AL, 400, { ...LINE, ladders: "short", via: WEST }, [5, 33, 6]),
   unit("Pack's Portuguese, east column (short ladders)", AL, 400, { ...LINE, ladders: "short", via: EAST }, [5, 53, 6]),
