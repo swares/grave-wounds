@@ -98,7 +98,7 @@ const LIGHT = { ...LINE, quality: "veteran" };
 const LADDERS = { ...LINE, ladders: true };
 const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", formation: "battery", mounted: false };   // ten crew to a gun
 const TRINIDAD = [[68, 60], [68, 52]], CURTAIN = [[55, 56], [55, 48]], SANTA_MARIA = [[50, 53], [45, 52]];   // to the foot of each breach, then over its top
-const CASTLE = [[79, 24], [74, 21], [74, 16], [66, 10], [60, 22]];   // over the Rivillas by the dyke, up the hill to the outwork's south face, over it, through the castle, out by the gate
+const CASTLE = [[79, 24], [74, 21], [74, 10], [66, 10], [60, 22]];   // over the Rivillas by the dyke, up the hill, over the outwork's south face (row 14) to a hex inside it, through the castle, out by the gate (a waypoint counts as reached within commander.route.reach, 3 hexes, so the one inside stands 4 rows past the wall: one just outside it was dropped before the column climbed)
 const units = [
   // the garrison on this front (ours: Philippon's 5,000 held the whole circuit and San Cristobal)
   unit("French at the Trinidad breach", FR, 600, LINE, [6, 65, 53]),
@@ -115,14 +115,15 @@ const units = [
   // in columns a breach wide or less (8 hexes): a wider block cannot get through the gap
   // Each goes by its route (via) to its breach or wall, as the plan of attack sent it: walls stand
   // between every column and the town, and with no route a column halts at the first wall in its way.
-  unit("4th Division storming party (with ladders)", AL, 500, { ...LADDERS, formation: "open", via: TRINIDAD }, [7, 62, 64]),
+  // the storming parties were picked volunteers: veterans, all three
+  unit("4th Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", formation: "open", via: TRINIDAD }, [7, 62, 64]),
   unit("4th Division, first brigade", AL, 1500, { ...LINE, via: TRINIDAD }, [8, 61, 69]),
   unit("4th Division, second brigade", AL, 1500, { ...LINE, via: CURTAIN }, [8, 61, 75]),
   unit("Light Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", formation: "open", via: SANTA_MARIA }, [7, 46, 64]),
   unit("Light Division, first brigade", AL, 1000, { ...LIGHT, via: SANTA_MARIA }, [8, 45, 69]),
   unit("Light Division, second brigade", AL, 1000, { ...LIGHT, via: CURTAIN }, [8, 45, 75]),
   // the 3rd Division escaladed the castle as a division: every unit of it carries ladders
-  at("3rd Division storming party (with ladders)", AL, 500, { ...LADDERS, via: CASTLE }, 5, [84, 18], 2),
+  at("3rd Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", via: CASTLE }, 5, [84, 18], 2),
   at("3rd Division, first brigade", AL, 1250, { ...LADDERS, via: CASTLE }, 5, [87, 9], N),
   at("3rd Division, second brigade", AL, 1250, { ...LADDERS, via: CASTLE }, 5, [87, 0], N),
 ];
