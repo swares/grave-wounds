@@ -2974,7 +2974,8 @@ It is drawn by `tools/maps/make_albuera_field.mjs`.
 hand, about 4 minutes to watch with **Run**.
 
 How it plays, a second cut (12 runs, the commander on both sides, 1 November 2026): the Allies take
-the castle in 2 of 12 (history: they took it), and lose 9% of their men against the French 57%
+the castle in 2 of 12 (history: they took it), and lose 13% of their men against the French 52%
+(9% and 57% before the breaches were drawn as bare slopes)
 (history: about 4,700 Allied killed and wounded, nearly half the stormers, and about 1,400 French).
 The breaches hold, as they did: the storming parties stop at the sword blades in the light of the
 fires and are shot down. The 3rd Division gets over the outwork's wall in about half the runs, but

@@ -119,10 +119,10 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 1.69
+      "ratio": 1.25
      },
      "drew": 0.0,
-     "lost_share": 0.094,
+     "lost_share": 0.132,
      "side": "Allies",
      "stance": "attack",
      "won": 0.17
@@ -130,16 +130,16 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 0.62
+      "ratio": 0.82
      },
      "drew": 0.0,
-     "lost_share": 0.575,
+     "lost_share": 0.524,
      "side": "French",
      "stance": "hold",
      "won": 0.83
     }
    ],
-   "stamp": "e18c6fc77369"
+   "stamp": "a0b70e43702b"
   },
   "beaumont-hamel-1916": {
    "runs": 12,
