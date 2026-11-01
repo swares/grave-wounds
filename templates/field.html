@@ -319,7 +319,7 @@ legend{padding:0}
         <button class="small" id="btn-reserve" hidden title="Held in the enemy commander's reserve: it holds until the commander commits it (when a unit breaks or the enemy comes close). Marking any unit takes the choice of reserves from the commander.">Hold in reserve</button>
         <button class="small" id="btn-sappers" hidden title="Engineers or pioneers: during the battle they can lay a hidden minefield in the row of hexes ahead of their front, or lift a lane through a known one">Sappers</button>
         <label class="sr" for="sel-sap">Sapper work</label><select class="small" id="sel-sap" hidden style="width:auto" title="On their own move, before moving and out of contact: lay mines in the row ahead of their front, or lift the known minefield there. They neither move nor fire while they work."></select>
-        <button class="small" id="btn-ladders" hidden title="Scaling ladders: across a wall, palisade or barred gate a few men a hex fight from the ladders, and the unit can climb over it; at a deep ditch they go down into it for everyone">Ladders</button>
+        <button class="small" id="btn-ladders" hidden title="Scaling ladders: across a wall, palisade or barred gate a few men a hex fight from the ladders, and the unit can climb over it; at a deep ditch they go down into it for everyone. Press again for short ladders, which do not reach the top of a wall">Ladders</button>
         <button class="small" id="btn-fac" hidden title="A forward air controller talks aircraft onto a target he can see: they scatter less, and may attack close to their own men">Air controller</button>
         <label class="sr" for="sel-medics">Medics</label><select class="small" id="sel-medics" hidden style="width:auto" title="Medics with the unit (followers of a healing career, chosen before the battle): they give its heroes first aid at their quality's chance"></select>
         <label class="sr" for="sel-ammo">Ammunition</label><select class="small" id="sel-ammo" hidden style="width:auto" title="How much ammunition the unit has (set before the battle; in play it runs down as the unit shoots)"></select>
@@ -2701,7 +2701,7 @@ const META_FLAGS = [["breach", "breaching"], ["assault", "storming"], ["prone", 
 const fatigueMeta = u => (u.fatigue ? " · " + WXD.fatigue.levels[u.fatigue].name.toLowerCase() : "");   // " · weary"
 function unitMeta(u){
   if (u.state === "fled") return "fled";
-  const down = u.down ? " · " + u.down + " down" : "", flags = META_FLAGS.filter(([k]) => u[k]).map(([, t]) => " · " + t).join("") + (dugHere(u) ? " · dug in" : "") + fatigueMeta(u);
+  const down = u.down ? " · " + u.down + " down" : "", flags = META_FLAGS.filter(([k]) => u[k]).map(([k, t]) => " · " + (k === "ladders" && u.ladders === "short" ? "short ladders" : t)).join("") + (dugHere(u) ? " · dug in" : "") + fatigueMeta(u);
   let mg = isMg(u.weapon) ? " · " + gunsText(mgGuns(u), "gun") : "";
   if (isAtGun(u)) mg = " · " + gunsText(atGuns(u), "gun") + ", " + (atRounds(u) ? atRounds(u) + " rounds" : "no rounds left") + (u.resupplying ? ", resupplying" : "");
   if (u.vehicle) mg = vehicleMeta(u);
@@ -3084,14 +3084,16 @@ function renderLadders(u, setup){                 // Ladders: on a unit on foot,
   b.hidden = !u || !!u.vehicle || !!u.mounted || isGun(u.weapon) || !hasWalls();
   if (b.hidden) return;
   b.disabled = !setup;
-  b.textContent = u.ladders ? "No ladders" : "Ladders";
+  b.textContent = !u.ladders ? "Ladders" : u.ladders === "short" ? "No ladders" : "Short ladders";   // a cycle: none, ladders, short ladders
   b.setAttribute("aria-pressed", String(!!u.ladders));
 }
-function toggleLadders(){
+function toggleLadders(){                          // none, then ladders, then short ladders, then none again
   const u = selUnit(); if (!u || S.phase !== "setup") return;
-  if (u.ladders) delete u.ladders; else u.ladders = true;
+  if (!u.ladders) u.ladders = true; else if (u.ladders === "short") delete u.ladders; else u.ladders = "short";
   const E = FD.units.escalade;
-  S.msg = u.ladders ? `${u.name} carry scaling ladders: across a wall, palisade or barred gate ${Math.round(100 * E.share)}% of the front rank fight from the ladders at −${E.penalty}%, and they can climb over it (${nOf(E.cross, "hex", "hexes")} of movement); at a deep ditch they put them down into it, and it is crossed there as an ordinary ditch.` : `${u.name} have no ladders.`;
+  S.msg = !u.ladders ? `${u.name} have no ladders.`
+    : u.ladders === "short" ? `${u.name} carry short scaling ladders: they get over a palisade or barred gate as with any ladders and go down into a deep ditch, but they do not reach the top of a wall, so there the unit stops at the foot as if it had none (Burgos, 1812).`
+    : `${u.name} carry scaling ladders: across a wall, palisade or barred gate ${Math.round(100 * E.share)}% of the front rank fight from the ladders at −${E.penalty}%, and they can climb over it (${nOf(E.cross, "hex", "hexes")} of movement); at a deep ditch they put them down into it, and it is crossed there as an ordinary ditch.`;
   render();
 }
 function renderFac(u, setup){                     // forward air controller: on a unit on foot, chosen before the battle, while aircraft are on call

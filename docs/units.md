@@ -2130,6 +2130,15 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   gate between its own hexes, so before this (31 October 2026) only a unit one rank deep could
   climb at all (found building Badajoz, where the 3rd Division stopped at the castle's foot). Mounted units and guns cannot use ladders. Without ladders, a unit still stops at
   the foot, and only reach-2 weapons strike over. The GM marks the units that carried them.
+  - **Short ladders** (`ladders: short` in a battlefield file; the GM presses **Ladders**
+    twice). They get men over a palisade or barred gate and down into a deep ditch like any
+    ladders, but they do not reach the top of a **tall** work (works.yaml `tall`: a wall), so
+    against a wall the unit stops at the foot as if it had none: no fighting from the ladders, no
+    climbing over, and its ranks may not stand across the wall. Burgos, 1812: at San Miguel
+    (19/20 September) the Portuguese laid their ladders against the 25-foot escarp and "they were
+    found somewhat short" (Oman, *A History of the Peninsular War*, vol. 6), and the attack
+    there failed while the light companies got in over the palisade at the open back. The game
+    draws no heights, so a ladder is long enough or short, and the battlefield or GM says which.
 - **A deep ditch** (`deep: true` on a battlefield's ditch; the two Great Redan battlefields):
   a siege ditch too deep to jump down into. Without ladders, crossing a side of it costs 4 hexes
   of movement (works.yaml `deep`) instead of a ditch's 2, so with the bank behind it a step

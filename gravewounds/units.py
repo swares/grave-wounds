@@ -1489,8 +1489,8 @@ def _hex_blows(d: Data, field: dict | None, pair: tuple, where: tuple, ranks: tu
     (u, e), (h, x, reach), (men, per, abreast, busy) = pair, where, ranks
     E = d.units["escalade"]
     blocked, pen, stk = _across(d, field, u, h, x, reach)
-    climbing = blocked and reach < 2 and has_ladders(u)
-    defends = blocked and reach < 2 and not climbing and has_ladders(e)
+    climbing = blocked and reach < 2 and ladders_reach(d, field, u, h, x)
+    defends = blocked and reach < 2 and not climbing and ladders_reach(d, field, e, h, x)
     n = _hex_strikers(men, abreast if defends else per, abreast, reach if blocked and not defends else 0, busy, E["share"] if climbing else 0)
     return pen + (E["penalty"] if climbing else 0), stk, n
 
@@ -4437,15 +4437,15 @@ def _stands(d: Data, field: dict, u: dict, hexes: list) -> bool:
     """Ground it can stand on, and no palisade, wall or barred gate between its own hexes, unless it
     carries ladders (escalade): then its ranks may stand on both sides of the work it is climbing."""
     keys = {f"{h[0]},{h[1]}" for h in hexes}
-    climbs = has_ladders(u)
+    climbs, short = has_ladders(u), short_ladders(u)
     for h in hexes:
         if not _can_enter(d, field, u, h):
             return False
-        if climbs:
+        if climbs and not short:
             continue
         for dirn in range(6):
             x = step(h, dirn)
-            if f"{x[0]},{x[1]}" in keys and _wall_between(d, field, h, x):
+            if f"{x[0]},{x[1]}" in keys and _wall_between(d, field, h, x) and not (climbs and not _tall_between(d, field, h, x)):
                 return False
     return True
 
@@ -4464,8 +4464,24 @@ def _can_enter(d: Data, field: dict, u: dict, h) -> bool:
 
 
 def has_ladders(u: dict) -> bool:
-    """A unit on foot marked with ladders (escalade)."""
+    """A unit on foot marked with ladders (escalade), long or short."""
     return bool(u.get("ladders")) and not u.get("mounted") and not u.get("vehicle")
+
+
+def short_ladders(u: dict) -> bool:
+    """Its ladders are short (`ladders: short`): they do not reach the top of a tall work (a wall)."""
+    return has_ladders(u) and u.get("ladders") == "short"
+
+
+def ladders_reach(d: Data, field: dict | None, u: dict, a, b) -> bool:
+    """Unit u's ladders get it up the work between hexes a and b: it has ladders, and they are not
+    short against a tall work (Burgos 1812)."""
+    return has_ladders(u) and not (short_ladders(u) and _tall_between(d, field, a, b))
+
+
+def _tall_between(d: Data, field: dict | None, a, b) -> bool:
+    """A tall work (works.yaml `tall`: a wall) between hexes a and b."""
+    return bool(field) and any(C._spec(d, "edge", it).get("tall") for it in C._edge_items(d, _works(field), a, b))
 
 
 def _wall_between(d: Data, field: dict, a, b) -> bool:
@@ -4500,7 +4516,7 @@ def _mover(u: dict) -> str:
         return "m"
     if u.get("no_deep"):
         return "d"                                  # a charge without ladders: a deep ditch stops it
-    return "l" if has_ladders(u) else "f"
+    return ("s" if short_ladders(u) else "l") if has_ladders(u) else "f"
 
 
 def step_cost(d: Data, field: dict | None, u: dict, a, b) -> int | None:
@@ -4521,7 +4537,7 @@ def _step_cost(d: Data, field: dict, u: dict, a, b) -> int | None:
     """step_cost, worked out."""
     if not _can_enter(d, field, u, b):
         return None
-    c = C.step_cost(d, _works(field), a, b, climb=d.units["escalade"]["cross"] if has_ladders(u) else None, deep_stops=bool(u.get("no_deep")))
+    c = C.step_cost(d, _works(field), a, b, climb=d.units["escalade"]["cross"] if has_ladders(u) else None, deep_stops=bool(u.get("no_deep")), short=short_ladders(u))
     if c is None:
         return None
     wx = field.get("weather") or {}

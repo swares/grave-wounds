@@ -14,7 +14,7 @@ function hexItem(works, h){
   const it = works?.hexes?.[hkey(h)];
   return it && intact("hex", it) ? it : null;
 }
-function stepCost(works, a, b, climb = null, deepStops = false){   // climb: with ladders, what a wall, palisade or barred gate costs instead of stopping him (and a deep ditch only its cross); deepStops: a deep ditch with no ladders down in it stops him (a charge without ladders)
+function stepCost(works, a, b, climb = null, deepStops = false, short = false){   // climb: with ladders, what a wall, palisade or barred gate costs instead of stopping him (and a deep ditch only its cross); deepStops: a deep ditch with no ladders down in it stops him (a charge without ladders); short: his ladders are short, and a tall work (a wall) still stops him
   let cost = 1;
   for (const it of edgeItems(works, a, b)){
     const s = specOf("edge", it);
@@ -23,7 +23,7 @@ function stepCost(works, a, b, climb = null, deepStops = false){   // climb: wit
       if (deepStops) return null;
       c = s.deep;
     }
-    if (c === null || c === undefined) c = climb;
+    if (c === null || c === undefined) c = short && s.tall ? null : climb;
     if (c === null || c === undefined) return null;
     cost += c;
   }

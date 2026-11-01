@@ -72,7 +72,7 @@ export function allRows(u, perHex){
 export const firstCol = u => u.pos[0] - Math.floor((u.width - 1) / 2);
 
 const yq = s => JSON.stringify(s);
-const unitLine = u => `  - {name: ${yq(u.name)}, side: ${u.side}, men: ${u.men}, quality: ${u.quality}, weapon: ${u.weapon}, kit: ${u.kit}, formation: ${u.formation}, width: ${u.width}, pos: [${u.pos.join(", ")}], facing: ${u.facing}${u.mounted ? ", mounted: true" : ""}${u.guns ? ", guns: " + u.guns : ""}${u.prone ? ", prone: true" : ""}${u.lands === undefined ? "" : ", lands: " + u.lands}${u.vehicle ? ", vehicle: " + u.vehicle : ""}${u.fixed ? ", fixed: [" + u.fixed.join(", ") + "]" : ""}${u.via ? ", via: [" + u.via.map(h => "[" + h.join(", ") + "]").join(", ") + "]" : ""}${u.nv ? ", nv: " + u.nv : ""}${u.fc ? ", fc: " + u.fc : ""}${u.armour ? ", armour: " + u.armour : ""}${u.fac ? ", fac: true" : ""}${u.ladders ? ", ladders: true" : ""}${u.type ? ", type: " + u.type : ""}${u.size ? ", size: " + u.size : ""}${u.unfit == null ? "" : ", unfit: " + u.unfit}${u.he === false ? ", he: false" : ""}}`;
+const unitLine = u => `  - {name: ${yq(u.name)}, side: ${u.side}, men: ${u.men}, quality: ${u.quality}, weapon: ${u.weapon}, kit: ${u.kit}, formation: ${u.formation}, width: ${u.width}, pos: [${u.pos.join(", ")}], facing: ${u.facing}${u.mounted ? ", mounted: true" : ""}${u.guns ? ", guns: " + u.guns : ""}${u.prone ? ", prone: true" : ""}${u.lands === undefined ? "" : ", lands: " + u.lands}${u.vehicle ? ", vehicle: " + u.vehicle : ""}${u.fixed ? ", fixed: [" + u.fixed.join(", ") + "]" : ""}${u.via ? ", via: [" + u.via.map(h => "[" + h.join(", ") + "]").join(", ") + "]" : ""}${u.nv ? ", nv: " + u.nv : ""}${u.fc ? ", fc: " + u.fc : ""}${u.armour ? ", armour: " + u.armour : ""}${u.fac ? ", fac: true" : ""}${u.ladders ? ", ladders: " + (u.ladders === "short" ? "short" : "true") : ""}${u.type ? ", type: " + u.type : ""}${u.size ? ", size: " + u.size : ""}${u.unfit == null ? "" : ", unfit: " + u.unfit}${u.he === false ? ", he: false" : ""}}`;
 function dumpsLine(ds){                          // the supply dumps' line (and its comment), or ""
   if (!ds?.length) return "";
   const one = m => "{at: [" + m.at.join(", ") + "], side: " + m.side + "}";
@@ -154,10 +154,10 @@ id: ${spec.id}
 name: ${yq(spec.name)}
 ${spec.period ? "period: " + yq(spec.period) + "                # the period its pickers list it under (else its wound table's conflict)\n" : ""}sides: [${spec.sides.map(yq).join(", ")}]
 table: ${spec.table}
-# On the travel map: a fight within \`within\` hexes of this place offers this field. \`sides\` are
+${t ? `# On the travel map: a fight within \`within\` hexes of this place offers this field. \`sides\` are
 # the travel-map sides that stand where each army stands here (${spec.sides[0]} first).
 travel: {map: ${t.map}, place: ${yq(t.place)}, within: ${t.within}, sides: [${t.sides.map(yq).join(", ")}]}
-size: [${grid[0].length}, ${grid.length}]
+` : "# Not on any travel map yet.\n"}size: [${grid[0].length}, ${grid.length}]
 ${upLine}weather: ${spec.weather}${spec.lz ? "\n" : ""}${spec.lz ? "lz: [" + hexList(spec.lz) + "]               # landing zones (units with `lands` come in by air at that one)" : ""}${dumpsLine(spec.dumps)}${objLine(spec.objective)}${stancesLine(spec.stances)}${endsLine(spec.ends)}${markersLine(spec.markers)}${phasesText(spec.phases)}
 ground: |
 ${grid.map(row => "  " + row.join("")).join("\n")}
