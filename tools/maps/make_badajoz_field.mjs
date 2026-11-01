@@ -21,10 +21,14 @@ import { N, S, wobble, patch, speckle, groundGrid, unit, at, stepHex, writeField
 
 const COLS = 90, ROWS = 80;                    // 900 m east to west, about 690 m north to south
 const EF = 70, SF = 50;                        // the east face's column and the south face's row
-const inCastle = (c, r) => c >= 50 && c <= EF && r >= 2 && r <= 20;   // the castle walls are the enclosure's on the east
+// The castle: its walls are the enclosure's on the east, with an outwork east of them (cols 71-77) whose
+// south face runs east-west above the slope to the Rivillas. The 3rd Division climbs that face: a column's
+// whole front can stand against a wall that runs east-west, where against a north-south one (the hexes
+// stand in columns that zigzag) only a hex or two of it touches the wall. Ours, for the map's sake.
+const inCastle = (c, r) => (c >= 50 && c <= EF && r >= 2 && r <= 20) || (c >= 71 && c <= 77 && r >= 2 && r <= 14);
 const inTrinidad = (c, r) => c >= 63 && c <= 74 && r >= 44 && r <= 56 && Math.abs(c - 68.5) + Math.abs(r - 50) * 0.8 <= 7.5;
 const inSantaMaria = (c, r) => c >= 33 && c <= 45 && r >= 46 && r <= 58 && Math.abs(c - 39) + Math.abs(r - 52) * 0.8 <= 7.5;
-const inside = (c, r) => (c <= EF && r <= SF) || inTrinidad(c, r) || inSantaMaria(c, r);
+const inside = (c, r) => (c <= EF && r <= SF) || inCastle(c, r) || inTrinidad(c, r) || inSantaMaria(c, r);
 const inTown = (c, r) => inside(c, r) && !inCastle(c, r);
 // the breaches: a slope of rubble 8 hexes (80 m) wide in each, on its outer face (ours: no source
 // reached gives their widths; units move as blocks, and a column wider than its breach cannot get in)
@@ -58,7 +62,7 @@ const grid = groundGrid(COLS, ROWS, kind);
 // walls and in front of the breaches; the sword blades (chevaux de frise: no ladders get over them) across the top of each
 // breach, the spiked planks (stakes) on its slope; the trenches the columns go in from.
 const wall = [], ditch = [], chevaux = [], stakes = [], trench = [];
-const CASTLE_GATE = [[59, 20], [60, 20]];   // the gate into the town, which Wellington had blown: left open (the rules have no blowing of a gate)
+const CASTLE_GATE = [[57, 20], [58, 20], [59, 20], [60, 20], [61, 20], [62, 20]];   // the gate into the town, which Wellington had blown: left open (the rules have no blowing of a gate)
 for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++){
   if (!inside(c, r)) continue;
   for (let d = 0; d < 6; d++){
@@ -94,7 +98,7 @@ const LIGHT = { ...LINE, quality: "veteran" };
 const LADDERS = { ...LINE, ladders: true };
 const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", formation: "battery", mounted: false };   // ten crew to a gun
 const TRINIDAD = [[68, 60], [68, 52]], CURTAIN = [[55, 56], [55, 48]], SANTA_MARIA = [[50, 53], [45, 52]];   // to the foot of each breach, then over its top
-const CASTLE = [[79, 24], [72, 14], [62, 12], [60, 22]];   // over the Rivillas by the dyke, up the hill, over the east wall, out by the gate
+const CASTLE = [[79, 24], [74, 21], [74, 16], [66, 10], [60, 22]];   // over the Rivillas by the dyke, up the hill to the outwork's south face, over it, through the castle, out by the gate
 const units = [
   // the garrison on this front (ours: Philippon's 5,000 held the whole circuit and San Cristobal)
   unit("French at the Trinidad breach", FR, 600, LINE, [6, 65, 53]),
