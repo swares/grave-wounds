@@ -1687,7 +1687,7 @@ out. All of this is design estimates (`data/units.yaml`).
   the map marks it ◠ like an emplaced gun. Unlike guns it can get up and move, leaving its
   holes (coming back to them, it is dug in again). In set-up **Dig in** starts the unit dug
   in at once. Design estimates (`dig_in` in `data/units.yaml`).
-- **Emplaced guns**: in set-up only, **Emplace** digs in a gun unit (anti-tank guns,
+- **Emplaced guns** (`emplaced: true` in a battlefield file too): in set-up only, **Emplace** digs in a gun unit (anti-tank guns,
   anti-aircraft guns, machine-gun teams, batteries) for the battle. While it stands, it
   counts as gone to ground: shots at it lose 15%, it is hidden, shellfire strikes it less
   and it holds better. It cannot move all battle, though it can turn, and it cannot limber
@@ -2949,6 +2949,34 @@ none of 12. The slaughter in the breaches is not played yet. Building it found t
 one rank deep could not escalade at all (*Escalade*).
 
 It is drawn by `tools/maps/make_badajoz_field.mjs`.
+
+**Burgos, 19-20 September 1812: the hornwork of San Miguel** (`data/fields/burgos-1812.yaml`).
+The field is 80 × 66 hexes, about 870 by 625 yards (800 by 570 m), north at the top (project
+doc "burgos-research"; Oman, *A History of the Peninsular War*, vol. 6, ch. II).
+- The hornwork on its hill: a front with a demi-bastion at each end, its escarp 25 feet of earth
+  drawn as wall edges (no axe opens it) with a ditch of 10 feet before it (not deep), and the
+  gorge at the back closed only by a palisade 7 feet high, with the postern (a gate) in it. The
+  corner of the castle's works is to the south-west, about 300 yards off across a ravine.
+- Bright moonlight.
+- The French: the 1st battalion of the 34th Line (500) on the parapet either side of the seven
+  field guns (emplaced, as are the castle's guns, which command the back slope).
+- The Allies: the firing party of the 1/42nd (300), two columns of Pack's Portuguese (400
+  each, ours: no source reached gives them) with **short ladders** (see *Escalade*) against the
+  demi-bastions, and Major Somers Cocks's light companies of the 1/42nd, 1/24th and 1/79th (140,
+  with ladders), sent by a route round the east flank, over the palisade and in.
+- The wound tables are the Peninsular War's. It is not on any travel map yet.
+
+How it plays, a first cut (6 test runs, the commander on both sides): the front attack fails as
+it did. The Portuguese stop at the foot of the escarp with their short ladders and are shot down
+from the parapet, and with the firing party they lose a quarter to a third of their men and run
+(the Allies lost 421, 204 of them in the 1/42nd and 113 Portuguese: ours are too many Portuguese
+and too few Highlanders). The light companies get over the palisade and stand inside the gorge,
+but the 34th, facing the front, never turns on them, and 140 men do not attack 500, so the
+hornwork is not taken and the French lose about 2%, where in fact they ran for the postern and
+lost 198 with 60 prisoners. What the battalion did when enemy appeared behind it inside its own
+work is not in the rules (enemy behind a unit does not shake it).
+
+It is drawn by `tools/maps/make_burgos_field.mjs`.
 
 **Cowpens, 17 January 1781** (`data/fields/cowpens-1781.yaml`). The field is 120 × 100 hexes,
 about 1,310 yards (1,200 m) east to west and 950 yards (870 m) north to south, with north at the
