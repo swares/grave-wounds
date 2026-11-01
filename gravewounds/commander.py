@@ -1732,15 +1732,34 @@ def _narrowed(d: Data, us: list, i: int, t: int | None, ctx: tuple, o: dict | No
     tu, obj = _where(us, t, ctx[3]), objective(ctx[1])
     now = U.unit_gap(d, u, tu)
     least = math.ceil(u.get("width0", u["width"]) * d.units["commander"]["narrow_to"])   # never narrower than this share of the front it started with
-    for q in (3, 2, 1):
-        w = max(least, 1, -(-u["width"] * q // 4))
-        if w >= u["width"]:
+
+    def try_at(floor):
+        for q in (3, 2, 1):
+            w = max(floor, 1, -(-u["width"] * q // 4))
+            if w >= u["width"]:
+                continue
+            trial = [{**x, "width": w} if k == i else x for k, x in enumerate(us)]
+            o2 = _best(d, trial, i, t, ctx) if obj is None else _for_objective(d, trial, i, t, ctx)
+            if o2 is not None and o2["act"] in MOVES and U.unit_gap(d, {**u, "width": w, "pos": o2["pos"], "facing": o2["facing"]}, tu) < now:
+                return {**o2, "width": w, "width0": u.get("width0", u["width"])}
+        return None
+    out = try_at(least)
+    if out is None and d.units["commander"].get("narrow_works") and _works_ahead(d, ctx[1], u):
+        out = try_at(1)   # held up at a gap in works: narrower still (commander.narrow_works)
+    return out
+
+
+def _works_ahead(d: Data, field: dict | None, u: dict) -> bool:
+    """An intact edge work (wall, ditch, bank, palisade, gate) within a move of the unit's front."""
+    edges = ((field or {}).get("works") or {}).get("edges") or {}
+    front, r = (U.footprint(d, u) or [[]])[0], U.allowance(d, u)
+    for k, its in edges.items():
+        if not any(C.intact(d, "edge", it) for it in its):
             continue
-        trial = [{**x, "width": w} if k == i else x for k, x in enumerate(us)]
-        o2 = _best(d, trial, i, t, ctx) if obj is None else _for_objective(d, trial, i, t, ctx)
-        if o2 is not None and o2["act"] in MOVES and U.unit_gap(d, {**u, "width": w, "pos": o2["pos"], "facing": o2["facing"]}, tu) < now:
-            return {**o2, "width": w, "width0": u.get("width0", u["width"])}
-    return None
+        h = [int(x) for x in k.split("|")[0].split(",")]
+        if any(U.hdist(f, h) <= r for f in front):
+            return True
+    return False
 
 
 VETERANS = ("veteran", "elite")                    # the qualities that rally from a pursuit
