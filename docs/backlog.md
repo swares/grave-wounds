@@ -212,7 +212,7 @@ When an item is done, delete it here and note it in the pull request that closes
   battlefield marks with a defensive fire plan (`df: true`) may fire, unseen, within 12 hexes of
   its own side's start positions (Pork Chop's flash fire: 4 to 12 of 12). Given to every
   defender, the fire plan put Tumbledown back to 0 (and Grozny 2 to 7, Hue and Chipyong-ni -1), so
-  it is marked by battlefield where a source gives one. 474 of 576 runs now match the battle as
+  it is marked by battlefield where a source gives one. On 12 runs of the 50 battlefields, planner off, 488 of 600 runs now match the battle as
   fought (Mojkovac and Topolčani added; reliability, 423 to 422; a bayonet front against horse,
   Albuera 7 to 12, Lundy's Lane 1 to 0; a closing volley before a charge home, both Redans +1;
   Cassino's sangars, the Monastery 0 to 3; trenches against shellfire at a fifth of lying, after
@@ -224,7 +224,9 @@ When an item is done, delete it here and note it in the pull request that closes
   German tanks pinning from range, 449 to 452: Snipe 3 to 6; plans for 73 Easting, Goose Green, Mons and the June Redan,
   452 to 462: 73 Easting 8 to 11, Goose Green 1 to 3, Mons 10 to 12, the June Redan 7 to 10; Jacob's Ford's storming
   column as four parties a breach wide, 462 to 470: Jacob's Ford 0 to 8; the Germans' posts on the massif held
-  in May, 470 to 474: the Poles 0 to 4). Still behind: Snipe 6 of 12 (the evening Italian tanks
+  in May, 470 to 474: the Poles 0 to 4; Badajoz and Burgos added; held up at a gap in works a formed unit
+  narrows further, 489 to 488 of 600: Aljubarrota 10 to 11, Jacob's Ford 8 to 6, Sidon's wall fought for but its
+  attackers still losing under 1%). Still behind: Snipe 6 of 12 (the evening Italian tanks
   have no plan: the account names only the Germans drawing back; not traced since); Tumbledown 6 of 12, Left Flank walking
   into contact upright in the dark and broken at once by a handful at its flank (the flank check
   counts three men as a flanking force); Lundy's Lane 0, studied (project doc "lundys-lane-study"):
