@@ -2986,13 +2986,18 @@ It is drawn by `tools/maps/make_albuera_field.mjs`.
 hand, about 4 minutes to watch with **Run**.
 
 How it plays, a second cut (12 runs, the commander on both sides, 1 November 2026): the Allies take
-the castle in 1 of 12 (history: they took it), and lose 32% of their men against the French 32%
+the castle in 1 of 12 (history: they took it), and lose 29% of their men against the French 34%
 (9% and 57% before the breaches were drawn as bare slopes and the flanking guns added, 1 November
 2026, with the commander's narrowing at gaps from #442 in the same measurement; history: about
 4,700 Allied killed and wounded, nearly half the stormers, and about 1,400 French).
 The breaches hold, as they did: the storming parties stop at the sword blades in the light of the
-fires and are shot down, and the flanking guns sweep the ditch with canister. The 3rd Division gets over the outwork's wall in about half the runs, but
-inside it breaks after losing a few dozen men, and its brigades never follow it up the ladders.
+fires and are shot down, and the flanking guns sweep the ditch with canister. The 3rd Division's
+storming party (veterans, as all three are: picked volunteers) now gets over the outwork's wall in
+nearly every run (its route's waypoint inside the outwork: one just outside was taken as reached,
+within the route's 3 hexes, before the column climbed), but inside it fights the garrison and
+breaks after losing a handful of men: each exchange it loses by even a man calls a morale check,
+and two failures break it (letting a small margin pass was measured and not built, #441). Its
+brigade ends up across the wall, facing away, and cannot move.
 Still open: the brigades behind each storming party mostly wait on its route (units move as blocks
 and cannot pass one another in the ditch); the castle falls too rarely; the other means Napier
 gives (three muskets a man, a mine, shells and stones thrown down) are not played (project doc
