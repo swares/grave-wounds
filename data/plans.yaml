@@ -42,6 +42,20 @@ cowpens-1781:
         target: "71st Highlanders (reserve)"
         when: {phase: "About-face and bayonets"}
 
+burgos-1812:
+  source: "Oman, A History of the Peninsular War, vol. 6 (1922), ch. II (project doc burgos-research)"
+  note: >-
+    The light companies' attack on the gorge, meant as a false attack to be made real if the gorge
+    was weakly held (Oman): they go round the east flank, up the back slope under the castle's
+    guns, over the palisade and in, and fall on the 34th's rear. The route and the target half of
+    the battalion are ours.
+  sides:
+    0:
+      - units: ["Light companies of the 1/42nd, 1/24th and 1/79th (Cocks)"]
+        do: envelop
+        via: [[66, 22], [66, 42], [50, 42], [46, 33]]
+        target: "1st battalion, 34th Line (east half)"
+
 snipe-1942:
   source: "project doc snipe-research, B3: Rommel's evening attack withdrew to 800 yd and fired until dark ([S]: Miskimon, Warfare History Network)"
   note: >-

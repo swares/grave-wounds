@@ -112,4 +112,4 @@ units:
   - {name: "1/42nd, the firing party", side: 0, men: 300, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 8, pos: [45, 7], facing: 4, size: company}
   - {name: "Pack's Portuguese, west column (short ladders)", side: 0, men: 400, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 5, pos: [35, 6], facing: 4, via: [[36, 18]], ladders: short, size: battalion}
   - {name: "Pack's Portuguese, east column (short ladders)", side: 0, men: 400, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 5, pos: [55, 6], facing: 4, via: [[54, 18]], ladders: short, size: battalion}
-  - {name: "Light companies of the 1/42nd, 1/24th and 1/79th (Cocks)", side: 0, men: 140, quality: veteran, weapon: musket_smoothbore, kit: none, formation: open, width: 4, pos: [68, 10], facing: 4, via: [[66, 22], [66, 42], [50, 42], [46, 33]], ladders: true, size: company}
+  - {name: "Light companies of the 1/42nd, 1/24th and 1/79th (Cocks)", side: 0, men: 140, quality: veteran, weapon: musket_smoothbore, kit: none, formation: open, width: 4, pos: [68, 10], facing: 4, ladders: true, size: company}
