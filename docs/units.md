@@ -563,7 +563,10 @@ general. All its numbers are in units.yaml `commander`.
 - **Storming works.** Attacking, a unit armed with a smoothbore musket, a rifle-musket, a
   breech-loader, a modern service or assault rifle or a sub-machine gun (`commander.storm`)
   whose target holds works
-  does not stop at range. The target holds works if it is dug in or emplaced where it
+  does not stop at range. So armed, a unit that has gone round on a plan (an envelopment, its
+  route done) and has its target's flank or rear goes in the same way, at any odds and whatever
+  its side's stance (1 November 2026; before, only men without missiles did: the light companies
+  at Burgos stood inside the gorge and traded fire). The target holds works if it is dug in or emplaced where it
   stands, if any of its hexes has cover from works toward the attacker (a bank, trench, wall,
   palisade or the like), or if it stands in buildings, tall buildings or rubble. The unit
   scores hexes as men without missiles do, taking no account of cover on the way, and
