@@ -1071,10 +1071,10 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.36
+      "ratio": 0.3
      },
      "drew": 0.0,
-     "lost_share": 0.412,
+     "lost_share": 0.484,
      "side": "British",
      "stance": "attack",
      "won": 0.0
@@ -1082,16 +1082,16 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 2.78
+      "ratio": 3.31
      },
      "drew": 0.0,
-     "lost_share": 0.121,
+     "lost_share": 0.114,
      "side": "Russians",
      "stance": "hold",
      "won": 1.0
     }
    ],
-   "stamp": "3e9a21888f0b"
+   "stamp": "e3190dbb4833"
   },
   "redan-1855-june": {
    "runs": 12,
@@ -1099,27 +1099,27 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.14
+      "ratio": 0.18
      },
      "drew": 0.0,
-     "lost_share": 0.321,
+     "lost_share": 0.349,
      "side": "British",
      "stance": "attack",
-     "won": 0.08
+     "won": 0.0
     },
     {
      "bar": {
       "outcome": "win",
-      "ratio": 7.53
+      "ratio": 6.04
      },
      "drew": 0.0,
-     "lost_share": 0.027,
+     "lost_share": 0.04,
      "side": "Russians",
      "stance": "hold",
-     "won": 0.92
+     "won": 1.0
     }
    ],
-   "stamp": "8e35a764fad6"
+   "stamp": "3b48f6a374c4"
   },
   "sidon-1253": {
    "runs": 12,
@@ -1374,5 +1374,5 @@
    "stamp": "3e77d8ae337b"
   }
  },
- "updated": "2026-10-31"
+ "updated": "2026-11-01"
 }
