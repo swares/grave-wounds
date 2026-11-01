@@ -2146,6 +2146,12 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   gate between its own hexes, so before this (31 October 2026) only a unit one rank deep could
   climb at all (found building Badajoz, where the 3rd Division stopped at the castle's foot). Mounted units and guns cannot use ladders. Without ladders, a unit still stops at
   the foot, and only reach-2 weapons strike over. The GM marks the units that carried them.
+  - **Chevaux de frise** (works.yaml `chevaux`, `no_ladders`): a beam set with sword blades or
+    spikes, chained across a breach. It stops hand to hand and passage like a palisade, gives a
+    little cover (10%), and no ladders, long or short, get anyone over it: men stop at it and
+    shoot, or hack it open (twice a palisade's work, ours). Badajoz 1812, across the top of each
+    breach; until 1 November 2026 drawn there as a palisade, which the storming parties climbed
+    with their ladders.
   - **Short ladders** (`ladders: short` in a battlefield file; the GM presses **Ladders**
     twice). They get men over a palisade or barred gate and down into a deep ditch like any
     ladders, but they do not reach the top of a **tall** work (works.yaml `tall`: a wall), so

@@ -1575,6 +1575,8 @@ def battlefield(d: Data, fid: str) -> dict:
             out["objective_radius"] = f["objective"]["radius"]
     if f.get("support"):
         out["support"] = _field_support(d, f)
+    if f.get("lit"):
+        out["lit"] = [{"at": list(x["at"]), "radius": x["radius"], "fires": True} for x in f["lit"]]   # lit by fires all battle
     return out
 
 
@@ -3981,9 +3983,10 @@ def _light_up(d: Data, field: dict, at, radius: int, late: int = 0) -> None:
 
 
 def _lit_fades(field: dict | None) -> None:
-    """Flares and illumination burn one exchange less; gone at none."""
+    """Flares and illumination burn one exchange less; gone at none. A battlefield's fires (its
+    `lit`, marked fires) burn all battle."""
     if (field or {}).get("lit"):
-        field["lit"] = [{**x, "left": x["left"] - 1} for x in field["lit"] if x["left"] > 1]
+        field["lit"] = [x if x.get("fires") else {**x, "left": x["left"] - 1} for x in field["lit"] if x.get("fires") or x["left"] > 1]
 
 
 def _lay_smoke(d: Data, field: dict, bursts: list) -> None:
@@ -4468,15 +4471,12 @@ def _stands(d: Data, field: dict, u: dict, hexes: list) -> bool:
     """Ground it can stand on, and no palisade, wall or barred gate between its own hexes, unless it
     carries ladders (escalade): then its ranks may stand on both sides of the work it is climbing."""
     keys = {f"{h[0]},{h[1]}" for h in hexes}
-    climbs, short = has_ladders(u), short_ladders(u)
     for h in hexes:
         if not _can_enter(d, field, u, h):
             return False
-        if climbs and not short:
-            continue
         for dirn in range(6):
             x = step(h, dirn)
-            if f"{x[0]},{x[1]}" in keys and _wall_between(d, field, h, x) and not (climbs and not _tall_between(d, field, h, x)):
+            if f"{x[0]},{x[1]}" in keys and _wall_between(d, field, h, x) and not ladders_reach(d, field, u, h, x):
                 return False
     return True
 
@@ -4505,14 +4505,22 @@ def short_ladders(u: dict) -> bool:
 
 
 def ladders_reach(d: Data, field: dict | None, u: dict, a, b) -> bool:
-    """Unit u's ladders get it up the work between hexes a and b: it has ladders, and they are not
-    short against a tall work (Burgos 1812)."""
-    return has_ladders(u) and not (short_ladders(u) and _tall_between(d, field, a, b))
+    """Unit u's ladders get it up the work between hexes a and b: it has ladders, they are not
+    short against a tall work (Burgos 1812), and the work is not one no ladders get over (chevaux
+    de frise: Badajoz 1812)."""
+    if not has_ladders(u):
+        return False
+    return not (short_ladders(u) and _tall_between(d, field, a, b)) and not _edge_has(d, field, a, b, "no_ladders")
 
 
 def _tall_between(d: Data, field: dict | None, a, b) -> bool:
     """A tall work (works.yaml `tall`: a wall) between hexes a and b."""
-    return bool(field) and any(C._spec(d, "edge", it).get("tall") for it in C._edge_items(d, _works(field), a, b))
+    return _edge_has(d, field, a, b, "tall")
+
+
+def _edge_has(d: Data, field: dict | None, a, b, key: str) -> bool:
+    """A work between hexes a and b whose works.yaml spec has `key` set."""
+    return bool(field) and any(C._spec(d, "edge", it).get(key) for it in C._edge_items(d, _works(field), a, b))
 
 
 def _wall_between(d: Data, field: dict, a, b) -> bool:

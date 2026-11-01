@@ -2367,6 +2367,9 @@ def _field_shape_errors(d: Data, f: dict, where: str) -> list[str]:
         errors.append(f"{where}: unknown table {f.get('table')}")
     errors += _field_weather_errors(d, f, where)
     errors += _field_travel_errors(d, f, where)
+    errors += [f"{where}: lit needs at (a hex on the map) and radius (a whole number, 0 or more) for each fire" for x in f.get("lit") or []
+               if not (isinstance(x.get("at"), list) and len(x["at"]) == 2 and all(isinstance(v, int) for v in x["at"])
+                       and 0 <= x["at"][0] < size[0] and 0 <= x["at"][1] < size[1] and isinstance(x.get("radius"), int) and x["radius"] >= 0)]
     works = f.get("works") or {}
     for kind, label, known in (("hexes", "hex", d.works.get("hex_works", {})), ("edges", "edge", d.works.get("edge_works", {}))):
         errors += [f"{where}: unknown {label} work {w.get('type')}" for w in works.get(kind, []) if w.get("type") not in known]
