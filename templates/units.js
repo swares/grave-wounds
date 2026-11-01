@@ -643,7 +643,7 @@ function morale(u0, roll){                       // {check, target, state}; hold
   const M = UD.morale, u = M.posture_flank && u0.holds ? { ...u0, flanked: false } : u0;
   if (u.state === "broken") return { check: false, target: null, state: "broken" };
   const byHand = !!M.posture_hand && u.holds && !u.flanked;   // holding a position: lost the fight hand to hand, not men lost to fire from afar (morale.posture_hand)
-  const losing = !u.braced && (byHand ? (u.hand_lost || 0) > (u.hand_dealt || 0) : (u.lost || 0) > (u.dealt || 0)) && u.contact;   // a front of pikes or bayonets struck only by horse at its front does not count as losing (melee.pikes.holds)
+  const losing = !u.braced && (byHand ? (u.hand_lost || 0) - (u.hand_dealt || 0) : (u.lost || 0) - (u.dealt || 0)) >= (M.losing_margin ?? 1) && u.contact;   // lost the exchange by at least losing_margin men   // a front of pikes or bayonets struck only by horse at its front does not count as losing (melee.pikes.holds)
   const attrition = u.down >= M.trigger * u.start && (u.lost > 0 || !(u.holds && !u.flanked));   // past a quarter down: every exchange in the open; holding a position, only when it lost men (morale.posture)
   const struck = attrition || u.lost >= M.shock * Math.max(1, u.men) || u.flanked || losing;
   const rally = u.state === "shaken" && !u.contact;

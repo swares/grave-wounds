@@ -1073,9 +1073,10 @@ def _losing(mo: dict, unit: dict) -> bool:
     hand to hand only by horse at its front (braced, melee.pikes.holds) does not count as losing."""
     if not unit.get("contact") or unit.get("braced"):
         return False
+    margin = mo.get("losing_margin", 1)   # lost the exchange by at least this many men
     if mo.get("posture_hand") and _holding(unit):
-        return unit.get("hand_lost", 0) > unit.get("hand_dealt", 0)
-    return unit.get("lost", 0) > unit.get("dealt", 0)
+        return unit.get("hand_lost", 0) - unit.get("hand_dealt", 0) >= margin
+    return unit.get("lost", 0) - unit.get("dealt", 0) >= margin
 
 
 def _attrition(mo: dict, unit: dict) -> bool:
