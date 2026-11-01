@@ -2942,7 +2942,9 @@ It is drawn by `tools/maps/make_albuera_field.mjs`.
 (project doc "badajoz-research").
 - The town behind its south face, with the Santa Maria (left) and Trinidad (right) bastions and
   three breaches: in each bastion and in the curtain between them, 80 m wide (ours). Each breach
-  is rubble with spiked planks (stakes) on its slope and the sword blades across its top
+  is a bare slope of broken masonry (slope ground, so the men on it are in full view: drawn as
+  rubble until 1 November 2026, which hid them, so only a tenth of the shots at them found a man)
+  with spiked planks (stakes) on it and the sword blades across its top
   (**chevaux de frise**: no ladders get over them; see *Escalade*); a deep ditch runs outside every
   wall (*A deep ditch*), flooded before the Trinidad from the dammed Rivillas, which spreads east
   of the town as the inundation. An unfinished ravelin stands before the curtain.
