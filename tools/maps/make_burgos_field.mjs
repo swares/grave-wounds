@@ -71,7 +71,7 @@ const AL = { side: 0, facing: S }, FR = { side: 1, facing: N };
 const LINE = { quality: "regular", weapon: "musket_smoothbore", kit: "none", formation: "close", mounted: false };
 const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", formation: "battery", mounted: false };   // ten crew to a gun
 const WEST = [[36, 18]], EAST = [[54, 18]];      // the two Portuguese columns, to the foot of each demi-bastion
-const GORGE_ROUTE = [[66, 22], [66, 42], [50, 42]];   // the light companies: round the east flank, up the back slope to the palisade
+const GORGE_ROUTE = [[66, 22], [66, 42], [50, 42], [46, 33]];   // the light companies: round the east flank, up the back slope, over the palisade and in
 const units = [
   unit("Guns in San Miguel (seven 4- and 6-pounders)", FR, 70, GUNS, [4, 43, FRONT]),
   unit("1st battalion, 34th Line", FR, 500, LINE, [12, 39, FRONT + 2]),
