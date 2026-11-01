@@ -565,7 +565,7 @@ general. All its numbers are in units.yaml `commander`.
   whose target holds works
   does not stop at range. So armed, a unit that has gone round on a plan (an envelopment, its
   route done) and has its target's flank or rear goes in the same way, at any odds and whatever
-  its side's stance (1 November 2026; before, only men without missiles did: the light companies
+  its side's stance (31 October 2026; before, only men without missiles did: the light companies
   at Burgos stood inside the gorge and traded fire). Measured on 12 runs of every battlefield:
   only Burgos changed (the Allies take it in 12 of 12, from 2). The target holds works if it is dug in or emplaced where it
   stands, if any of its hexes has cover from works toward the attacker (a bank, trench, wall,
