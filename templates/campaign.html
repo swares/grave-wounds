@@ -647,10 +647,11 @@ async function keepSlot(label = ""){                  // this campaign into its 
     return slot;
   } catch (err){ $("#c-saved").textContent = `This browser would not keep the campaign (${err.message || err}): save it to a file.`; return null }
 }
-function swapIn(keys){                                // every page's state replaced by these keys, and the pages look again
+function swapIn(keys, reload = true){                  // every page's state replaced by these keys, and the pages look again (reload false: the caller sends the frame on itself)
   for (const k of Object.keys(CAMPAIGN.read(localStorage))) localStorage.removeItem(k);
   for (const [k, v] of Object.entries(keys)) localStorage.setItem(k, v);
   loadRecord();
+  if (!reload) return;
   const f = $("#c-frame");
   try { f.contentWindow.location.reload() } catch { f.setAttribute("src", f.getAttribute("src")) }
 }
@@ -720,14 +721,17 @@ async function gmStart(){
   if (st.team.men.length || st.named.men){          // a campaign under way: kept, and the coached one started beside it
     if (!confirm("The coached first session starts a new campaign. The one here is kept: switch back to it under Campaigns in this browser, below. Go on?")) return show(phaseOf(REC.phase).page);
     if (!await keepSlot()) return show(phaseOf(REC.phase).page);
-    swapIn({});
+    swapIn({}, false);
     REC = freshRecord(); REC.slot = `c${Date.now()}`;
   }
   REC.name = "The road to Towton"; REC.quick = true; saveRecord();
   newDay().setMap(GM_MAP);
   note("A coached first session: a retinue on the road to Towton, March 1461");
   render();
-  show("team.html#gmstart");
+  const f = $("#c-frame");                            // the team builder made to start the session, whatever the frame showed before
+  f.setAttribute("src", "team.html#gmstart");
+  try { f.contentWindow.location.replace("team.html#gmstart") } catch { /* not loaded yet: the src does it */ }
+  showing();
   keepSlot();                                         // kept from the start, as any new campaign is
 }
 function gmForce(){                                   // Edward's army on the Towton map, as the travel map holds it

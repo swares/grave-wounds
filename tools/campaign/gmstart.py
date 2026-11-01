@@ -25,7 +25,11 @@ def coach(pg):
 
 
 def wait_coach(pg, text, timeout=45000):
-    pg.wait_for_function(f"() => !document.querySelector('{COACH}').hidden && document.querySelector('{COACH}').textContent.includes({text!r})", timeout=timeout)
+    try:
+        pg.wait_for_function(f"() => !document.querySelector('{COACH}').hidden && document.querySelector('{COACH}').textContent.includes({text!r})", timeout=timeout)
+    except Exception:                                # where it stood, for the annotation: the phase, the coach, the frame's page, the notice
+        state = pg.evaluate("() => [REC.phase, REC.quick, document.querySelector('#c-coach').hidden, document.querySelector('#c-coach').textContent.slice(0, 120), document.querySelector('#c-showing').textContent, document.querySelector('#c-notice').textContent.slice(0, 120)]")
+        raise RuntimeError(f"waited for coach step {text!r}; it stood at {state}") from None
 
 
 def run(p):
