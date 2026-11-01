@@ -2951,7 +2951,9 @@ It is drawn by `tools/maps/make_albuera_field.mjs`.
 (project doc "badajoz-research").
 - The town behind its south face, with the Santa Maria (left) and Trinidad (right) bastions and
   three breaches: in each bastion and in the curtain between them, 80 m wide (ours). Each breach
-  is rubble with spiked planks (stakes) on its slope and the sword blades across its top
+  is a bare slope of broken masonry (slope ground, so the men on it are in full view: drawn as
+  rubble until 1 November 2026, which hid them, so only a tenth of the shots at them found a man)
+  with spiked planks (stakes) on it and the sword blades across its top
   (**chevaux de frise**: no ladders get over them; see *Escalade*); a deep ditch runs outside every
   wall (*A deep ditch*), flooded before the Trinidad from the dammed Rivillas, which spreads east
   of the town as the inundation. An unfinished ravelin stands before the curtain.
@@ -2966,6 +2968,9 @@ It is drawn by `tools/maps/make_albuera_field.mjs`.
   it all battle (`lit`, the radii ours; see weather.md, *Fires*).
 - The garrison on this front (ours, of Philippon's 5,000): 600 at the Trinidad breach, 400 at the
   curtain, 600 at the Santa Maria with guns on that bastion, 450 in the castle, 500 in reserve.
+  Guns on the flank of each bastion (emplaced, as are those on the Santa Maria) sweep the ditch
+  with canister: "showers of grape from the flank swept the ditch" (Napier; where and how many
+  ours; project doc "siege-defences-research").
   The French at the breaches hold there (`data/orders.yaml`): they held them all night.
 - The storm, each division's storming party 500 with ladders (as the plan of attack gave it), then
   its two brigades (ours): the 4th Division on the Trinidad and the curtain, the Light Division on
@@ -2981,7 +2986,8 @@ It is drawn by `tools/maps/make_albuera_field.mjs`.
 hand, about 4 minutes to watch with **Run**.
 
 How it plays, a second cut (12 runs, the commander on both sides, 1 November 2026): the Allies take
-the castle in 2 of 12 (history: they took it), and lose 9% of their men against the French 57%
+the castle in 2 of 12 (history: they took it), and lose 13% of their men against the French 52%
+(9% and 57% before the breaches were drawn as bare slopes)
 (history: about 4,700 Allied killed and wounded, nearly half the stormers, and about 1,400 French).
 The breaches hold, as they did: the storming parties stop at the sword blades in the light of the
 fires and are shot down. The 3rd Division gets over the outwork's wall in about half the runs, but

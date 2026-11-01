@@ -32,6 +32,8 @@ export const UNIT_SIZES = {
     "French at the curtain breach": "battalion",
     "French at the Santa Maria breach": "battalion",
     "Guns on the Santa Maria bastion": "battery",
+    "Guns on the Trinidad's flank": "battery",
+    "Guns on the Santa Maria's flank": "battery",
     "The castle's garrison (French and Hesse-Darmstadt)": "battalion",
     "Philippon's reserve in the town": "battalion",
     "4th Division storming party (with ladders)": "battalion",
