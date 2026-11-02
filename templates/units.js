@@ -531,11 +531,13 @@ function leaveBehind(units, i, heroId){           // a lamed or down hero left o
   Object.assign(hero, { left: true, at: [...u.pos], left_by: u.id });
   return null;
 }
-function heroFates(units, table, rng){            // after the battle: heroes left on the field found, taken prisoner or killed (as units.hero_fates)
+const quarterFor = (table, field, side) => ((field?.no_quarter || []).includes(side) ? 0 : quarterOf(table));   // none for a garrison that refused terms after its breach was practicable (no_quarter, from the travel map) (as units.quarter)
+function heroFates(units, table, rng, field = null){   // after the battle: heroes left on the field found, taken prisoner or killed (as units.hero_fates)
   const out = [];
   const stands = u => u.men > 0 && (u.state === "steady" || u.state === "shaken");
-  const up = new Set(units.filter(stands).map(u => u.side)), chance = quarterOf(table);
+  const up = new Set(units.filter(stands).map(u => u.side));
   units.forEach((u, i) => {
+    const chance = quarterFor(table, field, u.side);
     const gone = !stands(u);
     for (const h of u.heroes || []){
       if (h.state === "dead" || h.state === "prisoner" || h.carried || !(h.left || h.going || (gone && h.state === "down"))) continue;
@@ -4533,7 +4535,7 @@ function startPhase(B, k){                         // side k's move; at the star
   for (let i = 0; i < B.units.length; i++){
     if (k !== 0 || B.units[i].state !== "broken") continue;
     const after = flee(B.units, i, B.size, B.field);
-    if (cornered(B.units, i, after)){ const s = surrender(B.units[i], quarterOf(B.table)); B.units[i] = s.unit; ran.push({ unit: i, through: [], fled: true, surrendered: true, taken: s.taken, killed: s.killed }); continue }
+    if (cornered(B.units, i, after)){ const s = surrender(B.units[i], quarterFor(B.table, B.field, B.units[i].side)); B.units[i] = s.unit; ran.push({ unit: i, through: [], fled: true, surrendered: true, taken: s.taken, killed: s.killed }); continue }
     const through = ranThrough(B.units, i, after);
     B.units = runAway(B.units, i, B.size, B.field);
     ran.push({ unit: i, through, fled: B.units[i].state === "fled" });
@@ -4633,7 +4635,7 @@ function sideEvac(B, k){                           // side k's medevac kind (its
 function afterBattle(B, care, evac, rng){          // the battle over: each unit's aftermath (care, evac: per unit) and the heroes' fates, applied: {all, after, fates} (as battle.after_battle)
   const all = afterAll(B), am = aftermath(all, care, rng, evac);
   const after = all.map((u, i) => ({ id: u.id, killed: u.dead || 0, ...am[i], ...(u.taken ? { taken: u.taken } : {}) }));   // taken: its men who surrendered, prisoners
-  const fates = heroFates(B.units, B.table, rng);  // heroes left on the field: found, taken prisoner or killed
+  const fates = heroFates(B.units, B.table, rng, B.field);  // heroes left on the field: found, taken prisoner or killed
   for (const f of fates){
     const h = B.units[f.unit].heroes.find(x => x.id === f.hero);
     if (f.fate === "killed") h.state = "dead";

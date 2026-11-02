@@ -220,6 +220,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
         <button class="small" id="btn-fight-wait" hidden title="Fight once the camp is finished">Wait for the camp</button>
       </div>
       <p class="muted" id="fight-note" style="margin:0"></p>
+      <div id="siege-box"></div>
       <h2>Health</h2>
       <div class="row">
         <div style="flex:2 1 200px"><label for="sel-hyg">Camp hygiene</label><select id="sel-hyg"></select></div>
@@ -277,7 +278,7 @@ const WK = DATA.works, CAMP_HEX_M = DATA.battle_hex_m, CG = DATA.ground;
 /*__CAMP_JS__*/
 /* ---------- the travel map's day: templates/travelday.js (state, march, night, the clock) ---------- */
 /*__TRAVELDAY_JS__*/
-const { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, sightings, fortresses, siegeState, roll100 } = makeTravelDay(DATA, RULES);
+const { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, sightings, fortresses, siegeState, termsChance, summon, roll100 } = makeTravelDay(DATA, RULES);
 /* ---------- drawing ---------- */
 const R = 12, W = Math.sqrt(3) * R;
 const xy = ([c, r]) => [W * (c + 0.5 * (r & 1)) + W / 2, 1.5 * R * r + R];
@@ -517,6 +518,7 @@ function renderSide(){
   $("#btn-camp").disabled = !!campCost(f, cur).error;
   $("#camp-who").textContent = "for " + colName(L);
   fightButton(f);
+  renderSiege(f);
   renderHealth(f);
   $("#log").innerHTML = f.log.map(l => `<li>${esc(l)}</li>`).join("");
 }
@@ -531,6 +533,17 @@ function fillFightMaps(dfd){
   else if ([...sel.options].some(o => o.value === was)) sel.value = was;
   else sel.value = was.startsWith("field") ? "field" : "roller";
   NEAR_SHOWN = key;
+}
+function renderSiege(f){                     // the fortress this force holds or besieges, if invested: the siege's state, and summoning it to surrender
+  const pl = fortresses().find(p => { const x = siegeState(p); return x.invested && ((f.side === x.side && sameHex(f.pos, p.hex)) || x.by.includes(f.name)) });
+  if (!pl){ $("#siege-box").innerHTML = ""; return }
+  const x = siegeState(pl), t = termsChance(pl), stores = pl.fortress.stores ? ` Stores: ${x.stores} days of food left.` : "";
+  const state = x.practicable ? "the breach is practicable: the storm is offered as any fight" : `${x.days} of ${x.of} days of siege work to a practicable breach; until then no fight is offered between the garrison and the besiegers`;
+  const terms = x.terms ? ` Terms: ${x.terms}.` : "";
+  $("#siege-box").innerHTML = `<h2>Siege</h2><p class="muted" style="margin:0">${esc(pl.name)}, held by ${esc(x.side)}, is invested by ${esc(x.by.join(", "))}: ${esc(state)}.${esc(stores)}${esc(terms)}</p>`
+    + `<div class="toolbar"><button class="small" data-summon="roll" title="Roll the garrison's answer: ${t.chance}% to accept (${esc(t.parts.map(([w, n]) => w + " " + n).join(", "))})">Summon to surrender (roll, ${t.chance}%)</button>`
+    + `<button class="small" data-summon="accept" title="The garrison's players accept: it marches out with the honours of war">It accepts</button><button class="small" data-summon="refuse" title="The garrison's players refuse">It refuses</button></div>`;
+  $("#siege-box").onclick = e => { const b = e.target.closest("button[data-summon]"); if (b){ summon(pl.name, b.dataset.summon); restore(); render() } };
 }
 function fightButton(f){                     // a fight needs an enemy marched to within reach
   const opts = fightOptions(f), p = opts[0], dfd = byId(p.defender), b = $("#btn-fight"), bw = $("#btn-fight-wait");
@@ -605,7 +618,7 @@ function placeYaml(p){                          // one place's line in an export
   const q = x => JSON.stringify(x);
   const depot = p.depot?.length ? ", depot: [" + p.depot.map(q).join(", ") + "]" : "", note = p.note ? ", note: " + q(p.note) : "";
   const tongues = p.tongues?.length ? ", tongues: [" + p.tongues.join(", ") + "]" : "";
-  const fort = p.fortress ? ", fortress: {side: " + q(p.fortress.side) + ", breach_days: " + p.fortress.breach_days + ", workers: " + p.fortress.workers + "}" : "";
+  const fort = p.fortress ? ", fortress: {side: " + q(p.fortress.side) + ", breach_days: " + p.fortress.breach_days + ", workers: " + p.fortress.workers + (p.fortress.stores ? ", stores: " + p.fortress.stores : "") + "}" : "";
   return "  - {name: " + q(p.name) + ", kind: " + p.kind + ", hex: [" + p.hex.join(", ") + "]" + depot + tongues + fort + note + "}";
 }
 function mapYaml(){
@@ -694,7 +707,7 @@ function seatShow(v){
   const VW = W * (cols + 0.5), VH = 1.5 * R * (rows - 1) + 2 * R;
   $("#map").innerHTML = `<svg viewBox="0 0 ${VW.toFixed(1)} ${VH.toFixed(1)}" style="max-width:${Math.round(VW * 1.5)}px">${hexesSvg(m)}${over}</svg>`;
   const light = v.light === "day" ? "" : `, ${v.light}`;
-  const sieges = (v.sieges || []).map(x => ` · ${x.name} ${x.ours ? "besieged" : "invested"}${x.practicable ? ": the breach is practicable" : ""}`).join("");
+  const sieges = (v.sieges || []).map(x => ` · ${x.name} ${x.ours ? "besieged" : "invested"}${x.practicable ? ": the breach is practicable" : ""}${x.terms ? ` (terms ${x.terms})` : ""}`).join("");
   $("#seat-when").textContent = `${DATA.maps[v.mapId].name} · ${v.when} · ${v.weather}${light}${v.air ? " · our aircraft are up" : ""}${sieges}`;
   seatPropose(v);
   $("#seat-key").textContent = `${v.ours.length} of your side's forces; ${v.seen.length} enemy seen now (red ring)${v.last.length ? `, ${v.last.length} last seen (faded, where and when it was seen)` : ""}. Hover a mark for more.`;

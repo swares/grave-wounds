@@ -229,7 +229,9 @@ engineers at its flank; attackers almost never lose men as prisoners (the captur
 on 12 runs of every battlefield: 443 to 449 of 576 (Tumbledown 3 to 6, Dornach 7 to 10,
 Chipyong-ni 10 to 12; Agincourt and Mogadishu -1). The war's quarter % of its men standing
 (`heroes.quarter`, the same figure as for a man found lying out) are taken prisoner and the
-rest killed; its heroes on their feet are taken. The log says so, *After the battle* counts
+rest killed (none taken for a side the field gives no quarter, `no_quarter`: a garrison stormed
+after refusing terms once its breach was practicable, from the travel map's siege; its heroes
+left on the field after the battle are killed too); its heroes on their feet are taken. The log says so, *After the battle* counts
 the prisoners, and a team's side offers the enemy it took to the team builder's captives, as
 with the pursuit. Sides the accounts show fighting to the end do not surrender
 (`fight_on` in `data/orders.yaml`): the North Vietnamese at Hue (about 52 killed for each

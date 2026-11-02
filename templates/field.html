@@ -670,6 +670,8 @@ function fromTravel(h){                            // a battle with the travel m
     ...(h.weather.light && h.weather.light !== "day" ? { light: h.weather.light } : {}), ...(h.weather.cold ? { cold: h.weather.cold } : {}) };
   if (h.battlefield && FD.fields[h.battlefield]) deployOnBattlefield(h.battlefield);
   else if (h.camp && WK.camps[h.camp.kind]?.layout) layCamp(h.camp, def);
+  const nq = [...new Set((h.noQuarter || []).map(id => S.forces.find(f => f.id === id)).filter(Boolean).map(forceSide))];   // a garrison stormed after refusing terms (the travel map's siege)
+  if (nq.length){ S.field.no_quarter = nq; S.msg += ` ${namesAnd(nq)} refused terms after the breach was practicable: no quarter is given them (a cornered unit is killed, not taken; heroes left on the field are killed).` }
 }
 // A travel-map fight on a battlefield: its ground and works (the day's weather stays), and its
 // armies as drawn up, scaled down to the forces' fit men if they are fewer, never up (a bigger

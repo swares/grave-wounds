@@ -312,7 +312,7 @@ def start_phase(d: Data, bt: dict, k: int) -> list:
             continue
         after = U.flee(d, bt["units"], i, bt["size"], bt["field"])
         if U.cornered(d, bt["units"], i, after):
-            s = U.surrender(bt["units"][i], U.quarter(d, bt["table"]))
+            s = U.surrender(bt["units"][i], U.quarter(d, bt["table"], bt["field"], bt["units"][i]["side"]))
             bt["units"][i] = s["unit"]
             ran.append({"unit": i, "through": [], "fled": True, "surrendered": True, "taken": s["taken"], "killed": s["killed"]})
             continue
@@ -553,7 +553,7 @@ def after_battle(d: Data, bt: dict, care: list, evac: list, rng) -> dict:
     every = after_all(d, bt)
     am = U.aftermath(d, every, care, rng, evac)
     after = [{"id": u["id"], "killed": u.get("dead") or 0, **am[i], **({"taken": u["taken"]} if u.get("taken") else {})} for i, u in enumerate(every)]   # taken: its men who surrendered
-    fates = U.hero_fates(d, bt["units"], bt["table"], rng)
+    fates = U.hero_fates(d, bt["units"], bt["table"], rng, bt["field"])
     for f in fates:
         for h in (x for x in bt["units"][f["unit"]]["heroes"] if x["id"] == f["hero"]):
             if f["fate"] == "killed":

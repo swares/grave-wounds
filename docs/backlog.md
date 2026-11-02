@@ -368,10 +368,11 @@ When an item is done, delete it here and note it in the pull request that closes
     leave out the British siege guns, which were silent during both assaults.
   - **Siege phase, first cut** (2 November 2026): done on the travel map (travel.md, *Sieges*): a
     fortress place, investment, a breach clock counted in days of siege work, and no storm offered
-    until the breach is practicable; Jacob's Ford's castle (4 days). Still to do: hunger in the
-    garrison and terms (honours of war, a sack if refused), sorties, mines and countermines, relief
-    breaking the investment, disease in the siege lines, and more fortresses (Badajoz on the
-    Albuera map, Burgos on a new one).
+    until the breach is practicable; Jacob's Ford's castle (4 days). Second cut (2 November 2026):
+    fortress stores, and terms (summoned; answered by players or rolled; honours of war, or no
+    quarter in the storm if refused after the breach). Still to do: sorties, mines and countermines,
+    relief breaking the investment, disease in the siege lines, the sack itself (loot), and more
+    fortresses (Badajoz on the Albuera map, Burgos on a new one).
   - **Wound tables:** the Crimean siege table is the only siege table (the Siege warfare tables
     item above).
   - To start: list the sieges and storms the game already touches (the two Redans, Jacob's Ford,

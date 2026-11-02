@@ -94,7 +94,8 @@ const map = buildCampaign({
   // works that evening; mining began on day 2, the first mine's fire failed, the second brought the wall down at dawn
   // on day 6 (30 Aug): four days of siege work, days 2 to 5 (a day of work counts for a force that did not march that
   // day). Workers: no source gives the sappers' numbers; 1,000 is ours (of the 3,000 foot, archers and sappers).
-  fortresses: { castle: { side: "Kingdom of Jerusalem", breach_days: 4, workers: 1000 } },
+  // Stores: "enough food for several years" (al-Fadil, via Barber): two years, ours.
+  fortresses: { castle: { side: "Kingdom of Jerusalem", breach_days: 4, workers: 1000, stores: 730 } },
   forces: [
     { name: "The Templar garrison", type: "foot", side: "Kingdom of Jerusalem", men: 1100, tools: true, at: "castle" },
     { name: "Baldwin IV's relief (gathering)", type: "foot", side: "Kingdom of Jerusalem", men: 4000, tools: true, at: "baldwin" },
