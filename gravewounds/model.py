@@ -1856,7 +1856,7 @@ def _events_errors(d: Data) -> list[str]:
                 errors.append(f"{where}: {e} incident {r.get('to')} lose must be [low, high]")
     for c, x in (E.get("conditions") or {}).items():
         at = f"{where}: condition {c}"
-        if c not in ("hungry", "unpaid"):
+        if c not in ("hungry", "unpaid", "sacking"):
             errors.append(f"{at}: unknown condition")
         for k, v in x.items():
             if k in ("source", "approx"):

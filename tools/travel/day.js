@@ -460,6 +460,35 @@ check("sieges: a mine fired falls short (dug again) or brings the wall down; a c
   }
   assert.ok(found > 10 && found < 60, `found about ${M.countermine}% of the days (${found} of 200)`);
 });
+check("sieges: a storm won takes the place; refused terms after the breach, the stormers sack it for days where the era allows", () => {
+  const { D } = fresh(15);
+  D.S.mapId = "badajoz-1812";
+  const pl = D.fortresses()[0], F = pl.fortress, fs = D.forcesHere();
+  const g = fs.find(f => f.side === F.side && D.sameHex(f.pos, pl.hex)), siege = fs.filter(f => f.side !== F.side && D.siegeState(pl).by.includes(f.name));
+  assert.ok(siege.length, "the siege corps invests Badajoz");
+  D.S.sieges[D.S.mapId] = { [pl.name]: { days: F.breach_days, terms: "refused after the breach" } };
+  D.save();
+  const msg = D.stormWon(pl.name);
+  D.restore();
+  assert.match(msg, /stormed and taken/); assert.match(msg, /sacked/);
+  assert.equal(D.siegeState(pl).side, siege[0].side, "the place passes to the stormers");
+  assert.equal(D.forcesHere().find(f => f.id === g.id).pos, null, "the garrison is taken");
+  const s1 = D.forcesHere().find(f => f.id === siege[0].id);
+  assert.ok(D.sacking(s1), "the stormers are sacking");
+  assert.ok(D.conditionsOf(s1).includes("sacking"), "desertion and straggling doubled");
+  for (let n = 0; n < DATA.terrain.siege.sack_days; n++){ const c = D.clockNow(); D.siegeNight(c); c.day += 1 }
+  assert.ok(!D.sacking(s1), `over after ${DATA.terrain.siege.sack_days} days`);
+});
+check("sieges: no sack where the era forbids it, nor when the GM spares the place", () => {
+  const { D } = fresh(16);
+  D.S.mapId = "badajoz-1812";
+  const pl = D.fortresses()[0], F = pl.fortress;
+  D.S.sieges[D.S.mapId] = { [pl.name]: { days: F.breach_days, terms: "refused after the breach" } };
+  D.save();
+  assert.doesNotMatch(D.stormWon(pl.name, false), /sacked/, "spared by the GM");
+  D.restore();
+  assert.ok(!DATA.sack_eras.includes("wwii") && DATA.sack_eras.includes("horse_musket"), "the eras that allow a sack");
+});
 check("fog of war: a player's view holds his side's forces and only the enemy it sees, or saw", () => {
   const { D } = fresh(5);
   D.S.mapId = "towton-1461";

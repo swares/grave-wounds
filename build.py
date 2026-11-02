@@ -1072,6 +1072,7 @@ def travel_bundle(d) -> dict:
         "period_order": periods(d)["order"],
         "battlefields": {fid: {"name": f["name"], **f["travel"]} for fid, f in d.fields.items() if f.get("travel")},
         "keep": {eid: keep_bundle(d, eid) for eid in team_eras(d)},
+        "sack_eras": [e for e, L in (d.ranks.get("loot") or {}).items() if (L.get("sack") or {}).get("allowed")],   # eras in which a town stormed may be sacked (ranks.yaml loot; the travel map's sieges)
         "events": d.events,   # events on the march and in camp (events.js)   # what a named man pays a day when his force is not fed by its army
     }
 

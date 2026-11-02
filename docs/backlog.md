@@ -378,7 +378,10 @@ When an item is done, delete it here and note it in the pull request that closes
     ground, 16 March to the storm, the town a fortress of 21 days. Mines and countermines (2 November
     2026): a fortress broken by a mine is fired when dug (50% the wall comes down, else redig), and
     a garrison may countermine (15% a day to find it, a day lost); Jacob's Ford's castle is mined.
-    Still to do: the sack itself (loot), and more fortresses (Burgos on a new map, Ciudad Rodrigo).
+    The storm won and the sack (2 November 2026): the GM marks the storm won; the place changes
+    hands, the garrison is taken, and where the era allows the stormers sack it for three days (halted,
+    desertion and straggling doubled, the named men's loot rolled in the roller). Still to do: more
+    fortresses (Burgos on a new map, Ciudad Rodrigo).
   - **Wound tables:** the Crimean siege table is the only siege table (the Siege warfare tables
     item above).
   - To start: list the sieges and storms the game already touches (the two Redans, Jacob's Ford,

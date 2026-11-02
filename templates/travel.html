@@ -279,7 +279,7 @@ const WK = DATA.works, CAMP_HEX_M = DATA.battle_hex_m, CG = DATA.ground;
 /*__CAMP_JS__*/
 /* ---------- the travel map's day: templates/travelday.js (state, march, night, the clock) ---------- */
 /*__TRAVELDAY_JS__*/
-const { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, sightings, fortresses, siegeState, termsChance, summon, sortie, buryDead, deadNow, fireMine, countermine, roll100 } = makeTravelDay(DATA, RULES);
+const { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, sightings, fortresses, siegeState, termsChance, summon, sortie, buryDead, deadNow, fireMine, countermine, stormWon, callOffSack, sacking, roll100 } = makeTravelDay(DATA, RULES);
 /* ---------- drawing ---------- */
 const R = 12, W = Math.sqrt(3) * R;
 const xy = ([c, r]) => [W * (c + 0.5 * (r & 1)) + W / 2, 1.5 * R * r + R];
@@ -537,6 +537,7 @@ function fillFightMaps(dfd){
   NEAR_SHOWN = key;
 }
 function renderSiege(f){                     // the fortress this force holds or besieges, if invested: the siege's state, and summoning it to surrender
+  if (sacking(f)) return renderSack(f);
   const pl = fortresses().find(p => { const x = siegeState(p); return x.invested && ((f.side === x.side && sameHex(f.pos, p.hex)) || x.by.includes(f.name)) });
   if (!pl){ $("#siege-box").innerHTML = ""; return }
   const x = siegeState(pl), t = termsChance(pl), stores = pl.fortress.stores ? ` Stores: ${x.stores} days of food left.` : "";
@@ -551,14 +552,26 @@ function renderSiege(f){                     // the fortress this force holds or
       : `<div class="toolbar"><button class="small" data-sortie="order" title="The garrison sallies out against the siege works: the besiegers can be fought despite the walls, on open ground or the roller">Order a sortie</button></div>`)
     + (x.mine && !x.practicable ? `<div class="toolbar">${x.ready ? `<button class="small" data-mine="fire" title="Fire the mine: ${TER.siege?.mine?.success ?? 50}% to bring the wall down; else it falls short and part must be dug again">Fire the mine</button>` : ""}`
       + `<button class="small" data-mine="${x.countermine ? "stop" : "counter"}" title="The garrison listens for the diggers and drives galleries to meet them: each day it may find the mine (${TER.siege?.mine?.countermine ?? 15}%), costing the besiegers a day of its work">${x.countermine ? "Stop countermining" : "Countermine"}</button></div>` : "");
+  const custom = x.terms === "refused after the breach";
+  $("#siege-box").innerHTML += `<div class="toolbar"><button class="small" data-won="sack" title="After the storm: the place is taken; where this war allows it, the stormers sack it for ${TER.siege?.sack_days ?? 3} days">Storm won: sack it${custom ? " (the custom)" : ""}</button>`
+    + `<button class="small" data-won="spare" title="After the storm: the place is taken, and the stormers are held from a sack">Storm won: no sack</button></div>`;
   $("#siege-box").onclick = e => {
-    const b = e.target.closest("button[data-summon], button[data-sortie], button[data-mine]"); if (!b) return;
-    if (b.dataset.summon) summon(pl.name, b.dataset.summon);
+    const b = e.target.closest("button[data-summon], button[data-sortie], button[data-mine], button[data-won]"); if (!b) return;
+    if (b.dataset.won) stormWon(pl.name, b.dataset.won === "sack");
+    else if (b.dataset.summon) summon(pl.name, b.dataset.summon);
     else if (b.dataset.sortie) sortie(pl.name, b.dataset.sortie);
     else if (b.dataset.mine === "fire") fireMine(pl.name);
     else countermine(pl.name, b.dataset.mine === "counter");
     restore(); render();
   };
+}
+function renderSack(f){                         // a force sacking a town: the days left, and calling it off
+  const pl = fortresses().find(p => { const x = siegeState(p); return x.sack && x.taken }), x = pl && siegeState(pl);
+  if (!pl){ $("#siege-box").innerHTML = ""; return }
+  const left = x.sack.until - clockNow().day;
+  $("#siege-box").innerHTML = `<h2>Sack</h2><p class="muted" style="margin:0">${esc(f.name)} is sacking ${esc(pl.name)}: ${left} day${left === 1 ? "" : "s"} more. It does not march, and more of its men desert and straggle. Its named men may roll the sack's loot in the roller ("A town stormed: the sack").</p>`
+    + `<div class="toolbar"><button class="small" data-calloff="1" title="The officers call it off: plunder from now on is the provost's">Call off the sack</button></div>`;
+  $("#siege-box").onclick = e => { if (e.target.closest("button[data-calloff]")){ callOffSack(pl.name); restore(); render() } };
 }
 function renderDead(){                        // battlefields whose dead lie unburied: forces near them sicken (disease.yaml dead)
   const xs = deadNow();
