@@ -74,6 +74,16 @@ place_kinds:
 #     device lets a man see to aim, if that is further: a thermal sight 3 km, goggles 1.5 km, a
 #     Starlight scope 1 km. Field glasses are left out: by day the horizon and folds of ground,
 #     not the eye, limit how far a body of troops is seen.
+# Sieges (docs/travel.md, Sieges; the project's claude/siege-phase-research.md). A place's
+# `fortress` gives the side holding it, its breach_days and workers, and stores (days of food for
+# its garrison while invested). terms: the % that a garrison summoned to surrender accepts, when
+# its answer is rolled: `before` the breach is practicable, once it is (`breach`), and `hungry`
+# added if it has gone hungry. Garrisons that gave up once the breach was practicable marched out
+# with the honours of war; one that refused and was stormed could by custom be sacked. The
+# figures are design estimates (no source gives a rate).
+siege:
+  terms: {before: 5, breach: 50, hungry: 25}
+
 sight:
   km: {foot: 3, mounted: 8, wagons: 2}
   weather_mass: 5

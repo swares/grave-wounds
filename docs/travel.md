@@ -425,9 +425,26 @@ a storm up by hand). Once it is practicable, the storm is offered as any fight, 
 battlefield. The GM's map shows the siege on the place (its label: besieged 2/4, or breached; its
 tooltip: who invests it and the days done); online, the players of both sides see that it is
 invested, and when the breach is practicable, but not the day count. The siege's state is kept
-with the map's (`S.sieges`). Hunger in the garrison, terms and their refusal, sorties, mines and
-countermines, and disease in the siege lines are not played yet (project doc
-"siege-phase-research").
+with the map's (`S.sieges`).
+
+**Stores.** A fortress can give its `stores`, in days of food for its garrison. While it is
+invested its garrison eats them, a day each evening, and is fed from them rather than from its
+army; when they are gone it lives on its own rations, then goes hungry under the usual rules.
+Not invested, it is fed by its army as any force.
+
+**Terms.** The **Siege** box (a selected garrison or besieging force at an invested fortress) shows
+the siege and summons the garrison to surrender: **It accepts** or **It refuses** as its players
+answer, or **Summon to surrender (roll)**: d100 at or under 5% before the breach is practicable,
+50% once it is, 25% more if the garrison has gone hungry (terrain.yaml `siege.terms`; design
+estimates). Accepted, the garrison marches out with the honours of war for its side's nearest
+depot, and the place passes to the besiegers. Refused once the breach is practicable, the custom of
+war allowed a place so stormed to be sacked and its garrison put to the sword (Badajoz was sacked
+for three days): the storm, sent to the field map, gives that garrison no quarter (`no_quarter`: a
+cornered unit of it is killed, not taken, and its heroes left on the field are killed); the sack
+itself is the GM's. Online players see that terms were refused or accepted.
+
+Sorties, mines and countermines, a relief breaking the investment, and disease in the siege lines
+are not played yet (project doc "siege-phase-research").
 
 ## Fog of war
 
@@ -612,8 +629,9 @@ Its climate is new: the upper Jordan valley (Tiberias), with August highs near 3
 Arabic. No source gives Saladin's numbers; the forces are round figures of our own. It is generated
 by `tools/maps/make_jacobsford.mjs`. The castle is a fortress (*Sieges*): 4 days of siege work
 with 1,000 men to a practicable breach (Saladin arrived on day 1 and the wall fell at dawn on day 6;
-the workers are ours). Once the breach is practicable, a fight within a hex of the castle is offered
-on the Jacob's Ford battlefield.
+the workers are ours), and stores for two years ("enough food for several years", al-Fadil; ours).
+Once the breach is practicable, a fight within a hex of the castle is offered on the Jacob's Ford
+battlefield.
 
 **The Dornach campaign, 1499** (`data/maps/dornach-1499.yaml`) covers the Birs valley and the
 Gempen plateau on 0.6-mile (1 km) hexes: 22 × 25 hexes, about 14 by 13 miles (22 by 21 km), from

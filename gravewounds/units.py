@@ -501,15 +501,16 @@ def cauterises(d: Data, table: str) -> bool:
     return (d.tables.get(table) or {}).get("battle") in d.units["heroes"]["cautery"]["battles"]
 
 
-def hero_fates(d: Data, units: list, table: str, rng) -> list:
+def hero_fates(d: Data, units: list, table: str, rng, field: dict | None = None) -> list:
     """After the battle, each hero still on the field who cannot leave it with his unit: left
     behind, or down with a unit that broke, fled or was destroyed. His own side holds the field
     if it has a unit still standing (or neither side has): he is found. Otherwise d100 at or
     under heroes.quarter % for the war makes him a prisoner, else he is killed. -> [{unit, hero,
     name, fate (found, prisoner or killed), roll, chance}], unit by unit."""
-    out, chance = [], quarter(d, table)
+    out = []
     up = {u["side"] for u in units if standing(u)}
     for i, u in enumerate(units):
+        chance = quarter(d, table, field, u["side"])
         for h in (h for h in u.get("heroes", []) if _lying_out(u, h)):
             line = {"unit": i, "hero": h["id"], "name": h["name"]}
             if u["side"] in up or not up:
@@ -524,9 +525,12 @@ def hero_fates(d: Data, units: list, table: str, rng) -> list:
     return out
 
 
-def quarter(d: Data, table: str) -> int:
+def quarter(d: Data, table: str, field: dict | None = None, side=None) -> int:
     """% that a man the enemy finds lying out is taken prisoner (heroes.quarter, by the wound
-    table's war), else killed."""
+    table's war), else killed. 0 for a side the field gives no quarter (no_quarter: a
+    garrison that refused terms after its breach was practicable, from the travel map's siege)."""
+    if side is not None and side in ((field or {}).get("no_quarter") or []):
+        return 0
     Q = d.units["heroes"]["quarter"]
     return Q.get((d.tables.get(table) or {}).get("battle"), Q["default"])
 
