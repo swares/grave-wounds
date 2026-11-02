@@ -2387,6 +2387,26 @@ the Japanese 47 mm (`anti_tank_guns` in `data/units.yaml`).
 - **Ordered by the commander.** The enemy commander moves them forward on tow and unhooks
   them in reach, as it limbers and moves its batteries (see The enemy commander: Its guns).
 
+**Siege defences** (`units.yaml` siege; project doc "siege-defences-research"). What a garrison
+used at a storm besides its fire (Badajoz, 1812, from Napier):
+- **Spare muskets.** A unit marked `spare_muskets: N` (set-up: **Spare muskets**, 3; or a
+  battlefield file), armed with a smoothbore, matchlock or rifle-musket, fires its first exchange
+  of fire at N − 1 more shots a man than its rate (with a smoothbore's 2 a minute and three
+  muskets, twice the shots), "with their loaded spare muskets" in the log; then its rate. The
+  spares cost no rounds.
+- **Things thrown down.** A unit marked `throws` (set-up: **Throws down**, on a field with a wall
+  or chevaux de frise) drops shells, stones and beams, once an exchange, on each enemy hex next to
+  it across a work that blocks hand to hand: 10% of the men there are struck (`thrown.struck`) and
+  wounded at 70% as by shell (the first of `thrown.weapons` the table has; none on the medieval
+  tables, so nothing is thrown there). The 10% is a design estimate, a quarter of grenades into a
+  bunker: Badajoz could not set it (Allied losses there 30% with it off, 29% at 5, 33% at 20 and
+  at 50: the stormers seldom stand long at the breach's foot).
+- **A sprung mine.** A minefield of the kind **A sprung mine** (`sprung`, `once`) goes off the
+  first time men go into it, at the anti-personnel rate, and is then gone ("A mine is sprung
+  under ..."). On a table without mine wounds (any gunpowder war) its men are wounded as by shell
+  (`mines.fallback`). The GM paints it in set-up like a minefield; a battlefield file lays it with
+  `mines: [{at, kind: sprung, hidden: true}]`.
+
 **Minefields** (wound tables with mine wounds: 1939 on). In set-up, **Clicking the map:
 Minefields** paints a hex as anti-personnel, anti-tank or mixed, **marked** or **hidden**.
 Click it again with the same choice to clear it.
@@ -3002,8 +3022,14 @@ deep, had no room to turn inside the outwork (7 hexes wide) to face the garrison
 all night (the castle fell in 1 of 12 then).
 Still open: the brigades behind each storming party mostly wait on its route (units move as blocks
 and cannot pass one another in the ditch); the castle falls too rarely; the other means Napier
-gives (three muskets a man, a mine, shells and stones thrown down) are not played (project doc
-"siege-defences-research"). The first cut (31 October 2026) took the town in 5 of 12, but only
+gives are now played (1 November 2026, *Siege defences*): the breaches' defenders have three
+muskets a man and throw things down, and a mine lies hidden before the curtain breach. They
+change the losses little (12 local runs, Allied losses 30% without them, 29-33% with them; French
+35%, 30-39%; in the benchmark the Allies 32% to 35%, the French 37% to 26%, and the castle falls in
+8 of 12, from 4):
+the gap to 1812's 45% is in how long the stormers stay at the breaches (Napier counts some forty
+attacks; here each storming party breaks after a few losses and the brigades wait behind it), not
+in what is thrown at them. The first cut (31 October 2026) took the town in 5 of 12, but only
 because the breaches gave way and the castle's garrison ran with them; the castle was never taken
 by escalade then (the escalade fight came to a blow an exchange each way: *Escalade*).
 

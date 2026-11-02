@@ -72,11 +72,15 @@ export function allRows(u, perHex){
 export const firstCol = u => u.pos[0] - Math.floor((u.width - 1) / 2);
 
 const yq = s => JSON.stringify(s);
-const unitLine = u => `  - {name: ${yq(u.name)}, side: ${u.side}, men: ${u.men}, quality: ${u.quality}, weapon: ${u.weapon}, kit: ${u.kit}, formation: ${u.formation}, width: ${u.width}, pos: [${u.pos.join(", ")}], facing: ${u.facing}${u.mounted ? ", mounted: true" : ""}${u.guns ? ", guns: " + u.guns : ""}${u.prone ? ", prone: true" : ""}${u.emplaced ? ", emplaced: true" : ""}${u.lands === undefined ? "" : ", lands: " + u.lands}${u.vehicle ? ", vehicle: " + u.vehicle : ""}${u.fixed ? ", fixed: [" + u.fixed.join(", ") + "]" : ""}${u.via ? ", via: [" + u.via.map(h => "[" + h.join(", ") + "]").join(", ") + "]" : ""}${u.nv ? ", nv: " + u.nv : ""}${u.fc ? ", fc: " + u.fc : ""}${u.armour ? ", armour: " + u.armour : ""}${u.fac ? ", fac: true" : ""}${u.ladders ? ", ladders: " + (u.ladders === "short" ? "short" : "true") : ""}${u.type ? ", type: " + u.type : ""}${u.size ? ", size: " + u.size : ""}${u.unfit == null ? "" : ", unfit: " + u.unfit}${u.he === false ? ", he: false" : ""}}`;
+const unitLine = u => `  - {name: ${yq(u.name)}, side: ${u.side}, men: ${u.men}, quality: ${u.quality}, weapon: ${u.weapon}, kit: ${u.kit}, formation: ${u.formation}, width: ${u.width}, pos: [${u.pos.join(", ")}], facing: ${u.facing}${u.mounted ? ", mounted: true" : ""}${u.guns ? ", guns: " + u.guns : ""}${u.prone ? ", prone: true" : ""}${u.emplaced ? ", emplaced: true" : ""}${u.lands === undefined ? "" : ", lands: " + u.lands}${u.vehicle ? ", vehicle: " + u.vehicle : ""}${u.fixed ? ", fixed: [" + u.fixed.join(", ") + "]" : ""}${u.via ? ", via: [" + u.via.map(h => "[" + h.join(", ") + "]").join(", ") + "]" : ""}${u.nv ? ", nv: " + u.nv : ""}${u.fc ? ", fc: " + u.fc : ""}${u.armour ? ", armour: " + u.armour : ""}${u.fac ? ", fac: true" : ""}${u.ladders ? ", ladders: " + (u.ladders === "short" ? "short" : "true") : ""}${u.type ? ", type: " + u.type : ""}${u.size ? ", size: " + u.size : ""}${u.unfit == null ? "" : ", unfit: " + u.unfit}${u.he === false ? ", he: false" : ""}${u.throws ? ", throws: true" : ""}${u.spare_muskets ? ", spare_muskets: " + u.spare_muskets : ""}}`;
 function dumpsLine(ds){                          // the supply dumps' line (and its comment), or ""
   if (!ds?.length) return "";
   const one = m => "{at: [" + m.at.join(", ") + "], side: " + m.side + "}";
   return `\n# Supply dumps placed before the battle (side 0 or 1): its units within ammunition.reach of one can resupply there.\ndumps: [${ds.map(one).join(", ")}]`;
+}
+function minesLine(mines){                         // mines laid before the battle (a sprung mine under a breach), or ""
+  if (!mines?.length) return "";
+  return `\n# Mines laid before the battle (units.yaml mines; sprung: goes off once, under the first men into it).\nmines: [${mines.map(x => "{at: [" + x.at.join(", ") + "], kind: " + x.kind + (x.hidden ? ", hidden: true" : "") + "}").join(", ")}]`;
 }
 function litLine(fires){                          // the fires that light hexes all battle (and their comment), or ""
   if (!fires?.length) return "";
@@ -162,7 +166,7 @@ ${t ? `# On the travel map: a fight within \`within\` hexes of this place offers
 # the travel-map sides that stand where each army stands here (${spec.sides[0]} first).
 travel: {map: ${t.map}, place: ${yq(t.place)}, within: ${t.within}, sides: [${t.sides.map(yq).join(", ")}]}
 ` : "# Not on any travel map yet.\n"}size: [${grid[0].length}, ${grid.length}]
-${upLine}weather: ${spec.weather}${spec.lz ? "\n" : ""}${spec.lz ? "lz: [" + hexList(spec.lz) + "]               # landing zones (units with `lands` come in by air at that one)" : ""}${dumpsLine(spec.dumps)}${litLine(spec.lit)}${objLine(spec.objective)}${stancesLine(spec.stances)}${endsLine(spec.ends)}${markersLine(spec.markers)}${phasesText(spec.phases)}
+${upLine}weather: ${spec.weather}${spec.lz ? "\n" : ""}${spec.lz ? "lz: [" + hexList(spec.lz) + "]               # landing zones (units with `lands` come in by air at that one)" : ""}${dumpsLine(spec.dumps)}${litLine(spec.lit)}${minesLine(spec.mines)}${objLine(spec.objective)}${stancesLine(spec.stances)}${endsLine(spec.ends)}${markersLine(spec.markers)}${phasesText(spec.phases)}
 ground: |
 ${grid.map(row => "  " + row.join("")).join("\n")}
 ${worksText}${supText}units:

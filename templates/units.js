@@ -902,9 +902,11 @@ function volleyOf(units, occ, field, i, men = null){   // unit i's volley at its
   const v = { att: i, dfd: best[1], men: men === null && ammoState(u) === "low" ? shots / 2 : shots, dist: best[0], cover: shareCover(field, best[2], units[best[1]]) + groundCover(units[best[1]]) + shieldCover(units[best[1]], best[3], best[2]), penalty: wx.penalty - up, misfire: wx.misfire, reach: (wx.reach || 0) + longer, from: best[2], to: best[3],
     height: up, over: lineFire(units, occ, field, i, best[1], [best[2], best[3], best[0]]), seen: seenShare(field, units[best[1]], best[3], u.weapon) };
   for (const k of ["blind", "flash", "beam"]) if (wx[k]) v[k] = true;
+  if (men === null && sparesLeft(u)){ const rate = UD.missile.rate[u.weapon] ?? UD.missile.default_rate; v.spare = (rate + u.spare_muskets - 1) / rate }   // its loaded spares, fired with its first exchange of fire
   if (men === null && isMg(u.weapon)) Object.assign(v, beaten(units, occ, field, i, best));
   return [v];
 }
+const sparesLeft = u => (u.spare_muskets || 0) >= 2 && !u.spares_fired && UD.siege.spare_muskets.weapons.includes(u.weapon);   // its loaded spare muskets beside its men, not yet fired (as units.spares_left)
 function riderShooters(u){                         // riders who can shoot: through an IFV's ports or from a tank's hull, rider_fire share (as units.rider_shooters)
   const K = vehicleKind(u), R = u.riders;
   if (!K || !R || R.men <= 0 || ROUTED.has(R.state) || !("range" in FD.weapons[R.weapon])) return 0;
@@ -1279,6 +1281,35 @@ function assaultAll(us, table, rng, acc, log, field){   // every unit ordered to
   if (!field || !weapon) return;
   const occ = occupancy(us);
   us.forEach((u, i) => { if (UD.assault.means[u.assault] && !out_(u)) storm(us, occ, i, { table, weapon, rng, acc, log, field }) });
+}
+function thrownWeapon(table){                     // the weapon men struck by things thrown down from a work wound as, or null (as units.thrown_weapon)
+  const have = FD.tables[table]?.weapons || [];
+  return UD.siege.thrown.weapons.find(w => have.includes(w)) || null;
+}
+function thrownAll(us, table, rng, acc, log, field){   // units marked throws drop shells, stones and beams on each enemy hex next to them across a work that blocks hand to hand, once an exchange (as units._thrown_all)
+  const weapon = thrownWeapon(table);
+  if (!field || !weapon) return;
+  const occ = occupancy(us);
+  us.forEach((u, i) => {
+    if (!u.throws || out_(u)) return;
+    const done = new Set();
+    for (const h of footprint(u).flat()) for (let dn = 0; dn < 6; dn++){
+      const x = step(h, dn), k = hk(x), j = occ[k];
+      if (j === undefined || done.has(k) || us[j].side === u.side || out_(us[j]) || us[j].vehicle || !across(field, u, h, x, 1)[0]) continue;
+      done.add(k);
+      log.push(...thrownAt(us, i, j, x, { table, weapon, rng, acc }));
+    }
+  });
+}
+function thrownAt(us, i, j, x, { table, weapon, rng, acc }){   // what unit i throws down on enemy unit j's men in hex x: struck %, wounded at attack % (as units._thrown_at)
+  const T = UD.siege.thrown, b = us[j], k = footprint(b).flat().findIndex(h => h[0] === x[0] && h[1] === x[1]), there = k >= 0 ? menByHex(b)[k] : 0;
+  let struck = 0;
+  for (let m = 0; m < there; m++) if (rng.randint(1, 100) <= T.struck) struck++;
+  const line = { kind: "thrown", unit: i, dfd: j, at: [...x], struck };
+  if (!struck) return [{ ...line, down: 0, dead: 0 }];
+  const t = takeHurt(b, blows({ table, weapon, kit: null, quality: "regular" }, sideOfUnit(b, table), struck, T.attack, 0, rng, { exposed: exposure(b, false, true), shift: -1000 }));
+  acc.lost[j] += t.down; acc.dead[j] += t.dead; acc.dealt[i] += t.down;
+  return logged(line, t);
 }
 function storm(us, occ, i, ctx){                  // unit i storms each intact, held bunker next to its front hexes once
   const u = us[i], A = UD.assault, M = A.means[u.assault], done = new Set(), { rng, acc, log, field } = ctx;
@@ -1829,10 +1860,11 @@ function shootAll(us, table, rng, acc, log, field, under = null){
   for (const v of volleys(us, field)){
     markMg(us, v, under);
     spend(us, v);
-    const b = us[v.dfd], exposed = exposure(b, false, true), mf = form(b).missile_factor;
-    if (b.vehicle){ armourVolley(us, table, rng, acc, log, v, { factor: mf * (100 - v.misfire) / 100 * v.seen, penalty: v.cover + v.penalty + v.over, reach: v.reach }); continue }
+    if (v.spare) us[v.att].spares_fired = true;     // its spares are fired now: its rate from the next exchange
+    const b = us[v.dfd], exposed = exposure(b, false, true), mf = form(b).missile_factor, sp = v.spare || 1;
+    if (b.vehicle){ armourVolley(us, table, rng, acc, log, v, { factor: mf * (100 - v.misfire) / 100 * v.seen * sp, penalty: v.cover + v.penalty + v.over, reach: v.reach }); continue }
     if (hurtsArmour(shooterOf(us, v).weapon)){ rocketVolley({ us, table, rng, acc, log, field, under }, v); continue }
-    const t = takeHurt(b, volley(sideOfUnit(shooterOf(us, v), table), sideOfUnit(b, table), v.men, v.dist, rng, { factor: mf * (100 - v.misfire) / 100 * v.seen, exposed, penalty: v.cover + v.penalty + v.over, reach: v.reach }));
+    const t = takeHurt(b, volley(sideOfUnit(shooterOf(us, v), table), sideOfUnit(b, table), v.men, v.dist, rng, { factor: mf * (100 - v.misfire) / 100 * v.seen * sp, exposed, penalty: v.cover + v.penalty + v.over, reach: v.reach }));
     tallyLoss(acc, v, t);
     log.push(...logged({ kind: "volley", ...v }, t));
     if (v.behind !== undefined && v.behind !== null) beatenFire(us, table, rng, acc, log, v);
@@ -2070,6 +2102,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   shootAll(us, table, rng, acc, log, field, under);
   indirectAll(us, table, rng, acc, log, field, under);
   assaultAll(us, table, rng, acc, log, field);
+  thrownAll(us, table, rng, acc, log, field);
   if (field) field.blast = !!blastWeapon(table);   // demolition charges on this table (walls)
   breachAll(us, field, log);
   laddersAll(us, field, log);
@@ -2171,6 +2204,7 @@ function minesAll(us, table, rng, acc, log, field){   // units that went into mi
     if (!hit.length) return;
     for (const x of hit) mines[hk(x)].found = true;
     log.push(...setOff(us, i, hit.map(x => mines[hk(x)].kind), table, rng, acc));
+    for (const x of hit) if (UD.mines.kinds[mines[hk(x)].kind].once) delete mines[hk(x)];   // a sprung mine goes off once, then is spent
   });
 }
 function minesVehicles(us, i, kinds, line, [table, rng, acc]){   // vehicles struck at the kind's vehicles %, knocked out at their armour's mine %, else immobilised
@@ -2182,13 +2216,18 @@ function minesVehicles(us, i, kinds, line, [table, rng, acc]){   // vehicles str
   u.immobile = Math.min(left, (u.immobile || 0) + immobile);
   return logged({ ...line, struck, knocked: k.knocked, crew: k.crew, immobilised: immobile, ...ridersLine(k) }, k.tally);
 }
+function mineWeapon(table, kinds){                 // the mine weapon if the table has it; for sprung mines alone (once), the fallback if it has that; else null (as units.mine_weapon)
+  const M = UD.mines, have = FD.tables[table]?.weapons || [];
+  if (have.includes(M.weapon)) return M.weapon;
+  return kinds.every(k => M.kinds[k].once) && have.includes(M.fallback) ? M.fallback : null;
+}
 function setOff(us, i, kinds, table, rng, acc){   // unit i in minefield hexes of these kinds: men struck at men % (a hex's worth a hex), vehicles at vehicles % then knocked at armour mine %, else immobilised
-  const M = UD.mines, u = us[i], line = { kind: "mines", unit: i, hexes: kinds.length };
+  const M = UD.mines, u = us[i], line = { kind: "mines", unit: i, hexes: kinds.length, ...(kinds.every(k => M.kinds[k].once) ? { sprung: true } : {}) };
   if (u.vehicle) return minesVehicles(us, i, kinds, line, [table, rng, acc]);
   const per = form(u).per_hex;
   let struck = 0;
   for (const k of kinds) for (let s = 0; s < Math.min(per, u.men); s++) if (rng.randint(1, 100) <= M.kinds[k].men) struck++;
-  const weapon = (FD.tables[table]?.weapons || []).includes(M.weapon) ? M.weapon : null;
+  const weapon = mineWeapon(table, kinds);
   if (!struck || !weapon) return [{ ...line, struck, down: 0, dead: 0 }];
   const t = takeHurt(u, blows({ table, weapon, kit: null, quality: "regular" }, sideOfUnit(u, table), struck, M.attack, 0, rng, { exposed: exposure(u, false, true), shift: -1000 }));
   acc.lost[i] += t.down; acc.dead[i] += t.dead;
@@ -4332,7 +4371,7 @@ function makeUnit(o, id, table){                   // a new unit as the GM or a 
 function unitMarks(o){                             // a drawn unit's optional marks, copied as given
   return { ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.armour ? { armour: o.armour } : {}),
     ...(o.via?.length ? { via: o.via.map(h => [...h]) } : {}), ...unitOrders(o), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: o.ladders === "short" ? "short" : true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}),
-    ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}), ...(o.fights_on ? { fights_on: true } : {}), ...(o.unfit != null ? { unfit: o.unfit } : {}), ...(o.he === false ? { he: false } : {}), ...(o.asFought ? { asFought: true } : {}) };
+    ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}), ...(o.fights_on ? { fights_on: true } : {}), ...(o.throws ? { throws: true } : {}), ...(o.spare_muskets ? { spare_muskets: o.spare_muskets } : {}), ...(o.unfit != null ? { unfit: o.unfit } : {}), ...(o.he === false ? { he: false } : {}), ...(o.asFought ? { asFought: true } : {}) };
 }
 const unitOrders = o => ({ ...(o.hold ? { hold: true } : {}), ...(o.withdraw ? { withdraw: { ...o.withdraw } } : {}) });   // its orders from the accounts
 function ensureTags(B){                            // each unit's number on its side, kept for the battle (B3 stays B3) (as battle.ensure_tags)

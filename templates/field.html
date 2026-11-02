@@ -321,6 +321,8 @@ legend{padding:0}
         <button class="small" id="btn-sappers" hidden title="Engineers or pioneers: during the battle they can lay a hidden minefield in the row of hexes ahead of their front, or lift a lane through a known one">Sappers</button>
         <label class="sr" for="sel-sap">Sapper work</label><select class="small" id="sel-sap" hidden style="width:auto" title="On their own move, before moving and out of contact: lay mines in the row ahead of their front, or lift the known minefield there. They neither move nor fire while they work."></select>
         <button class="small" id="btn-ladders" hidden title="Scaling ladders: across a wall, palisade or barred gate the front rank fights from the ladders, and the unit can climb over it; at a deep ditch they go down into it for everyone. Press again for short ladders, which do not reach the top of a wall">Ladders</button>
+        <button class="small" id="btn-throws" hidden title="Shells, stones and beams kept to throw down: once an exchange, on each enemy hex next to this unit across a wall or chevaux de frise (Badajoz, 1812)">Throws down</button>
+        <button class="small" id="btn-spares" hidden title="Three loaded muskets a man (Badajoz, 1812): fired with its first exchange of fire, then its usual rate">Spare muskets</button>
         <button class="small" id="btn-fac" hidden title="A forward air controller talks aircraft onto a target he can see: they scatter less, and may attack close to their own men">Air controller</button>
         <label class="sr" for="sel-medics">Medics</label><select class="small" id="sel-medics" hidden style="width:auto" title="Medics with the unit (followers of a healing career, chosen before the battle): they give its heroes first aid at their quality's chance"></select>
         <label class="sr" for="sel-ammo">Ammunition</label><select class="small" id="sel-ammo" hidden style="width:auto" title="How much ammunition the unit has (set before the battle; in play it runs down as the unit shoots)"></select>
@@ -1008,7 +1010,7 @@ function litSvg(l){ const [cx, cy] = xy(l.at); return `<circle class="lit" cx="$
 function fixedSvg(u){ const f = footprint(u)[0], [x1, y1] = xy(f[Math.floor(f.length / 2)]), [x2, y2] = xy(u.fixed); return `<line class="fixed" x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(x2)}" y2="${f1(y2)}"/>` }
 function batterySvg(b){ const [x, y] = xy(b.place), cls = b.overrun ? "bat gone" : "bat"; return `<rect class="${cls}" x="${f1(x - 4)}" y="${f1(y - 3)}" width="8" height="6"><title>${esc(b.name)} (${esc(b.side)})</title></rect>` }
 const poss = n => (n.endsWith("s") ? n + "'" : n + "'s");   // "Yorkists'", "England's"
-const MINE_TAG = { ap: "a.p.", at: "a.t.", mixed: "mix" };
+const MINE_TAG = { ap: "a.p.", at: "a.t.", mixed: "mix", sprung: "mine" };
 function minesSvg(){                              // marked minefields, hidden ones once found (and faintly for the GM: setting up, or laid by sappers)
   return Object.entries(S.field.mines || {}).filter(([, m]) => !m.hidden || m.found || S.phase === "setup" || "side" in m).map(([k, m]) => {
     const h = k.split(",").map(Number), [x, y] = xy(h), hid = m.hidden && !m.found ? " hid" : "";
@@ -1099,7 +1101,7 @@ function lostGuns(l){                             // "; 2 guns knocked out"
 }
 const signed = (n, up = "+", down = "−") => `${n > 0 ? up : down}${Math.abs(n)}%`;   // "+10%" or "−5%"
 function shotNotes(l){                            // " (cover -20%, weather -10%)"
-  const bits = [[l.blind, "blind, down its fixed line"], [l.flash, "seen by its muzzle flashes"], [l.beam, "seen by its infrared beam"]].filter(([on]) => on).map(([, text]) => text);
+  const bits = [[l.blind, "blind, down its fixed line"], [l.flash, "seen by its muzzle flashes"], [l.beam, "seen by its infrared beam"], [l.spare, "with their loaded spare muskets"]].filter(([on]) => on).map(([, text]) => text);
   if (l.cover) bits.push(`cover −${l.cover}%`);
   if (l.over) bits.push(`loosing high over the units between −${l.over}%`);
   if (l.seen !== undefined && l.seen < 1) bits.push(`hidden: ${Math.round(l.seen * 100)}% of shots find a man`);
@@ -1122,7 +1124,7 @@ function aidText(l, nm){                          // a hero's first aid: "X (uni
   return `${who} is bandaged${by}: his ${part} bleeds ${l.bleed ? "less" : "no more"}.`;
 }
 function mineText(l, nm){                         // a unit sets off mines
-  const where = `${nm(l.unit)} go into ${nOf(l.hexes, "minefield hex", "minefield hexes")}`;
+  const where = l.sprung ? `A mine is sprung under ${nm(l.unit)}` : `${nm(l.unit)} go into ${nOf(l.hexes, "minefield hex", "minefield hexes")}`;
   if (S.units[l.unit]?.vehicle){
     const knocked = l.knocked ? ", " + l.knocked + " knocked out (" + l.crew + " crew out of the fight)" : "";
     const stuck = l.immobilised ? ", " + l.immobilised + " immobilised" : "";
@@ -1188,6 +1190,7 @@ const OTHER_LINES = {                            // kind: (line, nm) => {cls, te
   fetched: (l, nm) => ({ cls: "hero", text: `${l.name} is picked up by ${nm(l.unit)}: he goes with them now.` }),
   found: (l, nm) => ({ cls: "morale", text: `${l.name} (${nm(l.unit)}) is found by ${l.at_post ? "the enemy overrunning the aid post" : nm(l.by)}: ${l.fate === "prisoner" ? "taken prisoner" : "killed"} (rolled ${l.roll}, quarter ${l.chance}% or less${l.fate_spent ? "; fate spent: spared and taken" : ""}).` }),
   mines: (l, nm) => ({ cls: "morale", text: mineText(l, nm) }),
+  thrown: (l, nm) => (l.struck ? { cls: "morale", text: `${nm(l.unit)} throw shells, stones and beams down on ${nm(l.dfd)} at ${hexName(l.at)}: ${l.struck} struck, ${l.down} down${l.dead ? " (" + l.dead + " dead)" : ""}.` } : null),
   hullshelled: (l, nm) => ({ cls: "", text: `${l.name || "Shells"} burst among the men riding on ${nm(l.dfd)}: ${l.struck} struck, ${l.down} down` + (l.dead ? ` (${l.dead} dead)` : "") + "." }),
   objective: l => ({ cls: "", text: objectiveText(l) }),
   overrun_post: l => ({ cls: "morale", text: `${poss(l.side)} aid post at ${hexName(l.at)} is overrun.` }),
@@ -2220,7 +2223,7 @@ function movePost(h, side, p){                     // in battle: a side's aid po
 const minesHere = () => (FD.tables[S.table]?.weapons || []).includes(FD.units.mines.weapon);   // a table with mine wounds: 1939 on
 function placeMine(h, kind, hidden){              // a minefield hex painted, changed or cleared (set-up only)
   if (S.phase !== "setup"){ S.msg = "Minefields are laid before the battle starts."; return }
-  if (!minesHere()){ S.msg = "These wound tables have no mine wounds: minefields are for 1939 on."; return }
+  if (!minesHere() && !(FD.units.mines.kinds[kind].once && (FD.tables[S.table]?.weapons || []).includes(FD.units.mines.fallback))){ S.msg = "These wound tables have no mine wounds: minefields are for 1939 on (a sprung mine needs gunpowder: the musket era on)."; return }
   const M = S.field.mines || (S.field.mines = {}), k = hkey(h), was = M[k];
   if (was && was.kind === kind && !!was.hidden === hidden){ delete M[k]; S.msg = `Minefield at ${hexName(h)} cleared.`; return }
   M[k] = { kind, hidden };
@@ -2699,7 +2702,7 @@ function renderMap(){
   const V = shows(); for (const k of ["reach", "edges", "refs", "oncall"]) $("#show-" + k).checked = V[k];
 }
 const gunsText = (n, what) => n + " " + what + (n === 1 ? "" : "s");   // "2 machine guns"
-const META_FLAGS = [["breach", "breaching"], ["assault", "storming"], ["prone", "to ground"], ["emplaced", "emplaced"], ["digging", "digging in"], ["pinned", "pinned"], ["lost", "lost in the dark"], ["fixed", "fixed line"], ["fac", "air controller"], ["reserve", "reserve"], ["sappers", "sappers"], ["shielded", "shielded"], ["ladders", "ladders"], ["jostled", "jostled"], ["mining", "laying mines"], ["clearing", "lifting mines"]];
+const META_FLAGS = [["breach", "breaching"], ["assault", "storming"], ["prone", "to ground"], ["emplaced", "emplaced"], ["digging", "digging in"], ["pinned", "pinned"], ["lost", "lost in the dark"], ["fixed", "fixed line"], ["fac", "air controller"], ["reserve", "reserve"], ["sappers", "sappers"], ["shielded", "shielded"], ["ladders", "ladders"], ["jostled", "jostled"], ["mining", "laying mines"], ["clearing", "lifting mines"], ["throws", "throwing things down"]];
 const fatigueMeta = u => (u.fatigue ? " · " + WXD.fatigue.levels[u.fatigue].name.toLowerCase() : "");   // " · weary"
 function unitMeta(u){
   if (u.state === "fled") return "fled";
@@ -2810,6 +2813,8 @@ function groundInfo(u){                          // the selected unit's Ground l
     + (dugHere(u) ? `<dt>Ground</dt><dd>Dug in: shots at it −${FD.units.to_ground.cover}% while it stands here; it leaves its holes if it moves</dd>` : "")
     + (u.digging ? `<dt>Ground</dt><dd>Digging in: ${u.digging.n} of ${FD.units.dig_in.exchanges} exchanges; it does not fire, and stops if it moves or comes into contact</dd>` : "")
     + sapInfo(u)
+    + (u.throws ? `<dt>From above</dt><dd>Throws shells, stones and beams down on each enemy hex next to it across a wall or chevaux de frise, once an exchange: ${FD.units.siege.thrown.struck}% of the men there struck</dd>` : "")
+    + (u.spare_muskets ? `<dt>Spare muskets</dt><dd>${u.spares_fired ? "Fired: at its rate now" : `${u.spare_muskets} loaded muskets a man: its first exchange of fire, ${u.spare_muskets - 1} more shots a man`}</dd>` : "")
     + (u.emplaced ? `<dt>Ground</dt><dd>Emplaced: dug in before the battle, shots at it −${FD.units.to_ground.cover}% while it stands; it cannot move, but may turn</dd>` : "");
 }
 function renderSel(){
@@ -2833,6 +2838,7 @@ function renderSel(){
   renderMedics(u, setup);
   renderFac(u, setup);
   renderLadders(u, setup);
+  renderSiege(u, setup);
   renderSappers(u, setup);
   renderShield(u, setup);
   if (!u){ $("#sel-info").innerHTML = ""; return }
@@ -3088,6 +3094,24 @@ function renderLadders(u, setup){                 // Ladders: on a unit on foot,
   b.disabled = !setup;
   b.textContent = !u.ladders ? "Ladders" : u.ladders === "short" ? "No ladders" : "Short ladders";   // a cycle: none, ladders, short ladders
   b.setAttribute("aria-pressed", String(!!u.ladders));
+}
+function renderSiege(u, setup){                   // Throws down and Spare muskets: a garrison's means, chosen before the battle (units.yaml siege)
+  const t = $("#btn-throws"), m = $("#btn-spares"), foot = u && !u.vehicle && !u.mounted && !isGun(u.weapon);
+  t.hidden = !foot || !hasWalls() || !thrownWeapon(S.table);
+  m.hidden = !foot || !FD.units.siege.spare_muskets.weapons.includes(u.weapon);
+  for (const [b, on] of [[t, !!u?.throws], [m, !!u?.spare_muskets]]){ b.disabled = !setup; b.setAttribute("aria-pressed", String(on)) }
+}
+function toggleThrows(){
+  const u = selUnit(); if (!u || S.phase !== "setup") return;
+  if (u.throws) delete u.throws; else u.throws = true;
+  S.msg = u.throws ? `${u.name} have shells, stones and beams to throw down: once an exchange, ${FD.units.siege.thrown.struck}% of the men in each enemy hex next to them across a wall or chevaux de frise are struck.` : `${u.name} throw nothing down.`;
+  render();
+}
+function toggleSpares(){
+  const u = selUnit(); if (!u || S.phase !== "setup") return;
+  if (u.spare_muskets) delete u.spare_muskets; else u.spare_muskets = 3;
+  S.msg = u.spare_muskets ? `${u.name} have three loaded muskets a man: they fire them all with their first exchange of fire (two more shots a man), then at their usual rate.` : `${u.name} have no spare muskets.`;
+  render();
 }
 function toggleLadders(){                          // none, then ladders, then short ladders, then none again
   const u = selUnit(); if (!u || S.phase !== "setup") return;
@@ -3640,6 +3664,8 @@ function init(){
   $("#sel-medics").onchange = e => setMedics(e.target.value);
   $("#btn-fac").onclick = toggleFac;
   $("#btn-ladders").onclick = toggleLadders;
+  $("#btn-throws").onclick = toggleThrows;
+  $("#btn-spares").onclick = toggleSpares;
   $("#btn-sappers").onclick = toggleSappers;
   $("#btn-shield").onclick = toggleShield;
   $("#sel-sap").onchange = e => setSap(e.target.value);

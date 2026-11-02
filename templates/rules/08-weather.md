@@ -93,6 +93,13 @@ strike back at them, and once the far side is clear the unit can climb over at a
 palisade or gate and down into a deep ditch, but they do not reach the top of a wall, and men
 with short ladders stop at its foot as if they had none (Burgos, 1812).
 
+A garrison had more than its fire. Men the GM marks as **throwing things down** drop shells,
+stones and beams on each enemy hex at the foot of their wall or sword blades, once an exchange:
+{{f_thrown}} of the men there are struck. Men with **spare muskets** loaded beside them (three
+a man at Badajoz) fire them all with their first exchange of fire, then at their usual rate. And
+a **sprung mine**, laid in set-up like a minefield but in any gunpowder war, goes off once
+under the first men into its hex (Badajoz, 1812).
+
 !!! gm "For the GM"
     Weather is the cheapest way to change a fight. Rain on the morning of a battle takes the
     archers' edge away and spoils matchlocks; fog lets the attackers close unseen; a gale at

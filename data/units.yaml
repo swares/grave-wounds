@@ -656,11 +656,17 @@ gun_shields:
 # immobilised (a track blown off). Design estimates.
 mines:
   weapon: mine_ied
+  fallback: artillery_smoothbore     # a once (sprung) kind's wounds on a table with no mine wounds
   attack: 70
   kinds:
     ap:    {name: "Anti-personnel mines", men: 10, vehicles: 0}
     at:    {name: "Anti-tank mines", men: 0, vehicles: 30}
     mixed: {name: "Mixed minefield", men: 8, vehicles: 25}
+    # A mine sprung once under the stormers in a black-powder siege (Badajoz 1812: "a mine was
+    # sprung in the ditch under the soldiers' feet", Napier): goes off the first time, then is
+    # spent (`once`); on a table without mine wounds its men are wounded as by `fallback`. At the
+    # anti-personnel rate: a design estimate.
+    sprung: {name: "A sprung mine", men: 10, vehicles: 0, once: true}
   # Sappers (a foot unit marked sappers) can lay or lift mines during the battle, on their side's
   # move, standing and out of contact: they neither move nor shoot while they work. After `lay`
   # exchanges the row of hexes just ahead of their front (as wide as it) is a hidden minefield of
@@ -715,6 +721,26 @@ assault:
     grenades: {name: "Grenades", knock: 10, struck: 40}
     satchel:  {name: "Satchel charges", knock: 25, struck: 60}
     flame:    {name: "Flamethrowers", knock: 40, struck: 70, flame: true}
+
+# ---------- siege defences ----------
+# What a garrison used besides its fire at a storm (project doc "siege-defences-research").
+# spare_muskets: a unit marked spare_muskets: N (2 or more), armed with one of `weapons`, fires
+#   its first exchange of fire at N - 1 more shots a man than its weapon's rate: the loaded
+#   spares beside each man (Badajoz 1812, Napier: "each man supplied with three muskets"). After
+#   that it fires at its rate. The spares cost no rounds from its pouches.
+# thrown: a unit marked throws (shells, stones, beams and powder barrels dropped from the top of
+#   a wall or breach) strikes each enemy hex next to it across a work that blocks hand to hand
+#   (a wall, chevaux de frise) once an exchange: `struck` % of the men in that hex are struck,
+#   and wounded at `attack` % as by the first of `weapons` the table has (none: nothing thrown).
+#   At Badajoz "beams of wood, stones, broken wagons, and live shells were poured upon their
+#   heads" (Napier). No source gives a rate: `struck` is a design estimate, a quarter of a
+#   storming party's grenades into a bunker (assault.means.grenades.struck). Badajoz cannot set
+#   it: 12 runs there with it off, at 5, 20 and 50% lost the Allies 30, 29, 33 and 33% of their
+#   men, because the stormers seldom stand long at the foot of a breach (1 November 2026).
+# A mine sprung under the stormers is a minefield hex of the kind `sprung` (mines, above).
+siege:
+  spare_muskets: {weapons: [matchlock_musket, musket_smoothbore, rifle_musket]}
+  thrown: {struck: 10, attack: 70, weapons: [artillery_smoothbore, artillery_acw, hand_grenade, explosive_fragment]}
 
 # ---------- suppression ----------
 # Shellfire and machine-gun fire pin men down. A unit that a shell burst within reach of, or a

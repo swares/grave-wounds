@@ -339,6 +339,11 @@ When an item is done, delete it here and note it in the pull request that closes
     the hornwork of San Miguel at Burgos as a battlefield, a first cut). Building it found that
     men touching across a wall no one fights over neither fought nor shot; they now shoot, with
     no cover at the foot of a wall against men on top of it (units.md, *Who shoots*).
+  - **Siege defences** (1 November 2026): done. Spare loaded muskets, things thrown down and a
+    sprung mine (units.md, *Siege defences*), on Badajoz's breaches. They change little there (Allied
+    losses 30% without, 29-33% with): the loss gap is how long the stormers stay at the breaches
+    (storming parties break after a few losses, the brigades wait behind them; Napier counts some
+    forty attacks), not what is thrown at them. That flow is the next thing to trace for Badajoz.
   - **Enemy inside a work, behind its defenders** (found at Burgos, 31 October 2026): done (31
     October 2026) without a new morale rule. The light companies' gorge attack is the battlefield's
     plan (an envelopment), and bayonet-armed units that have gone round on a plan charge a flank or
