@@ -499,6 +499,11 @@ def validate(d: Data) -> None:
                 errors.append(f"maps/{mid}: place {pl.get('name')} has unknown kind {pl.get('kind')}")
             if set(pl.get("depot") or []) - {fo.get("side") for fo in m.get("forces", [])}:
                 errors.append(f"maps/{mid}: place {pl.get('name')} is a depot of a side with no force on the map")
+            F = pl.get("fortress")
+            if F is not None and not (isinstance(F, dict) and F.get("side") in {fo.get("side") for fo in m.get("forces", [])}
+                                      and isinstance(F.get("breach_days"), (int, float)) and F["breach_days"] > 0
+                                      and isinstance(F.get("workers"), int) and F["workers"] >= 1):
+                errors.append(f"maps/{mid}: place {pl.get('name')} fortress needs side (a side with a force on the map), breach_days (above 0) and workers (a whole number of 1 or more)")
             if not inside(pl.get("hex")):
                 errors.append(f"maps/{mid}: place {pl.get('name')} is off the map")
             elif ("depth" in pl or "current" in pl) and not (keys.get(rows[pl["hex"][1]][pl["hex"][0]]) == "ford" and pl.get("depth", 0) > 0 and pl.get("current", -1) >= 0):

@@ -309,6 +309,29 @@ check("fog of war: a side's night sights see further in the dark, never beyond t
   assert.equal(D.sightOf(theirs, { cond: "fair", light: "night" }), K.night_km, "the side without: naked eye");
   assert.ok(D.sightOf(ours, { cond: "fog", light: "night" }) <= DATA.weather.conditions.fog.visibility * DATA.battle_hex_m * K.weather_mass / 1000 + 1e-9, "never beyond the weather's sight");
 });
+check("sieges: a garrison shut in its fortress is not fought until the breach is practicable; each day of siege work counts towards it", () => {
+  const { D } = fresh(9);
+  D.S.mapId = "jacobsford-1179";
+  const fs = D.forcesHere(), pl = D.fortresses()[0], F = pl.fortress, c = { day: 1, used: 0 };
+  assert.ok(pl && F.breach_days > 0, "the castle is a fortress");
+  const g = fs.find(f => f.side === F.side && D.sameHex(f.pos, pl.hex)), foot = fs.find(f => f.side !== F.side && f.tools);
+  foot.pos = [pl.hex[0] + 1, pl.hex[1]]; foot.marched = 0; foot.day = 1;
+  assert.deepEqual(D.fightOptions(g)[0].attackers, [], "no storm before the breach");
+  assert.ok(D.siegeState(pl).invested, "invested");
+  foot.men = F.workers / 2;
+  D.siegeNight(c);
+  assert.equal(D.siegeState(pl).days, 0.5, "half the workers wanted: half a day");
+  foot.men = F.workers * 3;
+  foot.marched = 2;
+  D.siegeNight(c);
+  assert.equal(D.siegeState(pl).days, 0.5, "a day it marched: no work");
+  foot.marched = 0;
+  for (let n = 0; n < F.breach_days; n++) D.siegeNight(c);
+  assert.ok(D.siegeState(pl).practicable, "practicable after its days of work");
+  assert.deepEqual(D.fightOptions(g)[0].attackers, [foot.id], "the storm is offered once the breach is practicable");
+  const v = D.fogView(g.side);
+  assert.deepEqual(v.sieges, [{ name: pl.name, practicable: true, ours: true }], "the garrison's players see the siege");
+});
 check("fog of war: a player's view holds his side's forces and only the enemy it sees, or saw", () => {
   const { D } = fresh(5);
   D.S.mapId = "towton-1461";
