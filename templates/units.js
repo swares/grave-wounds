@@ -1691,6 +1691,13 @@ function holdsWorks(field, h, t){                 // unit t holds works against 
   const [cols, rows] = fieldSize(field);
   return footprint(t).some(row => row.some(x => groundAt(field, x).hides || missileCover(field.works, h, x, cols, rows).cover > 0));
 }
+function atWorks(field, t){                        // unit t stands at a work that blocks hand to hand, or a hex behind one (as units.at_works)
+  const works = field?.works;
+  if (!works?.edges || !Object.keys(works.edges).length) return false;
+  for (const x of footprint(t).flat()) for (const y of [x, ...[0, 1, 2, 3, 4, 5].map(n => step(x, n))])
+    for (let n = 0; n < 6; n++) if (edgeItems(works, y, step(y, n)).some(it => specOf("edge", it).blocks_melee)) return true;
+  return false;
+}
 function coverAt(field, h, t){                    // % off shots from h at t: the best of the works' and the ground's
   if (!field) return 0;
   const [cols, rows] = fieldSize(field);
@@ -3966,7 +3973,7 @@ function bounding(us, i, t){                     // storming in bounds (commande
 function storming(u, t, field, stance){           // attacking, armed for storming (black powder with the bayonet), its target holding works: it closes and charges; so does one so armed gone round on a plan with the target's flank or rear, whatever the stance (as commander.storming)
   if (!UD.commander.storm.includes(u.weapon)) return false;
   if (enveloping(u) && arc(t.facing, bearing(t.pos, u.pos)) !== "front") return true;   // in with the bayonet
-  return stance === "attack" && holdsWorks(field, u.pos, t);
+  return stance === "attack" && (holdsWorks(field, u.pos, t) || atWorks(field, t));
 }
 function support(us, i){                          // men times attack % of the steady friendly units (not guns or vehicles) touching unit i: they go in with it (as commander.support)
   const u = us[i], near = new Set(footprint(u).flat().flatMap(h => [0, 1, 2, 3, 4, 5].map(n => hk(step(h, n)))));

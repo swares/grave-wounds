@@ -108,7 +108,7 @@ const MINES = [53, 54, 55, 56].map(c => ({ at: [c, SF + 1], kind: "sprung", hidd
 const units = [
   // the garrison on this front (ours: Philippon's 5,000 held the whole circuit and San Cristobal)
   unit("French at the Trinidad breach", FR, 600, BREACH, [6, 65, 53]),
-  unit("French at the curtain breach", FR, 400, BREACH, [5, 52, 48]),
+  unit("French at the curtain breach", FR, 400, BREACH, [5, 52, 49]),   // at the sword blades (row 49; 48 before 1 November 2026)
   at("French at the Santa Maria breach", FR, 600, BREACH, 5, [41, 51], 0),
   at("Guns on the Santa Maria bastion", FR, 60, { ...GUNS, emplaced: true }, 3, [37, 55], 5),
   // "Showers of grape from the flank swept the ditch" (Napier): guns on each bastion's flank, firing
@@ -118,16 +118,23 @@ const units = [
   at("The castle's garrison (French and Hesse-Darmstadt)", FR, 450, LINE, 6, [68, 10], 5),
   unit("Philippon's reserve in the town", FR, 500, LINE, [6, 52, 38]),
   // the storm: each division's storming party (500 with 12 ladders), then its two brigades (ours)
-  // in columns a breach wide or less (8 hexes): a wider block cannot get through the gap
+  // in columns a breach wide or less (8 hexes): a wider block cannot get through the gap. Each
+  // brigade goes as two half-brigades 4 hexes wide (ours): the flooded ditch before the Trinidad
+  // leaves a way only 5 hexes wide, and an 8-wide brigade stood in front of the water all night
+  // (traced 1 November 2026); the two halves follow the same route.
   // Each goes by its route (via) to its breach or wall, as the plan of attack sent it: walls stand
   // between every column and the town, and with no route a column halts at the first wall in its way.
   // the storming parties were picked volunteers: veterans, all three
   unit("4th Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", formation: "open", via: TRINIDAD }, [7, 62, 64]),
-  unit("4th Division, first brigade", AL, 1500, { ...LINE, via: TRINIDAD }, [8, 61, 69]),
-  unit("4th Division, second brigade", AL, 1500, { ...LINE, via: CURTAIN }, [8, 61, 75]),
+  unit("4th Division, first brigade (left half)", AL, 750, { ...LINE, via: TRINIDAD }, [4, 61, 69]),
+  unit("4th Division, first brigade (right half)", AL, 750, { ...LINE, via: TRINIDAD }, [4, 65, 69]),
+  unit("4th Division, second brigade (left half)", AL, 750, { ...LINE, via: CURTAIN }, [4, 61, 75]),
+  unit("4th Division, second brigade (right half)", AL, 750, { ...LINE, via: CURTAIN }, [4, 65, 75]),
   unit("Light Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", formation: "open", via: SANTA_MARIA }, [7, 46, 64]),
-  unit("Light Division, first brigade", AL, 1000, { ...LIGHT, via: SANTA_MARIA }, [8, 45, 69]),
-  unit("Light Division, second brigade", AL, 1000, { ...LIGHT, via: CURTAIN }, [8, 45, 75]),
+  unit("Light Division, first brigade (left half)", AL, 500, { ...LIGHT, via: SANTA_MARIA }, [4, 45, 69]),
+  unit("Light Division, first brigade (right half)", AL, 500, { ...LIGHT, via: SANTA_MARIA }, [4, 49, 69]),
+  unit("Light Division, second brigade (left half)", AL, 500, { ...LIGHT, via: CURTAIN }, [4, 45, 75]),
+  unit("Light Division, second brigade (right half)", AL, 500, { ...LIGHT, via: CURTAIN }, [4, 49, 75]),
   // the 3rd Division escaladed the castle as a division: every unit of it carries ladders
   at("3rd Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", via: CASTLE }, 5, [84, 18], 2),
   // each brigade in two halves of about 625 (5 wide, 4 deep): a 1,250-man block 7 deep had no room to
