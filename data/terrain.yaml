@@ -81,8 +81,15 @@ place_kinds:
 # added if it has gone hungry. Garrisons that gave up once the breach was practicable marched out
 # with the honours of war; one that refused and was stormed could by custom be sacked. The
 # figures are design estimates (no source gives a rate).
+# sortie_cost: days of siege work a successful sortie undoes (Burgos, 8-9 October 1812: a sortie "undid
+# most of their limited progress" on the saps; 5 October: 142 Allied losses and 200 picks and shovels
+# taken; Badajoz, 19 March 1812: 1,500 foot and 40 horse, about 150 British losses). repair: days of
+# siege work its garrison (with tools) takes back each day the fortress is not invested (relief, or
+# the besiegers gone). Design estimates.
 siege:
   terms: {before: 5, breach: 50, hungry: 25}
+  sortie_cost: 1
+  repair: 1
 
 sight:
   km: {foot: 3, mounted: 8, wagons: 2}
