@@ -343,7 +343,12 @@ When an item is done, delete it here and note it in the pull request that closes
     sprung mine (units.md, *Siege defences*), on Badajoz's breaches. They change little there (Allied
     losses 30% without, 29-33% with): the loss gap is how long the stormers stay at the breaches
     (storming parties break after a few losses, the brigades wait behind them; Napier counts some
-    forty attacks), not what is thrown at them. That flow is the next thing to trace for Badajoz.
+    forty attacks), not what is thrown at them. Traced the same day: an 8-wide brigade could not
+    pass the 5-wide flooded way before the Trinidad, and stormers stood short of the sword blades
+    trading fire. Fixed: half-brigades 4 wide (data), and storming now also goes for a target at or
+    a hex behind a work that blocks hand to hand (`units.at_works`); Allied losses 35% to 40%,
+    nothing else moved. Still open: re-forming broken stormers to go again (needs sources on
+    rallying), and half-brigades queued behind others.
   - **Enemy inside a work, behind its defenders** (found at Burgos, 31 October 2026): done (31
     October 2026) without a new morale rule. The light companies' gorge attack is the battlefield's
     plan (an envelopment), and bayonet-armed units that have gone round on a plan charge a flank or

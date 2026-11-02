@@ -2439,6 +2439,22 @@ def holds_works(d: Data, field: dict | None, h, t: dict) -> bool:
                for row in footprint(d, t) for x in row)
 
 
+def at_works(d: Data, field: dict | None, t: dict) -> bool:
+    """Unit t stands at a work that blocks hand to hand (a wall, palisade, barred gate, chevaux de
+    frise), or one hex behind one: an intact such work on a side of one of its hexes, or of a hex
+    next to it. Stormers go up to it rather than fire from range (commander.storming)."""
+    works = _works(field)
+    if not works or not works.get("edges"):
+        return False
+    for row in footprint(d, t):
+        for x in row:
+            for y in [x] + [step(x, n) for n in range(6)]:
+                for n in range(6):
+                    if any(C._spec(d, "edge", it).get("blocks_melee") for it in C._edge_items(d, works, y, step(y, n))):
+                        return True
+    return False
+
+
 def cover_at(d: Data, field: dict | None, h, t) -> int:
     """% off shots from hex h at hex t: the best of the works' cover and the ground's."""
     if not field:

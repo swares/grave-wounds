@@ -2305,7 +2305,9 @@ def bounding(d: Data, us: list, i: int, t: int) -> bool:
 
 def storming(d: Data, u: dict, t: dict, field: dict | None, stance: str) -> bool:
     """Attacking, a unit armed for storming (commander.storm: black powder with the bayonet)
-    whose target holds works (units.holds_works): it closes and charges rather than firing. So
+    whose target holds works (units.holds_works) or stands at, or a hex behind, a work that
+    blocks hand to hand (units.at_works: the sword blades on a breach): it closes and charges
+    rather than firing. So
     does one so armed that has gone round on a plan (_enveloping) and has its target's flank or
     rear, whatever its side's stance: in with the bayonet (Burgos 1812, the light companies at the
     gorge of San Miguel)."""
@@ -2313,7 +2315,7 @@ def storming(d: Data, u: dict, t: dict, field: dict | None, stance: str) -> bool
         return False
     if _enveloping(u) and U.arc(t["facing"], U.bearing(t["pos"], u["pos"])) != "front":
         return True
-    return stance == "attack" and U.holds_works(d, field, u["pos"], t)
+    return stance == "attack" and (U.holds_works(d, field, u["pos"], t) or U.at_works(d, field, t))
 
 
 def support(d: Data, us: list, i: int) -> int:
