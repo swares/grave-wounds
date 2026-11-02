@@ -365,6 +365,29 @@ check("sieges: an invested garrison eats its fortress's stores; summoned, it acc
   assert.equal(D.siegeState(pl).side, foot.side, "the place passes to the besiegers");
   assert.equal(g2.order, "march", "the garrison marches out");
 });
+check("sieges: a sortie can be fought from behind the walls and, if it succeeds, costs a day of work; unbesieged, the garrison repairs", () => {
+  const { D } = fresh(11);
+  D.S.mapId = "jacobsford-1179";
+  const fs = D.forcesHere(), pl = D.fortresses()[0], F = pl.fortress, c = { day: 1, used: 0 };
+  const g = fs.find(f => f.side === F.side && D.sameHex(f.pos, pl.hex)), foot = fs.find(f => f.side !== F.side && f.tools);
+  foot.pos = [pl.hex[0] + 1, pl.hex[1]]; foot.marched = 0; foot.day = 1;
+  D.S.sieges[D.S.mapId] = { [pl.name]: { days: 2.5 } };
+  D.save();
+  assert.deepEqual(D.fightOptions(foot)[0].attackers.filter(id => id === g.id), [], "no sortie ordered: the walls keep them apart");
+  D.sortie(pl.name, "order");
+  D.restore();
+  assert.ok(D.fightOptions(foot)[0].attackers.includes(g.id), "a sortie: the garrison can fight the besiegers");
+  assert.ok(!D.nearFields(foot).some(([, b]) => b.place === pl.name), "the storm battlefield is not offered for a sortie");
+  assert.deepEqual(D.fightOptions(g)[0].attackers, [], "but no storm of the garrison before the breach");
+  D.sortie(pl.name, "success");
+  D.restore();
+  assert.equal(D.siegeState(pl).days, 2.5 - DATA.terrain.siege.sortie_cost, "a day of work lost");
+  assert.ok(!D.siegeState(pl).sortie, "the sortie is over");
+  const far = D.forcesHere().find(f => f.id === foot.id);
+  far.pos = [pl.hex[0] + 6, pl.hex[1]];
+  D.siegeNight(c);
+  assert.equal(D.siegeState(pl).days, 1.5 - DATA.terrain.siege.repair, "not invested: the garrison repairs");
+});
 check("fog of war: a player's view holds his side's forces and only the enemy it sees, or saw", () => {
   const { D } = fresh(5);
   D.S.mapId = "towton-1461";

@@ -443,8 +443,22 @@ for three days): the storm, sent to the field map, gives that garrison no quarte
 cornered unit of it is killed, not taken, and its heroes left on the field are killed); the sack
 itself is the GM's. Online players see that terms were refused or accepted.
 
-Sorties, mines and countermines, a relief breaking the investment, and disease in the siege lines
-are not played yet (project doc "siege-phase-research").
+**Sorties.** **Order a sortie** (the Siege box) sends the garrison out against the siege works:
+while it is out, the besiegers can be fought by the garrison despite the walls. Select a besieging
+force to set the fight up; it is fought on open ground or the roller (the fortress's battlefield is
+its storm, not offered for a sortie). The storm itself still waits for the breach. After the fight
+the GM marks it **Sortie beaten off** or **Sortie succeeded**; a success undoes a day of siege work
+(`siege.sortie_cost`). Badajoz, 19 March 1812: 1,500 foot and 40 horse surprised the working parties
+(about 150 British losses); Burgos, 5 October: 142 Allied losses and 200 picks and shovels taken,
+and on 8-9 October a sortie "undid most of their limited progress" (Allies 184, French 33).
+
+**Relief.** A relief force fights the besiegers as any force. Once no besieger stands within a hex
+of the fortress, its garrison (with tools) takes back a day of siege work each evening
+(`siege.repair`) until the walls are whole again: a siege lifted (Burgos, 21 October 1812) starts
+over if it is not soon renewed. Both figures are design estimates.
+
+Mines and countermines, disease in the siege lines, and the sack's loot are not played yet
+(project doc "siege-phase-research").
 
 ## Fog of war
 
