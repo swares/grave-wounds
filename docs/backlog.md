@@ -339,8 +339,11 @@ When an item is done, delete it here and note it in the pull request that closes
     The brigade turned toward the flank guns 30 hexes off behind the walls (a battery scores high as
     a threat), and inside the outwork a 5-wide, 7-deep column had no room to turn to face the
     garrison. Fixed in data: the 3rd Division's brigades in halves of about 625; the castle falls in
-    4 of 12 (from 1). Not changed: a unit on a route still turns aside for a far target it cannot
-    reach.
+    4 of 12 (from 1). A unit on a route turning toward a far target: measured and not built (1
+    November 2026). The rule (a unit whose route is blocked goes for the enemy across its way, not
+    the best-scoring one elsewhere) changed nothing on any of the 50 battlefields, to three
+    decimals (run 41361333394): after the split the 3rd Division's halves target the garrison
+    themselves, and no other battlefield has the case. Branch route-blocker, not merged.
   - **The siege before the storm** is off every field map. Jacob's Ford's map starts at the
     storm (its mine, the outer wall and the days before are not played); the Redan's battlefields
     leave out the British siege guns, which were silent during both assaults.
