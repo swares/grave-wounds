@@ -1465,6 +1465,7 @@ const ORDER_TEXT = {                              // (who, them, o, up, facing) 
   fall_back: (who, them, o, up, facing) => (o.gap ? `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} to plug the gap${facing}.` : `${who} ${up}fall back ${nOf(o.cost, "hex", "hexes")} toward the objective${facing}.`),
   search: (who, them, o, up) => `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} forward to find the enemy (none in sight, no objective).`,
   turn: (who, them) => `${who} turn to face ${them}.`,
+  breach: who => `${who} set to hacking at the works in front of them.`,
   ground: who => `${who} go to ground under fire.`,
   abandon: (who, them, o) => `${who} leave ${nOf(o.n, "immobilised vehicle")} behind and go on without ${o.n === 1 ? "it" : "them"}; the crews bail out.`,
   lay: (who, them, o) => `${who} lay ${FD.units.mines.kinds[o.kind].name.toLowerCase()} ahead of them (${nOf(FD.units.mines.sappers.lay, "exchange")} without moving or firing).`,

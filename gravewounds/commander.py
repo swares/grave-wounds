@@ -63,10 +63,90 @@ def _command(d: Data, units: list, side, where: tuple, stance: str, memory: dict
             _apply(us, i, o)
             if o["act"] in MOVES:                 # what it sees from where it went, the units after it know
                 sightings(d, us, side, field, exchange, known)
+    orders += _face_contact(d, us, side, (size, field))
     us = _give_way(d, us, side, (size, field, stance, exchange), (aim, known), orders)
+    orders += _hack_through(d, us, side, (field, stance), orders)
     orders += _move_guns(d, us, side, (size, goal, stance, known, exchange))
     orders += _lay_guns(d, us, side, (size, goal, known, exchange))
     return us, orders + _call_fire(d, us, side, goal, known, (stance, exchange, orders, table))
+
+
+def _face_contact(d: Data, us: list, side, where: tuple) -> list:
+    """A unit touching an enemy only by its flank or rear, with none before its front, turns to
+    face it (the first turn that is legal and brings the enemy before its front rank): in contact it
+    takes no other order, and only its front rank strikes, so neither would ever fight (Ciudad
+    Rodrigo, 2 November 2026). Changes us in place."""
+    out = []
+    for i, u in enumerate(us):
+        if u["side"] != side or U._out(u) or u.get("vehicle") or U.is_battery(d, u) or U.is_at_gun(d, u) or u.get("emplaced"):
+            continue
+        occ = U.occupancy(d, us)
+        if not U.in_contact(d, us, occ, i) or _strikes_front(d, us, occ, u):
+            continue
+        o = next((t for j in U._adjacent_units(d, us, occ, i) if (t := _turn_to(d, us, i, j, where))), None)
+        if o:
+            us[i] = {**u, "facing": o["facing"]}
+            out.append(o)
+    return out
+
+
+def _strikes_front(d: Data, us: list, occ: dict, u: dict) -> bool:
+    """A standing enemy before one of u's front hexes (it strikes there)."""
+    return any(U._struck_hex(us, occ, u, h) for h in (U.footprint(d, u) or [[]])[0])
+
+
+def _turn_to(d: Data, us: list, i: int, j: int, where: tuple) -> dict | None:
+    """The turn that brings standing enemy j, touching unit i, before its front rank: toward j's
+    nearest hex, else a point either side, the first legal; or None."""
+    size, field = where
+    u, e = us[i], us[j]
+    if e["side"] == u["side"] or U._out(e):
+        return None
+    near = min((h for row in U.footprint(d, e) for h in row), key=lambda h: U.hdist(u["pos"], h))
+    f = U.bearing(u["pos"], near)
+    for g in (f, (f + 1) % 6, (f - 1) % 6):
+        if g == u["facing"] or not U.move(d, us, i, u["pos"], g, size, field)["ok"]:
+            continue
+        v = {**u, "facing": g}
+        vs = [v if k == i else x for k, x in enumerate(us)]
+        if _strikes_front(d, vs, U.occupancy(d, vs), v):
+            return {"unit": i, "act": "turn", "target": j, "facing": g}
+    return None
+
+
+def _hack_work(d: Data, field: dict | None, u: dict) -> bool:
+    """A line men can hack open by hand on its front, that bars hand to hand (a palisade, chevaux de
+    frise, a gate: works.yaml breach and blocks_melee), not a hex of stakes or wagons."""
+    if not field or not field.get("works"):
+        return False
+    for h in (U.footprint(d, u) or [[]])[0]:
+        w = U._breachable(d, field, u, h)
+        if w and w[0] == "edge":
+            s = C._spec(d, w[0], w[2])
+            if s.get("breach") and s.get("blocks_melee"):
+                return True
+    return False
+
+
+def _hack_through(d: Data, us: list, side, where: tuple, orders: list) -> list:
+    """Attacking, a unit armed to storm (commander.storm) that is not moving this move hacks at
+    works on its front that men can open by hand (units.breach), as the page's Breach the works;
+    one set to it so stops once it moves, or nothing is left to hack. Changes us in place."""
+    field, stance = where
+    going = {o["unit"] for o in orders if o["act"] in MOVES}
+    out = []
+    for i, u in enumerate(us):
+        if u["side"] != side:
+            continue
+        hack = stance == "attack" and i not in going and u["state"] == "steady" and u["men"] > 0 and not u.get("vehicle") \
+            and not U.is_battery(d, u) and not U.is_at_gun(d, u) and u["weapon"] in d.units["commander"]["storm"] and _hack_work(d, field, u)
+        if hack:
+            if not u.get("breach"):
+                us[i] = {**u, "breach": True, "hacking": True}
+                out.append({"unit": i, "act": "breach"})
+        elif u.get("hacking"):
+            us[i] = {k: v for k, v in u.items() if k not in ("breach", "hacking")}
+    return out
 
 
 def aims(d: Data, us: list, side, field: dict | None, stance: str, memory: dict) -> tuple:

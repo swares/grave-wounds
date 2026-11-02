@@ -17,6 +17,22 @@
 #     {outflanked: true}; a list of them (any), or {all: [...]} (every one).
 # Hexes and loss shares are ours unless the note says the account gives them.
 
+ciudad-rodrigo-1812:
+  source: "historyofwar; Wikipedia; napoleon-series (project doc ciudad-rodrigo-research)"
+  note: >-
+    The Light Division, in at the lesser breach, "spread out and attacked the defenders of the great
+    breach from the rear" (historyofwar), "making further resistance hopeless" (Wikipedia): through
+    the lesser breach, then west along the inside of the rampart onto the great breach's defenders.
+    Then, as both divisions did, on to the cathedral square (the attack's objective). The route is ours.
+  sides:
+    0:
+      - units: ["Light Division stormers (with ladders)", "Vandeleur's brigade (first column)", "Vandeleur's brigade (second column)",
+                "Vandeleur's brigade (third column)", "Vandeleur's brigade (fourth column)"]
+        do: envelop
+        via: [[36, 31], [36, 42], [22, 43]]
+        target: "French at the great breach"
+        until: {broken: "French at the great breach"}
+
 cowpens-1781:
   source: "https://npplan.com/parks-by-state/south-carolina-national-parks/park-at-a-glance-cowpens-national-battlefield/the-battle-of-cowpens-cowpens-national-battlefield/"
   note: >-
