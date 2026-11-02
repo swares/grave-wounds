@@ -347,8 +347,9 @@ When an item is done, delete it here and note it in the pull request that closes
     pass the 5-wide flooded way before the Trinidad, and stormers stood short of the sword blades
     trading fire. Fixed: half-brigades 4 wide (data), and storming now also goes for a target at or
     a hex behind a work that blocks hand to hand (`units.at_works`); Allied losses 35% to 40%,
-    nothing else moved. Still open: re-forming broken stormers to go again (needs sources on
-    rallying), and half-brigades queued behind others.
+    nothing else moved. Re-forming broken stormers: done for Badajoz only (`reform: true`; on every
+    battlefield it cost 31 of 576 runs as fought, units.md *Broken, re-forming*). Still open:
+    half-brigades queued behind others.
   - **Enemy inside a work, behind its defenders** (found at Burgos, 31 October 2026): done (31
     October 2026) without a new morale rule. The light companies' gorge attack is the battlefield's
     plan (an envelopment), and bayonet-armed units that have gone round on a plan charge a flank or

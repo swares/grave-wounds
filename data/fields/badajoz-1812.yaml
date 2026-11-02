@@ -31,6 +31,7 @@ weather: {cond: fair, wind: calm, light: night, ground: {mud: 0, snow: 0}}
 lit: [{at: [68, 56], radius: 7}, {at: [55, 52], radius: 6}, {at: [44, 53], radius: 7}]
 # Mines laid before the battle (units.yaml mines; sprung: goes off once, under the first men into it).
 mines: [{at: [53, 51], kind: sprung, hidden: true}, {at: [54, 51], kind: sprung, hidden: true}, {at: [55, 51], kind: sprung, hidden: true}, {at: [56, 51], kind: sprung, hidden: true}]
+reform: true                # broken units re-form out of the enemy's reach (units.yaml morale.reform)
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [60, 11], side: 0, name: "the castle of Badajoz", radius: 6}
 # How long the fight went on, in exchanges from the first, by the account (about two and a half hours: the breaches assaulted for about two hours (Wikipedia), the castle carried in that time (our reading)): self-play runs at least this long (never past commander.self_play.most).

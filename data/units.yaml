@@ -825,14 +825,18 @@ quick: {blows: false, samples: 4000, normal_from: 9}
 morale:
   trigger: 0.25
   shock: 0.10
-  # reform: a broken unit (not fled) that lost no men this exchange, with no enemy unit standing
+  # reform: on a battlefield that turns it on (its file's reform: true), a broken unit (not
+  #   fled) that lost no men this exchange, with no enemy unit standing
   #   within `reach` times its move, checks Nerve less `penalty` after the exchange; passing, it
   #   re-forms as shaken (and rallies to steady as any shaken unit out of contact). Kincaid (95th,
   #   Badajoz 1812): "We fell back about three hundred yards and re-formed all that remained to
   #   us", then "forming up fifty or a hundred men at a time at the foot of the breach ... fast as
   #   one dissolved, another was formed"; van Bylandt's broken brigade at Waterloo was rallied
   #   behind the reserve and joined the counter-attack (project doc "reform-research"). The reach
-  #   (about 300 yards for a column at 10 m hexes) and the penalty are design estimates.
+  #   (about 300 yards for a column at 10 m hexes) and the penalty are design estimates. On every
+  #   battlefield it cost 31 of 576 runs won as fought (484 to 453: Mons, Babuna, Agincourt and
+  #   Dornach worst), the beaten coming back to drag out routs; so it is only where the accounts
+  #   show men re-forming and going again (Badajoz).
   reform: {reach: 2, penalty: 20}
   # posture: a unit of a holding side (the commander's stance) holding a position (in a bunker, dug
   #   in, emplaced, behind works with cover toward the nearest enemy, or in ground that hides men),

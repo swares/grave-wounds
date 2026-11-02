@@ -2120,7 +2120,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
     if (cut > 0) u.hit = true; else delete u.hit;   // it lost men this exchange: under fire, for the next moves
   });
-  log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...reformAll(us, acc.lost, rng), ...suppressAll(us, under, rng), ...giveWayAll(us, field, log.slice(from)), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table), postsMoving(field)),
+  log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...reformAll(us, acc.lost, rng, field), ...suppressAll(us, under, rng), ...giveWayAll(us, field, log.slice(from)), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table), postsMoving(field)),
     ...partiesAfter(us, field), ...lyingAfter(us, table, rng), ...postsAfter(us, field, table, rng), ...digAll(us), ...sappersAll(us, field));
   postsSettle(field);
   toilFought(us, fought);
@@ -2410,9 +2410,9 @@ function holdsPosition(us, i, field){             // unit i holds a position: in
   for (const e of us) if (e.side !== u.side && e.men > 0 && !ROUTED.has(e.state)){ const dd = hdist(e.pos, u.pos); if (dd < best){ best = dd; at = e.pos } }
   return holdsWorks(field, at || u.pos, u);
 }
-function reformAll(us, lost, rng){                // broken units that lost no men this exchange, no standing enemy within reform.reach times their move, check Nerve less its penalty: passing, they re-form as shaken (as units._reform_all)
+function reformAll(us, lost, rng, field){                // broken units that lost no men this exchange, no standing enemy within reform.reach times their move, check Nerve less its penalty: passing, they re-form as shaken (as units._reform_all)
   const R = UD.morale.reform, log = [];
-  if (!R) return log;
+  if (!R || !field?.reform) return log;   // only on a battlefield that turns it on
   us.forEach((u, i) => {
     if (u.state !== "broken" || u.men <= 0 || lost[i] > 0) return;
     const reach = R.reach * allowance(u);

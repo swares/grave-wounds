@@ -159,6 +159,15 @@ The check is d100 against its Nerve (green 35, regular 50, veteran 65), with mod
   it rallies to steady; failing, it stays shaken. (Until October 2026 a failed rally broke it,
   so a shaken company out of contact broke about half the time each exchange; self-play, all
   46 battlefields: 202 of 276 runs as fought, against 198.)
+- **Broken, re-forming** (`morale.reform`; only on a battlefield whose file says `reform: true`,
+  1 November 2026: Badajoz). A broken unit, not fled, that lost no men in the exchange and has no
+  standing enemy within twice its move checks Nerve −20 after it: passing, it re-forms as
+  shaken, and then rallies as above and may go in again ("X re-form out of the enemy's reach").
+  Kincaid at Badajoz: "We fell back about three hundred yards and re-formed all that remained to
+  us", and "fast as one dissolved, another was formed" (project doc "reform-research"). On every
+  battlefield it cost 31 of 576 runs won as fought (484 to 453; Mons 12 to 6, Babuna 10 to 3,
+  Agincourt 7 to 3): the beaten came back and dragged out their routs. So it is off unless a
+  battlefield turns it on.
 
 **Holding a position** (`morale.posture`). A unit of a side the commander has holding its ground
 (not attacking), that holds a position, and is not struck in flank or rear, checks for being a

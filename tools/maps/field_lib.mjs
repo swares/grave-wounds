@@ -166,7 +166,7 @@ ${t ? `# On the travel map: a fight within \`within\` hexes of this place offers
 # the travel-map sides that stand where each army stands here (${spec.sides[0]} first).
 travel: {map: ${t.map}, place: ${yq(t.place)}, within: ${t.within}, sides: [${t.sides.map(yq).join(", ")}]}
 ` : "# Not on any travel map yet.\n"}size: [${grid[0].length}, ${grid.length}]
-${upLine}weather: ${spec.weather}${spec.lz ? "\n" : ""}${spec.lz ? "lz: [" + hexList(spec.lz) + "]               # landing zones (units with `lands` come in by air at that one)" : ""}${dumpsLine(spec.dumps)}${litLine(spec.lit)}${minesLine(spec.mines)}${objLine(spec.objective)}${stancesLine(spec.stances)}${endsLine(spec.ends)}${markersLine(spec.markers)}${phasesText(spec.phases)}
+${upLine}weather: ${spec.weather}${spec.lz ? "\n" : ""}${spec.lz ? "lz: [" + hexList(spec.lz) + "]               # landing zones (units with `lands` come in by air at that one)" : ""}${dumpsLine(spec.dumps)}${litLine(spec.lit)}${minesLine(spec.mines)}${spec.reform ? "\nreform: true                # broken units re-form out of the enemy's reach (units.yaml morale.reform)" : ""}${objLine(spec.objective)}${stancesLine(spec.stances)}${endsLine(spec.ends)}${markersLine(spec.markers)}${phasesText(spec.phases)}
 ground: |
 ${grid.map(row => "  " + row.join("")).join("\n")}
 ${worksText}${supText}units:
