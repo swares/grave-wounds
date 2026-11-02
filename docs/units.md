@@ -569,7 +569,12 @@ general. All its numbers are in units.yaml `commander`.
   at Burgos stood inside the gorge and traded fire). Measured on 12 runs of every battlefield:
   only Burgos changed (the Allies take it in 12 of 12, from 2). The target holds works if it is dug in or emplaced where it
   stands, if any of its hexes has cover from works toward the attacker (a bank, trench, wall,
-  palisade or the like), or if it stands in buildings, tall buildings or rubble. The unit
+  palisade or the like), or if it stands in buildings, tall buildings or rubble; or (1 November
+  2026, `units.at_works`) if it stands at a work that blocks hand to hand (a wall, palisade,
+  barred gate, chevaux de frise) or one hex behind one. Before that, stormers at Badajoz stood
+  a hex or two short of the sword blades all night trading musketry, because the French one hex
+  behind the blades had no cover toward them. Measured on 12 runs of every battlefield: only
+  Badajoz changed (Allied losses 35% to 40%). The unit
   scores hexes as men without missiles do, taking no account of cover on the way, and
   charges with the same odds; it still fires as it goes. Holding units, other weapons
   (flintlock rifles, matchlocks, bows, machine guns, rocket launchers) and targets in woods or
@@ -3022,7 +3027,13 @@ deep, had no room to turn inside the outwork (7 hexes wide) to face the garrison
 all night (the castle fell in 1 of 12 then).
 Still open: the brigades behind each storming party mostly wait on its route (units move as blocks
 and cannot pass one another in the ditch); the castle falls too rarely; the other means Napier
-gives are now played (1 November 2026, *Siege defences*): the breaches' defenders have three
+gives are now played (1 November 2026, *Siege defences*), and since a later trace the same day
+the brigades go as half-brigades 4 hexes wide (the flooded ditch before the Trinidad leaves a way
+5 hexes wide, and an 8-wide brigade stood in front of the water all night), the French at the
+curtain breach stand at the sword blades, and stormers close up to a held work (*Storming works*):
+Allied losses 40%, French 27%, the castle falling in 7 of 12 (benchmark). Still open there: broken
+stormers never re-form and go again (Napier's forty attacks), and half-brigades behind others
+wait all night. The siege defences alone: the breaches' defenders have three
 muskets a man and throw things down, and a mine lies hidden before the curtain breach. They
 change the losses little (12 local runs, Allied losses 30% without them, 29-33% with them; French
 35%, 30-39%; in the benchmark the Allies 32% to 35%, the French 37% to 26%, and the castle falls in
