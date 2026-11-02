@@ -51,6 +51,10 @@ badajoz-1812:
     - "French at the curtain breach"
     - "French at the Santa Maria breach"
     - "Guns on the Santa Maria bastion"
+ciudad-rodrigo-1812:
+  source: "project doc ciudad-rodrigo-research (napoleon-series; the 94th's narrative): the great breach's defenders held it until they were taken from behind"
+  hold:
+    - "French at the great breach"
 beaumont-hamel-1916:
   source: "https://www.veterans.gc.ca/eng/remembrance/battles-and-stages/battle-of-beaumont-hamel"
   hold:

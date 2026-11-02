@@ -2750,9 +2750,45 @@ function orderSide(units, side, [size, field, rng, exchange], { stance, memory, 
       if (AI_MOVES.has(o.act)) sightings(us, side, field, exchange, mem);   // what it sees from where it went, the units after it know (as commander.command)
     }
   }
+  orders.push(...faceContact(us, side, [size, field]));
   us = giveWay(us, side, [size, field, stance, exchange], [aim, known], orders);
+  orders.push(...hackThrough(us, side, [field, stance], orders));
   orders.push(...moveGuns(us, side, [size, goal, stance, known, exchange]), ...layGuns(us, side, [size, goal, known, exchange]), ...callFireAi(us, side, goal, known, [stance, exchange, orders, table]));
   return { units: us, orders };
+}
+function faceContact(us, side, [size, field]){   // a unit touching an enemy only by its flank or rear, with none before its front, turns to face it: in contact it takes no other order, and only its front rank strikes, so neither would ever fight (Ciudad Rodrigo, 2 November 2026) (as commander._face_contact)
+  const out = [];
+  us.forEach((u, i) => {
+    if (u.side !== side || out_(u) || u.vehicle || isBattery(u) || isAtGun(u) || u.emplaced) return;
+    const occ = occupancy(us);
+    if (!inContact(us, occ, i) || (footprint(u)[0] || []).some(h => struckHex(us, occ, u, h))) return;
+    for (const j of adjacentUnits(us, occ, i)){
+      const e = us[j];
+      if (e.side === u.side || out_(e)) continue;
+      const near = footprint(e).flat().reduce((a, h) => (hdist(u.pos, h) < hdist(u.pos, a) ? h : a));
+      const f = bearing(u.pos, near);
+      for (const g of [f, mod6(f + 1), mod6(f - 1)]){
+        if (g === u.facing || !moveUnit(us, i, u.pos, g, size, field).ok) continue;
+        const v = { ...u, facing: g }, vs = us.map((x, k) => (k === i ? v : x)), vocc = occupancy(vs);
+        if (!(footprint(v)[0] || []).some(h => struckHex(vs, vocc, v, h))) continue;
+        us[i] = v;
+        out.push({ unit: i, act: "turn", target: j, facing: g });
+        return;
+      }
+    }
+  });
+  return out;
+}
+const hackWork = (field, u) => !!field?.works && (footprint(u)[0] || []).some(h => { const w = breachable(field, u, h); return !!w && !!specOf(w[0], w[2]).breach });   // works men can hack open by hand on its front (a palisade, chevaux de frise, a gate: works.yaml breach) (as commander._hack_work)
+function hackThrough(us, side, [field, stance], orders){   // attacking, a unit armed to storm (commander.storm) that is not moving this move hacks at works on its front that men can open by hand (units.breach), as the page's Breach the works; one set to it so stops once it moves, or nothing is left to hack (as commander._hack_through)
+  const going = new Set(orders.filter(o => AI_MOVES.has(o.act)).map(o => o.unit)), out = [];
+  us.forEach((u, i) => {
+    if (u.side !== side) return;
+    const hack = stance === "attack" && !going.has(i) && u.state === "steady" && u.men > 0 && !u.vehicle && !isBattery(u) && !isAtGun(u) && UD.commander.storm.includes(u.weapon) && hackWork(field, u);
+    if (hack){ if (!u.breach){ us[i] = { ...u, breach: true, hacking: true }; out.push({ unit: i, act: "breach" }) } }
+    else if (u.hacking){ const v = { ...u }; delete v.breach; delete v.hacking; us[i] = v }
+  });
+  return out;
 }
 function orderOne(us, i, [size, field, stance, known, exchange], [aim, table], roll){   // unit i's order this move, or null: its own, gone to ground under fire, an air controller's, marked if it goes to plug a gap (as commander._order_one)
   const o1 = downUnderFire(us, i, unitOrder(us, i, [size, plugging(aimOf(us, i, aim), us[i]), stance, known, exchange], roll), stance, table);

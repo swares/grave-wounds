@@ -597,7 +597,14 @@ general. All its numbers are in units.yaml `commander`.
   batteries (Albuera to 9; Lundy's Lane unchanged, since the guns are never the target chosen).
   A wall or palisade
   blocks hand-to-hand fighting, so stormers stop at its foot unless they carry ladders (see
-  *Escalade*), when they go up it; breaching it is still the GM's order.
+  *Escalade*), when they go up it.
+  - **Hacking through** (2 November 2026). Attacking, a unit so armed that is not moving this
+    move, with a work on its front that men can open by hand (a palisade, chevaux de frise, a
+    gate: works.yaml `breach`), sets its front rank to hack at it, as the page's **Breach the
+    works** does; it stops once it moves or nothing is left on its front to hack. Walls, which
+    no axe opens, are left to ladders or charges. Before, breaching was only ever the GM's
+    order: at Ciudad Rodrigo the 3rd Division stood at the chevaux de frise on the great breach
+    all night. MEASURED_HACK
   - **In bounds** (`commander.bounds`). Storming with a modern weapon (breech-loaders on), a
     unit that heeds cover (regulars and better) and was fired on (hit or not) or pinned in the
     last exchange goes to ground where it is and fires this move, rather than walking on upright; it gets
@@ -623,6 +630,12 @@ general. All its numbers are in units.yaml `commander`.
   ground whose target is out of its front arc turns toward it where it lies, and stays down.
   Before 22 October a unit on the ground never turned: at Keating a guard post faced east all
   battle while it was shot at from 30 m to the west, and never fired back.
+  - **Touched on a flank** (2 November 2026). A unit in contact with an enemy only by its flank
+    or rear, with no enemy before its front, turns to face it (the first legal turn, toward the
+    enemy or a point either side, that brings it before its front rank). In contact a unit takes
+    no other order, and only a unit's front rank strikes, so before this the two never fought:
+    at Ciudad Rodrigo a Light Division column stood beside a gun's crew for the rest of the
+    night. MEASURED_FACE
   - Veterans prefer a hex off the target's front (30 points more).
 - **Holding.** A side that holds does not leave its ground. A unit only charges an enemy
   it can reach with the odds, turns to face its target, or goes to ground; the exceptions
@@ -3057,6 +3070,32 @@ because the breaches gave way and the castle's garrison ran with them; the castl
 by escalade then (the escalade fight came to a blow an exchange each way: *Escalade*).
 
 It is drawn by `tools/maps/make_badajoz_field.mjs`.
+
+**Ciudad Rodrigo, 19 January 1812: the breaches** (`data/fields/ciudad-rodrigo-1812.yaml`). The field
+is 60 × 62 hexes, 600 by about 540 m, north at the top (project doc "ciudad-rodrigo-research").
+- The town's north face and the angle at its north-west corner: the fausse-braie (about 6 m) before
+  the main wall (about 10 m), both drawn as wall edges, each with a ditch at its foot that is not deep
+  (the 94th leapt into it). The great breach near the angle and the lesser 200 m east, each a bare
+  slope through both walls, drawn 6 and 4 hexes wide (ours: the sources give about 30 m and 10 m,
+  but the rules lay a column's ranks out on a diagonal behind it, and at those widths no column got
+  in).
+- Behind the great breach: cuts 5 m deep on both sides of its top (deep ditch edges), chevaux de
+  frise across it, a gun on each side, and a hidden mine on its slope (the train of powder and
+  shells that killed Mackinnon).
+- Moonlit: the 94th's narrative has the moon throwing the wall's shadow on the ditch (a waxing
+  crescent about a third lit, high in the south-west at seven).
+- The French (ours, of Barrié's 1,800 to 1,900): 500 at the great breach (they hold, orders.yaml),
+  200 on the fausse-braie, 150 at the lesser breach, three guns. No reserve: none is recorded.
+- The Allies (ours): the 3rd Division's storming party (500) and Mackinnon's brigade (two halves of
+  700) at the great breach, Campbell's brigade (1,200, with ladders) round the angle from Santa Cruz,
+  and the Light Division's stormers and Vandeleur's brigade (five columns of 300) at the lesser
+  breach. The Light Division's plan (plans.yaml) takes it through the lesser breach onto the great
+  breach's defenders from behind, as in 1812. The objective is the great breach. The diversions
+  (Pack, O'Toole) are off the map. Broken units re-form (`reform: true`).
+- Ends at 55 exchanges: "an hour had nearly elapsed before all resistance ceased".
+- MEASURED_FIELD
+- On the Ciudad Rodrigo 1812 travel map, a fight within a hex of the town is offered on this
+  battlefield (docs/travel.md).
 
 **Burgos, 19-20 September 1812: the hornwork of San Miguel** (`data/fields/burgos-1812.yaml`).
 The field is 80 × 66 hexes, about 870 by 625 yards (800 by 570 m), north at the top (project

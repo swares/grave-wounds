@@ -383,8 +383,11 @@ When an item is done, delete it here and note it in the pull request that closes
     desertion and straggling doubled, the named men's loot rolled in the roller). Burgos 1812 (2
     November 2026): a third map, Celada to Briviesca, 19 September 1812; the castle is mined (10
     days, redig 5), Souham's relief at Briviesca. Ciudad Rodrigo 1812 (2 November 2026): a fourth map, the Águeda to
-    Salamanca, 8 January 1812; the town broken by the guns in 11 days; Marmont off the map. Still to
-    do: battlefields for Ciudad Rodrigo's storm and Burgos's later storms.
+    Salamanca, 8 January 1812; the town broken by the guns in 11 days; Marmont off the map. The Ciudad
+    Rodrigo battlefield (2 November 2026): the great and lesser breaches, with two commander rules
+    it needed (hacking through works men can open by hand; turning to face an enemy touching only a
+    flank). Still to do: Burgos's later storms; a column filing through a gap narrower than its
+    footprint (the breaches are drawn wider than the sources give for it).
   - **Wound tables:** the Crimean siege table is the only siege table (the Siege warfare tables
     item above).
   - To start: list the sieges and storms the game already touches (the two Redans, Jacob's Ford,
