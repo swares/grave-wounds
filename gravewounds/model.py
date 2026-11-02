@@ -1006,7 +1006,7 @@ def validate(d: Data) -> None:
         raise DataError("\n".join(errors))
 
 
-DISEASE_FACTORS = {"poor", "good", "staying", "crowded", "marsh", "town", "upland", "warm", "hot", "cold_wet", "plague"}
+DISEASE_FACTORS = {"poor", "good", "staying", "crowded", "marsh", "town", "upland", "warm", "hot", "cold_wet", "plague", "dead"}
 
 
 def _disease_errors(d: Data, terrain: dict) -> list[str]:

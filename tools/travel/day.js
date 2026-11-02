@@ -388,6 +388,30 @@ check("sieges: a sortie can be fought from behind the walls and, if it succeeds,
   D.siegeNight(c);
   assert.equal(D.siegeState(pl).days, 1.5 - DATA.terrain.siege.repair, "not invested: the garrison repairs");
 });
+check("sieges: the besiegers' lines count as a filthy camp from the investment; the unburied dead bring sickness until buried", () => {
+  const { D } = fresh(12);
+  D.S.mapId = "jacobsford-1179";
+  const fs = D.forcesHere(), pl = D.fortresses()[0], F = pl.fortress, c = { day: 1, used: 0 };
+  const g = fs.find(f => f.side === F.side && D.sameHex(f.pos, pl.hex)), foot = fs.find(f => f.side !== F.side && f.tools);
+  foot.pos = [pl.hex[0] + 1, pl.hex[1]]; foot.marched = 0; foot.day = 1;
+  D.siegeNight(c);
+  assert.deepEqual([foot.siegeFrom?.role, g.siegeFrom?.role], ["besieger", "garrison"], "both sides count from the investment");
+  assert.equal(D.hygieneOf(foot, null), DATA.terrain.siege.lines_hygiene, "siege lines with no camp: filthy");
+  assert.equal(D.hygieneOf(g, null), "fair", "the garrison: as its camp");
+  foot.day = 1 + DATA.disease.staying_days;
+  const fac = D.weekFactorsFor(foot, null, "poor");
+  assert.ok(fac.includes("staying") && fac.includes("crowded"), "a month in filthy siege lines: staying and crowded");
+  assert.ok(!fac.includes("dead"), "no dead yet");
+  D.S.dead[D.S.mapId] = [{ hex: pl.hex.slice(), day: foot.day - 2, place: pl.name }];
+  assert.ok(D.weekFactorsFor(foot, null, "poor").includes("dead"), "a battle's dead within a hex");
+  D.S.dead[D.S.mapId][0].buried = true;
+  assert.ok(!D.weekFactorsFor(foot, null, "poor").includes("dead"), "buried: gone");
+  D.S.dead[D.S.mapId][0].buried = false; D.S.dead[D.S.mapId][0].day = foot.day - DATA.disease.dead_days;
+  assert.ok(!D.weekFactorsFor(foot, null, "poor").includes("dead"), "after dead_days: gone");
+  foot.pos = [pl.hex[0] + 6, pl.hex[1]];
+  D.siegeNight({ day: foot.day, used: 0 });
+  assert.equal(foot.siegeFrom, undefined, "no longer investing");
+});
 check("fog of war: a player's view holds his side's forces and only the enemy it sees, or saw", () => {
   const { D } = fresh(5);
   D.S.mapId = "towton-1461";

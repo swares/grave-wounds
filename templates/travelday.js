@@ -89,9 +89,9 @@ function makeTravelDay(DATA, RULES, env = {}){
   }
 
   const KEY = "gravewounds-travel";
-  const S = { mapId: Object.keys(DATA.maps)[0], edits: {}, forces: {}, sel: {}, mode: "plan", paint: "forest", seq: 1, msg: "", wx: {}, plague: {}, fought: [], clock: {}, seen: {}, sieges: {} };
-  function save(){ try{ localStorage.setItem(KEY, JSON.stringify({ mapId: S.mapId, edits: S.edits, forces: S.forces, sel: S.sel, seq: S.seq, paint: S.paint, wx: S.wx, plague: S.plague, fought: S.fought, clock: S.clock, seen: S.seen, sieges: S.sieges })) }catch(e){} }
-  function restore(){ try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j?.mapId && DATA.maps[j.mapId]) Object.assign(S, j, { plague: j.plague || {}, fought: j.fought || [], clock: j.clock || {}, seen: j.seen || {}, sieges: j.sieges || {} }) }catch(e){ /* nothing saved, or unreadable: start fresh */ } }
+  const S = { mapId: Object.keys(DATA.maps)[0], edits: {}, forces: {}, sel: {}, mode: "plan", paint: "forest", seq: 1, msg: "", wx: {}, plague: {}, fought: [], clock: {}, seen: {}, sieges: {}, dead: {} };
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify({ mapId: S.mapId, edits: S.edits, forces: S.forces, sel: S.sel, seq: S.seq, paint: S.paint, wx: S.wx, plague: S.plague, fought: S.fought, clock: S.clock, seen: S.seen, sieges: S.sieges, dead: S.dead })) }catch(e){} }
+  function restore(){ try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j?.mapId && DATA.maps[j.mapId]) Object.assign(S, j, { plague: j.plague || {}, fought: j.fought || [], clock: j.clock || {}, seen: j.seen || {}, sieges: j.sieges || {}, dead: j.dead || {} }) }catch(e){ /* nothing saved, or unreadable: start fresh */ } }
   const baseMap = () => DATA.maps[S.mapId];
   function curMap(){                           // the map with any painting applied
     const b = baseMap();
@@ -556,8 +556,12 @@ function makeTravelDay(DATA, RULES, env = {}){
     return WXD.conditions[w.cond].hardship + cold;
   }
   const nightHard = (w, kind) => nightHardness(w) > WXD.shelter[kind || "none"];   // the night was harder than the shelter: cold and wet for recovery
+  function hygieneOf(f, kind){                  // the GM's word, else its camp's; siege lines with no camp made are filthy (terrain.yaml siege.lines_hygiene)
+    if (!kind && !f.hygiene && f.siegeFrom?.role === "besieger") return TER.siege?.lines_hygiene || "poor";
+    return campHygiene(f.hygiene || null, kind);
+  }
   function healthNight(f, today, camp){         // the sick get better or worse; once a week, the outbreak roll
-    const kind = camp ? camp.kind : null, hyg = campHygiene(f.hygiene || null, kind);
+    const kind = camp ? camp.kind : null, hyg = hygieneOf(f, kind);
     const ctx = { care: campCare(kind, f), marched: (f.marched || 0) > 0, wet_cold: nightHard(today.w, kind), filth: hyg === "poor", fresh: (f.noFresh || 0) < DZ.week_days,
       leech: leechBonus(bestSkill([f], "leechcraft")[0]), low: today.w.low, shelter: WXD.shelter[kind || "none"], hardness: nightHardness(today.w) };
     namedNight(f, ctx, f.day % DZ.week_days === 0 ? weekFactorsFor(f, kind, hyg) : null);
@@ -769,9 +773,25 @@ function makeTravelDay(DATA, RULES, env = {}){
   }
   function weekFactorsFor(f, kind, hyg){        // this week's factors for the force where it is
     const days = Array.from({ length: DZ.week_days }, (_, i) => f.day - i).filter(dd => dd >= 1).map(dayWeather);
-    const camp = campHere(f);
-    return weekFactors({ hygiene: hyg, camped_days: camp?.from ? f.day - camp.from.day + 1 : 0, terrain: terrainAt(curMap(), f.pos).id,
+    const camp = campHere(f), sieged = f.siegeFrom ? f.day - f.siegeFrom.day + 1 : 0;   // investing a fortress, or its garrison: camped there since the investment began
+    const out = weekFactors({ hygiene: hyg, camped_days: Math.max(camp?.from ? f.day - camp.from.day + 1 : 0, sieged), terrain: terrainAt(curMap(), f.pos).id,
       highs: days.map(x => x.w.high), wet: days.map(x => WXD.conditions[x.w.cond].precip !== "none"), plague: !!S.plague[S.mapId] });
+    return deadNear(f) ? [...out, "dead"] : out;
+  }
+  // The unburied dead (disease.yaml dead): a battle's field for dead_days after it, until the GM marks them buried.
+  const deadSites = () => (S.dead[S.mapId] ||= []);
+  const deadNear = f => Array.isArray(f.pos) && deadSites().some(x => !x.buried && f.day >= x.day && f.day < x.day + (DZ.dead_days ?? 14) && hexDistance(x.hex, f.pos) <= TER.fight_within);
+  function buryDead(i){                            // the GM marks a battle's dead buried -> what came of it
+    restore();
+    const x = deadSites()[i];
+    if (!x) return "No such battlefield.";
+    x.buried = true;
+    save();
+    return `The dead at ${x.place} are buried.`;
+  }
+  function deadNow(){                              // [{i, place, day}] the battlefields whose dead still lie unburied today
+    const c = clockNow();
+    return deadSites().map((x, i) => ({ i, ...x })).filter(x => !x.buried && c.day < x.day + (DZ.dead_days ?? 14));
   }
   function healthWeekFor(f, kind, hyg){
     const h = healthOf(f), r = healthWeek(h, f.men, weekFactorsFor(f, kind, hyg), roll100, DZ.endurance, { extra: contagionOf(h, f.men), nurse: nursingOf(h, f.men, !!f.cleanNurses), noFresh: f.noFresh || 0 });
@@ -1049,6 +1069,18 @@ function makeTravelDay(DATA, RULES, env = {}){
   }
   function siegeNight(c){                         // each invested fortress's day: its garrison eats a day of its stores, and the siege work goes on; one not invested is repaired, at nightfall -> [text]
     const out = [];
+    const at = new Map();                        // force id -> {place, role}: who invests a fortress, and its garrison, tonight
+    for (const pl of fortresses()){
+      const g = garrisonOf(pl), by = besiegersOf(pl);
+      if (!g.length || !by.length) continue;
+      for (const f of g) at.set(f.id, { place: pl.name, role: "garrison" });
+      for (const f of by) at.set(f.id, { place: pl.name, role: "besieger" });
+    }
+    for (const f of forcesHere()){                // camped there, for its disease, from the day the investment began (siege lines)
+      const now = at.get(f.id);
+      if (!now) delete f.siegeFrom;
+      else if (!f.siegeFrom || f.siegeFrom.place !== now.place || f.siegeFrom.role !== now.role) f.siegeFrom = { ...now, day: c.day };
+    }
     for (const pl of fortresses()){               // relief: no besiegers at it, its garrison (with tools) takes back siege.repair days of work a day
       const s = siegeOf(pl), g = garrisonOf(pl).filter(f => f.tools);
       if (s.days <= 0 || !g.length || besiegersOf(pl).length || s.held) continue;
@@ -1289,6 +1321,8 @@ function makeTravelDay(DATA, RULES, env = {}){
       const f = S.forces[r.mapId].find(o => o.id === +id);
       if (f) fallBack(f, r.mapId);
     }
+    const at = r.start && Object.keys(r.forces).map(id => S.forces[r.mapId].find(o => o.id === +id)).find(f => f && Array.isArray(f.pos));
+    if (at && r.kind !== "skirmish") (S.dead[r.mapId] ||= []).push({ hex: at.pos.slice(), day: r.start.day, place: r.place });   // its dead lie unburied (disease.yaml dead)
     S.fought.push(r.battle);
     S.mapId = r.mapId;
     S.msg = `The ${r.kind || "battle"} at ${r.place} is over. ${lines.join("; ")}.`;
@@ -1605,7 +1639,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
   function byId(id){ return forcesHere().find(o => o.id === id) }
 
-  return { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, seatView, hexChoice, mapChoices, setMap, sightOf, airUp, deviceKm, sightings, fortresses, siegeState, siegeNight, walledOff, termsChance, summon, noQuarterIn, sortie, noteSightings, fogView, roll100 };
+  return { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, seatView, hexChoice, mapChoices, setMap, sightOf, airUp, deviceKm, sightings, fortresses, siegeState, siegeNight, walledOff, termsChance, summon, noQuarterIn, sortie, buryDead, deadNow, hygieneOf, noteSightings, fogView, roll100 };
 }
 
 if (typeof module !== "undefined") module.exports = makeTravelDay;   // Node (the tests); the page has no `module`
