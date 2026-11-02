@@ -3733,7 +3733,7 @@ function faceContact(us, side, [size, field]){   // a unit touching an enemy onl
   });
   return out;
 }
-const hackWork = (field, u) => !!field?.works && (footprint(u)[0] || []).some(h => { const w = breachable(field, u, h); return !!w && !!specOf(w[0], w[2]).breach });   // works men can hack open by hand on its front (a palisade, chevaux de frise, a gate: works.yaml breach) (as commander._hack_work)
+const hackWork = (field, u) => !!field?.works && (footprint(u)[0] || []).some(h => { const w = breachable(field, u, h); return !!w && w[0] === "edge" && !!specOf(w[0], w[2]).breach && !!specOf(w[0], w[2]).blocks_melee });   // a line men can hack open by hand on its front, that bars hand to hand (a palisade, chevaux de frise, a gate: works.yaml breach and blocks_melee), not a hex of stakes or wagons (as commander._hack_work)
 function hackThrough(us, side, [field, stance], orders){   // attacking, a unit armed to storm (commander.storm) that is not moving this move hacks at works on its front that men can open by hand (units.breach), as the page's Breach the works; one set to it so stops once it moves, or nothing is left to hack (as commander._hack_through)
   const going = new Set(orders.filter(o => AI_MOVES.has(o.act)).map(o => o.unit)), out = [];
   us.forEach((u, i) => {

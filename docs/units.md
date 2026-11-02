@@ -599,10 +599,12 @@ general. All its numbers are in units.yaml `commander`.
   blocks hand-to-hand fighting, so stormers stop at its foot unless they carry ladders (see
   *Escalade*), when they go up it.
   - **Hacking through** (2 November 2026). Attacking, a unit so armed that is not moving this
-    move, with a work on its front that men can open by hand (a palisade, chevaux de frise, a
-    gate: works.yaml `breach`), sets its front rank to hack at it, as the page's **Breach the
-    works** does; it stops once it moves or nothing is left on its front to hack. Walls, which
-    no axe opens, are left to ladders or charges. Before, breaching was only ever the GM's
+    move, with a line on its front that men can open by hand and that bars hand to hand (a
+    palisade, chevaux de frise, a gate: works.yaml `breach` and `blocks_melee`), sets its front
+    rank to hack at it, as the page's **Breach the works** does; it stops once it moves or
+    nothing is left on its front to hack. Walls, which no axe opens, are left to ladders or
+    charges; hexes of stakes or wagons are not hacked (with them, the warriors at the Wagon Box
+    pulled the corral apart and took it in 7 of 12 runs, where they never had). Before, breaching was only ever the GM's
     order: at Ciudad Rodrigo the 3rd Division stood at the chevaux de frise on the great breach
     all night. MEASURED_HACK
   - **In bounds** (`commander.bounds`). Storming with a modern weapon (breech-loaders on), a

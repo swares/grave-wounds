@@ -109,13 +109,16 @@ def _face_contact(d: Data, us: list, side, where: tuple) -> list:
 
 
 def _hack_work(d: Data, field: dict | None, u: dict) -> bool:
-    """Works men can hack open by hand on its front (a palisade, chevaux de frise, a gate: works.yaml breach)."""
+    """A line men can hack open by hand on its front, that bars hand to hand (a palisade, chevaux de
+    frise, a gate: works.yaml breach and blocks_melee), not a hex of stakes or wagons."""
     if not field or not field.get("works"):
         return False
     for h in (U.footprint(d, u) or [[]])[0]:
         w = U._breachable(d, field, u, h)
-        if w and C._spec(d, w[0], w[2]).get("breach"):
-            return True
+        if w and w[0] == "edge":
+            s = C._spec(d, w[0], w[2])
+            if s.get("breach") and s.get("blocks_melee"):
+                return True
     return False
 
 
