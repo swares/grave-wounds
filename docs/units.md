@@ -606,7 +606,9 @@ general. All its numbers are in units.yaml `commander`.
     charges; hexes of stakes or wagons are not hacked (with them, the warriors at the Wagon Box
     pulled the corral apart and took it in 7 of 12 runs, where they never had). Before, breaching was only ever the GM's
     order: at Ciudad Rodrigo the 3rd Division stood at the chevaux de frise on the great breach
-    all night. MEASURED_HACK
+    all night. Measured on 12 runs of every battlefield (with the turn below): only Badajoz
+    (Allies won as fought 7 to 6 of 12; French losses 36% to 29%) and the new Ciudad Rodrigo
+    moved.
   - **In bounds** (`commander.bounds`). Storming with a modern weapon (breech-loaders on), a
     unit that heeds cover (regulars and better) and was fired on (hit or not) or pinned in the
     last exchange goes to ground where it is and fires this move, rather than walking on upright; it gets
@@ -637,7 +639,7 @@ general. All its numbers are in units.yaml `commander`.
     enemy or a point either side, that brings it before its front rank). In contact a unit takes
     no other order, and only a unit's front rank strikes, so before this the two never fought:
     at Ciudad Rodrigo a Light Division column stood beside a gun's crew for the rest of the
-    night. MEASURED_FACE
+    night. Measured with the hacking above: no other battlefield moved.
   - Veterans prefer a hex off the target's front (30 points more).
 - **Holding.** A side that holds does not leave its ground. A unit only charges an enemy
   it can reach with the odds, turns to face its target, or goes to ground; the exceptions
@@ -3095,7 +3097,12 @@ is 60 × 62 hexes, 600 by about 540 m, north at the top (project doc "ciudad-rod
   breach's defenders from behind, as in 1812. The objective is the great breach. The diversions
   (Pack, O'Toole) are off the map. Broken units re-form (`reform: true`).
 - Ends at 55 exchanges: "an hour had nearly elapsed before all resistance ceased".
-- MEASURED_FIELD
+- Self-play (12 runs): Allies lose 8% (about 10% in 1812), the French 78% (nearly all lost in 1812,
+  most of them taken). The Light Division takes the great breach's defenders from behind in most
+  runs, and the storming party hacks through the chevaux in some, but the Allies hold the breach
+  secured in only 1 of 12: the guns' crews beside it fight on hand to hand (ten strikers on one hex of
+  front give about a blow an exchange) and outlast the hour, and a standing enemy within the
+  `secure` radius keeps it from counting as taken.
 - On the Ciudad Rodrigo 1812 travel map, a fight within a hex of the town is offered on this
   battlefield (docs/travel.md).
 
