@@ -215,6 +215,12 @@ than a run's own spread; they bite in a small force or one where many are alread
 Typhus needs crowding: it breaks out in a camp that is both filthy (poor hygiene) and held
 four weeks or more.
 
+**The unburied dead.** For two weeks after a battle (`disease.yaml` `dead_days`; not a skirmish on
+the roller), forces within a hex of where it was fought catch the flux and typhoid more often (+10
+and +5 a week: design estimates), until the GM presses **Bury the dead** for it (beside the fight
+buttons). At Jacob's Ford in 1179 a plague broke out three days after the corpses went into the
+cistern, from "the extreme heat and the stench of the cadavers" (Imad), and killed ten emirs.
+
 **Nursing and spread.** The men too sick to work (Serious or worse) need nursing: one fit man
 for every 5 of them, taken off digging. Each week every nurse may catch what his patients
 have, as in the design doc: bloody flux 6%, typhoid 3%, camp fever (typhus) 8% and plague 1% a
@@ -457,8 +463,16 @@ of the fortress, its garrison (with tools) takes back a day of siege work each e
 (`siege.repair`) until the walls are whole again: a siege lifted (Burgos, 21 October 1812) starts
 over if it is not soon renewed. Both figures are design estimates.
 
-Mines and countermines, disease in the siege lines, and the sack's loot are not played yet
-(project doc "siege-phase-research").
+**Disease.** A force investing a fortress, and its garrison, count as camped there from the night
+the investment began, for the camp's disease (*Health*: `staying` after four weeks, and `crowded`,
+typhus's condition, if also filthy). Besiegers who have made no camp sit in siege lines at poor
+hygiene (`siege.lines_hygiene`: filth, crowding, latrines in the trenches) unless the GM sets it;
+the garrison keeps its camp's. The Health rules then give the siege-camp toll they were
+calibrated on (six weeks of a hot, filthy siege camp, about a fifth dead: Harfleur, 1415). After a
+storm or any battle, its unburied dead add their own (*Health*, The unburied dead).
+
+Mines and countermines and the sack's loot are not played yet (project doc
+"siege-phase-research").
 
 ## Fog of war
 

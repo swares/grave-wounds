@@ -372,8 +372,10 @@ When an item is done, delete it here and note it in the pull request that closes
     fortress stores, and terms (summoned; answered by players or rolled; honours of war, or no
     quarter in the storm if refused after the breach). Third cut (2 November 2026): sorties (fought,
     then marked: a success undoes a day of work) and relief (unbesieged, the garrison repairs a day
-    a day). Still to do: mines and countermines, disease in the siege lines, the sack itself
-    (loot), and more fortresses (Badajoz on the Albuera map, Burgos on a new one).
+    a day). Fourth cut (2 November 2026): disease in the siege lines (investing counts as a camp
+    from the investment, poor hygiene with none made) and the unburied dead (flux and typhoid near a
+    battle for two weeks until buried). Still to do: mines and countermines, the sack itself (loot),
+    and more fortresses (Badajoz on the Albuera map, Burgos on a new one).
   - **Wound tables:** the Crimean siege table is the only siege table (the Siege warfare tables
     item above).
   - To start: list the sieges and storms the game already touches (the two Redans, Jacob's Ford,

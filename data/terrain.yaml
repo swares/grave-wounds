@@ -86,7 +86,11 @@ place_kinds:
 # taken; Badajoz, 19 March 1812: 1,500 foot and 40 horse, about 150 British losses). repair: days of
 # siege work its garrison (with tools) takes back each day the fortress is not invested (relief, or
 # the besiegers gone). Design estimates.
+# lines_hygiene: the hygiene of a besieging force's siege lines when it has made no camp (filth,
+# crowding, latrines in the trenches); a force investing a fortress, and its garrison, count as
+# camped there from the day the investment began (disease.yaml staying and crowded).
 siege:
+  lines_hygiene: poor
   terms: {before: 5, breach: 50, hungry: 25}
   sortie_cost: 1
   repair: 1
