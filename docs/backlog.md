@@ -23,7 +23,9 @@ When an item is done, delete it here and note it in the pull request that closes
   and painting. A travel map open in another tab follows the day when it changes elsewhere; the
   roller and the team builder open in another tab still keep what they loaded until reloaded.
   The day still keeps the named men, purses and experience in the browser's storage as the other
-  pages do, and the stress rolls in ranks.js take the browser's dice, not the day's.
+  pages do (a campaign's slot and save file carry every one of those keys, so nothing is lost; the
+  pages simply share them). The Strain checks on the march and at a ford now take the day's dice
+  (1 November 2026; before, the browser's own, which mattered only to a seeded day run with no page).
 - **Virtual GM, first cut.** The roller's strike is decided with no page (`templates/strike.js`),
   each strike, wound and scripted move goes into an event log tagged with who may see it
   (`templates/gamelog.js`), and Run the fight plays each side as a player, the GM by hand, or the
