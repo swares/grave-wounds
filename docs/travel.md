@@ -482,7 +482,19 @@ the other two went off as meant; the defenders listened with water in buckets or
 counter-galleries (Grant at Constantinople, 1453). No source gives a rate: the figures are design
 estimates.
 
-The sack's loot is not played yet (project doc "siege-phase-research").
+**The storm won, and the sack.** After the storm, the GM marks it in the Siege box: **Storm won:
+sack it** or **Storm won: no sack** (the first is the custom when the garrison refused terms after
+the breach). The place passes to the stormers, and what is left of its garrison is taken (Badajoz:
+3,500 to 3,700 captured). Where the war allows a sack (`data/ranks.yaml` loot: the medieval, Thirty
+Years' and horse-and-musket eras) and the GM sacks it, the stormers sack it for three days
+(`siege.sack_days`; Badajoz and San Sebastián were each sacked for about three days): they do not
+march, more of them desert and straggle (twice the chances: `events.yaml` conditions, `sacking`; a
+design estimate), and their named men may roll the sack's loot in the roller ("A town stormed: the
+sack", the finds roll +15). The **Sack** box lets the GM call it off sooner; after it, plunder is
+the provost's ("Plunder after the sack is called off"). In a later war the log says the custom
+forbids it.
+
+Details are in the project doc "siege-phase-research".
 
 ## Fog of war
 

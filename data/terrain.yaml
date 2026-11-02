@@ -103,6 +103,12 @@ siege:
   # counter-tunnels, fights underground (Grant at Constantinople, 1453). No source gives a rate: design
   # estimates.
   mine: {success: 50, redig: 2, countermine: 15, found_cost: 1}
+  # sack_days: a storm won where the era allows a sack (data/ranks.yaml loot: sack allowed), the stormers
+  # sack the place this many days unless the GM calls it off sooner: Badajoz and San Sebastian were
+  # each sacked for about three days. Meanwhile they do not march, desertion and straggling are
+  # doubled (events.yaml conditions: sacking), and their named men may roll the sack's loot in the
+  # roller ("A town stormed: the sack"); after it, plunder is the provost's ("after the sack").
+  sack_days: 3
 
 sight:
   km: {foot: 3, mounted: 8, wagons: 2}
