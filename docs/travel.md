@@ -411,6 +411,24 @@ defence (`defenceFor`: the better of Parry and Dodge less the band's) and, Overl
 the run. **Drop packs** (After the fight) puts a side in fighting order; if it loses the field its
 packs are lost, and the travel forces its named men go with are told.
 
+## Sieges
+
+A map's place can be a **fortress** (`fortress: {side, breach_days, workers}` on the place): the
+side that holds it, the days of siege work its walls stand before the breach is practicable, and
+the men that work takes. A force of that side standing in it is its **garrison**. Enemy forces
+within fighting reach (a hex) **invest** it. Each evening the besiegers with tools that did not
+march that day put in a day of siege work: a whole day with `workers` men or more, pro rata below
+("Siege work at Chastellet: 2 of 4 days to a practicable breach"). Until the breach is
+**practicable**, no fight is offered between the garrison in the fortress and a force outside it:
+the walls keep them apart (a force that marches out can still be met, and the GM can always set
+a storm up by hand). Once it is practicable, the storm is offered as any fight, on the fortress's
+battlefield. The GM's map shows the siege on the place (its label: besieged 2/4, or breached; its
+tooltip: who invests it and the days done); online, the players of both sides see that it is
+invested, and when the breach is practicable, but not the day count. The siege's state is kept
+with the map's (`S.sieges`). Hunger in the garrison, terms and their refusal, sorties, mines and
+countermines, and disease in the siege lines are not played yet (project doc
+"siege-phase-research").
+
 ## Fog of war
 
 What each side's forces see of the enemy's, for a player online (his map shows only what his side
@@ -592,8 +610,10 @@ swamps marsh; Upper Galilee and the Golan are hills. The castle stands 200 m nor
 a hex west of it at this scale. The Franks resupply at Tiberias and Safed, the Ayyubids at Banias.
 Its climate is new: the upper Jordan valley (Tiberias), with August highs near 38 C. Its people speak
 Arabic. No source gives Saladin's numbers; the forces are round figures of our own. It is generated
-by `tools/maps/make_jacobsford.mjs`. A fight within a hex of the castle is offered on the Jacob's
-Ford battlefield.
+by `tools/maps/make_jacobsford.mjs`. The castle is a fortress (*Sieges*): 4 days of siege work
+with 1,000 men to a practicable breach (Saladin arrived on day 1 and the wall fell at dawn on day 6;
+the workers are ours). Once the breach is practicable, a fight within a hex of the castle is offered
+on the Jacob's Ford battlefield.
 
 **The Dornach campaign, 1499** (`data/maps/dornach-1499.yaml`) covers the Birs valley and the
 Gempen plateau on 0.6-mile (1 km) hexes: 22 × 25 hexes, about 14 by 13 miles (22 by 21 km), from

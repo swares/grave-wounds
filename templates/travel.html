@@ -277,7 +277,7 @@ const WK = DATA.works, CAMP_HEX_M = DATA.battle_hex_m, CG = DATA.ground;
 /*__CAMP_JS__*/
 /* ---------- the travel map's day: templates/travelday.js (state, march, night, the clock) ---------- */
 /*__TRAVELDAY_JS__*/
-const { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, sightings, roll100 } = makeTravelDay(DATA, RULES);
+const { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, sightings, fortresses, siegeState, roll100 } = makeTravelDay(DATA, RULES);
 /* ---------- drawing ---------- */
 const R = 12, W = Math.sqrt(3) * R;
 const xy = ([c, r]) => [W * (c + 0.5 * (r & 1)) + W / 2, 1.5 * R * r + R];
@@ -302,13 +302,20 @@ function placeMark(p, x, y){                   // a place's mark, by its kind
   if (p.kind === "landmark") return `<circle class="mk" cx="${x}" cy="${y}" r="2.2"/>`;
   return `<rect class="mk" x="${x - 3.5}" y="${y - 3.5}" width="7" height="7"/>`;
 }
+function siegeText(p){                         // "; held by X: invested by Y, breach 3 of 4 days of siege work"
+  const x = siegeState(p);
+  const state = x.practicable ? "the breach is practicable" : x.invested ? `invested by ${x.by.join(", ")}: ${x.days} of ${x.of} days of siege work to a practicable breach` : `not invested (${x.days} of ${x.of} days of siege work done)`;
+  return `; a fortress held by ${x.side}: ${state}`;
+}
+const siegeTag = p => { if (!p.fortress) return ""; const x = siegeState(p); return x.practicable ? " (breached)" : x.invested ? ` (besieged ${x.days}/${x.of})` : "" };
 function placesSvg(){                          // the map's places, named
   let out = "";
   for (const p of baseMap().places || []){
     const [x, y] = xy(p.hex);
     const depot = p.depot?.length ? ` (depot of ${p.depot.join(", ")})` : "";   // where its sides' forces refill their supplies
     const spoken = p.tongues?.length ? `; people speak ${tongueNames(p.tongues)}` : "";   // the place's own tongues (else the map's)
-    out += `<g class="place ${p.kind}${depot ? " depot" : ""}"><title>${esc(p.name + depot + spoken)}</title>${placeMark(p, x, y)}<text x="${(x + 8).toFixed(1)}" y="${(y - 7).toFixed(1)}">${esc(p.name)}${depot ? " ⚑" : ""}</text></g>`;
+    const siege = p.fortress ? siegeText(p) : "";   // a fortress's siege: invested, and how far the breach is
+    out += `<g class="place ${p.kind}${depot ? " depot" : ""}"><title>${esc(p.name + depot + spoken + siege)}</title>${placeMark(p, x, y)}<text x="${(x + 8).toFixed(1)}" y="${(y - 7).toFixed(1)}">${esc(p.name)}${depot ? " ⚑" : ""}${siegeTag(p)}</text></g>`;
   }
   return out;
 }
@@ -598,7 +605,8 @@ function placeYaml(p){                          // one place's line in an export
   const q = x => JSON.stringify(x);
   const depot = p.depot?.length ? ", depot: [" + p.depot.map(q).join(", ") + "]" : "", note = p.note ? ", note: " + q(p.note) : "";
   const tongues = p.tongues?.length ? ", tongues: [" + p.tongues.join(", ") + "]" : "";
-  return "  - {name: " + q(p.name) + ", kind: " + p.kind + ", hex: [" + p.hex.join(", ") + "]" + depot + tongues + note + "}";
+  const fort = p.fortress ? ", fortress: {side: " + q(p.fortress.side) + ", breach_days: " + p.fortress.breach_days + ", workers: " + p.fortress.workers + "}" : "";
+  return "  - {name: " + q(p.name) + ", kind: " + p.kind + ", hex: [" + p.hex.join(", ") + "]" + depot + tongues + fort + note + "}";
 }
 function mapYaml(){
   const b = baseMap(), m = curMap(), q = s => JSON.stringify(String(s));
@@ -686,7 +694,8 @@ function seatShow(v){
   const VW = W * (cols + 0.5), VH = 1.5 * R * (rows - 1) + 2 * R;
   $("#map").innerHTML = `<svg viewBox="0 0 ${VW.toFixed(1)} ${VH.toFixed(1)}" style="max-width:${Math.round(VW * 1.5)}px">${hexesSvg(m)}${over}</svg>`;
   const light = v.light === "day" ? "" : `, ${v.light}`;
-  $("#seat-when").textContent = `${DATA.maps[v.mapId].name} · ${v.when} · ${v.weather}${light}${v.air ? " · our aircraft are up" : ""}`;
+  const sieges = (v.sieges || []).map(x => ` · ${x.name} ${x.ours ? "besieged" : "invested"}${x.practicable ? ": the breach is practicable" : ""}`).join("");
+  $("#seat-when").textContent = `${DATA.maps[v.mapId].name} · ${v.when} · ${v.weather}${light}${v.air ? " · our aircraft are up" : ""}${sieges}`;
   seatPropose(v);
   $("#seat-key").textContent = `${v.ours.length} of your side's forces; ${v.seen.length} enemy seen now (red ring)${v.last.length ? `, ${v.last.length} last seen (faded, where and when it was seen)` : ""}. Hover a mark for more.`;
 }

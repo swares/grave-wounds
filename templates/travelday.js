@@ -89,9 +89,9 @@ function makeTravelDay(DATA, RULES, env = {}){
   }
 
   const KEY = "gravewounds-travel";
-  const S = { mapId: Object.keys(DATA.maps)[0], edits: {}, forces: {}, sel: {}, mode: "plan", paint: "forest", seq: 1, msg: "", wx: {}, plague: {}, fought: [], clock: {}, seen: {} };
-  function save(){ try{ localStorage.setItem(KEY, JSON.stringify({ mapId: S.mapId, edits: S.edits, forces: S.forces, sel: S.sel, seq: S.seq, paint: S.paint, wx: S.wx, plague: S.plague, fought: S.fought, clock: S.clock, seen: S.seen })) }catch(e){} }
-  function restore(){ try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j?.mapId && DATA.maps[j.mapId]) Object.assign(S, j, { plague: j.plague || {}, fought: j.fought || [], clock: j.clock || {}, seen: j.seen || {} }) }catch(e){ /* nothing saved, or unreadable: start fresh */ } }
+  const S = { mapId: Object.keys(DATA.maps)[0], edits: {}, forces: {}, sel: {}, mode: "plan", paint: "forest", seq: 1, msg: "", wx: {}, plague: {}, fought: [], clock: {}, seen: {}, sieges: {} };
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify({ mapId: S.mapId, edits: S.edits, forces: S.forces, sel: S.sel, seq: S.seq, paint: S.paint, wx: S.wx, plague: S.plague, fought: S.fought, clock: S.clock, seen: S.seen, sieges: S.sieges })) }catch(e){} }
+  function restore(){ try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j?.mapId && DATA.maps[j.mapId]) Object.assign(S, j, { plague: j.plague || {}, fought: j.fought || [], clock: j.clock || {}, seen: j.seen || {}, sieges: j.sieges || {} }) }catch(e){ /* nothing saved, or unreadable: start fresh */ } }
   const baseMap = () => DATA.maps[S.mapId];
   function curMap(){                           // the map with any painting applied
     const b = baseMap();
@@ -957,9 +957,42 @@ function makeTravelDay(DATA, RULES, env = {}){
     for (const a of fs) for (const b of fs) if (a.id < b.id && a.side !== b.side && hexDistance(a.pos, b.pos) <= TER.fight_within) out[pairKey(a, b)] = [a, b];
     return out;
   }
-  function nightFalls(c){                        // the night for every force on today's clock; the clock moves to the next morning -> camps finished in the evening [text]
+  // ----- sieges: a fortress place (its `fortress`: the side holding it, breach_days, workers; docs/travel.md, Sieges) -----
+  // A force of the fortress's side standing in it is its garrison. Enemy forces within fighting reach invest it, and
+  // each evening those with tools that did not march that day work the siege: a day of work (pro rata below `workers`
+  // men) towards `breach_days`. Until the breach is practicable no fight is offered between the garrison in it and a
+  // force outside it.
+  const fortresses = () => (baseMap().places || []).filter(p => p.fortress && Array.isArray(p.hex));
+  const siegeOf = pl => ((S.sieges[S.mapId] ||= {})[pl.name] ||= { days: 0 });
+  const breached = pl => siegeOf(pl).days >= pl.fortress.breach_days - 1e-9;
+  const garrisonOf = pl => forcesHere().filter(f => f.side === pl.fortress.side && Array.isArray(f.pos) && sameHex(f.pos, pl.hex));
+  const besiegersOf = pl => forcesHere().filter(f => f.side !== pl.fortress.side && Array.isArray(f.pos) && hexDistance(f.pos, pl.hex) <= TER.fight_within);
+  const shutIn = f => fortresses().find(pl => f.side === pl.fortress.side && Array.isArray(f.pos) && sameHex(f.pos, pl.hex) && !breached(pl)) || null;
+  const walledOff = (a, b) => !!(shutIn(a) || shutIn(b));   // one of them is shut in a fortress whose breach is not yet practicable
+  function siegeState(pl){                        // {name, side, invested (a garrison in it, besiegers at it), by [names], days, of, practicable}
+    const g = garrisonOf(pl), by = besiegersOf(pl), s = siegeOf(pl);
+    return { name: pl.name, side: pl.fortress.side, invested: g.length > 0 && by.length > 0, by: by.map(f => f.name), days: s.days, of: pl.fortress.breach_days, practicable: breached(pl) };
+  }
+  function siegeNight(c){                         // each invested fortress's day of siege work, at nightfall -> [text]
+    const out = [];
+    for (const pl of fortresses()){
+      if (breached(pl) || !garrisonOf(pl).length) continue;
+      const by = besiegersOf(pl), F = pl.fortress, s = siegeOf(pl);
+      const men = by.filter(f => f.day === c.day && f.tools && !(f.marched > 0)).reduce((t, f) => t + (fitOf(f).fit || f.men), 0);
+      const add = Math.min(1, men / F.workers);
+      if (!by.length || add <= 0) continue;
+      s.days = Math.round((s.days + add) * 100) / 100;
+      const line = breached(pl) ? `The breach at ${pl.name} is practicable after ${s.days} days of siege work: the storm can now be fought.`
+        : `Siege work at ${pl.name}: ${s.days} of ${F.breach_days} days to a practicable breach${add < 1 ? ` (${Math.round(add * 100)}%: ${men} men at work, ${F.workers} wanted)` : ""}.`;
+      out.push(line);
+      for (const f of [...garrisonOf(pl), ...by]) f.log.unshift(`${dateText(c.day, true)}: ${line}`);
+    }
+    return out;
+  }
+  function nightFalls(c){                        // the night for every force on today's clock; the clock moves to the next morning -> camps finished in the evening, and the sieges' work [text]
     const done = forcesHere().filter(f => f.day === c.day && busy(f, c) && f.camp)
-      .map(f => `${f.name} finished its ${WK.camps[f.camp.kind].name.toLowerCase()} at ${clock(f.used, f.day)} the evening before.`);
+      .map(f => `${f.name} finished its ${WK.camps[f.camp.kind].name.toLowerCase()} at ${clock(f.used, f.day)} the evening before.`)
+      .concat(siegeNight(c));
     for (const f of forcesHere()) if (f.day === c.day) endDay(f);
     c.day += 1; c.used = 0;
     return done;
@@ -1068,10 +1101,14 @@ function makeTravelDay(DATA, RULES, env = {}){
     return leaderOf(dfd) === dfd ? p : fightPlan(forcesHere(), leaderOf(dfd).id, wait);
   }
   function fightOptions(f){                    // the fights on offer: attack now, and wait for the camp if it is unfinished
-    const wait = planFor(f, true);
+    const wait = unwalled(planFor(f, true));
     if (!wait.early) return [wait];
-    const now = planFor(f, false);
+    const now = unwalled(planFor(f, false));
     return campStatus(byId(now.defender), now).done === null ? [now] : [now, wait];
+  }
+  function unwalled(p){                         // a fight's attackers less any the walls of an unbreached fortress keep from the defender (sieges)
+    const dfd = byId(p.defender);
+    return { ...p, attackers: p.attackers.filter(id => !walledOff(dfd, byId(id))) };
   }
   function nearFields(dfd){
     const places = baseMap().places || [];
@@ -1377,6 +1414,7 @@ function makeTravelDay(DATA, RULES, env = {}){
       .map(([, x]) => ({ name: x.name, side: x.side, type: x.type, size: x.size, pos: x.pos, when: `${dateText(x.day, true)}, ${clock(x.used, x.day)}` }));
     return { mapId: S.mapId, edits: S.edits[S.mapId] || null, day: c.day, when: `${dateText(c.day, true)}, ${clock(c.used, c.day)}`,
       weather: WXD.conditions[now.cond]?.name || now.cond, light: now.light, air: airUp(side, now), sides: sides(),
+      sieges: fortresses().map(siegeState).filter(x => x.invested && (x.side === side || forcesHere().some(f => f.side === side && x.by.includes(f.name)))).map(x => ({ name: x.name, practicable: x.practicable, ours: x.side === side })),
       ours: forcesHere().filter(f => f.side === side && placed(f)).map(ours), seen: seenNow.map(report), last };
   }
   // What one player sees of the map: his named men (uids) and the forces they are with, nothing of
@@ -1477,7 +1515,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
   function byId(id){ return forcesHere().find(o => o.id === id) }
 
-  return { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, seatView, hexChoice, mapChoices, setMap, sightOf, airUp, deviceKm, sightings, noteSightings, fogView, roll100 };
+  return { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, seatView, hexChoice, mapChoices, setMap, sightOf, airUp, deviceKm, sightings, fortresses, siegeState, siegeNight, walledOff, noteSightings, fogView, roll100 };
 }
 
 if (typeof module !== "undefined") module.exports = makeTravelDay;   // Node (the tests); the page has no `module`

@@ -89,7 +89,7 @@ terrain: |
     ffffffwwwwwwwwwwwfffffffffffffffffffff
     ffffffffffffffffffffffffffffffffffffff
 places:
-  - {name: "Chastellet (the castle at Jacob's Ford)", kind: objective, hex: [14, 34], note: "The Templar castle begun in October 1178 on a low tell by the ford: walls 4 m thick and about 10 m high, unfinished; stormed on 30 August"}
+  - {name: "Chastellet (the castle at Jacob's Ford)", kind: objective, hex: [14, 34], fortress: {side: "Kingdom of Jerusalem", breach_days: 4, workers: 1000}, note: "The Templar castle begun in October 1178 on a low tell by the ford: walls 4 m thick and about 10 m high, unfinished; stormed on 30 August"}
   - {name: "Jacob's Ford", kind: landmark, hex: [15, 34], note: "The only crossing of the Jordan between the Hula swamps and the gorge to the south, on the road from Acre to Damascus"}
   - {name: "Tiberias", kind: camp, hex: [5, 62], depot: ["Kingdom of Jerusalem"], note: "Where Baldwin IV gathered the relief, slowly; 25 km from the castle"}
   - {name: "Safed", kind: town, hex: [2, 39], depot: ["Kingdom of Jerusalem"], note: "A Templar castle since 1168; Saladin's men cut timber for their palisades in its country"}
