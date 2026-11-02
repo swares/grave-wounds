@@ -94,6 +94,15 @@ siege:
   terms: {before: 5, breach: 50, hungry: 25}
   sortie_cost: 1
   repair: 1
+  # mine: for a fortress broken `by: mine` (its breach_days the mine's digging): fired, d100 at or under
+  # `success` brings the wall down, else it fell short and `redig` days (the fortress's, else this) must
+  # be dug again. A garrison countermining finds the gallery `countermine` % of the days it is dug,
+  # and the fight underground costs `found_cost` days. Jacob's Ford 1179: the first mine's fire
+  # failed, the second, dug deeper, brought the wall down; Burgos 1812: of three mines the first fell
+  # short, the other two went off as meant. Countermines: listening with water in buckets or barrels,
+  # counter-tunnels, fights underground (Grant at Constantinople, 1453). No source gives a rate: design
+  # estimates.
+  mine: {success: 50, redig: 2, countermine: 15, found_cost: 1}
 
 sight:
   km: {foot: 3, mounted: 8, wagons: 2}

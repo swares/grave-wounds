@@ -375,8 +375,10 @@ When an item is done, delete it here and note it in the pull request that closes
     a day). Fourth cut (2 November 2026): disease in the siege lines (investing counts as a camp
     from the investment, poor hygiene with none made) and the unburied dead (flux and typhoid near a
     battle for two weeks until buried). Badajoz 1812 (2 November 2026): a second map on the Albuera
-    ground, 16 March to the storm, the town a fortress of 21 days. Still to do: mines and
-    countermines, the sack itself (loot), and more fortresses (Burgos on a new map, Ciudad Rodrigo).
+    ground, 16 March to the storm, the town a fortress of 21 days. Mines and countermines (2 November
+    2026): a fortress broken by a mine is fired when dug (50% the wall comes down, else redig), and
+    a garrison may countermine (15% a day to find it, a day lost); Jacob's Ford's castle is mined.
+    Still to do: the sack itself (loot), and more fortresses (Burgos on a new map, Ciudad Rodrigo).
   - **Wound tables:** the Crimean siege table is the only siege table (the Siege warfare tables
     item above).
   - To start: list the sieges and storms the game already touches (the two Redans, Jacob's Ford,

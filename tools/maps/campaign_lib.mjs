@@ -143,7 +143,7 @@ export function buildCampaign(spec){
   const tonguesOf = k => (spec.tongues?.[k] ? ", tongues: [" + spec.tongues[k].join(", ") + "]" : "");   // the place's own tongues, main first (data/languages.yaml)
   for (const k of Object.keys(spec.tongues || {})) if (!spec.names[k]) throw new Error(`tongues: no place ${k}`);
   const depotOf = k => (spec.depots?.[k] ? ", depot: [" + spec.depots[k].map(yq).join(", ") + "]" : "");   // the sides that resupply here (data/supplies.yaml)
-  const fortOf = k => { const F = spec.fortresses?.[k]; return F ? `, fortress: {side: ${yq(F.side)}, breach_days: ${F.breach_days}, workers: ${F.workers}${F.stores ? ", stores: " + F.stores : ""}}` : "" };   // a fortress to besiege (docs/travel.md, Sieges)
+  const fortOf = k => { const F = spec.fortresses?.[k]; return F ? `, fortress: {side: ${yq(F.side)}${F.by ? ", by: " + F.by : ""}, breach_days: ${F.breach_days}${F.redig ? ", redig: " + F.redig : ""}, workers: ${F.workers}${F.stores ? ", stores: " + F.stores : ""}}` : "" };   // a fortress to besiege (docs/travel.md, Sieges)
   for (const k of Object.keys(spec.fortresses || {})) if (!spec.names[k]) throw new Error(`fortresses: no place ${k}`);
   const places = Object.keys(spec.names).filter(k => g.on(placeHex(k))).map(k =>
     `  - {name: ${yq(spec.names[k])}, kind: ${kindOf(k)}, hex: [${placeHex(k).join(", ")}]${depotOf(k)}${fortOf(k)}${tonguesOf(k)}${noteOf(k)}}`);

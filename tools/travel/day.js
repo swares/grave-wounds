@@ -327,7 +327,15 @@ check("sieges: a garrison shut in its fortress is not fought until the breach is
   assert.equal(D.siegeState(pl).days, 0.5, "a day it marched: no work");
   foot.marched = 0;
   for (let n = 0; n < F.breach_days; n++) D.siegeNight(c);
-  assert.ok(D.siegeState(pl).practicable, "practicable after its days of work");
+  assert.equal(F.by, "mine", "Jacob's Ford's castle is broken by a mine");
+  assert.ok(D.siegeState(pl).ready && !D.siegeState(pl).practicable, "the mine dug: ready to fire, the wall still stands");
+  assert.deepEqual(D.fightOptions(g)[0].attackers, [], "no storm before the mine brings the wall down");
+  let fired = 0;
+  for (let n = 0; n < 40 && !D.siegeState(pl).practicable; n++){
+    if (D.siegeState(pl).ready){ D.save(); D.fireMine(pl.name); D.restore(); fired++ }
+    else { for (const f of D.forcesHere()) f.marched = 0; D.siegeNight(c) }
+  }
+  assert.ok(D.siegeState(pl).practicable && fired >= 1, "fired until it brings the wall down (a miss: dug again)");
   assert.deepEqual(D.fightOptions(g)[0].attackers, [foot.id], "the storm is offered once the breach is practicable");
   const v = D.fogView(g.side);
   assert.deepEqual(v.sieges, [{ name: pl.name, practicable: true, ours: true }], "the garrison's players see the siege");
@@ -351,7 +359,7 @@ check("sieges: an invested garrison eats its fortress's stores; summoned, it acc
   assert.match(msg, /refuses terms/);
   D.restore();
   assert.deepEqual(D.noQuarterIn([g.id]), [], "refused before the breach: quarter as usual");
-  D.S.sieges[D.S.mapId][pl.name].days = F.breach_days;
+  D.S.sieges[D.S.mapId][pl.name].days = F.breach_days; D.S.sieges[D.S.mapId][pl.name].blown = true;
   D.save();
   assert.equal(D.termsChance(pl).chance, T.breach, "the breach practicable");
   msg = D.summon(pl.name, "refuse");
@@ -422,6 +430,35 @@ check("sieges: Badajoz 1812 is invested from the start, and its breach is practi
   for (let n = 1; n <= F.breach_days; n++){ for (const f of D.forcesHere()) f.day = n; c.day = n; D.siegeNight(c) }
   assert.ok(D.siegeState(pl).practicable, "practicable after the night of day 21 (5 April), stormed on the 22nd (6 April)");
   assert.ok(D.nearFields(D.forcesHere().find(f => f.side === F.side && D.sameHex(f.pos, pl.hex))).some(([id]) => id === "badajoz-1812"), "the storm on the Badajoz battlefield");
+});
+check("sieges: a mine fired falls short (dug again) or brings the wall down; a countermine may find it", () => {
+  const { D } = fresh(14);
+  D.S.mapId = "jacobsford-1179";
+  const fs = D.forcesHere(), pl = D.fortresses()[0], F = pl.fortress, M = DATA.terrain.siege.mine;
+  const g = fs.find(f => f.side === F.side && D.sameHex(f.pos, pl.hex)), foot = fs.find(f => f.side !== F.side && f.tools);
+  foot.pos = [pl.hex[0] + 1, pl.hex[1]]; foot.marched = 0; foot.day = 1;
+  D.S.sieges[D.S.mapId] = { [pl.name]: { days: F.breach_days } };
+  D.save();
+  let short = 0, down = 0;
+  for (let n = 0; n < 60; n++){
+    D.S.sieges[D.S.mapId][pl.name] = { days: F.breach_days }; D.save();
+    const msg = D.fireMine(pl.name); D.restore();
+    if (/falls short/.test(msg)){ short++; assert.equal(D.siegeState(pl).days, F.breach_days - F.redig, "fell short: redig days to dig again") }
+    else { down++; assert.ok(D.siegeState(pl).practicable, "the wall comes down") }
+  }
+  assert.ok(short > 10 && down > 10, `both happen at ${M.success}% (${short} short, ${down} down)`);
+  D.S.sieges[D.S.mapId][pl.name] = { days: 0 }; D.save();
+  assert.match(D.countermine(pl.name), /countermines/);
+  D.restore();
+  assert.ok(D.siegeState(pl).countermine, "the garrison countermines");
+  let found = 0;
+  for (let n = 0; n < 200; n++){
+    D.S.sieges[D.S.mapId][pl.name].days = 0.5;
+    for (const f of D.forcesHere()){ f.marched = 0; f.day = 1 }
+    const out = D.siegeNight({ day: 1, used: 0 }).join(" ");
+    if (/countermine breaks into the gallery/.test(out)) found++;
+  }
+  assert.ok(found > 10 && found < 60, `found about ${M.countermine}% of the days (${found} of 200)`);
 });
 check("fog of war: a player's view holds his side's forces and only the enemy it sees, or saw", () => {
   const { D } = fresh(5);
