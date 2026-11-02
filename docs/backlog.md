@@ -380,8 +380,9 @@ When an item is done, delete it here and note it in the pull request that closes
     a garrison may countermine (15% a day to find it, a day lost); Jacob's Ford's castle is mined.
     The storm won and the sack (2 November 2026): the GM marks the storm won; the place changes
     hands, the garrison is taken, and where the era allows the stormers sack it for three days (halted,
-    desertion and straggling doubled, the named men's loot rolled in the roller). Still to do: more
-    fortresses (Burgos on a new map, Ciudad Rodrigo).
+    desertion and straggling doubled, the named men's loot rolled in the roller). Burgos 1812 (2
+    November 2026): a third map, Celada to Briviesca, 19 September 1812; the castle is mined (10
+    days, redig 5), Souham's relief at Briviesca. Still to do: Ciudad Rodrigo.
   - **Wound tables:** the Crimean siege table is the only siege table (the Siege warfare tables
     item above).
   - To start: list the sieges and storms the game already touches (the two Redans, Jacob's Ford,

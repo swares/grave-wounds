@@ -92,6 +92,7 @@ writeField({
   ends: { at: 60, why: "about an hour: the firing party stood about a quarter of an hour, and the hornwork was carried the same night (our reading)" },
   objective: { at: [45, 31], side: 0, name: "the hornwork of San Miguel", radius: 6 },
   id: "burgos-1812", name: "Burgos, 19-20 September 1812 (the hornwork of San Miguel)", sides: ["Allies", "French"], table: "peninsular-1808-14-all-hits",
+  travel: { map: "burgos-1812", place: "Burgos", within: 1, sides: ["Allies", "France"] },
   weather: "{cond: fair, wind: calm, light: moonlit, ground: {mud: 0, snow: 0}}",
   grid, units,
   edgeWorks: { wall, ditch, palisade, gate },

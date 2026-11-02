@@ -3072,7 +3072,8 @@ doc "burgos-research"; Oman, *A History of the Peninsular War*, vol. 6, ch. II).
   each, ours: no source reached gives them) with **short ladders** (see *Escalade*) against the
   demi-bastions, and Major Somers Cocks's light companies of the 1/42nd, 1/24th and 1/79th (140,
   with ladders), sent by a route round the east flank, over the palisade and in.
-- The wound tables are the Peninsular War's. It is not on any travel map yet.
+- The wound tables are the Peninsular War's. On the Burgos 1812 travel map, a fight within a hex of the
+  castle is offered on this battlefield (docs/travel.md).
 
 How it plays (12 runs, the commander on both sides): the Allies take the hornwork in all 12, as
 they did. The front attack fails: the Portuguese stop at the foot of the escarp with their short
