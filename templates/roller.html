@@ -886,10 +886,16 @@ function logLine(type, line, c = null){
 }
 function hzLog(line, c = null){ S.hzlog = [line, ...(S.hzlog || [])].slice(0, 30); logLine("hazard", line, c) }
 function plainText(html){ const el = document.createElement("span"); el.innerHTML = html; return el.textContent }
-function crushWound(c, sev, zone){                // a fall's wound on his card, with its stop check
+function crushWound(c, sev, zone){                // a fall's wound on his card, with its stop check; a player character with fate may spend it on the wound as on a blow's
   const locs = ZONE_LOCS[zone] || ZONE_LOCS.torso, loc = locs[(d100() - 1) % locs.length], fx = DATA.wounds[`${LOC[loc].class}|crush|${sev}`];
+  const prevState = c.state ? { ...c.state } : null;
   if (!fx || !applyHit(c, { loc, mech: "crush", sev, fx })) return "";
   const line = applyStopCheck(c, c.wounds[c.wounds.length - 1]), tail = line ? "; " + plainText(line) : "";
+  if (isPC(c)){
+    S.fateOffer = { id: c.id, w: c.wounds.length - 1, prevState, failed: /failed by/.test(line) };
+    const m = $("#apply-msg"), offer = fateButtons();
+    if (m && offer) m.innerHTML = `${attr(c.name)}: ${sev} ${LOC[loc].name.toLowerCase()} from the fall.${offer}`;
+  }
   return `${sev} ${LOC[loc].name.toLowerCase()}${tail}`;
 }
 function doFall(c, height, landing, shift, why){
@@ -916,7 +922,7 @@ function hzSwimBody(c, K, H){
   const shed = loadInfo(c) && loadOrderOf(c) !== "fighting";
   return `<div class="toolbar">Water ${hazardOpts("hz-cold", H.cold.map((x, i) => [i, x.name]), K.cold)} Current ${hazardOpts("hz-current", Object.keys(H.swim.current).map(k => [k, k]), K.current)}
       <label class="check"><input type="checkbox" id="hz-float"${hzChecked(K.float)}> Something to float on</label> <label>Minutes to the bank <input type="number" id="hz-shore" min="1" value="${K.shore}" style="width:4em"></label></div>
-      <div class="toolbar"><button class="small" id="hz-in">Into the water</button><button class="small" id="hz-min"${hzOff(st && !st.out && st.step < 4)}>A minute</button><button class="small" id="hz-shed"${hzOff(shed)}>Shed his pack</button>
+      <div class="toolbar"><button class="small" id="hz-in">Into the water</button><button class="small" id="hz-min"${hzOff(st && !st.out && st.step < 4)}>A minute</button><button class="small" id="hz-shed"${hzOff(shed)}>Shed his pack</button>${st && !st.out && st.step >= 4 && pcFate(c) > 0 ? `<button class="small" id="hz-fate" title="A fate point: he is pulled out near-drowned (two steps of fatigue) instead of drowning">Spend fate: pulled out</button>` : ""}
       <span class="muted">${attr(c.name)}: ${attr(can)}, ${attr(step)}${mins}</span></div>`;
 }
 function hzClimbBody(c, K, H){
@@ -962,13 +968,24 @@ function swimMinute(c){                          // a minute in the water
   const r = hzSwimStep(st.step, t, d100());
   st.step = r.step; st.minutes += 1; st.worst = Math.max(st.worst, st.step);
   let t2 = `${c.name}, minute ${st.minutes}: swims at ${t}, rolled ${r.check.roll}: ${H.swim.steps[st.step]}`;
-  if (st.step >= 4){ c.state = { id: "out", rounds: null }; t2 += ". He drowns" }
+  if (st.step >= 4){
+    st.before = c.state ? { ...c.state } : null;  // as he was, if his fate pulls him out
+    c.state = { id: "out", rounds: null }; t2 += ". He drowns";
+    if (pcFate(c) > 0) t2 += ` (he has ${pcFate(c)} fate: Spend fate to have him pulled out)`;
+  }
   else if (st.minutes >= K.shore){
     t2 += ". He reaches the bank";
     if (st.worst >= 3){ c.fatigue = Math.min(WXD.fatigue.levels.length - 1, (c.fatigue || 0) + 2); t2 += ", near-drowned (two steps of fatigue)" }
     st.out = true;
   }
   hzLog(t2 + ".", c);
+}
+function drownSpared(c){                          // a player character's fate: pulled out near-drowned instead of drowning (lethality.js)
+  const st = c.swimState;
+  if (!st || st.out || st.step < 4 || !fateSpend(c.sheet.pid, "pulled out of the water, near-drowned")) return;
+  c.state = st.before || null; st.step = 3; st.out = true;
+  c.fatigue = Math.min(WXD.fatigue.levels.length - 1, (c.fatigue || 0) + 2);
+  hzLog(`${c.name}: fate spent, he is pulled out near-drowned (two steps of fatigue).`, c);
 }
 function climbStep(c){
   const cl = c.climbState, sf = HZD().climb.surfaces[cl.surface];
@@ -1044,7 +1061,7 @@ function fallNow(c, K){
 }
 const foeOf = K => S.chars.find(x => x.id === K.foe);
 const HZ_DO = {                                   // the panel's buttons
-  "hz-in": intoWater, "hz-min": c => swimMinute(c), "hz-shed": c => { c.loadOrder = "fighting"; hzLog(`${c.name} sheds his pack.`, c) },
+  "hz-in": intoWater, "hz-min": c => swimMinute(c), "hz-fate": drownSpared, "hz-shed": c => { c.loadOrder = "fighting"; hzLog(`${c.name} sheds his pack.`, c) },
   "hz-climb-start": startClimb, "hz-climb": c => climbStep(c), "hz-fall": fallNow,
   "hz-chase-start": (c, K) => { S.chase = { gap: HZD().chase.start, round: 0 }; hzLog(`${foeOf(K).name} goes after ${c.name}.`, c) },
   "hz-chase": (c, K) => chaseRound(c, foeOf(K))

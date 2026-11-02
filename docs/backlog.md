@@ -57,11 +57,13 @@ When an item is done, delete it here and note it in the pull request that closes
   naked-eye sight: a per-period factor is next), scouting orders and patrols, and the delay of
   reports; the weather factor (5) and several distances are judgments, not sourced.
 - **Lethality, first cut.** Gritty | Standard | Heroic for player characters (wounds.yaml
-  lethality): fate a season, Blood and the stop check, on every page. Still left out: fate does
-  not save a man from drowning, a fall or the other hazards; the roller offers fate only on the hit
-  just applied (not on old wounds or a pain check); the field map's heroes spend it only on a
-  killing wound or a death when found, never on a stop check; and the CLI and self-play use the
-  default setting with no flag to change it.
+  lethality): fate a season, Blood and the stop check, on every page. Fate now saves a man from
+  drowning (the roller's **Spend fate: pulled out**; a ford on the travel map spends it at once) and
+  lowers a fall's wound as a blow's (1 November 2026), and `python3 -m gravewounds team --lethality`
+  sets the CLI's sheets. Still left out: the roller offers fate only on the wound just applied (not
+  on old wounds or a later pain check). By design, not a gap: the field map's heroes, like every
+  page that runs on its own, spend fate only to save a life, so never on a stop check (design.md);
+  self-play has no player characters, so it needs no setting.
 - **The rule book, still left out.** `dist/rules.html` covers the whole game in
   eleven core chapters and four modules, with a medieval retinue followed through. Five period
   books hold every era's figures and battlefields (`dist/book-medieval.html`,

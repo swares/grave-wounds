@@ -67,6 +67,7 @@ def _main(argv=None) -> int:
     ts.add_argument("--array", action="store_true", help="the fixed array instead of 3d6 x 5")
     ts.add_argument("--women", choices=["none", "roll"], default="none", help="roll each member and follower man or woman at the army's share")
     ts.add_argument("--seed", type=int, default=None, help="repeatable dice")
+    ts.add_argument("--lethality", default=None, help="the GM's setting for the player characters: gritty, standard or heroic (default: wounds.yaml's)")
 
     ws = sub.add_parser("work", help="jobs between fights: list an era's jobs, or work a term of one")
     ws.add_argument("--era", default="medieval")
@@ -119,8 +120,10 @@ def _main(argv=None) -> int:
         a.region = a.region or ("england" if a.era == "medieval" else E["regions"][0]["id"])
         a.template = a.template or E["templates"][0]["id"]
         team = make_team(d, a.era, a.region, a.template, "array" if a.array else "roll", rng, a.women)
+        if a.lethality is not None and a.lethality not in d.wounds["lethality"]["presets"]:
+            p.error(f"--lethality must be one of {', '.join(d.wounds['lethality']['presets'])}")
         for c in team:
-            print("\n".join(sheet(d, c)) + "\n")
+            print("\n".join(sheet(d, c, a.lethality)) + "\n")
         tpl = next(t for t in era(d, a.era)["templates"] if t["id"] == a.template)
         crew = make_followers(d, a.era, a.region, tpl.get("followers", []), tpl.get("follower_quality", "default"), rng, a.women)
         if crew:

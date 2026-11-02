@@ -277,10 +277,11 @@ def _a(word: str) -> str:
     return ("an " if word[:1] in "aeiou" else "a ") + word
 
 
-def fight_line(d: Data, c: dict) -> str:
-    """What his characteristics do in a fight (combat.py): Blood, initiative, toil, and as leader, morale."""
+def fight_line(d: Data, c: dict, setting: str | None = None) -> str:
+    """What his characteristics do in a fight (combat.py): Blood, initiative, toil, and as leader,
+    morale. setting: the lethality preset's id (default: wounds.yaml's)."""
     from .combat import blood_pool, lethality, toil_blows
-    s, per, L = c["stats"], d.wounds["combat"]["characteristics"], lethality(d)
+    s, per, L = c["stats"], d.wounds["combat"]["characteristics"], lethality(d, setting)
     bits = [f"Blood {blood_pool(d, s['end'], L)} ({L['name']}; {L['fate']} fate)", f"initiative d{per['initiative']['die']}+{s['agi'] // per['initiative']['agi_per']}",
             f"tires after {toil_blows(d, c['kit'], s['str'])} exchanges hand to hand"]
     if c.get("leader"):
@@ -303,8 +304,8 @@ def tongue_line(d: Data, c: dict) -> str:
     return ", ".join(own + [f"{names[t]['name']} {v} ({band(d, v)})" for t, v in rest])
 
 
-def sheet(d: Data, c: dict) -> list[str]:
-    """A character as lines of text."""
+def sheet(d: Data, c: dict, setting: str | None = None) -> list[str]:
+    """A character as lines of text; setting: the lethality preset's id (default: wounds.yaml's)."""
     T = era(d, c["era"])
     career = _by_id(T["careers"], c["career"])
     names = {s["id"]: s["name"] for s in T["skills"]}
@@ -318,7 +319,7 @@ def sheet(d: Data, c: dict) -> list[str]:
              f"  Skills: {trained}",
              *([f"  Tongues: {tongue_line(d, c)}"] if c.get("tongues") else []),
              f"  Arms: {d.weapons[c['weapon']]['name']} (attack {c['attack']}%), defence {c['defence']}%; {d.armor['kits'][c['kit']]['name']}"]
-    lines.append("  In a fight: " + fight_line(d, c))
+    lines.append("  In a fight: " + fight_line(d, c, setting))
     if d.equipment.get(c["era"]):
         from .money import money_line
         lines.append("  Money: " + money_line(d, c))
