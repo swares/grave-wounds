@@ -1615,7 +1615,7 @@ def _vehicle_errors(d: Data) -> list[str]:
 def _at_mine_errors(d: Data) -> list[str]:
     """units.yaml anti_tank_guns (known weapons, a crew, rounds, a gun as a vehicle's), gun_shields
     (known weapons, a cover %) and mines (a known weapon, kinds with men and vehicles %)."""
-    A, M, errors = d.units.get("anti_tank_guns"), d.units.get("mines"), _shield_errors(d)
+    A, M, errors = d.units.get("anti_tank_guns"), d.units.get("mines"), _shield_errors(d) + _siege_spec_errors(d)
     if A:
         g = A.get("gun") or {}
         if not (all(w in d.weapons for w in A.get("weapons", [])) and isinstance(A.get("crew"), int) and A["crew"] > 0 and A.get("crew_weapon") in d.weapons
@@ -1624,11 +1624,24 @@ def _at_mine_errors(d: Data) -> list[str]:
         if not (isinstance(A.get("rounds"), int) and A["rounds"] > 0):
             errors.append("units.yaml: anti_tank_guns.rounds must be a whole number above 0")
     if M:
-        if M.get("weapon") not in d.weapons or not isinstance(M.get("attack"), int):
-            errors.append("units.yaml: mines needs a known weapon and an attack %")
+        if M.get("weapon") not in d.weapons or not isinstance(M.get("attack"), int) or ("fallback" in M and M["fallback"] not in d.weapons):
+            errors.append("units.yaml: mines needs a known weapon and an attack % (and a known fallback, if given)")
         errors += [f"units.yaml: mines.kinds.{k} needs men and vehicles (% 0-100)" for k, v in (M.get("kinds") or {}).items()
                    if not all(isinstance(v.get(x), int) and 0 <= v[x] <= 100 for x in ("men", "vehicles"))]
     return errors
+
+
+def _siege_spec_errors(d: Data) -> list[str]:
+    """units.yaml siege: spare_muskets.weapons and thrown.weapons known weapons; thrown.struck and
+    attack % (0-100)."""
+    S = d.units.get("siege")
+    if not S:
+        return []
+    sp, T = S.get("spare_muskets") or {}, S.get("thrown") or {}
+    if not (sp.get("weapons") and all(w in d.weapons for w in sp["weapons"]) and T.get("weapons") and all(w in d.weapons for w in T["weapons"])
+            and all(isinstance(T.get(k), int) and 0 <= T[k] <= 100 for k in ("struck", "attack"))):
+        return ["units.yaml: siege needs spare_muskets.weapons and thrown.weapons (known weapons), and thrown.struck and attack (% 0-100)"]
+    return []
 
 
 def _shield_errors(d: Data) -> list[str]:
@@ -2509,6 +2522,27 @@ def _objective_errors(f: dict, where: str) -> list[str]:
     return [f"{where}: objective needs at (a hex on the map), side (0 or 1: the army that attacked it), a name, and radius a whole number of 1 or more if given"]
 
 
+def _siege_errors(d: Data, f: dict, where: str) -> list[str]:
+    """A battlefield's siege defences (units.yaml siege, mines): throws true or false; spare_muskets
+    a whole number of 2 or more, on a unit armed with one of siege.spare_muskets.weapons; mines,
+    each {at: a hex on the map, kind: a known kind, hidden: true or false}, of a kind its table
+    can wound with (the mine weapon, or the fallback for a kind that goes off once)."""
+    S, M = d.units.get("siege") or {}, d.units.get("mines") or {}
+    sw = (S.get("spare_muskets") or {}).get("weapons", [])
+    errors = [f"{where}: unit {u.get('name')}: throws must be true or false" for u in f.get("units", []) if "throws" in u and not isinstance(u["throws"], bool)]
+    errors += [f"{where}: unit {u.get('name')}: spare_muskets must be a whole number of 2 or more, on a unit armed with one of {', '.join(sw)}" for u in f.get("units", [])
+               if "spare_muskets" in u and not (isinstance(u["spare_muskets"], int) and not isinstance(u["spare_muskets"], bool) and u["spare_muskets"] >= 2 and u.get("weapon") in sw)]
+    have, kinds = (d.tables.get(f.get("table")) or {}).get("weapons", []), M.get("kinds") or {}
+    for x in f.get("mines") or []:
+        at, k = x.get("at"), x.get("kind")
+        if not (isinstance(at, list) and len(at) == 2 and all(isinstance(v, int) for v in at) and 0 <= at[0] < f["size"][0] and 0 <= at[1] < f["size"][1]
+                and k in kinds and isinstance(x.get("hidden", False), bool)):
+            errors.append(f"{where}: mines need at (a hex on the map), a known kind and hidden true or false")
+        elif M.get("weapon") not in have and not (kinds[k].get("once") and M.get("fallback") in have):
+            errors.append(f"{where}: mines of kind {k} need a table with mine wounds (or, for a mine that goes off once, {M.get('fallback')})")
+    return errors
+
+
 def _flag_errors(f: dict, where: str) -> list[str]:
     """A battlefield's units' true-or-false marks: fac (a forward air controller), ladders (or
     `short`: ladders that do not reach the top of a wall)."""
@@ -2569,6 +2603,7 @@ def _field_unit_errors(d: Data, f: dict, where: str, battlefield, battlefield_un
     errors += [f"{where}: unit {u.get('name')}: nv (a night-vision device) must be one of {', '.join(sorted(devices))}" for u in f.get("units", [])
                if "nv" in u and u["nv"] not in devices]
     errors += _flag_errors(f, where)
+    errors += _siege_errors(d, f, where)
     if errors:
         return errors
     field, units = battlefield(d, f["id"]), battlefield_units(d, f["id"])

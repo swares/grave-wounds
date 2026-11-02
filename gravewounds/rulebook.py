@@ -229,7 +229,7 @@ def _field_values(d: Data) -> dict:
         "f_pikes": M["pikes"]["attack"], "f_charge_move": U["charge_move"], "f_mounted": U["mounted_move"],
         "f_trigger": _pct(MO["trigger"]), "f_shock": _pct(MO["shock"]), "f_shaken_by": MO["shaken_by"],
         "f_rout": U["rout"]["attack"], "f_rout_x": U["rout"]["exchanges"],
-        "f_esc_pen": f"−{U['escalade']['penalty']}%", "f_esc_cross": U["escalade"]["cross"], "f_range_scale": U["range_scale"],
+        "f_esc_pen": f"−{U['escalade']['penalty']}%", "f_esc_cross": U["escalade"]["cross"], "f_thrown": f"{U['siege']['thrown']['struck']}%", "f_range_scale": U["range_scale"],
         "f_ground": U["to_ground"]["cover"], "f_tempo_h": f"{H['tempo']:g}", "f_exposure": f"{H['exposure']:g}", "f_duel": H["duel"],
         "f_bearers": H["bearers"], "f_back": H["back_after"], "f_first_aid": H["first_aid"],
         "f_post_pace": H["aid_post"]["pace"], "f_post_aid": H["aid_post"]["first_aid"],

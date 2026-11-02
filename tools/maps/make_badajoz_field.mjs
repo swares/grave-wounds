@@ -99,11 +99,17 @@ const LADDERS = { ...LINE, ladders: true };
 const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", formation: "battery", mounted: false };   // ten crew to a gun
 const TRINIDAD = [[68, 60], [68, 52]], CURTAIN = [[55, 56], [55, 48]], SANTA_MARIA = [[50, 53], [45, 52]];   // to the foot of each breach, then over its top
 const CASTLE = [[79, 24], [74, 21], [74, 10], [66, 10], [60, 22]];   // over the Rivillas by the dyke, up the hill, over the outwork's south face (row 14) to a hex inside it, through the castle, out by the gate (a waypoint counts as reached within commander.route.reach, 3 hexes, so the one inside stands 4 rows past the wall: one just outside it was dropped before the column climbed)
+// The breaches' defenders (Napier): "each man supplied with three muskets" (spare_muskets: 3), and
+// "beams of wood, stones, broken wagons, and live shells were poured upon their heads from above"
+// (throws). A mine "sprung in the ditch under the soldiers' feet": where, ours (before the curtain
+// breach, hidden until it goes off).
+const BREACH = { ...LINE, spare_muskets: 3, throws: true };
+const MINES = [53, 54, 55, 56].map(c => ({ at: [c, SF + 1], kind: "sprung", hidden: true }));
 const units = [
   // the garrison on this front (ours: Philippon's 5,000 held the whole circuit and San Cristobal)
-  unit("French at the Trinidad breach", FR, 600, LINE, [6, 65, 53]),
-  unit("French at the curtain breach", FR, 400, LINE, [5, 52, 48]),
-  at("French at the Santa Maria breach", FR, 600, LINE, 5, [41, 51], 0),
+  unit("French at the Trinidad breach", FR, 600, BREACH, [6, 65, 53]),
+  unit("French at the curtain breach", FR, 400, BREACH, [5, 52, 48]),
+  at("French at the Santa Maria breach", FR, 600, BREACH, 5, [41, 51], 0),
   at("Guns on the Santa Maria bastion", FR, 60, { ...GUNS, emplaced: true }, 3, [37, 55], 5),
   // "Showers of grape from the flank swept the ditch" (Napier): guns on each bastion's flank, firing
   // canister along the ditch before the curtain and the breaches (where and how many: ours)
@@ -145,7 +151,7 @@ writeField({
   id: "badajoz-1812", name: "Badajoz, 6-7 April 1812 (the breaches and the castle)", sides: ["Allies", "French"], table: "peninsular-1808-14-all-hits",
   travel: { map: "albuera-1811", place: "Badajoz", within: 1, sides: ["Allies", "France"] },
   weather: "{cond: fair, wind: calm, light: night, ground: {mud: 0, snow: 0}}",
-  grid, units, deep: ["ditch"],
+  grid, units, deep: ["ditch"], mines: MINES,
   hexWorks: { stakes, trench },
   edgeWorks: { wall, ditch, chevaux },
   lit: FIRES,

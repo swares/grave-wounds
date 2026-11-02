@@ -1620,6 +1620,8 @@ def battlefield(d: Data, fid: str) -> dict:
         out["support"] = _field_support(d, f)
     if f.get("lit"):
         out["lit"] = [{"at": list(x["at"]), "radius": x["radius"], "fires": True} for x in f["lit"]]   # lit by fires all battle
+    if f.get("mines"):                              # mines laid before the battle (a sprung mine under a breach)
+        out["mines"] = {f"{x['at'][0]},{x['at'][1]}": {"kind": x["kind"], **({"hidden": True} if x.get("hidden") else {})} for x in f["mines"]}
     return out
 
 
@@ -1785,9 +1787,18 @@ def _volley_of(d: Data, units: list, occ: dict, field: dict | None, i: int, men:
          "penalty": wx["penalty"] - up, "misfire": wx["misfire"], "reach": wx.get("reach", 0) + longer, "from": best[2], "to": best[3], "height": up,
          "over": line_fire(d, units, occ, field, i, best[1], best[2], best[3], best[0]), "seen": seen_share(d, field, units[best[1]], best[3], u["weapon"])}
     v.update({k: True for k in ("blind", "flash", "beam") if wx.get(k)})
+    if men is None and spares_left(d, u):
+        rate = d.units["missile"]["rate"].get(u["weapon"], d.units["missile"]["default_rate"])
+        v["spare"] = (rate + u["spare_muskets"] - 1) / rate   # its loaded spares, fired with its first exchange of fire
     if men is None and is_mg(d, u["weapon"]):
         v.update(_beaten(d, units, occ, field, i, best))
     return [v]
+
+
+def spares_left(d: Data, u: dict) -> bool:
+    """Unit u still has the loaded spare muskets beside its men (siege.spare_muskets): marked,
+    armed with one of its weapons, and not yet fired them."""
+    return (u.get("spare_muskets") or 0) >= 2 and not u.get("spares_fired") and u["weapon"] in d.units["siege"]["spare_muskets"]["weapons"]
 
 
 def rider_shooters(d: Data, u: dict) -> int:
@@ -2600,6 +2611,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     log += _shoot_all(d, us, table, rng, acc, field, under)
     log += _indirect_all(d, us, table, rng, acc, field, under)
     log += _assault_all(d, us, table, rng, acc, field)
+    log += _thrown_all(d, us, table, rng, acc, field)
     if field is not None:
         field["blast"] = blast_weapon(d, table) is not None   # demolition charges on this table (walls)
     log += _breach_all(d, us, field)
@@ -2834,6 +2846,9 @@ def _mines_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
             for x in hit:
                 mines[C.hkey(x)]["found"] = True
             log += _set_off(d, us, i, [mines[C.hkey(x)]["kind"] for x in hit], (table, rng, acc))
+            for x in hit:                           # a sprung mine goes off once, then is spent
+                if d.units["mines"]["kinds"][mines[C.hkey(x)]["kind"]].get("once"):
+                    del mines[C.hkey(x)]
     return log
 
 
@@ -2851,16 +2866,26 @@ def _mines_vehicles(d: Data, us: list, i: int, kinds: list, lc: tuple) -> list:
     return _logged({**line, "struck": struck, "knocked": k["knocked"], "crew": k["crew"], "immobilised": immobile, **_riders_line(k)}, k["tally"])
 
 
+def mine_weapon(d: Data, table: str, kinds: list) -> str | None:
+    """The weapon men struck by mines of these kinds are wounded as: the mine weapon if the table
+    has it; else, for sprung mines alone (once), the fallback if the table has that; else None."""
+    M, have = d.units["mines"], (d.tables.get(table) or {}).get("weapons", [])
+    if M["weapon"] in have:
+        return M["weapon"]
+    once = all(M["kinds"][k].get("once") for k in kinds)
+    return M["fallback"] if once and M.get("fallback") in have else None
+
+
 def _set_off(d: Data, us: list, i: int, kinds: list, ctx: tuple) -> list:
     """Unit i in minefield hexes of these kinds: its men or vehicles struck (_mines_all)."""
     table, rng, acc = ctx
     M, u = d.units["mines"], us[i]
-    line = {"kind": "mines", "unit": i, "hexes": len(kinds)}
+    line = {"kind": "mines", "unit": i, "hexes": len(kinds), **({"sprung": True} if all(M["kinds"][k].get("once") for k in kinds) else {})}
     if u.get("vehicle"):
         return _mines_vehicles(d, us, i, kinds, (line, ctx))
     per = form(d, u)["per_hex"]
     struck = sum(1 for k in kinds for _ in range(min(per, u["men"])) if rng.randint(1, 100) <= M["kinds"][k]["men"])
-    weapon = M["weapon"] if M["weapon"] in (d.tables.get(table) or {}).get("weapons", []) else None
+    weapon = mine_weapon(d, table, kinds)
     if not struck or weapon is None:
         return [{**line, "struck": struck, "down": 0, "dead": 0}]
     t = _take_hurt(u, _blows(d, {"table": table, "weapon": weapon, "kit": None, "quality": "regular"}, _side(u, table), struck, M["attack"], 0, rng, _exposure(d, u, False, True), -1000))
@@ -3135,7 +3160,9 @@ def _closing_volleys(d: Data, us: list, table: str, rng, acc: tuple, field: dict
         v = vs[0]
         _spend(d, us, v)
         b = us[v["dfd"]]
-        opts = {"factor": form(d, b)["missile_factor"] * (100 - v["misfire"]) / 100 * v["seen"], "exposed": _exposure(d, b, False, True),
+        if v.get("spare"):
+            us[v["att"]]["spares_fired"] = True     # its spares are fired now: its rate from the next exchange
+        opts = {"factor": form(d, b)["missile_factor"] * (100 - v["misfire"]) / 100 * v["seen"] * v.get("spare", 1), "exposed": _exposure(d, b, False, True),
                 "penalty": v["cover"] + v["penalty"] + v["over"], "reach": v["reach"]}
         t = _take_hurt(b, volley(d, _shooter_side(d, _shooter(us, v), table), _side(b, table), v["men"], v["dist"], rng, **opts))
         _tally(*acc, v, t)
@@ -3328,7 +3355,9 @@ def _shoot_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | Non
         _mark_mg(d, us, v, under)
         _spend(d, us, v)
         b = us[v["dfd"]]
-        opts = {"factor": form(d, b)["missile_factor"] * (100 - v["misfire"]) / 100 * v["seen"], "exposed": _exposure(d, b, False, True),
+        if v.get("spare"):
+            us[v["att"]]["spares_fired"] = True     # its spares are fired now: its rate from the next exchange
+        opts = {"factor": form(d, b)["missile_factor"] * (100 - v["misfire"]) / 100 * v["seen"] * v.get("spare", 1), "exposed": _exposure(d, b, False, True),
                 "penalty": v["cover"] + v["penalty"] + v["over"], "reach": v["reach"]}
         if b.get("vehicle"):
             log += _armour_volley(d, us, (table, rng, acc), v, opts)
@@ -4194,6 +4223,54 @@ def _assault_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | N
         if u.get("assault") in d.units["assault"]["means"] and not _out(u):
             log += _storm(d, us, occ, i, (table, weapon), rng, acc, field)
     return log
+
+
+def thrown_weapon(d: Data, table: str) -> str | None:
+    """The weapon men struck by things thrown down from a work are wounded as on this table, or None."""
+    from .model import available_weapons
+    have = available_weapons(d, table)
+    return next((w for w in d.units["siege"]["thrown"]["weapons"] if w in have), None)
+
+
+def _thrown_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | None) -> list:
+    """Units marked throws drop shells, stones and beams on each enemy hex next to them across a
+    work that blocks hand to hand, once an exchange: siege.thrown's struck % of the men there."""
+    weapon, log = thrown_weapon(d, table), []
+    if not field or weapon is None:
+        return log
+    occ = occupancy(d, us)
+    for i, u in enumerate(us):
+        if not u.get("throws") or _out(u):
+            continue
+        done = set()
+        for row in footprint(d, u):
+            for h in row:
+                for dirn in range(6):
+                    x = step(h, dirn)
+                    k, j = f"{x[0]},{x[1]}", occ.get(f"{x[0]},{x[1]}")
+                    if j is None or k in done or us[j]["side"] == u["side"] or _out(us[j]) or us[j].get("vehicle") or not _across(d, field, u, h, x, 1)[0]:
+                        continue
+                    done.add(k)
+                    log += _thrown_at(d, us, (i, j, x), (table, weapon), rng, acc)
+    return log
+
+
+def _thrown_at(d: Data, us: list, ijx: tuple, tw: tuple, rng, acc: tuple) -> list:
+    """What unit i throws down on enemy unit j's men in hex x: struck %, wounded at attack %."""
+    (i, j, x), (table, weapon), T = ijx, tw, d.units["siege"]["thrown"]
+    b = us[j]
+    hexes = [h for row in footprint(d, b) for h in row]
+    k = next((n for n, h in enumerate(hexes) if h[0] == x[0] and h[1] == x[1]), None)
+    there = men_by_hex(d, b)[k] if k is not None else 0
+    struck = sum(1 for _ in range(there) if rng.randint(1, 100) <= T["struck"])
+    line = {"kind": "thrown", "unit": i, "dfd": j, "at": list(x), "struck": struck}
+    if not struck:
+        return [{**line, "down": 0, "dead": 0}]
+    t = _take_hurt(b, _blows(d, {"table": table, "weapon": weapon, "kit": None, "quality": "regular"}, _side(b, table), struck, T["attack"], 0, rng, _exposure(d, b, False, True), -1000))
+    acc[0][j] += t["down"]
+    acc[1][j] += t["dead"]
+    acc[2][i] += t["down"]
+    return _logged(line, t)
 
 
 def _storm(d: Data, us: list, occ: dict, i: int, tw: tuple, rng, acc: tuple, field: dict) -> list:
