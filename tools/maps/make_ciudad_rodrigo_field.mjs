@@ -40,9 +40,9 @@ const outside = (c, r) => !inTown(c, r) && !inFausse(c, r);
 // behind it on a diagonal (units.js footprint), so a gap cut straight through the two walls admits a column
 // only some hexes narrower than itself: at the sources' widths no column deeper than it is wide got in, and
 // self-play stalled on the fausse-braie (2 November 2026). Wellington's columns went in narrower and deeper.
-const GREAT = [13, 14, 15, 16, 17, 18], LESSER = [34, 35, 36, 37];   // the breaches' columns
-const breach = (c, r) => (GREAT.includes(c) || LESSER.includes(c)) && r >= FB && r <= MW;
-const greatTop = (c, r) => GREAT.includes(c) && r === MW;
+const GREAT = new Set([13, 14, 15, 16, 17, 18]), LESSER = new Set([34, 35, 36, 37]);   // the breaches' columns
+const breach = (c, r) => (GREAT.has(c) || LESSER.has(c)) && r >= FB && r <= MW;
+const greatTop = (c, r) => GREAT.has(c) && r === MW;
 
 function kind(c, r){
   if (breach(c, r)) return "s";                                       // the breach: a bare slope of rubble, the stormers in full view
@@ -75,7 +75,7 @@ for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++){
       if (!breach(c, r) || !breach(...o)) ditch.push([[c, r], o]);
     }
     if (greatTop(c, r) && inTown(...o) && !breach(...o)){
-      if (o[1] <= MW + 1 && !GREAT.includes(o[0])) cut.push([[c, r], o]);   // the cuts either side of the breach's top
+      if (o[1] <= MW + 1 && !GREAT.has(o[0])) cut.push([[c, r], o]);   // the cuts either side of the breach's top
       else chevaux.push([o, [c, r]]);                                       // the chevaux-de-frise across it
     }
   }
@@ -84,7 +84,7 @@ for (let c = 4; c <= 42; c++) if (!speckle(c, 12, 5)) trench.push([c, 12]);   //
 
 // The French fired a train of powder and shells on the great breach as the stormers reached its top (the 94th's
 // narrative; napoleon-series: a mine; others: a magazine): hidden, on the breach's slope through the fausse-braie.
-const MINES = GREAT.map(c => ({ at: [c, MW - 1], kind: "sprung", hidden: true }));
+const MINES = [...GREAT].map(c => ({ at: [c, MW - 1], kind: "sprung", hidden: true }));
 
 // ---------- the armies (pos is the middle of the front row) ----------
 const AL = { side: 0, facing: S }, FR = { side: 1, facing: N };

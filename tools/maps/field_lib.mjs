@@ -151,7 +151,7 @@ export function writeField(spec){
   const { grid } = spec, works = Object.entries(spec.hexWorks || {});
   const edges = Object.entries(spec.edgeWorks || {});
   const workLine = ([type, hs]) => `    - {type: ${type}, at: [${hexList(hs)}]}`;
-  const edgeLine = ([type, pairs]) => `    - {type: ${(spec.edgeTypes || {})[type] || type}${(spec.deep || []).includes(type) ? ", deep: true" : ""}, at: [${pairs.map(pr => "[" + hexList(pr) + "]").join(", ")}]}`;   // edgeTypes: a key standing for a works.yaml type (a deep ditch beside a shallow one: {cut: "ditch"})
+  const edgeLine = ([type, pairs]) => `    - {type: ${spec.edgeTypes?.[type] || type}${(spec.deep || []).includes(type) ? ", deep: true" : ""}, at: [${pairs.map(pr => "[" + hexList(pr) + "]").join(", ")}]}`;   // edgeTypes: a key standing for a works.yaml type (a deep ditch beside a shallow one: {cut: "ditch"})
   const hexText = works.length ? "  hexes:\n" + works.map(workLine).join("\n") + "\n" : "";
   const edgeText = edges.length ? "  edges:\n" + edges.map(edgeLine).join("\n") + "\n" : "";
   const worksText = hexText || edgeText ? "works:\n" + hexText + edgeText : "";

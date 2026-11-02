@@ -76,36 +76,42 @@ def _face_contact(d: Data, us: list, side, where: tuple) -> list:
     face it (the first turn that is legal and brings the enemy before its front rank): in contact it
     takes no other order, and only its front rank strikes, so neither would ever fight (Ciudad
     Rodrigo, 2 November 2026). Changes us in place."""
-    size, field = where
     out = []
     for i, u in enumerate(us):
         if u["side"] != side or U._out(u) or u.get("vehicle") or U.is_battery(d, u) or U.is_at_gun(d, u) or u.get("emplaced"):
             continue
         occ = U.occupancy(d, us)
-        if not U.in_contact(d, us, occ, i) or any(U._struck_hex(us, occ, u, h) for h in (U.footprint(d, u) or [[]])[0]):
+        if not U.in_contact(d, us, occ, i) or _strikes_front(d, us, occ, u):
             continue
-        done = False
-        for j in U._adjacent_units(d, us, occ, i):
-            e = us[j]
-            if e["side"] == u["side"] or U._out(e):
-                continue
-            near = min((h for row in U.footprint(d, e) for h in row), key=lambda h: U.hdist(u["pos"], h))
-            f = U.bearing(u["pos"], near)
-            for g in (f, (f + 1) % 6, (f - 1) % 6):
-                if g == u["facing"] or not U.move(d, us, i, u["pos"], g, size, field)["ok"]:
-                    continue
-                v = {**u, "facing": g}
-                vs = [v if k == i else x for k, x in enumerate(us)]
-                vocc = U.occupancy(d, vs)
-                if not any(U._struck_hex(vs, vocc, v, h) for h in (U.footprint(d, v) or [[]])[0]):
-                    continue
-                us[i] = v
-                out.append({"unit": i, "act": "turn", "target": j, "facing": g})
-                done = True
-                break
-            if done:
-                break
+        o = next((t for j in U._adjacent_units(d, us, occ, i) if (t := _turn_to(d, us, i, j, where))), None)
+        if o:
+            us[i] = {**u, "facing": o["facing"]}
+            out.append(o)
     return out
+
+
+def _strikes_front(d: Data, us: list, occ: dict, u: dict) -> bool:
+    """A standing enemy before one of u's front hexes (it strikes there)."""
+    return any(U._struck_hex(us, occ, u, h) for h in (U.footprint(d, u) or [[]])[0])
+
+
+def _turn_to(d: Data, us: list, i: int, j: int, where: tuple) -> dict | None:
+    """The turn that brings standing enemy j, touching unit i, before its front rank: toward j's
+    nearest hex, else a point either side, the first legal; or None."""
+    size, field = where
+    u, e = us[i], us[j]
+    if e["side"] == u["side"] or U._out(e):
+        return None
+    near = min((h for row in U.footprint(d, e) for h in row), key=lambda h: U.hdist(u["pos"], h))
+    f = U.bearing(u["pos"], near)
+    for g in (f, (f + 1) % 6, (f - 1) % 6):
+        if g == u["facing"] or not U.move(d, us, i, u["pos"], g, size, field)["ok"]:
+            continue
+        v = {**u, "facing": g}
+        vs = [v if k == i else x for k, x in enumerate(us)]
+        if _strikes_front(d, vs, U.occupancy(d, vs), v):
+            return {"unit": i, "act": "turn", "target": j, "facing": g}
+    return None
 
 
 def _hack_work(d: Data, field: dict | None, u: dict) -> bool:

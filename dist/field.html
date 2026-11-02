@@ -3706,8 +3706,7 @@ function orderSide(units, side, [size, field, rng, exchange], { stance, memory, 
   }
   orders.push(...faceContact(us, side, [size, field]));
   us = giveWay(us, side, [size, field, stance, exchange], [aim, known], orders);
-  orders.push(...hackThrough(us, side, [field, stance], orders));
-  orders.push(...moveGuns(us, side, [size, goal, stance, known, exchange]), ...layGuns(us, side, [size, goal, known, exchange]), ...callFireAi(us, side, goal, known, [stance, exchange, orders, table]));
+  orders.push(...hackThrough(us, side, [field, stance], orders), ...moveGuns(us, side, [size, goal, stance, known, exchange]), ...layGuns(us, side, [size, goal, known, exchange]), ...callFireAi(us, side, goal, known, [stance, exchange, orders, table]));
   return { units: us, orders };
 }
 function faceContact(us, side, [size, field]){   // a unit touching an enemy only by its flank or rear, with none before its front, turns to face it: in contact it takes no other order, and only its front rank strikes, so neither would ever fight (Ciudad Rodrigo, 2 November 2026) (as commander._face_contact)
@@ -3719,7 +3718,7 @@ function faceContact(us, side, [size, field]){   // a unit touching an enemy onl
     for (const j of adjacentUnits(us, occ, i)){
       const e = us[j];
       if (e.side === u.side || out_(e)) continue;
-      const near = footprint(e).flat().reduce((a, h) => (hdist(u.pos, h) < hdist(u.pos, a) ? h : a));
+      const hs = footprint(e).flat(), near = hs.reduce((a, h) => (hdist(u.pos, h) < hdist(u.pos, a) ? h : a), hs[0]);
       const f = bearing(u.pos, near);
       for (const g of [f, mod6(f + 1), mod6(f - 1)]){
         if (g === u.facing || !moveUnit(us, i, u.pos, g, size, field).ok) continue;
