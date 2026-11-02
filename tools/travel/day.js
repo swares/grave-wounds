@@ -431,6 +431,18 @@ check("sieges: Badajoz 1812 is invested from the start, and its breach is practi
   assert.ok(D.siegeState(pl).practicable, "practicable after the night of day 21 (5 April), stormed on the 22nd (6 April)");
   assert.ok(D.nearFields(D.forcesHere().find(f => f.side === F.side && D.sameHex(f.pos, pl.hex))).some(([id]) => id === "badajoz-1812"), "the storm on the Badajoz battlefield");
 });
+check("sieges: Burgos 1812 is invested from the start, and its mine is dug after 10 days of the siege corps' work", () => {
+  const { D } = fresh(17);
+  D.S.mapId = "burgos-1812";
+  const pl = D.fortresses()[0], F = pl.fortress;
+  assert.equal(pl.name, "Burgos"); assert.equal(F.by, "mine");
+  assert.ok(D.siegeState(pl).invested, "the siege corps starts within a hex of the castle");
+  const c = { day: 1, used: 0 };
+  for (let n = 1; n <= F.breach_days; n++){ for (const f of D.forcesHere()) f.day = n; c.day = n; D.siegeNight(c) }
+  const st = D.siegeState(pl);
+  assert.ok(st.ready && !st.practicable, "dug after the night of day 10 (28 September), fired on the 29th: not practicable until it is");
+  assert.ok(D.nearFields(D.forcesHere().find(f => f.side === F.side && D.sameHex(f.pos, pl.hex))).some(([id]) => id === "burgos-1812"), "the hornwork battlefield");
+});
 check("sieges: a mine fired falls short (dug again) or brings the wall down; a countermine may find it", () => {
   const { D } = fresh(14);
   D.S.mapId = "jacobsford-1179";
