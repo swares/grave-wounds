@@ -3024,7 +3024,9 @@ Still open: the brigades behind each storming party mostly wait on its route (un
 and cannot pass one another in the ditch); the castle falls too rarely; the other means Napier
 gives are now played (1 November 2026, *Siege defences*): the breaches' defenders have three
 muskets a man and throw things down, and a mine lies hidden before the curtain breach. They
-change little (12 runs, Allied losses 30% without them, 29-33% with them; French 35%, 30-39%):
+change the losses little (12 local runs, Allied losses 30% without them, 29-33% with them; French
+35%, 30-39%; in the benchmark the Allies 32% to 35%, the French 37% to 26%, and the castle falls in
+8 of 12, from 4):
 the gap to 1812's 45% is in how long the stormers stay at the breaches (Napier counts some forty
 attacks; here each storming party breaks after a few losses and the brigades wait behind it), not
 in what is thrown at them. The first cut (31 October 2026) took the town in 5 of 12, but only
