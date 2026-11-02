@@ -2530,6 +2530,7 @@ def _siege_errors(d: Data, f: dict, where: str) -> list[str]:
     S, M = d.units.get("siege") or {}, d.units.get("mines") or {}
     sw = (S.get("spare_muskets") or {}).get("weapons", [])
     errors = [f"{where}: unit {u.get('name')}: throws must be true or false" for u in f.get("units", []) if "throws" in u and not isinstance(u["throws"], bool)]
+    errors += [f"{where}: reform must be true or false"] if "reform" in f and not isinstance(f["reform"], bool) else []
     errors += [f"{where}: unit {u.get('name')}: spare_muskets must be a whole number of 2 or more, on a unit armed with one of {', '.join(sw)}" for u in f.get("units", [])
                if "spare_muskets" in u and not (isinstance(u["spare_muskets"], int) and not isinstance(u["spare_muskets"], bool) and u["spare_muskets"] >= 2 and u.get("weapon") in sw)]
     have, kinds = (d.tables.get(f.get("table")) or {}).get("weapons", []), M.get("kinds") or {}

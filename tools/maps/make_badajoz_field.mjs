@@ -159,6 +159,9 @@ writeField({
   travel: { map: "albuera-1811", place: "Badajoz", within: 1, sides: ["Allies", "France"] },
   weather: "{cond: fair, wind: calm, light: night, ground: {mud: 0, snow: 0}}",
   grid, units, deep: ["ditch"], mines: MINES,
+  // The stormers re-formed and went again (Kincaid: "fast as one dissolved, another was formed";
+  // some forty attacks): broken units re-form out of the enemy's reach (units.yaml morale.reform).
+  reform: true,
   hexWorks: { stakes, trench },
   edgeWorks: { wall, ditch, chevaux },
   lit: FIRES,
