@@ -74,13 +74,16 @@ and they share it.
 **Fate.** A player character has the setting's fate points each season; the ones he spends come
 back at End of season. One fate point, spent after the dice:
 
-- lowers a wound he has just taken one severity step (a light wound turned is no wound at all);
+- lowers a wound he has just taken one severity step (a light wound turned is no wound at all),
+  a fall's as well as a blow's;
 - rolls again a stop check, a recovery check or a wound-fever roll he has just failed;
-- spares him a capture or captivity roll that would kill him (he is held instead).
+- spares him a capture or captivity roll that would kill him (he is held instead);
+- pulls him out of the water near-drowned when he would drown (two steps of fatigue).
 
-In the roller the player chooses, with the buttons under the hit. The pages that run on their own
-(the travel map's nights, the field map's heroes, the team builder's captives) spend one only to
-save a life, and say so in the log.
+In the roller the player chooses, with the buttons under the hit (and, in the water, **Spend
+fate: pulled out**). The pages that run on their own (the travel map's nights and fords, the field
+map's heroes, the team builder's captives) spend one only to save a life, and say so in the log:
+so a hero on the field map never spends one on a stop check, only on a wound that would kill him.
 
 The examples in this book are at Gritty: a player character's Blood and stop checks as anyone's.
 

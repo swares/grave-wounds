@@ -2548,9 +2548,10 @@ function makeTravelDay(DATA, RULES, env = {}){
     if (!diff) return null;
     const value = mounted ? (n.ride || n.agi || 50) : (n.agi ?? 50);
     if (skillCheck(value, diff, roll100()).success) return null;
-    const fate = sweptOff(f, n, ford, band);
+    let fate = sweptOff(f, n, ford, band);
+    if (fate === "drowned" && n.pid && fateSpend(n.pid, "spared drowning at a ford")) fate = "near-drowned (fate spent)";   // a player character's fate saves his life, as on a night's checks (lethality.js)
     if (fate === "drowned"){ n.dead = true; markLost(n.pid, "killed") }
-    else if (fate === "near-drowned" && n.pid && DATA.stress) xpStress(n.pid, "near_miss", n.nerve ?? 50, "nearly drowned at a ford", [], dayDice);
+    else if (fate.startsWith("near-drowned") && n.pid && DATA.stress) xpStress(n.pid, "near_miss", n.nerve ?? 50, "nearly drowned at a ford", [], dayDice);
     const horse = mounted && hzHorseLost(W.band.id, roll100()) ? ", and his horse is drowned" : "";
     if (horse && (n.animals || []).includes("horse")){ n.animals.splice(n.animals.indexOf("horse"), 1); n.carry = Math.max(0, (n.carry || 0) - (animalRow("horse")?.load || 0)) }
     return `${n.name} is swept off his feet: ${fate}${horse}`;
