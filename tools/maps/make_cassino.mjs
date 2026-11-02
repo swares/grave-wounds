@@ -62,6 +62,7 @@ const map = buildCampaign({
   id: "cassino-1944", script: "make_cassino.mjs", title: "Cassino and Monte Cassino, February to May 1944",
   name: "Cassino, 1944 (Monte Cairo to the Liri valley)",
   start_date: "1944-02-15", calendar: "gregorian", latitude: 41, climate: "mediterranean", climate_shift: -1, base: "f",
+  sight: { air: ["Allies"], note: "Allied aircraft held the air by day (our reading)." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [13.720, 41.560, 13.930, 41.430], midLat: 41.49, hexKm: 0.5,
   header: [
     "The abbey, the town and the villages are at their modern centres, rounded; Castle Hill,",

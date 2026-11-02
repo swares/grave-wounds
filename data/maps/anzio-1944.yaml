@@ -22,6 +22,9 @@ calendar: gregorian
 latitude: 41
 climate: mediterranean
 climate_shift: -1
+sight:                # fog of war (data/terrain.yaml sight): the sides with aircraft up, and their night sights
+  air: ["Americans"]
+  note: "Allied aircraft held the air by day; the Germans watched the beachhead from the Alban Hills, which this rule does not give (our reading)."
 terrain: |
     ffffffffffffhhhhfffffffffffffff
     fffffff==ffhhhhhfffhfffffffffff

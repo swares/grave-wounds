@@ -1324,25 +1324,31 @@ function makeTravelDay(DATA, RULES, env = {}){
     const c = clockNow(), day = wxState().days[c.day], cond = day ? day.w.cond : "fair";
     return { cond, light: lightAt(curMap(), c.day, win(c.day).start + Math.min(c.used, dayEnd(c.day)), cond) };
   }
+  const mapSight = () => baseMap().sight || {};   // the map's sides with aircraft up, and their night sights
+  function deviceKm(side){                        // km side's night sight lets it see a body of troops at in the dark (0: none)
+    const dev = WXD.light?.night_vision?.devices?.[(mapSight().night || {})[side]];
+    return dev ? dev.sight * DATA.battle_hex_m * (SIGHT.weather_mass ?? 5) / 1000 : 0;
+  }
   function sightOf(f, now = sightNow()){         // km force f sees a body of enemy troops at, now
     let km = SIGHT.km[f.type] ?? SIGHT.km.foot ?? 3;
     const vis = WXD.conditions[now.cond]?.visibility;
     if (vis) km = Math.min(km, vis * DATA.battle_hex_m * (SIGHT.weather_mass ?? 5) / 1000);
-    if (now.light === "dusk") km *= SIGHT.dusk ?? 0.5;
-    else if (now.light === "moonlit") km = Math.min(km, SIGHT.moonlit_km ?? 0.5);
-    else if (now.light === "night") km = Math.min(km, SIGHT.night_km ?? 0.2);
-    return km;
+    const dark = now.light === "dusk" ? km * (SIGHT.dusk ?? 0.5) : now.light === "moonlit" ? SIGHT.moonlit_km ?? 0.5 : now.light === "night" ? SIGHT.night_km ?? 0.2 : null;
+    return dark === null ? km : Math.min(km, Math.max(dark, deviceKm(f.side)));   // night sights see further in the dark, never beyond the day's (or the weather's) sight
   }
+  const airUp = (side, now) => now.light === "day" && (SIGHT.air_weather || []).includes(now.cond) && (mapSight().air || []).includes(side);
+  const hidden = e => (SIGHT.hidden_in || []).includes(terrainAt(curMap(), e.pos).id);
   function sees(f, e, reach){                     // force f sees enemy force e, f seeing `reach` km
     const km = hexDistance(f.pos, e.pos) * curMap().hex_km, contact = SIGHT.contact_km ?? 1;
     if (km <= contact + 1e-9) return true;        // its outposts find it: any weather, light or cover
-    if ((SIGHT.hidden_in || []).includes(terrainAt(curMap(), e.pos).id)) return false;
+    if (hidden(e)) return false;
     return km <= reach + 1e-9;
   }
   const placed = f => Array.isArray(f.pos);
-  function sightings(side){                       // the enemy forces side's forces see now
+  function sightings(side){                       // the enemy forces side's forces (and its aircraft, by day) see now
     const now = sightNow(), ours = forcesHere().filter(f => f.side === side && placed(f)).map(f => [f, sightOf(f, now)]);
-    return forcesHere().filter(e => e.side !== side && placed(e) && ours.some(([f, reach]) => sees(f, e, reach)));
+    const air = airUp(side, now) && ours.length > 0;   // its aircraft see every enemy force in the open, anywhere on the map
+    return forcesHere().filter(e => e.side !== side && placed(e) && ((air && !hidden(e)) || ours.some(([f, reach]) => sees(f, e, reach))));
   }
   function roughly(n){                            // a force's size as an enemy reckons it: about 500, about 2,000
     if (n < 10) return "fewer than 10";
@@ -1359,7 +1365,7 @@ function makeTravelDay(DATA, RULES, env = {}){
     }
   }
   // What one player's map shows: his side's forces, and of the enemy only what his side sees now, or
-  // where it last saw them. side: his side. -> {mapId, edits, day, when, weather, light, sides, ours,
+  // where it last saw them. side: his side. -> {mapId, edits, day, when, weather, light, air (its aircraft up), sides, ours,
   // seen, last} or null with no map. Nothing else of the enemy's is in it.
   function fogView(side, mine = []){                 // mine: the ids of the forces his own men are with (he may propose their routes)
     restore();
@@ -1370,7 +1376,7 @@ function makeTravelDay(DATA, RULES, env = {}){
     const last = Object.entries(S.seen[S.mapId]?.[side] || {}).filter(([id]) => !ids.has(+id))
       .map(([, x]) => ({ name: x.name, side: x.side, type: x.type, size: x.size, pos: x.pos, when: `${dateText(x.day, true)}, ${clock(x.used, x.day)}` }));
     return { mapId: S.mapId, edits: S.edits[S.mapId] || null, day: c.day, when: `${dateText(c.day, true)}, ${clock(c.used, c.day)}`,
-      weather: WXD.conditions[now.cond]?.name || now.cond, light: now.light, sides: sides(),
+      weather: WXD.conditions[now.cond]?.name || now.cond, light: now.light, air: airUp(side, now), sides: sides(),
       ours: forcesHere().filter(f => f.side === side && placed(f)).map(ours), seen: seenNow.map(report), last };
   }
   // What one player sees of the map: his named men (uids) and the forces they are with, nothing of
@@ -1471,7 +1477,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
   function byId(id){ return forcesHere().find(o => o.id === id) }
 
-  return { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, seatView, hexChoice, mapChoices, setMap, sightOf, sightings, noteSightings, fogView, roll100 };
+  return { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, seatView, hexChoice, mapChoices, setMap, sightOf, airUp, deviceKm, sightings, noteSightings, fogView, roll100 };
 }
 
 if (typeof module !== "undefined") module.exports = makeTravelDay;   // Node (the tests); the page has no `module`

@@ -420,10 +420,25 @@ patrols out) and 2 km with wagons. In rain, snow or fog it sees five times as fa
 to aim in that weather (`weather.yaml` visibility): fog 250 m, rain 1.5 km. At dusk sight is halved;
 by moonlight it is 500 m, and on a dark night 200 m. Within 1 km its outposts find an enemy in any
 weather, light or cover, and a force in woods or a town or village is seen only that close. A side
-sees what any of its forces sees. Each time the clock moves, each side remembers where it saw each
+sees what any of its forces sees.
+
+**By period.** A map may list the sides with **aircraft up** (its `sight.air`, with a note saying
+why): by day, in fair or overcast weather, such a side sees every enemy force on the map that is not
+in woods, a village or a town, however far off. In any other weather, at dusk and in the dark its
+aircraft see nothing, which is why armies under an enemy's air marched by night and hid by day. A
+map may also give a side **night sights** (its `sight.night`, a `weather.yaml` night-vision device):
+at dusk, by moonlight and on a dark night that side sees five times as far as the device lets a man
+see to aim (a thermal sight 3 km, goggles 1.5 km, a Starlight scope 1 km), never beyond its day's
+sight. The 20th-century maps set both, battle by battle (the UN in Korea has the air, the Chinese
+none; the Coalition at 73 Easting has thermals, the Iraqis none). Field glasses are left out: by day
+the horizon and folds of ground, not the eye, limit how far a body of troops is seen. A player's
+view says when his side's aircraft are up.
+
+Each time the clock moves, each side remembers where it saw each
 enemy force and when; a player's map shows that, faded, once the force is out of sight. The numbers
 are in `data/terrain.yaml` (`sight`); where they come from, and what they leave out (campfires,
-dust, height, optics and aircraft), is in `docs/fog-of-war-research.md`.
+dust, height), is in `docs/fog-of-war-research.md`; aircraft and night sights are in the project's
+`claude/fog-of-war-period-research.md`.
 
 The GM's travel map shows everything; its **view** choice beside the map's scale (Everything, or
 As *side* sees it) draws it as one side sees it, as that side's players see it online: the side's

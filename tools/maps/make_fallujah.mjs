@@ -53,6 +53,7 @@ const map = buildCampaign({
   id: "fallujah-2004", script: "make_fallujah.mjs", title: "Fallujah, November 2004",
   name: "Fallujah, 2004 (Operation Phantom Fury)",
   start_date: "2004-11-07", calendar: "gregorian", latitude: 33, climate: "arid", climate_shift: 0, base: ".",
+  sight: { air: ["Coalition"], night: {"Coalition": "thermal"}, note: "Coalition aircraft and drones held the air; its tanks and Bradleys had thermal sights, as the battlefield gives them." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [43.700, 33.400, 43.880, 33.295], midLat: 33.35, hexKm: 0.5,
   header: [
     "The districts, the railway station, the bridges, the hospital and Camp Fallujah are placed",

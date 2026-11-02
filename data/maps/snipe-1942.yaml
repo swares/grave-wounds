@@ -19,6 +19,9 @@ calendar: gregorian
 latitude: 31
 climate: egypt_coast
 climate_shift: 0
+sight:                # fog of war (data/terrain.yaml sight): the sides with aircraft up, and their night sights
+  air: ["Eighth Army", "Axis"]
+  note: "The Desert Air Force held the air at Alamein, but Axis reconnaissance still flew (our reading)."
 terrain: |
     ===..wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww
     .======wwwwwwwwwwwwwwwwwwwwwwwwwwwwwww

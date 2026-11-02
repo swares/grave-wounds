@@ -56,6 +56,7 @@ const map = buildCampaign({
   id: "snipe-1942", script: "make_snipe.mjs", title: "El Alamein, the northern sector, 26 October 1942",
   name: "Snipe, 1942 (the coast to Miteiriya)",
   start_date: "1942-10-26", calendar: "gregorian", latitude: 31, climate: "egypt_coast", climate_shift: 0, base: ".",
+  sight: { air: ["Eighth Army", "Axis"], note: "The Desert Air Force held the air at Alamein, but Axis reconnaissance still flew (our reading)." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [28.60, 31.00, 28.98, 30.72], midLat: 30.86, hexKm: 1,
   header: [
     "El Alamein and Tell el Aqqaqir are at the NGA's points; Kidney, Snipe, Woodcock, Miteiriya Ridge,",

@@ -42,6 +42,7 @@ const map = buildCampaign({
   id: "dakto-1967", script: "make_dakto.mjs", title: "Dak To, November 1967",
   name: "Dak To, 1967 (the base to Hill 875)",
   start_date: "1967-11-03", calendar: "gregorian", latitude: 15, climate: "central_highlands", climate_shift: 0, base: "F",
+  sight: { air: ["United States and ARVN"], night: {"United States and ARVN": "starlight"}, note: "US and ARVN aircraft and helicopters held the air by day. Starlight scopes, about one rifle a squad (weather.yaml night_vision)." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [107.570, 14.740, 107.845, 14.545], midLat: 14.64, hexKm: 0.5,
   header: [
     "Dak To, Tan Canh, Ben Het and the hills are placed after the accounts and approximate; the",

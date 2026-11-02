@@ -70,6 +70,7 @@ const map = buildCampaign({
   id: "anzio-1944", script: "make_anzio.mjs", title: "The Anzio beachhead and the attack on Cisterna, January 1944",
   name: "Anzio, 1944 (the beachhead to Cisterna)",
   start_date: "1944-01-29", calendar: "gregorian", latitude: 41, climate: "mediterranean", climate_shift: -1,
+  sight: { air: ["Americans"], note: "Allied aircraft held the air by day; the Germans watched the beachhead from the Alban Hills, which this rule does not give (our reading)." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [12.600, 41.705, 12.960, 41.400], midLat: 41.55, hexKm: 1,
   header: [
     "The coast is Natural Earth's; the towns are at their modern centres, rounded; Conca and Isola",

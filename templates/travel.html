@@ -686,7 +686,7 @@ function seatShow(v){
   const VW = W * (cols + 0.5), VH = 1.5 * R * (rows - 1) + 2 * R;
   $("#map").innerHTML = `<svg viewBox="0 0 ${VW.toFixed(1)} ${VH.toFixed(1)}" style="max-width:${Math.round(VW * 1.5)}px">${hexesSvg(m)}${over}</svg>`;
   const light = v.light === "day" ? "" : `, ${v.light}`;
-  $("#seat-when").textContent = `${DATA.maps[v.mapId].name} · ${v.when} · ${v.weather}${light}`;
+  $("#seat-when").textContent = `${DATA.maps[v.mapId].name} · ${v.when} · ${v.weather}${light}${v.air ? " · our aircraft are up" : ""}`;
   seatPropose(v);
   $("#seat-key").textContent = `${v.ours.length} of your side's forces; ${v.seen.length} enemy seen now (red ring)${v.last.length ? `, ${v.last.length} last seen (faded, where and when it was seen)` : ""}. Hover a mark for more.`;
 }

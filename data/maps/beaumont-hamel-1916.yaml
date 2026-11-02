@@ -20,6 +20,9 @@ calendar: gregorian
 latitude: 50
 climate: maritime
 climate_shift: 0
+sight:                # fog of war (data/terrain.yaml sight): the sides with aircraft up, and their night sights
+  air: ["British", "Germans"]
+  note: "Both sides had aircraft and balloons up over the Somme; the RFC held the upper hand (our reading)."
 terrain: |
     ffffffffffffffffffffffffffffffffffffffff
     ffffffffffffffffffffffffffffffffffffffff

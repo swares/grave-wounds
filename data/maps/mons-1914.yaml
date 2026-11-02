@@ -19,6 +19,9 @@ calendar: gregorian
 latitude: 50
 climate: maritime
 climate_shift: 1
+sight:                # fog of war (data/terrain.yaml sight): the sides with aircraft up, and their night sights
+  air: ["British", "Germans"]
+  note: "Both sides flew reconnaissance: British airmen saw von Kluck's advance on 22 August, German airmen the British (Air & Space Forces Magazine, Eyes in the Sky)."
 terrain: |
     fffffffffffffffffffffffffffffffffffffffffffffffffffff
     fffffffffffffffffffffffffffffffffffffffffffffffffffff

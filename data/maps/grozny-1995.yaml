@@ -19,6 +19,9 @@ calendar: gregorian
 latitude: 43
 climate: continental
 climate_shift: 0
+sight:                # fog of war (data/terrain.yaml sight): the sides with aircraft up, and their night sights
+  air: ["Russians"]
+  note: "Russian aircraft flew, though winter cloud often kept them off, as the weather does here (our reading)."
 terrain: |
     ........................................
     ...................=..................~.

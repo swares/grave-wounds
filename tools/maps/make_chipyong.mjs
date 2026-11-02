@@ -69,6 +69,7 @@ const map = buildCampaign({
   id: "chipyong-1951", script: "make_chipyong.mjs", title: "The siege of Chipyong-ni, February 1951",
   name: "Chipyong-ni, 1951 (Yangpyong to Wonju)",
   start_date: "1951-02-13", calendar: "gregorian", latitude: 37, climate: "korea", climate_shift: 0, base: "h",
+  sight: { air: ["United Nations"], note: "UN aircraft held the air; the Chinese and North Koreans moved largely at night to avoid air strikes and observation (Bevin Alexander, Korea: The First War We Lost)." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [127.420, 37.560, 128.010, 37.250], midLat: 37.40, hexKm: 1,
   header: [
     "The Han is crossed only at its bridges; the towns are at their modern centres, rounded; the",

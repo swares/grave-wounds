@@ -63,6 +63,17 @@ place_kinds:
 #   dusk: sight times this; moonlit_km, night_km: sight by moonlight and on a dark night.
 #   contact_km: within this, outposts and pickets find an enemy in any weather, light or cover.
 #   hidden_in: an enemy force in these is seen only within contact_km.
+#   air_weather: by day in these conditions, a side a map lists with aircraft up (the map's
+#     sight.air) sees every enemy force on the map not hidden_in cover, however far: observers
+#     flew over a whole campaign map in a few hours from 1914 (the project's
+#     claude/fog-of-war-period-research.md: Tannenberg, the Marne, Normandy, Korea). In any other
+#     weather, at dusk or in the dark, they are grounded or see nothing. Which conditions ground
+#     aircraft is a judgment.
+#   Night sights: a side a map gives a device (its sight.night, a weather.yaml night_vision
+#     device) sees at dusk, by moonlight and on a dark night weather_mass times as far as the
+#     device lets a man see to aim, if that is further: a thermal sight 3 km, goggles 1.5 km, a
+#     Starlight scope 1 km. Field glasses are left out: by day the horizon and folds of ground,
+#     not the eye, limit how far a body of troops is seen.
 sight:
   km: {foot: 3, mounted: 8, wagons: 2}
   weather_mass: 5
@@ -71,3 +82,4 @@ sight:
   night_km: 0.2
   contact_km: 1
   hidden_in: [forest, village, town]
+  air_weather: [fair, overcast]

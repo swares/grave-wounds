@@ -39,6 +39,7 @@ const map = buildCampaign({
   id: "keating-2009", script: "make_keating.mjs", title: "The Kamdesh valley and COP Keating, October 2009",
   name: "COP Keating, 2009 (the Kamdesh valley)",
   start_date: "2009-10-03", calendar: "gregorian", latitude: 35, climate: "hindu_kush", climate_shift: 0, base: "M",
+  sight: { air: ["Coalition"], night: {"Coalition": "goggles"}, note: "US aircraft were on call; every man had night-vision goggles (weather.yaml night_vision)." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [71.260, 35.460, 71.410, 35.320], midLat: 35.39, hexKm: 0.5,
   header: [
     "The outpost, the observation post and the villages are placed after the accounts and",

@@ -33,6 +33,7 @@ const map = buildCampaign({
   id: "porkchop-1953", script: "make_porkchop.mjs", title: "Pork Chop Hill and the outpost line, 1953",
   name: "Pork Chop Hill, 1953 (the outpost line north of Yeoncheon)",
   start_date: "1953-04-16", calendar: "gregorian", latitude: 38, climate: "korea", climate_shift: 0, base: "f",
+  sight: { air: ["United Nations"], note: "UN aircraft held the air; the Chinese and North Koreans moved largely at night to avoid air strikes and observation (Bevin Alexander, Korea: The First War We Lost)." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [126.950, 38.295, 127.100, 38.185], midLat: 38.24, hexKm: 0.5,
   header: [
     "Pork Chop Hill is at its published position, rounded; Old Baldy, Hill 200, T-Bone and the",

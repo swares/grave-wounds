@@ -48,14 +48,18 @@ When an item is done, delete it here and note it in the pull request that closes
   same seat, his page keeping his last screen; a blinked connection mends itself), sending changes of the whole picture (the panels that changed go as their changed tags, but a turn that lights every hex still sends them all), a player's
   works and the other panels from his page (first aid he gives, on his side's turn), and the field
   and travel pages online.
-- **Fog of war on the travel map, second cut** (`docs/travel.md`, `docs/fog-of-war-research.md`).
+- **Fog of war on the travel map, third cut** (`docs/travel.md`, `docs/fog-of-war-research.md`).
   A side sees enemy forces within a distance in km (3 on foot, 8 mounted, 2 with wagons; cut by the
   weather, dusk and the dark; outposts find any enemy within 1 km; woods and towns hide a force
   beyond that) and remembers where it last saw them; a player's map online shows only that, and the
-  GM's travel map can show any side's view. Still
-  left out: campfires at night, dust, height, optics and aircraft (the 20th-century maps get
-  naked-eye sight: a per-period factor is next), scouting orders and patrols, and the delay of
-  reports; the weather factor (5) and several distances are judgments, not sourced.
+  GM's travel map can show any side's view. By period: a map lists the sides with aircraft up
+  (by day in fair or overcast weather they see every enemy force in the open on the map) and the
+  sides' night sights (a thermal sees 3 km in the dark, goggles 1.5, a Starlight scope 1), set
+  battle by battle on the 27 20th-century maps (project doc fog-of-war-period-research). Still
+  left out: campfires at night, dust, height, field glasses (by day the ground limits sight, not
+  the eye), scouting orders and patrols, and the delay of reports; the weather factor (5), the
+  flying weather and several distances are judgments, not sourced, and several maps' air notes
+  are our reading.
 - **Lethality, first cut.** Gritty | Standard | Heroic for player characters (wounds.yaml
   lethality): fate a season, Blood and the stop check, on every page. Fate now saves a man from
   drowning (the roller's **Spend fate: pulled out**; a ford on the travel map spends it at once) and

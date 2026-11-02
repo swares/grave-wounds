@@ -64,6 +64,7 @@ const map = buildCampaign({
   id: "osan-1950", script: "make_osan.mjs", title: "Task Force Smith and the battle of Osan, July 1950",
   name: "Osan, 1950 (Suwon to P'yongt'aek)",
   start_date: "1950-07-05", calendar: "gregorian", latitude: 37, climate: "korea", climate_shift: 0, base: "f",
+  sight: { air: ["United Nations"], note: "US aircraft flew from Japan; on 5 July rain kept them off Task Force Smith, as the weather does here (our reading)." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [126.96, 37.300, 127.300, 36.975], midLat: 37.14, hexKm: 1,
   header: [
     "The saddle north of Osan is at its memorial; the towns are at their modern centres, rounded;",

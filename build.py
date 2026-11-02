@@ -1067,7 +1067,7 @@ def travel_bundle(d) -> dict:
         "battle_hex_m": d.wounds["combat"]["move"]["hex_m"],
         "ground": {k: d.wounds["combat"]["ground"][k] for k in ("through", "camp_bank")},   # a camp's gates (camp.js)
         "maps": {mid: {**{k: m.get(k) for k in ("id", "name", "hex_km", "rows", "places", "forces",
-                                                   "start_date", "calendar", "latitude", "climate", "climate_shift")}, "period": periods(d)["maps"][mid]}
+                                                   "start_date", "calendar", "latitude", "climate", "climate_shift", "sight")}, "period": periods(d)["maps"][mid]}
                  for mid, m in d.maps.items()},
         "period_order": periods(d)["order"],
         "battlefields": {fid: {"name": f["name"], **f["travel"]} for fid, f in d.fields.items() if f.get("travel")},

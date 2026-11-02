@@ -18,6 +18,10 @@ calendar: gregorian
 latitude: 15
 climate: central_highlands
 climate_shift: 0
+sight:                # fog of war (data/terrain.yaml sight): the sides with aircraft up, and their night sights
+  air: ["United States and ARVN"]
+  night: {"United States and ARVN": starlight}
+  note: "US and ARVN aircraft and helicopters held the air by day. Starlight scopes, about one rifle a squad (weather.yaml night_vision)."
 terrain: |
     FFFFFFFFFMMMMFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF~FFFFFFFFFFFFFFFFF
     FFFFFFFFMMMMMMFFFFFFFFFFFFFFFFFFFFFFFFFFFFF~FFFFFFFF=FFFFFFFF

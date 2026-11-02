@@ -18,6 +18,10 @@ calendar: gregorian
 latitude: -52
 climate: falklands
 climate_shift: 0
+sight:                # fog of war (data/terrain.yaml sight): the sides with aircraft up, and their night sights
+  air: ["British"]
+  night: {"Argentines": starlight}
+  note: "British Harriers held the air by day (our reading); the Argentine Marines had night sights, as the battlefield gives them."
 terrain: |
     ........................................
     ........................................

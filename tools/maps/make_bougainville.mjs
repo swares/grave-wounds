@@ -62,6 +62,7 @@ const map = buildCampaign({
   id: "bougainville-1944", script: "make_bougainville.mjs", title: "The Empress Augusta Bay perimeter on Bougainville, March 1944",
   name: "Bougainville, 1944 (the Torokina perimeter)",
   start_date: "1944-03-07", calendar: "gregorian", latitude: -6, climate: "tropical", climate_shift: 0, base: "F",
+  sight: { air: ["Americans"], note: "Japanese air power at Rabaul had been beaten down by early 1944 (our reading); the jungle hides most movement anyway." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [154.93, -6.06, 155.25, -6.29], midLat: -6.18, hexKm: 1,
   header: [
     "The coast is Natural Earth's and coarse; the cape, the river mouths, the airfields, the hills",

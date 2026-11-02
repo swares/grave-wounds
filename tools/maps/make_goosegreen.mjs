@@ -43,6 +43,7 @@ const map = buildCampaign({
   id: "goosegreen-1982", script: "make_goosegreen.mjs", title: "Goose Green, May 1982",
   name: "Goose Green, 1982 (the Darwin isthmus)",
   start_date: "1982-05-27", calendar: "gregorian", latitude: -52, climate: "falklands", climate_shift: 0, base: ".", coast: "drawn",
+  sight: { air: ["British", "Argentines"], note: "British Harriers and Argentine Pucaras both flew over Goose Green (our reading)." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [-59.100, -51.720, -58.850, -51.870], midLat: -51.80, hexKm: 0.5,
   header: [
     "The settlements and the Argentine positions are placed after the accounts and approximate;",

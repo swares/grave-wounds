@@ -25,6 +25,9 @@ calendar: gregorian
 latitude: 2
 climate: horn_coast
 climate_shift: 0
+sight:                # fog of war (data/terrain.yaml sight): the sides with aircraft up, and their night sights
+  air: ["United States"]
+  note: "US helicopters were overhead; the assault force went in by day and left its night-vision goggles behind, as the battlefield has it."
 terrain: |
     vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
     vvvvvvvvvvvvvvvv=vvvvvvvvvvvvvvvvvvvvvvvvv
