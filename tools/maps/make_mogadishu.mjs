@@ -53,6 +53,7 @@ const map = buildCampaign({
   id: "mogadishu-1993", script: "make_mogadishu.mjs", title: "Mogadishu, 3-4 October 1993",
   name: "Mogadishu, 1993 (the airport to the stadium)",
   start_date: "1993-10-03", calendar: "gregorian", latitude: 2, climate: "horn_coast", climate_shift: 0, base: "v", coast: "drawn", water: [SEA],
+  sight: { air: ["United States"], note: "US helicopters were overhead; the assault force went in by day and left its night-vision goggles behind, as the battlefield has it." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [45.285, 2.075, 45.375, 2.000], midLat: 2.04, hexKm: 0.25,
   header: [
     "The target, the crash sites and the Olympic Hotel are at their published positions, rounded;",

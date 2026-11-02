@@ -44,6 +44,7 @@ const map = buildCampaign({
   id: "tumbledown-1982", script: "make_tumbledown.mjs", title: "Tumbledown, June 1982",
   name: "Tumbledown, 1982 (the hills west of Stanley)",
   start_date: "1982-06-13", calendar: "gregorian", latitude: -52, climate: "falklands", climate_shift: 0, base: ".", coast: "drawn",
+  sight: { air: ["British"], night: {"Argentines": "starlight"}, note: "British Harriers held the air by day (our reading); the Argentine Marines had night sights, as the battlefield gives them." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [-58.080, -51.660, -57.800, -51.730], midLat: -51.695, hexKm: 0.5,
   header: [
     "The hills and the positions are placed after the accounts and approximate; Stanley Harbour,",

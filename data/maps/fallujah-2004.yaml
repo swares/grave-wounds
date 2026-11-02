@@ -20,6 +20,10 @@ calendar: gregorian
 latitude: 33
 climate: arid
 climate_shift: 0
+sight:                # fog of war (data/terrain.yaml sight): the sides with aircraft up, and their night sights
+  air: ["Coalition"]
+  night: {"Coalition": thermal}
+  note: "Coalition aircraft and drones held the air; its tanks and Bradleys had thermal sights, as the battlefield gives them."
 terrain: |
     .....~.............=......f........
     .....~............=.....ffff.......

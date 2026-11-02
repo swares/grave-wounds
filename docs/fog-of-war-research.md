@@ -81,9 +81,8 @@ reports took time.
 - **Dust by day in dry weather.** No sourced distance. It would extend sight of a marching force.
 - **Height.** A force on a hill sees further, and one in a valley less. The rule does not look at
   ground height.
-- **Optics and aircraft.** Telescopes and field glasses (from the 18th and 19th centuries) and
-  observation aircraft (from 1914) see much further. The 20th-century maps get the same naked-eye
-  numbers, which is too little for them. A per-period factor is the obvious next step.
+- **Optics and aircraft.** Now done: aircraft and night sights per map and side, field glasses
+  left out. The sources and the decisions are in the project's `claude/fog-of-war-period-research.md`.
 - **Scouting as an order.** Patrols, spies and deserters sent out, and false or stale reports
   beyond the last sighting.
 - **The delay of reports.** A side's whole knowledge is shared at once.

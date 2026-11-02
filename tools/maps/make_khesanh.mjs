@@ -49,6 +49,7 @@ const map = buildCampaign({
   id: "khesanh-1968", script: "make_khesanh.mjs", title: "Khe Sanh, January to April 1968",
   name: "Khe Sanh, 1968 (the base and its hills)",
   start_date: "1968-01-20", calendar: "gregorian", latitude: 17, climate: "annamite", climate_shift: 0, base: "F",
+  sight: { air: ["United States and ARVN"], night: {"United States and ARVN": "starlight"}, note: "US and ARVN aircraft and helicopters held the air by day. Starlight scopes, as the battlefield gives the Marines." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [106.580, 16.745, 106.820, 16.580], midLat: 16.66, hexKm: 0.5,
   header: [
     "The base, the hills, the village and Lang Vei are placed after the accounts and approximate;",

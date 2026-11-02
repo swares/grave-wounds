@@ -74,6 +74,7 @@ const map = buildCampaign({
   id: "mons-1914", script: "make_mons.mjs", title: "The battle of Mons, August 1914, from Condé to Binche",
   name: "Mons, 1914 (Condé to Binche)",
   start_date: "1914-08-22", calendar: "gregorian", latitude: 50, climate: "maritime", climate_shift: 1,
+  sight: { air: ["British", "Germans"], note: "Both sides flew reconnaissance: British airmen saw von Kluck's advance on 22 August, German airmen the British (Air & Space Forces Magazine, Eyes in the Sky)." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [3.55, 50.62, 4.27, 50.24], midLat: 50.43, hexKm: 1,
   header: [
     "Towns and villages are at their modern places; the canal bridges are only approximate; the",

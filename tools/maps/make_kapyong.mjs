@@ -38,6 +38,7 @@ const map = buildCampaign({
   id: "kapyong-1951", script: "make_kapyong.mjs", title: "The Kapyong valley, April 1951",
   name: "Kapyong, 1951 (the Kapyong valley)",
   start_date: "1951-04-22", calendar: "gregorian", latitude: 38, climate: "korea", climate_shift: 0, base: "h",
+  sight: { air: ["United Nations"], note: "UN aircraft held the air; the Chinese and North Koreans moved largely at night to avoid air strikes and observation (Bevin Alexander, Korea: The First War We Lost)." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [127.420, 37.990, 127.630, 37.780], midLat: 37.88, hexKm: 0.5,
   header: [
     "Kapyong is at its modern centre, rounded; the hills, Chuktun-ni and Naech'on are placed after",

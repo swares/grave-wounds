@@ -38,6 +38,7 @@ const map = buildCampaign({
   id: "debecka-2003", script: "make_debecka.mjs", title: "Debecka, April 2003",
   name: "Debecka, 2003 (south of Erbil)",
   start_date: "2003-04-06", calendar: "gregorian", latitude: 36, climate: "mediterranean", climate_shift: 0, base: ".",
+  sight: { air: ["Americans and Kurds"], night: {"Americans and Kurds": "thermal"}, note: "US aircraft were on call; the Special Forces' Javelin sights were thermal, as the battlefield gives them." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [43.540, 36.030, 43.910, 35.760], midLat: 35.89, hexKm: 0.5,
   header: [
     "Only the crossroads has a published coordinate; the ridge, Press Hill, the Alamo and Pir Da'ud are",

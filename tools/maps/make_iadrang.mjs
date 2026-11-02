@@ -58,6 +58,7 @@ const map = buildCampaign({
   id: "iadrang-1965", script: "make_iadrang.mjs", title: "The Ia Drang valley and the Chu Pong massif, November 1965",
   name: "Ia Drang, 1965 (X-Ray and Albany)",
   start_date: "1965-11-14", calendar: "gregorian", latitude: 14, climate: "central_highlands", climate_shift: 0, base: "F",
+  sight: { air: ["United States"], note: "US and ARVN aircraft and helicopters held the air by day. Starlight scopes were only coming into service in 1965 (our reading), so no night sights." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [107.585, 13.665, 107.930, 13.505], midLat: 13.58, hexKm: 0.5,
   header: [
     "X-Ray, Albany and Falcon are at their published positions, rounded; Columbus, Victor and the",

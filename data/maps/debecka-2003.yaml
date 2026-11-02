@@ -17,6 +17,10 @@ calendar: gregorian
 latitude: 36
 climate: mediterranean
 climate_shift: 0
+sight:                # fog of war (data/terrain.yaml sight): the sides with aircraft up, and their night sights
+  air: ["Americans and Kurds"]
+  night: {"Americans and Kurds": thermal}
+  note: "US aircraft were on call; the Special Forces' Javelin sights were thermal, as the battlefield gives them."
 terrain: |
     ....................................................................
     ....................................................................

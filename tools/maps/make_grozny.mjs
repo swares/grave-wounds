@@ -54,6 +54,7 @@ const map = buildCampaign({
   id: "grozny-1995", script: "make_grozny.mjs", title: "Grozny, December 1994 to January 1995",
   name: "Grozny, 1995 (the New Year's assault)",
   start_date: "1994-12-31", calendar: "gregorian", latitude: 43, climate: "continental", climate_shift: 0, base: ".",
+  sight: { air: ["Russians"], note: "Russian aircraft flew, though winter cloud often kept them off, as the weather does here (our reading)." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [45.580, 43.400, 45.820, 43.250], midLat: 43.32, hexKm: 0.5,
   header: [
     "The palace, the station, Minutka square, the airports and the suburbs are placed after the",

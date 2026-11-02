@@ -19,6 +19,9 @@ calendar: gregorian
 latitude: -52
 climate: falklands
 climate_shift: 0
+sight:                # fog of war (data/terrain.yaml sight): the sides with aircraft up, and their night sights
+  air: ["British", "Argentines"]
+  note: "British Harriers and Argentine Pucaras both flew over Goose Green (our reading)."
 terrain: |
     wwwwww..............................
     wwwwww..........=...................

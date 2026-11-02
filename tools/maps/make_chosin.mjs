@@ -54,6 +54,7 @@ const map = buildCampaign({
   id: "chosin-1950", script: "make_chosin.mjs", title: "The Chosin Reservoir, November-December 1950",
   name: "Chosin Reservoir, 1950 (Yudam-ni to Hungnam)",
   start_date: "1950-11-27", calendar: "gregorian", latitude: 40, climate: "changjin", climate_shift: -2, base: "M",
+  sight: { air: ["United Nations"], note: "UN aircraft held the air; the Chinese and North Koreans moved largely at night to avoid air strikes and observation (Bevin Alexander, Korea: The First War We Lost)." },   // fog of war by period (project doc fog-of-war-period-research)
   water: [RESERVOIR],
   bounds: [127.050, 40.640, 127.680, 39.800], midLat: 40.22, hexKm: 1,
   header: [

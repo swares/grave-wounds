@@ -43,6 +43,7 @@ const map = buildCampaign({
   id: "hamburger-1969", script: "make_hamburger.mjs", title: "The A Shau valley, May 1969",
   name: "Hamburger Hill, 1969 (the A Shau valley)",
   start_date: "1969-05-10", calendar: "gregorian", latitude: 16, climate: "annamite", climate_shift: 0, base: "F",
+  sight: { air: ["United States and ARVN"], night: {"United States and ARVN": "starlight"}, note: "US and ARVN aircraft and helicopters held the air by day. Starlight scopes, about one rifle a squad." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [107.080, 16.360, 107.320, 16.120], midLat: 16.24, hexKm: 0.5,
   header: [
     "Ap Bia, A Luoi, Ta Bat and the valley are placed after the accounts and approximate; the A Sap",

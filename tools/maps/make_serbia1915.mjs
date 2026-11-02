@@ -163,6 +163,7 @@ const map = buildCampaign({
   id: "serbia-1915", script: "make_serbia1915.mjs", title: "The Serbian retreat, November 1915 to January 1916, from Kraljevo to the Adriatic",
   name: "Serbia, 1915 (the great retreat)",
   start_date: "1915-11-05", calendar: "gregorian", latitude: 42, climate: "balkan_highland", climate_shift: 0,
+  sight: { air: ["Central Powers", "Serbia and Montenegro"], note: "The Central Powers flew reconnaissance, and a small French squadron flew for the Serbs (our reading); the winter weather grounds both often." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [19.20, 43.80, 21.95, 41.00], midLat: 42.4, hexKm: 5,
   header: [
     "Towns and villages are at their modern places; the passes, Vizier's Bridge and Topolčani are",

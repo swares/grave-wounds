@@ -22,6 +22,10 @@ calendar: gregorian
 latitude: 35
 climate: hindu_kush
 climate_shift: 0
+sight:                # fog of war (data/terrain.yaml sight): the sides with aircraft up, and their night sights
+  air: ["United States"]
+  night: {"United States": goggles}
+  note: "US aircraft and drones were on call; every man had night-vision goggles (weather.yaml night_vision)."
 terrain: |
     MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM
     MMMMMMMMMMMMMMMMMMMMMMM~MMMMMMMMMMMMMM

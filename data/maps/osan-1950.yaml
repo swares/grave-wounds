@@ -21,6 +21,9 @@ calendar: gregorian
 latitude: 37
 climate: korea
 climate_shift: 0
+sight:                # fog of war (data/terrain.yaml sight): the sides with aircraft up, and their night sights
+  air: ["United Nations"]
+  note: "US aircraft flew from Japan; on 5 July rain kept them off Task Force Smith, as the weather does here (our reading)."
 terrain: |
     ffffffffffffffffffffffffffffffff
     ffff=fffffffffffffffffffffffffff

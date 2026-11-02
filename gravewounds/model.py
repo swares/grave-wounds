@@ -539,6 +539,16 @@ def validate(d: Data) -> None:
         for wid, w in d.weapons.items():
             if w.get("ignition") and w["ignition"] not in WX["battle"]["misfire"]:
                 errors.append(f"weapons.yaml: {wid} ignition {w['ignition']} is not in weather.yaml battle.misfire")
+        devices = ((WX.get("light") or {}).get("night_vision") or {}).get("devices", {})
+        errors += [f"terrain.yaml: sight.air_weather names unknown weather {c}" for c in (d.terrain.get("sight") or {}).get("air_weather", []) if c not in WX["conditions"]]
+        for mid, m in d.maps.items():
+            ms, msides = m.get("sight"), {fo.get("side") for fo in m.get("forces", [])}
+            if ms is not None:   # the fog of war's sides with aircraft up and their night sights (terrain.yaml sight)
+                if not isinstance(ms, dict) or set(ms) - {"air", "night", "note"} or not isinstance(ms.get("air", []), list) or not isinstance(ms.get("night", {}), dict):
+                    errors.append(f"maps/{mid}: sight takes air (a list of sides), night (side: device) and a note")
+                else:
+                    errors += [f"maps/{mid}: sight names {s}, not a side on the map" for s in [*ms.get("air", []), *ms.get("night", {})] if s not in msides]
+                    errors += [f"maps/{mid}: sight.night gives {s} unknown device {v}" for s, v in ms.get("night", {}).items() if v not in devices]
         for mid, m in d.maps.items():
             if not re.fullmatch(r"-?\d{1,4}-\d{2}-\d{2}", str(m.get("start_date", ""))):
                 errors.append(f"maps/{mid}: start_date must be YYYY-MM-DD")

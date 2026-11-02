@@ -50,6 +50,7 @@ const map = buildCampaign({
   id: "wanat-2008", script: "make_wanat.mjs", title: "The Waygal valley and Wanat, July 2008",
   name: "Wanat, 2008 (the Waygal valley)",
   start_date: "2008-07-13", calendar: "gregorian", latitude: 35, climate: "hindu_kush", climate_shift: 0, base: "M",
+  sight: { air: ["United States"], night: {"United States": "goggles"}, note: "US aircraft and drones were on call; every man had night-vision goggles (weather.yaml night_vision)." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [70.800, 35.130, 71.000, 34.955], midLat: 35.04, hexKm: 0.5,
   header: [
     "Wanat is at its published position, rounded; Blessing, Nangalam, Waygal and the side outposts",

@@ -19,6 +19,10 @@ calendar: gregorian
 latitude: 17
 climate: annamite
 climate_shift: 0
+sight:                # fog of war (data/terrain.yaml sight): the sides with aircraft up, and their night sights
+  air: ["United States and ARVN"]
+  night: {"United States and ARVN": starlight}
+  note: "US and ARVN aircraft and helicopters held the air by day. Starlight scopes, as the battlefield gives the Marines."
 terrain: |
     FFFF~FFFFFFFFFFFFFFFFFFFMMMMFFFFFF~FFFFFFFFFFFFFFFFFF
     FFFF~FFFFFFFFFFFFFFFFFMMMMMMMFFFF~FFFFFFMMMMMFFFFFFFF

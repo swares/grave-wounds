@@ -97,6 +97,7 @@ const map = buildCampaign({
   id: "beaumont-hamel-1916", script: "make_beaumont.mjs", title: "The Somme, 30 June 1916, from Doullens to Bapaume",
   name: "Beaumont-Hamel, 1916 (Doullens to Bapaume)",
   start_date: "1916-06-30", calendar: "gregorian", latitude: 50, climate: "maritime", climate_shift: 0,
+  sight: { air: ["British", "Germans"], note: "Both sides had aircraft and balloons up over the Somme; the RFC held the upper hand (our reading)." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [2.33, 50.17, 2.87, 49.98], midLat: 50.08, hexKm: 1,
   header: [
     "Towns and villages are at their modern town halls; Serre, Hamel, Gézaincourt and the woods are only",

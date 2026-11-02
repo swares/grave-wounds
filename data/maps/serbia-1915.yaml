@@ -25,6 +25,9 @@ calendar: gregorian
 latitude: 42
 climate: balkan_highland
 climate_shift: 0
+sight:                # fog of war (data/terrain.yaml sight): the sides with aircraft up, and their night sights
+  air: ["Central Powers", "Serbia and Montenegro"]
+  note: "The Central Powers flew reconnaissance, and a small French squadron flew for the Serbs (our reading); the winter weather grounds both often."
 terrain: |
     hhhhhhhhhhhhhhhhhhhh~~hhhhhhhhhhhhhhh~hhhhhhhhh
     hhhhhhhhhhhhhhhhhhhhh~~hhhhhhhhhhhhh~hhhhhhhhhh

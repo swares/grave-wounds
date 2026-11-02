@@ -59,6 +59,7 @@ const map = buildCampaign({
   id: "hue-1968", script: "make_hue.mjs", title: "Hue, January to March 1968",
   name: "Hue, 1968 (the city and Phu Bai)",
   start_date: "1968-01-31", calendar: "gregorian", latitude: 16, climate: "central_coast", climate_shift: 0, base: "f",
+  sight: { air: ["United States and ARVN"], night: {"United States and ARVN": "starlight"}, note: "US and ARVN aircraft and helicopters held the air by day. Low cloud and drizzle kept much of it off at Hue, as the weather does here. Starlight scopes, about one rifle a squad." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [107.500, 16.545, 107.730, 16.370], midLat: 16.46, hexKm: 0.5,
   header: [
     "The Citadel, the bridges, Phu Bai and the villages are placed after the accounts and",

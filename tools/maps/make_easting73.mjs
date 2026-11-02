@@ -55,6 +55,7 @@ const map = buildCampaign({
   id: "easting73-1991", script: "make_easting73.mjs", title: "73 Easting, February 1991",
   name: "73 Easting, 1991 (the 2nd Armored Cavalry's last day)",
   start_date: "1991-02-26", calendar: "gregorian", latitude: 30, climate: "arid", climate_shift: 0, base: ".",
+  sight: { air: ["Coalition"], night: {"Coalition": "thermal"}, note: "Coalition aircraft held the air; its tanks and Bradleys had thermal sights, the Iraqis none (H. R. McMaster, National Interest)." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [46.620, 29.950, 46.960, 29.740], midLat: 29.85, hexKm: 0.5,
   header: [
     "The grid lines (60 to 74 Easting) are placed from the military grid; the troops, the buildings,",

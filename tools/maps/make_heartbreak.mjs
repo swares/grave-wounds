@@ -32,6 +32,7 @@ const map = buildCampaign({
   id: "heartbreak-1951", script: "make_heartbreak.mjs", title: "Heartbreak Ridge, September-October 1951",
   name: "Heartbreak Ridge, 1951 (the Mundung-ni and Sat'ae-ri valleys)",
   start_date: "1951-09-13", calendar: "gregorian", latitude: 38, climate: "korea", climate_shift: -2, base: "h",
+  sight: { air: ["United Nations"], note: "UN aircraft held the air; the Chinese and North Koreans moved largely at night to avoid air strikes and observation (Bevin Alexander, Korea: The First War We Lost)." },   // fog of war by period (project doc fog-of-war-period-research)
   bounds: [127.920, 38.380, 128.100, 38.220], midLat: 38.30, hexKm: 0.5,
   header: [
     "The peaks are at their published spacing along the ridge, rounded; the villages, valleys and",

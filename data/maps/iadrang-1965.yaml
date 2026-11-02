@@ -20,6 +20,9 @@ calendar: gregorian
 latitude: 14
 climate: central_highlands
 climate_shift: 0
+sight:                # fog of war (data/terrain.yaml sight): the sides with aircraft up, and their night sights
+  air: ["United States"]
+  note: "US and ARVN aircraft and helicopters held the air by day. Starlight scopes were only coming into service in 1965 (our reading), so no night sights."
 terrain: |
     FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF
     FFFFFFFFFFFFFFFFFFFFFFFhhhhFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF

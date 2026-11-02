@@ -254,13 +254,15 @@ check("fog of war: a side sees the enemy within its sight in km, not beyond, nor
 });
 check("fog of war: in km, so a map's hex size does not change how far a force sees", () => {
   for (const id of ["towton-1461", "agincourt-1415", "mogadishu-1993"].filter(x => DATA.maps[x])){
-    const { D } = fresh(6);
+    const { D } = fresh(6), keep = DATA.maps[id].sight;
+    delete DATA.maps[id].sight;                       // naked-eye sight alone: no aircraft up
     D.S.mapId = id;
     const { a, e, m, at } = lone(D), K = DATA.terrain.sight;
     a.type = "foot";
     const near = at(Math.floor(K.km.foot / m.hex_km) * m.hex_km), far = at((Math.floor(K.km.foot / m.hex_km) + 1) * m.hex_km);
     if (near){ e.pos = near; assert.equal(D.sightings(a.side).length, 1, `${id}: seen within ${K.km.foot} km`) }
     if (far && (Math.floor(K.km.foot / m.hex_km) + 1) * m.hex_km > Math.max(K.km.foot, K.contact_km)){ e.pos = far; assert.equal(D.sightings(a.side).length, 0, `${id}: not beyond`) }
+    if (keep) DATA.maps[id].sight = keep;
   }
 });
 check("fog of war: the weather and the dark cut how far a force sees", () => {
@@ -275,6 +277,37 @@ check("fog of war: the weather and the dark cut how far a force sees", () => {
   assert.equal(D.sightOf(a, { cond: "fair", light: "dusk" }), K.km.mounted * K.dusk, "dusk");
   assert.equal(D.sightOf(a, { cond: "fair", light: "moonlit" }), K.moonlit_km, "by moonlight");
   assert.equal(D.sightOf(a, { cond: "fair", light: "night" }), K.night_km, "a dark night");
+});
+check("fog of war: by day in flying weather a side with aircraft up sees every enemy force in the open on the map, not in cover, nor at night", () => {
+  const { D } = fresh(7);
+  D.S.mapId = "chosin-1950";                         // the UN had the air (data/maps sight.air)
+  const { a, e, m, at, forest } = lone(D), K = DATA.terrain.sight, air = DATA.maps["chosin-1950"].sight.air;
+  const ours = air.includes(a.side) ? a : e, theirs = ours === a ? e : a;
+  assert.ok(D.airUp(ours.side, CLEAR_DAY), "its aircraft are up on a clear day");
+  assert.ok(!D.airUp(theirs.side, CLEAR_DAY), "the other side has none up");
+  assert.ok(!D.airUp(ours.side, { cond: "fog", light: "day" }) && !D.airUp(ours.side, { cond: "fair", light: "night" }) && !D.airUp(ours.side, { cond: "fair", light: "dusk" }), "grounded in fog, at dusk and in the dark");
+  const v = D.fogView(ours.side), flying = v.light === "day" && K.air_weather.includes(Object.keys(DATA.weather.conditions).find(c => DATA.weather.conditions[c].name === v.weather) || "fair");
+  assert.equal(v.air, flying, "the player's view says whether its aircraft are up");
+  const opens = []; for (let r = 0; r < m.rows.length; r++) for (let c = 0; c < m.rows[0].length; c++) if (CLEAR.has(RULES.terrainAt(m, [c, r]).id) && RULES.hexDistance([c, r], ours.pos) * m.hex_km > K.km.mounted + 1) opens.push([c, r]);
+  theirs.pos = opens[0];
+  assert.ok(theirs.pos, "an open hex far off");
+  assert.equal(D.sightings(ours.side).length, flying ? 1 : 0, "seen from the air, far beyond its forces' sight, only while its aircraft are up");
+  const wood = forest.find(h => RULES.hexDistance(h, ours.pos) * m.hex_km > K.contact_km + 1);
+  if (wood){ theirs.pos = wood; assert.equal(D.sightings(ours.side).length, 0, "woods hide a force from the air") }
+});
+check("fog of war: a side's night sights see further in the dark, never beyond the day's sight", () => {
+  const { D } = fresh(8);
+  D.S.mapId = "easting73-1991";                      // thermal sights for the Coalition (data/maps sight.night)
+  const fs = D.forcesHere(), K = DATA.terrain.sight, night = DATA.maps["easting73-1991"].sight.night;
+  const ours = fs.find(f => night[f.side]), theirs = fs.find(f => !night[f.side]);
+  const dev = DATA.weather.light.night_vision.devices[night[ours.side]], km = dev.sight * DATA.battle_hex_m * K.weather_mass / 1000;
+  ours.type = theirs.type = "foot";
+  assert.equal(D.deviceKm(ours.side), km, "its device's sight, as for a body of troops");
+  assert.equal(D.sightOf(ours, { cond: "fair", light: "night" }), Math.min(K.km.foot, km), "a dark night: its device's sight");
+  assert.equal(D.sightOf(ours, { cond: "fair", light: "moonlit" }), Math.min(K.km.foot, km), "by moonlight too");
+  assert.equal(D.sightOf(ours, CLEAR_DAY), K.km.foot, "by day no further than without");
+  assert.equal(D.sightOf(theirs, { cond: "fair", light: "night" }), K.night_km, "the side without: naked eye");
+  assert.ok(D.sightOf(ours, { cond: "fog", light: "night" }) <= DATA.weather.conditions.fog.visibility * DATA.battle_hex_m * K.weather_mass / 1000 + 1e-9, "never beyond the weather's sight");
 });
 check("fog of war: a player's view holds his side's forces and only the enemy it sees, or saw", () => {
   const { D } = fresh(5);

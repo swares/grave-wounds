@@ -19,6 +19,9 @@ calendar: gregorian
 latitude: 38
 climate: korea
 climate_shift: 0
+sight:                # fog of war (data/terrain.yaml sight): the sides with aircraft up, and their night sights
+  air: ["United Nations"]
+  note: "UN aircraft held the air; the Chinese and North Koreans moved largely at night to avoid air strikes and observation (Bevin Alexander, Korea: The First War We Lost)."
 terrain: |
     hhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
     hhhhhhhhhhhhhhhhhhh=mhhhhhhhhhhhhhhhhh
