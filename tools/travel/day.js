@@ -412,6 +412,17 @@ check("sieges: the besiegers' lines count as a filthy camp from the investment; 
   D.siegeNight({ day: foot.day, used: 0 });
   assert.equal(foot.siegeFrom, undefined, "no longer investing");
 });
+check("sieges: Badajoz 1812 is invested from the start, and its breach is practicable after 21 days of the siege corps' work", () => {
+  const { D } = fresh(13);
+  D.S.mapId = "badajoz-1812";
+  const pl = D.fortresses()[0], F = pl.fortress;
+  assert.equal(pl.name, "Badajoz");
+  assert.ok(D.siegeState(pl).invested, "the siege corps starts within a hex of the town");
+  const c = { day: 1, used: 0 };
+  for (let n = 1; n <= F.breach_days; n++){ for (const f of D.forcesHere()) f.day = n; c.day = n; D.siegeNight(c) }
+  assert.ok(D.siegeState(pl).practicable, "practicable after the night of day 21 (5 April), stormed on the 22nd (6 April)");
+  assert.ok(D.nearFields(D.forcesHere().find(f => f.side === F.side && D.sameHex(f.pos, pl.hex))).some(([id]) => id === "badajoz-1812"), "the storm on the Badajoz battlefield");
+});
 check("fog of war: a player's view holds his side's forces and only the enemy it sees, or saw", () => {
   const { D } = fresh(5);
   D.S.mapId = "towton-1461";

@@ -156,7 +156,7 @@ writeField({
   // entry at San Vicente is off the map). The French at the breaches hold there (orders.yaml).
   objective: { at: [60, 11], side: 0, name: "the castle of Badajoz", radius: 6 },
   id: "badajoz-1812", name: "Badajoz, 6-7 April 1812 (the breaches and the castle)", sides: ["Allies", "French"], table: "peninsular-1808-14-all-hits",
-  travel: { map: "albuera-1811", place: "Badajoz", within: 1, sides: ["Allies", "France"] },
+  travel: { map: "badajoz-1812", place: "Badajoz", within: 1, sides: ["Allies", "France"] },
   weather: "{cond: fair, wind: calm, light: night, ground: {mud: 0, snow: 0}}",
   grid, units, deep: ["ditch"], mines: MINES,
   // The stormers re-formed and went again (Kincaid: "fast as one dissolved, another was formed";
