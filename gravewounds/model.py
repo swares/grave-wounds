@@ -503,8 +503,9 @@ def validate(d: Data) -> None:
             if F is not None and not (isinstance(F, dict) and F.get("side") in {fo.get("side") for fo in m.get("forces", [])}
                                       and isinstance(F.get("breach_days"), (int, float)) and F["breach_days"] > 0
                                       and isinstance(F.get("workers"), int) and F["workers"] >= 1
-                                      and isinstance(F.get("stores", 0), int) and F.get("stores", 0) >= 0):
-                errors.append(f"maps/{mid}: place {pl.get('name')} fortress needs side (a side with a force on the map), breach_days (above 0), workers (a whole number of 1 or more), and stores (days, 0 or more) if given")
+                                      and isinstance(F.get("stores", 0), int) and F.get("stores", 0) >= 0
+                                      and F.get("by", "guns") in ("guns", "mine") and isinstance(F.get("redig", 0), (int, float)) and F.get("redig", 0) >= 0):
+                errors.append(f"maps/{mid}: place {pl.get('name')} fortress needs side (a side with a force on the map), breach_days (above 0), workers (a whole number of 1 or more), and if given stores (days, 0 or more), by (guns or mine) and redig (days, 0 or more)")
             if not inside(pl.get("hex")):
                 errors.append(f"maps/{mid}: place {pl.get('name')} is off the map")
             elif ("depth" in pl or "current" in pl) and not (keys.get(rows[pl["hex"][1]][pl["hex"][0]]) == "ford" and pl.get("depth", 0) > 0 and pl.get("current", -1) >= 0):

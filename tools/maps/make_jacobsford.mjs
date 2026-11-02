@@ -90,12 +90,13 @@ const map = buildCampaign({
   water: WATER, marsh: MARSH, woods: WOODS, hills: HILLS, mountains: MOUNTAINS, roads: ROADS, towns: TOWNS, villages: VILLAGES,
   kinds: { castle: "objective", tiberias: "camp", banias: "camp" },
   depots: { tiberias: ["Kingdom of Jerusalem"], safed: ["Kingdom of Jerusalem"], banias: ["Ayyubids"] },   // where each side resupplies (project doc "jacobsford-research")
-  // The castle as a fortress to besiege (docs/travel.md, Sieges). Saladin arrived on day 1 (25 Aug) and took the outer
-  // works that evening; mining began on day 2, the first mine's fire failed, the second brought the wall down at dawn
-  // on day 6 (30 Aug): four days of siege work, days 2 to 5 (a day of work counts for a force that did not march that
-  // day). Workers: no source gives the sappers' numbers; 1,000 is ours (of the 3,000 foot, archers and sappers).
+  // The castle as a fortress to besiege (docs/travel.md, Sieges), broken by a mine. Saladin arrived on day 1 (25 Aug)
+  // and took the outer works that evening; mining began on day 2 and the mine was fired on the Sunday night (days 2-3:
+  // breach_days 2); its fire failed, and it was dug deeper and wider through Tuesday and Wednesday (redig 2) and fired
+  // again, and the wall fell at dawn on day 6 (30 Aug). A day of work counts for a force that did not march that day.
+  // Workers: no source gives the sappers' numbers; 1,000 is ours (of the 3,000 foot, archers and sappers).
   // Stores: "enough food for several years" (al-Fadil, via Barber): two years, ours.
-  fortresses: { castle: { side: "Kingdom of Jerusalem", breach_days: 4, workers: 1000, stores: 730 } },
+  fortresses: { castle: { side: "Kingdom of Jerusalem", by: "mine", breach_days: 2, redig: 2, workers: 1000, stores: 730 } },
   forces: [
     { name: "The Templar garrison", type: "foot", side: "Kingdom of Jerusalem", men: 1100, tools: true, at: "castle" },
     { name: "Baldwin IV's relief (gathering)", type: "foot", side: "Kingdom of Jerusalem", men: 4000, tools: true, at: "baldwin" },

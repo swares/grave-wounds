@@ -471,8 +471,18 @@ the garrison keeps its camp's. The Health rules then give the siege-camp toll th
 calibrated on (six weeks of a hot, filthy siege camp, about a fifth dead: Harfleur, 1415). After a
 storm or any battle, its unburied dead add their own (*Health*, The unburied dead).
 
-Mines and countermines and the sack's loot are not played yet (project doc
-"siege-phase-research").
+**Mines.** A fortress can be broken by a mine (`by: mine`): its days of siege work are the mine's
+digging. Once it is dug, **Fire the mine** (the Siege box): d100 at or under 50% brings the wall
+down and the breach is practicable; otherwise it fell short and the wall stands, and `redig` days
+(the fortress's, else 2) must be dug again. A garrison with tools can **Countermine**: on each day
+the mine is being dug, 15% that its listeners and galleries find it, and the fight underground
+costs the besiegers a day of the mine's work (`siege.mine`). Jacob's Ford 1179: the first mine's
+fire failed, the second brought the wall down; Burgos 1812: of three mines the first fell short and
+the other two went off as meant; the defenders listened with water in buckets or barrels and drove
+counter-galleries (Grant at Constantinople, 1453). No source gives a rate: the figures are design
+estimates.
+
+The sack's loot is not played yet (project doc "siege-phase-research").
 
 ## Fog of war
 
@@ -655,11 +665,12 @@ swamps marsh; Upper Galilee and the Golan are hills. The castle stands 200 m nor
 a hex west of it at this scale. The Franks resupply at Tiberias and Safed, the Ayyubids at Banias.
 Its climate is new: the upper Jordan valley (Tiberias), with August highs near 38 C. Its people speak
 Arabic. No source gives Saladin's numbers; the forces are round figures of our own. It is generated
-by `tools/maps/make_jacobsford.mjs`. The castle is a fortress (*Sieges*): 4 days of siege work
-with 1,000 men to a practicable breach (Saladin arrived on day 1 and the wall fell at dawn on day 6;
-the workers are ours), and stores for two years ("enough food for several years", al-Fadil; ours).
-Once the breach is practicable, a fight within a hex of the castle is offered on the Jacob's Ford
-battlefield.
+by `tools/maps/make_jacobsford.mjs`. The castle is a fortress broken by a mine (*Sieges*,
+Mines): 2 days to dig it with 1,000 men, and 2 to dig again if it falls short (Saladin arrived on
+day 1; the mine was fired on the second night and failed, was dug deeper through two more days,
+and brought the wall down at dawn on day 6; the workers are ours), and stores for two years
+("enough food for several years", al-Fadil; ours). Once the mine has brought the wall down, a
+fight within a hex of the castle is offered on the Jacob's Ford battlefield.
 
 **The Dornach campaign, 1499** (`data/maps/dornach-1499.yaml`) covers the Birs valley and the
 Gempen plateau on 0.6-mile (1 km) hexes: 22 × 25 hexes, about 14 by 13 miles (22 by 21 km), from
