@@ -825,6 +825,15 @@ quick: {blows: false, samples: 4000, normal_from: 9}
 morale:
   trigger: 0.25
   shock: 0.10
+  # reform: a broken unit (not fled) that lost no men this exchange, with no enemy unit standing
+  #   within `reach` times its move, checks Nerve less `penalty` after the exchange; passing, it
+  #   re-forms as shaken (and rallies to steady as any shaken unit out of contact). Kincaid (95th,
+  #   Badajoz 1812): "We fell back about three hundred yards and re-formed all that remained to
+  #   us", then "forming up fifty or a hundred men at a time at the foot of the breach ... fast as
+  #   one dissolved, another was formed"; van Bylandt's broken brigade at Waterloo was rallied
+  #   behind the reserve and joined the counter-attack (project doc "reform-research"). The reach
+  #   (about 300 yards for a column at 10 m hexes) and the penalty are design estimates.
+  reform: {reach: 2, penalty: 20}
   # posture: a unit of a holding side (the commander's stance) holding a position (in a bunker, dug
   #   in, emplaced, behind works with cover toward the nearest enemy, or in ground that hides men),
   #   and not flanked, checks for being a quarter down only in an exchange it lost men; units in the

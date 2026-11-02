@@ -2647,6 +2647,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
         else:
             u.pop("hit", None)
     log += _morale_all(d, us, occ, before, (lost, dealt, flanked, hand, braced), rng, table, field)
+    log += _reform_all(d, us, lost, rng)
     log += _suppress_all(d, us, under, rng)
     log += _give_way_all(d, us, field, struck)
     log += _heroes_after(d, us, rng, [not lost[i] and not under[i] and not in_contact(d, us, occ, i) for i in range(len(us))], cauterises(d, table), posts_moving(field))
@@ -4538,6 +4539,26 @@ def _morale_all(d: Data, us: list, occ: dict, before: list, acc: tuple, rng, tab
         u["state"] = m["state"]
     for j in broke:
         log += _rout_strike(d, us, occ, j, table, rng)
+    return log
+
+
+def _reform_all(d: Data, us: list, lost: list, rng) -> list:
+    """Broken units that lost no men this exchange and have no standing enemy within
+    morale.reform.reach times their move check Nerve less its penalty: passing, they re-form
+    as shaken."""
+    R, log = d.units["morale"].get("reform"), []
+    if not R:
+        return log
+    for i, u in enumerate(us):
+        if u["state"] != "broken" or u["men"] <= 0 or lost[i] > 0:
+            continue
+        reach = R["reach"] * allowance(d, u)
+        if any(e["side"] != u["side"] and not _out(e) and unit_gap(d, u, e) <= reach for e in us):
+            continue
+        target, roll = quality(d, u["quality"])["nerve"] - R["penalty"], rng.randint(1, 100)
+        if roll <= target:
+            u["state"] = "shaken"
+        log.append({"kind": "reform", "unit": i, "target": target, "roll": roll, "state": u["state"]})
     return log
 
 

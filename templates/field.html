@@ -1161,6 +1161,7 @@ const OTHER_LINES = {                            // kind: (line, nm) => {cls, te
   giveway: (l, nm) => ({ cls: "morale", text: `${nm(l.by)} win a footing on the wall from their ladders: ${nm(l.unit)} give way a hex.` }),
   ladders: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)} put their ladders down into the deep ditch (${l.sides} hex side${l.sides === 1 ? "" : "s"}): it is crossed as an ordinary ditch there.` }),
   morale: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)}: ${l.from} → ${l.state} (needed ${l.target} or less)` }),
+  reform: (l, nm) => (l.state === "shaken" ? { cls: "morale", text: `${nm(l.unit)} re-form out of the enemy's reach: broken → shaken (rolled ${l.roll}, needed ${l.target} or less)` } : null),
   herohit: l => ({ cls: "hero", text: heroHitText(l) }),
   pinned: (l, nm) => ({ cls: "morale", text: `${nm(l.unit)} are pinned down (rolled ${l.roll}, needed ${l.target} or less): no move and half their fire next exchange.` }),
   barrage: l => ({ cls: "", text: fireText(l) }),
