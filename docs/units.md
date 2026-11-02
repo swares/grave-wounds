@@ -167,7 +167,8 @@ The check is d100 against its Nerve (green 35, regular 50, veteran 65), with mod
   us", and "fast as one dissolved, another was formed" (project doc "reform-research"). On every
   battlefield it cost 31 of 576 runs won as fought (484 to 453; Mons 12 to 6, Babuna 10 to 3,
   Agincourt 7 to 3): the beaten came back and dragged out their routs. So it is off unless a
-  battlefield turns it on.
+  battlefield turns it on. At Badajoz (benchmark): French losses 27% to 36% (1812: about 47%), Allied
+  40% to 37%, the castle still falling in 7 of 12.
 
 **Holding a position** (`morale.posture`). A unit of a side the commander has holding its ground
 (not attacking), that holds a position, and is not struck in flank or rear, checks for being a
