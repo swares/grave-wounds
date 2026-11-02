@@ -262,10 +262,10 @@ function stAmount(source, mods){                    // a source's Strain, a comb
   const sum = [...new Set(mods)].reduce((a, m) => a + (S.mods?.[m]?.add || 0), 0);
   return Math.max(0, base * (1 + sum));
 }
-function xpStress(pid, source, nerve, why, extra = []){   // a man takes a source's Strain (the shared store), with his own modifiers and any of the moment's: -> the checks made
+function xpStress(pid, source, nerve, why, extra = [], rng = stRoll){   // a man takes a source's Strain (the shared store), with his own modifiers and any of the moment's: -> the checks made; rng: the caller's dice (the travel day's), else the browser's
   if (!pid || !TD.stress) return [];
   const all = readXp(), x = xpOf(all, pid), st = (x.stress ||= stNew()), amount = stAmount(source, [...(x.strainMods || []), ...extra]);
-  const ev = stAdd(st, amount, nerve, stRoll);
+  const ev = stAdd(st, amount, nerve, rng);
   x.stressLog ||= [];
   x.stressLog.unshift({ source, why: why || STR().sources[source].name, amount, ev });
   x.stressLog = x.stressLog.slice(0, 30);
