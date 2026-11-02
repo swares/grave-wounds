@@ -45,6 +45,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   const TER = DATA.terrain, TT = TER.terrain, FT = TER.forces;
   const WXD = DATA.weather, DZ = DATA.disease, WK = DATA.works;
   const roll100 = env.roll100 || (() => 1 + (crypto.getRandomValues(new Uint32Array(1))[0] % 100));   // a d100 for the weather
+  const dayDice = { randint: (a, b) => a + (roll100() - 1) % (b - a + 1) };   // the day's d100 as dice for the Strain checks (d100 and d10), so a seeded day is the same day again
   const SIDE_NAMES = ["east", "north-east", "north-west", "west", "south-west", "south-east"];   // NEIGHBOURS' order, north up
   function sidesAround(m, h){                    // the terrain beyond each side of hex h, for the roller's battle map
     const cols = m.rows[0].length, rows = m.rows.length, around = {};
@@ -596,7 +597,7 @@ function makeTravelDay(DATA, RULES, env = {}){
     if (skillCheck(value, diff, roll100()).success) return null;
     const fate = sweptOff(f, n, ford, band);
     if (fate === "drowned"){ n.dead = true; markLost(n.pid, "killed") }
-    else if (fate === "near-drowned" && n.pid && DATA.stress) xpStress(n.pid, "near_miss", n.nerve ?? 50, "nearly drowned at a ford");
+    else if (fate === "near-drowned" && n.pid && DATA.stress) xpStress(n.pid, "near_miss", n.nerve ?? 50, "nearly drowned at a ford", [], dayDice);
     const horse = mounted && hzHorseLost(W.band.id, roll100()) ? ", and his horse is drowned" : "";
     if (horse && (n.animals || []).includes("horse")){ n.animals.splice(n.animals.indexOf("horse"), 1); n.carry = Math.max(0, (n.carry || 0) - (animalRow("horse")?.load || 0)) }
     return `${n.name} is swept off his feet: ${fate}${horse}`;
@@ -620,7 +621,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   function strainNight(f, n){                    // combat stress: a day in the line adds Strain; a day out of it, camped, is rest
     if (!DATA.stress || !n.pid) return;
     if (f.inLine){
-      const ev = xpStress(n.pid, "line_day", n.nerve ?? 50, undefined, (f.marched || 0) > 0 ? ["moving"] : []).filter(e => !e.held);   // on the move in the line: an advance or a withdrawal
+      const ev = xpStress(n.pid, "line_day", n.nerve ?? 50, undefined, (f.marched || 0) > 0 ? ["moving"] : [], dayDice).filter(e => !e.held);   // on the move in the line: an advance or a withdrawal
       const era = forceEra(f);
       for (const e of ev) f.log.unshift(`${dateText(f.day, true)}: ${n.name}: ${stName(era, e.result)} (Nerve ${e.target}, rolled ${e.roll}).`);
     } else if ((f.marched || 0) <= 0) xpStressDo(n.pid, st => stRest(st, 1));
