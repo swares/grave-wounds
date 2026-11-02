@@ -2482,9 +2482,10 @@ function canEnter(field, u, h){                  // no wagons or water; for hors
   return !groundAt(field, h).no_horse && !(it && specOf("hex", it).no_horse);
 }
 const wallBetween = (field, a, b) => edgeItems(field.works, a, b).some(it => { const s = specOf("edge", it); return s.cross === null || s.cross === undefined || !!s.gate });
-function stands(field, u, hexes){                 // ground it can stand on, and no palisade or wall running through it, unless it carries ladders (escalade: its ranks on both sides of the work it climbs) (as units._stands)
-  const keys = new Set(hexes.map(hk));
-  return hexes.every(h => canEnter(field, u, h) && [0, 1, 2, 3, 4, 5].every(dn => { const x = step(h, dn); return !keys.has(hk(x)) || !wallBetween(field, h, x) || laddersReach(field, u, h, x) }));
+function stands(field, u, hexes){                 // ground it can stand on, and no palisade or wall running through it, unless it carries ladders (escalade: its ranks on both sides of the work it climbs); with filing.front_clear, only through its front row (its ranks file through a gap) (as units._stands)
+  const keys = new Set(hexes.map(hk)), front = UD.filing?.front_clear ? new Set((footprint(u)[0] || []).map(hk)) : null;
+  const across = (h, x) => keys.has(hk(x)) && (front === null || front.has(hk(h)) || front.has(hk(x)));   // a side between two of its hexes that must be clear
+  return hexes.every(h => canEnter(field, u, h) && [0, 1, 2, 3, 4, 5].every(dn => { const x = step(h, dn); return !across(h, x) || !wallBetween(field, h, x) || laddersReach(field, u, h, x) }));
 }
 const leavesDisabled = u => !!UD.commander.leave_disabled && !!u.vehicle && (u.immobile || 0) > 0 && vehiclesLeft(u) > u.immobile;   // attacking, a vehicle unit with some vehicles that can still move leaves its immobilised ones (commander.leave_disabled) (as commander._leaves_disabled)
 function abandonImmobile(u){                       // a vehicle unit leaves its immobilised vehicles: their crews leave the fight unhurt (bailed)
@@ -2609,23 +2610,24 @@ function popCheapest(open){                      // take the [cost, hex] with th
   for (let q = 1; q < open.length; q++) if (open[q][0] < open[m][0]) m = q;
   return open.splice(m, 1)[0];
 }
-function stepsFrom(field, u, h, occ, size){       // [hex, cost] for each step the middle hex can take from h: the worst any of its hexes pays
-  const out = [], front = field ? footprint({ ...u, pos: h }).flat() : [h];
+function stepsFrom(field, u, h, occ, size){       // [hex, cost] for each step the middle hex can take from h: the worst any of its hexes pays; with filing.front_clear, a rank behind that cannot take the step (a wall in its way) files after its front rather than blocking it (as units._steps_from)
+  const out = [], rows = field ? footprint({ ...u, pos: h }) : [[h]], front = rows.flat();
+  const lead = field && UD.filing?.front_clear ? new Set((rows[0] || []).map(hk)) : null;
   for (let dn = 0; dn < 6; dn++){
     const x = step(h, dn);
     if (!onMap(x, size) || occ[hk(x)] !== undefined) continue;
-    const sc = frontCost(field, u, front, dn, size);
+    const sc = frontCost(field, u, front, dn, size, lead);
     if (sc !== null) out.push([x, sc]);
   }
   return out;
 }
-function frontCost(field, u, front, dn, size){    // the worst step cost of a front row's hexes stepping in direction dn (off the map: not counted)
+function frontCost(field, u, front, dn, size, lead = null){   // the worst step cost of a front row's hexes stepping in direction dn (off the map: not counted); lead: the hexes that must take it (the rest, ranks filing after, are skipped where they cannot) (as units._front_cost)
   let worst = 0;
   for (const f of front){
     const y = step(f, dn);
     if (!onMap(y, size)) continue;
     const c = unitStepCost(field, u, f, y);
-    if (c === null) return null;
+    if (c === null){ if (lead === null || lead.has(hk(f))) return null; continue }
     worst = Math.max(worst, c);
   }
   return worst || 1;

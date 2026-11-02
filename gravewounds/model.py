@@ -1458,6 +1458,8 @@ def _rout_errors(d: Data) -> list[str]:
     if not (isinstance(E.get("share"), (int, float)) and 0 < E["share"] <= 1 and isinstance(E.get("penalty"), int) and E["penalty"] >= 0
             and isinstance(E.get("cross"), int) and E["cross"] >= 1):
         errors.append("units.yaml: escalade needs share (over 0, at most 1), penalty (a whole % of 0 or more) and cross (whole hexes, 1 or more)")
+    if not isinstance((d.units.get("filing") or {}).get("front_clear", False), bool):
+        errors.append("units.yaml: filing.front_clear must be true or false")
     return errors
 
 
