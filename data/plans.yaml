@@ -152,3 +152,19 @@ redan-1855-june:
         do: withdraw_if
         to: S
         when: [{exchange: 25}, {lost: 33, side: true}]
+
+albuera-1811:
+  source: "Oman, A History of the Peninsular War, vol. 4 (1911), pp. 389-392 (project doc albuera-times-research)"
+  note: >-
+    Cole's 4th Division, after standing an hour and a half behind the allied cavalry (Oman, p. 389),
+    comes on against the French left, where the Fusiliers broke Werlé's brigade (pp. 390-392). The
+    route and the hour (91, the earliest Oman's words allow) are ours. Hoghton's relief of the
+    Spaniards is not here: a brigade 70 hexes wide cannot pass through Zayas's line (a unit passes
+    through its own side only to charge).
+  sides:
+    0:
+      - units: ["Cole's division (coming up)"]
+        do: envelop
+        via: [[32, 141]]
+        target: "Werlé's brigade (reserve)"
+        when: {exchange: 91}

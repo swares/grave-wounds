@@ -386,7 +386,7 @@ each side is the flank; the two behind are the rear.
 **Turn order.** Each exchange (about a minute):
 1. Every broken unit runs straight back, as far as it can move; a unit that runs off the
    map has fled the field. Its own side's units do not stop it: it runs on through them to
-   the first clear ground beyond (up to three times its move in all, `rout.through`; with
+   the first clear ground beyond (up to six times its move in all, `rout.through`; with
    none in that, it stops where it last stood clear). Each friendly unit it runs through is
    **jostled**: its move that exchange is halved, rounded down (`rout.jostle`). Enemy units,
    impassable ground and the map edge stop it as before. A broken unit with no men left has
@@ -1046,6 +1046,11 @@ steps; the log says when one starts or ends and why ("Plan: Washington's horse g
 British left; About-face and bayonets has begun").
 
 **The battlefields with a plan.**
+- **Albuera:** Cole's 4th Division, after standing an hour and a half behind the cavalry (Oman),
+  comes on against the French left at exchange 91 and goes for Werlé's brigade, which the Fusiliers
+  broke (`envelop`; the route and the hour, the earliest Oman's words allow, are ours). Hoghton's
+  relief of Zayas's Spaniards is not in it: a unit cannot pass through its own side's units except
+  to charge, and the two lines are each 70 hexes wide.
 - **Cowpens:** the militia fall back round the Continentals' left (east, for a line facing
   south) when the phase *The militia fall back* begins or a sixth are down (`withdraw_if`, ours).
   When the Continentals face about (*About-face and bayonets*), Washington's horse go round the
