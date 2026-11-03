@@ -15,7 +15,7 @@
 # off its flank. On 6 January 1916, Orthodox Christmas Eve, the Austro-Hungarians attacked
 # after a heavy bombardment, in knee-deep snow; they were beaten off by noon, and in fighting
 # with bayonets and knives on the Bojna njiva, in snow and fog, the Drobnjak battalion broke into
-# their line and Generalmajor Reinöhl was killed leading his last reserves. A second attack on
+# their line and Generalmajor Reinöhl led his last reserves forward. A second attack on
 # 7 January failed too, and the Austro-Hungarians drew off. They lost 700 men, 224 of them dead
 # (the Austrian official history); the Montenegrins 205 (English Wikipedia). Montenegro laid
 # down its arms within three weeks.
@@ -38,7 +38,7 @@ phases:
   - {name: "The bombardment and the attack", at: 1, note: "About 07:30: after a heavy bombardment of Mojkovac and the lines, the Landsturm come up out of the snowfields at the Bojna njiva (the hour is ours; 'early that morning')."}
   - {name: "Beaten off", at: 271, note: "About noon: the attack has been beaten off (English Wikipedia), and heavy snow sets in (German Wikipedia: heavy snowfall and fog in the fighting on the Bojna njiva; the hour is ours).", weather: {cond: "heavy_snow", wind: "breeze"}}
   - {name: "The Drobnjak battalion", at: 301, note: "About 12:30: Vukotić throws in his only reserve, the Drobnjak battalion, which breaks into the enemy's first line but not the second (German Wikipedia; the hour is ours).", arrive: ["Drobnjak battalion (the reserve)"]}
-  - {name: "Reinöhl's last reserves", at: 421, note: "About 14:30: Reinöhl leads his last reserves forward and is killed (German Wikipedia; the hour is ours). Bayonets and knives in the snow and fog.", weather: {cond: "fog", wind: "calm"}, arrive: ["Reinöhl's last reserves"]}
+  - {name: "Reinöhl's last reserves", at: 421, note: "About 14:30: Reinöhl leads his last reserves forward (German Wikipedia; the hour is ours). Bayonets and knives in the snow and fog.", weather: {cond: "fog", wind: "calm"}, arrive: ["Reinöhl's last reserves"]}
   - {name: "Dusk", at: 541, note: "About 16:30: the light goes; Mojkovac and the ground round it are in Montenegrin hands.", light: dusk}
 ground: |
   wwwwwwwrr....o....o.......o.........o...............oo..................o......o......o....o......................o..o............

@@ -11,10 +11,10 @@ By the end of November 1915 the Serbian army was going over the mountains of Mon
 ### The leaders
 - **Janko Vukotić** (Montenegrin, serdar, the Sandžak army), with Krsto Popović under him.
 - **Hermann Kövess von Kövessháza** (Austro-Hungarian, Third Army).
-- **Wilhelm von Reinöhl** (Austro-Hungarian, Generalmajor, a group made up mostly of the 205th Landsturm Brigade): killed leading his last reserves, and awarded the Knight's Cross of the Military Order of Maria Theresa after his death.
+- **Wilhelm von Reinöhl** (Austro-Hungarian, Generalmajor, a group made up mostly of the 205th Landsturm Brigade): led his last reserves forward, and lived; promoted Feldmarschalleutnant in 1918, he died in Prague that September, and was awarded the Knight's Cross of the Military Order of Maria Theresa, for his command of the brigade, after his death (1922).
 
 ### The battle
-On 6 January 1916, Christmas Eve by the Orthodox calendar, the Austro-Hungarians attacked early in the morning after a heavy bombardment of Mojkovac and the Montenegrin lines. The snow was knee-deep. By noon the attack had been beaten off. The Sandžak army had about 6,500 men, 25 guns and 8 machine guns; the Austro-Hungarians about 20,000 men and 45 guns. Much of the fighting on the Bojna njiva was hand to hand, with bayonets and knives, in heavy snow and fog. Vukotić threw in his only reserve, the Drobnjak battalion, which broke into the Austro-Hungarians' first line but not their second. Reinöhl went forward with his last reserves and was killed. By the end of the day the Montenegrins held Mojkovac and the ground round it.
+On 6 January 1916, Christmas Eve by the Orthodox calendar, the Austro-Hungarians attacked early in the morning after a heavy bombardment of Mojkovac and the Montenegrin lines. The snow was knee-deep. By noon the attack had been beaten off. The Sandžak army had about 6,500 men, 25 guns and 8 machine guns; the Austro-Hungarians about 20,000 men and 45 guns. Much of the fighting on the Bojna njiva was hand to hand, with bayonets and knives, in heavy snow and fog. Vukotić threw in his only reserve, the Drobnjak battalion, which broke into the Austro-Hungarians' first line but not their second. Reinöhl went forward with his last reserves. By the end of the day the Montenegrins held Mojkovac and the ground round it.
 
 On 7 January the Austro-Hungarians attacked again and failed again, with heavy losses on both sides, and drew off. The Austrian official history gives their loss as 700 men, 224 of them killed. The battlefield is the first day.
 
@@ -23,14 +23,19 @@ The stand bought time, but by then most of the Serbian army was already over the
 ### Where the accounts disagree
 - **Who attacked.** The English Wikipedia article has the Austro-Hungarians attack and the Montenegrins beat them off. The German article has Vukotić order a general attack on the Austro-Hungarian position on the Bojna njiva, the first two waves stall and the Drobnjak battalion break in. The battlefield takes both, in turn: the attack in the morning, the Montenegrin counter-attack after noon.
 - **The losses.** The Austro-Hungarian loss of 700, 224 dead, is the official history's; the English article also says more than 2,000 Austro-Hungarians were left dead. It gives the Montenegrin loss as 205.
+- **Reinöhl's fate.** The German article has him killed leading his last reserves. He was not:
+  he commanded the 205th Landsturm Brigade into 1916, was promoted Feldmarschalleutnant in June 1918
+  and died in Prague on 14 September 1918 (valka.cz); the English article quotes him on the battle
+  afterwards; his Maria Theresa cross came in 1922, after his death, which may be where the story
+  of his death in the battle began.
 - **The strengths.** The 6,500 Montenegrins and 20,000 Austro-Hungarians are from the English article; other accounts give the Montenegrins 4,000 to 6,500 and Reinöhl's group alone a few thousand. The companies and battalions on the battlefield are a slice of the line at about three to one, with round numbers for play.
 
 !!! story "Christmas Eve on the Bojna njiva"
     The Austro-Hungarians came on Christmas Eve by the Orthodox calendar, through knee-deep snow,
     after their guns had shelled Mojkovac. By noon they had been beaten off. In the afternoon, in
     snow and fog, the fighting on the Bojna njiva came to bayonets and knives. Vukotić sent in the
-    Drobnjak battalion, the last men he had. Reinöhl led his own last reserves forward, and was
-    killed at their head.
+    Drobnjak battalion, the last men he had. Reinöhl led his own last reserves forward at
+    their head.
 
 ### Sources
 - "Battle of Mojkovac", *Wikipedia* (citing Gažević, *Vojna enciklopedija*, 1974; Vukčević and Kovačević, *Mojkovačka operacija 1915-1916*, 1997; DiNardo, *Invasion*, 2015, and others): https://en.wikipedia.org/wiki/Battle_of_Mojkovac

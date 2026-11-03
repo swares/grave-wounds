@@ -7,10 +7,16 @@
 // guns, against about 20,000 Austro-Hungarians with 45 guns (English Wikipedia, after the Vojna
 // enciklopedija and Vukčević and Kovačević); the upper Tara valley, the Bojna njiva the "gate" of
 // Mojkovac, the 205th Landsturm Brigade the bulk of Generalmajor Reinöhl's group, the Drobnjak
-// battalion the only Montenegrin reserve, heavy snow and fog, Reinöhl killed leading his last
-// reserves, and the Austro-Hungarian loss of 700 men, 224 of them dead (German Wikipedia, after the
+// battalion the only Montenegrin reserve, heavy snow and fog, Reinöhl leading his last reserves
+// forward, and the Austro-Hungarian loss of 700 men, 224 of them dead (German Wikipedia, after the
 // Austrian official history, vol. 4, p. 43); the attack after a heavy bombardment early on 6
 // January, beaten off by noon, the Montenegrins holding and retaking Mojkovac by the day's end,
+// Reinöhl was not killed: German Wikipedia had him fall at the head of his reserves, but he
+//   commanded the 205th Landsturm Brigade into 1916 (a photograph of 24 April), was promoted
+//   Feldmarschalleutnant on 4 June 1918 and died in Prague on 14 September 1918 (valka.cz); his
+//   Knight's Cross of the Military Order of Maria Theresa, as the brigade's commander, came in the
+//   189th promotion of 1922, after his death (austro-hungarian-army.co.uk, after Hofmann and
+//   Hubka); and English Wikipedia quotes him on the battle after it.
 // knee-deep snow, hand-to-hand fighting with bayonets and knives (English Wikipedia). The sources
 // disagree on who attacked: the English article has the Austro-Hungarians attack, the German one
 // Vukotić's general attack on their position on the Bojna njiva; we take both, in turn. The ground
@@ -77,7 +83,7 @@ writeField({
     { name: "The bombardment and the attack", at: 1, note: "About 07:30: after a heavy bombardment of Mojkovac and the lines, the Landsturm come up out of the snowfields at the Bojna njiva (the hour is ours; 'early that morning')." },
     { name: "Beaten off", at: 271, note: "About noon: the attack has been beaten off (English Wikipedia), and heavy snow sets in (German Wikipedia: heavy snowfall and fog in the fighting on the Bojna njiva; the hour is ours).", weather: { cond: "heavy_snow", wind: "breeze" } },
     { name: "The Drobnjak battalion", at: 301, note: "About 12:30: Vukotić throws in his only reserve, the Drobnjak battalion, which breaks into the enemy's first line but not the second (German Wikipedia; the hour is ours).", arrive: ["Drobnjak battalion (the reserve)"] },
-    { name: "Reinöhl's last reserves", at: 421, note: "About 14:30: Reinöhl leads his last reserves forward and is killed (German Wikipedia; the hour is ours). Bayonets and knives in the snow and fog.", arrive: ["Reinöhl's last reserves"], weather: { cond: "fog", wind: "calm" } },
+    { name: "Reinöhl's last reserves", at: 421, note: "About 14:30: Reinöhl leads his last reserves forward (German Wikipedia; the hour is ours). Bayonets and knives in the snow and fog.", arrive: ["Reinöhl's last reserves"], weather: { cond: "fog", wind: "calm" } },
     { name: "Dusk", at: 541, note: "About 16:30: the light goes; Mojkovac and the ground round it are in Montenegrin hands.", light: "dusk" },
   ],
   ends: { at: 571, why: "beaten off by noon, Mojkovac retaken by the day's end (English Wikipedia): 07:30 to about 17:00" },
@@ -110,7 +116,7 @@ writeField({
     "off its flank. On 6 January 1916, Orthodox Christmas Eve, the Austro-Hungarians attacked",
     "after a heavy bombardment, in knee-deep snow; they were beaten off by noon, and in fighting",
     "with bayonets and knives on the Bojna njiva, in snow and fog, the Drobnjak battalion broke into",
-    "their line and Generalmajor Reinöhl was killed leading his last reserves. A second attack on",
+    "their line and Generalmajor Reinöhl led his last reserves forward. A second attack on",
     "7 January failed too, and the Austro-Hungarians drew off. They lost 700 men, 224 of them dead",
     "(the Austrian official history); the Montenegrins 205 (English Wikipedia). Montenegro laid",
     "down its arms within three weeks.",
