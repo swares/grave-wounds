@@ -51,7 +51,7 @@ def _command(d: Data, units: list, side, where: tuple, stance: str, memory: dict
     if stance == "hold":
         orders += _fix_lines(d, us, side, (field, known, exchange))
     for i in range(len(us)):
-        if us[i]["side"] != side or not _free(d, us, i, exchange):
+        if us[i]["side"] != side or not _free(d, us, i, exchange, field):
             continue
         if stance == "attack" and _leaves_disabled(d, us[i]):   # it goes on without its immobilised vehicles
             n = us[i]["immobile"]
@@ -178,14 +178,16 @@ def _aim(us: list, i: int, aim: tuple) -> dict | None:
     return aim[0] if us[i].get("id", i) in aim[2] else aim[1]
 
 
-def _free(d: Data, us: list, i: int, exchange) -> bool:
-    """A unit it can order: standing, not a battery, anti-tank guns or gun tractors, not in contact, not just come on."""
+def _free(d: Data, us: list, i: int, exchange, field: dict | None = None) -> bool:
+    """A unit it can order: standing, not a battery, anti-tank guns or gun tractors, not in contact
+    (given the field, engaged: touching an enemy only across a wall no one fights over does not
+    hold it), not just come on."""
     u = us[i]
     if u["state"] in ROUTED or u["men"] <= 0 or U.is_battery(d, u) or U.is_at_gun(d, u) or _tractor(d, u):
         return False
     if exchange is not None and u.get("arrived") == exchange:
         return False
-    return not U.in_contact(d, us, U.occupancy(d, us), i)
+    return not U.engaged(d, us, U.occupancy(d, us), i, field)
 
 
 def _tractor(d: Data, u: dict) -> bool:

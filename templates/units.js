@@ -2641,7 +2641,7 @@ function moveUnit(units, i, pos, facing, size, field = null){   // {ok, cost, ch
   const u = units[i];
   if (u.state === "broken" || u.state === "fled") return { ok: false, why: "it is running" };
   const same = pos[0] === u.pos[0] && pos[1] === u.pos[1] && facing === u.facing;
-  if (inContact(units, occupancy(units), i) && !same) return { ok: false, why: "it is in contact" };
+  if (engaged(units, occupancy(units), i, field) && !same) return { ok: false, why: "it is in contact" };   // touching an enemy only across a wall no one fights over does not hold it (as units._held_still)
   const rooted = (pos[0] !== u.pos[0] || pos[1] !== u.pos[1]) && rootedWhy(u);
   if (rooted) return { ok: false, why: rooted };
   const turns = Math.min(mod6(facing - u.facing), mod6(u.facing - facing)), most = allowance(u) * UD.charge_move;
@@ -2743,7 +2743,7 @@ function orderSide(units, side, [size, field, rng, exchange], { stance, memory, 
   orders.push(...commitReserve(us, side, known, mem, stance));
   if (stance === "hold") orders.push(...fixLines(us, side, [field, known, exchange]));
   for (let i = 0; i < us.length; i++){
-    if (us[i].side !== side || !commandable(us, i, exchange)) continue;
+    if (us[i].side !== side || !commandable(us, i, exchange, field)) continue;
     if (stance === "attack" && leavesDisabled(us[i])){ const n = us[i].immobile; us[i] = abandonImmobile(us[i]); orders.push({ unit: i, act: "abandon", n }) }   // it goes on without its immobilised vehicles
     const o = orderOne(us, i, [size, field, stance, known, exchange], [aim, table], rng.randint(1, 100));
     if (o){
@@ -3359,11 +3359,11 @@ function sightings(us, side, field, exchange, memory){   // {index: {pos, facing
 }
 const seenBy = (us, side, field, e) => marksOf(e).some(h => spotted(us, field, side, h));   // a unit of side sees enemy e: its middle hex or either end of its front row
 const tractor = u => !!vehicleKind(u)?.tows;      // gun tractors: not ordered as other units (towing: moveGuns)
-function commandable(us, i, exchange){            // standing, not a battery, anti-tank guns or gun tractors, not in contact, not just come on
+function commandable(us, i, exchange, field = null){   // standing, not a battery, anti-tank guns or gun tractors, not in contact (given the field, engaged: touching an enemy only across a wall no one fights over does not hold it), not just come on (as commander._free)
   const u = us[i];
   if (ROUTED.has(u.state) || u.men <= 0 || isBattery(u) || isAtGun(u) || tractor(u)) return false;
   if (exchange !== null && u.arrived === exchange) return false;
-  return !inContact(us, occupancy(us), i);
+  return !engaged(us, occupancy(us), i, field);
 }
 function spotter(us, i, o, [size, field, stance, known]){   // attacking, an air controller that would stand or turn moves up to see a target for its side's aircraft, when they can fly and no controller sees a known enemy (as commander._spotter)
   const u = us[i];

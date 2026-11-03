@@ -4821,7 +4821,7 @@ def move(d: Data, units: list, i: int, pos, facing: int, size: tuple, field: dic
     move that ends in contact with an enemy may be up to charge_move times the allowance (a
     charge; not for a shaken unit)."""
     u = units[i]
-    why = _held_still(d, units, i, pos, facing)
+    why = _held_still(d, units, i, pos, facing, field)
     if why:
         return {"ok": False, "why": why}
     turns = min((facing - u["facing"]) % 6, (u["facing"] - facing) % 6)
@@ -4880,14 +4880,15 @@ def mates(units: list, i: int, through: bool) -> list:
     return [x for k, x in enumerate(units) if k != i and not (through and x["side"] == u["side"])]
 
 
-def _held_still(d: Data, units: list, i: int, pos, facing: int) -> str | None:
-    """Why unit i cannot move to pos (or turn to facing) at all, or None: running, in contact,
-    lost in the dark, or with vehicles that cannot move."""
+def _held_still(d: Data, units: list, i: int, pos, facing: int, field: dict | None = None) -> str | None:
+    """Why unit i cannot move to pos (or turn to facing) at all, or None: running, in contact
+    (engaged: touching an enemy only across a wall no one fights over does not hold it), lost in
+    the dark, or with vehicles that cannot move."""
     u = units[i]
     goes = list(pos) != u["pos"]
     if u["state"] in ("broken", "fled"):
         return "it is running"
-    if in_contact(d, units, occupancy(d, units), i) and (goes or facing != u["facing"]):
+    if engaged(d, units, occupancy(d, units), i, field) and (goes or facing != u["facing"]):
         return "it is in contact"
     if u.get("lost") and goes:
         return "it has lost its way in the dark (it may turn)"
