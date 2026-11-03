@@ -397,8 +397,9 @@ When an item is done, delete it here and note it in the pull request that closes
     leader hero of his unit (heroes.field_leaders); Badajoz's French losses 33% to 43% (1812: about
     47%), Burgos 10 to 9 of 12, the total 494 to 493. A field leader's rank bonus (3 November 2026):
     left at 12, as the rule already gives it (3 a step up the era's ladder, at most 12: an ensign is
-    four steps up, so every officer is at the cap); asked and answered. Still to do: Burgos's later
-    storms; leaders on the other battlefields.
+    four steps up, so every officer is at the cap); asked and answered. Leaders on Albuera, Cowpens, Lundy's Lane and both
+    Redans (3 November 2026): 38 named, from the orders of battle; as fought 493 to 494 of 588.
+    Still to do: Burgos's later storms; leaders on the battlefields of the other eras.
   - **Wound tables:** the Crimean siege table is the only siege table (the Siege warfare tables
     item above).
   - To start: list the sieges and storms the game already touches (the two Redans, Jacob's Ford,

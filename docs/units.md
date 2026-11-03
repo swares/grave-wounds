@@ -1650,10 +1650,13 @@ and Nerve, the usual Blood, and the most a rank adds (12: the accounts name offi
 lieutenants to generals, and on the rank ladders every officer, from an ensign up, is already
 at the cap; a general adds no more than a lieutenant, by design). He is struck as officers are, can be wounded and fall (−20 to his
 unit's morale), and while up lets it re-form when broken. He is the battlefield's man, not the
-team's: his wounds stay on the field and do not go to the roller. Badajoz, Ciudad Rodrigo and
-Burgos name theirs (Picton, Kempt, Colville, Bowes and Barnard; Mackinnon, Campbell,
-Craufurd, George Napier, Gurwood and Vandeleur; Somers Cocks and Pack); which half or column of
-a brigade each is with is ours. Philippon is left off: he directed Badajoz's defence from
+team's: his wounds stay on the field and do not go to the roller. A battlefield's maker puts
+them on its units by name (`field_lib.mjs` `led`, which fails on a name no unit has). Badajoz,
+Ciudad Rodrigo, Burgos, Albuera, Cowpens, Lundy's Lane and both Redans name theirs, from their
+orders of battle; an army's commander who led no one unit (Wellington, Beresford, Soult, Morgan,
+Brown, Drummond) is not on the map. At the sieges they are Picton, Kempt, Colville, Bowes and Barnard; Mackinnon, Campbell,
+Craufurd, George Napier, Gurwood and Vandeleur; Somers Cocks and Pack. Where a leader's place
+in his brigade or column is not in the accounts, it is ours, and the battlefield's maker says so. Philippon is left off: he directed Badajoz's defence from
 the town and withdrew to San Cristóbal, and at the head of the reserve he held it in all but 6
 of 12 runs.
 
