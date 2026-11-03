@@ -15,7 +15,7 @@
 // shape, not traced from any map, and are approximate; the corral is drawn larger than it was
 // (a ring of hexes 10 m across); the deployment is the first charge, in our own words, with
 // round numbers for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, led, writeField } from "./field_lib.mjs";
 
 const COLS = 100, ROWS = 80;                  // 1000 m east to west, about 690 m north to south
 const bigPiney = c => 6 + wobble(c / 4, 0.7, 1.4) * 0.9, littlePiney = c => 73 + wobble(c / 4, 2.1, 0.5) * 0.9;
@@ -41,6 +41,9 @@ const ring = [...new Map(inside.flatMap(around).filter(h => !inside.some(x => ke
 const US = { side: 0, facing: N }, NATIONS = { side: 1, facing: S };
 const BREECH = { quality: "regular", weapon: "breechloader", kit: "none", formation: "close", mounted: false };
 const BOWS = { quality: "veteran", weapon: "bow", kit: "rawhide_shield", formation: "open", mounted: true };
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them. Sources:
+//   https://www.wyohistory.org/encyclopedia/wagon-box-fight-1867
 const units = [
   unit("27th Infantry, Company C (Powell and Jenness)", US, 26, BREECH, [1, 49, 40]),
   unit("Woodcutters and teamsters (civilians, repeating rifles)", US, 6, { ...BREECH, quality: "green" }, [1, 49, 41]),
@@ -49,6 +52,10 @@ const units = [
   unit("Major Smith's relief column", { side: 0, facing: 3 }, 100, BREECH, [10, 82, 40]),
   unit("Warriors with guns, along the plateau's edge", NATIONS, 100, { ...BOWS, weapon: "rifle_musket", kit: "none", mounted: false }, [5, 22, 30]),
 ];
+led(units, {
+  "27th Infantry, Company C (Powell and Jenness)": [["James W. Powell", "Captain"], ["John C. Jenness", "Lieutenant"]],
+  "Major Smith's relief column": [["Benjamin F. Smith", "Major"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate

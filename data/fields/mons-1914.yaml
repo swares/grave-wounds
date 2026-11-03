@@ -158,9 +158,9 @@ support:
   - {name: "German field guns (77 mm)", side: 1, kind: field, tubes: 12}
   - {name: "German field howitzers", side: 1, kind: howitzer, tubes: 6}
 units:
-  - {name: "4th Royal Fusiliers (C Coy, the railway bridge)", side: 0, men: 180, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 18, pos: [58, 44], facing: 1, size: company}
-  - {name: "Royal Fusiliers machine guns (railway bridge)", side: 0, men: 10, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [68, 38], facing: 1, size: section}
-  - {name: "4th Royal Fusiliers (B Coy, the road bridge)", side: 0, men: 180, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 18, pos: [80, 41], facing: 1, size: company}
+  - {name: "4th Royal Fusiliers (C Coy, the railway bridge)", side: 0, men: 180, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 18, pos: [58, 44], facing: 1, size: company, leaders: [{name: "L. F. Ashburner", rank: "Captain"}, {name: "Mead", rank: "Second Lieutenant"}]}
+  - {name: "Royal Fusiliers machine guns (railway bridge)", side: 0, men: 10, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [68, 38], facing: 1, size: section, leaders: [{name: "Maurice James Dease", rank: "Lieutenant"}]}
+  - {name: "4th Royal Fusiliers (B Coy, the road bridge)", side: 0, men: 180, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 18, pos: [80, 41], facing: 1, size: company, leaders: [{name: "Frederick Forster", rank: "Captain"}]}
   - {name: "4th Royal Fusiliers (A and D Coys, Nimy)", side: 0, men: 400, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 34, pos: [74, 76], facing: 1, size: company}
   - {name: "4th Middlesex (canal east)", side: 0, men: 400, quality: veteran, weapon: rifle_service, kit: none, formation: extended, width: 20, pos: [107, 63], facing: 1, size: battalion}
   - {name: "Middlesex machine guns", side: 0, men: 10, quality: veteran, weapon: machine_gun, kit: none, formation: mg, width: 2, pos: [118, 65], facing: 1, size: section}

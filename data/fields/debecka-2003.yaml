@@ -336,13 +336,13 @@ support:
   - {name: "Navy F/A-18s (close air support)", side: 0, kind: fighter_bomber, tubes: 2}
   - {name: "Iraqi 120 mm mortars", side: 1, kind: mortar, tubes: 2}
 units:
-  - {name: "ODA 391's gun trucks (the Alamo, west of the road)", side: 0, men: 8, quality: veteran, weapon: machine_gun, kit: interceptor, formation: armour, width: 4, pos: [63, 44], facing: 4, vehicle: lorry, size: platoon}
+  - {name: "ODA 391's gun trucks (the Alamo, west of the road)", side: 0, men: 8, quality: veteran, weapon: machine_gun, kit: interceptor, formation: armour, width: 4, pos: [63, 44], facing: 4, vehicle: lorry, size: platoon, leaders: [{name: "Eric Wright", rank: "Captain"}]}
   - {name: "ODA 391's Javelin teams", side: 0, men: 5, quality: veteran, weapon: atgm, kit: interceptor, formation: extended, width: 2, pos: [67, 47], facing: 4, prone: true, nv: thermal, size: section}
-  - {name: "ODA 392's gun trucks (the Alamo, east of the road)", side: 0, men: 8, quality: veteran, weapon: machine_gun, kit: interceptor, formation: armour, width: 4, pos: [87, 44], facing: 4, vehicle: lorry, size: platoon}
+  - {name: "ODA 392's gun trucks (the Alamo, east of the road)", side: 0, men: 8, quality: veteran, weapon: machine_gun, kit: interceptor, formation: armour, width: 4, pos: [87, 44], facing: 4, vehicle: lorry, size: platoon, leaders: [{name: "Matthew Saunders", rank: "Captain"}]}
   - {name: "ODA 392's Javelin teams", side: 0, men: 5, quality: veteran, weapon: atgm, kit: interceptor, formation: extended, width: 2, pos: [83, 47], facing: 4, prone: true, nv: thermal, size: section}
   - {name: "The combat controllers and the intelligence men", side: 0, men: 5, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 2, pos: [75, 46], facing: 4, prone: true, fac: true, size: section}
   - {name: "Peshmerga with the teams", side: 0, men: 80, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 14, pos: [105, 47], facing: 4, prone: true, size: company}
-  - {name: "Peshmerga and the command vehicles at Press Hill", side: 0, men: 60, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [75, 12], facing: 4, size: platoon}
+  - {name: "Peshmerga and the command vehicles at Press Hill", side: 0, men: 60, quality: regular, weapon: rifle_assault, kit: none, formation: extended, width: 10, pos: [75, 12], facing: 4, size: platoon, leaders: [{name: "Eric Howard", rank: "Major"}]}
   - {name: "Iraqi MT-LBs (ahead, under smoke)", side: 1, men: 12, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 4, pos: [75, 282], facing: 1, vehicle: apc, nv: none, size: platoon}
   - {name: "Iraqi T-55s", side: 1, men: 20, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 5, pos: [79, 288], facing: 1, vehicle: tank, nv: none, fc: stadia, size: platoon}
   - {name: "Iraqi motorised infantry", side: 1, men: 100, quality: green, weapon: rifle_assault, kit: ww2_rifleman, formation: extended, width: 14, pos: [55, 280], facing: 1, size: company}

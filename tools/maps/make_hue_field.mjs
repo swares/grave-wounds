@@ -12,7 +12,7 @@
 // was cold, with drizzle and low cloud. The streets, blocks and buildings are drawn by hand to
 // that pattern, not traced from any map or photograph, and are approximate; the deployment is
 // the attack east, in our own words, with round numbers for play.
-import { N, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
+import { N, patch, speckle, groundGrid, unit, led, writeField, at } from "./field_lib.mjs";
 
 const COLS = 150, ROWS = 110;                 // 1500 m east to west, about 950 m north to south
 const RIVER = 8, LE_LOI = 11, CANAL = 100;    // the river along the north, Le Loi street on its bank, the Phu Cam canal along the south
@@ -46,6 +46,9 @@ const MG = { quality: "regular", weapon: "machine_gun", kit: "vietnam_usmc", for
 const TANK = { quality: "regular", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank" };
 const ONTOS = { ...TANK, vehicle: "ontos" };
 const PAVN = { quality: "veteran", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false, prone: true };
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them. Sources: https://historynet.com/?p=13737864
+//   https://miltours.com/image/data/brochures/lneckhuepart1.pdf
 const units = [
   at("F Company, 2/5 Marines (by the university)", US, 140, MARINE, 12, [UNIVERSITY[0] + 7, 24], 0),
   at("H Company, 2/5 Marines (for the Treasury)", US, 140, MARINE, 12, [74, 36], 0),
@@ -61,6 +64,11 @@ const units = [
   at("North Vietnamese RPG teams", NV, 30, { ...PAVN, weapon: "rpg" }, 4, [82, 44], 3),
   at("North Vietnamese machine guns", NV, 10, { ...MG, kit: "none", quality: "veteran", prone: true }, 2, [92, 32], 3),
 ];
+led(units, {
+  "F Company, 2/5 Marines (by the university)": [["Michael Downs", "Captain"]],
+  "H Company, 2/5 Marines (for the Treasury)": [["Ron Christmas", "Captain"], ["Leo Myers", "Lieutenant"]],
+  "G Company, 2/5 Marines (the south blocks)": [["Chuck Meadows", "Captain"], ["Michael McNeil", "Second Lieutenant"]],
+});
 
 // A strongpoint (a bunker) under the middle of the North Vietnamese front in the Treasury, the
 // hospital and the prison (drawn five hexes in front of them before, so no unit stood in one).

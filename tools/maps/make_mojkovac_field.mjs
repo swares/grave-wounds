@@ -17,7 +17,7 @@
 // is drawn by hand to that shape, not traced from any map; the slice of the line, the companies,
 // the battalions and the times are ours, with round numbers for play, at the sourced odds of about
 // three to one.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField, extended, mgTeam, alongLine } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, led, writeField, extended, mgTeam, alongLine } from "./field_lib.mjs";
 
 const COLS = 130, ROWS = 110;                 // 1300 m east to west, about 950 m north to south
 // The Bojna njiva: a long rise across the map, highest in the middle, falling to the Tara on the
@@ -52,6 +52,8 @@ const grid = groundGrid(COLS, ROWS, kind);
 const MN = { side: 0, facing: N }, AH = { side: 1, facing: S };
 const MONTE = extended("veteran", { prone: true }), MG = mgTeam("veteran", { prone: true }), LANDSTURM = extended("regular");
 const onBrow = alongLine(brow, 1);                                     // just forward of the brow
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them. Sources: https://www.armedconflicts.com/-t176144
 const units = [
   unit("Sandžak army, a company above the Tara", MN, 200, MONTE, onBrow(18, 12)),
   unit("Sandžak army, a company on the Bojna njiva", MN, 200, MONTE, onBrow(20, 52)),
@@ -64,6 +66,9 @@ const units = [
   unit("205th Landsturm Brigade, a battalion on the east", AH, 800, LANDSTURM, [26, 92, 22]),
   unit("Reinöhl's last reserves", AH, 800, LANDSTURM, [28, 50, 12]),
 ];
+led(units, {
+  "Reinöhl's last reserves": [["Wilhelm von Reinöhl", "Major-General"]],
+});
 const trench = [12, 52, 92].flatMap((c0, i) => Array.from({ length: [18, 20, 20][i] }, (_, j) => [c0 + j, brow(c0 + j) - 1]))
   .concat([[74, brow(74) - 1], [75, brow(75) - 1]]);
 

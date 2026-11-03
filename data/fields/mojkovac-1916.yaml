@@ -169,4 +169,4 @@ units:
   - {name: "205th Landsturm Brigade, a battalion in the centre", side: 1, men: 800, quality: regular, weapon: rifle_service, kit: none, formation: extended, width: 28, pos: [64, 24], facing: 4, size: battalion}
   - {name: "Austro-Hungarian machine guns", side: 1, men: 20, quality: regular, weapon: machine_gun, kit: none, formation: mg, width: 4, pos: [66, 30], facing: 4, size: section}
   - {name: "205th Landsturm Brigade, a battalion on the east", side: 1, men: 800, quality: regular, weapon: rifle_service, kit: none, formation: extended, width: 26, pos: [105, 22], facing: 4, size: battalion}
-  - {name: "Reinöhl's last reserves", side: 1, men: 800, quality: regular, weapon: rifle_service, kit: none, formation: extended, width: 28, pos: [64, 12], facing: 4, size: battalion}
+  - {name: "Reinöhl's last reserves", side: 1, men: 800, quality: regular, weapon: rifle_service, kit: none, formation: extended, width: 28, pos: [64, 12], facing: 4, size: battalion, leaders: [{name: "Wilhelm von Reinöhl", rank: "Major-General"}]}

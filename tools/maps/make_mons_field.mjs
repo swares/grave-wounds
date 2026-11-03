@@ -10,7 +10,7 @@
 // two machine guns. The canal, the village, the woods and the bridges are drawn by hand to that
 // shape, not traced from any map, and are approximate. The deployment is mid-morning, in our
 // own words; numbers are round figures for play.
-import { N, S, wobble, patch, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, groundGrid, unit, led, writeField } from "./field_lib.mjs";
 
 const COLS = 150, ROWS = 120;                 // 1500 m east to west, about 1040 m north to south
 // The canal: about 20 m wide, its loop's tip at the top of the salient near the middle.
@@ -40,6 +40,11 @@ const MG = { quality: "veteran", weapon: "machine_gun", kit: "none", formation: 
 const COLUMN = { quality: "regular", weapon: "rifle_service", kit: "none", formation: "close", mounted: false };
 const row = c => Math.ceil(Math.max(canal(c - 0.5), canal(c + 0.5))) + 3;    // the first row clear of the canal on the south bank
 const rowFor = (c0, w) => Math.max(...Array.from({ length: w }, (_, i) => row(c0 + i)));   // clear of the canal all along a front
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them; placed by us: Mead, Frederick Forster. Sources:
+//   https://britishempire.co.uk/forces/armyunits/britishinfantry/fusiliersnimybridge.htm
+//   https://losthistory.net/battlefields1418/nimy.htm
+//   https://visitmons.co.uk/see-do/top-sights/mons-the-first-the-last/battlefields-guide/2-the-road-bridge
 const units = [
   unit("4th Royal Fusiliers (C Coy, the railway bridge)", BR, 180, RIFLES, [18, 50, rowFor(50, 18)]),
   unit("Royal Fusiliers machine guns (railway bridge)", BR, 10, MG, [2, 68, rowFor(68, 2)]),
@@ -53,6 +58,11 @@ const units = [
   unit("IR 84 machine-gun company", GE, 30, { ...MG, quality: "regular" }, [6, 73, 26]),
   unit("IR 84, III Battalion (in support)", GE, 900, { ...COLUMN, formation: "extended" }, [60, 72, 9]),
 ];
+led(units, {
+  "4th Royal Fusiliers (C Coy, the railway bridge)": [["L. F. Ashburner", "Captain"], ["Mead", "Second Lieutenant"]],
+  "Royal Fusiliers machine guns (railway bridge)": [["Maurice James Dease", "Lieutenant"]],
+  "4th Royal Fusiliers (B Coy, the road bridge)": [["Frederick Forster", "Captain"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; times from docs and sources in the project's battle-phases research, rounded

@@ -11,7 +11,7 @@
 // taken about noon. The hill, its spurs and the bunkers are drawn by hand to that shape, not traced
 // from any map, and are approximate; the deployment is the last assault, in our own words, with
 // round numbers for play.
-import { N, S, wobble, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
+import { N, S, wobble, speckle, groundGrid, unit, led, writeField, at } from "./field_lib.mjs";
 
 const COLS = 140, ROWS = 140;                 // 1400 m east to west, about 1210 m north to south
 const TOP = [70, 66];
@@ -45,6 +45,9 @@ const SKY = { quality: "veteran", weapon: "rifle_assault", kit: "vietnam_army", 
 const ARVN = { ...SKY, quality: "regular", kit: "none" };
 const PAVN = { quality: "veteran", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false, prone: true };
 const MG = { quality: "veteran", weapon: "machine_gun", kit: "none", formation: "mg", mounted: false, prone: true };
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them. Sources:
+//   https://ipfs.aleph.im/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/wiki/Battle_of_Hamburger_Hill.html
 const units = [
   at("3/187 Infantry (up the north-west spur)", US, 200, SKY, 14, [TOP[0] - 22, TOP[1] - 22], 5),
   at("1/506 Infantry (up the south spur)", US, 200, SKY, 14, [TOP[0] + 2, TOP[1] + 30], N),
@@ -55,6 +58,11 @@ const units = [
   at("29th Regiment in the south bunkers", NV, 60, PAVN, 8, [TOP[0] + 2, TOP[1] + 14], 4),
   at("North Vietnamese machine guns", NV, 10, MG, 2, [TOP[0] + 8, TOP[1] - 6], 0),
 ];
+led(units, {
+  "3/187 Infantry (up the north-west spur)": [["Weldon Honeycutt", "Lieutenant Colonel"]],
+  "1/506 Infantry (up the south spur)": [["John Bowers", "Lieutenant Colonel"]],
+  "2/501 Infantry (from the north-east)": [["Robert German", "Lieutenant Colonel"]],
+});
 
 writeField({
   objective: { at: TOP, side: 0, name: "the summit of Hill 937 (Hamburger Hill)", radius: 4 },

@@ -12,7 +12,7 @@
 // railroad and the paddies are drawn by hand to that shape, not traced from any map, and are
 // approximate; the deployment is the second night's attack, in our own words, with round numbers
 // for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, led, writeField, at } from "./field_lib.mjs";
 
 const COLS = 200, ROWS = 170;                 // 2000 m east to west, about 1470 m north to south
 const CX = 100, CY = 86, RX = 72, RY = 58;    // the perimeter: an uneven ring of low hills round the village
@@ -39,6 +39,9 @@ const edge = (angle, out = 0) => {                                        // the
   const a = angle * Math.PI / 180;
   return [Math.round(CX + (RX + out) * 0.97 * Math.cos(a)), Math.round(CY + (RY + out) * 0.97 * Math.sin(a))];
 };
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them; placed by us: John A. Elledge. Sources:
+//   https://www.koreanwaronline.com/history/CombatActions/Chipyong-ni.htm
 const units = [
   // the 1st Battalion on the north
   at("A Company, 23rd Infantry", UN, 150, DUG, 30, edge(-115), N),
@@ -71,6 +74,10 @@ const units = [
   at("Task Force Crombez (tanks, up Route 24A)", { side: 0, facing: N }, 80, { quality: "regular", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank" }, 4, [CX - 1, ROWS - 5], N),
   at("Chinese machine guns (south)", CH, 15, { ...MG, kit: "none", quality: "veteran", prone: false }, 3, [edge(110)[0], 160], N),
 ];
+led(units, {
+  "G Company, 23rd Infantry (the southern hill)": [["Thomas Heath", "Lieutenant"], ["Paul J. McGee", "Lieutenant"]],
+  "Quad .50s (82nd AAA), south": [["John A. Elledge", "Captain"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate

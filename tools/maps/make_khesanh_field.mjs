@@ -12,7 +12,7 @@
 // hill. The hill, the ridge, the trenches, bunkers and wire are drawn by hand to that shape, not
 // traced from any map, and are approximate; the deployment is the attack, in our own words, with
 // round numbers for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, led, writeField, at } from "./field_lib.mjs";
 
 const COLS = 140, ROWS = 120;                 // 1400 m east to west, about 1040 m north to south
 const TOP = [72, 62];
@@ -43,6 +43,9 @@ const US = { side: 0, facing: N }, NV = { side: 1, facing: S };
 const MARINE = { quality: "regular", weapon: "rifle_assault", kit: "vietnam_usmc", formation: "extended", mounted: false, prone: true, nv: "starlight" };
 const MG = { quality: "regular", weapon: "machine_gun", kit: "vietnam_usmc", formation: "mg", mounted: false, prone: true, nv: "starlight" };
 const PAVN = { quality: "veteran", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false, nv: "none" };
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them; placed by us: Earle G. Breeding. Sources:
+//   https://homeofheroes.com/?p=43955
 const units = [
   at("E Company, 2/26 Marines (the north trenches)", US, 60, MARINE, 10, [TOP[0], TOP[1] - 8], N),
   at("E Company, 2/26 Marines (the west and east trenches)", US, 60, MARINE, 8, [TOP[0] - 8, TOP[1] + 2], 3),
@@ -51,6 +54,9 @@ const units = [
   at("North Vietnamese battalion (through the north wire)", NV, 200, PAVN, 30, [TOP[0], 16], S),
   at("North Vietnamese machine guns", NV, 10, { ...MG, kit: "none", quality: "veteran", nv: "none" }, 2, [TOP[0] + 20, 22], 4),
 ];
+led(units, {
+  "E Company, 2/26 Marines (the north trenches)": [["Earle G. Breeding", "Captain"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate

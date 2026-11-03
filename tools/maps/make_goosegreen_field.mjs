@@ -11,7 +11,7 @@
 // later that morning. The ridge, the gully, the gorse, the shore and Darwin settlement are drawn by
 // hand to that shape, not traced from any map, and are approximate; the deployment is the fight
 // at dawn, in our own words, with round numbers for play.
-import { frontRow, N, S, wobble, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
+import { frontRow, N, S, wobble, patch, speckle, groundGrid, unit, led, writeField, at } from "./field_lib.mjs";
 
 const COLS = 140, ROWS = 110;                 // 1400 m east to west, about 950 m north to south
 const RIDGE = c => 56 + Math.round(wobble(c / 8, 0.6, 1.4));             // the crest of Darwin ridge, west to east
@@ -36,6 +36,9 @@ const PARA = { quality: "veteran", weapon: "rifle_assault", kit: "ww2_rifleman",
 const GPMG = { quality: "veteran", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false };
 const CONSCRIPT = { quality: "green", weapon: "rifle_assault", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true };
 const MAG = { quality: "regular", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false, prone: true };
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them; placed by us: Ernesto Peluffo, Guillermo Ricardo Aliaga, Roberto
+//   Estévez. Sources: https://military-history.fandom.com/wiki/Battle_of_Goose_Green
 const units = [
   at("A Company, 2 Para (in the gorse gully)", UK, 90, PARA, 10, [GULLY[0], GULLY[1] - 6], S),
   at("B Company, 2 Para (on the open slope)", UK, 90, PARA, 14, [44, 30], S),
@@ -47,6 +50,15 @@ const units = [
   at("Argentine machine guns", AR, 10, MAG, 2, [86, RIDGE(86)], N),
   at("Argentine reserve (Darwin)", AR, 40, { ...CONSCRIPT, prone: false }, 6, [DARWIN[0] - 8, DARWIN[1] - 8], N),
 ];
+led(units, {
+  "A Company, 2 Para (in the gorse gully)": [["Dair Farrar-Hockley", "Major"], ["Chris Dent", "Captain"]],
+  "B Company, 2 Para (on the open slope)": [["John Crosland", "Major"]],
+  "2 Para's headquarters (H. Jones)": [["Herbert \"H\" Jones", "Lieutenant Colonel"], ["David Wood", "Captain"]],
+  "D Company, 2 Para (coming up)": [["Philip Neame", "Major"]],
+  "Argentine platoons in the ridge trenches (Darwin Hill)": [["Ernesto Peluffo", "Subteniente"]],
+  "Argentine platoons in the ridge trenches (west)": [["Guillermo Ricardo Aliaga", "Subteniente"]],
+  "Argentine reserve (Darwin)": [["Roberto Estévez", "Subteniente"]],
+});
 
 // The Argentine trenches along the ridge, under the front rows of the platoons the account puts in
 // them (drawn a row ahead of them before, so no unit stood in one), and running on along the crest

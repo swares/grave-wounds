@@ -165,7 +165,7 @@ support:
   - {name: "North Vietnamese 82 mm mortars", side: 1, kind: mortar, tubes: 12}
   - {name: "North Vietnamese rockets and guns", side: 1, kind: field, tubes: 8}
 units:
-  - {name: "E Company, 2/26 Marines (the north trenches)", side: 0, men: 60, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 10, pos: [72, 54], facing: 1, prone: true, nv: starlight, size: company}
+  - {name: "E Company, 2/26 Marines (the north trenches)", side: 0, men: 60, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 10, pos: [72, 54], facing: 1, prone: true, nv: starlight, size: company, leaders: [{name: "Earle G. Breeding", rank: "Captain"}]}
   - {name: "E Company, 2/26 Marines (the west and east trenches)", side: 0, men: 60, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 8, pos: [64, 64], facing: 3, prone: true, nv: starlight, size: company}
   - {name: "E Company's reserve platoon", side: 0, men: 50, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 8, pos: [74, 66], facing: 1, nv: starlight, size: platoon}
   - {name: "E Company's machine guns", side: 0, men: 10, quality: regular, weapon: machine_gun, kit: vietnam_usmc, formation: mg, width: 2, pos: [77, 56], facing: 1, prone: true, fixed: [72, 16], nv: starlight, size: company}

@@ -14,7 +14,7 @@
 // slopes. The flat, the buildings, the river, the stream, the village and the slopes are drawn by
 // hand to that shape, not traced from any map or photograph, and are approximate; the deployment
 // is the attack at dawn, in our own words, with round numbers for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, led, writeField, at } from "./field_lib.mjs";
 
 const COLS = 120, ROWS = 110;                 // 1200 m east to west, about 950 m north to south
 const RIVER = r => 24 + Math.round(wobble(r / 7, 0.9, 1.4) * 0.8);       // the Landay-Sin, north to south down the west
@@ -54,6 +54,9 @@ const ANA = { quality: "green", weapon: "rifle_assault", kit: "pasgt", formation
 const FIGHTER = { quality: "regular", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false, prone: true };
 const RPG = { ...FIGHTER, weapon: "rpg" };
 const PKM = { quality: "regular", weapon: "machine_gun", kit: "none", formation: "mg", mounted: false, prone: true };
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them; placed by us: Andrew Bundermann. Sources:
+//   https://warhistoryonline.com/featured/andrew-bundermann.html
 const units = [
   at("B Troop, 3-61 Cavalry (the barracks and command post)", US, 30, { ...TROOPER, fac: true }, 6, [COP[0] - 3, COP[1] - 4], N),
   at("B Troop (the guard posts and trucks)", US, 15, TROOPER, 4, [COP[0] + 7, COP[1] - 2], 0),
@@ -66,6 +69,9 @@ const units = [
   at("Insurgent RPG teams (north)", IN, 20, RPG, 3, [COP[0] - 13, COP[1] - 16], S),
   at("Insurgent machine guns (east)", IN, 10, PKM, 2, [COP[0] + 23, COP[1] - 4], 3),
 ];
+led(units, {
+  "B Troop, 3-61 Cavalry (the barracks and command post)": [["Andrew Bundermann", "First Lieutenant"]],
+});
 
 writeField({
   ends: { at: 671, why: "the last fighters cleared from the outpost about 17:10, from 06:00 (the Army gives 10 to 13 hours of fighting)" },

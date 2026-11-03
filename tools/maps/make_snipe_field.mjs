@@ -16,7 +16,7 @@
 // Axis attack but those the accounts number are ours, with round numbers. The clock is Egyptian
 // summer time (GMT+3), which the sources' first light at 06:15 and last round at 19:40 fit; whether
 // the armies moved their clocks back at midnight on 26/27 October is not known.
-import { N, S, wobble, groundGrid, unit, writeField, allRows } from "./field_lib.mjs";
+import { N, S, wobble, groundGrid, unit, led, writeField, allRows } from "./field_lib.mjs";
 
 const COLS = 200, ROWS = 160;                 // 2000 m west to east, about 1390 m north to south
 const C = [100, 80];                          // the middle of the hollow
@@ -41,6 +41,9 @@ const PANZERS = { quality: "veteran", weapon: "machine_gun", kit: "none", format
 const M14 = { ...PANZERS, quality: "regular", armour: "light" };                                                                        // M13/40, M14/41, Semovente 75/18: 30 mm fronts
 const BERSAGLIERI = { quality: "regular", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false };
 const at = (u, facing) => ({ ...u, facing });
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them; placed by us: Camplani. Sources:
+//   https://warfarehistorynetwork.com/?p=20127 https://www.flamesofwar.com/hobby.aspx?art_id=578
 const units = [
   at(unit("239 Battery's six-pounders (north and north-east)", RB, 30, SIX_PDR, [6, 124, 49]), NE),
   at(unit("A Company's six-pounders (north-west and north)", RB, 20, SIX_PDR, [4, 84, 60]), NW),
@@ -64,6 +67,11 @@ const units = [
   at(unit("German tanks of the evening attack, from the south-west", AX, 120, PANZERS, [30, 60, 152]), N),
   at(unit("Italian tanks of the evening attack", AX, 40, M14, [10, 140, 154]), N),
 ];
+led(units, {
+  "239 Battery's six-pounders (north and north-east)": [["Alan Baer", "Lieutenant"]],
+  "The carriers (scout and carrier platoons)": [["Dick Flower", "Lieutenant"]],
+  "Italian tanks over the western ridge (Capitano Preve)": [["Preve", "Captain"], ["Camplani", "Second Lieutenant"]],
+});
 const waves = { 76: ["47th RTR (Shermans and Crusaders)", "41st RTR", "Long-gunned Panzers from the south"],
   226: ["Bersaglieri of the Littorio"], 256: ["A dozen Italian tanks from the west", "German tanks on the Italians' right"],
   406: ["Italian tanks over the western ridge (Capitano Preve)"],
