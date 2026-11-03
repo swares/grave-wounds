@@ -1653,7 +1653,10 @@ unit's morale), and while up lets it re-form when broken. He is the battlefield'
 team's: his wounds stay on the field and do not go to the roller. A battlefield's maker puts
 them on its units by name (`field_lib.mjs` `led`, which fails on a name no unit has). Badajoz,
 Ciudad Rodrigo, Burgos, Albuera, Cowpens, Lundy's Lane, both Redans, Bull Run, Lützen, Crécy,
-Dornach and Jacob's Ford name theirs, from their orders of battle and the project's research; an army's commander who led no one unit (Wellington, Beresford, Soult, Morgan,
+Dornach, Jacob's Ford and 26 battlefields from Fetterman (1866) to Keating (2009) name theirs, from
+their orders of battle, the accounts and the project's research (on the later fields, commissioned
+officers only, at most two to a unit; no sergeant is a field leader, since the rank bonus is an
+officer's); an army's commander who led no one unit (Wellington, Beresford, Soult, Morgan,
 Brown, Drummond, McDowell, Beauregard, Wallenstein, Saladin) is not on the map. Agincourt, Towton
 and Aljubarrota have none yet: with their lords on, the losers' great battles held together (+22
 and re-forming) and those fields fell from 7, 12 and 12 of 12 runs as fought to 2, 7 and 9; their
