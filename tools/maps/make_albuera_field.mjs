@@ -72,6 +72,7 @@ writeField({
   travel: { map: "albuera-1811", place: "La Albuera", within: 2, sides: ["Allies", "France"] },
   weather: "{cond: overcast, wind: breeze, ground: {mud: 0, snow: 0}}",
   grid, units,
+  ends: { at: 150, why: "about two and a half hours from the flank attack to the French rout: the Spaniards stood an hour and a half (Beresford, in Fortescue), Hoghton's men then fought half an hour (Oman, p. 386), and the Fusiliers' fire-fight lasted half an hour (Fortescue, p. 205); project doc albuera-times-research" },
   phases: [   // the squall on an event: no source gives its time; Oman, Fortescue and Napier put it at the end of Colborne's fire-fight (claude/albuera-times-research)
     { name: "Soult's flank attack", at: 1, note: "Girard's and Gazan's divisions come up onto the heights in heavy columns; Zayas's Spaniards turn to face them." },
     { name: "The squall", at: 30, when: { fires: "Colborne's brigade", wait: 6 }, weather: { cond: "storm", wind: "strong" }, note: "A squall of rain and hail blows in from the north at the end of Colborne's fire-fight, and in it the Vistula Lancers and the 2nd Hussars come round the open flank (six exchanges after Colborne's brigade first fires, or at 30 at the latest: our reading, no source gives the time)." },
