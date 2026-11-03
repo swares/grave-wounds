@@ -14,7 +14,7 @@
 // town are drawn by hand to the distances the accounts give, not traced from any map, and are
 // approximate; the deployment is the counter-attack coming out of the haze, in our own words, with
 // round numbers for play.
-import { speckle, patch, wobble, groundGrid, writeField, at } from "./field_lib.mjs";
+import { speckle, patch, wobble, groundGrid, led, writeField, at } from "./field_lib.mjs";
 
 const COLS = 150, ROWS = 290;                 // 1.5 km east to west, about 2,500 m north to south (rows 8.66 m apart)
 const ROAD = 75;                              // the hardball road from the ridge, north to south
@@ -42,6 +42,9 @@ const TRUCK = { ...T55, vehicle: "lorry" };
 const IRAQI = { quality: "green", weapon: "rifle_assault", kit: "ww2_rifleman", formation: "extended", mounted: false };
 // 31 Americans (Antenori): 26 of the two teams, four gun trucks each with two men aboard, the rest
 // dismounted with the Javelins, and 3 combat controllers and 2 intelligence soldiers.
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them; placed by us: Eric Wright, Matthew Saunders, Eric Howard. Sources:
+//   https://mail.arsof-history.org/articles/pdf/v1n1_debecka_crossroads.pdf
 const units = [
   at("ODA 391's gun trucks (the Alamo, west of the road)", US, 8, GMV, 4, [ROAD - 12, ALAMO(ROAD - 12) - 3], 4),
   at("ODA 391's Javelin teams", US, 5, JAVELIN, 2, [ROAD - 8, ALAMO(ROAD - 8)], 4),
@@ -55,6 +58,11 @@ const units = [
   at("Iraqi motorised infantry", IQ, 100, IRAQI, 14, [ROAD - 20, 280], 1),
   at("Iraqi troop trucks and command vehicles", IQ, 8, TRUCK, 4, [ROAD - 4, 288], 1),
 ];
+led(units, {
+  "ODA 391's gun trucks (the Alamo, west of the road)": [["Eric Wright", "Captain"]],
+  "ODA 392's gun trucks (the Alamo, east of the road)": [["Matthew Saunders", "Captain"]],
+  "Peshmerga and the command vehicles at Press Hill": [["Eric Howard", "Major"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; times are Gresham's ("local", UTC+4), which run about two hours ahead of the CENTCOM release for the bomb; sources in the project's debecka-research.md, rounded; (est.) marks an estimate

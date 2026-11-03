@@ -12,7 +12,7 @@
 // reached it over the mountains on 2 December. The hill, the road, the rocks and the slopes are
 // drawn by hand to that shape, not traced from any map, and approximate; the deployment is the
 // first night's attack, in our own words, with round numbers for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, led, writeField, at } from "./field_lib.mjs";
 
 const COLS = 150, ROWS = 120;                 // 1500 m east to west, about 1040 m north to south
 const HILL = [75, 54];                        // the crest Fox Company held
@@ -31,6 +31,9 @@ const US = { side: 0, facing: N }, CH = { side: 1, facing: S };
 const MARINE = { quality: "regular", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true };   // in holes hacked in the frozen ground
 const MG = { quality: "regular", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false, prone: true };
 const PVA = { quality: "veteran", weapon: "rifle_service", kit: "none", formation: "extended", mounted: false };
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them. Sources: https://donmooreswartales.com/2010/05/24/hector-cafferata
+//   https://www.usmcu.edu/Outreach/Marine-Corps-University-Press/Books-by-topic/MCUP-Titles-A-Z/Always-Faithful/Always-Faithful-Chapter-22/
 const units = [
   at("Fox Company, 3rd Platoon (the crest, facing north)", US, 60, MARINE, 14, [HILL[0] - 2, HILL[1] - 8], N),
   at("Fox Company, 1st Platoon (the east shoulder)", US, 55, MARINE, 10, [HILL[0] + 13, HILL[1] - 2], 0),
@@ -42,6 +45,10 @@ const units = [
   at("Chinese on the road (stumbling into the command post)", CH, 100, PVA, 10, [HILL[0] + 24, ROAD(HILL[0] + 24) - 2], 3),
   at("Chinese machine guns", CH, 10, { ...MG, kit: "none", quality: "veteran", prone: false }, 2, [HILL[0] - 30, 30], 5),
 ];
+led(units, {
+  "Company headquarters, mortars and the road block": [["William E. Barber", "Captain"]],
+  "Fox Company, 3rd Platoon (the crest, facing north)": [["Robert C. McCarthy", "Lieutenant"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate

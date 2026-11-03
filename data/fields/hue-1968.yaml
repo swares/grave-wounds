@@ -149,9 +149,9 @@ support:
   - {name: "North Vietnamese mortars", side: 1, kind: mortar, tubes: 8}
   - {name: "North Vietnamese rockets and guns", side: 1, kind: field, tubes: 4}
 units:
-  - {name: "F Company, 2/5 Marines (by the university)", side: 0, men: 140, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 12, pos: [69, 24], facing: 0, size: company}
-  - {name: "H Company, 2/5 Marines (for the Treasury)", side: 0, men: 140, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 12, pos: [74, 36], facing: 0, size: company}
-  - {name: "G Company, 2/5 Marines (the south blocks)", side: 0, men: 120, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 12, pos: [70, 62], facing: 0, size: company}
+  - {name: "F Company, 2/5 Marines (by the university)", side: 0, men: 140, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 12, pos: [69, 24], facing: 0, size: company, leaders: [{name: "Michael Downs", rank: "Captain"}]}
+  - {name: "H Company, 2/5 Marines (for the Treasury)", side: 0, men: 140, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 12, pos: [74, 36], facing: 0, size: company, leaders: [{name: "Ron Christmas", rank: "Captain"}, {name: "Leo Myers", rank: "Lieutenant"}]}
+  - {name: "G Company, 2/5 Marines (the south blocks)", side: 0, men: 120, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 12, pos: [70, 62], facing: 0, size: company, leaders: [{name: "Chuck Meadows", rank: "Captain"}, {name: "Michael McNeil", rank: "Second Lieutenant"}]}
   - {name: "A Company, 1/1 Marines and the MACV compound", side: 0, men: 147, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 10, pos: [44, 27], facing: 0, size: company}
   - {name: "Marine machine guns", side: 0, men: 12, quality: regular, weapon: machine_gun, kit: vietnam_usmc, formation: mg, width: 2, pos: [62, 21], facing: 0, size: section}
   - {name: "Marine M48 tanks (Highway 1)", side: 0, men: 8, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 2, pos: [40, 46], facing: 1, vehicle: tank, size: section}

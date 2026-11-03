@@ -11,7 +11,7 @@
 // The hill, the slopes, the bunkers and the trenches are drawn by hand to that shape, not traced
 // from any map, and are approximate; the deployment is the attack going up, in our own words, with
 // round numbers for play.
-import { N, S, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
+import { N, S, patch, speckle, groundGrid, unit, led, writeField, at } from "./field_lib.mjs";
 
 const COLS = 120, ROWS = 140;                 // 1200 m east to west, about 1210 m north to south
 const TOP = [60, 74];
@@ -41,6 +41,8 @@ const US = { side: 0, facing: S }, NV = { side: 1, facing: N };
 const SKY = { quality: "veteran", weapon: "rifle_assault", kit: "vietnam_army", formation: "extended", mounted: false };
 const MG = { quality: "veteran", weapon: "machine_gun", kit: "vietnam_army", formation: "mg", mounted: false };
 const PAVN = { quality: "veteran", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false, prone: true };
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them. Sources: https://VIRTUALWALL.org/units/hill875.htm
 const units = [
   at("C Company, 2/503 Infantry (up the slope)", US, 100, SKY, 12, [TOP[0] - 6, TOP[1] - 26], S),
   at("D Company, 2/503 Infantry (up the slope)", US, 100, SKY, 12, [TOP[0] + 8, TOP[1] - 26], S),
@@ -51,6 +53,10 @@ const units = [
   at("North Vietnamese company behind them (from the west)", NV, 120, { ...PAVN, prone: false }, 12, [16, TOP[1] - 46], 0),
   at("North Vietnamese machine guns", NV, 10, { ...MG, kit: "none", prone: true }, 2, [TOP[0] - 14, TOP[1] - 4], N),
 ];
+led(units, {
+  "A Company, 2/503 Infantry (cutting the landing zone behind)": [["Michael J. Kiley", "Captain"]],
+  "C Company, 2/503 Infantry (up the slope)": [["Harold J. Kaufman", "Captain"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; times from docs and sources in the project's battle-phases research, rounded

@@ -156,7 +156,7 @@ support:
 units:
   - {name: "B Company, 21st Infantry (the saddle and east of it)", side: 0, men: 140, quality: green, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 47, pos: [66, 42], facing: 1, prone: true, size: company}
   - {name: "B Company platoon (the hillock west of the road)", side: 0, men: 35, quality: green, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 12, pos: [17, 45], facing: 1, prone: true, size: platoon}
-  - {name: "Recoilless rifle and bazooka teams (by the road)", side: 0, men: 25, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 9, pos: [40, 47], facing: 1, prone: true, size: platoon}
+  - {name: "Recoilless rifle and bazooka teams (by the road)", side: 0, men: 25, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 9, pos: [40, 47], facing: 1, prone: true, size: platoon, leaders: [{name: "Ollie Connor", rank: "Second Lieutenant"}]}
   - {name: "Battalion machine guns", side: 0, men: 10, quality: regular, weapon: machine_gun, kit: ww2_rifleman, formation: mg, width: 2, pos: [60, 44], facing: 1, prone: true, size: section}
   - {name: "C Company, 21st Infantry (the ridge east)", side: 0, men: 120, quality: green, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 40, pos: [129, 41], facing: 1, prone: true, size: company}
   - {name: "C Company's right (bent back by the railroad)", side: 0, men: 30, quality: green, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [179, 55], facing: 1, prone: true, size: company}

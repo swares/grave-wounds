@@ -12,7 +12,7 @@
 // the tracks and the blocks round them are drawn by hand to that pattern, not traced from any map
 // or photograph, and are approximate; the deployment is the fight for the square at dusk, in our own
 // words, with round numbers for play.
-import { N, S, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
+import { N, S, patch, speckle, groundGrid, unit, led, writeField, at } from "./field_lib.mjs";
 
 const COLS = 140, ROWS = 110;                 // 1400 m east to west, about 950 m north to south
 const STATION = [70, 58], SQUARE = [70, 44], YARD = 76;  // the station building, its square to the north, the freight yard's tracks from row 76 south
@@ -38,6 +38,9 @@ const TANK = { ...BMP, vehicle: "tank" };
 const FIGHTER = { quality: "veteran", weapon: "rifle_assault", kit: "none", formation: "extended", mounted: false, prone: true };
 const RPG = { ...FIGHTER, weapon: "rpg" };
 const MG = { quality: "veteran", weapon: "machine_gun", kit: "none", formation: "mg", mounted: false, prone: true };
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them; placed by us: Ivan Savin, Grinchenko. Sources:
+//   https://novayagazeta.ru/articles/2021/12/31/groznyi-novogodnii-shturm-ot-pervogo-litsa
 const units = [
   at("1st Battalion, 131st Brigade (in the station)", RU, 150, SOLDIER, 16, [STATION[0], STATION[1] + 1], N),
   at("131st Brigade's infantry carriers (the square)", RU, 36, BMP, 3, [SQUARE[0] - 6, SQUARE[1]], N),
@@ -50,6 +53,11 @@ const units = [
   at("Chechen fighters (south of the yards)", CH, 120, FIGHTER, 14, [60, YARD + 22], N),
   at("Chechen machine guns", CH, 10, MG, 2, [SQUARE[0] + 24, 30], 4),
 ];
+led(units, {
+  "1st Battalion, 131st Brigade (in the station)": [["Sergei Khmelevsky", "Major"], ["Rustem Klupov", "Captain"]],
+  "131st Brigade's infantry carriers (the square)": [["Ivan Savin", "Colonel"]],
+  "131st Brigade's tanks (the square)": [["Grinchenko", "Senior Lieutenant"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; sunset and the moon worked out for the place and day

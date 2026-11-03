@@ -11,7 +11,7 @@
 // round the outposts all night. The hill, the trenches, the bunkers, the valley and Hill 200 are
 // drawn by hand to that shape, not traced from any map, and approximate; the deployment is the
 // Chinese attack, in our own words, with round numbers for play.
-import { N, S, patch, speckle, groundGrid, unit, writeField, at } from "./field_lib.mjs";
+import { N, S, patch, speckle, groundGrid, unit, led, writeField, at } from "./field_lib.mjs";
 
 const COLS = 160, ROWS = 130;                 // 1600 m east to west, about 1130 m north to south
 const TOP = [76, 56], H200 = [124, 96];
@@ -42,6 +42,9 @@ const UN = { side: 0, facing: N }, CH = { side: 1, facing: S };
 const GI = { quality: "regular", weapon: "rifle_service", kit: "vietnam_army", formation: "extended", mounted: false };
 const MG = { quality: "regular", weapon: "machine_gun", kit: "vietnam_army", formation: "mg", mounted: false };
 const PVA = { quality: "veteran", weapon: "pistol_smg", kit: "none", formation: "extended", mounted: false };
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them; placed by us: Thomas V. Harrold. Sources:
+//   https://historynet.com/korean-war-battle-on-pork-chop-hill/
 const units = [
   at("E Company, 31st Infantry (the north trenches)", UN, 50, GI, 10, [TOP[0], TOP[1] - 9], N),
   at("E Company, 31st Infantry (the west trenches)", UN, 30, GI, 6, [TOP[0] - 9, TOP[1] + 2], 3),
@@ -53,6 +56,12 @@ const units = [
   at("Chinese company from Old Baldy (the west)", CH, 150, PVA, 12, [16, 60], 0),
   at("Chinese machine guns", CH, 10, { ...MG, kit: "none", quality: "veteran" }, 2, [50, 14], 5),
 ];
+led(units, {
+  "E Company, 31st Infantry (the north trenches)": [["Thomas V. Harrold", "First Lieutenant"]],
+  "K Company, 31st Infantry (from the main line)": [["Joseph G. Clemons, Jr.", "First Lieutenant"], ["Tsugi O'Hashi", "First Lieutenant"]],
+  "L Company, 31st Infantry (Hill 200)": [["Forrest James Crittendon", "First Lieutenant"], ["Homer F. Bechtel", "Second Lieutenant"]],
+  "G Company, 17th Infantry (from the main line)": [["Walter B. Russell, Jr.", "First Lieutenant"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; times from docs and sources in the project's battle-phases research, rounded

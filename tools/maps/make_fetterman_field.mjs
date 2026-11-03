@@ -13,7 +13,7 @@
 // killed. The ridge, the ravines and the creek are drawn by hand to that shape, not traced from
 // any map, and are approximate; the deployment is the moment the decoys turned, in our own
 // words, with round numbers for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, led, writeField } from "./field_lib.mjs";
 
 const COLS = 150, ROWS = 120;                 // 1500 m east to west, about 1040 m north to south
 const crest = r => 75 + wobble(r / 3, 0.5, 1.9) * 1.2 + (r < 40 ? (40 - r) * 0.08 : 0);   // the ridge's crest line, north to south
@@ -43,6 +43,9 @@ const INF = { quality: "regular", weapon: "rifle_musket", kit: "none", formation
 const CAV = { quality: "regular", weapon: "breechloader", kit: "none", formation: "open", mounted: true };
 const BOWS = { quality: "veteran", weapon: "bow", kit: "rawhide_shield", formation: "open", mounted: true };
 const FOOT = { ...BOWS, mounted: false };
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them. Sources:
+//   https://ipfs.aleph.im/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/wiki/Fetterman_Fight.html
 const units = [
   unit("18th Infantry (Fetterman and Brown)", US, 51, INF, [3, 73, 86]),
   unit("Wheatley and Fisher (civilians, repeating rifles)", US, 2, { ...CAV, quality: "veteran", mounted: false }, [1, 77, 62]),
@@ -52,6 +55,10 @@ const units = [
   unit("Lakota on foot in the west ravines", NATIONS, 350, FOOT, [9, 20, 46]),
   unit("Cheyenne and Arapaho in the east ravines", NATIONS, 350, BOWS, [9, 116, 50]),
 ];
+led(units, {
+  "18th Infantry (Fetterman and Brown)": [["William J. Fetterman", "Captain"], ["Frederick H. Brown", "Captain"]],
+  "2nd Cavalry, Company C (Grummond)": [["George W. Grummond", "Second Lieutenant"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate

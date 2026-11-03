@@ -216,14 +216,14 @@ support:
   - {name: "German guns and 88s", side: 1, kind: field, tubes: 8}
   - {name: "Stukas (the attack before Rommel's counter-stroke)", side: 1, kind: fighter_bomber, tubes: 20}
 units:
-  - {name: "239 Battery's six-pounders (north and north-east)", side: 0, men: 30, quality: veteran, weapon: at_gun, kit: ww2_rifleman, formation: at_gun, width: 6, pos: [126, 49], facing: 0, prone: true, size: battery, he: false}
+  - {name: "239 Battery's six-pounders (north and north-east)", side: 0, men: 30, quality: veteran, weapon: at_gun, kit: ww2_rifleman, formation: at_gun, width: 6, pos: [126, 49], facing: 0, prone: true, size: battery, he: false, leaders: [{name: "Alan Baer", rank: "Lieutenant"}]}
   - {name: "A Company's six-pounders (north-west and north)", side: 0, men: 20, quality: veteran, weapon: at_gun, kit: ww2_rifleman, formation: at_gun, width: 4, pos: [85, 60], facing: 2, prone: true, size: platoon, he: false}
   - {name: "C Company's six-pounders (south-west)", side: 0, men: 20, quality: veteran, weapon: at_gun, kit: ww2_rifleman, formation: at_gun, width: 4, pos: [75, 108], facing: 3, prone: true, size: platoon, he: false}
   - {name: "B Company's six-pounders (south-east)", side: 0, men: 25, quality: veteran, weapon: at_gun, kit: ww2_rifleman, formation: at_gun, width: 5, pos: [118, 100], facing: 5, prone: true, size: platoon, he: false}
   - {name: "A Company's riflemen", side: 0, men: 30, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [92, 66], facing: 2, prone: true, size: platoon}
   - {name: "C Company's riflemen", side: 0, men: 30, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [82, 102], facing: 3, prone: true, size: platoon}
   - {name: "B Company's riflemen", side: 0, men: 30, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 10, pos: [114, 94], facing: 5, prone: true, size: platoon}
-  - {name: "The carriers (scout and carrier platoons)", side: 0, men: 66, quality: veteran, weapon: machine_gun, kit: none, formation: armour, width: 11, pos: [100, 78], facing: 1, vehicle: apc, size: platoon}
+  - {name: "The carriers (scout and carrier platoons)", side: 0, men: 66, quality: veteran, weapon: machine_gun, kit: none, formation: armour, width: 11, pos: [100, 78], facing: 1, vehicle: apc, size: platoon, leaders: [{name: "Dick Flower", rank: "Lieutenant"}]}
   - {name: "7th Field Squadron's sappers", side: 0, men: 16, quality: veteran, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 4, pos: [101, 86], facing: 1, prone: true, size: platoon}
   - {name: "47th RTR (Shermans and Crusaders)", side: 0, men: 96, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 12, pos: [187, 52], facing: 2, vehicle: tank, size: battalion}
   - {name: "41st RTR", side: 0, men: 96, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 12, pos: [187, 104], facing: 3, vehicle: tank, size: battalion}
@@ -233,7 +233,7 @@ units:
   - {name: "Bersaglieri of the Littorio", side: 1, men: 200, quality: regular, weapon: rifle_service, kit: ww2_rifleman, formation: extended, width: 24, pos: [16, 92], facing: 4, size: company}
   - {name: "A dozen Italian tanks from the west", side: 1, men: 48, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 12, pos: [12, 70], facing: 0, vehicle: tank, armour: light, size: company}
   - {name: "German tanks on the Italians' right", side: 1, men: 32, quality: veteran, weapon: machine_gun, kit: none, formation: armour, width: 8, pos: [10, 120], facing: 0, vehicle: tank, size: company}
-  - {name: "Italian tanks over the western ridge (Capitano Preve)", side: 1, men: 36, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 9, pos: [18, 106], facing: 0, vehicle: tank, armour: light, size: company}
+  - {name: "Italian tanks over the western ridge (Capitano Preve)", side: 1, men: 36, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 9, pos: [18, 106], facing: 0, vehicle: tank, armour: light, size: company, leaders: [{name: "Preve", rank: "Captain"}, {name: "Camplani", rank: "Second Lieutenant"}]}
   - {name: "Panzer IIIs against the north-west", side: 1, men: 60, quality: veteran, weapon: machine_gun, kit: none, formation: armour, width: 15, pos: [27, 10], facing: 5, vehicle: tank, size: company}
   - {name: "German tanks of the evening attack, from the south-west", side: 1, men: 120, quality: veteran, weapon: machine_gun, kit: none, formation: armour, width: 30, pos: [75, 152], facing: 1, vehicle: tank, size: company}
   - {name: "Italian tanks of the evening attack", side: 1, men: 40, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 10, pos: [145, 154], facing: 1, vehicle: tank, armour: light, size: company}

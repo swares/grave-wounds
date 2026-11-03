@@ -15,7 +15,7 @@
 // rise, the trenches and the high ground beyond are drawn by hand to that shape, not traced
 // from any map, and are approximate; the deployment is the moment of cresting, in our own words,
 // with round numbers for play. No minefields are drawn: the accounts we used name none here.
-import { frontRow, wobble, speckle, patch, groundGrid, unit, writeField, at } from "./field_lib.mjs";
+import { frontRow, wobble, speckle, patch, groundGrid, unit, led, writeField, at } from "./field_lib.mjs";
 
 const COLS = 200, ROWS = 120;                 // 2 km east to west (about 72.2 to 74.2 Easting), 1.2 km north to south
 const E = 0, W = 3;                           // facings: east (a little north) and west (a little south)
@@ -35,6 +35,9 @@ const T72 = { quality: "regular", weapon: "machine_gun", kit: "none", formation:
 const BMP = { ...T72, vehicle: "ifv" };
 const LORRY = { ...T72, vehicle: "lorry" };
 const GUARD = { quality: "regular", weapon: "rifle_assault", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true };
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them; placed by us: Michael Petschek. Sources:
+//   https://mcoecbamcoepwprd01.blob.core.usgovcloudapi.net/library/DonovanPapers/other/73Easting.pdf
 const units = [
   at("Eagle Troop's tanks (the troop commander and the north platoon)", US, 20, M1A1, 5, [38, 50], E),
   at("Eagle Troop's tanks (the south platoon)", US, 16, M1A1, 4, [36, 72], E),
@@ -48,6 +51,12 @@ const units = [
   at("Iraqi lorries behind the position", IQ, 16, LORRY, 8, [CREST(60) + 40, 60], W),
   at("T-72s on the high ground beyond (about 74 Easting)", IQ, 72, T72, 18, [BEYOND[0] - 4, BEYOND[1]], W),
 ];
+led(units, {
+  "Eagle Troop's tanks (the troop commander and the north platoon)": [["H. R. McMaster", "Captain"], ["Michael Hamilton", "First Lieutenant"]],
+  "Eagle Troop's tanks (the south platoon)": [["Jeffrey DeStefano", "First Lieutenant"]],
+  "Eagle Troop's Bradleys (the north scout platoon)": [["Michael Petschek", "First Lieutenant"]],
+  "Eagle Troop's Bradleys (the south scout platoon)": [["Timothy Gauthier", "First Lieutenant"]],
+});
 
 // The Iraqi trenches behind the rise, under the front rows of the infantry and RPG teams the account
 // puts in them (drawn a hex ahead of them before, so most of their men stood outside), and running on

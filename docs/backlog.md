@@ -409,8 +409,13 @@ When an item is done, delete it here and note it in the pull request that closes
     off (7 with no leaders). Re-forming is most of it at Towton and Aljubarrota; Agincourt stays
     low whatever is off, within the runs' spread. The +22 and re-forming rest on Napoleonic
     sources and nothing found sizes a medieval lord's effect, so the three stay without leaders
-    (asked and answered); closed. Still to do: Burgos's later storms; leaders on the
-    20th-century battlefields.
+    (asked and answered); closed. Leaders on 26 battlefields from Fetterman to
+    Keating (3 November 2026): 99 commissioned officers from the accounts, at most two to a unit;
+    as fought 496 to 496 (Tumbledown 6 to 9, X-Ray, Hue and Cisterna up 2; Wanat 8 to 5, Mons,
+    Goose Green and Grozny down 2). None named yet on Babuna, Topolčani, the three Cassino fields,
+    Bougainville and Heartbreak Ridge. Reinöhl at Mojkovac: the maker has him killed with his last
+    reserves (de.wikipedia), valka.cz has a Generalmajor Wilhelm von Reinöhl of the 205th Landsturm
+    Brigade dying in Prague in 1918; unresolved. Still to do: Burgos's later storms.
   - **Wound tables:** the Crimean siege table is the only siege table (the Siege warfare tables
     item above).
   - To start: list the sieges and storms the game already touches (the two Redans, Jacob's Ford,

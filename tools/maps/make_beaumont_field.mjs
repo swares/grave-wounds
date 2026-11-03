@@ -19,7 +19,7 @@
 // RIR 119's companies or its machine guns here: those, the British battalions' strengths but the
 // Inniskillings' and the Newfoundlanders', and where each stood are ours, with round numbers. The
 // lines, the slope and the ravine are drawn to those distances, not traced from a trench map.
-import { N, S, wobble, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, speckle, groundGrid, unit, led, writeField } from "./field_lib.mjs";
 
 // EAST is at the top: the columns run from north (left, towards Hawthorn Ridge) to south (right,
 // towards the Mary Redan), the rows from east (the German rear, top) to west (St John's Road, bottom).
@@ -68,6 +68,10 @@ const NFLD = { ...WAVE, quality: "regular" };                                   
 const HOLD = { quality: "veteran", weapon: "rifle_service", kit: "none", formation: "extended", mounted: false, prone: true };
 const MG = { quality: "veteran", weapon: "machine_gun", kit: "none", formation: "mg", mounted: false, prone: true };
 const RESERVE = { quality: "veteran", weapon: "rifle_service", kit: "none", formation: "close", mounted: false, prone: true };
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them. Sources:
+//   https://test-v17.cwgc.org/stories/stories/captain-eric-s-ayre-1st-bn-royal-newfoundland-regiment/
+//   https://thelonsdalebattalion.co.uk/wiki/1st_Battalion_War_Diary,_July_1916
 const units = [
   unit("2nd South Wales Borderers (first wave, on Y Ravine)", BR, 700, WAVE, [36, 4, BRIT - 1]),
   unit("1st Royal Inniskilling Fusiliers (first wave, the right)", BR, 950, WAVE, [38, 41, BRIT - 1]),
@@ -85,6 +89,10 @@ const units = [
   unit("RIR 119, the company in Y Ravine", GE, 200, RESERVE, [3, 21, GER - 6]),
   unit("RIR 119, the support company (third trench)", GE, 150, HOLD, [30, 42, GER - 19]),
 ];
+led(units, {
+  "1st Border (second wave)": [["A. J. Ellis", "Lieutenant-Colonel"]],
+  "1st Newfoundland Regiment, C and D Companies": [["Eric Stanley Ayre", "Captain"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; BEF time (GMT+1); sunrise 04:43 (project doc "beaumont-research")

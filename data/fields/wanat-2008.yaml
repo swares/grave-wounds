@@ -120,7 +120,7 @@ support:
   - {name: "Apaches (AH-64)", side: 0, kind: gunship, tubes: 2}
   - {name: "A-10, B-1B and F-15E (later in the morning)", side: 0, kind: fighter_bomber, tubes: 3}
 units:
-  - {name: "Observation Post Topside (paratroopers)", side: 0, men: 6, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 2, pos: [52, 29], facing: 1, prone: true, size: section}
+  - {name: "Observation Post Topside (paratroopers)", side: 0, men: 6, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 2, pos: [52, 29], facing: 1, prone: true, size: section, leaders: [{name: "Jonathan P. Brostrom", rank: "First Lieutenant"}]}
   - {name: "Observation Post Topside (the M240 and its crew)", side: 0, men: 3, quality: veteran, weapon: machine_gun, kit: interceptor, formation: mg, width: 1, pos: [54, 30], facing: 0, prone: true, size: section}
   - {name: "2nd Platoon at the base's north end", side: 0, men: 15, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 5, pos: [39, 27], facing: 1, prone: true, size: platoon}
   - {name: "2nd Platoon on the base's east side, facing the post", side: 0, men: 12, quality: veteran, weapon: rifle_assault, kit: interceptor, formation: extended, width: 4, pos: [43, 40], facing: 0, prone: true, size: platoon}

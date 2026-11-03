@@ -15,7 +15,7 @@
 // saddle, the paddies and the line are drawn by hand to that shape, not traced from any map,
 // and are approximate; the deployment is the infantry attack near noon, in our own words, with
 // round numbers for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, led, writeField } from "./field_lib.mjs";
 
 const COLS = 220, ROWS = 110;                 // 2200 m east to west, about 950 m north to south
 const ROAD = 40, RAIL = 190;                  // the highway and the railroad, running north to south
@@ -48,6 +48,9 @@ const RIFLES = { quality: "green", weapon: "rifle_service", kit: "ww2_rifleman",
 const MG = { quality: "regular", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false, prone: true };
 const KPA = { quality: "veteran", weapon: "rifle_service", kit: "none", formation: "extended", mounted: false };
 const row = c => Math.round(crest(c)) - 3;
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them; placed by us: Ollie Connor. Sources:
+//   https://ipfs.ssi.eecc.de/ipns/en.wikipedia-on-ipfs.org/wiki/Battle_of_Osan
 const units = [
   unit("B Company, 21st Infantry (the saddle and east of it)", UN, 140, RIFLES, [47, ROAD + 3, row(ROAD + 26)]),
   unit("B Company platoon (the hillock west of the road)", UN, 35, RIFLES, [12, 12, 45]),
@@ -61,6 +64,9 @@ const units = [
   { ...unit("18th Regiment, battalion moving down the railroad", NK, 600, KPA, [44, 160, 20]), via: [[196, 58], [160, 62]] },   // down the railroad past C Company's right, then behind the ridge (our reading)
   unit("4th Division machine guns", NK, 15, { ...MG, kit: "none", quality: "veteran", prone: false }, [3, 60, 22]),
 ];
+led(units, {
+  "Recoilless rifle and bazooka teams (by the road)": [["Ollie Connor", "Second Lieutenant"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; times from docs and sources in the project's battle-phases research, rounded

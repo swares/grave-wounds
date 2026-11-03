@@ -12,7 +12,7 @@
 // ditch, the road, the farmhouses and the town's edge are drawn by hand to that shape, not
 // traced from any map, and are approximate; the deployment is first light, in our own words,
 // with round numbers for play.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, led, writeField } from "./field_lib.mjs";
 
 const COLS = 150, ROWS = 120;                 // 1500 m east to west, about 1040 m north to south
 const townEdge = c => 9 + wobble(c / 4, 0.3, 1.1) * 0.8;
@@ -44,6 +44,9 @@ const US = { side: 0, facing: N }, DE = { side: 1, facing: S };
 const RANGERS = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false };
 const GREN = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true };   // dug in, in houses and haystacks
 const MG = { quality: "veteran", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false, prone: true };
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them. Sources:
+//   https://ipfs.ssi.eecc.de/ipns/en.wikipedia-on-ipfs.org/wiki/Battle_of_Cisterna
 const units = [
   unit("1st Ranger Battalion (at the road crossing)", US, 380, RANGERS, [40, 44, 82]),
   unit("3rd Ranger Battalion (along the ditch)", US, 380, RANGERS, [36, 92, 96]),
@@ -55,6 +58,9 @@ const units = [
   unit("Riflemen in haystacks and dugouts (east)", DE, 150, GREN, [30, 116, 84]),
   unit("Paratroops by the station", DE, 120, { ...GREN, prone: false }, [24, 2, 18]),
 ];
+led(units, {
+  "1st Ranger Battalion (at the road crossing)": [["Dobson", "Major"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate

@@ -12,7 +12,7 @@
 // beside them. The ridge, its crags and the slopes are drawn by hand to that shape, not traced from
 // any map, and are approximate; the deployment is Left Flank's contact at 22:30, in our own words,
 // with round numbers for play (no source gives the Scots Guards' company strengths).
-import { frontRow, wobble, speckle, patch, groundGrid, writeField, at } from "./field_lib.mjs";
+import { frontRow, wobble, speckle, patch, groundGrid, led, writeField, at } from "./field_lib.mjs";
 
 const COLS = 220, ROWS = 120;                 // 2.2 km west to east, about 1,040 m north to south (rows 8.66 m apart)
 const E = 0, W = 3;                           // facings: east (a little north) and west (a little south)
@@ -34,6 +34,10 @@ const GPMG = { quality: "regular", weapon: "machine_gun", kit: "ww2_rifleman", f
 const MARINES = { quality: "regular", weapon: "rifle_assault", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true };
 const MARINE_MG = { quality: "regular", weapon: "machine_gun", kit: "ww2_rifleman", formation: "mg", mounted: false, prone: true, nv: "starlight" };
 const ARMY = { quality: "green", weapon: "rifle_assault", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true };
+// Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
+//   ranks as the sources give them; placed by us: Waldemar Aquino. Sources:
+//   https://nottinghammalvinas.blogspot.com/2016/01
+//   https://wiki.krisyotam.com/content/wikipedia_en_all_nopic_2026-03/Mount_Tumbledown
 const units = [
   at("G Company, 2nd Scots Guards (on the western end)", UK, 90, GUARDS, 12, [WEST[0] + 6, WEST[1]], E),
   at("Left Flank, 2nd Scots Guards (13 and 15 Platoons in front, 14 behind)", UK, 100, { ...GUARDS, prone: true }, 14, [70, CREST(70) + 2], E),
@@ -47,6 +51,16 @@ const units = [
   at("RI 12 platoons (Mosteirín and Dorigón, the eastern end)", AR, 60, ARMY, 10, [EAST[0] - 8, EAST[1]], W),
   at("La Madrid's platoon, RI 6 (the counter-attack)", AR, 30, { ...ARMY, prone: false }, 6, [EAST[0], EAST[1] + 10], W),
 ];
+led(units, {
+  "G Company, 2nd Scots Guards (on the western end)": [["Iain Dalzel-Job", "Major"]],
+  "Left Flank, 2nd Scots Guards (13 and 15 Platoons in front, 14 behind)": [["John Kiszely", "Major"], ["Alasdair Mitchell", "Lieutenant"]],
+  "Right Flank, 2nd Scots Guards (round the south)": [["Simon Price", "Major"], ["Robert Lawrence", "Lieutenant"]],
+  "4th Platoon, N Company, BIM 5 (Vázquez, the summit)": [["Carlos Daniel Vázquez", "Teniente de Corbeta"]],
+  "RI 4 platoon (Silva, beside the 4th Platoon)": [["Oscar Augusto Silva", "Subteniente"]],
+  "5th (engineers) Platoon (Miño, behind, facing north)": [["Héctor Omar Miño", "Marine Sub-Lieutenant"], ["Waldemar Aquino", "Marine Lieutenant"]],
+  "RI 12 platoons (Mosteirín and Dorigón, the eastern end)": [["Celestino Mosteirín", "Subteniente"], ["Marcelo Dorigón", "Subteniente"]],
+  "La Madrid's platoon, RI 6 (the counter-attack)": [["Augusto La Madrid", "Subteniente"]],
+});
 
 // The Argentine works along the crest: bunkers in the summit crags under the 4th Platoon, its
 // machine guns and the RI 4 platoon, trenches and sangars under the front rows of the platoons
