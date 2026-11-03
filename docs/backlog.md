@@ -403,9 +403,14 @@ When an item is done, delete it here and note it in the pull request that closes
     Jacob's Ford (3 November 2026): 46 named; as fought 494 to 496. Held back at Agincourt, Towton
     and Aljubarrota (asked and answered): with their lords on, the losers' battles held together
     (7 to 2, 12 to 7, 12 to 9 of 12; without the losers' lords alone they came back to 7, 11, 11).
-    Still to do: why a lord holds a great medieval battle together (the +22 and re-forming on a
-    unit of thousands; his being struck no more often than an officer of a company), then those
-    three; Burgos's later storms; leaders on the 20th-century battlefields.
+    Lords on great medieval battles, looked at (3 November 2026): with the lords on, each part of
+    the rule turned off in turn (12 runs each, wins as fought): Towton 7, 10 without leaders
+    re-forming, 9 without the bonus; Aljubarrota 9, 10, 10; Agincourt 2, 3, 1, and 5 with both
+    off (7 with no leaders). Re-forming is most of it at Towton and Aljubarrota; Agincourt stays
+    low whatever is off, within the runs' spread. The +22 and re-forming rest on Napoleonic
+    sources and nothing found sizes a medieval lord's effect, so the three stay without leaders
+    (asked and answered); closed. Still to do: Burgos's later storms; leaders on the
+    20th-century battlefields.
   - **Wound tables:** the Crimean siege table is the only siege table (the Siege warfare tables
     item above).
   - To start: list the sieges and storms the game already touches (the two Redans, Jacob's Ford,

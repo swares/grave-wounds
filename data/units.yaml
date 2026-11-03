@@ -848,8 +848,10 @@ morale:
   #   leader: on any battlefield, a broken unit whose leader is up (a leader hero up, or the unit
   #   marked with its leader up) re-forms by the same check, his morale bonus added (mods.leader and
   #   his rank: van Zuylen rallied van Bylandt's broken Dutch at Waterloo); where the battlefield
-  #   turns re-forming on, a leader up adds his bonus too. No battlefield file has leaders, so the
-  #   benchmark does not see it. Design choice (asked and answered, 2 November 2026).
+  #   turns re-forming on, a leader up adds his bonus too. Design choice (asked and answered,
+  #   2 November 2026). With the lords from the accounts on Towton and Aljubarrota, re-forming was
+  #   most of what held the losers' great battles together (12 to 7 and 12 to 9 of 12; 10 and 10
+  #   with it off), so those battlefields carry no leaders (project doc "field-leaders-research").
   reform: {reach: 2, penalty: 20, leader: true}
   # posture: a unit of a holding side (the commander's stance) holding a position (in a bunker, dug
   #   in, emplaced, behind works with cover toward the nearest enemy, or in ground that hides men),
