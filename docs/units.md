@@ -250,6 +250,18 @@ loser's losses 5% to 4%, now counting prisoners); Visby 23 to 24 (the Gotlanders
 32%: Visby's quarter is 20%), X-Ray, Grozny, Lützen and Agincourt +1; Mogadishu 21 to 19, Wanat
 and the September Redan -1. The self-play tools count prisoners as losses.
 
+**Guns overrun** (`rout.overrun`, 2 November 2026). A battery or anti-tank guns, not broken,
+touched hand to hand at the start of an exchange by standing enemy (not vehicles, and not only
+across a wall no one fights over) who have at least as many men as its crews standing, is
+overrun: the guns are lost, the war's quarter % of the crews taken and the rest killed (all
+killed where its side fights on). The log says "X are overrun at their guns". Hand to hand at the
+chosen pace (`melee.tempo`), ten men put about one try an exchange into a crew of ten, and the
+crew, losing few men, held its nerve: at Ciudad Rodrigo a gun's crew beside the great breach
+outlasted the hour, and the breach was taken in 4 runs of 12. The accounts have crews overrun once
+the infantry reached the guns: "our Artillery Men were bayonetted by the enemy in the Act of
+loading" (Drummond, Lundy's Lane), the KGL battery "ridden over" by the lancers at Albuera, the
+88th and the 45th taking the two guns at Ciudad Rodrigo. MEASURED_OVERRUN
+
 ## What the numbers give
 
 Regular swordsmen front to front, on the Towton tables, per minute:

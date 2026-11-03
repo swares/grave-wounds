@@ -924,6 +924,16 @@ rout:
   #   attackers almost never lose men as prisoners (TDI capture-rate study: 0.04% of strength),
   #   and the Rangers at Cisterna, who did, were surrounded by more men. Design estimate.
   outnumbered: true
+  # overrun: at the start of an exchange, a battery or anti-tank guns (not broken) touched hand to
+  #   hand by standing enemy (not vehicles, not only across a wall no one fights over) who have at
+  #   least as many men as its crews standing is overrun: the guns are lost, the war's quarter % of
+  #   the crews taken and the rest killed (all killed where its side fights on). Hand to hand at the
+  #   chosen pace (melee.tempo) ten men put about one try an exchange into a crew of ten, which
+  #   outlasted the hour at Ciudad Rodrigo's great breach; the accounts have crews overrun once the
+  #   infantry reached the guns: "our Artillery Men were bayonetted by the enemy in the Act of
+  #   loading" (Drummond, Lundy's Lane 1814), the KGL battery "ridden over" at Albuera, the 88th and
+  #   45th taking the two guns at Ciudad Rodrigo. Design choice (asked and answered, 2 November 2026).
+  overrun: true
 
 # ---------- after the battle ----------
 # Every wounded man is remembered by his wound's severity, its untreated time to death

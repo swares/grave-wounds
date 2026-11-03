@@ -308,6 +308,12 @@ def start_phase(d: Data, bt: dict, k: int) -> list:
     """Side k's move; at the start of an exchange every broken unit runs first."""
     bt["phase"], ran = k, []
     for i in range(len(bt["units"])):
+        if k == 0 and U.overrun(d, bt["units"], i, bt["field"]):   # guns overrun: the crews taken or killed where they stand (rout.overrun)
+            u = bt["units"][i]
+            s = U.surrender(u, 0 if u.get("fights_on") else U.quarter(d, bt["table"], bt["field"], u["side"]))
+            bt["units"][i] = {**s["unit"], "overrun": True}
+            ran.append({"unit": i, "through": [], "fled": True, "surrendered": True, "overrun": True, "taken": s["taken"], "killed": s["killed"]})
+            continue
         if k != 0 or bt["units"][i]["state"] != "broken":
             continue
         after = U.flee(d, bt["units"], i, bt["size"], bt["field"])

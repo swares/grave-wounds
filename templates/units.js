@@ -2708,6 +2708,16 @@ function cornered(units, i, after){               // broken unit i cannot run (i
   if (!foes.length) return false;
   return !UD.rout.outnumbered || foes.filter(j => !out_(units[j])).reduce((n, j) => n + units[j].men, 0) >= u.men;   // only when the enemy touching it is at least as many as it has standing (rout.outnumbered)
 }
+function overrun(units, i, field = null){         // a battery or anti-tank guns, not broken, touched hand to hand by standing enemy (not vehicles, not only across a wall no one fights over) with at least as many men as its crews standing (rout.overrun) (as units.overrun)
+  const u = units[i];
+  if (!UD.rout.overrun || !(isBattery(u) || isAtGun(u)) || out_(u) || u.vehicle) return false;
+  const occ = occupancy(units), foes = new Set();
+  for (const row of footprint(u)) for (const h of row) for (let dn = 0; dn < 6; dn++){
+    const x = step(h, dn), j = occ[hk(x)];
+    if (j !== undefined && j !== i && units[j].side !== u.side && !out_(units[j]) && !units[j].vehicle && !walledOff(field, u, units[j], h, x)) foes.add(j);
+  }
+  return foes.size > 0 && [...foes].reduce((n, j) => n + units[j].men, 0) >= u.men;
+}
 function surrender(u, quarter){                   // a cornered unit gives up: quarter % of its men standing taken prisoner, the rest killed; heroes on their feet taken -> {unit, taken, killed} (as units.surrender)
   const taken = Math.floor(u.men * quarter / 100), killed = u.men - taken;
   const heroes = (u.heroes || []).map(h => (h.state === "up" && !offField(h) ? { ...h, state: "prisoner" } : h));
@@ -4570,6 +4580,12 @@ function startPhase(B, k){                         // side k's move; at the star
   B.phase = k;
   const ran = [];
   for (let i = 0; i < B.units.length; i++){
+    if (k === 0 && overrun(B.units, i, B.field)){   // guns overrun: the crews taken or killed where they stand (rout.overrun)
+      const s = surrender(B.units[i], B.units[i].fights_on ? 0 : quarterFor(B.table, B.field, B.units[i].side));
+      B.units[i] = { ...s.unit, overrun: true };
+      ran.push({ unit: i, through: [], fled: true, surrendered: true, overrun: true, taken: s.taken, killed: s.killed });
+      continue;
+    }
     if (k !== 0 || B.units[i].state !== "broken") continue;
     const after = flee(B.units, i, B.size, B.field);
     if (cornered(B.units, i, after)){ const s = surrender(B.units[i], quarterFor(B.table, B.field, B.units[i].side)); B.units[i] = s.unit; ran.push({ unit: i, through: [], fled: true, surrendered: true, taken: s.taken, killed: s.killed }); continue }
