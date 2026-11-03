@@ -399,10 +399,10 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 2.42
+      "ratio": 2.24
      },
      "drew": 0.0,
-     "lost_share": 0.065,
+     "lost_share": 0.066,
      "side": "Allies",
      "stance": "attack",
      "won": 0.83
@@ -410,16 +410,16 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.46
+      "ratio": 0.45
      },
      "drew": 0.0,
-     "lost_share": 0.865,
+     "lost_share": 0.497,
      "side": "French",
      "stance": "hold",
      "won": 0.17
     }
    ],
-   "stamp": "24466f3c1fbe"
+   "stamp": "509f302a5663"
   },
   "cowpens-1781": {
    "runs": 12,

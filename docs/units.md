@@ -3130,12 +3130,11 @@ is 60 × 62 hexes, 600 by about 540 m, north at the top (project doc "ciudad-rod
   breach's defenders from behind, as in 1812. The objective is the great breach. The diversions
   (Pack, O'Toole) are off the map. Broken units re-form (`reform: true`).
 - Ends at 55 exchanges: "an hour had nearly elapsed before all resistance ceased".
-- Self-play (12 runs): Allies lose 8% (about 10% in 1812), the French 78% (nearly all lost in 1812,
-  most of them taken). The Light Division takes the great breach's defenders from behind in most
-  runs, and the storming party hacks through the chevaux in some, but the Allies hold the breach
-  secured in only 1 of 12: the guns' crews beside it fight on hand to hand (ten strikers on one hex of
-  front give about a blow an exchange) and outlast the hour, and a standing enemy within the
-  `secure` radius keeps it from counting as taken.
+- Self-play (12 runs of the benchmark): the Allies win as fought in 10 of 12, losing 7% (about 10% in
+  1812); the French lose 50% (nearly all lost in 1812, most of them taken after the fighting). The
+  Light Division gets in at the lesser breach in every run, the storming party hacks through the
+  chevaux in some, and the guns' crews are overrun (*Guns overrun*). With the breaches drawn 6 and 4
+  hexes wide it was also 10 of 12, the French losing 86%; before guns were overrun, 4 of 12.
 - On the Ciudad Rodrigo 1812 travel map, a fight within a hex of the town is offered on this
   battlefield (docs/travel.md).
 
