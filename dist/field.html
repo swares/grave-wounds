@@ -5390,7 +5390,7 @@ const sideIndex = (B, u) => (u.side === B.sides[0] ? 0 : 1);
 const fieldSupport = B => B.field.support || (B.field.support = []);
 function makeUnit(o, id, table){                   // a new unit as the GM or a battlefield draws it (as battle.make_unit)
   const nv = o.nv || (o.vehicle ? vehicleDevice(table) : null), fc = fireControlOf(o, table);
-  return { id, name: o.name, side: o.side, banner: o.banner || null, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
+  return { id, name: o.name, side: o.side, banner: o.banner || null, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, quality: o.quality, weapon: o.weapon,
     kit: o.kit, formation: o.formation, mounted: !!o.mounted, ...(isGun(o.weapon) ? { guns: gunKind(o) } : {}), width: o.width || Math.ceil(o.men / form(o).per_hex),
     pos: o.pos, facing: o.facing, state: "steady", charged: false, ...unitMarks(o), ...(nv ? { nv } : {}), ...(fc ? { fc } : {}), heroes: fieldLeaders(o, id) };
 }
