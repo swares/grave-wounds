@@ -260,7 +260,10 @@ crew, losing few men, held its nerve: at Ciudad Rodrigo a gun's crew beside the 
 outlasted the hour, and the breach was taken in 4 runs of 12. The accounts have crews overrun once
 the infantry reached the guns: "our Artillery Men were bayonetted by the enemy in the Act of
 loading" (Drummond, Lundy's Lane), the KGL battery "ridden over" by the lancers at Albuera, the
-88th and the 45th taking the two guns at Ciudad Rodrigo. MEASURED_OVERRUN
+88th and the 45th taking the two guns at Ciudad Rodrigo.
+Measured on 12 runs of every battlefield, planner off: 487 of 588 runs as fought to 494. Ciudad
+Rodrigo 4 to 10 (Allied losses 10% to 6%, French 90% to 86%), Lützen 9 to 12 (the Swedes' losses 7%
+to 4%); Dornach and Snipe -1; Burgos's French losses 46% to 52%.
 
 ## What the numbers give
 
