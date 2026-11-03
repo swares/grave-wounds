@@ -13,7 +13,7 @@
 // in a zone 100-150 m deep. The valleys, the ditches and the pit field are drawn to those figures,
 // not traced from any plan; the pits play as stakes (they stop horses and slow men). The strengths
 // are Lopes's (his lances as men-at-arms), split among the bodies he names, with round numbers.
-import { N, S, wobble, patch, speckle, groundGrid, unit, led, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
 
 const COLS = 100, ROWS = 130;                 // 1000 m east to west, about 1130 m north to south
 const CHAPEL = [50, 44];
@@ -84,16 +84,17 @@ const units = [
   unit("Right wing: the Master of Calatrava (Pedro Álvares Pereira)", CA, 700, LANCES, [14, 84, FRONT_CA + 6]),
   unit("Juan I's main battle (three mounted bodies)", CA, 3000, { ...LANCES, quality: "regular" }, [40, 30, 104]),
 ];
-led(units, {
-  "Vanguard: the Constable's men-at-arms": [["Nuno Álvares Pereira", "Constable"]],
-  "Right wing: the Ala dos Namorados": [["Mem Rodrigues de Vasconcelos", "Knight"], ["Rui Mendes de Vasconcelos", "Knight"]],
-  "Left wing: Antão Vasques and the foreigners": [["Antão Vasques", "Knight"]],
-  "Rearguard: João I's men-at-arms": [["João I", "King"]],
-  "French vanguard (on foot)": [["Jean de Rye", "Chamberlain"]],
-  "Portuguese loyalists in the vanguard (João Afonso Telo)": [["João Afonso Telo", "Count"]],
-  "Left wing: the Master of Alcántara's ginetes": [["Gonzalo Núñez de Guzmán", "Master of Alcántara"]],
-  "Right wing: the Master of Calatrava (Pedro Álvares Pereira)": [["Pedro Álvares Pereira", "Master of Calatrava"]],
-});
+// Held back (3 November 2026, asked and answered): with these leaders on, the losers' lords kept their
+//   battles together (Aljubarrota 12 to 9 of 12; without the losers' alone it came back), so the field has none
+//   until the rule is looked at (backlog: leaders on medieval battlefields). They would be:
+//   Nuno Álvares Pereira (Constable) with Vanguard: the Constable's men-at-arms; Mem Rodrigues de
+//   Vasconcelos (Knight) and Rui Mendes de Vasconcelos (Knight) with Right wing: the Ala dos
+//   Namorados; Antão Vasques (Knight) with Left wing: Antão Vasques and the foreigners; João I
+//   (King) with Rearguard: João I's men-at-arms; Jean de Rye (Chamberlain) with French vanguard (on
+//   foot); João Afonso Telo (Count) with Portuguese loyalists in the vanguard (João Afonso Telo);
+//   Gonzalo Núñez de Guzmán (Master of Alcántara) with Left wing: the Master of Alcántara's ginetes;
+//   Pedro Álvares Pereira (Master of Calatrava) with Right wing: the Master of Calatrava (Pedro
+//   Álvares Pereira).
 
 writeField({
   phases: [   // an exchange is about a minute; the attack about 18:00 (local solar time), sunset 18:50 (project doc "aljubarrota-research")

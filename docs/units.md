@@ -1652,9 +1652,12 @@ at the cap; a general adds no more than a lieutenant, by design). He is struck a
 unit's morale), and while up lets it re-form when broken. He is the battlefield's man, not the
 team's: his wounds stay on the field and do not go to the roller. A battlefield's maker puts
 them on its units by name (`field_lib.mjs` `led`, which fails on a name no unit has). Badajoz,
-Ciudad Rodrigo, Burgos, Albuera, Cowpens, Lundy's Lane and both Redans name theirs, from their
-orders of battle; an army's commander who led no one unit (Wellington, Beresford, Soult, Morgan,
-Brown, Drummond) is not on the map. At the sieges they are Picton, Kempt, Colville, Bowes and Barnard; Mackinnon, Campbell,
+Ciudad Rodrigo, Burgos, Albuera, Cowpens, Lundy's Lane, both Redans, Bull Run, Lützen, Crécy,
+Dornach and Jacob's Ford name theirs, from their orders of battle and the project's research; an army's commander who led no one unit (Wellington, Beresford, Soult, Morgan,
+Brown, Drummond, McDowell, Beauregard, Wallenstein, Saladin) is not on the map. Agincourt, Towton
+and Aljubarrota have none yet: with their lords on, the losers' great battles held together (+22
+and re-forming) and those fields fell from 7, 12 and 12 of 12 runs as fought to 2, 7 and 9; their
+makers list the leaders, held back until that is looked at. At the sieges they are Picton, Kempt, Colville, Bowes and Barnard; Mackinnon, Campbell,
 Craufurd, George Napier, Gurwood and Vandeleur; Somers Cocks and Pack. Where a leader's place
 in his brigade or column is not in the accounts, it is ours, and the battlefield's maker says so. Philippon is left off: he directed Badajoz's defence from
 the town and withdrew to San Cristóbal, and at the head of the reserve he held it in all but 6

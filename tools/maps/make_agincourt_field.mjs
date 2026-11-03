@@ -11,7 +11,7 @@
 // on the wings, stakes in front of the archers; the French in three lines, the first two of
 // dismounted men-at-arms, with mounted wings to ride down the archers and a mounted rear.
 // Numbers are disputed; those here are round figures for play.
-import { N, S, wobble, lerp, groundGrid, unit, firstCol, led, writeField } from "./field_lib.mjs";
+import { N, S, wobble, lerp, groundGrid, unit, firstCol, writeField } from "./field_lib.mjs";
 
 const COLS = 100, ROWS = 80;                  // 1000 m east to west, about 690 m north to south
 const westEdge = r => Math.round(lerp(4, 12, r / (ROWS - 1)) + wobble(r, 0.7, 2.1));    // Azincourt wood: cols below this
@@ -46,15 +46,14 @@ const units = [
   unit("Main battle", FR, 4800, KNIGHTS, [60, 20, 30]),
   unit("Rearguard (mounted)", FR, 3000, MOUNTED_REAR, [75, 12, 16]),
 ];
-led(units, {
-  "Vaward (York)": [["Edward, Duke of York", "Duke"]],
-  "Main battle (the King)": [["Henry V", "King"]],
-  "Rearward (Camoys)": [["Thomas Camoys", "Baron"]],
-  "Vanguard": [["Charles d'Albret", "Constable of France"], ["Boucicaut", "Marshal of France"]],
-  "Main battle": [["Alençon", "Duke"], ["Bar", "Duke"]],
-  "Mounted wing, west": [["Clignet de Bréban", "Knight"]],
-  "Mounted wing, east": [["Louis de Bosredon", "Knight"]],
-});
+// Held back (3 November 2026, asked and answered): with these leaders on, the losers' lords kept their
+//   battles together (Agincourt 7 to 2 of 12; without the losers' alone it came back), so the field has none
+//   until the rule is looked at (backlog: leaders on medieval battlefields). They would be:
+//   Edward, Duke of York (Duke) with Vaward (York); Henry V (King) with Main battle (the King);
+//   Thomas Camoys (Baron) with Rearward (Camoys); Charles d'Albret (Constable of France) and
+//   Boucicaut (Marshal of France) with Vanguard; Alençon (Duke) and Bar (Duke) with Main battle;
+//   Clignet de Bréban (Knight) with Mounted wing, west; Louis de Bosredon (Knight) with Mounted
+//   wing, east.
 // Stakes: a row in front of each body of archers, one hex ahead of their front.
 const stakes = units.filter(u => u.weapon === "longbow").flatMap(u => Array.from({ length: u.width }, (_, i) => [firstCol(u) + i, FRONT_EN - 1]));
 

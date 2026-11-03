@@ -203,27 +203,27 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 0.81
+      "ratio": 0.74
      },
      "drew": 0.0,
-     "lost_share": 0.254,
+     "lost_share": 0.25,
      "side": "Confederates",
      "stance": "hold",
-     "won": 1.0
+     "won": 0.92
     },
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 1.25
+      "ratio": 1.4
      },
      "drew": 0.0,
      "lost_share": 0.14,
      "side": "Union",
      "stance": "attack",
-     "won": 0.0
+     "won": 0.08
     }
    ],
-   "stamp": "9c80f6aca95e"
+   "stamp": "c44972794de0"
   },
   "burgos-1812": {
    "runs": 12,
@@ -458,7 +458,7 @@
       "ratio": 4.82
      },
      "drew": 0.0,
-     "lost_share": 0.025,
+     "lost_share": 0.024,
      "side": "English",
      "stance": "hold",
      "won": 1.0
@@ -469,13 +469,13 @@
       "ratio": 0.21
      },
      "drew": 0.0,
-     "lost_share": 0.064,
+     "lost_share": 0.063,
      "side": "French",
      "stance": "attack",
      "won": 0.0
     }
    ],
-   "stamp": "ad56bb7b29a0"
+   "stamp": "4cfa52b5160d"
   },
   "dakto-1967": {
    "runs": 12,
@@ -539,27 +539,27 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 0.51
+      "ratio": 1.41
      },
      "drew": 0.0,
-     "lost_share": 0.312,
+     "lost_share": 0.191,
      "side": "Swiss Confederates",
      "stance": "attack",
-     "won": 0.75
+     "won": 0.83
     },
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 2.1
+      "ratio": 0.99
      },
      "drew": 0.0,
-     "lost_share": 0.15,
+     "lost_share": 0.118,
      "side": "Imperials",
      "stance": "hold",
-     "won": 0.25
+     "won": 0.17
     }
    ],
-   "stamp": "59e01e71b267"
+   "stamp": "d25a879a5d32"
   },
   "easting73-1991": {
    "runs": 12,
@@ -819,27 +819,27 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.11
+      "ratio": 0.08
      },
      "drew": 0.0,
-     "lost_share": 0.868,
+     "lost_share": 0.961,
      "side": "Templars",
      "stance": "hold",
-     "won": 0.33
+     "won": 0.17
     },
     {
      "bar": {
       "outcome": "win",
-      "ratio": 10.19
+      "ratio": 14.46
      },
      "drew": 0.0,
-     "lost_share": 0.02,
+     "lost_share": 0.016,
      "side": "Ayyubids",
      "stance": "attack",
-     "won": 0.67
+     "won": 0.83
     }
    ],
-   "stamp": "34ebbc4080f1"
+   "stamp": "40ad142db02b"
   },
   "kapyong-1951": {
    "runs": 12,
@@ -959,10 +959,10 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 19.42
+      "ratio": 7.89
      },
      "drew": 0.0,
-     "lost_share": 0.04,
+     "lost_share": 0.069,
      "side": "Swedes",
      "stance": "attack",
      "won": 1.0
@@ -970,16 +970,16 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.08
+      "ratio": 0.13
      },
      "drew": 0.0,
-     "lost_share": 0.385,
+     "lost_share": 0.384,
      "side": "Imperialists",
      "stance": "hold",
      "won": 0.0
     }
    ],
-   "stamp": "f8b52f371b56"
+   "stamp": "0790395dbb2b"
   },
   "mogadishu-1993": {
    "runs": 12,

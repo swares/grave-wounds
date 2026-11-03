@@ -10,7 +10,7 @@
 // in our own words: each army's archers in front of its main body; Lancastrian men hidden in
 // Castle Hill Wood; the Duke of Norfolk's men coming up late on the Yorkist right. Numbers are
 // disputed; those here are round figures for play.
-import { N, S, wobble, groundGrid, unit, led, writeField } from "./field_lib.mjs";
+import { N, S, wobble, groundGrid, unit, writeField } from "./field_lib.mjs";
 
 const COLS = 150, ROWS = 120;                 // 1500 m east to west, about 1040 m north to south
 const beck = r => 4 + 0.8 * wobble(r, 0.3, 1.7);              // Cock Beck, down in its valley
@@ -45,13 +45,12 @@ const units = [
   unit("Rear battle (Exeter, Northumberland)", LANC, 6000, BILLS, [100, 30, FRONT_L - 10]),
   unit("Men in Castle Hill Wood", LANC, 1500, BILLS, [10, 14, 28]),
 ];
-led(units, {
-  "Archers (Fauconberg)": [["Fauconberg", "Baron"]],
-  "Edward's battle": [["Edward IV", "King"]],
-  "Norfolk's men (coming up late)": [["Norfolk", "Duke"]],
-  "Somerset's battle": [["Somerset", "Duke"]],
-  "Rear battle (Exeter, Northumberland)": [["Exeter", "Duke"], ["Northumberland", "Earl"]],
-});
+// Held back (3 November 2026, asked and answered): with these leaders on, the losers' lords kept their
+//   battles together (Towton 12 to 7 of 12; without the losers' alone it came back), so the field has none
+//   until the rule is looked at (backlog: leaders on medieval battlefields). They would be:
+//   Fauconberg (Baron) with Archers (Fauconberg); Edward IV (King) with Edward's battle; Norfolk
+//   (Duke) with Norfolk's men (coming up late); Somerset (Duke) with Somerset's battle; Exeter
+//   (Duke) and Northumberland (Earl) with Rear battle (Exeter, Northumberland).
 
 writeField({
   id: "towton-1461", name: "Towton, 29 March 1461", sides: ["Yorkists", "Lancastrians"], table: "towton-1461-all-hits",

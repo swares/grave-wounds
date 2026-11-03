@@ -399,7 +399,13 @@ When an item is done, delete it here and note it in the pull request that closes
     left at 12, as the rule already gives it (3 a step up the era's ladder, at most 12: an ensign is
     four steps up, so every officer is at the cap); asked and answered. Leaders on Albuera, Cowpens, Lundy's Lane and both
     Redans (3 November 2026): 38 named, from the orders of battle; as fought 493 to 494 of 588.
-    Still to do: Burgos's later storms; leaders on the battlefields of the other eras.
+    Leaders on Bull Run, Lützen, Crécy, Dornach and
+    Jacob's Ford (3 November 2026): 46 named; as fought 494 to 496. Held back at Agincourt, Towton
+    and Aljubarrota (asked and answered): with their lords on, the losers' battles held together
+    (7 to 2, 12 to 7, 12 to 9 of 12; without the losers' lords alone they came back to 7, 11, 11).
+    Still to do: why a lord holds a great medieval battle together (the +22 and re-forming on a
+    unit of thousands; his being struck no more often than an officer of a company), then those
+    three; Burgos's later storms; leaders on the 20th-century battlefields.
   - **Wound tables:** the Crimean siege table is the only siege table (the Siege warfare tables
     item above).
   - To start: list the sieges and storms the game already touches (the two Redans, Jacob's Ford,
