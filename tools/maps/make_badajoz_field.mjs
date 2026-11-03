@@ -107,7 +107,8 @@ const BREACH = { ...LINE, spare_muskets: 3, throws: true };
 const MINES = [53, 54, 55, 56].map(c => ({ at: [c, SF + 1], kind: "sprung", hidden: true }));
 // Leaders from the accounts (heroes.field_leaders), each on the unit he led; which half or party is ours:
 //   Picton (3rd Division, wounded at the castle), Kempt (its brigade, wounded), Colville and Bowes (4th
-//   Division, both wounded), Barnard (the Light Division), Philippon (the governor, with his reserve).
+//   Division, both wounded), Barnard (the Light Division). Not Philippon: he directed the defence from the town and, the castle
+//   taken, withdrew across the river to San Cristóbal (asked and answered, 2 November 2026).
 const units = [
   // the garrison on this front (ours: Philippon's 5,000 held the whole circuit and San Cristobal)
   unit("French at the Trinidad breach", FR, 600, BREACH, [6, 65, 53]),
@@ -119,7 +120,7 @@ const units = [
   at("Guns on the Trinidad's flank", FR, 60, { ...GUNS, emplaced: true }, 3, [63, 49], 4),
   at("Guns on the Santa Maria's flank", FR, 60, { ...GUNS, emplaced: true }, 3, [40, 47], 5),
   at("The castle's garrison (French and Hesse-Darmstadt)", FR, 450, LINE, 6, [68, 10], 5),
-  unit("Philippon's reserve in the town", FR, 500, { ...LINE, leaders: [{ name: "Philippon", rank: "Général de division" }] }, [6, 52, 38]),
+  unit("Philippon's reserve in the town", FR, 500, LINE, [6, 52, 38]),
   // the storm: each division's storming party (500 with 12 ladders), then its two brigades (ours)
   // in columns a breach wide or less (8 hexes): a wider block cannot get through the gap. Each
   // brigade goes as two half-brigades 4 hexes wide (ours): the flooded ditch before the Trinidad
