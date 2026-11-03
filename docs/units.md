@@ -2208,7 +2208,9 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   29% to 32%), Ciudad Rodrigo 1 to 4 (French losses 78% to 90%), Aljubarrota 11 to 12; Burgos 12 to
   10 and the September Redan 12 to 10 (British losses 41% to 47%); Jacob's Ford unchanged at 8.
   At its sourced breach widths (30 m and 10 m) Ciudad Rodrigo's columns now get in, but trickle in
-  one at a time and stall inside (0 of 12), so its breaches stay drawn wider.
+  one at a time and stall inside (0 of 12), so its breaches were left drawn wider; with guns overrun
+  (*Guns overrun*) they no longer stall, and the breaches are drawn at the sourced
+  widths again (2 November 2026).
 - **Escalade:** a unit on foot marked **Ladders** (set-up only, on a field with a wall,
   palisade or gate; or `ladders: true` in a battlefield file) fights across a palisade, wall
   or barred gate and climbs over it. Across it the front rank of each front hex fights from the
@@ -3111,9 +3113,9 @@ is 60 × 62 hexes, 600 by about 540 m, north at the top (project doc "ciudad-rod
 - The town's north face and the angle at its north-west corner: the fausse-braie (about 6 m) before
   the main wall (about 10 m), both drawn as wall edges, each with a ditch at its foot that is not deep
   (the 94th leapt into it). The great breach near the angle and the lesser 200 m east, each a bare
-  slope through both walls, drawn 6 and 4 hexes wide (ours: the sources give about 30 m and 10 m,
-  but the rules lay a column's ranks out on a diagonal behind it, and at those widths no column got
-  in).
+  slope through both walls, 3 hexes (30 m) and 1 hex (10 m) wide, as the sources give them; columns
+  file through them (*Filing through a gap*). Earlier on 2 November 2026 they were drawn 6 and 4 hexes
+  wide, when the rules let no column deeper than it was wide get in.
 - Behind the great breach: cuts 5 m deep on both sides of its top (deep ditch edges), chevaux de
   frise across it, a gun on each side, and a hidden mine on its slope (the train of powder and
   shells that killed Mackinnon).
@@ -3123,17 +3125,16 @@ is 60 × 62 hexes, 600 by about 540 m, north at the top (project doc "ciudad-rod
   200 on the fausse-braie, 150 at the lesser breach, three guns. No reserve: none is recorded.
 - The Allies (ours): the 3rd Division's storming party (500) and Mackinnon's brigade (two halves of
   700) at the great breach, Campbell's brigade (1,200, with ladders) round the angle from Santa Cruz,
-  and the Light Division's stormers and Vandeleur's brigade (five columns of 300) at the lesser
-  breach. The Light Division's plan (plans.yaml) takes it through the lesser breach onto the great
+  and the Light Division's stormers and Vandeleur's brigade (five columns of 300, a hex wide) at the
+  lesser breach. The Light Division's plan (plans.yaml) takes it through the lesser breach onto the great
   breach's defenders from behind, as in 1812. The objective is the great breach. The diversions
   (Pack, O'Toole) are off the map. Broken units re-form (`reform: true`).
 - Ends at 55 exchanges: "an hour had nearly elapsed before all resistance ceased".
-- Self-play (12 runs): Allies lose 8% (about 10% in 1812), the French 78% (nearly all lost in 1812,
-  most of them taken). The Light Division takes the great breach's defenders from behind in most
-  runs, and the storming party hacks through the chevaux in some, but the Allies hold the breach
-  secured in only 1 of 12: the guns' crews beside it fight on hand to hand (ten strikers on one hex of
-  front give about a blow an exchange) and outlast the hour, and a standing enemy within the
-  `secure` radius keeps it from counting as taken.
+- Self-play (12 runs of the benchmark): the Allies win as fought in 10 of 12, losing 7% (about 10% in
+  1812); the French lose 50% (nearly all lost in 1812, most of them taken after the fighting). The
+  Light Division gets in at the lesser breach in every run, the storming party hacks through the
+  chevaux in some, and the guns' crews are overrun (*Guns overrun*). With the breaches drawn 6 and 4
+  hexes wide it was also 10 of 12, the French losing 86%; before guns were overrun, 4 of 12.
 - On the Ciudad Rodrigo 1812 travel map, a fight within a hex of the town is offered on this
   battlefield (docs/travel.md).
 
