@@ -2412,14 +2412,17 @@ function holdsPosition(us, i, field){             // unit i holds a position: in
   for (const e of us) if (e.side !== u.side && e.men > 0 && !ROUTED.has(e.state)){ const dd = hdist(e.pos, u.pos); if (dd < best){ best = dd; at = e.pos } }
   return holdsWorks(field, at || u.pos, u);
 }
-function reformAll(us, lost, rng, field){                // broken units that lost no men this exchange, no standing enemy within reform.reach times their move, check Nerve less its penalty: passing, they re-form as shaken (as units._reform_all)
+const leaderBonus = u => UD.morale.mods.leader + Math.max(0, ...(u.heroes || []).filter(h => h.leader && h.state === "up").map(h => h.rank_bonus || 0));   // a leader up: his morale bonus and his rank's, as moraleMods (as units.leader_bonus)
+function reformAll(us, lost, rng, field){                // broken units that lost no men this exchange, no standing enemy within reform.reach times their move, check Nerve less its penalty: passing, they re-form as shaken; on a battlefield that turns it on, or anywhere with their leader up (reform.leader), his bonus added (as units._reform_all)
   const R = UD.morale.reform, log = [];
-  if (!R || !field?.reform) return log;   // only on a battlefield that turns it on
+  if (!R) return log;
   us.forEach((u, i) => {
     if (u.state !== "broken" || u.men <= 0 || lost[i] > 0) return;
+    const led = !!R.leader && leaderState(u) === "up";
+    if (!field?.reform && !led) return;   // only on a battlefield that turns it on, or with its leader up
     const reach = R.reach * allowance(u);
     if (us.some(e => e.side !== u.side && !out_(e) && unitGap(u, e) <= reach)) return;
-    const target = quality(u.quality).nerve - R.penalty, roll = rng.randint(1, 100);
+    const target = quality(u.quality).nerve - R.penalty + (led ? leaderBonus(u) : 0), roll = rng.randint(1, 100);
     if (roll <= target) u.state = "shaken";
     log.push({ kind: "reform", unit: i, target, roll, state: u.state });
   });

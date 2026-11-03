@@ -4567,20 +4567,29 @@ def _morale_all(d: Data, us: list, occ: dict, before: list, acc: tuple, rng, tab
     return log
 
 
+def leader_bonus(d: Data, u: dict) -> int:
+    """A leader up: his morale bonus (morale.mods.leader) and his rank's, as the morale check."""
+    return d.units["morale"]["mods"]["leader"] + max([0] + [h.get("rank_bonus", 0) for h in u.get("heroes", []) if h.get("leader") and h.get("state") == "up"])
+
+
 def _reform_all(d: Data, us: list, lost: list, rng, field: dict | None = None) -> list:
-    """On a battlefield that turns it on (reform: true), broken units that lost no men this
-    exchange and have no standing enemy within morale.reform.reach times their move check Nerve
-    less its penalty: passing, they re-form as shaken."""
+    """Broken units that lost no men this exchange and have no standing enemy within
+    morale.reform.reach times their move check Nerve less its penalty: passing, they re-form as
+    shaken. On a battlefield that turns it on (reform: true), or on any with their leader up
+    (morale.reform.leader); a leader up adds his bonus."""
     R, log = d.units["morale"].get("reform"), []
-    if not R or not (field or {}).get("reform"):
+    if not R:
         return log
     for i, u in enumerate(us):
         if u["state"] != "broken" or u["men"] <= 0 or lost[i] > 0:
             continue
+        led = bool(R.get("leader")) and leader_state(u) == "up"
+        if not (field or {}).get("reform") and not led:
+            continue
         reach = R["reach"] * allowance(d, u)
         if any(e["side"] != u["side"] and not _out(e) and unit_gap(d, u, e) <= reach for e in us):
             continue
-        target, roll = quality(d, u["quality"])["nerve"] - R["penalty"], rng.randint(1, 100)
+        target, roll = quality(d, u["quality"])["nerve"] - R["penalty"] + (leader_bonus(d, u) if led else 0), rng.randint(1, 100)
         if roll <= target:
             u["state"] = "shaken"
         log.append({"kind": "reform", "unit": i, "target": target, "roll": roll, "state": u["state"]})
