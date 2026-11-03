@@ -392,8 +392,11 @@ When an item is done, delete it here and note it in the pull request that closes
     touched hand to hand by as many enemy as its crews is overrun (Ciudad Rodrigo 4 to 10 of 12).
     Ciudad Rodrigo at its sourced breach widths (2 November 2026): with guns
     overrun the columns no longer stall inside. Re-forming with a leader (2 November 2026): on any
-    battlefield, a broken unit whose leader is up re-forms (Nerve −20 plus his bonus). Still to do:
-    Burgos's later storms.
+    battlefield, a broken unit whose leader is up re-forms (Nerve −20 plus his bonus). Leaders from
+    the accounts (2 November 2026): Badajoz, Ciudad Rodrigo and Burgos name their leaders, each a
+    leader hero of his unit (heroes.field_leaders); Badajoz's French losses 33% to 43% (1812: about
+    47%), Burgos 10 to 9 of 12, the total 494 to 493. Still to do: Burgos's later storms; leaders on
+    the other battlefields, and whether a field leader's rank bonus should follow his rank.
   - **Wound tables:** the Crimean siege table is the only siege table (the Siege warfare tables
     item above).
   - To start: list the sieges and storms the game already touches (the two Redans, Jacob's Ford,

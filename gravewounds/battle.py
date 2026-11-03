@@ -41,7 +41,23 @@ def make_unit(d: Data, o: dict, uid: int, table: str) -> dict:
         u["fc"] = fc
     if o.get("medics"):
         u.update({"medics": o["medics"], "medic_quality": o.get("medic_quality") or o["quality"]})
+    u["heroes"] = field_leaders(d, o, uid)
     return u
+
+
+def field_leaders(d: Data, o: dict, uid: int) -> list:
+    """A battlefield unit's leaders from the accounts (its `leaders`: [{name, rank}]) as leader heroes
+    (heroes.field_leaders): officers in its front rank, with its weapon and kit and its quality's
+    attack, defence and Nerve, the usual Blood, and the most a rank adds (heroes.rank_cap). Not the
+    team's or the roller's men (from_field)."""
+    H = d.units["heroes"]
+    if not H.get("field_leaders"):
+        return []
+    q, pool = U.quality(d, o["quality"]), d.wounds["tracking"]["blood_pool"]
+    return [{"id": 100000 + uid * 10 + k, "name": L["name"], "role": "front", "attack": q["attack"], "defence": q["defence"], "nerve": q["nerve"],
+             "weapon": o["weapon"], "kit": o["kit"], "leader": True, "state": "up", "wounds": [], "hand": "R", "pool": pool, "blood": pool,
+             "old_pain": 0, "old_bleed": 0, "old": [], "rank": L["rank"], "rank_bonus": H.get("rank_cap", 12), "officer": True, "from_field": True}
+            for k, L in enumerate(o.get("leaders") or [])]
 
 
 def _unit_marks(o: dict) -> dict:

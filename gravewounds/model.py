@@ -2540,6 +2540,9 @@ def _siege_errors(d: Data, f: dict, where: str) -> list[str]:
     sw = (S.get("spare_muskets") or {}).get("weapons", [])
     errors = [f"{where}: unit {u.get('name')}: throws must be true or false" for u in f.get("units", []) if "throws" in u and not isinstance(u["throws"], bool)]
     errors += [f"{where}: reform must be true or false"] if "reform" in f and not isinstance(f["reform"], bool) else []
+    errors += [f"{where}: unit {u.get('name')}: leaders must be a list of {{name, rank}}, each a name and a rank" for u in f.get("units", [])
+               if "leaders" in u and not (isinstance(u["leaders"], list) and all(isinstance(L, dict) and isinstance(L.get("name"), str) and L["name"]
+                                                                                and isinstance(L.get("rank"), str) and L["rank"] for L in u["leaders"]))]
     errors += [f"{where}: unit {u.get('name')}: spare_muskets must be a whole number of 2 or more, on a unit armed with one of {', '.join(sw)}" for u in f.get("units", [])
                if "spare_muskets" in u and not (isinstance(u["spare_muskets"], int) and not isinstance(u["spare_muskets"], bool) and u["spare_muskets"] >= 2 and u.get("weapon") in sw)]
     have, kinds = (d.tables.get(f.get("table")) or {}).get("weapons", []), M.get("kinds") or {}

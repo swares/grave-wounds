@@ -105,6 +105,10 @@ const CASTLE = [[79, 24], [74, 21], [74, 10], [66, 10], [60, 22]];   // over the
 // breach, hidden until it goes off).
 const BREACH = { ...LINE, spare_muskets: 3, throws: true };
 const MINES = [53, 54, 55, 56].map(c => ({ at: [c, SF + 1], kind: "sprung", hidden: true }));
+// Leaders from the accounts (heroes.field_leaders), each on the unit he led; which half or party is ours:
+//   Picton (3rd Division, wounded at the castle), Kempt (its brigade, wounded), Colville and Bowes (4th
+//   Division, both wounded), Barnard (the Light Division). Not Philippon: he directed the defence from the town and, the castle
+//   taken, withdrew across the river to San Cristóbal (asked and answered, 2 November 2026).
 const units = [
   // the garrison on this front (ours: Philippon's 5,000 held the whole circuit and San Cristobal)
   unit("French at the Trinidad breach", FR, 600, BREACH, [6, 65, 53]),
@@ -125,21 +129,21 @@ const units = [
   // Each goes by its route (via) to its breach or wall, as the plan of attack sent it: walls stand
   // between every column and the town, and with no route a column halts at the first wall in its way.
   // the storming parties were picked volunteers: veterans, all three
-  unit("4th Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", formation: "open", via: TRINIDAD }, [7, 62, 64]),
-  unit("4th Division, first brigade (left half)", AL, 750, { ...LINE, via: TRINIDAD }, [4, 61, 69]),
+  unit("4th Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", formation: "open", via: TRINIDAD, leaders: [{ name: "Bowes", rank: "Major-General" }] }, [7, 62, 64]),
+  unit("4th Division, first brigade (left half)", AL, 750, { ...LINE, via: TRINIDAD, leaders: [{ name: "Colville", rank: "Major-General" }] }, [4, 61, 69]),
   unit("4th Division, first brigade (right half)", AL, 750, { ...LINE, via: TRINIDAD }, [4, 65, 69]),
   unit("4th Division, second brigade (left half)", AL, 750, { ...LINE, via: CURTAIN }, [4, 61, 75]),
   unit("4th Division, second brigade (right half)", AL, 750, { ...LINE, via: CURTAIN }, [4, 65, 75]),
   unit("Light Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", formation: "open", via: SANTA_MARIA }, [7, 46, 64]),
-  unit("Light Division, first brigade (left half)", AL, 500, { ...LIGHT, via: SANTA_MARIA }, [4, 45, 69]),
+  unit("Light Division, first brigade (left half)", AL, 500, { ...LIGHT, via: SANTA_MARIA, leaders: [{ name: "Barnard", rank: "Lieutenant-Colonel" }] }, [4, 45, 69]),
   unit("Light Division, first brigade (right half)", AL, 500, { ...LIGHT, via: SANTA_MARIA }, [4, 49, 69]),
   unit("Light Division, second brigade (left half)", AL, 500, { ...LIGHT, via: CURTAIN }, [4, 45, 75]),
   unit("Light Division, second brigade (right half)", AL, 500, { ...LIGHT, via: CURTAIN }, [4, 49, 75]),
   // the 3rd Division escaladed the castle as a division: every unit of it carries ladders
-  at("3rd Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", via: CASTLE }, 5, [84, 18], 2),
+  at("3rd Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", via: CASTLE, leaders: [{ name: "Picton", rank: "Lieutenant-General" }] }, 5, [84, 18], 2),
   // each brigade in two halves of about 625 (5 wide, 4 deep): a 1,250-man block 7 deep had no room to
   // turn inside the outwork (7 hexes wide) to face the garrison, and stood there all night (ours)
-  at("3rd Division, first brigade (right half)", AL, 625, { ...LADDERS, via: CASTLE }, 5, [87, 12], N),
+  at("3rd Division, first brigade (right half)", AL, 625, { ...LADDERS, via: CASTLE, leaders: [{ name: "Kempt", rank: "Major-General" }] }, 5, [87, 12], N),
   at("3rd Division, first brigade (left half)", AL, 625, { ...LADDERS, via: CASTLE }, 5, [87, 8], N),
   at("3rd Division, second brigade (right half)", AL, 625, { ...LADDERS, via: CASTLE }, 5, [87, 4], N),
   at("3rd Division, second brigade (left half)", AL, 625, { ...LADDERS, via: CASTLE }, 5, [87, 0], N),

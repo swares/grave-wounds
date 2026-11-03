@@ -1643,6 +1643,19 @@ on his unit's heroes. A unit with
 a hero still up shows a star on the map. The heroes' list shows each one's attack and defence
 after his wounds, his state and his Blood.
 
+**Leaders from the accounts.** A battlefield can name a unit's leaders as the accounts give
+them (its `leaders`: name and rank; `heroes.field_leaders`). Each comes on as a leader hero of
+his unit: an officer in its front rank, with its weapon and kit, its quality's attack, defence
+and Nerve, the usual Blood, and the most a rank adds (12: the accounts name officers, from
+lieutenants to generals). He is struck as officers are, can be wounded and fall (−20 to his
+unit's morale), and while up lets it re-form when broken. He is the battlefield's man, not the
+team's: his wounds stay on the field and do not go to the roller. Badajoz, Ciudad Rodrigo and
+Burgos name theirs (Picton, Kempt, Colville, Bowes and Barnard; Mackinnon, Campbell,
+Craufurd, George Napier, Gurwood and Vandeleur; Somers Cocks and Pack); which half or column of
+a brigade each is with is ours. Philippon is left off: he directed Badajoz's defence from
+the town and withdrew to San Cristóbal, and at the head of the reserve he held it in all but 6
+of 12 runs.
+
 After the battle, **Heroes' wounds to the roller** puts each wound on his record in the
 wound roller (with its bleeding, pain and clock), and marks him out of the fight if he went
 down, and his Blood where the field left it.
