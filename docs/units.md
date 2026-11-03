@@ -2188,7 +2188,12 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   breach or a gate one front wide, its ranks following, where before the block the rules lay out
   (its ranks slanting behind its front) had to fit whole: a gap cut straight through two walls let
   in only a column some hexes narrower than the gap, and Ciudad Rodrigo's 10 m lesser breach let in
-  none. MEASURED_FILING
+  none. Measured with the contact change below (*Across a wall*) on 12 runs of every battlefield,
+  planner off: 484 of 588 runs as fought to 487. Badajoz 6 to 9 (Allied losses 37% to 35%, French
+  29% to 32%), Ciudad Rodrigo 1 to 4 (French losses 78% to 90%), Aljubarrota 11 to 12; Burgos 12 to
+  10 and the September Redan 12 to 10 (British losses 41% to 47%); Jacob's Ford unchanged at 8.
+  At its sourced breach widths (30 m and 10 m) Ciudad Rodrigo's columns now get in, but trickle in
+  one at a time and stall inside (0 of 12), so its breaches stay drawn wider.
 - **Escalade:** a unit on foot marked **Ladders** (set-up only, on a field with a wall,
   palisade or gate; or `ladders: true` in a battlefield file) fights across a palisade, wall
   or barred gate and climbs over it. Across it the front rank of each front hex fights from the
