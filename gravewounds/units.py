@@ -4633,14 +4633,20 @@ def _fits(d: Data, units: list, i: int, u: dict, size: tuple, field: dict | None
 
 def _stands(d: Data, field: dict, u: dict, hexes: list) -> bool:
     """Ground it can stand on, and no palisade, wall or barred gate between its own hexes, unless it
-    carries ladders (escalade): then its ranks may stand on both sides of the work it is climbing."""
+    carries ladders (escalade): then its ranks may stand on both sides of the work it is climbing.
+    With filing.front_clear, only its front row must be clear: the ranks behind may lie across one,
+    as a column files through a gap."""
     keys = {f"{h[0]},{h[1]}" for h in hexes}
+    front = {f"{h[0]},{h[1]}" for h in (footprint(d, u) or [[]])[0]} if (d.units.get("filing") or {}).get("front_clear") else None
     for h in hexes:
         if not _can_enter(d, field, u, h):
             return False
         for dirn in range(6):
             x = step(h, dirn)
-            if f"{x[0]},{x[1]}" in keys and _wall_between(d, field, h, x) and not ladders_reach(d, field, u, h, x):
+            kx = f"{x[0]},{x[1]}"
+            if kx not in keys or (front is not None and f"{h[0]},{h[1]}" not in front and kx not in front):
+                continue
+            if _wall_between(d, field, h, x) and not ladders_reach(d, field, u, h, x):
                 return False
     return True
 
@@ -4775,20 +4781,26 @@ def _path_len(d: Data, units: list, i: int, goal, size: tuple, limit: int, field
 
 def _steps_from(d: Data, field: dict | None, u: dict, h: tuple, occ: dict, size: tuple) -> list:
     """(hex, cost) for each step the unit's middle hex can take from h: the worst that any hex
-    of the unit, front, flanks and rear, pays for the same step (one that cannot step blocks it)."""
-    out, front = [], [x for row in footprint(d, {**u, "pos": list(h)}) for x in row] if field else [list(h)]
+    of the unit, front, flanks and rear, pays for the same step (one that cannot step blocks it).
+    With filing.front_clear, a rank behind that cannot take the step (a wall in its way) files
+    after its front rather than blocking it."""
+    rows = footprint(d, {**u, "pos": list(h)}) if field else [[list(h)]]
+    out, front = [], [x for row in rows for x in row]
+    lead = {f"{x[0]},{x[1]}" for x in (rows[0] if rows else [])} if field and (d.units.get("filing") or {}).get("front_clear") else None
     for dirn in range(6):
         x = tuple(step(list(h), dirn))
         if not (0 <= x[0] < size[0] and 0 <= x[1] < size[1]) or f"{x[0]},{x[1]}" in occ:
             continue
-        sc = _front_cost(d, field, u, front, dirn, size)
+        sc = _front_cost(d, field, u, front, dirn, size, lead)
         if sc is not None:
             out.append((x, sc))
     return out
 
 
-def _front_cost(d: Data, field: dict | None, u: dict, front: list, dirn: int, size: tuple) -> int | None:
-    """The worst step cost of a front row's hexes stepping in direction dirn (off the map: not counted)."""
+def _front_cost(d: Data, field: dict | None, u: dict, front: list, dirn: int, size: tuple, lead: set | None = None) -> int | None:
+    """The worst step cost of a front row's hexes stepping in direction dirn (off the map: not
+    counted); lead: the hexes that must take it (the rest, ranks filing after, are skipped where
+    they cannot)."""
     worst = 0
     for f in front:
         y = step(f, dirn)
@@ -4796,7 +4808,9 @@ def _front_cost(d: Data, field: dict | None, u: dict, front: list, dirn: int, si
             continue
         c = step_cost(d, field, u, f, y)
         if c is None:
-            return None
+            if lead is None or f"{f[0]},{f[1]}" in lead:
+                return None
+            continue
         worst = max(worst, c)
     return worst or 1
 
@@ -4807,7 +4821,7 @@ def move(d: Data, units: list, i: int, pos, facing: int, size: tuple, field: dic
     move that ends in contact with an enemy may be up to charge_move times the allowance (a
     charge; not for a shaken unit)."""
     u = units[i]
-    why = _held_still(d, units, i, pos, facing)
+    why = _held_still(d, units, i, pos, facing, field)
     if why:
         return {"ok": False, "why": why}
     turns = min((facing - u["facing"]) % 6, (u["facing"] - facing) % 6)
@@ -4866,14 +4880,15 @@ def mates(units: list, i: int, through: bool) -> list:
     return [x for k, x in enumerate(units) if k != i and not (through and x["side"] == u["side"])]
 
 
-def _held_still(d: Data, units: list, i: int, pos, facing: int) -> str | None:
-    """Why unit i cannot move to pos (or turn to facing) at all, or None: running, in contact,
-    lost in the dark, or with vehicles that cannot move."""
+def _held_still(d: Data, units: list, i: int, pos, facing: int, field: dict | None = None) -> str | None:
+    """Why unit i cannot move to pos (or turn to facing) at all, or None: running, in contact
+    (engaged: touching an enemy only across a wall no one fights over does not hold it), lost in
+    the dark, or with vehicles that cannot move."""
     u = units[i]
     goes = list(pos) != u["pos"]
     if u["state"] in ("broken", "fled"):
         return "it is running"
-    if in_contact(d, units, occupancy(d, units), i) and (goes or facing != u["facing"]):
+    if engaged(d, units, occupancy(d, units), i, field) and (goes or facing != u["facing"]):
         return "it is in contact"
     if u.get("lost") and goes:
         return "it has lost its way in the dark (it may turn)"

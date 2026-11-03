@@ -433,8 +433,11 @@ of each front hex shoot. Shots at a unit in open order count 0.8.
 - **Across a wall** (31 October 2026): a unit that touches the enemy only across a work no
   one fights over is not in contact for shooting, so it shoots and is shot at (as are batteries).
   Such a work is a wall, palisade or barred gate, or a deep ditch with no ladders down, when
-  neither side has reach-2 weapons and neither has ladders that get up it. It still cannot move
-  away, as a unit in contact. Men at the foot of a wall get no cover from it against men
+  neither side has reach-2 weapons and neither has ladders that get up it. Since 2 November 2026
+  it is not held in contact for moving or taking the commander's orders either: it may move off
+  and turn (before, it could not, and with ranks filing across walls the Ayyubids at Jacob's Ford
+  stood touching the Templars across the castle wall, neither fighting nor moving, to the end of
+  the run: 8 of 12 runs as fought to 4; with this, back to 8). Men at the foot of a wall get no cover from it against men
   shooting down from its high (inner) side in the hex right above them; the men on top keep
   theirs, and shots from further off count the wall as before. Before this, men at the foot of a wall and the men on top of it
   neither fought nor shot: at Burgos 800 Portuguese stood under the hornwork for an hour and lost
@@ -2178,6 +2181,19 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   neither strike nor shoot; the ranks behind fight as usual. The work's breach figure is for a battle-map side
   (about 1.2 yards, 1.15 m); a field-map side takes five times as much, so ten men open a stretch of palisade in about a
   minute. A bank or ditch under a breached palisade stays.
+- **Filing through a gap** (2 November 2026, `filing.front_clear`). A unit's front row must stand
+  clear of walls, palisades and barred gates, but its ranks behind may lie across one, and a rank
+  that cannot take a step (a wall in its way) files after the front rather than stopping the move:
+  the front must still find a way through, and pays for the going as before. A column goes through a
+  breach or a gate one front wide, its ranks following, where before the block the rules lay out
+  (its ranks slanting behind its front) had to fit whole: a gap cut straight through two walls let
+  in only a column some hexes narrower than the gap, and Ciudad Rodrigo's 10 m lesser breach let in
+  none. Measured with the contact change below (*Across a wall*) on 12 runs of every battlefield,
+  planner off: 484 of 588 runs as fought to 487. Badajoz 6 to 9 (Allied losses 37% to 35%, French
+  29% to 32%), Ciudad Rodrigo 1 to 4 (French losses 78% to 90%), Aljubarrota 11 to 12; Burgos 12 to
+  10 and the September Redan 12 to 10 (British losses 41% to 47%); Jacob's Ford unchanged at 8.
+  At its sourced breach widths (30 m and 10 m) Ciudad Rodrigo's columns now get in, but trickle in
+  one at a time and stall inside (0 of 12), so its breaches stay drawn wider.
 - **Escalade:** a unit on foot marked **Ladders** (set-up only, on a field with a wall,
   palisade or gate; or `ladders: true` in a battlefield file) fights across a palisade, wall
   or barred gate and climbs over it. Across it the front rank of each front hex fights from the
@@ -2186,9 +2202,9 @@ side, on the high side; for a gate, on the inside. Click again to take it away.
   climb up a wall's height; the defenders' front rank strikes back at the men on the ladders.
   Stepping over the work costs 4 hexes of movement (`escalade.cross`), into hexes clear of
   the enemy. While it climbs, its ranks may stand on both sides of the work (its front over, the
-  rest on the ladders); a unit without ladders may never stand with a palisade, wall or barred
-  gate between its own hexes, so before this (31 October 2026) only a unit one rank deep could
-  climb at all (found building Badajoz, where the 3rd Division stopped at the castle's foot). Mounted units and guns cannot use ladders. Without ladders, a unit still stops at
+  rest on the ladders); a unit without ladders may not have a palisade, wall or barred gate
+  across its front row (since 2 November 2026 its ranks behind may lie across one: *Filing
+  through a gap*), so before this (31 October 2026) only a unit one rank deep could climb at all (found building Badajoz, where the 3rd Division stopped at the castle's foot). Mounted units and guns cannot use ladders. Without ladders, a unit still stops at
   the foot, and only reach-2 weapons strike over. The GM marks the units that carried them.
   - **A footing on the wall** (1 November 2026): when men on ladders put down more of the
     defenders across the work they climb than they lose to those defenders in an exchange, the
