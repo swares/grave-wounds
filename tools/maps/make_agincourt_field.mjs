@@ -28,6 +28,10 @@ const KNIGHTS = { ...MEN_AT_ARMS, quality: "regular" };
 const MOUNTED = { quality: "veteran", weapon: "spear", kit: "full_plate", formation: "close", mounted: true };
 const MOUNTED_REAR = { ...MOUNTED, quality: "regular" };
 const FRONT_EN = 66, FRONT_FR = 42;
+// Leaders from the accounts (heroes.field_leaders; Wikipedia, "Battle of Agincourt"): York, the King and
+//   Camoys with the three English battles; d'Albret and Boucicaut with the French vanguard, Alençon and
+//   Bar with the main battle, Clignet de Bréban and Bosredon with the mounted wings (which wing each led
+//   is ours). Erpingham led the archers of all four bodies, so is on none; the rearguard was leaderless.
 const units = [
   unit("Archers, left wing", EN, 1600, ARCHERS, [16, 12, FRONT_EN]),
   unit("Rearward (Camoys)", EN, 320, MEN_AT_ARMS, [8, 28, FRONT_EN]),
@@ -42,6 +46,14 @@ const units = [
   unit("Main battle", FR, 4800, KNIGHTS, [60, 20, 30]),
   unit("Rearguard (mounted)", FR, 3000, MOUNTED_REAR, [75, 12, 16]),
 ];
+// Held back (3 November 2026, asked and answered): with these leaders on, the losers' lords kept their
+//   battles together (Agincourt 7 to 2 of 12; without the losers' alone it came back), so the field has none
+//   until the rule is looked at (backlog: leaders on medieval battlefields). They would be:
+//   Edward, Duke of York (Duke) with Vaward (York); Henry V (King) with Main battle (the King);
+//   Thomas Camoys (Baron) with Rearward (Camoys); Charles d'Albret (Constable of France) and
+//   Boucicaut (Marshal of France) with Vanguard; Alençon (Duke) and Bar (Duke) with Main battle;
+//   Clignet de Bréban (Knight) with Mounted wing, west; Louis de Bosredon (Knight) with Mounted
+//   wing, east.
 // Stakes: a row in front of each body of archers, one hex ahead of their front.
 const stakes = units.filter(u => u.weapon === "longbow").flatMap(u => Array.from({ length: u.width }, (_, i) => [firstCol(u) + i, FRONT_EN - 1]));
 

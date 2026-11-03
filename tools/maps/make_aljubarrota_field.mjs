@@ -63,6 +63,10 @@ const ARCHERS = { quality: "veteran", weapon: "longbow", kit: "gambeson", format
 const CROSSBOWS = { quality: "regular", weapon: "crossbow", kit: "gambeson", formation: "open", mounted: false };
 const LANCES = { quality: "veteran", weapon: "spear", kit: "transitional", formation: "close", mounted: true };
 const GINETES = { quality: "veteran", weapon: "spear", kit: "hauberk", formation: "open", mounted: true };
+// Leaders from the accounts (heroes.field_leaders; project doc "aljubarrota-research", after Lopes and
+//   Monteiro): the Constable, Mem Rodrigues and Rui Mendes de Vasconcelos, Antão Vasques and João I; the
+//   Masters of Alcántara and Calatrava, João Afonso Telo, and Jean de Rye with the French (ours). Juan I
+//   is left off: sick, he had been carried in a litter for a fortnight.
 const units = [
   unit("Vanguard: the Constable's men-at-arms", PT, 600, MAA, [20, 39, FRONT_PT]),
   unit("Vanguard foot", PT, 1200, FOOT, [20, 39, FRONT_PT - 6]),
@@ -80,6 +84,17 @@ const units = [
   unit("Right wing: the Master of Calatrava (Pedro Álvares Pereira)", CA, 700, LANCES, [14, 84, FRONT_CA + 6]),
   unit("Juan I's main battle (three mounted bodies)", CA, 3000, { ...LANCES, quality: "regular" }, [40, 30, 104]),
 ];
+// Held back (3 November 2026, asked and answered): with these leaders on, the losers' lords kept their
+//   battles together (Aljubarrota 12 to 9 of 12; without the losers' alone it came back), so the field has none
+//   until the rule is looked at (backlog: leaders on medieval battlefields). They would be:
+//   Nuno Álvares Pereira (Constable) with Vanguard: the Constable's men-at-arms; Mem Rodrigues de
+//   Vasconcelos (Knight) and Rui Mendes de Vasconcelos (Knight) with Right wing: the Ala dos
+//   Namorados; Antão Vasques (Knight) with Left wing: Antão Vasques and the foreigners; João I
+//   (King) with Rearguard: João I's men-at-arms; Jean de Rye (Chamberlain) with French vanguard (on
+//   foot); João Afonso Telo (Count) with Portuguese loyalists in the vanguard (João Afonso Telo);
+//   Gonzalo Núñez de Guzmán (Master of Alcántara) with Left wing: the Master of Alcántara's ginetes;
+//   Pedro Álvares Pereira (Master of Calatrava) with Right wing: the Master of Calatrava (Pedro
+//   Álvares Pereira).
 
 writeField({
   phases: [   // an exchange is about a minute; the attack about 18:00 (local solar time), sunset 18:50 (project doc "aljubarrota-research")

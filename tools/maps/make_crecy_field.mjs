@@ -17,7 +17,7 @@
 // 1,000 Welsh), with the King's spearmen ours; the French are Sumption's (about 12,000 men-at-arms
 // and 6,000 Genoese), split among the bodies the chroniclers name, with round numbers. The ridge,
 // the valley, the bank and the terraces are drawn to those words, not traced from any survey.
-import { N, S, wobble, patch, speckle, groundGrid, unit, stepHex, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, stepHex, led, writeField } from "./field_lib.mjs";
 
 // WEST is at the top: the columns run from south (left, Crécy) to north (right, Wadicourt), the rows
 // from west (the English rear) to east (the Estrées plateau).
@@ -86,6 +86,9 @@ const WELSH = { quality: "regular", weapon: "spear", kit: "gambeson", formation:
 const GENOESE = { quality: "veteran", weapon: "crossbow", kit: "gambeson", formation: "open", mounted: false };   // their pavises left with the baggage
 const LANCES = { quality: "veteran", weapon: "spear", kit: "transitional", formation: "close", mounted: true };
 const LEVY = { quality: "green", weapon: "spear", kit: "gambeson", formation: "close", mounted: false };
+// Leaders from the accounts (heroes.field_leaders; project doc "crecy-research"): the Prince with Warwick
+//   and Northampton (Prestwich, Knighton), Arundel, and the King; Doria and Grimaldi with the Genoese,
+//   Alençon, John of Bohemia, Lorraine, Blois and Flanders, and Philip VI.
 const units = [
   unit("The Prince's archers, right", EN, 1000, ARCHERS, [30, 12, 52]),
   unit("The Prince of Wales's men-at-arms (with Warwick)", EN, 800, MAA, [20, 43, 52]),
@@ -104,6 +107,16 @@ const units = [
   unit("Philip VI's battle", FR, 4000, { ...LANCES, quality: "regular" }, [40, 10, 140]),
   unit("French foot on the road", FR, 2000, LEVY, [25, 60, 150]),
 ];
+led(units, {
+  "The Prince of Wales's men-at-arms (with Warwick)": [["Edward, Prince of Wales", "Prince"], ["Warwick", "Earl"], ["Northampton", "Earl"]],
+  "Arundel's men-at-arms (the second battle)": [["Arundel", "Earl"]],
+  "Edward III's men-at-arms (by the windmill)": [["Edward III", "King"]],
+  "The Genoese crossbowmen (Doria and Grimaldi)": [["Ottone Doria", "Captain"], ["Carlo Grimaldi", "Captain"]],
+  "Alençon's men-at-arms": [["Charles of Alençon", "Count"]],
+  "John of Bohemia and his knights": [["John of Bohemia", "King"]],
+  "Lorraine, Blois and Flanders": [["Rudolph of Lorraine", "Duke"], ["Louis of Blois", "Count"], ["Louis of Flanders", "Count"]],
+  "Philip VI's battle": [["Philip VI", "King"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; the Genoese about 17:00 (local solar time, Sumption), sunset 18:40 (project doc "crecy-research")

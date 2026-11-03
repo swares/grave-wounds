@@ -9,7 +9,7 @@
 // The deployment is the outline most modern accounts share, in our own words: both armies in
 // lines of foot with horse on the wings, and Pappenheim's horse coming in late on the Imperial
 // left. Numbers are disputed; those here are round figures for play, the guns among them.
-import { N, S, wobble, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, groundGrid, unit, led, writeField } from "./field_lib.mjs";
 
 const COLS = 220, ROWS = 120;                 // 2200 m east to west, about 1040 m north to south
 const ROAD = 75;                              // the high road runs east and west along this row
@@ -37,6 +37,10 @@ const PIKE = { quality: "regular", weapon: "pike", kit: "pikeman_1630", formatio
 const HORSE = { quality: "veteran", weapon: "sword", kit: "harquebusier_1630", formation: "close", mounted: true };
 const CUIRASS = { ...HORSE, kit: "cuirassier_1630" };
 const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", formation: "battery", mounted: false };   // ten crew to a gun
+// Leaders from the accounts (heroes.field_leaders; Wikipedia, "Battle of Lützen (1632)"): the King with
+//   his right-wing horse, Bernhard with the left, Knyphausen with the second line (his title "General"
+//   is ours), Pappenheim with his horse (his title ours). Wallenstein, who led no one unit, is not on
+//   the map; the Imperial wings' and centre's commanders are not named there.
 const units = [
   unit("Swedish musketeers, first line", SWE, 3000, { ...SHOT, quality: "veteran" }, [80, 70, 100]),
   unit("Swedish pike, first line", SWE, 3000, { ...PIKE, quality: "veteran" }, [50, 85, 103]),
@@ -55,6 +59,12 @@ const units = [
   unit("Pappenheim's horse (coming up)", IMP, 2500, CUIRASS, [30, 185, 10]),
   unit("Pappenheim's foot (coming up, too late)", IMP, 3000, PIKE, [40, 120, 6]),
 ];
+led(units, {
+  "Swedish horse, right (the King)": [["Gustavus Adolphus", "King"]],
+  "Swedish horse, left (Bernhard)": [["Bernhard of Saxe-Weimar", "Duke"]],
+  "Swedish second line": [["Dodo von Knyphausen", "General"]],
+  "Pappenheim's horse (coming up)": [["Pappenheim", "Field Marshal"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; times from docs and sources in the project's battle-phases research, rounded

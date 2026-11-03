@@ -33,6 +33,9 @@ const YORK = { side: 0, facing: N }, LANC = { side: 1, facing: S };
 const ARCHERS = { quality: "regular", weapon: "longbow", kit: "jack_sallet", formation: "open", mounted: false };
 const BILLS = { quality: "regular", weapon: "bill", kit: "jack_sallet", formation: "close", mounted: false };
 const FRONT_Y = 75, FRONT_L = 50;
+// Leaders from the accounts (heroes.field_leaders; Wikipedia, "Battle of Towton"): Fauconberg with the
+//   archers, Edward IV, Norfolk; Somerset, Exeter and Northumberland. Warwick, lamed at Ferrybridge, and
+//   Clifford, killed there, are not on the map; the Lancastrian archers' and the wood's leaders are not named.
 const units = [
   unit("Archers (Fauconberg)", YORK, 5000, { ...ARCHERS, quality: "veteran" }, [100, 30, FRONT_Y]),
   unit("Edward's battle", YORK, 11000, BILLS, [100, 30, FRONT_Y + 4]),
@@ -42,6 +45,12 @@ const units = [
   unit("Rear battle (Exeter, Northumberland)", LANC, 6000, BILLS, [100, 30, FRONT_L - 10]),
   unit("Men in Castle Hill Wood", LANC, 1500, BILLS, [10, 14, 28]),
 ];
+// Held back (3 November 2026, asked and answered): with these leaders on, the losers' lords kept their
+//   battles together (Towton 12 to 7 of 12; without the losers' alone it came back), so the field has none
+//   until the rule is looked at (backlog: leaders on medieval battlefields). They would be:
+//   Fauconberg (Baron) with Archers (Fauconberg); Edward IV (King) with Edward's battle; Norfolk
+//   (Duke) with Norfolk's men (coming up late); Somerset (Duke) with Somerset's battle; Exeter
+//   (Duke) and Northumberland (Earl) with Rear battle (Exeter, Northumberland).
 
 writeField({
   id: "towton-1461", name: "Towton, 29 March 1461", sides: ["Yorkists", "Lancastrians"], table: "towton-1461-all-hits",
