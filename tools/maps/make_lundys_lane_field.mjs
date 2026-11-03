@@ -9,7 +9,7 @@
 // not traced from any map, and are approximate. The deployment is the evening's opening, when
 // Scott's brigade came up against the hill and Jesup's 25th worked round the British left by
 // the Portage road, in our own words; numbers are round figures for play, the guns among them.
-import { N, S, wobble, patch, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, groundGrid, unit, led, writeField } from "./field_lib.mjs";
 
 const COLS = 130, ROWS = 110;                 // 1300 m east to west, about 950 m north to south
 const crest = c => 30 + wobble(c / 3, 0.7, 1.6);                     // Lundy's Lane along the crest
@@ -29,6 +29,9 @@ const US = { side: 0, facing: N }, GB = { side: 1, facing: S };
 const LINE = { quality: "regular", weapon: "musket_smoothbore", kit: "none", formation: "close", mounted: false };
 const HORSE = { quality: "regular", weapon: "saber", kit: "dragoon_helmet", formation: "close", mounted: true };
 const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", formation: "battery", mounted: false };   // ten crew to a gun
+// Leaders from the accounts (heroes.field_leaders), ranks as Wikipedia's "Battle of Lundy's Lane" gives
+//   them; Riall with the 8th and 41st on the lane is ours. Brown and Drummond, who led no one unit,
+//   are not on the map.
 const units = [
   unit("Scott's brigade (9th, 11th, 22nd)", US, 800, { ...LINE, quality: "veteran" }, [24, 52, 72]),
   { ...unit("25th Infantry (Jesup)", US, 300, { ...LINE, quality: "veteran" }, [8, 104, 60]), via: [[110, 40], [100, 18]] },   // round the British left (the east end of the hill) to behind their line (our reading)
@@ -43,6 +46,19 @@ const units = [
   unit("19th Light Dragoons", GB, 150, HORSE, [6, 86, 30]),
   unit("Hercules Scott's column (coming up)", GB, 1000, LINE, [25, 40, 10]),
 ];
+led(units, {
+  "Scott's brigade (9th, 11th, 22nd)": [["Winfield Scott", "Brigadier-General"]],
+  "25th Infantry (Jesup)": [["Thomas Jesup", "Major"]],
+  "Towson's battery": [["Nathan Towson", "Captain"]],
+  "Ripley's brigade (21st, 23rd, coming up)": [["Eleazer Ripley", "Brigadier-General"]],
+  "Porter's volunteers (coming up)": [["Peter B. Porter", "Brigadier-General"]],
+  "89th Foot": [["Joseph Morrison", "Lieutenant-Colonel"]],
+  "Incorporated Militia": [["William Robinson", "Lieutenant-Colonel"]],
+  "Glengarry Light Infantry": [["Francis Battersby", "Lieutenant-Colonel"]],
+  "8th and 41st Foot (on the lane)": [["Phineas Riall", "Major-General"]],
+  "19th Light Dragoons": [["Robert Lisle", "Major"]],
+  "Hercules Scott's column (coming up)": [["Hercules Scott", "Colonel"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; the times are our reading of the accounts, rounded

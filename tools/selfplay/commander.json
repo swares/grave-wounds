@@ -35,10 +35,10 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 1.48
+      "ratio": 1.3
      },
      "drew": 0.0,
-     "lost_share": 0.192,
+     "lost_share": 0.191,
      "side": "Allies",
      "stance": "hold",
      "won": 1.0
@@ -46,16 +46,16 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.69
+      "ratio": 0.78
      },
      "drew": 0.0,
-     "lost_share": 0.297,
+     "lost_share": 0.263,
      "side": "French",
      "stance": "attack",
      "won": 0.0
     }
    ],
-   "stamp": "6d3f4572c625"
+   "stamp": "c9a73a630b6c"
   },
   "aljubarrota-1385": {
    "runs": 12,
@@ -427,10 +427,10 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 1.69
+      "ratio": 1.83
      },
      "drew": 0.0,
-     "lost_share": 0.231,
+     "lost_share": 0.222,
      "side": "Americans",
      "stance": "hold",
      "won": 1.0
@@ -438,16 +438,16 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.64
+      "ratio": 0.66
      },
      "drew": 0.0,
-     "lost_share": 0.512,
+     "lost_share": 0.527,
      "side": "British",
      "stance": "attack",
      "won": 0.0
     }
    ],
-   "stamp": "60896fb10b0d"
+   "stamp": "15c3f79251ba"
   },
   "crecy-1346": {
    "runs": 12,
@@ -931,10 +931,10 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.67
+      "ratio": 0.6
      },
      "drew": 0.0,
-     "lost_share": 0.691,
+     "lost_share": 0.604,
      "side": "Americans",
      "stance": "attack",
      "won": 0.0
@@ -942,16 +942,16 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 1.69
+      "ratio": 1.91
      },
      "drew": 0.0,
-     "lost_share": 0.43,
+     "lost_share": 0.366,
      "side": "British",
      "stance": "hold",
      "won": 1.0
     }
    ],
-   "stamp": "28c5095b6386"
+   "stamp": "4d3fbdd43a4d"
   },
   "lutzen-1632": {
    "runs": 12,
@@ -1127,38 +1127,10 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.51
+      "ratio": 0.32
      },
      "drew": 0.0,
-     "lost_share": 0.472,
-     "side": "British",
-     "stance": "attack",
-     "won": 0.17
-    },
-    {
-     "bar": {
-      "outcome": "win",
-      "ratio": 2.02
-     },
-     "drew": 0.0,
-     "lost_share": 0.183,
-     "side": "Russians",
-     "stance": "hold",
-     "won": 0.83
-    }
-   ],
-   "stamp": "33a58a2c86f6"
-  },
-  "redan-1855-june": {
-   "runs": 12,
-   "sides": [
-    {
-     "bar": {
-      "outcome": "loss",
-      "ratio": 0.21
-     },
-     "drew": 0.0,
-     "lost_share": 0.352,
+     "lost_share": 0.491,
      "side": "British",
      "stance": "attack",
      "won": 0.08
@@ -1166,16 +1138,44 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 4.84
+      "ratio": 3.54
      },
      "drew": 0.0,
-     "lost_share": 0.045,
+     "lost_share": 0.145,
      "side": "Russians",
      "stance": "hold",
      "won": 0.92
     }
    ],
-   "stamp": "f774f6a60624"
+   "stamp": "bbff2ea43738"
+  },
+  "redan-1855-june": {
+   "runs": 12,
+   "sides": [
+    {
+     "bar": {
+      "outcome": "loss",
+      "ratio": 0.19
+     },
+     "drew": 0.0,
+     "lost_share": 0.344,
+     "side": "British",
+     "stance": "attack",
+     "won": 0.08
+    },
+    {
+     "bar": {
+      "outcome": "win",
+      "ratio": 5.66
+     },
+     "drew": 0.0,
+     "lost_share": 0.04,
+     "side": "Russians",
+     "stance": "hold",
+     "won": 0.92
+    }
+   ],
+   "stamp": "6f4a8e2f2da8"
   },
   "sidon-1253": {
    "runs": 12,

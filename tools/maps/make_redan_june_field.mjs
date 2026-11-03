@@ -21,7 +21,7 @@
 // it where they reach it, and from then on everyone crosses it there as an ordinary ditch (Delhi
 // 1857, the nearest well-recorded case: the time went on letting the ladders down; Simpson's
 // ladder party of 320 placed theirs and the men "immediately stormed the parapet").
-import { unit, writeField } from "./field_lib.mjs";
+import { unit, led, writeField } from "./field_lib.mjs";
 import { COLS, redan, BRITISH, RUSSIANS, RIFLE, MUSKET, GUNS, COMMON } from "./redan_lib.mjs";
 
 const ROWS = 105;                            // about 910 m north to south
@@ -35,6 +35,9 @@ const column = (label, col0) => [
   unit(`${label}: storming party`, BRITISH, 400, { ...RIFLE, size: "battalion" }, [10, col0, 94]),
   unit(`${label}: supports`, BRITISH, 800, { ...RIFLE, quality: "green", size: "battalion" }, [12, col0 - 1, 98]),
 ];
+// Leaders from the accounts (heroes.field_leaders): Colonel Yea and Major-General Sir John Campbell, who
+//   led the two columns and fell (Raglan's despatch; Wikipedia, "Battle of the Great Redan"), each
+//   with his storming party (ours). The Russians' officers are not named.
 const units = [
   ...column("Right column (Yea)", 65),        // Raglan: the right column against the left face (the east one: faces are named from inside the work)
   ...column("Left column (Campbell)", 25),     // the left against the re-entering angle by the right face (the west one)
@@ -48,6 +51,10 @@ const units = [
   unit("Riflemen on the line to the east", RUSSIANS, 200, { ...MUSKET, weapon: "rifle_musket", formation: "open", size: "company" }, [10, 82, 33]),
   unit("Russian reserve in the Karabelnaya", RUSSIANS, 2000, { ...MUSKET, size: "brigade" }, [40, 30, 12]),
 ];
+led(units, {
+  "Right column (Yea): storming party": [["Lacy Yea", "Colonel"]],
+  "Left column (Campbell): storming party": [["Sir John Campbell", "Major-General"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; the times are our reading of the accounts, rounded

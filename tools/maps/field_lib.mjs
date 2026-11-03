@@ -45,6 +45,16 @@ export function unit(name, army, men, kind, at){
   const [width, col0, row] = at;
   return { name, ...army, men, ...kind, width, pos: [middle(col0, width, army.facing), row] };
 }
+// Leaders from the accounts (heroes.field_leaders) put on units by name: by maps a unit's name to its
+// leaders, each [name, rank]. A name with no unit is an error, so a renamed unit cannot drop its leader.
+export function led(units, by){
+  for (const [name, ls] of Object.entries(by)){
+    const u = units.find(v => v.name === name);
+    if (!u) throw new Error(`no unit named ${name} for its leaders`);
+    u.leaders = ls.map(([n, rank]) => ({ name: n, rank }));
+  }
+  return units;
+}
 // A unit placed by hand: its front's middle at pos, facing that way.
 export const at = (name, army, men, kind, width, pos, facing) => ({ ...unit(name, army, men, kind, [width, 0, 0]), pos, facing });
 // Hexes as the rules count them (units.js step: odd rows shifted half a hex east): a hex n steps

@@ -9,7 +9,7 @@
 // from any map, and are approximate. The field runs from the village south over the heights:
 // the allied line north of the village is off the map. The deployment is the moment Soult's
 // flank attack came on, in our own words; numbers are round figures for play, the guns among them.
-import { N, S, wobble, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, groundGrid, unit, led, writeField } from "./field_lib.mjs";
 
 const COLS = 150, ROWS = 230;                 // 1500 m east to west, about 2000 m north to south
 const stream = r => 104 + wobble(r / 3, 0.6, 2.4) + (r > 60 ? (r - 60) * 0.15 : 0);   // the Albuera, then the Nogales brook to the south-east
@@ -29,6 +29,9 @@ const ALLY = { side: 0, facing: S }, FR = { side: 1, facing: N };
 const LINE = { quality: "regular", weapon: "musket_smoothbore", kit: "none", formation: "close", mounted: false };
 const HORSE = { quality: "regular", weapon: "saber", kit: "dragoon_helmet", formation: "close", mounted: true };
 const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", formation: "battery", mounted: false };   // ten crew to a gun
+// Leaders from the accounts (heroes.field_leaders), ranks as the order of battle gives them (Wikipedia,
+//   "Battle of Albuera order of battle"); Gazan's rank, and which brigade of a pair Hoghton and
+//   Abercrombie stand with, are ours. Beresford and Soult, who led no unit, are not on the map.
 const units = [
   unit("Zayas's Spanish", ALLY, 4000, LINE, [70, 45, 140]),
   unit("Colborne's brigade", ALLY, 1600, { ...LINE, quality: "veteran" }, [40, 5, 142]),
@@ -48,6 +51,20 @@ const units = [
   // little south), so its front runs north-west to south-east; pos is the middle of the front.
   { name: "Godinot's brigade (feint at the village)", side: 1, facing: 3, men: 3500, ...LINE, width: 25, pos: [128, 40] },
 ];
+led(units, {
+  "Zayas's Spanish": [["José Zayas", "General"]],
+  "Colborne's brigade": [["John Colborne", "Lieutenant-Colonel"]],
+  "Hoghton's and Abercrombie's brigades": [["Daniel Hoghton", "Major-General"], ["Alexander Abercrombie", "Lieutenant-Colonel"]],
+  "Allied cavalry (Lumley)": [["William Lumley", "Major-General"]],
+  "Cole's division (coming up)": [["Lowry Cole", "Major-General"]],
+  "Hamilton's Portuguese (reserve)": [["John Hamilton", "Major-General"]],
+  "Alten's Germans in the village": [["Charles Alten", "Major-General"]],
+  "Girard's division, in column": [["Girard", "Général de division"]],
+  "Gazan's division, in column": [["Gazan", "Général de division"]],
+  "Werlé's brigade (reserve)": [["Werlé", "Général de brigade"]],
+  "Latour-Maubourg's dragoons": [["Latour-Maubourg", "Général de division"]],
+  "Godinot's brigade (feint at the village)": [["Godinot", "Général de brigade"]],
+});
 
 writeField({
   objective: { at: [40, 136], side: 1, name: "the heights south of the allied line", radius: 6 },

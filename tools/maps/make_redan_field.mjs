@@ -20,13 +20,16 @@
 // it where they reach it, and from then on everyone crosses it there as an ordinary ditch (Delhi
 // 1857, the nearest well-recorded case: the time went on letting the ladders down; Simpson's
 // ladder party of 320 placed theirs and the men "immediately stormed the parapet").
-import { unit, writeField } from "./field_lib.mjs";
+import { unit, led, writeField } from "./field_lib.mjs";
 import { COLS, redan, BRITISH, RUSSIANS, RIFLE, MUSKET, GUNS, COMMON } from "./redan_lib.mjs";
 
 const ROWS = 80;                             // about 690 m north to south
 const { grid, hexWorks, edgeWorks } = redan({ rows: ROWS, trenchRow: 67, holes: 14, abatis: "scatter" });   // the trench about 200 yards from the salient; the abatis mostly smashed
 
 // ---------- the armies (pos is the middle of the front row) ----------
+// Leaders from the accounts (heroes.field_leaders), ranks as Wikipedia's "Battle of the Great Redan"
+//   gives them (Shirley and Windham acting brigadiers); Ventsel with the Vladimirski's main body is
+//   ours. The covering party's officers are not named.
 const units = [
   unit("Covering party (2nd Rifle Brigade and the Buffs)", BRITISH, 200, { ...RIFLE, formation: "open", size: "company" }, [20, 40, 63]),
   unit("Ladder party (the Buffs and the 97th)", BRITISH, 320, { ...RIFLE, ladders: true, size: "company" }, [10, 45, 65]),
@@ -44,6 +47,13 @@ const units = [
   unit("Barrack Battery, on the line to the west", RUSSIANS, 60, { ...GUNS, size: "battery" }, [4, 16, 34]),
   unit("Iakutski and Selenginski regiments (reserve)", RUSSIANS, 2000, { ...MUSKET, size: "brigade" }, [40, 30, 12]),
 ];
+led(units, {
+  "Ladder party (the Buffs and the 97th)": [["Welsford", "Major"]],
+  "Light Division stormers (90th and 97th)": [["Horatio Shirley", "Brigadier-General"]],
+  "2nd Division stormers (the Buffs, 41st and 62nd)": [["Charles Windham", "Brigadier-General"]],
+  "Supports (7th, 23rd, 33rd, 34th and 77th)": [["Charles van Straubenzee", "Brigadier-General"]],
+  "Vladimirski Regiment, behind the breastwork": [["Ventsel", "Colonel"]],
+});
 
 writeField({
   ...COMMON,

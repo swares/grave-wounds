@@ -153,11 +153,11 @@ works:
 units:
   - {name: "Right column (Yea): covering riflemen (Rifle Brigade)", side: 0, men: 100, quality: regular, weapon: rifle_musket, kit: none, formation: open, width: 10, pos: [69, 89], facing: 1, size: company}
   - {name: "Right column (Yea): ladders and wool-bags (sailors and soldiers)", side: 0, men: 170, quality: regular, weapon: rifle_musket, kit: none, formation: close, width: 6, pos: [69, 91], facing: 1, ladders: true, size: company}
-  - {name: "Right column (Yea): storming party", side: 0, men: 400, quality: regular, weapon: rifle_musket, kit: none, formation: close, width: 10, pos: [69, 94], facing: 1, size: battalion}
+  - {name: "Right column (Yea): storming party", side: 0, men: 400, quality: regular, weapon: rifle_musket, kit: none, formation: close, width: 10, pos: [69, 94], facing: 1, size: battalion, leaders: [{name: "Lacy Yea", rank: "Colonel"}]}
   - {name: "Right column (Yea): supports", side: 0, men: 800, quality: green, weapon: rifle_musket, kit: none, formation: close, width: 12, pos: [69, 98], facing: 1, size: battalion}
   - {name: "Left column (Campbell): covering riflemen (Rifle Brigade)", side: 0, men: 100, quality: regular, weapon: rifle_musket, kit: none, formation: open, width: 10, pos: [29, 89], facing: 1, size: company}
   - {name: "Left column (Campbell): ladders and wool-bags (sailors and soldiers)", side: 0, men: 170, quality: regular, weapon: rifle_musket, kit: none, formation: close, width: 6, pos: [29, 91], facing: 1, ladders: true, size: company}
-  - {name: "Left column (Campbell): storming party", side: 0, men: 400, quality: regular, weapon: rifle_musket, kit: none, formation: close, width: 10, pos: [29, 94], facing: 1, size: battalion}
+  - {name: "Left column (Campbell): storming party", side: 0, men: 400, quality: regular, weapon: rifle_musket, kit: none, formation: close, width: 10, pos: [29, 94], facing: 1, size: battalion, leaders: [{name: "Sir John Campbell", rank: "Major-General"}]}
   - {name: "Left column (Campbell): supports", side: 0, men: 800, quality: green, weapon: rifle_musket, kit: none, formation: close, width: 12, pos: [29, 98], facing: 1, size: battalion}
   - {name: "Russian infantry at the salient", side: 1, men: 600, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 12, pos: [50, 45], facing: 4, size: battalion}
   - {name: "Guns on the right face", side: 1, men: 40, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 3, pos: [36, 35], facing: 4, size: battery}

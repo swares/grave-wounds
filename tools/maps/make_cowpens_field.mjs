@@ -8,7 +8,7 @@
 // road runs up the middle of the field, which is drawn with north at the top and the British
 // coming up from the south. The deployment is Morgan's three lines as most modern accounts give
 // them, in our own words; numbers are round figures for play, the guns among them.
-import { N, S, wobble, patch, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, groundGrid, unit, led, writeField } from "./field_lib.mjs";
 
 const COLS = 120, ROWS = 100;                 // 1200 m east to west, about 870 m north to south
 function kind(c, r){
@@ -27,6 +27,9 @@ const MILITIA = { quality: "green", weapon: "rifle_flintlock", kit: "none", form
 const LINE = { quality: "regular", weapon: "musket_smoothbore", kit: "none", formation: "close", mounted: false };
 const HORSE = { quality: "veteran", weapon: "saber", kit: "dragoon_helmet", formation: "close", mounted: true };
 const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", formation: "battery", mounted: false };   // ten crew to a gun
+// Leaders from the accounts (heroes.field_leaders), ranks as Wikipedia's "Battle of Cowpens" gives
+//   them; Tarleton with his reserve of dragoons is ours. Morgan, who led no one unit, is not on the
+//   map, nor are the Legion's, the 7th's and the light infantry's officers (the account names none).
 const units = [
   // the National Park Service's strengths (Bearss): at least 1,500 Americans, about 120 of them riflemen, and nearly 1,100 British
   unit("Riflemen skirmishing (McDowell, Cunningham)", US, 120, RIFLES, [40, 40, 62]),
@@ -42,6 +45,14 @@ const units = [
   unit("Legion dragoons, left", GB, 45, { ...HORSE, quality: "regular" }, [3, 74, 86]),
   unit("Legion dragoons (reserve)", GB, 140, { ...HORSE, quality: "regular" }, [5, 66, 95]),
 ];
+led(units, {
+  "Riflemen skirmishing (McDowell, Cunningham)": [["Joseph McDowell", "Colonel"], ["Cunningham", "Major"]],
+  "Militia line (Pickens)": [["Andrew Pickens", "Colonel"]],
+  "Continentals and Virginia men (Howard)": [["John Eager Howard", "Lieutenant-Colonel"]],
+  "Washington's horse": [["William Washington", "Lieutenant-Colonel"]],
+  "71st Highlanders (reserve)": [["Arthur MacArthur", "Major"]],
+  "Legion dragoons (reserve)": [["Banastre Tarleton", "Lieutenant-Colonel"]],
+});
 
 writeField({
   stances: ["hold", "attack"],   // as fought: Morgan stood on the slope and Tarleton attacked
