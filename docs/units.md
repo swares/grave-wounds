@@ -1647,7 +1647,8 @@ after his wounds, his state and his Blood.
 them (its `leaders`: name and rank; `heroes.field_leaders`). Each comes on as a leader hero of
 his unit: an officer in its front rank, with its weapon and kit, its quality's attack, defence
 and Nerve, the usual Blood, and the most a rank adds (12: the accounts name officers, from
-lieutenants to generals). He is struck as officers are, can be wounded and fall (−20 to his
+lieutenants to generals, and on the rank ladders every officer, from an ensign up, is already
+at the cap; a general adds no more than a lieutenant, by design). He is struck as officers are, can be wounded and fall (−20 to his
 unit's morale), and while up lets it re-form when broken. He is the battlefield's man, not the
 team's: his wounds stay on the field and do not go to the roller. Badajoz, Ciudad Rodrigo and
 Burgos name theirs (Picton, Kempt, Colville, Bowes and Barnard; Mackinnon, Campbell,

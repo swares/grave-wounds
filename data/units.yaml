@@ -1024,7 +1024,7 @@ heroes:
   #   [{name, rank}]): each comes on as a leader hero of his unit, an officer, fighting in its front
   #   rank with its weapon and kit, his attack, defence and Nerve its quality's, his Blood the usual
   #   pool, and his rank adding `rank_cap` (the most a rank adds: the accounts name officers, from
-  #   lieutenants to generals). He draws fire as officers do, can be wounded and fall (the leader-down
+  #   lieutenants to generals, and every officer on the ladders, an ensign up, is at the cap already). He draws fire as officers do, can be wounded and fall (the leader-down
   #   modifier), and lets a broken unit re-form (morale.reform.leader). He is not one of the team's or
   #   the roller's men: his wounds stay on the field. Design choice (asked and answered, 2 November 2026).
   field_leaders: true
