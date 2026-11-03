@@ -845,7 +845,12 @@ morale:
   #   battlefield it cost 31 of 576 runs won as fought (484 to 453: Mons, Babuna, Agincourt and
   #   Dornach worst), the beaten coming back to drag out routs; so it is only where the accounts
   #   show men re-forming and going again (Badajoz).
-  reform: {reach: 2, penalty: 20}
+  #   leader: on any battlefield, a broken unit whose leader is up (a leader hero up, or the unit
+  #   marked with its leader up) re-forms by the same check, his morale bonus added (mods.leader and
+  #   his rank: van Zuylen rallied van Bylandt's broken Dutch at Waterloo); where the battlefield
+  #   turns re-forming on, a leader up adds his bonus too. No battlefield file has leaders, so the
+  #   benchmark does not see it. Design choice (asked and answered, 2 November 2026).
+  reform: {reach: 2, penalty: 20, leader: true}
   # posture: a unit of a holding side (the commander's stance) holding a position (in a bunker, dug
   #   in, emplaced, behind works with cover toward the nearest enemy, or in ground that hides men),
   #   and not flanked, checks for being a quarter down only in an exchange it lost men; units in the

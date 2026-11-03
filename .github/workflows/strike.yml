@@ -2,16 +2,17 @@
 # checked against gravewounds.engine.roll_hit on the same dice, then the unit tests
 # (tools/strike/parity.py runs tools/strike/test.js), and the scripted fighter's choices (tools/gm/test.js). Also the travel
 # map's rules (templates/travelrules.js) against gravewounds/weather.py, travel.py and disease.py, and its day
-# (templates/travelday.js) played with no page (tools/travel/parity.py runs tools/travel/test.js and day.js). A few seconds; runs on pull requests and on
+# (templates/travelday.js) played with no page (tools/travel/parity.py runs tools/travel/test.js and day.js), and re-forming
+# broken units on the built field page against the Python (tools/field/reform.py). A few seconds; runs on pull requests and on
 # main when the rules it checks change.
 name: strike
 
 on:
   pull_request:
-    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "templates/campaign.js", "templates/travelrules.js", "templates/travelday.js", "templates/ranks.js", "templates/purse.js", "templates/xp.js", "templates/events.js", "templates/camp.js", "templates/measure.js", "templates/lethality.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**", "tools/campaign/**", "tools/travel/**", "worker/**", "templates/**", "tools/guide/**", ".github/workflows/strike.yml"]
+    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "templates/campaign.js", "templates/travelrules.js", "templates/travelday.js", "templates/ranks.js", "templates/purse.js", "templates/xp.js", "templates/events.js", "templates/camp.js", "templates/measure.js", "templates/lethality.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**", "tools/campaign/**", "tools/travel/**", "worker/**", "templates/**", "tools/guide/**", "tools/field/reform.py", "dist/field.html", ".github/workflows/strike.yml"]
   push:
     branches: [main]
-    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "templates/campaign.js", "templates/travelrules.js", "templates/travelday.js", "templates/ranks.js", "templates/purse.js", "templates/xp.js", "templates/events.js", "templates/camp.js", "templates/measure.js", "templates/lethality.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**", "tools/campaign/**", "tools/travel/**", "worker/**", "templates/**", "tools/guide/**", ".github/workflows/strike.yml"]
+    paths: ["templates/strike.js", "templates/gamelog.js", "templates/fighter.js", "templates/net.js", "templates/campaign.js", "templates/travelrules.js", "templates/travelday.js", "templates/ranks.js", "templates/purse.js", "templates/xp.js", "templates/events.js", "templates/camp.js", "templates/measure.js", "templates/lethality.js", "gravewounds/**", "data/**", "build.py", "tools/strike/**", "tools/gm/**", "tools/net/**", "tools/campaign/**", "tools/travel/**", "worker/**", "templates/**", "tools/guide/**", "tools/field/reform.py", "dist/field.html", ".github/workflows/strike.yml"]
   workflow_dispatch:
 
 permissions:
@@ -36,3 +37,4 @@ jobs:
       - run: python3 tools/guide/check.py
       - run: node tools/campaign/test.js
       - run: python3 tools/travel/parity.py 300 1
+      - run: python3 tools/field/reform.py

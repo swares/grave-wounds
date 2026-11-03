@@ -391,7 +391,9 @@ When an item is done, delete it here and note it in the pull request that closes
     after it. Guns overrun (2 November 2026): a battery or anti-tank guns
     touched hand to hand by as many enemy as its crews is overrun (Ciudad Rodrigo 4 to 10 of 12).
     Ciudad Rodrigo at its sourced breach widths (2 November 2026): with guns
-    overrun the columns no longer stall inside. Still to do: Burgos's later storms.
+    overrun the columns no longer stall inside. Re-forming with a leader (2 November 2026): on any
+    battlefield, a broken unit whose leader is up re-forms (Nerve −20 plus his bonus). Still to do:
+    Burgos's later storms.
   - **Wound tables:** the Crimean siege table is the only siege table (the Siege warfare tables
     item above).
   - To start: list the sieges and storms the game already touches (the two Redans, Jacob's Ford,
