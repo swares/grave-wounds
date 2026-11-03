@@ -4438,7 +4438,15 @@ function makeUnit(o, id, table){                   // a new unit as the GM or a 
   const nv = o.nv || (o.vehicle ? vehicleDevice(table) : null), fc = fireControlOf(o, table);
   return { id, name: o.name, side: o.side, banner: o.banner || null, force: o.force ?? null, men: o.men, start: o.men, down: 0, dead: 0, hurt: {}, heroes: [], quality: o.quality, weapon: o.weapon,
     kit: o.kit, formation: o.formation, mounted: !!o.mounted, ...(isGun(o.weapon) ? { guns: gunKind(o) } : {}), width: o.width || Math.ceil(o.men / form(o).per_hex),
-    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...unitMarks(o), ...(nv ? { nv } : {}), ...(fc ? { fc } : {}) };
+    pos: o.pos, facing: o.facing, state: "steady", charged: false, ...unitMarks(o), ...(nv ? { nv } : {}), ...(fc ? { fc } : {}), heroes: fieldLeaders(o, id) };
+}
+function fieldLeaders(o, id){                       // a battlefield unit's leaders from the accounts (its leaders: [{name, rank}]) as leader heroes (heroes.field_leaders): officers in its front rank, its weapon, kit and quality, the usual Blood, the most a rank adds; not the team's or the roller's men (as battle.field_leaders)
+  const H = UD.heroes;
+  if (!H.field_leaders) return [];
+  const q = quality(o.quality), pool = FD.tracking.blood_pool;
+  return (o.leaders || []).map((L, k) => ({ id: 100000 + id * 10 + k, name: L.name, role: "front", attack: q.attack, defence: q.defence, nerve: q.nerve,
+    weapon: o.weapon, kit: o.kit, leader: true, state: "up", wounds: [], hand: "R", pool, blood: pool,
+    old_pain: 0, old_bleed: 0, old: [], rank: L.rank, rank_bonus: H.rank_cap ?? 12, officer: true, from_field: true }));
 }
 function unitMarks(o){                             // a drawn unit's optional marks, copied as given
   return { ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.armour ? { armour: o.armour } : {}),

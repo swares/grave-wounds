@@ -2454,7 +2454,7 @@ function captivesToTeam(){                        // the enemy's men the team's 
 function heroesToRoller(){                        // their wounds onto their records in the wound roller
   const lost = [0, 1].filter(k => !standing(k)), held = lost.length === 1 ? S.sides[1 - lost[0]] : null;   // the side that holds the field, if one does
   const sideOfHero = h => h.unit.side;   // allHeroes gives each hero his unit
-  const heroes = allHeroes().map(h => ({ id: h.id, name: h.name, state: h.state, wounds: h.wounds, blood: h.blood, old: (h.old || []).map(o => ({ bleed: o.bleed, aid: o.aid })), ...(h.post ? { post: true } : {}),
+  const heroes = allHeroes().filter(h => !h.from_field).map(h => ({ id: h.id, name: h.name, state: h.state, wounds: h.wounds, blood: h.blood, old: (h.old || []).map(o => ({ bleed: o.bleed, aid: o.aid })), ...(h.post ? { post: true } : {}),
     ...(held ? { won: sideOfHero(h) === held } : {}), ...S.htally?.[h.id],
     ...(h.pc && h.fate_start > (h.fate || 0) ? { fate_spent: h.fate_start - (h.fate || 0) } : {}) }));   // his fate points spent here: the roller marks them   // the roller's After the fight: deeds and loot for the winners; his hits and downs
   try{ localStorage.setItem("gravewounds-field-heroes", JSON.stringify({ place: S.from?.place || "", heroes })) }catch(e){ S.msg = "Could not save the heroes for the roller (storage is off)."; return render() }

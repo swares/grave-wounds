@@ -93,6 +93,10 @@ const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", 
 const through = c => [[c, FB - 4], [c, MW + 4]];   // straight down to the foot of a breach, then over its top and into the town
 const TO_GREAT = through(15), TO_LESSER = through(36);
 const FROM_WEST = [[6, FB - 3], ...TO_GREAT];                       // north along the west face, round the angle, along the ditch to the great breach
+// Leaders from the accounts (heroes.field_leaders): Mackinnon (killed by the mine at the great breach),
+//   Campbell (his brigade), Craufurd (mortally wounded on the glacis directing the stormers), George Napier
+//   (led them into the lesser breach; his rank is ours) and Gurwood (the forlorn hope), Vandeleur
+//   (wounded with his brigade at the lesser breach). Which half or column each is on is ours.
 const units = [
   // the garrison on this front (ours: Barrié's 1,800 to 1,900 held the whole circuit and the castle; no reserve
   // here: none is recorded, and a reserve on or near the breach kept it from ever being secured in self-play)
@@ -106,13 +110,13 @@ const units = [
   // Mackinnon's brigade in two halves 3 hexes wide; Campbell's brigade (the 5th, 77th, 94th)
   // from the convent of Santa Cruz on the west, along the ditch to the breach
   unit("3rd Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", formation: "open", via: TO_GREAT }, [3, 15, 22]),
-  unit("Mackinnon's brigade (first half)", AL, 700, { ...LINE, via: TO_GREAT }, [3, 14, 12]),
+  unit("Mackinnon's brigade (first half)", AL, 700, { ...LINE, via: TO_GREAT, leaders: [{ name: "Mackinnon", rank: "Major-General" }] }, [3, 14, 12]),
   unit("Mackinnon's brigade (second half)", AL, 700, { ...LINE, via: TO_GREAT }, [3, 19, 12]),
-  at("Campbell's brigade (5th, 77th, 94th, with ladders)", AL, 1200, { ...LADDERS, via: FROM_WEST }, 3, [6, 44], N),
+  at("Campbell's brigade (5th, 77th, 94th, with ladders)", AL, 1200, { ...LADDERS, via: FROM_WEST, leaders: [{ name: "Campbell", rank: "Colonel" }] }, 3, [6, 44], N),
   // the Light Division: its stormers, then Vandeleur's brigade in columns of 300, a breach wide (1 hex; the
   // strengths and the columns ours)
-  unit("Light Division stormers (with ladders)", AL, 300, { ...LADDERS, quality: "veteran", via: TO_LESSER }, [1, 35, 26]),
-  unit("Vandeleur's brigade (first column)", AL, 300, { ...LIGHT, via: TO_LESSER }, [1, 39, 26]),
+  unit("Light Division stormers (with ladders)", AL, 300, { ...LADDERS, quality: "veteran", via: TO_LESSER, leaders: [{ name: "Craufurd", rank: "Major-General" }, { name: "George Napier", rank: "Major" }, { name: "Gurwood", rank: "Lieutenant" }] }, [1, 35, 26]),
+  unit("Vandeleur's brigade (first column)", AL, 300, { ...LIGHT, via: TO_LESSER, leaders: [{ name: "Vandeleur", rank: "Major-General" }] }, [1, 39, 26]),
   unit("Vandeleur's brigade (second column)", AL, 300, { ...LIGHT, via: TO_LESSER }, [1, 36, 17]),
   unit("Vandeleur's brigade (third column)", AL, 300, { ...LIGHT, via: TO_LESSER }, [1, 39, 17]),
   unit("Vandeleur's brigade (fourth column)", AL, 300, { ...LIGHT, via: TO_LESSER }, [1, 42, 17]),
