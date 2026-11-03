@@ -1383,6 +1383,25 @@ def cornered(d: Data, units: list, i: int, after: dict) -> bool:
     return sum(units[j]["men"] for j in foes if not _out(units[j])) >= u["men"]   # the enemy touching it at least as many as it has standing
 
 
+def overrun(d: Data, units: list, i: int, field: dict | None = None) -> bool:
+    """A battery or anti-tank guns, not broken, touched hand to hand by standing enemy (not
+    vehicles, not only across a wall no one fights over) with at least as many men as its crews
+    standing (rout.overrun)."""
+    u = units[i]
+    if not d.units["rout"].get("overrun") or not (is_battery(d, u) or is_at_gun(d, u)) or _out(u) or u.get("vehicle"):
+        return False
+    occ, foes = occupancy(d, units), set()
+    for row in footprint(d, u):
+        for h in row:
+            for dirn in range(6):
+                x = step(h, dirn)
+                j = occ.get(f"{x[0]},{x[1]}")
+                if j is not None and j != i and units[j]["side"] != u["side"] and not _out(units[j]) and not units[j].get("vehicle") \
+                        and not walled_off(d, field, u, units[j], h, x):
+                    foes.add(j)
+    return bool(foes) and sum(units[j]["men"] for j in foes) >= u["men"]
+
+
 def surrender(u: dict, quarter_pct: int) -> dict:
     """A cornered unit gives up: quarter % of its men standing taken prisoner, the rest killed;
     its heroes on their feet taken. -> {unit, taken, killed}"""

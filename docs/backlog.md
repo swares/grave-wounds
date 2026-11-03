@@ -388,8 +388,10 @@ When an item is done, delete it here and note it in the pull request that closes
     it needed (hacking through works men can open by hand; turning to face an enemy touching only a
     flank). Columns filing
     through a gap (2 November 2026): a unit's ranks behind its front may lie across a wall and file
-    after it. Still to do: Burgos's later storms; Ciudad Rodrigo at its sourced breach widths (with
-    filing the columns get in, but trickle in and stall inside: 0 of 12).
+    after it. Guns overrun (2 November 2026): a battery or anti-tank guns
+    touched hand to hand by as many enemy as its crews is overrun (Ciudad Rodrigo 4 to 10 of 12).
+    Still to do: Burgos's later storms; Ciudad Rodrigo at its sourced breach widths (with filing the
+    columns get in, but trickle in and stall inside: 0 of 12).
   - **Wound tables:** the Crimean siege table is the only siege table (the Siege warfare tables
     item above).
   - To start: list the sieges and storms the game already touches (the two Redans, Jacob's Ford,

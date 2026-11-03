@@ -1351,7 +1351,7 @@ function newMove(){                               // a side's move begins: the c
 function ranNote(ran){                            // the broken units that ran at the start of the exchange, logged
   for (const r of ran){
     const f = S.units[r.unit], past = r.through.length ? ` back through ${r.through.map(j => S.units[j].name).join(", ")}, who are jostled` : "";
-    const gone = r.surrendered ? `${unitName(f)}, cornered with nowhere to run, surrenders: ${r.taken} taken prisoner, ${r.killed} killed.` : `${unitName(f)} has fled the field.`;
+    const gone = r.overrun ? `${unitName(f)} are overrun at their guns: ${r.taken} taken prisoner, ${r.killed} killed, the guns lost.` : r.surrendered ? `${unitName(f)}, cornered with nowhere to run, surrenders: ${r.taken} taken prisoner, ${r.killed} killed.` : `${unitName(f)} has fled the field.`;
     S.log.unshift({ cls: "morale", text: r.fled ? gone : `${unitName(f)} runs${past}.` });
   }
 }
