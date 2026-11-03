@@ -12,7 +12,7 @@
 // garrison is al-Qadi al-Fadil's (80 knights with their squires, 15 chiefs with 50 men each,
 // craftsmen, who are not on the field); no source gives Saladin's numbers, so the attackers are ours, with round numbers.
 // The tell, the river, the breach and the camp are drawn to those figures, not traced from a plan.
-import { N, S, wobble, patch, speckle, groundGrid, unit, at, stepHex, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, at, stepHex, led, writeField } from "./field_lib.mjs";
 
 const COLS = 40, ROWS = 70;                   // 400 m east to west, about 600 m north to south
 const C0 = 14, C1 = 18, R0 = 22, R1 = 38;     // the castle's hexes: 50 m by about 150 m
@@ -72,6 +72,9 @@ const VOLUNTEERS = { quality: "green", weapon: "spear", kit: "gambeson", formati
 // the standing wall, or caught its rear ranks on it, and never reached the garrison (0 of 12 in
 // self-play). The numbers are ours, as before; the totals are unchanged.
 const PARTIES = ["first", "second", "third", "fourth"], WAVE = ["first", "second", "third"], SE = 5;
+// Leaders from the accounts (heroes.field_leaders; project doc "jacobsford-research"): Farrukh-Shah, who
+//   led attacks on several sides, with the first storming party (ours, as is his title). The garrison's
+//   commander is not named; Saladin led no one unit.
 const units = [
   unit("Templar knights and their squires", TP, 160, KNIGHTS, [3, 15, 26]),
   unit("Sergeants (the fifteen companies)", TP, 450, SERGEANTS, [4, C0 + 1, 29]),
@@ -81,6 +84,9 @@ const units = [
   unit("Archers across the river", AY, 400, ARCHERS, [5, 33, 36]),
   ...WAVE.map((p, j) => at(`Volunteers and foot (the second wave), ${p} party`, AY, 500, VOLUNTEERS, 3, [20 + 4 * j, 10], SE)),
 ];
+led(units, {
+  "The storming column (Farrukh-Shah), first party": [["Farrukh-Shah", "Emir"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; sunrise 05:35 local solar time on 30 August 1179 (project doc "jacobsford-research")

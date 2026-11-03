@@ -113,7 +113,7 @@ units:
   - {name: "Templar knights and their squires", side: 0, men: 160, quality: veteran, weapon: sword, kit: hauberk, formation: close, width: 3, pos: [16, 26], facing: 1, size: company}
   - {name: "Sergeants (the fifteen companies)", side: 0, men: 450, quality: regular, weapon: spear, kit: hauberk, formation: close, width: 4, pos: [16, 29], facing: 1, size: battalion}
   - {name: "Crossbowmen and archers", side: 0, men: 300, quality: regular, weapon: crossbow, kit: gambeson, formation: open, width: 3, pos: [17, 33], facing: 1, size: battalion}
-  - {name: "The storming column (Farrukh-Shah), first party", side: 1, men: 250, quality: veteran, weapon: sword, kit: hauberk, formation: close, width: 3, pos: [16, 20], facing: 5, size: company}
+  - {name: "The storming column (Farrukh-Shah), first party", side: 1, men: 250, quality: veteran, weapon: sword, kit: hauberk, formation: close, width: 3, pos: [16, 20], facing: 5, size: company, leaders: [{name: "Farrukh-Shah", rank: "Emir"}]}
   - {name: "The storming column (Farrukh-Shah), second party", side: 1, men: 250, quality: veteran, weapon: sword, kit: hauberk, formation: close, width: 3, pos: [16, 15], facing: 5, size: company}
   - {name: "The storming column (Farrukh-Shah), third party", side: 1, men: 250, quality: veteran, weapon: sword, kit: hauberk, formation: close, width: 3, pos: [16, 10], facing: 5, size: company}
   - {name: "The storming column (Farrukh-Shah), fourth party", side: 1, men: 250, quality: veteran, weapon: sword, kit: hauberk, formation: close, width: 3, pos: [16, 5], facing: 5, size: company}

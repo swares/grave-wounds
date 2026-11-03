@@ -13,7 +13,7 @@
 // in a zone 100-150 m deep. The valleys, the ditches and the pit field are drawn to those figures,
 // not traced from any plan; the pits play as stakes (they stop horses and slow men). The strengths
 // are Lopes's (his lances as men-at-arms), split among the bodies he names, with round numbers.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, led, writeField } from "./field_lib.mjs";
 
 const COLS = 100, ROWS = 130;                 // 1000 m east to west, about 1130 m north to south
 const CHAPEL = [50, 44];
@@ -63,6 +63,10 @@ const ARCHERS = { quality: "veteran", weapon: "longbow", kit: "gambeson", format
 const CROSSBOWS = { quality: "regular", weapon: "crossbow", kit: "gambeson", formation: "open", mounted: false };
 const LANCES = { quality: "veteran", weapon: "spear", kit: "transitional", formation: "close", mounted: true };
 const GINETES = { quality: "veteran", weapon: "spear", kit: "hauberk", formation: "open", mounted: true };
+// Leaders from the accounts (heroes.field_leaders; project doc "aljubarrota-research", after Lopes and
+//   Monteiro): the Constable, Mem Rodrigues and Rui Mendes de Vasconcelos, Antão Vasques and João I; the
+//   Masters of Alcántara and Calatrava, João Afonso Telo, and Jean de Rye with the French (ours). Juan I
+//   is left off: sick, he had been carried in a litter for a fortnight.
 const units = [
   unit("Vanguard: the Constable's men-at-arms", PT, 600, MAA, [20, 39, FRONT_PT]),
   unit("Vanguard foot", PT, 1200, FOOT, [20, 39, FRONT_PT - 6]),
@@ -80,6 +84,16 @@ const units = [
   unit("Right wing: the Master of Calatrava (Pedro Álvares Pereira)", CA, 700, LANCES, [14, 84, FRONT_CA + 6]),
   unit("Juan I's main battle (three mounted bodies)", CA, 3000, { ...LANCES, quality: "regular" }, [40, 30, 104]),
 ];
+led(units, {
+  "Vanguard: the Constable's men-at-arms": [["Nuno Álvares Pereira", "Constable"]],
+  "Right wing: the Ala dos Namorados": [["Mem Rodrigues de Vasconcelos", "Knight"], ["Rui Mendes de Vasconcelos", "Knight"]],
+  "Left wing: Antão Vasques and the foreigners": [["Antão Vasques", "Knight"]],
+  "Rearguard: João I's men-at-arms": [["João I", "King"]],
+  "French vanguard (on foot)": [["Jean de Rye", "Chamberlain"]],
+  "Portuguese loyalists in the vanguard (João Afonso Telo)": [["João Afonso Telo", "Count"]],
+  "Left wing: the Master of Alcántara's ginetes": [["Gonzalo Núñez de Guzmán", "Master of Alcántara"]],
+  "Right wing: the Master of Calatrava (Pedro Álvares Pereira)": [["Pedro Álvares Pereira", "Master of Calatrava"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; the attack about 18:00 (local solar time), sunset 18:50 (project doc "aljubarrota-research")

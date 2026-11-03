@@ -15,7 +15,7 @@
 // bottom. The scarp, the castle's spur, the village, the river and the camp are drawn by hand to
 // that shape, not traced from any map; the contingents' strengths are the chronicles' (Leutenegger)
 // and the imperial army's split among its parts is ours, with round numbers.
-import { N, S, wobble, patch, speckle, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, speckle, groundGrid, unit, led, writeField } from "./field_lib.mjs";
 
 const COLS = 120, ROWS = 140;                 // 1200 m north (left) to south (right), about 1210 m east (top) to west (bottom)
 const scarpFoot = c => 32 + Math.round(wobble(c / 9, 0.4, 1.7) * 2);   // where the wooded scarp meets the plain
@@ -59,6 +59,9 @@ const LANDSKNECHTE = { quality: "regular", weapon: "pike", kit: "jack_sallet", f
 const LEVIES = { quality: "green", weapon: "spear", kit: "gambeson", formation: "close", mounted: false };
 const HORSE = { quality: "veteran", weapon: "spear", kit: "full_plate", formation: "close", mounted: true };
 const BATTERY = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", formation: "battery", mounted: false, guns: "smoothbore" };
+// Leaders from the accounts (heroes.field_leaders; project doc "dornach-research", after Leutenegger and
+//   Winkler): Conrad, von Stein, Göldli and Stapfer, von Erlach, Feer and Steiner, Hugi; Fürstenberg and
+//   Vaudrey. Their ranks where the accounts give none (Hauptmann, Captain) are ours.
 const units = [
   unit("Solothurn's vanguard (Niklaus Conrad)", CH, 1000, PIKES, [20, 62, 30]),
   unit("Solothurn's halberdiers", CH, 500, HALBERDS, [12, 84, 32]),
@@ -75,6 +78,16 @@ const units = [
   unit("Swabian and Alsatian levies", IM, 3000, LEVIES, [40, 22, 100]),
   unit("The Welsche Garde (Louis de Vaudrey)", IM, 1000, HORSE, [24, 28, 138]),
 ];
+led(units, {
+  "Solothurn's vanguard (Niklaus Conrad)": [["Niklaus Conrad", "Schultheiss"]],
+  "Bernese under Kaspar von Stein": [["Kaspar von Stein", "Hauptmann"]],
+  "Zürich (Kaspar Göldli)": [["Kaspar Göldli", "Hauptmann"], ["Jakob Stapfer", "Venner"]],
+  "Bern's main banner (Rudolf von Erlach)": [["Rudolf von Erlach", "Hauptmann"]],
+  "Lucerne and Zug": [["Petermann Feer", "Hauptmann"], ["Werner Steiner", "Hauptmann"]],
+  "Dorneck garrison (Benedikt Hugi)": [["Benedikt Hugi", "Vogt"]],
+  "Fürstenberg and the knights": [["Heinrich von Fürstenberg", "Count"]],
+  "The Welsche Garde (Louis de Vaudrey)": [["Louis de Vaudrey", "Captain"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; the attack about 16:00 (local solar time), sunset 19:36 (project doc "dornach-research")

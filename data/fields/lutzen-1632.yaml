@@ -164,9 +164,9 @@ works:
 units:
   - {name: "Swedish musketeers, first line", side: 0, men: 3000, quality: veteran, weapon: matchlock_musket, kit: none, formation: open, width: 80, pos: [109, 100], facing: 1, size: regiment}
   - {name: "Swedish pike, first line", side: 0, men: 3000, quality: veteran, weapon: pike, kit: pikeman_1630, formation: close, width: 50, pos: [109, 103], facing: 1, size: regiment}
-  - {name: "Swedish second line", side: 0, men: 4000, quality: regular, weapon: pike, kit: pikeman_1630, formation: close, width: 60, pos: [109, 108], facing: 1, size: brigade}
-  - {name: "Swedish horse, right (the King)", side: 0, men: 3000, quality: veteran, weapon: sword, kit: harquebusier_1630, formation: close, width: 30, pos: [174, 100], facing: 1, mounted: true, size: regiment}
-  - {name: "Swedish horse, left (Bernhard)", side: 0, men: 2500, quality: veteran, weapon: sword, kit: harquebusier_1630, formation: close, width: 25, pos: [50, 100], facing: 1, mounted: true, size: regiment}
+  - {name: "Swedish second line", side: 0, men: 4000, quality: regular, weapon: pike, kit: pikeman_1630, formation: close, width: 60, pos: [109, 108], facing: 1, size: brigade, leaders: [{name: "Dodo von Knyphausen", rank: "General"}]}
+  - {name: "Swedish horse, right (the King)", side: 0, men: 3000, quality: veteran, weapon: sword, kit: harquebusier_1630, formation: close, width: 30, pos: [174, 100], facing: 1, mounted: true, size: regiment, leaders: [{name: "Gustavus Adolphus", rank: "King"}]}
+  - {name: "Swedish horse, left (Bernhard)", side: 0, men: 2500, quality: veteran, weapon: sword, kit: harquebusier_1630, formation: close, width: 25, pos: [50, 100], facing: 1, mounted: true, size: regiment, leaders: [{name: "Bernhard of Saxe-Weimar", rank: "Duke"}]}
   - {name: "Musketeers in the road ditch", side: 1, men: 1600, quality: regular, weapon: matchlock_musket, kit: none, formation: open, width: 80, pos: [110, 74], facing: 4, size: regiment}
   - {name: "Imperial musketeers, centre", side: 1, men: 4000, quality: regular, weapon: matchlock_musket, kit: none, formation: open, width: 70, pos: [110, 69], facing: 4, size: brigade}
   - {name: "Imperial pike, centre", side: 1, men: 4000, quality: regular, weapon: pike, kit: pikeman_1630, formation: close, width: 50, pos: [110, 64], facing: 4, size: brigade}
@@ -176,5 +176,5 @@ units:
   - {name: "Swedish heavy guns", side: 0, men: 200, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 10, pos: [109, 97], facing: 1, size: battery}
   - {name: "Imperial horse, right", side: 1, men: 1500, quality: veteran, weapon: sword, kit: harquebusier_1630, formation: close, width: 20, pos: [40, 58], facing: 4, mounted: true, size: regiment}
   - {name: "Imperial cuirassiers, left", side: 1, men: 2000, quality: veteran, weapon: sword, kit: cuirassier_1630, formation: close, width: 25, pos: [167, 68], facing: 4, mounted: true, size: regiment}
-  - {name: "Pappenheim's horse (coming up)", side: 1, men: 2500, quality: veteran, weapon: sword, kit: cuirassier_1630, formation: close, width: 30, pos: [200, 10], facing: 4, mounted: true, size: regiment}
+  - {name: "Pappenheim's horse (coming up)", side: 1, men: 2500, quality: veteran, weapon: sword, kit: cuirassier_1630, formation: close, width: 30, pos: [200, 10], facing: 4, mounted: true, size: regiment, leaders: [{name: "Pappenheim", rank: "Field Marshal"}]}
   - {name: "Pappenheim's foot (coming up, too late)", side: 1, men: 3000, quality: regular, weapon: pike, kit: pikeman_1630, formation: close, width: 40, pos: [140, 6], facing: 4, size: brigade}

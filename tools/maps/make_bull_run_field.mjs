@@ -12,7 +12,7 @@
 // play, the guns among them. The two Union batteries are rifled (Ricketts's six 10-pounder
 // Parrotts; Griffin's a mix, set rifled here); the Confederate guns, mostly 6-pounders and
 // howitzers, are left smoothbore.
-import { N, S, wobble, patch, groundGrid, unit, writeField } from "./field_lib.mjs";
+import { N, S, wobble, patch, groundGrid, unit, led, writeField } from "./field_lib.mjs";
 
 const COLS = 140, ROWS = 130;                 // 1400 m east to west, about 1130 m north to south
 const branch = c => 20 + wobble(c / 3, 1.7, 0.6);                    // Young's Branch, under the turnpike
@@ -31,6 +31,9 @@ const grid = groundGrid(COLS, ROWS, kind);
 const CSA = { side: 0, facing: N }, USA = { side: 1, facing: S };
 const RIFLE = { quality: "green", weapon: "rifle_musket", kit: "none", formation: "close", mounted: false };
 const GUNS = { quality: "regular", weapon: "artillery_acw", kit: "none", formation: "battery", mounted: false };   // ten crew to a gun
+// Leaders from the accounts (heroes.field_leaders), ranks as Wikipedia's orders of battle for First Bull
+//   Run give them (Confederate and Union). The guns' several battery officers are not on the map, nor
+//   McDowell and Beauregard, who led no one unit.
 const units = [
   unit("Jackson's brigade", CSA, 2600, { ...RIFLE, quality: "regular" }, [40, 55, 88]),
   unit("33rd Virginia", CSA, 450, RIFLE, [10, 31, 80]),
@@ -48,6 +51,22 @@ const units = [
   unit("Elzey's and Early's brigades (onto Chinn Ridge)", CSA, 3500, RIFLE, [40, 2, 122]),
   unit("Howard's brigade (Chinn Ridge)", USA, 2400, RIFLE, [30, 2, 16]),
 ];
+led(units, {
+  "Jackson's brigade": [["Thomas J. Jackson", "Brigadier-General"]],
+  "33rd Virginia": [["Arthur C. Cummings", "Colonel"]],
+  "Hampton's Legion": [["Wade Hampton", "Colonel"]],
+  "Bee's and Bartow's men, rallied": [["Barnard Bee", "Brigadier-General"], ["Francis Bartow", "Colonel"]],
+  "Stuart's cavalry": [["J. E. B. Stuart", "Colonel"]],
+  "Ricketts's battery (10-pounder Parrotts)": [["James B. Ricketts", "Captain"]],
+  "Griffin's battery (rifles and howitzers)": [["Charles Griffin", "Captain"]],
+  "11th New York (Fire Zouaves)": [["Noah L. Farnham", "Colonel"]],
+  "US Marines": [["John G. Reynolds", "Major"]],
+  "14th Brooklyn": [["Alfred M. Wood", "Colonel"]],
+  "Willcox's and Franklin's brigades": [["Orlando B. Willcox", "Colonel"], ["William B. Franklin", "Colonel"]],
+  "Sherman's brigade (coming over)": [["William T. Sherman", "Colonel"]],
+  "Elzey's and Early's brigades (onto Chinn Ridge)": [["Edmund Kirby Smith", "Brigadier-General"], ["Arnold Elzey", "Colonel"], ["Jubal A. Early", "Colonel"]],
+  "Howard's brigade (Chinn Ridge)": [["Oliver O. Howard", "Colonel"]],
+});
 
 writeField({
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate

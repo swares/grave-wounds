@@ -11,7 +11,7 @@
 // on the wings, stakes in front of the archers; the French in three lines, the first two of
 // dismounted men-at-arms, with mounted wings to ride down the archers and a mounted rear.
 // Numbers are disputed; those here are round figures for play.
-import { N, S, wobble, lerp, groundGrid, unit, firstCol, writeField } from "./field_lib.mjs";
+import { N, S, wobble, lerp, groundGrid, unit, firstCol, led, writeField } from "./field_lib.mjs";
 
 const COLS = 100, ROWS = 80;                  // 1000 m east to west, about 690 m north to south
 const westEdge = r => Math.round(lerp(4, 12, r / (ROWS - 1)) + wobble(r, 0.7, 2.1));    // Azincourt wood: cols below this
@@ -28,6 +28,10 @@ const KNIGHTS = { ...MEN_AT_ARMS, quality: "regular" };
 const MOUNTED = { quality: "veteran", weapon: "spear", kit: "full_plate", formation: "close", mounted: true };
 const MOUNTED_REAR = { ...MOUNTED, quality: "regular" };
 const FRONT_EN = 66, FRONT_FR = 42;
+// Leaders from the accounts (heroes.field_leaders; Wikipedia, "Battle of Agincourt"): York, the King and
+//   Camoys with the three English battles; d'Albret and Boucicaut with the French vanguard, Alençon and
+//   Bar with the main battle, Clignet de Bréban and Bosredon with the mounted wings (which wing each led
+//   is ours). Erpingham led the archers of all four bodies, so is on none; the rearguard was leaderless.
 const units = [
   unit("Archers, left wing", EN, 1600, ARCHERS, [16, 12, FRONT_EN]),
   unit("Rearward (Camoys)", EN, 320, MEN_AT_ARMS, [8, 28, FRONT_EN]),
@@ -42,6 +46,15 @@ const units = [
   unit("Main battle", FR, 4800, KNIGHTS, [60, 20, 30]),
   unit("Rearguard (mounted)", FR, 3000, MOUNTED_REAR, [75, 12, 16]),
 ];
+led(units, {
+  "Vaward (York)": [["Edward, Duke of York", "Duke"]],
+  "Main battle (the King)": [["Henry V", "King"]],
+  "Rearward (Camoys)": [["Thomas Camoys", "Baron"]],
+  "Vanguard": [["Charles d'Albret", "Constable of France"], ["Boucicaut", "Marshal of France"]],
+  "Main battle": [["Alençon", "Duke"], ["Bar", "Duke"]],
+  "Mounted wing, west": [["Clignet de Bréban", "Knight"]],
+  "Mounted wing, east": [["Louis de Bosredon", "Knight"]],
+});
 // Stakes: a row in front of each body of archers, one hex ahead of their front.
 const stakes = units.filter(u => u.weapon === "longbow").flatMap(u => Array.from({ length: u.width }, (_, i) => [firstCol(u) + i, FRONT_EN - 1]));
 
