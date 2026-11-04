@@ -80,7 +80,7 @@ writeField({
   support: [
     { name: "Russian artillery", side: 0, kind: "field", tubes: 18 },
     { name: "Russian mortars", side: 0, kind: "mortar", tubes: 6 },
-    { name: "Chechen mortars", side: 1, kind: "mortar", tubes: 4 },
+    { name: "Chechen mortars", side: 1, kind: "mortar", tubes: 4 },   // no source: neither account read names mortars at the station (4 November 2026), yet they decide the run (above all the backlog's Grozny note)
   ],
   header: [
     `The railway station in Grozny at dusk on 31 December 1994, at 10 m a hex: ${COLS} x ${ROWS} hexes, about 1400 m east to west and`,

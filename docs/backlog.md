@@ -346,6 +346,16 @@ When an item is done, delete it here and note it in the pull request that closes
   Dak To and Pork Chop 12 of 12, X-Ray 11, Cassino town 12 of 12 locally under report.py's own count, though every run ends with one side gone, well before the cap, rather than in the stalemate), so they are left as they are, the
   cut documented in each field's units.md entry and by self_play.most; Grozny's breakout at
   1,531 is still past it (its fight is too short as it stands, above).
+- **Grozny's short fight, traced 4 November 2026.** The 4 Chechen mortar tubes decide it, and no
+  source supports them: the maker gives none, and neither the Novaya Gazeta account nor Russian
+  Wikipedia's (which has fire from upper floors at vehicles that could not manoeuvre in the narrow
+  streets) mentions mortars at the station. Through the roof they put about 34 men down in the first
+  quarter hour, keep the battalion pinned and hit Khmelevsky; the Chechen fighters close, Klupov
+  falls and the battalion breaks within half an hour (Chechens 8 of 12). Without them the Chechen
+  attack on the station is beaten (Russians 8 of 12, 12 local runs). Neither is the history, in
+  which the battalion held all night and was destroyed breaking out on 1 January (past
+  self_play.most). Left as it is, by choice; a sourced account of what struck the battalion in the
+  station overnight (Oliker's RAND study, Grau) would settle the mortars.
 - **Tear gas, first cut** (`indirect.gas`, the `e8` kind; 4 November 2026). A CS launcher lays a
   cloud that thins and drifts as smoke does; unmasked men in it fire nothing and check Nerve or fall
   back out of it, masked men fire less (a unit's `masks`). On Hue's 6 February field: 2 to 5 of 12
