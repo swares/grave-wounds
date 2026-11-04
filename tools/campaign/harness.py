@@ -36,3 +36,21 @@ def serve():
     server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), functools.partial(Quiet, directory=str(ROOT)))
     threading.Thread(target=server.serve_forever, daemon=True).start()
     return f"http://127.0.0.1:{server.server_port}/dist/", server
+
+
+def main(run, server):
+    """Run a test's run(playwright), report a stop as a failed check, shut the server and exit."""
+    import sys
+    import traceback
+    from playwright.sync_api import sync_playwright
+    try:
+        with sync_playwright() as pw:
+            run(pw)
+    except Exception as e:                           # a timeout or error: where, as an annotation in CI
+        print(traceback.format_exc())
+        check(False, f"stopped: {str(e).splitlines()[0][:300]}")
+    server.shutdown()
+    if failures:
+        print(f"{len(failures)} check(s) failed")
+        sys.exit(1)
+    print("all checks passed")

@@ -199,6 +199,29 @@ computer or share. **Load a saved game** replaces every page's state in this bro
 file's, after asking. The narrator's settings stay out of save files and are left alone by a load:
 they may hold a service key, and they belong to the browser, not the game.
 
+**Hand the game to the next GM**, for groups that take turns as GM, writes a save file for whoever runs
+the next session (`CAMPAIGN.handoverFile`):
+
+- **It's marked as a handover:** who from, to whom, on what day, and a note for the next GM. The log
+  records it too ("Handed to Ann").
+- **The GM-only notes in the campaign's log go sealed.** They are encrypted with a passphrase the GMs
+  share (AES-GCM in the browser, the key from PBKDF2 with a salt kept with the campaign). They travel
+  with the game, but its words aren't in the file. The next GM loads the file as usual and sees who
+  handed it over, the note, and how many notes are sealed. With the passphrase, **Unseal** opens them.
+  A wrong passphrase leaves them sealed. Notes for a player stay readable: the GM sees those anyway.
+- **The outgoing copy is marked handed over.** Its console's panels stand still (inert) so the
+  campaign doesn't fork, until he loads a newer file or presses **Take it back**. Saving, loading and
+  the campaigns in this browser still work.
+- **The players' rooms go with the game.** Who plays whom and each room's code and host key are kept
+  with the campaign, so the next GM's console uses the same rooms. A room unused for hours is
+  forgotten, and the console then makes a new code.
+- **What can't be sealed: the next GM sees the whole map and every side,** including what the last GM
+  kept hidden. A GM has to see the game to run it; that is the price of taking turns.
+
+`python3 tools/campaign/handover.py` plays it in two browsers. The first GM hands over, his copy stands
+handed over, then he takes it back. The second loads the file: the note is sealed, a wrong passphrase
+leaves it sealed, and the right one opens it.
+
 **Campaigns in this browser** keeps several campaigns side by side (in the browser's IndexedDB,
 which holds far more than its ordinary storage). Each is every page's state, as a save file holds
 it, under the campaign's name:
