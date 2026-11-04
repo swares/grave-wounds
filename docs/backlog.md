@@ -364,6 +364,20 @@ When an item is done, delete it here and note it in the pull request that closes
   no field down. Wanat's American losses rose from 54% to 69%, against about 40% in the account (9
   killed and 27 wounded of about a hundred): the relief forces now fight, and lose men, where the
   run used to end.
+- **Wanat's American losses, traced 4 November 2026** (69% against about 40% in the account, after
+  the held stop above). The Afghan platoon on the base's west side (24 men; the account has 4
+  wounded) breaks in the first minutes and, a broken unit running straight back from its facing,
+  runs east across the base past the post into the fighters on the slopes: gone in 9 of 12 runs (as
+  Hue's G Company before that map was redrawn). Two rout rules were measured and not built (branch
+  rout-away): running straight away from the nearest enemy, net -10 on the benchmark (Wanat's
+  losses 45%, but the Cassino Poles 7 to 3, Badajoz, the Monastery and Grozny down 2); running
+  straight back unless that takes the unit nearer the nearest enemy, net -5 (Wanat 10 of 12 at 55%,
+  but the Poles 7 to 4, the Monastery down 2: on a flipped seed the German paratroops on Point 593,
+  breaking, turned from the Poles behind them, were cut down to the last man, and the Poles held
+  the point at the end). Next: the Afghan platoon's position and facing from the Army's study
+  (Combat Studies Institute, Wanat: Combat Action in Afghanistan, 2008), which no source reached
+  gave (Wikipedia: 24 Afghans, 4 wounded; neither it nor Foreign Policy places them); the study
+  was not reachable from here.
 - **Tear gas, first cut** (`indirect.gas`, the `e8` kind; 4 November 2026). A CS launcher lays a
   cloud that thins and drifts as smoke does; unmasked men in it fire nothing and check Nerve or fall
   back out of it, masked men fire less (a unit's `masks`). On Hue's 6 February field: 2 to 5 of 12
