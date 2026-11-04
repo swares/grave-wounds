@@ -332,6 +332,11 @@ When an item is done, delete it here and note it in the pull request that closes
   the cheapest round known mines within its move, not the hexes actually clicked through (a
   hand move is a destination, not a route). No battlefield has minefields yet:
   to be laid only where the accounts name them. Crews who bail out simply leave the fight.
+- **Tear gas, first cut** (`indirect.gas`, the `e8` kind; 4 November 2026). A CS launcher lays a
+  cloud that thins and drifts as smoke does; unmasked men in it fire nothing and check Nerve or fall
+  back out of it, masked men fire less (a unit's `masks`). On Hue's 6 February field: 2 to 5 of 12
+  (full benchmark; Marine losses 31% to 24%, North Vietnamese 60% to 67%), no other field moved. Still left out: gas grenades thrown by the stormers, CS mortar rounds, gas
+  drifting back on unmasked friends calling the launcher off, and masks on any other battlefield.
 - **Fire at hidden men, first cut.** Men gone to ground, in bunkers or in buildings are now hit
   at 10% of aimed shots (machine guns 5%), and dug-in men hold better. A dug-in line left alone
   is tuned to hold for an hour and a half to two against five times its numbers (Osan) where

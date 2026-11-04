@@ -47,7 +47,7 @@ const kind = (c, r) => water(c, r) ?? streets(c, r) ?? blocks(c, r);
 const grid = groundGrid(COLS, ROWS, kind);
 
 const US = { side: 0, facing: 0 }, NV = { side: 1, facing: 3 };
-const MARINE = { quality: "regular", weapon: "rifle_assault", kit: "vietnam_usmc", formation: "extended", mounted: false };
+const MARINE = { quality: "regular", weapon: "rifle_assault", kit: "vietnam_usmc", formation: "extended", mounted: false, masks: true };   // every man of 2/5 carried a gas mask (2/5's chronology)
 const MG = { quality: "regular", weapon: "machine_gun", kit: "vietnam_usmc", formation: "mg", mounted: false };
 const TANK = { quality: "regular", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank" };
 const ONTOS = { ...TANK, vehicle: "ontos" };
@@ -98,6 +98,7 @@ writeField({
   hexWorks: { bunker: STRONGPOINTS },
   support: [
     { name: "Marine 81 mm mortars", side: 0, kind: "mortar", tubes: 8 },
+    { name: "E-8 tear gas launcher", side: 0, kind: "e8", tubes: 1 },      // 2/5's chronology: the E-8 used at the Treasury, the provincial headquarters and the hospital; one launcher is ours
     { name: "Marine 105 mm howitzers (observed missions only)", side: 0, kind: "field", tubes: 6 },
     { name: "North Vietnamese mortars", side: 1, kind: "mortar", tubes: 8 },
     { name: "North Vietnamese rockets and guns", side: 1, kind: "field", tubes: 4 },

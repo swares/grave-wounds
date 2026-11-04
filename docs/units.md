@@ -1890,6 +1890,20 @@ with shell wounds (the First World War and later):
   exchange it drifts downwind (towards the hex side nearest the way the wind blows): a hex
   in a breeze, 2 in a strong wind or a gale; calm air leaves it where it is. Smoke blown off
   the map is gone.
+- **Tear gas** (`indirect.gas`, the `e8` kind): a CS launcher (an E-8: 4 volleys of 16 canisters,
+  out to 25 hexes, 250 m) wounds no one. Each volley fills its hex and the hexes round it with
+  gas (yellow on the map), which thins and drifts as smoke does (2 exchanges after landing in
+  calm air, 1 in a breeze, none in a strong wind or a gale) but hides nothing. A unit with men in
+  the gas at the end of an exchange (not vehicles, not broken or fleeing): masked (`masks: true`
+  on the battlefield's unit), it fires 75% of its shots the next exchange; unmasked, the gas gets
+  in (in a bunker, at 50%), it fires none the next exchange and checks Nerve, and a failure falls
+  back 4 hexes straight behind it, out of the cloud, to hold there. The enemy commander calls a
+  launcher only on the enemy it scores best as a target, never for smoke, illumination,
+  counter-battery or a creeping barrage. Sources (the project's hue-supports notes): the E-8's
+  volleys and reach (Willbanks), how fast CS acts and wears off (Borden Institute), the Treasury
+  at Hue (the North Vietnamese left quickly; every man of 2/5 masked), the wind spoiling it at
+  the provincial headquarters, and two grenades failing on a concrete bunker; the cloud's size
+  and life, the bunker %, the masked fire and the distance fallen back are design estimates.
 - **Illumination**: mortars, field guns and heavy howitzers can fire illumination instead
   (**Fire: Illumination**). It can be called on any hex, with no one needing to see it,
   spends one round a tube, and wounds no one. It lights the hexes round its aim (out to 15
@@ -3883,7 +3897,8 @@ is 150 × 110 hexes, about 1,640 by 1,040 yards (1,500 by 950 m), north at the t
   and machine guns.
 - A run goes on for the account's length (`ends` 256: 09:50 to the flag over the provincial
   headquarters a little past 14:00).
-- Fire support: Marine 81 mm mortars and 105 mm howitzers (observed missions only); North
+- Fire support: Marine 81 mm mortars, an E-8 tear gas launcher (**tear gas**; every Marine
+  masked, the North Vietnamese not) and 105 mm howitzers (observed missions only); North
   Vietnamese mortars, rockets and guns.
 - It was the 4-6 February clearing from 07:00 on the 4th until 4 November 2026. That ran 3,301
   exchanges, and every run was cut off at the 1,200-exchange cap, 20 hours in, long before the

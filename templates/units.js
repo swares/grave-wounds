@@ -1018,7 +1018,7 @@ function seenShare(field, u, at, weapon = null){  // share of aimed shots at u t
   if (!(low(u) || inBunker(field, u) || (at && hidesAt(field, at)))) return 1;
   return weapon && isMg(weapon) ? (H.mg_seen ?? H.seen) / 100 : H.seen / 100;
 }
-function shooters(u, field = null){               // a machine-gun team's served guns; any other unit's front hexes' first shoot_ranks ranks, less breaching front ranks; pinned, fewer; none passing another's lines
+function shooters(u, field = null){               // a machine-gun team's served guns; any other unit's front hexes' first shoot_ranks ranks, less breaching front ranks; pinned or in gas, fewer; none passing another's lines
   if (u.passing) return 0;
   let n = 0;
   if (isMg(u.weapon)) n = mgGuns(u);
@@ -1026,7 +1026,8 @@ function shooters(u, field = null){               // a machine-gun team's served
     const rows = footprint(u), men = menByHex(u), ab = form(u).abreast, per = ab * Math.min(UD.shoot_ranks, form(u).ranks), busy = breaching(field, u);
     for (let k = 0; k < rows[0].length; k++) n += Math.max(0, Math.min(per, men[k]) - (busy.has(k) ? Math.min(ab, men[k]) : 0));
   }
-  return u.pinned ? n * UD.suppression.fire : n;
+  n = u.pinned ? n * UD.suppression.fire : n;
+  return !u.gassed ? n : u.gassed.masked ? n * UD.indirect.gas.masked_fire : 0;   // in gas: masked, masked_fire of them; unmasked, none
 }
 // ----- indirect fire and suppression (as gravewounds/units.py) -----
 function shellWeapon(table){                      // the weapon shell fragments wound as on this table, or null (no indirect fire)
@@ -1209,11 +1210,12 @@ function groundFire(us, flight, attacking, rng){   // ground fire at the aircraf
   b.rounds = Math.max(0, b.rounds - share * hit);
   return [{ kind: "airloss", sup: k, name: b.name, side: b.side, lost: downed, damaged: hit - downed, left: b.tubes }];
 }
-function bombard(ctx, k, b, shells, scatter = null){   // shells on a hex: where each lands (0 to scatter hexes off), then smoke laid, or men struck and bunkers knocked
+function bombard(ctx, k, b, shells, scatter = null){   // shells on a hex: where each lands (0 to scatter hexes off), then smoke or gas (a kind with gas) laid, or men struck and bunkers knocked
   const { rng, log, field } = ctx, K = UD.indirect.kinds[b.kind], m = b.mission, bursts = [], sc = (scatter ?? K.scatter) + (m.planned ? UD.indirect.planned.scatter : 0);   // planned fire: on the place, not an observer's correction
   for (let s = 0; s < shells; s++){ const dirn = rng.randint(0, 5), far = rng.randint(0, sc); bursts.push(step(m.hex, dirn, far)) }
-  log.push({ kind: "barrage", sup: k, name: b.name, side: b.side, shells, at: m.hex, bursts, smoke: !!m.smoke });
+  log.push({ kind: "barrage", sup: k, name: b.name, side: b.side, shells, at: m.hex, bursts, smoke: !!m.smoke, ...(K.gas ? { gas: true } : {}) });
   if (m.smoke) laySmoke(field, bursts);
+  else if (K.gas) laySmoke(field, bursts, "gas");
   else { shellUnits(ctx, k, b, bursts); shellParties(ctx, bursts, K, { table: ctx.table, weapon: ctx.weapon, kit: null, quality: "regular" }); knockBunkers(field, k, b, bursts, rng, log) }
 }
 function lightUp(field, at, radius, late = 0){      // a flare or illumination lights the hexes within radius of at for light.lasts exchanges (+ late: fired after the shooting)
@@ -1258,8 +1260,8 @@ function counterFire(field, fire, tw, rng){        // fire [k, battery, shells, 
   if (servedTubes(tg) <= 0) tg.mission = null;
   return [{ kind: "counter", sup: k, name: b.name, side: b.side, shells, target: j, tname: tg.name, knocked, left: tg.tubes, struck, down: t.down, dead: t.dead, crew: tg.crew, served: servedTubes(tg) }];
 }
-function laySmoke(field, bursts){                 // smoke over each burst and the hexes round it, as long as the wind lets it hang
-  const S = UD.indirect.smoke, lasts = S.lasts[field.weather?.wind || "calm"], sm = field.smoke || (field.smoke = {});
+function laySmoke(field, bursts, cloud = "smoke"){   // smoke (or gas: indirect.gas) over each burst and the hexes round it, as long as the wind lets it hang
+  const S = UD.indirect[cloud], lasts = S.lasts[field.weather?.wind || "calm"], sm = field[cloud] || (field[cloud] = {});
   for (const at of bursts) for (const h of within(at, S.radius)){ const key = `${h[0]},${h[1]}`; sm[key] = Math.max(sm[key] || 0, lasts) }
 }
 function knockBunkers(field, k, b, bursts, rng, log){   // a shell bursting on a bunker's hex knocks it out at the kind's knock %, and opens a stone wall (shelled) on its sides at the same % (as units._knock_bunkers)
@@ -1434,6 +1436,28 @@ function suppressAll(us, under, rng){             // under fire: Nerve or pinned
     if (!under[i] || u.men <= 0 || u.state === "broken" || u.state === "fled") return;
     const target = quality(u.quality).nerve + (low(u) ? S.prone : 0), roll = rng.randint(1, 100);
     if (roll > target){ u.pinned = 2; log.push({ kind: "pinned", unit: i, roll, target }) }
+  });
+  return log;
+}
+function gassedAll(us, field, rng){               // men in gas at the end of the exchange: masked, fewer shots next exchange; unmasked (in a bunker at gas.bunker %), none, and Nerve or fall back fall_back hexes straight behind to hold there (as units._gassed_all)
+  const gas = field?.gas, log = [];
+  if (!gas || !Object.keys(gas).length) return log;
+  const G = UD.indirect.gas, size = field.size;
+  us.forEach((u, i) => {
+    if (u.men <= 0 || u.state === "broken" || u.state === "fled" || u.vehicle) return;
+    if (!footprint(u).flat().some(h => `${h[0]},${h[1]}` in gas)) return;
+    if (u.masks){ u.gassed = { left: 2, masked: true }; return }
+    if (inBunker(field, u) && rng.randint(1, 100) > G.bunker) return;
+    u.gassed = { left: 2, masked: false };
+    if (u.withdraw){ log.push({ kind: "gassed", unit: i }); return }
+    const target = quality(u.quality).nerve, roll = rng.randint(1, 100), out = roll > target;
+    if (out){
+      let h = step(u.pos, (Number(u.facing) + 3) % 6, G.fall_back);
+      if (size) h = [Math.min(Math.max(h[0], 0), size[0] - 1), Math.min(Math.max(h[1], 0), size[1] - 1)];
+      u.withdraw = { at: 0, to: h };
+      delete u.hold;
+    }
+    log.push({ kind: "gassed", unit: i, roll, target, falls_back: out });
   });
   return log;
 }
@@ -2123,7 +2147,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
     if (cut > 0) u.hit = true; else delete u.hit;   // it lost men this exchange: under fire, for the next moves
   });
-  log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...reformAll(us, acc.lost, rng, field), ...suppressAll(us, under, rng), ...giveWayAll(us, field, log.slice(from)), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table), postsMoving(field)),
+  log.push(...moraleAll(us, occ, before, acc, rng, table, field), ...reformAll(us, acc.lost, rng, field), ...suppressAll(us, under, rng), ...gassedAll(us, field, rng), ...giveWayAll(us, field, log.slice(from)), ...heroesAfter(us, rng, us.map((_, i) => !acc.lost[i] && !under[i] && !inContact(us, occ, i)), cauterises(table), postsMoving(field)),
     ...partiesAfter(us, field), ...lyingAfter(us, table, rng), ...postsAfter(us, field, table, rng), ...digAll(us), ...sappersAll(us, field));
   postsSettle(field);
   toilFought(us, fought);
@@ -2354,14 +2378,17 @@ function afterExchange(us, field, log = []){        // charges spent, batteries 
     if (u.resupplying && ammoFull(u)) log.push({ kind: "resupplied", unit: i });
     batteryAfter(u);
     if (u.pinned) u.pinned -= 1;
+    if (u.gassed && --u.gassed.left <= 0) delete u.gassed;
     if (u.lost) u.lost -= 1;
   });
   flashes(us, log, field);
   beams(us, log, field);
   for (const b of field?.support || []) if (b.mission && (b.mission.wait || 0) > 0) b.mission.wait -= 1;
   log.push(...displaceAll(field), ...overrunAll(us, field));
-  if (field?.smoke) field.smoke = Object.fromEntries(Object.entries(field.smoke).filter(([, n]) => n > 1).map(([h, n]) => [h, n - 1]));   // smoke thins
-  smokeDrifts(field);
+  for (const cloud of ["smoke", "gas"]){             // smoke and gas thin, then drift
+    if (field?.[cloud]) field[cloud] = Object.fromEntries(Object.entries(field[cloud]).filter(([, n]) => n > 1).map(([h, n]) => [h, n - 1]));
+    smokeDrifts(field, cloud);
+  }
   if (field?.lit?.length) field.lit = field.lit.filter(x => x.fires || x.left > 1).map(x => (x.fires ? x : { ...x, left: x.left - 1 }));   // flares burn down; a battlefield's fires burn all battle
 }
 function displaceAll(field){                      // displacing batteries count down; one that has moved is no longer located, missions on it end
@@ -2388,8 +2415,8 @@ function downwind(field){                         // the hex side (0-5) the wind
   }
   return side;
 }
-function smokeDrifts(field){                      // smoke moves `drift` hexes downwind; off the map it is gone
-  const sm = field?.smoke, side = sm ? downwind(field) : null, n = UD.indirect.smoke.drift?.[field?.weather?.wind || "calm"] || 0;
+function smokeDrifts(field, cloud = "smoke"){      // smoke (or gas) moves `drift` hexes downwind; off the map it is gone
+  const sm = field?.[cloud], side = sm ? downwind(field) : null, n = UD.indirect[cloud]?.drift?.[field?.weather?.wind || "calm"] || 0;
   if (side === null || !n) return;
   const size = field.size, out = {};
   for (const [key, left] of Object.entries(sm)){
@@ -2398,7 +2425,7 @@ function smokeDrifts(field){                      // smoke moves `drift` hexes d
     const k2 = `${h[0]},${h[1]}`;
     out[k2] = Math.max(out[k2] || 0, left);
   }
-  field.smoke = out;
+  field[cloud] = out;
 }
 function vehicleLosses(u, before, lost){          // [down, lost this exchange] for its morale: a vehicle unit's in whole vehicles gone (their crews), not crewmen hit in vehicles still fighting (as units._vehicle_losses)
   const K = vehicleKind(u);
@@ -3197,10 +3224,11 @@ function gunApply(us, i, o, [size, field, exchange]){   // limber or unlimber (c
 function callFireAi(us, side, field, known, [stance, exchange, orders, table] = ["attack", null, [], null]){   // its batteries under counter-battery fire displace; in the dark, one battery lights an enemy it lost sight of; attacking, one battery lays smoke where its units are under fire; its other free batteries are called on the enemy it sees that scores best as a target (as commander._call_fire)
   const out = displaceAi(field, side);
   const free = (field?.support || []).map((b, k) => k).filter(k => freeBattery(field.support[k], side));
-  out.push(...callIllum(us, side, field, [known, exchange], free));
-  if (stance === "attack") out.push(...callSmoke(us, side, field, known, free));
-  out.push(...aiCounter(field, side, free));
-  if (stance === "attack") out.push(...callCreep(us, side, field, [known, orders || []], free));
+  const shells = free.filter(k => !UD.indirect.kinds[field.support[k].kind].gas);   // gas launchers are only called plain
+  out.push(...callIllum(us, side, field, [known, exchange], shells));
+  if (stance === "attack") out.push(...callSmoke(us, side, field, known, shells));
+  out.push(...aiCounter(field, side, shells));
+  if (stance === "attack") out.push(...callCreep(us, side, field, [known, orders || []], shells));
   const air = (field?.support || []).map((b, k) => k).filter(k => freeAir(field, field.support[k], side));
   [...free, ...air].sort((a, b) => a - b).forEach(k => {
     const b = field.support[k], K = UD.indirect.kinds[b.kind];

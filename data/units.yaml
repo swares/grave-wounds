@@ -459,6 +459,7 @@ indirect:
     tank:     {name: "Tanks (direct fire)", rate: 2, rounds: 60, delay: 0, scatter: 0, radius: 1, struck: [25, 5],              counter: 0, knock: 8, direct: true, crew: 5, serve: 3, displace: 0, room: 50}
     autocannon: {name: "Autocannon (direct fire)", rate: 3, rounds: 300, delay: 0, scatter: 0, radius: 0, struck: [20],              counter: 0, knock: 3, direct: true, crew: 3, serve: 2, displace: 0}
     fighter_bomber: {name: "Fighter-bombers (bombs, napalm)", rate: 2, rounds: 4, delay: 2, scatter: 3, radius: 4, struck: [45, 25, 12, 5, 2], counter: 0, knock: 15, air: true, by_night: false, exposed: 1, shot: [bomb, bombs]}
+    e8:       {name: "CS launcher (E-8)", range: 25, rate: 1, rounds: 4, delay: 0, scatter: 1, radius: 0, struck: [0], counter: 0, crew: 2, serve: 1, displace: 0, gas: true}   # a tube is a launcher, a round one volley of 16 canisters (64 in four)
     gunship:  {name: "Helicopter gunships (rockets, guns)", rate: 4, rounds: 24, delay: 0, scatter: 1, radius: 1, struck: [20, 6], counter: 0, knock: 4, air: true, by_night: true, exposed: 2, shot: [rocket and gun pass, rocket and gun passes]}
   air:
     grounded: [fog, storm, heavy_snow, blizzard, sandstorm]
@@ -484,6 +485,21 @@ indirect:
       napalm: {length: 3, struck: 45, knock: 15, dead: 35, kinds: [fighter_bomber], from: 1944, wars: [WWII, Korea, Vietnam, "Late 20th century", "Iraq & Afghanistan"]}
   tree_burst: {ground: [woods], factor: 1.5, prone: 0.7}
   smoke: {radius: 1, lasts: {calm: 4, breeze: 3, strong: 2, gale: 1}, drift: {calm: 0, breeze: 1, strong: 2, gale: 2}}
+  # gas: tear gas (CS) from a launcher (a kind with `gas`): each volley lays a cloud over its hex and
+  #   those within `radius`, hanging `lasts` exchanges by the wind and drifting `drift` hexes downwind
+  #   at the end of each, as smoke does (it does not block sight). It wounds no one. A unit with men in
+  #   a gassed hex at the end of an exchange (not vehicles, not broken or fleeing): masked (the unit's
+  #   `masks`) it fires `masked_fire` of its shots the next exchange; unmasked, the gas gets in (in a
+  #   bunker, at `bunker` %), it fires none the next exchange, and it checks Nerve: a failure and it
+  #   falls back `fall_back` hexes straight behind it, out of the cloud, and holds there (as a withdraw
+  #   order). Sources (the project's hue-supports notes): an E-8 launcher fires 64 canisters in four
+  #   bursts of 16 out to about 250 m (Willbanks); CS acts within seconds and wears off 15-30 minutes
+  #   after leaving the cloud (Borden Institute); at the Treasury in Hue, 4 February 1968, the North
+  #   Vietnamese left quickly under it and the Marines, every man of 2/5 masked, went in at small cost;
+  #   at the provincial headquarters on the 6th the river breeze blew it away; two grenades into a
+  #   concrete bunker failed to bring its men out. The radius, how long it hangs and drifts, the
+  #   bunker %, the masked fire and the distance fallen back are design estimates.
+  gas: {radius: 1, lasts: {calm: 3, breeze: 2, strong: 1, gale: 1}, drift: {calm: 0, breeze: 1, strong: 2, gale: 2}, bunker: 50, masked_fire: 0.75, fall_back: 4}
   counter_battery: {among: 2, near: 3, near_struck: 1}
   creep: {max: 3, every_max: 4}
 
