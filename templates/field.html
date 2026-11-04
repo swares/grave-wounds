@@ -1439,6 +1439,9 @@ function triggerText(w){                          // why a plan step started or 
   if (w.start) return "from the start";
   if (w.done) return "its task is done";
   if (w.stalled) return "they could get no nearer, and give it up";
+  if (w.relieved) return `they have passed ${w.relieved}'s lines and taken their place`;
+  if (w.gone) return `${w.gone}, whom they were to relieve, have broken or are gone`;
+  if (w.blocked) return `there is no room for them and ${w.blocked} to change places`;
   if ("exchange" in w) return `exchange ${w.exchange} has come`;
   if ("phase" in w) return `${w.phase} has begun`;
   if ("light" in w) return `it is ${FD.weather.light.levels[w.light].name.toLowerCase()}`;
@@ -1452,7 +1455,8 @@ function planOrderText(who, o){                   // a plan step starting or end
   const st = S.field?.plan?.[S.units[o.unit]?.side]?.[o.step] || {};
   if (!o.start) return `Plan: ${who} have done with their task (${triggerText(o.why)}).`;
   const what = { advance_to: `advance to their line at ${hexName(st.to || [0, 0])}`, pin: `keep ${st.target} under fire from as far off as they can`,
-    envelop: st.target ? `go round to strike ${st.target} in the flank` : "go round by their route", commit: "are released from the reserve", withdraw_if: "fall back, as planned" }[o.do];
+    envelop: st.target ? `go round to strike ${st.target} in the flank` : "go round by their route", commit: "are released from the reserve", withdraw_if: "fall back, as planned",
+    relieve: `come up to relieve ${st.relieves}` }[o.do];
   return `Plan: ${who} ${what} (${triggerText(o.why)}).`;
 }
 const ORDER_TEXT = {                              // (who, them, o, up, facing) -> the order's line
@@ -3456,7 +3460,7 @@ function stageText(){                             // the strip above the map: th
   const next = nx ? ` <span class="muted">${esc(nextText)}</span>` : "";
   return `<b>Phase ${i + 1} of ${list.length}: ${esc(st.name)}.</b> ${esc(st.note || "")}${late}${next}`;
 }
-const TASK_WORD = { advance_to: "to their line", pin: "pinning", envelop: "going round", commit: "committed", withdraw_if: "falling back" };
+const TASK_WORD = { advance_to: "to their line", pin: "pinning", envelop: "going round", commit: "committed", withdraw_if: "falling back", relieve: "relieving" };
 function hiddenPlan(side){                        // a plan the commander wrote for itself, while the GM plays the other side: not shown on the strip
   const k = S.sides.indexOf(side);
   return !!S.field?.planned?.[side] && k >= 0 && !aiOf(1 - k);
@@ -3465,7 +3469,7 @@ function planText(){                              // the strip: each side's plan
   const P = S.field?.plan;
   if (!P) return "";
   const sides = Object.keys(P), hidden = sides.filter(hiddenPlan);
-  if (S.phase === "setup") return "<b>Plans:</b> " + esc(sides.map(s => `${s}, ${nOf(P[s].length, "step")}: ` + P[s].map(st => `${st.units.join(", ")} ${TASK_WORD[st.do]}${st.target ? " (" + st.target + ")" : ""}`).join("; ")).join(" · "));
+  if (S.phase === "setup") return "<b>Plans:</b> " + esc(sides.map(s => `${s}, ${nOf(P[s].length, "step")}: ` + P[s].map(st => `${st.units.join(", ")} ${TASK_WORD[st.do]}${st.target || st.relieves ? " (" + (st.target || st.relieves) + ")" : ""}`).join("; ")).join(" · "));
   const running = S.units.filter(u => u.task && u.men > 0 && u.state !== "fled" && !hidden.includes(u.side)).map(u => `${u.name} ${TASK_WORD[u.task.do]}${u.focus ? " (" + u.focus + ")" : ""}`);
   const secret = hidden.map(s => `${s}: the commander has a plan`);
   const parts = [...(running.length ? ["<b>Plans running:</b> " + esc(running.join("; "))] : []), ...(secret.length ? [esc(secret.join("; ")) + "."] : [])];

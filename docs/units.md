@@ -1014,6 +1014,14 @@ its side knows where it is, instead of choosing its own.
   round, its target, and goes back to ordinary orders (and to the reserve if it was held there).
 - **commit** `{to}` (optional): releases a reserve unit; with `to` it goes there, as a unit plugging
   a gap does; without, it fights as any committed unit. It is done at once.
+- **relieve** `{relieves}`: a passage of lines. The unit makes for the ground just behind the
+  friend it relieves (a hex behind its rear rank, on its middle). Once within `commander.route.reach`
+  of it, the two pass each other's lines for `commander.plans.relieve` exchanges (3, ours): neither
+  fires nor takes orders, and the enemy strikes them as usual. Then they change places: the unit
+  takes the friend's ground and facing, and the friend goes to where the unit stood. The step ends
+  when they have changed places, when the friend breaks or is gone, or when there is no room to
+  change. The drill books (Dundas 1792; Smyth's 1812 regulations) had the passage done by files or
+  through intervals; no time for it was found. Design choice (asked and answered, 3 November 2026).
 - **withdraw_if** `{to}`: when its step starts, falls back to a hex (and holds it) or to a map
   edge (and leaves), as a withdrawal on orders does. It is the account's `withdraw`, started by
   what happens instead of by the clock. Done when it is there.
@@ -1049,8 +1057,7 @@ British left; About-face and bayonets has begun").
 - **Albuera:** Cole's 4th Division, after standing an hour and a half behind the cavalry (Oman),
   comes on against the French left at exchange 91 and goes for Werlé's brigade, which the Fusiliers
   broke (`envelop`; the route and the hour, the earliest Oman's words allow, are ours). Hoghton's
-  relief of Zayas's Spaniards is not in it: a unit cannot pass through its own side's units except
-  to charge, and the two lines are each 70 hexes wide.
+  brigade relieves Zayas's Spaniards at 61, after their stand of "over an hour" (Oman; `relieve`).
 - **Cowpens:** the militia fall back round the Continentals' left (east, for a line facing
   south) when the phase *The militia fall back* begins or a sixth are down (`withdraw_if`, ours).
   When the Continentals face about (*About-face and bayonets*), Washington's horse go round the

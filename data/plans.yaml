@@ -158,11 +158,15 @@ albuera-1811:
   note: >-
     Cole's 4th Division, after standing an hour and a half behind the allied cavalry (Oman, p. 389),
     comes on against the French left, where the Fusiliers broke Werlé's brigade (pp. 390-392). The
-    route and the hour (91, the earliest Oman's words allow) are ours. Hoghton's relief of the
-    Spaniards is not here: a brigade 70 hexes wide cannot pass through Zayas's line (a unit passes
-    through its own side only to charge).
+    route and the hour (91, the earliest Oman's words allow) are ours. Hoghton's brigade relieves
+    Zayas's Spaniards after their stand of "over an hour" (Oman, p. 386: 61, the earliest those
+    words allow), passing their lines (commander.plans.relieve); the Spaniards draw back behind.
   sides:
     0:
+      - units: ["Hoghton's and Abercrombie's brigades"]
+        do: relieve
+        relieves: "Zayas's Spanish"
+        when: {exchange: 61}
       - units: ["Cole's division (coming up)"]
         do: envelop
         via: [[32, 141]]

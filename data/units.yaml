@@ -1188,7 +1188,13 @@ commander:
   # plans (data/plans.yaml; docs/units.md, Plans): a step's outflanked trigger is a steady enemy
   # it knows of off the flank or in the rear of one of the step's units, within `flank` hexes of
   # it (between their nearest hexes). Design estimate: the reserve's 12, close enough to matter.
-  plans: {flank: 12}
+  # relieve: a relieve step's unit makes for the ground behind the friend it relieves, and once
+  #   within route.reach of it the two pass each other's lines for `relieve` exchanges, neither
+  #   firing nor moving (the enemy strikes them as usual), then change places, the friend behind.
+  #   The drill books (Dundas 1792; Smyth's 1812 regulations, the passage of lines) have it done
+  #   by files or through intervals; no time found: 3 is our estimate. Design choice (asked and
+  #   answered, 3 November 2026).
+  plans: {flank: 12, relieve: 3}
   # planner (docs/units.md, The procedural planner): the commander's own plan, for a side with none.
   # A way round the enemy's end is open if it keeps `flank_gap` hexes clear of the end and of every
   # other enemy it knows of, and its ground costs on average no more than `going` times open ground.

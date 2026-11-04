@@ -1326,7 +1326,7 @@ def _withdraw_errors(fid: str, w: dict, size: list) -> list[str]:
     return errors
 
 
-PLAN_TASKS = {"advance_to": ("to",), "pin": ("target",), "envelop": ("via",), "commit": (), "withdraw_if": ("to",)}
+PLAN_TASKS = {"advance_to": ("to",), "pin": ("target",), "envelop": ("via",), "commit": (), "withdraw_if": ("to",), "relieve": ("relieves",)}
 PLAN_TRIGGERS = ("exchange", "phase", "light", "pinned", "broken", "lost", "outflanked")
 
 
@@ -1336,6 +1336,8 @@ def _plans_errors(d: Data) -> list[str]:
     and triggers that exist (phases by name, light levels, units by name)."""
     flank = ((d.units.get("commander") or {}).get("plans") or {}).get("flank")
     errors = [] if d.plans is None or not d.plans or (isinstance(flank, int) and flank >= 1) else ["units.yaml: commander.plans.flank must be a whole number of 1 or more"]
+    relieve = ((d.units.get("commander") or {}).get("plans") or {}).get("relieve")
+    errors += [] if isinstance(relieve, int) and relieve >= 1 else ["units.yaml: commander.plans.relieve must be a whole number of 1 or more"]
     for fid, p in (d.plans or {}).items():
         F = d.fields.get(fid)
         if F is None:
@@ -1379,6 +1381,8 @@ def _step_errors(d: Data, F: dict, side: int, st: dict, where: str) -> list[str]
         errors.append(f"{where}: via must be a list of hexes on the map")
     if "stall" in st and not (st.get("do") == "envelop" and isinstance(st["stall"], int) and st["stall"] >= 1):
         errors.append(f"{where}: stall is for an envelopment, a whole number of moves of 1 or more")
+    if "relieves" in st and not (do == "relieve" and st["relieves"] in mine and st["relieves"] not in (units or [])):
+        errors.append(f"{where}: relieves is for a relieve step, a unit of its own side not among the step's units")
     if st.get("target") is not None and st["target"] not in theirs:
         errors.append(f"{where}: target {st['target']!r} is not an enemy unit")
     for key in ("when", "until"):

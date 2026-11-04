@@ -1893,7 +1893,9 @@ def _nearest_on_line(d: Data, units: list, ctx: tuple, aim: tuple, best):
 def _shooters(d: Data, u: dict, field: dict | None = None) -> float:
     """Who shoots: a machine-gun team's served guns; any other unit's front hexes' first
     shoot_ranks ranks, less the front rank of each hex breaching the works. A pinned unit,
-    suppression.fire of them."""
+    suppression.fire of them; none in a unit passing another's lines (commander.plans.relieve)."""
+    if u.get("passing"):
+        return 0
     if is_mg(d, u["weapon"]):
         n = mg_guns(d, u)
     else:
