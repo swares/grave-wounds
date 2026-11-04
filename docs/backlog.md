@@ -418,9 +418,13 @@ When an item is done, delete it here and note it in the pull request that closes
     after his death); the maker, the book and the phase note are corrected. Albuera's length (3 November 2026): `ends: 150` from the
     accounts (the Spaniards' hour and a half, Hoghton's half hour, the Fusiliers' half hour);
     Colborne's brigade is now ridden down as in 1811, Allied losses 19% to 23%, French 26% to 27%.
-    Still to do: the jam behind a broken unit (Albuera: Girard's division breaks with Gazan's and
-    Werlé's behind it, deeper than `rout.through`, so it stays broken where it stands, and Gazan,
-    Werlé, Hoghton and Cole never fight); Burgos's later storms.
+    The jam behind a broken unit (3 November 2026): `rout.through` 3 to 6, so Girard's division runs
+    back through Gazan's and Werlé's; and Albuera's plan brings Cole on against the French left at
+    91 (Oman). Albuera's French losses 27% to 40% (Soult's 5,936 to Oman's 7,900 are 29% to 38% of
+    the French on the map), the Allies' 23% (about 27% in 1811); every other battlefield within its
+    spread (Agincourt 7 to 9, Babuna 10 to 9, Chipyong-ni 12 to 11; 496 of 588 as before). Still to
+    do: Hoghton's relief of Zayas (a unit passes through its own side only to charge, and both
+    lines are 70 hexes wide); Burgos's later storms.
   - **Wound tables:** the Crimean siege table is the only siege table (the Siege warfare tables
     item above).
   - To start: list the sieges and storms the game already touches (the two Redans, Jacob's Ford,
