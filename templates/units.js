@@ -2774,7 +2774,9 @@ function orderSide(units, side, [size, field, rng, exchange], { stance, memory, 
   let us = units.map(u => ({ ...u }));
   if (UD.morale.posture) us.forEach(u => { if (u.side === side) u.holding = stance === "hold" });   // its stance, for morale.posture: only a holding side's units hold a position
   const orders = [], mem = memory ?? {};
-  const known = sightings(us, side, field, exchange, mem), aim = aims(us, side, field, stance, mem);
+  const known = sightings(us, side, field, exchange, mem);
+  if (stance === "attack") garrisonKnown(us, side, field, exchange, known);
+  const aim = aims(us, side, field, stance, mem);
   const goal = aim[1];                              // the field with the objective most of its units go for (with a second one marked)
   { const h = hookUp(us, side, [goal, known, exchange, stance]); us = h.units; orders.push(...h.orders) }
   { const r = ridersAi(us, side, [goal, known, exchange, stance], orders); us = r.units; orders.splice(0, orders.length, ...r.orders) }
@@ -3398,6 +3400,14 @@ function sightings(us, side, field, exchange, memory){   // {index: {pos, facing
     else if (k in memory && ex - memory[k].ex > UD.commander.remember) delete memory[k];
   });
   return memory;
+}
+function garrisonKnown(us, side, field, exchange, memory){   // attacking, the side knows where each enemy on its objective (within its radius) stands, seen or not (as commander._garrison_known)
+  const obj = objectiveOf(field);
+  if (!obj) return;
+  const r = objectiveRadii(field)[0];
+  us.forEach((e, j) => {
+    if (e.side !== side && !ROUTED.has(e.state) && e.men > 0 && offObjective(e, obj) <= r) memory[String(j)] = { pos: [...e.pos], facing: e.facing, ex: exchange ?? 0 };
+  });
 }
 const seenBy = (us, side, field, e) => marksOf(e).some(h => spotted(us, field, side, h));   // a unit of side sees enemy e: its middle hex or either end of its front row
 const tractor = u => !!vehicleKind(u)?.tows;      // gun tractors: not ordered as other units (towing: moveGuns)
