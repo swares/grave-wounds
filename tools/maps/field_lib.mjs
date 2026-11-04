@@ -156,7 +156,10 @@ export const alongLine = (line, ahead) => (w, c0) => [w, c0, Math.min(...Array.f
 // that count as on it}), markers (the unit markers' settings: {labels, strength, size}, all
 // optional), stances (with no objective: how each army fought, [attack|hold, attack|hold]), ends ({at: the
 // exchange the account's fight ends, why: the words it rests on}), phases (the battle's stages: [{name, at (the exchange it begins, the first 1), note,
-// arrive (names of units held off the map until then)}]). A unit may also set type and size
+// arrive (names of units held off the map until then), when (sooner, on an event: {fires: a unit's name,
+// wait}, {after: exchanges after the phase before} or {broken: a unit's name}, once it has broken, fled
+// or has no men; a phase on a unit's breaking does not lengthen a run, and its at is only a latest)}]).
+// A unit may also set type and size
 // (units.yaml markers).
 export function writeField(spec){
   spec = { ...spec, units: sized(spec.id, spec.units) };

@@ -37,6 +37,7 @@ phases:
   - {name: "Dark, by moonlight", at: 61, note: "By about eight it is dark; a moon some eight days old, more than half lit, is up until after midnight.", light: moonlit}
   - {name: "Ripley and Hercules Scott come up", at: 120, note: "About nine, in the dark: Brown brings up Ripley's brigade and Porter's volunteers, and Hercules Scott's column, sent towards Queenston and recalled, reaches the British line.", arrive: ["Ripley's brigade (21st, 23rd, coming up)", "Porter's volunteers (coming up)", "Hercules Scott's column (coming up)"]}
   - {name: "Drummond's counter-attacks", at: 150, note: "Drummond's reinforced line counter-attacks three times to win back the guns, until near midnight."}
+  - {name: "The American guns come up", at: 271, when: {broken: "British guns on the crest"}, note: "Once the British guns are taken, Hindman brings Biddle's and Ritchie's guns up among them on the crest (Wikipedia; HistoryNet); Drummond's men come on to retake their cannon, \"the muzzles of the Enemy's Guns ... advanced within a few Yards of ours\" (Drummond). Never, if the guns are not taken.", arrive: ["Hindman's guns brought up (Biddle's and Ritchie's companies)"]}
 ground: |
   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF....................................................................................................
   FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF....................................................................................................
@@ -161,3 +162,4 @@ units:
   - {name: "8th and 41st Foot (on the lane)", side: 1, men: 400, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 10, pos: [71, 35], facing: 4, size: battalion, leaders: [{name: "Phineas Riall", rank: "Major-General"}]}
   - {name: "19th Light Dragoons", side: 1, men: 150, quality: regular, weapon: saber, kit: dragoon_helmet, formation: close, width: 6, pos: [89, 30], facing: 4, mounted: true, size: company, leaders: [{name: "Robert Lisle", rank: "Major"}]}
   - {name: "Hercules Scott's column (coming up)", side: 1, men: 1000, quality: regular, weapon: musket_smoothbore, kit: none, formation: close, width: 25, pos: [52, 10], facing: 4, size: battalion, leaders: [{name: "Hercules Scott", rank: "Colonel"}]}
+  - {name: "Hindman's guns brought up (Biddle's and Ritchie's companies)", side: 0, men: 60, quality: regular, weapon: artillery_smoothbore, kit: none, formation: battery, width: 6, pos: [51, 37], facing: 1, size: battery}

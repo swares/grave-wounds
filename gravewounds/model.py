@@ -2346,7 +2346,7 @@ def _phase_when_errors(d: Data, f: dict, where: str) -> list[str]:
         if not isinstance(st, dict):
             continue
         if "when" in st and not _when_ok(st["when"], units, i):
-            errors.append(f"{where}: phase {i + 1} begins when {{fires: a unit of the field, wait: exchanges}} or {{after: exchanges after the phase before}}")
+            errors.append(f"{where}: phase {i + 1} begins when {{fires: a unit of the field, wait: exchanges}}, {{after: exchanges after the phase before}} or {{broken: a unit of the field}}")
         if "weather" in st and not _weather_ok(d, st["weather"]):
             errors.append(f"{where}: phase {i + 1} sets the weather as cond (a weather.yaml condition) and wind, both optional")
     return errors
@@ -2356,6 +2356,8 @@ def _when_ok(on, units: set, i: int) -> bool:
     """A phase's when: {fires: a unit of the field, wait (whole exchanges)}, or {after: n} (not the first phase)."""
     if not isinstance(on, dict):
         return False
+    if set(on) == {"broken"}:
+        return on["broken"] in units
     if set(on) <= {"fires", "wait"}:
         return on.get("fires") in units and isinstance(on.get("wait", 0), int)
     return set(on) == {"after"} and isinstance(on["after"], int) and i > 0

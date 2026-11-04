@@ -4584,9 +4584,10 @@ function lightOfPhase(B, st, out){                 // a phase that sets the ligh
   B.field.weather = { ...B.field.weather, light: st.light };
   (out.light || (out.light = {}))[B.stageNo] = FD.weather.light.levels[st.light].name;
 }
-function phaseDue(B, st){                          // a phase's time has come: its exchange (at the latest), or sooner on an event: when {fires: a unit's name, wait} that many exchanges after the unit first fired; when {after} that many after the phase before began (as battle._phase_due)
+function phaseDue(B, st){                          // a phase's time has come: its exchange (at the latest), or sooner on an event: when {fires: a unit's name, wait} that many exchanges after the unit first fired; when {after} that many after the phase before began; when {broken: a unit's name} once it has broken, fled or has no men (as battle._phase_due)
   if (st.at <= B.exchange) return true;
   const on = st.when;
+  if (on?.broken) return !B.units.some(u => u.name === on.broken && u.men > 0 && u.state !== "broken" && u.state !== "fled");   // once that unit has broken, fled or has no men left
   if (on?.fires){ const f = B.fired?.[on.fires]; return f !== undefined && f + (on.wait || 0) <= B.exchange }
   if (on?.after !== undefined){ const s = B.stageBegan?.[B.stageNo]; return s !== undefined && s + on.after <= B.exchange }
   return false;
@@ -4712,9 +4713,10 @@ function playStop(B, held, stances){               // after an exchange of a sel
   if (B.exchange - 1 >= playLimit(B)) return { why: "limit" };
   return null;
 }
-const phasesToCome = B => (B.stages || []).some(s => s.at >= B.exchange);   // a phase of the battlefield's account has still to begin: holding the objective does not end the run yet (as battle.phases_to_come)
+const onBreak = s => !!s.when?.broken;               // a phase that begins when a unit breaks: its at is only a latest (as battle._on_break)
+const phasesToCome = B => (B.stages || []).some(s => s.at >= B.exchange && !onBreak(s));   // a phase of the battlefield's account has still to begin: holding the objective does not end the run yet; one on a unit's breaking does not count (as battle.phases_to_come)
 function playLimit(B){                            // the exchanges a self-played battle runs at most: the limit, or after_phases past its last phase's start, or as long as the battlefield's account says it was fought (ends) if later; never more than most (as battle.play_limit)
-  const P = UD.commander.self_play, last = Math.max(0, ...(B.stages || []).map(s => s.at));
+  const P = UD.commander.self_play, last = Math.max(0, ...(B.stages || []).filter(s => !onBreak(s)).map(s => s.at));
   return Math.max(P.limit, Math.min(P.most, Math.max(last ? last + P.after_phases : 0, B.ends || 0)));
 }
 function playStances(fid){                         // a self-played battle's stances: the side the battlefield's objective names attacks and the other holds; else its stances as fought; else both attack (as battle.stances)

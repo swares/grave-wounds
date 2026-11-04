@@ -45,6 +45,12 @@ const units = [
   unit("8th and 41st Foot (on the lane)", GB, 400, LINE, [10, 66, 35]),
   unit("19th Light Dragoons", GB, 150, HORSE, [6, 86, 30]),
   unit("Hercules Scott's column (coming up)", GB, 1000, LINE, [25, 40, 10]),
+  // Hindman's guns brought up among the captured British guns (Wikipedia: "While the Americans tried to deploy their
+  // own artillery among the captured British guns, Drummond ... mounted a determined attempt to retake his own
+  // cannon"; HistoryNet: they "consolidated the high ground and brought up their own artillery"): Biddle's three
+  // 12-pounders and Ritchie's two 6-pounders and howitzer (Wikipedia's order of battle), ten crew to a gun; where
+  // on the crest, just behind the British guns' ground, is ours.
+  unit("Hindman's guns brought up (Biddle's and Ritchie's companies)", US, 60, GUNS, [6, 49, 37]),
 ];
 led(units, {
   "Scott's brigade (9th, 11th, 22nd)": [["Winfield Scott", "Brigadier-General"]],
@@ -67,6 +73,7 @@ writeField({
     { name: "Dark, by moonlight", at: 61, note: "By about eight it is dark; a moon some eight days old, more than half lit, is up until after midnight.", light: "moonlit" },
     { name: "Ripley and Hercules Scott come up", at: 120, note: "About nine, in the dark: Brown brings up Ripley's brigade and Porter's volunteers, and Hercules Scott's column, sent towards Queenston and recalled, reaches the British line.", arrive: ["Ripley's brigade (21st, 23rd, coming up)", "Porter's volunteers (coming up)", "Hercules Scott's column (coming up)"] },
     { name: "Drummond's counter-attacks", at: 150, note: "Drummond's reinforced line counter-attacks three times to win back the guns, until near midnight." },
+    { name: "The American guns come up", at: 271, when: { broken: "British guns on the crest" }, note: "Once the British guns are taken, Hindman brings Biddle's and Ritchie's guns up among them on the crest (Wikipedia; HistoryNet); Drummond's men come on to retake their cannon, \"the muzzles of the Enemy's Guns ... advanced within a few Yards of ours\" (Drummond). Never, if the guns are not taken.", arrive: ["Hindman's guns brought up (Biddle's and Ritchie's companies)"] },
   ],
   ends: { at: 271, why: "counter-attacks until near midnight: 23:30 from 19:00" },
   objective: { at: [49, 33], side: 0, name: "the British guns on the crest by the churchyard", radius: 3 },
