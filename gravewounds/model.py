@@ -1548,7 +1548,7 @@ def _pikes_errors(d: Data) -> list[str]:
 
 
 def _indirect_errors(d: Data) -> list[str]:
-    """units.yaml indirect: tree bursts on known ground, smoke for every wind, a counter % per kind."""
+    """units.yaml indirect: tree bursts on known ground, smoke and gas for every wind, a counter % per kind."""
     I, errors = d.units.get("indirect") or {}, []
     if not I:
         return errors
@@ -1565,6 +1565,13 @@ def _indirect_errors(d: Data) -> list[str]:
                if not (isinstance(v.get("illum", 0), int) and v.get("illum", 0) >= 0)]
     if winds and set(I.get("smoke", {}).get("drift", {})) != winds:
         errors.append("units.yaml: indirect.smoke.drift needs every wind")
+    G = I.get("gas")
+    if G is not None and not (winds <= set(G.get("lasts", {})) and winds <= set(G.get("drift", {})) and isinstance(G.get("radius"), int)
+                              and isinstance(G.get("fall_back"), int) and isinstance(G.get("bunker"), (int, float)) and 0 <= G["bunker"] <= 100
+                              and isinstance(G.get("masked_fire"), (int, float)) and 0 <= G["masked_fire"] <= 1):
+        errors.append("units.yaml: indirect.gas needs lasts and drift for every wind, whole-number radius and fall_back, a bunker % and masked_fire from 0 to 1")
+    if G is None and any(v.get("gas") for v in I.get("kinds", {}).values()):
+        errors.append("units.yaml: an indirect kind with gas needs indirect.gas")
     if not all(isinstance(I.get("counter_battery", {}).get(k), int) for k in ("among", "near", "near_struck")):
         errors.append("units.yaml: indirect.counter_battery needs whole-number among, near and near_struck")
     return errors
@@ -2566,8 +2573,8 @@ def _siege_errors(d: Data, f: dict, where: str) -> list[str]:
 
 def _flag_errors(f: dict, where: str) -> list[str]:
     """A battlefield's units' true-or-false marks: fac (a forward air controller), ladders (or
-    `short`: ladders that do not reach the top of a wall)."""
-    names = {"fac": "fac (a forward air controller)", "ladders": "ladders"}
+    `short`: ladders that do not reach the top of a wall), masks (gas masks: indirect.gas)."""
+    names = {"fac": "fac (a forward air controller)", "ladders": "ladders", "masks": "masks (gas masks)"}
     return [f"{where}: unit {u.get('name')}: {names[k]} must be true or false" + (" (or short)" if k == "ladders" else "")
             for u in f.get("units", []) for k in names
             if k in u and not isinstance(u[k], bool) and not (k == "ladders" and u[k] == "short")]
