@@ -1012,6 +1012,10 @@ its side knows where it is, instead of choosing its own.
   Done when the target breaks or is gone, or, with no target, once round. With `stall` (optional, a
   whole number of moves), it gives up after that many moves coming no nearer its next waypoint, or
   round, its target, and goes back to ordinary orders (and to the reserve if it was held there).
+  With `charge: true`, once round it goes in with the bayonet against its target from any side, at
+  any odds, firing its closing volley first (missile.closing_volley), instead of stopping to shoot:
+  for an account that has the unit charge home (Miller's 21st at the guns, Lundy's Lane). Design
+  choice (asked and answered, 3 November 2026).
 - **commit** `{to}` (optional): releases a reserve unit; with `to` it goes there, as a unit plugging
   a gap does; without, it fights as any committed unit. It is done at once.
 - **relieve** `{relieves}`: a passage of lines. The unit makes for the ground just behind the
@@ -1054,6 +1058,9 @@ steps; the log says when one starts or ends and why ("Plan: Washington's horse g
 British left; About-face and bayonets has begun").
 
 **The battlefields with a plan.**
+- **Lundy's Lane:** Ripley's brigade, come up at nine in the dark, goes round below the crest and
+  charges the British guns (`envelop` with `charge`): Miller's 21st fired from a few yards and took
+  the guns with the bayonet (Wikipedia; the American Battlefield Trust). The approach is ours.
 - **Albuera:** Cole's 4th Division, after standing an hour and a half behind the cavalry (Oman),
   comes on against the French left at exchange 91 and goes for Werlé's brigade, which the Fusiliers
   broke (`envelop`; the route and the hour, the earliest Oman's words allow, are ours). Hoghton's

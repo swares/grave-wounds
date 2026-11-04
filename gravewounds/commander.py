@@ -1337,7 +1337,7 @@ def _start_task(d: Data, us: list, i: int, k: int, st: dict, exchange) -> None:
         if st.get("to"):
             u["plug"] = list(st["to"])
         return
-    u["task"] = {"step": k, "do": do, **({"reserve": True} if was else {})}
+    u["task"] = {"step": k, "do": do, **({"reserve": True} if was else {}), **({"charge": True} if do == "envelop" and st.get("charge") else {})}
     if do == "withdraw_if":
         u["withdraw"] = {"at": exchange or 0, "to": st["to"] if isinstance(st["to"], str) else list(st["to"])}
     elif do == "envelop":
@@ -1754,6 +1754,12 @@ def _behind(axis: int) -> str:
 def _enveloping(u: dict) -> bool:
     """On a plan's envelopment, its route done."""
     return (u.get("task") or {}).get("do") == "envelop" and not u.get("via")
+
+
+def _charging(u: dict, t: dict) -> bool:
+    """On a plan's envelopment marked charge, its route done, and t its target: it goes in with the
+    bayonet from any side, as Miller's 21st went at the guns at Lundy's Lane."""
+    return _enveloping(u) and bool(u["task"].get("charge")) and t.get("name") == u.get("focus")
 
 
 def _focus(us: list, i: int, known: dict | None, t: int | None) -> int | None:
@@ -2454,7 +2460,7 @@ def storming(d: Data, u: dict, t: dict, field: dict | None, stance: str) -> bool
     gorge of San Miguel)."""
     if u["weapon"] not in d.units["commander"]["storm"]:
         return False
-    if _enveloping(u) and U.arc(t["facing"], U.bearing(t["pos"], u["pos"])) != "front":
+    if _enveloping(u) and (_charging(u, t) or U.arc(t["facing"], U.bearing(t["pos"], u["pos"])) != "front"):
         return True
     return stance == "attack" and (U.holds_works(d, field, u["pos"], t) or U.at_works(d, field, t))
 
@@ -2474,8 +2480,8 @@ def may_charge(d: Data, u: dict, t: dict, stance: str = "attack", storm: bool = 
     stance (charge_odds), counting the friends touching it (backing: their men times attack %)."""
     if ("range" in d.weapons[u["weapon"]] and not storm) or u["state"] != "steady":
         return False
-    if _enveloping(u) and U.arc(t["facing"], U.bearing(t["pos"], u["pos"])) != "front":
-        return True                               # gone round on a plan: it charges a flank or rear at any odds
+    if _enveloping(u) and (_charging(u, t) or U.arc(t["facing"], U.bearing(t["pos"], u["pos"])) != "front"):
+        return True                               # gone round on a plan: it charges a flank or rear (or, marked charge, its target) at any odds
     mine = u["men"] * U.quality(d, u["quality"])["attack"] + backing
     theirs = t["men"] * U.quality(d, t["quality"])["attack"]
     return 100 * mine >= d.units["commander"]["charge_odds"][stance].get(u["quality"], 100) * theirs

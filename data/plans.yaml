@@ -172,3 +172,19 @@ albuera-1811:
         via: [[32, 141]]
         target: "Werlé's brigade (reserve)"
         when: {exchange: 91}
+
+lundys-lane-1814:
+  source: "Wikipedia, Battle of Lundy's Lane; American Battlefield Trust (project docs lundys-lane-study, closing-volley-research)"
+  note: >-
+    Ripley's brigade, come up about nine in the dark, goes at the British guns on the crest: Miller's
+    21st "deployed within a few yards of the British artillery", fired a volley that "killed most of
+    the gunners and followed up with a bayonet charge", took the guns and drove the British centre
+    from the hill. The approach up the slope below the guns is ours.
+  sides:
+    0:
+      - units: ["Ripley's brigade (21st, 23rd, coming up)"]
+        do: envelop
+        via: [[50, 45]]
+        target: "British guns on the crest"
+        charge: true
+        when: {phase: "Ripley and Hercules Scott come up"}

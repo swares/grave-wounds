@@ -3517,7 +3517,7 @@ function startTask(us, i, k, st, exchange){        // step k's task on unit i (a
   const was = !!u.reserve;
   if (d !== "withdraw_if") u.reserve = false;
   if (d === "commit"){ if (st.to) u.plug = [...st.to]; return }
-  u.task = { step: k, do: d, ...(was ? { reserve: true } : {}) };
+  u.task = { step: k, do: d, ...(was ? { reserve: true } : {}), ...(d === "envelop" && st.charge ? { charge: true } : {}) };
   if (d === "withdraw_if") u.withdraw = { at: exchange ?? 0, to: typeof st.to === "string" ? st.to : [...st.to] };
   else if (d === "envelop") u.via = st.via.map(h => [...h]);
   else if (d === "advance_to") u.goal = [...st.to];
@@ -3759,6 +3759,7 @@ function planTemplate(us, [pick, mine, foes, seen, roles], [front, flanks, mobil
 }
 const planBehind = axis => ({ 0: "W", 1: "S", 2: "S", 3: "E", 4: "N", 5: "N" })[mod6(axis)];   // the map edge behind a side whose axis to the enemy is that direction (as commander._relief_hex)
 const enveloping = u => u.task?.do === "envelop" && !u.via;   // on a plan's envelopment, its route done (as commander._enveloping)
+const charging = (u, t) => enveloping(u) && !!u.task.charge && t.name === u.focus;   // on an envelopment marked charge, its route done, t its target: in with the bayonet from any side (as commander._charging)
 function focusOf(us, i, known, t){                  // the plan's target for unit i (focus, by name) if it stands and its side knows of it, else t (as commander._focus)
   const name = us[i].focus;
   if (!name) return t;
@@ -4071,7 +4072,7 @@ function bounding(us, i, t){                     // storming in bounds (commande
 }
 function storming(u, t, field, stance){           // attacking, armed for storming (black powder with the bayonet), its target holding works: it closes and charges; so does one so armed gone round on a plan with the target's flank or rear, whatever the stance (as commander.storming)
   if (!UD.commander.storm.includes(u.weapon)) return false;
-  if (enveloping(u) && arc(t.facing, bearing(t.pos, u.pos)) !== "front") return true;   // in with the bayonet
+  if (enveloping(u) && (charging(u, t) || arc(t.facing, bearing(t.pos, u.pos)) !== "front")) return true;   // in with the bayonet
   return stance === "attack" && (holdsWorks(field, u.pos, t) || atWorks(field, t));
 }
 function support(us, i){                          // men times attack % of the steady friendly units (not guns or vehicles) touching unit i: they go in with it (as commander.support)
@@ -4080,7 +4081,7 @@ function support(us, i){                          // men times attack % of the s
 }
 function mayCharge(u, t, stance = "attack", storm = false, backing = 0){   // men without missiles (or storming works), steady, with the odds its quality wants in its stance, counting the friends touching it
   if (("range" in FD.weapons[u.weapon] && !storm) || u.state !== "steady") return false;
-  if (enveloping(u) && arc(t.facing, bearing(t.pos, u.pos)) !== "front") return true;   // gone round on a plan: it charges a flank or rear at any odds
+  if (enveloping(u) && (charging(u, t) || arc(t.facing, bearing(t.pos, u.pos)) !== "front")) return true;   // gone round on a plan: it charges a flank or rear (or, marked charge, its target) at any odds
   const mine = u.men * quality(u.quality).attack + backing, theirs = t.men * quality(t.quality).attack;
   return 100 * mine >= (UD.commander.charge_odds[stance][u.quality] ?? 100) * theirs;
 }

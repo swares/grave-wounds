@@ -242,7 +242,12 @@ When an item is done, delete it here and note it in the pull request that closes
   storm them, it breaks 7 men down to the per-man rule for losing the exchange, and capping that
   rule by share cost Agincourt more than it gained. A closing volley before a charge home is
   now in (missile.closing_volley), but with the storm order it still gives 1 of 12: Ripley's
-  brigade still loses the melee by the per-man rule.
+  brigade still loses the melee by the per-man rule. A planned charge (3 November 2026): `envelop` with
+  `charge: true`, and Lundy's Lane's plan sends Ripley's brigade round below the crest and at the
+  guns. Ripley now takes the guns (traced: about 155) and holds the crest against Hercules Scott's
+  column for some 75 exchanges, then breaks (about 230) and is cut down in the rout: 0 to 1 of 12,
+  American losses 58% to 63% (about 31% in 1814). Still to do: holding the crest once taken (an
+  attacker on the objective it took checks morale as in the open, not as a unit holding a position).
 - **Self-play against the battles as fought, first review** (`docs/selfplay-review.md`). Every
   battlefield was played with the commander on both sides and set against what happened; what has
   been changed since, and what was measured and not built, is in the review. To do, from the
