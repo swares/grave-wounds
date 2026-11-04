@@ -1,5 +1,5 @@
-// Builds data/fields/hue-1968.yaml: the Marines clearing the new city of Hue, south of the
-// Perfume River, 4-6 February 1968, on the field map at 10 m a hex. Run from this folder after
+// Builds data/fields/hue-1968.yaml: the Marines taking the provincial headquarters in the new city
+// of Hue, south of the Perfume River, on 6 February 1968, on the field map at 10 m a hex. Run from this folder after
 // editing: node make_hue_field.mjs (no packages needed).
 //
 // Sources, all public domain or plain fact, and the drawing is ours: the US Marine Corps'
@@ -11,14 +11,20 @@
 // 4th Regiment held the stone public buildings with rifles, machine guns and RPGs; the weather
 // was cold, with drizzle and low cloud. The streets, blocks and buildings are drawn by hand to
 // that pattern, not traced from any map or photograph, and are approximate; the deployment is
-// the attack east, in our own words, with round numbers for play.
+// the morning of 6 February, the last day of the three (the Treasury fell on the 4th, the hospital
+// was entered on the 5th), in our own words, with round numbers for play. Played from the 4th, the
+// fight ran 55 hours and every run was cut off after 20 (self_play.most), long before the
+// headquarters fell.
 import { N, patch, speckle, groundGrid, unit, led, writeField, at } from "./field_lib.mjs";
 
 const COLS = 150, ROWS = 110;                 // 1500 m east to west, about 950 m north to south
 const RIVER = 8, LE_LOI = 11, CANAL = 100;    // the river along the north, Le Loi street on its bank, the Phu Cam canal along the south
 const HIGHWAY = 40, BRIDGE = 30;              // Highway 1 (four hexes wide from here) north from the An Cuu bridge; the river bridge into the Citadel
 const onHighway = c => c >= HIGHWAY - 1 && c <= HIGHWAY + 2;
-const MACV = [44, 22], UNIVERSITY = [62, 18], PROVINCE = [86, 24], TREASURY = [98, 42], HOSPITAL = [122, 30], PRISON = [102, 74];
+// The hospital is drawn by the river and the provincial headquarters to the south-east beyond the
+// Treasury, so that the Marines come to them in the order they did (the hospital entered on the 5th,
+// the headquarters taken on the 6th); neither place is traced from a map.
+const MACV = [44, 22], UNIVERSITY = [62, 18], HOSPITAL = [86, 24], TREASURY = [98, 42], PROVINCE = [112, 52], PRISON = [102, 74];
 const BIG = [MACV, UNIVERSITY, PROVINCE, TREASURY, HOSPITAL, PRISON];
 function water(c, r){                         // the river and the canal, crossed by their bridges; Le Loi street
   if (r <= RIVER) return Math.abs(c - BRIDGE) <= 1 ? "." : "w";
@@ -49,47 +55,55 @@ const PAVN = { quality: "veteran", weapon: "rifle_assault", kit: "none", formati
 // Leaders from the accounts (heroes.field_leaders), commissioned officers with the unit they led,
 //   ranks as the sources give them. Sources: https://historynet.com/?p=13737864
 //   https://miltours.com/image/data/brochures/lneckhuepart1.pdf
+// The morning of 6 February (2/5's February command chronology, through the project's hue-supports
+//   notes): H Company halted by heavy fire before the provincial headquarters at 09:50; tanks, 106 mm
+//   recoilless rifles and Ontos called up; an 81 mm mission with E-8 gas silenced the North Vietnamese
+//   weapons and let the Marines into the compound (4 Marines killed, 9 wounded, 6 North Vietnamese
+//   killed). One tank took two B-40s and fought on; an Ontos sent to blast the wall was knocked out by
+//   a B-40, and a 106 on a Mule made the breach (Nolan; Wikipedia after Bowden). G Company was at the
+//   hospital. The company strengths are ours (no figure for the 6th: the companies came in at 140 and
+//   had lost men every day), as are the North Vietnamese numbers (Nolan: six dead or dying pulled
+//   from the spider holes round the headquarters and one taken, many escaped) and every position.
 const units = [
-  at("F Company, 2/5 Marines (by the university)", US, 140, MARINE, 12, [UNIVERSITY[0] + 7, 24], 0),
-  at("H Company, 2/5 Marines (for the Treasury)", US, 140, MARINE, 12, [74, 36], 0),
-  at("G Company, 2/5 Marines (the south blocks)", US, 120, MARINE, 12, [70, 62], 0),
-  at("A Company, 1/1 Marines and the MACV compound", US, 147, MARINE, 10, [MACV[0], MACV[1] + 5], 0),
-  at("Marine machine guns", US, 12, MG, 2, [UNIVERSITY[0], UNIVERSITY[1] + 3], 0),
-  at("Marine M48 tanks (Highway 1)", US, 8, TANK, 2, [HIGHWAY, 46], N),           // the 2 gun tanks the accounts name in the assaults (2 M67 flame tanks came too)
-  at("Marine Ontos (with H Company)", US, 6, ONTOS, 2, [56, 46], N),               // 2, which came in with H/2/5 on 2 February
-  at("North Vietnamese in the provincial headquarters", NV, 120, PAVN, 10, [PROVINCE[0], PROVINCE[1] + 4], 3),
-  at("North Vietnamese in the Treasury", NV, 150, PAVN, 10, [TREASURY[0], TREASURY[1] + 4], 3),
-  at("North Vietnamese in the hospital", NV, 150, PAVN, 10, [HOSPITAL[0], HOSPITAL[1] + 4], 3),
-  at("North Vietnamese in the prison", NV, 120, PAVN, 10, [PRISON[0], PRISON[1] + 4], 3),
-  at("North Vietnamese RPG teams", NV, 30, { ...PAVN, weapon: "rpg" }, 4, [82, 44], 3),
-  at("North Vietnamese machine guns", NV, 10, { ...MG, kit: "none", quality: "veteran", prone: true }, 2, [92, 32], 3),
+  at("H Company, 2/5 Marines (before the headquarters)", US, 100, MARINE, 10, [PROVINCE[0] - 12, PROVINCE[1]], 0),
+  at("G Company, 2/5 Marines (at the hospital)", US, 100, MARINE, 10, [HOSPITAL[0] - 10, HOSPITAL[1]], 0),
+  at("Marine M48 tanks", US, 8, TANK, 2, [88, 46], N),                              // the 2 gun tanks the accounts name in the assaults
+  at("Marine Ontos", US, 6, ONTOS, 2, [88, 60], N),                                  // the 2 that came in with H/2/5 on 2 February
+  at("106 mm recoilless rifle on a Mule", US, 4, { ...MARINE, weapon: "recoilless" }, 1, [PROVINCE[0] - 17, PROVINCE[1] + 5], 0),   // one gun, its crew ours
+  at("North Vietnamese in the provincial headquarters", NV, 40, PAVN, 6, [PROVINCE[0], PROVINCE[1]], 3),
+  at("North Vietnamese in the hospital", NV, 40, PAVN, 6, [HOSPITAL[0], HOSPITAL[1]], 3),
+  at("North Vietnamese RPG teams", NV, 10, { ...PAVN, weapon: "rpg" }, 2, [PROVINCE[0] - 4, PROVINCE[1] + 5], 3),
+  at("North Vietnamese machine guns", NV, 10, { ...MG, kit: "none", quality: "veteran", prone: true }, 2, [PROVINCE[0] + 3, PROVINCE[1] - 2], 3),
 ];
 led(units, {
-  "F Company, 2/5 Marines (by the university)": [["Michael Downs", "Captain"]],
-  "H Company, 2/5 Marines (for the Treasury)": [["Ron Christmas", "Captain"], ["Leo Myers", "Lieutenant"]],
-  "G Company, 2/5 Marines (the south blocks)": [["Chuck Meadows", "Captain"], ["Michael McNeil", "Second Lieutenant"]],
+  "H Company, 2/5 Marines (before the headquarters)": [["Ron Christmas", "Captain"], ["Leo Myers", "Lieutenant"]],
+  "G Company, 2/5 Marines (at the hospital)": [["Chuck Meadows", "Captain"], ["Michael McNeil", "Second Lieutenant"]],
 });
 
-// A strongpoint (a bunker) under the middle of the North Vietnamese front in the Treasury, the
-// hospital and the prison (drawn five hexes in front of them before, so no unit stood in one).
-const STRONGPOINTS = units.filter(u => /in the (Treasury|hospital|prison)/.test(u.name)).map(u => [...u.pos]);
+// A strongpoint (a bunker) under the middle of the North Vietnamese in the headquarters (its spider
+// holes) and in the hospital (its bunkers: 2/5's chronology has the hospital ringed by them).
+const STRONGPOINTS = units.filter(u => /in the (provincial headquarters|hospital)/.test(u.name)).map(u => [...u.pos]);
 
 writeField({
+  phases: [   // an exchange is about a minute, from 09:50
+    { name: "Halted before the headquarters", at: 1, note: "09:50 on 6 February: H Company, 2/5 Marines is halted by heavy fire before the provincial headquarters; G Company is at the hospital (2/5's chronology)." },
+    { name: "Tanks, 106s and Ontos called up", at: 31, note: "Tanks, 106 mm recoilless rifles and Ontos are called up (2/5's chronology; when is ours). About 10:20 the North Vietnamese retake the hospital's TB building (Gurske).", arrive: ["Marine M48 tanks", "Marine Ontos", "106 mm recoilless rifle on a Mule"] },
+  ],
   objective: { at: PROVINCE, side: 0, name: "the provincial headquarters", radius: 3 },
-  ends: { at: 3301, why: "the flag over the provincial headquarters a little past 14:00 on 6 February: from 07:00 on the 4th, when 2/5 Marines' attack went in" },
-  id: "hue-1968", name: "Hue: the new city, 4-6 February 1968", sides: ["United States and ARVN", "North Vietnamese"], table: "vietnam-1965-70-hospitalized",
+  ends: { at: 256, why: "the flag over the provincial headquarters a little past 14:00 (Nolan), the hospital secured by 14:05 (Gurske): from 09:50" },
+  id: "hue-1968", name: "Hue: the provincial headquarters, 6 February 1968", sides: ["United States and ARVN", "North Vietnamese"], table: "vietnam-1965-70-hospitalized",
   travel: { map: "hue-1968", place: "Hue, the new city (south bank)", within: 1, sides: ["United States and ARVN", "North Vietnamese"] },
   weather: "{cond: rain, wind: breeze, dir: NE, ground: {mud: 1, snow: 0}}",
   grid, units,
   hexWorks: { bunker: STRONGPOINTS },
   support: [
     { name: "Marine 81 mm mortars", side: 0, kind: "mortar", tubes: 8 },
-    { name: "Marine 105 mm howitzers (held back at first)", side: 0, kind: "field", tubes: 6 },
+    { name: "Marine 105 mm howitzers (observed missions only)", side: 0, kind: "field", tubes: 6 },
     { name: "North Vietnamese mortars", side: 1, kind: "mortar", tubes: 8 },
     { name: "North Vietnamese rockets and guns", side: 1, kind: "field", tubes: 4 },
   ],
   header: [
-    `The new city of Hue, south of the Perfume River, on 4-6 February 1968, at 10 m a hex: ${COLS} x ${ROWS} hexes, about 1500 m`,
+    `The new city of Hue, south of the Perfume River, on 6 February 1968, at 10 m a hex: ${COLS} x ${ROWS} hexes, about 1500 m`,
     "east to west and 950 m north to south, north at the top: the river along the top with its bridge",
     "into the Citadel, Le Loi street and the park along the bank, Highway 1 coming up from the An",
     "Cuu bridge on the Phu Cam canal along the bottom, and between them blocks of houses and the",
@@ -97,15 +111,16 @@ writeField({
     "Treasury, the hospital and the prison.",
     "Generated by tools/maps/make_hue_field.mjs: edit that file and re-run it rather than this one.",
     "The streets, blocks and buildings are drawn by hand to that pattern, not traced from any map or",
-    "photograph; the deployment is the Marines attacking east, in our own words, with round numbers",
-    "for play. The public buildings are tall buildings (tall buildings) and the houses buildings,",
+    "photograph; the deployment is the morning of 6 February, H Company halted before the provincial",
+    "headquarters and G Company at the hospital, in our own words, with round numbers for play.",
+    "The public buildings are tall buildings (tall buildings) and the houses buildings,",
     "with rubble where the shells fell; tanks keep to the streets. Cold drizzle and low cloud.",
     "",
     "What happened, briefly: from 4 February the 2nd Battalion, 5th Marines, with the 1st Battalion,",
     "1st Marines, fought east from the MACV compound and the university, taking the Treasury, the",
     "public health building and the hospital building by building with tanks, Ontos, recoilless",
-    "rifles and tear gas; the provincial headquarters fell on the 6th. By 10 February the south bank",
-    "was clear, and the fighting moved into the Citadel.",
+    "rifles and tear gas; the provincial headquarters fell on the 6th, its flag pulled down a little",
+    "after 14:00. By 10 February the south bank was clear, and the fighting moved into the Citadel.",
   ],
 });
 console.log(grid.map(r => r.join("")).join("\n"));
