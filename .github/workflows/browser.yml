@@ -60,6 +60,8 @@ jobs:
         run: python3 tools/campaign/remount.py
       - name: Handing the game to the next GM (GM notes sealed, the old copy marked)
         run: python3 tools/campaign/handover.py
+      - name: The players following a handover through their rooms
+        run: python3 tools/net/handrooms.py
       - name: Keep the pictures the tests take
         if: always()
         uses: actions/upload-artifact@v6

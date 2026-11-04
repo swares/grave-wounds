@@ -53,7 +53,7 @@ def campaign_with(gm, base, map_id, men):
 def add_player(gm, rooms, name, uid):
     """The GM's room server chosen (once), and a player added for the named man uid: his room's code."""
     if rooms not in gm.inner_text("#c-players"):
-        gm.click("#c-players details summary")
+        gm.click("#pl-room-box summary")
         gm.fill("#pl-room", rooms); gm.click("#pl-room-set")
     gm.fill("#pl-name", name); gm.uncheck("#pl-stun"); gm.check(f'[data-pl-new][value="{uid}"]'); gm.click("#pl-add")
     gm.wait_for_function(f"() => {{ const pl = REC.players.find(p => p.name === {name!r}); return pl && PL.conn[pl.id]?.room }}", timeout=15000)

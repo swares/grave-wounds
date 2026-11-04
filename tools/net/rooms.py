@@ -38,7 +38,7 @@ try:
         campaign_with(gm, BASE, MAP, {"u1": "Hal Ashby", "u2": "Ann Fenwick"})
         gm.goto(BASE + "campaign.html")
         gm.wait_for_selector("#pl-room", state="attached", timeout=15000)
-        gm.click(PANEL + " details summary")
+        gm.click("#pl-room-box summary")
         gm.fill("#pl-room", ROOMS); gm.click("#pl-room-set")
         check(ROOMS in gm.inner_text(PANEL) and "invited again by itself" in gm.inner_text(PANEL), f"the GM chooses a room server ({ROOMS})")
         for name, uid in (("Scott", "u1"), ("Ann", "u2")):
@@ -84,7 +84,7 @@ try:
         gm.fill("#c-note", "Rooms work."); gm.uncheck("#c-note-gm"); gm.click("#c-add-note")
         scott.wait_for_function("() => document.querySelector('#p-news').textContent.includes('Rooms work.')", timeout=10000)
         check(True, "and his page follows the campaign again")
-        gm.click(PANEL + " details summary")
+        gm.click("#pl-room-box summary")
         gm.click("#pl-room-off")
         check("none (copy and paste)" in gm.inner_text(PANEL), "the GM can choose copy and paste instead, even with a room server")
         shots = Path(__file__).parent / ".cache"; shots.mkdir(exist_ok=True)

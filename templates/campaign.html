@@ -109,7 +109,7 @@ iframe{display:block;width:100%;height:82vh;border:0;background:var(--bg)}
         <button type="button" class="small" id="c-hand" title="A save file for the GM who runs the next session: your GM-only notes sealed with a passphrase the GMs share">Hand the game to the next GM</button>
       </div>
       <form id="c-hand-form" hidden style="display:flex;flex-direction:column;gap:6px;border:1px dashed var(--line);padding:8px">
-        <p class="muted" style="margin:0;font-size:.85rem">The next GM loads this file and runs the game from here. <b>He sees the whole map and every side</b>: what you kept hidden is his to see. Your GM-only notes go <b>sealed</b>: only someone with the GMs' passphrase can read them. Your copy is then marked handed over.</p>
+        <p class="muted" style="margin:0;font-size:.85rem">The next GM loads this file and runs the game from here. <b>He sees the whole map and every side</b>: what you kept hidden is his to see. Your GM-only notes go <b>sealed</b>: only someone with the GMs' passphrase can read them. Your copy is then marked handed over and lets the players go: with a room server, their pages wait in their rooms and his console invites them when he loads the file.</p>
         <label class="muted">From <input type="text" id="c-hand-from" placeholder="You" style="width:12em"></label>
         <label class="muted">To <input type="text" id="c-hand-to" placeholder="The next GM" style="width:12em" required></label>
         <label class="muted">A note for him <input type="text" id="c-hand-note" placeholder="Where things stand, what to watch" style="width:24em"></label>
@@ -802,6 +802,7 @@ $("#c-handed").addEventListener("click", e => {
   const h = REC.handedTo; delete REC.handedTo;
   note(`Taken back from ${h?.to || "the next GM"}: this copy is the game again`);
   render();
+  inviteThroughRooms();
 });
 $("#c-hand").addEventListener("click", () => { $("#c-hand-form").hidden = false; $("#c-hand-to").focus() });
 $("#c-hand-cancel").addEventListener("click", () => { $("#c-hand-form").hidden = true });
@@ -816,8 +817,10 @@ $("#c-hand-form").addEventListener("submit", async e => {
     downloadSave(f, `handover-${to}`);
     REC.handedTo = { to, day, at: f.saved };
     saveRecord();
+    letPlayersGo();
     $("#c-hand-form").hidden = true; $("#c-hand-pass").value = $("#c-hand-pass2").value = "";
-    $("#c-saved").textContent = `Handed to ${to}: the file is downloaded. Send it to him, and the passphrase another way.`;
+    const rooms = roomServer() && players().some(x => x.room) ? " Your players' pages wait in their rooms: his console invites them when he loads it." : "";
+    $("#c-saved").textContent = `Handed to ${to}: the file is downloaded. Send it to him, and the passphrase another way.${rooms}`;
     render();
   } catch (err){ $("#c-saved").textContent = `Could not hand it over: ${err.message}` }
 });
@@ -848,9 +851,11 @@ $("#c-load").addEventListener("change", async e => {
   try {
     const keys = CAMPAIGN.checkFile(JSON.parse(await file.text()));
     if (!confirm(`Load this saved game? Every page's state in this browser (the team, the maps, the fights, the campaign's log) is replaced by the file's ${Object.keys(keys).length} entries.`)) return;
+    letPlayersGo();                                    // the old game's players; the file's are invited through their rooms
     for (const k of Object.keys(CAMPAIGN.read(localStorage))) localStorage.removeItem(k);
     for (const [k, v] of Object.entries(keys)) localStorage.setItem(k, v);
     loadRecord(); note(`Loaded the saved game ${file.name}`); render();
+    inviteThroughRooms();
     $("#c-frame").contentWindow?.location.reload();
     $("#c-saved").textContent = `Loaded ${file.name}.`;
   } catch (err){ $("#c-saved").textContent = `Could not load it: ${err.message}` }
@@ -1036,8 +1041,17 @@ async function roomInvite(pl, c, peer){               // his invitation into his
 }
 function roomAgain(pl, peer){                         // he was lost: with a room, he is invited again by itself
   const c = PL.conn[pl.id];
-  if (!roomServer() || !pl.room) return;
+  if (!roomServer() || !pl.room || REC.handedTo) return;
   setTimeout(() => { if (c && c.peer === peer && NET_LOST.has(c.state) && players().includes(pl)) playerConnect(pl) }, 2000);
+}
+function inviteThroughRooms(){                         // every player with a room invited again (a page load, a file loaded, a game taken back); not from a copy handed over
+  if (!roomServer() || REC.handedTo) return;
+  for (const pl of players().filter(x => x.room)) playerConnect(pl);   // (it catches its own failures)
+}
+function letPlayersGo(){                               // this console's connections closed and not renewed: the pages fall back to waiting in their rooms
+  for (const c of Object.values(PL.conn)){ const p = c.peer; c.peer = null; p?.close() }   // (no peer: its closing is not heard as "lost")
+  PL.conn = {}; PL.fighting.clear();
+  relayIn(); renderPlayers();
 }
 async function playerConnect(pl){                     // an invitation for his seat: a first one, or again after he was lost or this page reloaded
   const c = (PL.conn[pl.id] ||= {});
@@ -1109,6 +1123,16 @@ function connectButton(pl, c){                        // Invite, or Invite again
   const label = c.peer ? "Invite again" : "Invite";
   return `<button type="button" class="small primary" data-pl="invite" data-id="${esc(pl.id)}">${label}</button>`;
 }
+function allLinks(){                                   // "Name: link", a line for each player waiting in his room
+  return players().filter(pl => PL.conn[pl.id]?.room && PL.conn[pl.id].state !== "open").map(pl => `${pl.name}: ${roomLink(PL.conn[pl.id].room)}`).join("\n");
+}
+function allLinksHtml(){                               // every waiting player's link at once, for a group chat
+  const text = allLinks(), n = text ? text.split("\n").length : 0;
+  if (n < 2) return "";
+  return `<details id="pl-all"${PL.allOpen ? " open" : ""}><summary class="muted" style="font-size:.88rem">Every link at once (${n} players waiting)</summary>
+      <textarea readonly rows="${Math.min(n, 6)}" id="pl-all-links" aria-label="Every waiting player's link" style="width:100%">${esc(text)}</textarea>
+      <span class="toolbar"><button type="button" class="small" id="pl-copy-all">Copy every link</button></span></details>`;
+}
 function playerRow(pl){
   const c = PL.conn[pl.id] || { state: "not connected" };
   const st = { open: "connected", closed: "gone", failed: "could not connect", disconnected: "lost" }[c.state] || c.state;
@@ -1124,14 +1148,16 @@ function renderPlayers(){
   if (!box || PLAYER_PAGE) return;
   if (box.contains(document.activeElement) && ["TEXTAREA", "INPUT"].includes(document.activeElement.tagName) && document.activeElement.type !== "checkbox") return;   // not while the GM types
   const open = players().filter(pl => PL.conn[pl.id]?.state === "open").length;
+  PL.allOpen = $("#pl-all")?.open || false;           // kept open across redraws
   box.innerHTML = `<div class="toolbar" style="justify-content:space-between"><h2 id="h-players">Players online</h2><span class="muted">${open} connected</span></div>
-    <p class="muted" style="margin:0;font-size:.9rem">Each player gets his own link for the session and sees his men, the forces they are with and the campaign's news (not the GM's notes, nor the march's word on other forces), from his own computer. ${roomServer() ? "Through the room server: he opens his link (or types his room's code), and nothing comes back by hand; if he is lost, or this page reloads, he is invited again by itself." : "No room server: the link and his reply are passed by hand."}</p>
+    <p class="muted" style="margin:0;font-size:.9rem">Each player gets his own link for the session and sees his men, the forces they are with and the campaign's news (not the GM's notes, nor the march's word on other forces), from his own computer. ${roomServer() ? "Through the room server: he opens his link (or types his room's code), and nothing comes back by hand; if he is lost, or this page reloads, or the game is handed to another GM, he is invited again by itself." : "No room server: the link and his reply are passed by hand."}</p>
     ${proposalsHtml()}
+    ${allLinksHtml()}
     ${players().length ? `<ul class="players">${players().map(playerRow).join("")}</ul>` : ""}
     <div class="toolbar"><label class="muted">Player <input type="text" id="pl-name" placeholder="His name" style="width:12em"></label>
       <button type="button" class="small" id="pl-add">Add a player</button>
       <label class="muted" style="display:inline-flex;gap:4px;align-items:center" title="Lets pages find each other across the internet; on one network it is not needed"><input type="checkbox" id="pl-stun"${PL.stun ? " checked" : ""}> Public STUN server</label></div>
-    <details><summary class="muted" style="font-size:.88rem">Room server${roomServer() ? ": " + esc(roomServer()) : ": none (copy and paste)"}</summary>
+    <details id="pl-room-box"><summary class="muted" style="font-size:.88rem">Room server${roomServer() ? ": " + esc(roomServer()) : ": none (copy and paste)"}</summary>
       <span class="toolbar"><label class="muted" for="pl-room">Its address</label><input type="text" id="pl-room" value="${esc(roomServer())}" placeholder="https://grave-wounds-rooms.you.workers.dev" style="width:24em">
         <button type="button" class="small" id="pl-room-set">Use it</button><button type="button" class="small" id="pl-room-off">Copy and paste instead</button></span>
       <p class="muted" style="margin:0;font-size:.85rem">A Cloudflare Worker that passes the connection codes (worker/README.md). This browser keeps the choice; blank (Use it) means the site's own${CD.room_server ? " (" + esc(CD.room_server) + ")" : ", which is none"}.</p></details>
@@ -1157,6 +1183,7 @@ function addPlayer(){
 }
 $("#c-players").addEventListener("click", e => {
   if (e.target.id === "pl-add") return addPlayer();
+  if (e.target.id === "pl-copy-all") return navigator.clipboard?.writeText(allLinks()).catch(() => $("#pl-all-links").select());
   if (e.target.id === "pl-room-set" || e.target.id === "pl-room-off"){
     const v = e.target.id === "pl-room-off" ? ROOM_OFF : $("#pl-room").value.trim();
     try { localStorage.setItem(ROOM_KEY, v) } catch { /* storage off: the site's own */ }
@@ -1421,7 +1448,7 @@ if (PLAYER_PAGE){
   if (location.hash === "#gmstart") gmLink();
   else show(phaseOf(REC.phase).page);
   window.addEventListener("hashchange", () => { if (location.hash === "#gmstart") gmLink() });   // the link followed again in this tab
-  if (roomServer()) for (const pl of players().filter(x => x.room)) playerConnect(pl);   // (it catches its own failures)   // through their rooms, his players are invited again by themselves
+  inviteThroughRooms();                               // through their rooms, his players are invited again by themselves
   IDB.all().then(x => { SLOTS = x; renderSlots() }).catch(() => { $("#c-slots").innerHTML = '<p class="muted" style="margin:0">This browser keeps no campaigns side by side (IndexedDB is off): save to a file instead.</p>' });
 }
 </script>

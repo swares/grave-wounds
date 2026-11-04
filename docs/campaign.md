@@ -213,14 +213,21 @@ the next session (`CAMPAIGN.handoverFile`):
   campaign doesn't fork, until he loads a newer file or presses **Take it back**. Saving, loading and
   the campaigns in this browser still work.
 - **The players' rooms go with the game.** Who plays whom and each room's code and host key are kept
-  with the campaign, so the next GM's console uses the same rooms. A room unused for hours is
-  forgotten, and the console then makes a new code.
+  with the campaign, so the next GM's console uses the same rooms. Handing over lets the players go:
+  the old console closes their connections and invites no one again, even reloaded, so their pages
+  fall back to waiting in their rooms. Loading a saved game invites every player through his room
+  (as a reload does), so the same evening they're back on the next GM's console with no new link.
+  A room unused for 6 hours is forgotten and the console makes a new code. Then **Every link at
+  once** under Players online gives each waiting player's link on a line of its own, to paste in a
+  group chat. Without a room server, each player is invited by hand as usual. **Take it back**
+  invites them again from the old console.
 - **What can't be sealed: the next GM sees the whole map and every side,** including what the last GM
   kept hidden. A GM has to see the game to run it; that is the price of taking turns.
 
 `python3 tools/campaign/handover.py` plays it in two browsers. The first GM hands over, his copy stands
 handed over, then he takes it back. The second loads the file: the note is sealed, a wrong passphrase
-leaves it sealed, and the right one opens it.
+leaves it sealed, and the right one opens it. `python3 tools/net/handrooms.py` follows a player through
+the handover: let go by the first console, then back on the second's through his room, with no new link.
 
 **Campaigns in this browser** keeps several campaigns side by side (in the browser's IndexedDB,
 which holds far more than its ordinary storage). Each is every page's state, as a save file holds
