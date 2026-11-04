@@ -246,8 +246,13 @@ When an item is done, delete it here and note it in the pull request that closes
   `charge: true`, and Lundy's Lane's plan sends Ripley's brigade round below the crest and at the
   guns. Ripley now takes the guns (traced: about 155) and holds the crest against Hercules Scott's
   column for some 75 exchanges, then breaks (about 230) and is cut down in the rout: 0 to 1 of 12,
-  American losses 58% to 63% (about 31% in 1814). Still to do: holding the crest once taken (an
-  attacker on the objective it took checks morale as in the open, not as a unit holding a position).
+  American losses 58% to 63% (about 31% in 1814). Holding the crest once taken, looked at
+  (3 November 2026): letting an attacker on the objective it took count as holding (morale.posture)
+  changed nothing (12 runs: 1 of 12, the same runs): posture needs a bunker, cover to lie in or
+  works, and the crest is open ground, for the British on it too. Ripley holds some 70 exchanges
+  under Hercules Scott's fire, falls past a quarter down (900 to 626), checks every exchange and
+  breaks at 228. What held it in 1814 is not on the map: the captured guns turned on their owners,
+  and the dark at point blank. Closed with no change (asked and answered).
 - **Self-play against the battles as fought, first review** (`docs/selfplay-review.md`). Every
   battlefield was played with the commander on both sides and set against what happened; what has
   been changed since, and what was measured and not built, is in the review. To do, from the
