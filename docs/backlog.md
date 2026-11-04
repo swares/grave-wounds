@@ -291,7 +291,19 @@ When an item is done, delete it here and note it in the pull request that closes
     gave 4 of 12 over 12 local runs and was left out), Keating (traced: not the bounds;
     and the Americans retaking the outpost, researched but with no clock times in the sources) and
     Wanat (no single fix; within the runs' spread);
-  - Hue: the Marines' rockets (3.5-inch, LAW, 106), recoilless rifles and gas (no sourced counts);
+  - Hue: the Marines' rockets (3.5-inch, LAW, 106), recoilless rifles and gas (no sourced counts).
+    Traced 4 November 2026 (3 of 12): the North Vietnamese mortars are not the cause (2 tubes: 2 of
+    12; none: 3, the Marine losses unchanged at 26%); the 4-6 February field's 3,301 exchanges were
+    cut at self_play.most (1,200), 20 hours in, so the Marines had to take the headquarters two days
+    early, their companies checking morale every minute of it and failing at 10-30% down. The field
+    is now 6 February alone, 09:50 (H Company halted before the headquarters, 2/5's chronology) to
+    the flag a little past 14:00 (Nolan), 256 exchanges, with the hospital drawn west of the
+    headquarters (the order the Marines came to them; drawn the other way, G Company's rout ran past
+    the headquarters' garrison and was cut to pieces). It did not move Hue (2 of 12 over 12 local
+    runs, Marine losses 31% against a few dozen in the sources): H Company storms a bunkered
+    garrison nothing has suppressed, loses a quarter to a third and flees, the tanks never breaking
+    it. The sources credit an 81 mm mission with E-8 gas for silencing the weapons and getting H
+    into the compound, and there is no gas rule: next;
   - Mogadishu: the Somali losses falling from 27% to 13% once a unit holding a position was no
     longer flanked for morale, and the American losses falling to 25% once the relief comes;
   - the September Redan, 4 of 4 to 3 since the shooters give way;

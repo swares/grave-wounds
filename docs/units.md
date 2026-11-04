@@ -3865,28 +3865,31 @@ hexes, about 1,750 by 1,240 yards (1,600 by 1,130 m), north at the top.
 
 *Playing time:* about 1½ hours with the commander's orders taken and adjusted, about 2 hours moving every unit by hand, about 13 minutes to watch with **Run** (self-play: 553 exchanges, ended with the objective taken and held). See [selfplay-review.md](selfplay-review.md#playing-time-29-october-2026).
 
-**Hue: the new city, 4-6 February 1968** (`data/fields/hue-1968.yaml`). The field is 150 × 110
-hexes, about 1,640 by 1,040 yards (1,500 by 950 m), north at the top.
+**Hue: the provincial headquarters, 6 February 1968** (`data/fields/hue-1968.yaml`). The field
+is 150 × 110 hexes, about 1,640 by 1,040 yards (1,500 by 950 m), north at the top.
 - The Perfume River runs along the top, with its bridge into the Citadel, and Le Loi street
   and a park along the bank. Highway 1 comes up from the An Cuu bridge on the Phu Cam canal
   along the bottom.
 - Between them are blocks of houses (**buildings**, with **rubble** where shells fell) and the
-  stone public buildings (**tall buildings**): the MACV compound, the university, the
-  provincial headquarters, the Treasury, the hospital and the prison.
+  stone public buildings (**tall buildings**): the MACV compound, the university, the hospital
+  by the river, the Treasury, the provincial headquarters to the south-east beyond it, and the
+  prison (drawn in the order the Marines came to them, not traced).
 - Cold drizzle and low cloud.
-- United States: three companies of the 2nd Battalion, 5th Marines and A Company, 1st
-  Marines, attacking east, with machine guns, two M48 **tanks** on Highway 1 and two **Ontos**
-  (106 mm recoilless rifles) with H Company.
-- North Vietnamese (veteran, in cover): the provincial headquarters, the Treasury, the
-  hospital and the prison held (a strongpoint, a **bunker**, under the middle of the front
-  in the Treasury, the hospital and the prison), with RPG teams that can knock out tanks,
+- United States: H Company, 2/5 Marines, halted before the provincial headquarters at 09:50,
+  and G Company at the hospital; two M48 **tanks**, two **Ontos** (106 mm recoilless rifles)
+  and a 106 mm recoilless rifle on a Mule come up 30 minutes in (when is ours).
+- North Vietnamese (veteran, in cover): small garrisons in the provincial headquarters and the
+  hospital (a strongpoint, a **bunker**, under each), with RPG teams that can knock out tanks,
   and machine guns.
-- A run goes on for the account's length (`ends` 3,301: 07:00 on 4 February to the flag over
-  the provincial headquarters a little past 14:00 on the 6th), so at most 1,200 exchanges.
-- Fire support: Marine 81 mm mortars and 105 mm howitzers (held back at first to spare the
-  city); North Vietnamese mortars, rockets and guns.
+- A run goes on for the account's length (`ends` 256: 09:50 to the flag over the provincial
+  headquarters a little past 14:00).
+- Fire support: Marine 81 mm mortars and 105 mm howitzers (observed missions only); North
+  Vietnamese mortars, rockets and guns.
+- It was the 4-6 February clearing from 07:00 on the 4th until 4 November 2026. That ran 3,301
+  exchanges, and every run was cut off at the 1,200-exchange cap, 20 hours in, long before the
+  headquarters fell.
 
-*Playing time:* about 4 hours with the commander's orders taken and adjusted, about 5 hours moving every unit by hand, about 29 minutes to watch with **Run** (self-play: 1,200 exchanges, stopped at the 1,200-exchange cap). See [selfplay-review.md](selfplay-review.md#playing-time-29-october-2026).
+*Playing time:* about 1 hour with the commander's orders taken and adjusted, about 1 hour moving every unit by hand, about 6 minutes to watch with **Run** (256 exchanges; scaled by exchanges from the old field's timed figures, not timed again).
 
 **Hill 861A, Khe Sanh, 5 February 1968** (`data/fields/khesanh-1968.yaml`). The field is
 140 × 120 hexes, about 1,530 by 1,140 yards (1,400 by 1,040 m), north at the top.
