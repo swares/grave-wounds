@@ -356,6 +356,14 @@ When an item is done, delete it here and note it in the pull request that closes
   which the battalion held all night and was destroyed breaking out on 1 January (past
   self_play.most). Left as it is, by choice; a sourced account of what struck the battalion in the
   station overnight (Oliker's RAND study, Grau) would settle the mortars.
+- **Wanat, traced 4 November 2026 (5 of 12).** In the losing runs the fighters took Topside and the
+  run stopped at exchange 244, three after the second relief force (3rd Platoon, A Company and the
+  scouts) came on at the map's south edge, more than 10 hexes from the post, so the post counted as
+  secured. Holding the objective now ends a run only once the last phase is self_play.after_phases
+  old, as the run's length already allowed. Full benchmark: Wanat 5 to 9, the June Redan 11 to 12,
+  no field down. Wanat's American losses rose from 54% to 69%, against about 40% in the account (9
+  killed and 27 wounded of about a hundred): the relief forces now fight, and lose men, where the
+  run used to end.
 - **Tear gas, first cut** (`indirect.gas`, the `e8` kind; 4 November 2026). A CS launcher lays a
   cloud that thins and drifts as smoke does; unmasked men in it fire nothing and check Nerve or fall
   back out of it, masked men fire less (a unit's `masks`). On Hue's 6 February field: 2 to 5 of 12

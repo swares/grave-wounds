@@ -519,18 +519,19 @@ def stop_reason(d: Data, bt: dict, held: dict, how: list) -> dict | None:
     held["side"] = o
     if gone:
         return {"why": "gone", "sides": gone}
-    if held["n"] >= P["held"] and not phases_to_come(bt):
+    if held["n"] >= P["held"] and not phases_to_come(bt, P["after_phases"]):
         return {"why": "held", "side": o}
     if bt["exchange"] - 1 >= play_limit(d, bt):
         return {"why": "limit"}
     return None
 
 
-def phases_to_come(bt: dict) -> bool:
-    """A phase of the battlefield's account has still to begin: holding the objective does not end
-    a self-played run yet. A phase that begins only on a unit's breaking (when {broken}) does not
-    count: it may never come."""
-    return any(s["at"] >= bt["exchange"] for s in bt.get("stages") or [] if not _on_break(s))
+def phases_to_come(bt: dict, after: int = 0) -> bool:
+    """A phase of the battlefield's account has still to begin, or began less than `after`
+    exchanges ago (self_play.after_phases: what it brings on has time to get there): holding the
+    objective does not end a self-played run yet. A phase that begins only on a unit's breaking
+    (when {broken}) does not count: it may never come."""
+    return any(s["at"] + after >= bt["exchange"] for s in bt.get("stages") or [] if not _on_break(s))
 
 
 def _on_break(s: dict) -> bool:
