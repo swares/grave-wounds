@@ -283,7 +283,12 @@ When an item is done, delete it here and note it in the pull request that closes
     withdraw order, and most are shaken by then;
   - Goose Green (3 of 12 with its plan: the trench platoons break, but the Argentine machine-gun
     nest, 10 men, holds the crest, while 2 Para's companies flee at about a quarter to a third
-    down, the constant morale drain), Keating (traced: not the bounds;
+    down, the constant morale drain; 1 of 12 once the officers were named, since the plan left D
+    Company free and the commander sent it over the open grass to the trenches at first light,
+    where Neame went down and it broke in 11 of 12 runs; D now waits with A and B until the noon
+    phase, as Wikipedia has it "temporarily halted" between them (4 November 2026): 1 to 7 of 12,
+    no other field moved. Holding Jones's headquarters until about 10:00 as well, an estimate,
+    gave 4 of 12 over 12 local runs and was left out), Keating (traced: not the bounds;
     and the Americans retaking the outpost, researched but with no clock times in the sources) and
     Wanat (no single fix; within the runs' spread);
   - Hue: the Marines' rockets (3.5-inch, LAW, 106), recoilless rifles and gas (no sourced counts);
