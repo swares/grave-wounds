@@ -59,7 +59,8 @@ const units = [
 
 // The cellars the paratroops came up out of: a bunker under the middle of each paratroop unit's
 // front row (they were drawn a few hexes off the units before, so no unit stood in one).
-const CELLARS = units.filter(u => u.name.startsWith("German paratroops")).map(u => [...u.pos]);
+const CELLARS = units.filter(u => u.name.startsWith("German paratroops")).flatMap(u =>
+  u.facing === N || u.facing === S ? Array.from({ length: u.width }, (_, k) => [u.pos[0] - Math.floor((u.width - 1) / 2) + k, u.pos[1]]) : [[...u.pos]]);
 
 writeField({
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
