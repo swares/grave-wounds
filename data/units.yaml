@@ -1187,7 +1187,9 @@ commander:
   objective: {radius: 1, hold: 3, guard: 4, bonus: 30}
   # self_play: the commander on both sides (the GM watching). A run stops after `limit`
   # exchanges, or when one side has held the (first) objective `held` exchanges running (once all
-  # the battlefield's phases have begun), or when
+  # the battlefield's phases have begun, the last at least `after_phases` exchanges before, so what
+  # it brings on has time to get there: Wanat's second relief force came on at the map's edge
+  # three exchanges before the run stopped), or when
   # a side has no unit left standing (and none still to come); then the battle ends. A battlefield
   # with phases runs at least `after_phases` exchanges past its last phase's start, but never more
   # than `most` (a battle that goes on for days is still cut short: Bougainville's last phase, at
