@@ -426,8 +426,15 @@ When an item is done, delete it here and note it in the pull request that closes
     lines (3 November 2026): a plan's `relieve` task (commander.plans.relieve: 3 exchanges, ours);
     at Albuera Hoghton's brigade relieves Zayas at 61. Only Albuera changed: Allied losses 23% to
     22%, French 40% to 43%. Hoghton's fight is still not the bloodbath of 1811 (about two thirds
-    of his men down): Gazan's division breaks soon after Hoghton comes into line. Still to do:
-    why Gazan breaks so soon (the French columns against a line); Burgos's later storms.
+    of his men down): Gazan's division breaks soon after Hoghton comes into line. Looked at
+    (3 November 2026; 12 runs each): Hoghton loses 3-5% and Gazan 17-19%. Gazan's column of 4,000
+    fires about 600 muskets against Hoghton's 1,400, and is shot at by Zayas, Cole and what is left
+    of Colborne too; the 20 French guns stay 600 m back firing round shot, mostly at Zayas. Brought
+    up within canister range they changed nothing for Hoghton (3%; they fired at Zayas and
+    Colborne) and French losses rose to 47%. In 1811 the British were struck "mainly by grape-shot
+    from their guns ... at close range" (britishbattles.com). Nothing found sizes a column's fire or
+    the guns' share, so closed with no change (asked and answered). Still to do: Burgos's later
+    storms.
   - **Wound tables:** the Crimean siege table is the only siege table (the Siege warfare tables
     item above).
   - To start: list the sieges and storms the game already touches (the two Redans, Jacob's Ford,
