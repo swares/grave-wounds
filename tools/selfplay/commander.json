@@ -678,28 +678,28 @@
    "sides": [
     {
      "bar": {
-      "outcome": "loss",
-      "ratio": 0.67
+      "outcome": "win",
+      "ratio": 1.9
      },
      "drew": 0.0,
-     "lost_share": 0.317,
+     "lost_share": 0.217,
      "side": "British",
      "stance": "attack",
-     "won": 0.08
+     "won": 0.58
     },
     {
      "bar": {
-      "outcome": "win",
-      "ratio": 1.81
+      "outcome": "loss",
+      "ratio": 1.45
      },
      "drew": 0.0,
-     "lost_share": 0.349,
+     "lost_share": 0.411,
      "side": "Argentines",
      "stance": "hold",
-     "won": 0.92
+     "won": 0.42
     }
    ],
-   "stamp": "b3a3d12f189b"
+   "stamp": "29d643f2e0a4"
   },
   "grozny-1995": {
    "runs": 12,
