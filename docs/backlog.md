@@ -338,7 +338,7 @@ When an item is done, delete it here and note it in the pull request that closes
   stood at the objective's edge. An attacking side now knows where the enemy on its objective
   stands (commander.objective). The station is also lit all battle by the burning train and oil
   tank car of the Novaya Gazeta account (lit; where and the radii ours). 12 local runs: 4 to 8 of
-  12 (7 without the light). The battalion now breaks within about half an hour, where it held the
+  12 (7 without the light); full benchmark 4 to 8. Across every field a net 15 more runs as fought: Hue 5 to 8, the Cassino Poles 4 to 7, Babuna, Burgos, Ciudad Rodrigo, Mogadishu and the Monastery up 2, Chipyong and Keating up 1; Badajoz and Tumbledown down 2, Goose Green, Snipe and Topolčani down 1. The battalion now breaks within about half an hour, where it held the
   station into the next evening: the fight is short, not overnight. Still open: six fields run
   past self_play.most (1,200): Bougainville (ends 4,171), Cassino town (10,801), Dak To (5,131),
   Grozny (1,531), Pork Chop (1,496) and X-Ray (1,556).
