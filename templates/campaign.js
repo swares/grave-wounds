@@ -238,8 +238,8 @@ const CAMPAIGN = (() => {
   // Handing the game to the next GM: the GM-only notes (log entries seen by no seat) sealed with a
   // passphrase the GMs share. WebCrypto: the browser's, or Node's (the tests).
   const SEAL_ITER = 150000;
-  const b64 = bytes => btoa(String.fromCharCode(...new Uint8Array(bytes)));
-  const unb64 = s => Uint8Array.from(atob(s), ch => ch.charCodeAt(0));
+  const b64 = bytes => btoa(String.fromCodePoint(...new Uint8Array(bytes)));
+  const unb64 = s => Uint8Array.from(atob(s), ch => ch.codePointAt(0));
   const gmOnly = e => Array.isArray(e.vis) && e.vis.length === 0;
   const newSalt = () => b64(crypto.getRandomValues(new Uint8Array(16)));
   async function sealKey(pass, salt){
@@ -247,27 +247,26 @@ const CAMPAIGN = (() => {
     return crypto.subtle.deriveKey({ name: "PBKDF2", salt: unb64(salt), iterations: SEAL_ITER, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
   }
   const sealed = log => (log || []).filter(e => e.data?.sealed).length;
+  async function sealOne(e, key){
+    if (!gmOnly(e) || e.data?.sealed) return e;
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(JSON.stringify(e.data)));
+    return { ...e, data: { phase: e.data?.phase, sealed: { iv: b64(iv), ct: b64(ct) } } };
+  }
+  async function unsealOne(e, key){
+    if (!e.data?.sealed) return e;
+    const text = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(e.data.sealed.iv) }, key, unb64(e.data.sealed.ct));
+    return { ...e, data: JSON.parse(new TextDecoder().decode(text)) };
+  }
   async function sealLog(log, pass, salt){           // a copy of the log with every GM-only note locked; the phase stays readable
     if (!pass) throw new Error("A passphrase is needed to seal the GM's notes.");
-    const key = await sealKey(pass, salt), out = [];
-    for (const e of log || []){
-      if (!gmOnly(e) || e.data?.sealed){ out.push(e); continue }
-      const iv = crypto.getRandomValues(new Uint8Array(12));
-      const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(JSON.stringify(e.data)));
-      out.push({ ...e, data: { phase: e.data?.phase, sealed: { iv: b64(iv), ct: b64(ct) } } });
-    }
-    return out;
+    const key = await sealKey(pass, salt);
+    return Promise.all((log || []).map(e => sealOne(e, key)));
   }
   async function unsealLog(log, pass, salt){         // the log with its sealed notes read again; a wrong passphrase throws
-    const key = await sealKey(pass, salt), out = [];
-    for (const e of log || []){
-      if (!e.data?.sealed){ out.push(e); continue }
-      let text;
-      try { text = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(e.data.sealed.iv) }, key, unb64(e.data.sealed.ct)) }
-      catch { throw new Error("That passphrase does not open the sealed notes.") }
-      out.push({ ...e, data: JSON.parse(new TextDecoder().decode(text)) });
-    }
-    return out;
+    const key = await sealKey(pass, salt);
+    try { return await Promise.all((log || []).map(e => unsealOne(e, key))) }
+    catch (err){ throw new Error("That passphrase does not open the sealed notes.", { cause: err }) }
   }
   async function handoverFile(raw, name, hand, pass){   // hand: {from, to, note, day}
     let rec = null;

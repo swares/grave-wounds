@@ -118,7 +118,7 @@ iframe{display:block;width:100%;height:82vh;border:0;background:var(--bg)}
         <span class="toolbar"><button type="submit" class="small primary">Write the handover file</button><button type="button" class="small" id="c-hand-cancel">Cancel</button></span>
       </form>
       <div id="c-unseal" hidden style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.9rem"><span id="c-unseal-say"></span>
-        <input type="password" id="c-unseal-pass" placeholder="The GMs' passphrase" autocomplete="current-password" style="width:14em"><button type="button" class="small" id="c-unseal-go">Unseal</button></div>
+        <input type="password" id="c-unseal-pass" aria-label="The GMs' passphrase" placeholder="The GMs' passphrase" autocomplete="current-password" style="width:14em"><button type="button" class="small" id="c-unseal-go">Unseal</button></div>
       <p class="muted" id="c-saved" style="margin:0;font-size:.85rem" aria-live="polite"></p>
       <div id="c-slots" style="border-top:1px dashed var(--line);padding-top:8px;display:flex;flex-direction:column;gap:6px" aria-labelledby="h-slots"></div>
     </section>
@@ -4139,8 +4139,8 @@ const CAMPAIGN = (() => {
   // Handing the game to the next GM: the GM-only notes (log entries seen by no seat) sealed with a
   // passphrase the GMs share. WebCrypto: the browser's, or Node's (the tests).
   const SEAL_ITER = 150000;
-  const b64 = bytes => btoa(String.fromCharCode(...new Uint8Array(bytes)));
-  const unb64 = s => Uint8Array.from(atob(s), ch => ch.charCodeAt(0));
+  const b64 = bytes => btoa(String.fromCodePoint(...new Uint8Array(bytes)));
+  const unb64 = s => Uint8Array.from(atob(s), ch => ch.codePointAt(0));
   const gmOnly = e => Array.isArray(e.vis) && e.vis.length === 0;
   const newSalt = () => b64(crypto.getRandomValues(new Uint8Array(16)));
   async function sealKey(pass, salt){
@@ -4148,27 +4148,26 @@ const CAMPAIGN = (() => {
     return crypto.subtle.deriveKey({ name: "PBKDF2", salt: unb64(salt), iterations: SEAL_ITER, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
   }
   const sealed = log => (log || []).filter(e => e.data?.sealed).length;
+  async function sealOne(e, key){
+    if (!gmOnly(e) || e.data?.sealed) return e;
+    const iv = crypto.getRandomValues(new Uint8Array(12));
+    const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(JSON.stringify(e.data)));
+    return { ...e, data: { phase: e.data?.phase, sealed: { iv: b64(iv), ct: b64(ct) } } };
+  }
+  async function unsealOne(e, key){
+    if (!e.data?.sealed) return e;
+    const text = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(e.data.sealed.iv) }, key, unb64(e.data.sealed.ct));
+    return { ...e, data: JSON.parse(new TextDecoder().decode(text)) };
+  }
   async function sealLog(log, pass, salt){           // a copy of the log with every GM-only note locked; the phase stays readable
     if (!pass) throw new Error("A passphrase is needed to seal the GM's notes.");
-    const key = await sealKey(pass, salt), out = [];
-    for (const e of log || []){
-      if (!gmOnly(e) || e.data?.sealed){ out.push(e); continue }
-      const iv = crypto.getRandomValues(new Uint8Array(12));
-      const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(JSON.stringify(e.data)));
-      out.push({ ...e, data: { phase: e.data?.phase, sealed: { iv: b64(iv), ct: b64(ct) } } });
-    }
-    return out;
+    const key = await sealKey(pass, salt);
+    return Promise.all((log || []).map(e => sealOne(e, key)));
   }
   async function unsealLog(log, pass, salt){         // the log with its sealed notes read again; a wrong passphrase throws
-    const key = await sealKey(pass, salt), out = [];
-    for (const e of log || []){
-      if (!e.data?.sealed){ out.push(e); continue }
-      let text;
-      try { text = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(e.data.sealed.iv) }, key, unb64(e.data.sealed.ct)) }
-      catch { throw new Error("That passphrase does not open the sealed notes.") }
-      out.push({ ...e, data: JSON.parse(new TextDecoder().decode(text)) });
-    }
-    return out;
+    const key = await sealKey(pass, salt);
+    try { return await Promise.all((log || []).map(e => unsealOne(e, key))) }
+    catch (err){ throw new Error("That passphrase does not open the sealed notes.", { cause: err }) }
   }
   async function handoverFile(raw, name, hand, pass){   // hand: {from, to, note, day}
     let rec = null;
@@ -4816,6 +4815,11 @@ $("#c-coach").addEventListener("click", e => { if (e.target.dataset?.coach === "
    share (CAMPAIGN.handoverFile), marked with who handed it to whom. This copy is then marked handed over:
    its console stands still (inert) until a newer file is loaded or the GM takes it back, so the
    campaign does not fork. The next GM sees the whole map: the price of taking turns. */
+function handedBy(h){                                 // "Handed over by Scott on day 14: “Watch the ford”. "
+  if (!h) return "";
+  const day = h.day ? " on day " + esc(h.day) : "", said = h.note ? ": “" + esc(h.note) + "”" : "";
+  return `Handed over by <b>${esc(h.from || "the last GM")}</b>${day}${said}. `;
+}
 const HANDED_PANELS = ["#h-phase", "#c-players", "#h-log", "#c-frame"];
 function renderHandover(){
   const h = REC.handedTo, el = $("#c-handed");
@@ -4824,7 +4828,7 @@ function renderHandover(){
   for (const s of HANDED_PANELS){ const p = $(s)?.closest("section"); if (p) p.inert = !!h }
   const n = CAMPAIGN.sealed(REC.log), from = REC.handover;
   $("#c-unseal").hidden = !n;
-  if (n) $("#c-unseal-say").innerHTML = `${from ? `Handed over by <b>${esc(from.from || "the last GM")}</b>${from.day ? " on day " + esc(from.day) : ""}${from.note ? `: “${esc(from.note)}”` : ""}. ` : ""}${n === 1 ? "1 GM note is" : n + " GM notes are"} sealed.`;
+  if (n) $("#c-unseal-say").innerHTML = handedBy(from) + (n === 1 ? "1 GM note is sealed." : `${n} GM notes are sealed.`);
 }
 $("#c-handed").addEventListener("click", e => {
   if (e.target.id !== "c-take-back") return;

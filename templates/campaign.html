@@ -118,7 +118,7 @@ iframe{display:block;width:100%;height:82vh;border:0;background:var(--bg)}
         <span class="toolbar"><button type="submit" class="small primary">Write the handover file</button><button type="button" class="small" id="c-hand-cancel">Cancel</button></span>
       </form>
       <div id="c-unseal" hidden style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.9rem"><span id="c-unseal-say"></span>
-        <input type="password" id="c-unseal-pass" placeholder="The GMs' passphrase" autocomplete="current-password" style="width:14em"><button type="button" class="small" id="c-unseal-go">Unseal</button></div>
+        <input type="password" id="c-unseal-pass" aria-label="The GMs' passphrase" placeholder="The GMs' passphrase" autocomplete="current-password" style="width:14em"><button type="button" class="small" id="c-unseal-go">Unseal</button></div>
       <p class="muted" id="c-saved" style="margin:0;font-size:.85rem" aria-live="polite"></p>
       <div id="c-slots" style="border-top:1px dashed var(--line);padding-top:8px;display:flex;flex-direction:column;gap:6px" aria-labelledby="h-slots"></div>
     </section>
@@ -782,6 +782,11 @@ $("#c-coach").addEventListener("click", e => { if (e.target.dataset?.coach === "
    share (CAMPAIGN.handoverFile), marked with who handed it to whom. This copy is then marked handed over:
    its console stands still (inert) until a newer file is loaded or the GM takes it back, so the
    campaign does not fork. The next GM sees the whole map: the price of taking turns. */
+function handedBy(h){                                 // "Handed over by Scott on day 14: “Watch the ford”. "
+  if (!h) return "";
+  const day = h.day ? " on day " + esc(h.day) : "", said = h.note ? ": “" + esc(h.note) + "”" : "";
+  return `Handed over by <b>${esc(h.from || "the last GM")}</b>${day}${said}. `;
+}
 const HANDED_PANELS = ["#h-phase", "#c-players", "#h-log", "#c-frame"];
 function renderHandover(){
   const h = REC.handedTo, el = $("#c-handed");
@@ -790,7 +795,7 @@ function renderHandover(){
   for (const s of HANDED_PANELS){ const p = $(s)?.closest("section"); if (p) p.inert = !!h }
   const n = CAMPAIGN.sealed(REC.log), from = REC.handover;
   $("#c-unseal").hidden = !n;
-  if (n) $("#c-unseal-say").innerHTML = `${from ? `Handed over by <b>${esc(from.from || "the last GM")}</b>${from.day ? " on day " + esc(from.day) : ""}${from.note ? `: “${esc(from.note)}”` : ""}. ` : ""}${n === 1 ? "1 GM note is" : n + " GM notes are"} sealed.`;
+  if (n) $("#c-unseal-say").innerHTML = handedBy(from) + (n === 1 ? "1 GM note is sealed." : `${n} GM notes are sealed.`);
 }
 $("#c-handed").addEventListener("click", e => {
   if (e.target.id !== "c-take-back") return;
