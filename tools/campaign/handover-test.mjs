@@ -5,10 +5,8 @@ import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 const C = createRequire(import.meta.url)("../../templates/campaign.js");
 
-let failed = 0, passed = 0;
-async function check(name, fn){
-  try { await fn(); passed++ } catch (e){ failed++; console.error(`FAIL ${name}\n  ${e.message.split("\n").slice(0, 6).join("\n  ")}`) }
-}
+const fails = [];
+const check = (name, fn) => fn().then(() => console.log("ok   " + name), e => { fails.push(name); console.error(`FAIL ${name}: ${e.message}`) });
 const PASS = "oak and ash", SALT = "AAAAAAAAAAAAAAAAAAAAAA==", SECRET = "The ambush is at the ford";
 const log = [
   { n: 1, round: 1, type: "note", vis: "public", data: { phase: "march", text: "On to the march" } },
@@ -43,5 +41,4 @@ await check("the handover file: a save file, marked, the notes sealed, the old c
   await assert.rejects(C.handoverFile(raw, "Towton", { to: "Ann" }, ""), /passphrase/);
 });
 
-console.log(`${passed} passed, ${failed} failed`);
-process.exitCode = failed ? 1 : 0;
+process.exitCode = fails.length ? 1 : 0;

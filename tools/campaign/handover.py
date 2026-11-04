@@ -9,12 +9,9 @@ sealed (its words nowhere in the file), the wrong passphrase leaves it sealed, a
 it. Needs Python's playwright with Chromium and a built site. Exits non-zero on any failure.
 """
 import json
-import sys
 import tempfile
-import traceback
 from pathlib import Path
-from playwright.sync_api import sync_playwright
-from harness import check, failures, serve
+from harness import check, main, serve
 
 BASE, server = serve()
 SECRET = "The ambush waits at the ford"
@@ -92,14 +89,4 @@ def run(p):
     br.close()
 
 
-try:
-    with sync_playwright() as pw:
-        run(pw)
-except Exception as e:                               # a timeout or error: where, as an annotation in CI
-    print(traceback.format_exc())
-    check(False, f"stopped: {str(e).splitlines()[0][:300]}")
-server.shutdown()
-if failures:
-    print(f"{len(failures)} check(s) failed")
-    sys.exit(1)
-print("all checks passed")
+main(run, server)
