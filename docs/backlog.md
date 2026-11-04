@@ -422,9 +422,12 @@ When an item is done, delete it here and note it in the pull request that closes
     back through Gazan's and Werlé's; and Albuera's plan brings Cole on against the French left at
     91 (Oman). Albuera's French losses 27% to 40% (Soult's 5,936 to Oman's 7,900 are 29% to 38% of
     the French on the map), the Allies' 23% (about 27% in 1811); every other battlefield within its
-    spread (Agincourt 7 to 9, Babuna 10 to 9, Chipyong-ni 12 to 11; 496 of 588 as before). Still to
-    do: Hoghton's relief of Zayas (a unit passes through its own side only to charge, and both
-    lines are 70 hexes wide); Burgos's later storms.
+    spread (Agincourt 7 to 9, Babuna 10 to 9, Chipyong-ni 12 to 11; 496 of 588 as before). Passage of
+    lines (3 November 2026): a plan's `relieve` task (commander.plans.relieve: 3 exchanges, ours);
+    at Albuera Hoghton's brigade relieves Zayas at 61. Only Albuera changed: Allied losses 23% to
+    22%, French 40% to 43%. Hoghton's fight is still not the bloodbath of 1811 (about two thirds
+    of his men down): Gazan's division breaks soon after Hoghton comes into line. Still to do:
+    why Gazan breaks so soon (the French columns against a line); Burgos's later storms.
   - **Wound tables:** the Crimean siege table is the only siege table (the Siege warfare tables
     item above).
   - To start: list the sieges and storms the game already touches (the two Redans, Jacob's Ford,
