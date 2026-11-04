@@ -84,6 +84,7 @@ iframe{display:block;width:100%;height:82vh;border:0;background:var(--bg)}
     <nav><a href="../index.html">Home</a><a href="roller.html">Wound roller</a><a href="travel.html">Travel map</a><a href="field.html">Field map</a><a href="team.html">Team builder</a><a href="guide.html" target="_top" title="How to use the pages, mode by mode">How to play</a><a href="rules.html">Rule book</a></nav>
   </header>
 
+  <p class="notice" id="c-handed" hidden aria-live="polite"></p>
   <div class="top">
     <section class="panel" aria-labelledby="h-phase">
       <div class="toolbar" style="justify-content:space-between">
@@ -105,7 +106,19 @@ iframe{display:block;width:100%;height:82vh;border:0;background:var(--bg)}
       <div class="toolbar" style="border-top:1px dashed var(--line);padding-top:8px">
         <button type="button" class="small" id="c-save" title="Every page's state, the campaign's log with it, as one file">Save the game to a file</button>
         <label class="small" style="display:inline-flex;align-items:center;gap:6px;cursor:pointer"><span>Load a saved game</span><input type="file" id="c-load" accept=".json,application/json" style="max-width:14em"></label>
+        <button type="button" class="small" id="c-hand" title="A save file for the GM who runs the next session: your GM-only notes sealed with a passphrase the GMs share">Hand the game to the next GM</button>
       </div>
+      <form id="c-hand-form" hidden style="display:flex;flex-direction:column;gap:6px;border:1px dashed var(--line);padding:8px">
+        <p class="muted" style="margin:0;font-size:.85rem">The next GM loads this file and runs the game from here. <b>He sees the whole map and every side</b>: what you kept hidden is his to see. Your GM-only notes go <b>sealed</b>: only someone with the GMs' passphrase can read them. Your copy is then marked handed over.</p>
+        <label class="muted">From <input type="text" id="c-hand-from" placeholder="You" style="width:12em"></label>
+        <label class="muted">To <input type="text" id="c-hand-to" placeholder="The next GM" style="width:12em" required></label>
+        <label class="muted">A note for him <input type="text" id="c-hand-note" placeholder="Where things stand, what to watch" style="width:24em"></label>
+        <label class="muted">The GMs' passphrase <input type="password" id="c-hand-pass" autocomplete="new-password" style="width:14em" required></label>
+        <label class="muted">Again <input type="password" id="c-hand-pass2" autocomplete="new-password" style="width:14em" required></label>
+        <span class="toolbar"><button type="submit" class="small primary">Write the handover file</button><button type="button" class="small" id="c-hand-cancel">Cancel</button></span>
+      </form>
+      <div id="c-unseal" hidden style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:.9rem"><span id="c-unseal-say"></span>
+        <input type="password" id="c-unseal-pass" placeholder="The GMs' passphrase" autocomplete="current-password" style="width:14em"><button type="button" class="small" id="c-unseal-go">Unseal</button></div>
       <p class="muted" id="c-saved" style="margin:0;font-size:.85rem" aria-live="polite"></p>
       <div id="c-slots" style="border-top:1px dashed var(--line);padding-top:8px;display:flex;flex-direction:column;gap:6px" aria-labelledby="h-slots"></div>
     </section>
@@ -3902,6 +3915,11 @@ if (typeof module !== "undefined") module.exports = { LOG_KEEP, GM_SEAT, sideSea
      of a day, the end of a season.
    CAMPAIGN.saveFile(raw) / CAMPAIGN.checkFile(obj): the whole game as one file (every entry as stored),
      and the check that a file read back is one: the entries to write back.
+   CAMPAIGN.sealLog(log, pass, salt) / unsealLog(log, pass, salt) / sealed(log): the GM-only notes of a
+     campaign's log locked with a passphrase (AES-GCM, the key from PBKDF2), so they travel in a
+     handover file but only the GMs who share the passphrase can read them.
+   CAMPAIGN.handoverFile(raw, name, hand, pass): a save file for the next GM: the GM-only notes sealed,
+     marked with who handed it over to whom, when, and his note.
    CD is the campaign page's data: the maps', eras', weather's and diseases' names. build.py puts this file into the campaign
    page at its CAMPAIGN_JS marker; in Node it is a module (tools/campaign/test.js). */
 const CAMPAIGN = (() => {
@@ -4118,6 +4136,52 @@ const CAMPAIGN = (() => {
     return keys;
   }
 
+  // Handing the game to the next GM: the GM-only notes (log entries seen by no seat) sealed with a
+  // passphrase the GMs share. WebCrypto: the browser's, or Node's (the tests).
+  const SEAL_ITER = 150000;
+  const b64 = bytes => btoa(String.fromCharCode(...new Uint8Array(bytes)));
+  const unb64 = s => Uint8Array.from(atob(s), ch => ch.charCodeAt(0));
+  const gmOnly = e => Array.isArray(e.vis) && e.vis.length === 0;
+  const newSalt = () => b64(crypto.getRandomValues(new Uint8Array(16)));
+  async function sealKey(pass, salt){
+    const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+    return crypto.subtle.deriveKey({ name: "PBKDF2", salt: unb64(salt), iterations: SEAL_ITER, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+  }
+  const sealed = log => (log || []).filter(e => e.data?.sealed).length;
+  async function sealLog(log, pass, salt){           // a copy of the log with every GM-only note locked; the phase stays readable
+    if (!pass) throw new Error("A passphrase is needed to seal the GM's notes.");
+    const key = await sealKey(pass, salt), out = [];
+    for (const e of log || []){
+      if (!gmOnly(e) || e.data?.sealed){ out.push(e); continue }
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(JSON.stringify(e.data)));
+      out.push({ ...e, data: { phase: e.data?.phase, sealed: { iv: b64(iv), ct: b64(ct) } } });
+    }
+    return out;
+  }
+  async function unsealLog(log, pass, salt){         // the log with its sealed notes read again; a wrong passphrase throws
+    const key = await sealKey(pass, salt), out = [];
+    for (const e of log || []){
+      if (!e.data?.sealed){ out.push(e); continue }
+      let text;
+      try { text = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(e.data.sealed.iv) }, key, unb64(e.data.sealed.ct)) }
+      catch { throw new Error("That passphrase does not open the sealed notes.") }
+      out.push({ ...e, data: JSON.parse(new TextDecoder().decode(text)) });
+    }
+    return out;
+  }
+  async function handoverFile(raw, name, hand, pass){   // hand: {from, to, note, day}
+    let rec = null;
+    try { rec = JSON.parse(raw[RECORD] || "null") } catch { rec = null }
+    if (!rec || !Array.isArray(rec.log)) throw new Error("There is no campaign to hand over.");
+    const salt = rec.seal?.salt || newSalt();
+    const { handedTo, ...rest } = rec;                 // the outgoing console's own mark stays with him
+    const out = { ...rest, seal: { salt }, log: await sealLog(rec.log, pass, salt),
+      handover: { from: hand.from || "", to: hand.to || "", note: hand.note || "", day: hand.day ?? null, at: new Date().toISOString() } };
+    const f = saveFile({ ...raw, [RECORD]: JSON.stringify(out) }, name);
+    return { ...f, handover: out.handover };
+  }
+
   // Campaign slots (the console keeps them in the browser's IndexedDB): each a save file's keys, with its
   // snapshots, the newest first, at most `keep` of them.
   function addSnap(snaps, snap, keep = 8){
@@ -4130,7 +4194,7 @@ const CAMPAIGN = (() => {
     for (let n = wanted.trim() ? 2 : 1; ; n++){ const name = wanted.trim() ? `${base} (${n})` : `${base} ${n}`; if (!taken.has(name)) return name }
   }
 
-  return { read, status, suggest, notices, saveFile, checkFile, addSnap, slotName, PHASES, RECORD, PREFIX, KEEP_OUT };
+  return { read, status, suggest, notices, saveFile, checkFile, addSnap, slotName, sealLog, unsealLog, sealed, handoverFile, PHASES, RECORD, PREFIX, KEEP_OUT };
 })();
 
 if (typeof module !== "undefined") module.exports = CAMPAIGN;   // Node (the tests); the page has no `module`
@@ -4538,8 +4602,9 @@ function render(){
   renderCoach(st);
   if (ph.id === "fight"){ tellRoller("status"); tellField("status") }   // and the page answers with its fight as it stands
   $("#c-status").innerHTML = statusRows(st);
+  renderHandover();
   playersFollow();
-  $("#c-log").innerHTML = [...REC.log].reverse().map(e => `<li class="${e.vis === "public" ? "" : "gm"}"><b>${e.round ? "Day " + e.round : "–"}</b>${esc(phaseOf(e.data.phase).name)} · ${esc(e.data.text)}${e.vis === "public" ? "" : ' <span class="muted">(GM)</span>'}</li>`).join("")
+  $("#c-log").innerHTML = [...REC.log].reverse().map(e => `<li class="${e.vis === "public" ? "" : "gm"}"><b>${e.round ? "Day " + e.round : "–"}</b>${esc(phaseOf(e.data.phase).name)} · ${e.data.sealed ? '<i class="muted">a sealed GM note</i>' : esc(e.data.text)}${e.vis === "public" ? "" : ' <span class="muted">(GM)</span>'}</li>`).join("")
     || '<li class="muted">Nothing yet. The log fills as the campaign moves from phase to phase; add notes of your own.</li>';
 }
 
@@ -4746,15 +4811,65 @@ function renderCoach(st){
 }
 $("#c-coach").addEventListener("click", e => { if (e.target.dataset?.coach === "done"){ REC.quick = false; saveRecord(); note("The coach is done"); render() } });
 
+/* ---------- handing the game to the next GM ----------
+   A save file for the GM who runs the next session: the GM-only notes sealed with a passphrase the GMs
+   share (CAMPAIGN.handoverFile), marked with who handed it to whom. This copy is then marked handed over:
+   its console stands still (inert) until a newer file is loaded or the GM takes it back, so the
+   campaign does not fork. The next GM sees the whole map: the price of taking turns. */
+const HANDED_PANELS = ["#h-phase", "#c-players", "#h-log", "#c-frame"];
+function renderHandover(){
+  const h = REC.handedTo, el = $("#c-handed");
+  el.hidden = !h;
+  if (h) el.innerHTML = `Handed to <b>${esc(h.to)}</b>${h.day ? " on day " + esc(h.day) : ""} (${esc(h.at.slice(0, 16).replace("T", " "))}). This copy is out of date: load the newer file, or <button type="button" class="small" id="c-take-back">Take it back</button>.`;
+  for (const s of HANDED_PANELS){ const p = $(s)?.closest("section"); if (p) p.inert = !!h }
+  const n = CAMPAIGN.sealed(REC.log), from = REC.handover;
+  $("#c-unseal").hidden = !n;
+  if (n) $("#c-unseal-say").innerHTML = `${from ? `Handed over by <b>${esc(from.from || "the last GM")}</b>${from.day ? " on day " + esc(from.day) : ""}${from.note ? `: “${esc(from.note)}”` : ""}. ` : ""}${n === 1 ? "1 GM note is" : n + " GM notes are"} sealed.`;
+}
+$("#c-handed").addEventListener("click", e => {
+  if (e.target.id !== "c-take-back") return;
+  const h = REC.handedTo; delete REC.handedTo;
+  note(`Taken back from ${h?.to || "the next GM"}: this copy is the game again`);
+  render();
+});
+$("#c-hand").addEventListener("click", () => { $("#c-hand-form").hidden = false; $("#c-hand-to").focus() });
+$("#c-hand-cancel").addEventListener("click", () => { $("#c-hand-form").hidden = true });
+$("#c-hand-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const pass = $("#c-hand-pass").value, to = $("#c-hand-to").value.trim();
+  if (pass !== $("#c-hand-pass2").value){ $("#c-saved").textContent = "The two passphrases differ."; return }
+  const day = CAMPAIGN.status(CAMPAIGN.read(localStorage), CD).travel?.day ?? null;
+  try {
+    note(`Handed to ${to}${$("#c-hand-from").value.trim() ? " by " + $("#c-hand-from").value.trim() : ""}`);
+    const f = await CAMPAIGN.handoverFile(CAMPAIGN.read(localStorage), REC.name, { from: $("#c-hand-from").value.trim(), to, note: $("#c-hand-note").value.trim(), day }, pass);
+    downloadSave(f, `handover-${to}`);
+    REC.handedTo = { to, day, at: f.saved };
+    saveRecord();
+    $("#c-hand-form").hidden = true; $("#c-hand-pass").value = $("#c-hand-pass2").value = "";
+    $("#c-saved").textContent = `Handed to ${to}: the file is downloaded. Send it to him, and the passphrase another way.`;
+    render();
+  } catch (err){ $("#c-saved").textContent = `Could not hand it over: ${err.message}` }
+});
+$("#c-unseal-go").addEventListener("click", async () => {
+  try {
+    REC.log = await CAMPAIGN.unsealLog(REC.log, $("#c-unseal-pass").value, REC.seal?.salt);
+    $("#c-unseal-pass").value = ""; saveRecord(); render();
+    $("#c-saved").textContent = "The GM notes are unsealed.";
+  } catch (err){ $("#c-saved").textContent = err.message }
+});
+
 /* ---------- the whole game as a file ---------- */
-$("#c-save").addEventListener("click", () => {
-  const f = CAMPAIGN.saveFile(CAMPAIGN.read(localStorage), REC.name);
+function downloadSave(f, what = ""){
   const blob = new Blob([JSON.stringify(f, null, 1)], { type: "application/json" });
   const a = document.createElement("a"), stamp = f.saved.slice(0, 16).replaceAll(":", "-");
   a.href = URL.createObjectURL(blob);
-  a.download = `grave-wounds-${(REC.name || "campaign").replaceAll(/[^\w-]+/g, "-").toLowerCase()}-${stamp}.json`;
+  a.download = `grave-wounds-${(REC.name || "campaign").replaceAll(/[^\w-]+/g, "-").toLowerCase()}${what ? "-" + what.replaceAll(/[^\w-]+/g, "-").toLowerCase() : ""}-${stamp}.json`;
   a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+$("#c-save").addEventListener("click", () => {
+  const f = CAMPAIGN.saveFile(CAMPAIGN.read(localStorage), REC.name);
+  downloadSave(f);
   $("#c-saved").textContent = `Saved ${Object.keys(f.keys).length} pages' state at ${f.saved.slice(11, 16)}.`;
 });
 $("#c-load").addEventListener("change", async e => {

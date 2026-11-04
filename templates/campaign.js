@@ -14,6 +14,11 @@
      of a day, the end of a season.
    CAMPAIGN.saveFile(raw) / CAMPAIGN.checkFile(obj): the whole game as one file (every entry as stored),
      and the check that a file read back is one: the entries to write back.
+   CAMPAIGN.sealLog(log, pass, salt) / unsealLog(log, pass, salt) / sealed(log): the GM-only notes of a
+     campaign's log locked with a passphrase (AES-GCM, the key from PBKDF2), so they travel in a
+     handover file but only the GMs who share the passphrase can read them.
+   CAMPAIGN.handoverFile(raw, name, hand, pass): a save file for the next GM: the GM-only notes sealed,
+     marked with who handed it over to whom, when, and his note.
    CD is the campaign page's data: the maps', eras', weather's and diseases' names. build.py puts this file into the campaign
    page at its CAMPAIGN_JS marker; in Node it is a module (tools/campaign/test.js). */
 const CAMPAIGN = (() => {
@@ -230,6 +235,52 @@ const CAMPAIGN = (() => {
     return keys;
   }
 
+  // Handing the game to the next GM: the GM-only notes (log entries seen by no seat) sealed with a
+  // passphrase the GMs share. WebCrypto: the browser's, or Node's (the tests).
+  const SEAL_ITER = 150000;
+  const b64 = bytes => btoa(String.fromCharCode(...new Uint8Array(bytes)));
+  const unb64 = s => Uint8Array.from(atob(s), ch => ch.charCodeAt(0));
+  const gmOnly = e => Array.isArray(e.vis) && e.vis.length === 0;
+  const newSalt = () => b64(crypto.getRandomValues(new Uint8Array(16)));
+  async function sealKey(pass, salt){
+    const base = await crypto.subtle.importKey("raw", new TextEncoder().encode(pass), "PBKDF2", false, ["deriveKey"]);
+    return crypto.subtle.deriveKey({ name: "PBKDF2", salt: unb64(salt), iterations: SEAL_ITER, hash: "SHA-256" }, base, { name: "AES-GCM", length: 256 }, false, ["encrypt", "decrypt"]);
+  }
+  const sealed = log => (log || []).filter(e => e.data?.sealed).length;
+  async function sealLog(log, pass, salt){           // a copy of the log with every GM-only note locked; the phase stays readable
+    if (!pass) throw new Error("A passphrase is needed to seal the GM's notes.");
+    const key = await sealKey(pass, salt), out = [];
+    for (const e of log || []){
+      if (!gmOnly(e) || e.data?.sealed){ out.push(e); continue }
+      const iv = crypto.getRandomValues(new Uint8Array(12));
+      const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, new TextEncoder().encode(JSON.stringify(e.data)));
+      out.push({ ...e, data: { phase: e.data?.phase, sealed: { iv: b64(iv), ct: b64(ct) } } });
+    }
+    return out;
+  }
+  async function unsealLog(log, pass, salt){         // the log with its sealed notes read again; a wrong passphrase throws
+    const key = await sealKey(pass, salt), out = [];
+    for (const e of log || []){
+      if (!e.data?.sealed){ out.push(e); continue }
+      let text;
+      try { text = await crypto.subtle.decrypt({ name: "AES-GCM", iv: unb64(e.data.sealed.iv) }, key, unb64(e.data.sealed.ct)) }
+      catch { throw new Error("That passphrase does not open the sealed notes.") }
+      out.push({ ...e, data: JSON.parse(new TextDecoder().decode(text)) });
+    }
+    return out;
+  }
+  async function handoverFile(raw, name, hand, pass){   // hand: {from, to, note, day}
+    let rec = null;
+    try { rec = JSON.parse(raw[RECORD] || "null") } catch { rec = null }
+    if (!rec || !Array.isArray(rec.log)) throw new Error("There is no campaign to hand over.");
+    const salt = rec.seal?.salt || newSalt();
+    const { handedTo, ...rest } = rec;                 // the outgoing console's own mark stays with him
+    const out = { ...rest, seal: { salt }, log: await sealLog(rec.log, pass, salt),
+      handover: { from: hand.from || "", to: hand.to || "", note: hand.note || "", day: hand.day ?? null, at: new Date().toISOString() } };
+    const f = saveFile({ ...raw, [RECORD]: JSON.stringify(out) }, name);
+    return { ...f, handover: out.handover };
+  }
+
   // Campaign slots (the console keeps them in the browser's IndexedDB): each a save file's keys, with its
   // snapshots, the newest first, at most `keep` of them.
   function addSnap(snaps, snap, keep = 8){
@@ -242,7 +293,7 @@ const CAMPAIGN = (() => {
     for (let n = wanted.trim() ? 2 : 1; ; n++){ const name = wanted.trim() ? `${base} (${n})` : `${base} ${n}`; if (!taken.has(name)) return name }
   }
 
-  return { read, status, suggest, notices, saveFile, checkFile, addSnap, slotName, PHASES, RECORD, PREFIX, KEEP_OUT };
+  return { read, status, suggest, notices, saveFile, checkFile, addSnap, slotName, sealLog, unsealLog, sealed, handoverFile, PHASES, RECORD, PREFIX, KEEP_OUT };
 })();
 
 if (typeof module !== "undefined") module.exports = CAMPAIGN;   // Node (the tests); the page has no `module`

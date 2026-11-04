@@ -211,5 +211,42 @@ check("campaign slots: names not already taken, and snapshots newest first, so m
   assert.deepEqual(C.addSnap(undefined, { label: "a" }).map(x => x.label), ["a"]);
 });
 
-console.log(`${passed} passed, ${failed} failed`);
-process.exit(failed ? 1 : 0);
+async function checkAsync(name, fn){
+  try { await fn(); passed++ } catch (e){ failed++; console.error(`FAIL ${name}\n  ${e.message.split("\n").slice(0, 6).join("\n  ")}`) }
+}
+(async () => {
+  const log = [
+    { n: 1, round: 1, type: "note", vis: "public", data: { phase: "march", text: "On to the march" } },
+    { n: 2, round: 2, type: "note", vis: [], data: { phase: "march", text: "The ambush is at the ford" } },
+    { n: 3, round: 2, type: "note", vis: ["player:a"], data: { phase: "march", text: "Will hears of it" } },
+  ];
+  await checkAsync("GM handover: GM-only notes sealed and read back with the passphrase, and not without it", async () => {
+    const salt = "AAAAAAAAAAAAAAAAAAAAAA==";
+    const s = await C.sealLog(log, "oak and ash", salt);
+    assert.equal(C.sealed(s), 1);
+    assert.equal(s[0].data.text, "On to the march");
+    assert.equal(s[2].data.text, "Will hears of it");
+    assert.ok(!JSON.stringify(s).includes("ambush"));
+    assert.equal(s[1].data.phase, "march");
+    assert.deepEqual(await C.unsealLog(s, "oak and ash", salt), log);
+    await assert.rejects(C.unsealLog(s, "wrong", salt), /passphrase/);
+    assert.deepEqual(await C.sealLog(s, "oak and ash", salt), s);   // sealed once only
+  });
+  await checkAsync("GM handover: the file is a save file, marked, the notes sealed, the old console's mark left out", async () => {
+    const rec = { name: "Towton", phase: "march", log, seen: {}, handedTo: { to: "Ann" } };
+    const raw = { ...C.read(store(pages)), [C.RECORD]: JSON.stringify(rec) };
+    const f = await C.handoverFile(raw, "Towton", { from: "Scott", to: "Ann", note: "The ford", day: 2 }, "oak and ash");
+    const keys = C.checkFile(JSON.parse(JSON.stringify(f)));
+    const r = JSON.parse(keys[C.RECORD]);
+    assert.equal(r.handover.to, "Ann"); assert.equal(r.handover.from, "Scott"); assert.equal(r.handover.day, 2);
+    assert.equal(f.handover.note, "The ford");
+    assert.equal(r.handedTo, undefined);
+    assert.equal(C.sealed(r.log), 1);
+    assert.ok(!keys[C.RECORD].includes("ambush"));
+    assert.ok(!("gravewounds-narrator" in keys));
+    assert.equal((await C.unsealLog(r.log, "oak and ash", r.seal.salt))[1].data.text, "The ambush is at the ford");
+    await assert.rejects(C.handoverFile(raw, "Towton", { to: "Ann" }, ""), /passphrase/);
+  });
+  console.log(`${passed} passed, ${failed} failed`);
+  process.exit(failed ? 1 : 0);
+})();
