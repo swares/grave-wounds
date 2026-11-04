@@ -36,5 +36,6 @@ jobs:
       - run: node tools/net/roomscheck.mjs
       - run: python3 tools/guide/check.py
       - run: node tools/campaign/test.js
+      - run: node tools/campaign/handover-test.mjs
       - run: python3 tools/travel/parity.py 300 1
       - run: python3 tools/field/reform.py
