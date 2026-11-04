@@ -108,8 +108,11 @@ goosegreen-1982:
   note: >-
     A Company, pinned in the gorse gully below Darwin Hill, and B Company on the open slope hold
     where they are and fire, as they did all morning, until the advance resumes shortly before
-    noon (the battlefield's phase, 11:55); then they go in as before, storming in bounds. 2 Para's
-    machine guns keep the Argentine machine guns under fire from the start (the accounts have the
+    noon (the battlefield's phase, 11:55); then they go in as before, storming in bounds. D Company,
+    coming up between them, waits where it is until then too ("The Coronation Ridge position
+    temporarily halted Neame's D Company as they advanced between A and B companies": Wikipedia;
+    the Coronation Ridge platoon is not on this map), rather than crossing the open grass to the
+    Darwin Hill trenches at first light. 2 Para's machine guns keep the Argentine machine guns under fire from the start (the accounts have the
     trenches suppressed by machine guns, Milan and 66 mm rockets before the break-in).
   sides:
     0:
@@ -120,6 +123,10 @@ goosegreen-1982:
       - units: ["B Company, 2 Para (on the open slope)"]
         do: advance_to
         to: [44, 30]
+        until: {phase: "Shortly before noon"}
+      - units: ["D Company, 2 Para (coming up)"]
+        do: advance_to
+        to: [70, 12]
         until: {phase: "Shortly before noon"}
       - units: ["2 Para's machine guns"]
         do: pin
