@@ -3592,6 +3592,7 @@ south, north at the top: the ridge across the middle.
 - Fire support: American 105 mm and 155 mm howitzers and 81 mm mortars; Japanese mountain guns
   and mortars.
 - The wound tables are Bougainville 1944's.
+- Self-play stops a run at 1,200 exchanges at the latest (`self_play.most`, 20 hours), so it plays only the first part of the account's 4,171 (to 12 March); the 148th Infantry (exchange 3,531) never comes on in self-play. The result as fought is settled long before: 12 of 12 runs (the benchmark of 4 November 2026).
 
 *Playing time:* about 15 minutes with the commander's orders taken and adjusted, about 30 minutes moving every unit by hand, about a minute to watch with **Run** (self-play: 52 exchanges, ended with a side gone). See [selfplay-review.md](selfplay-review.md#playing-time-29-october-2026).
 
@@ -3692,6 +3693,7 @@ hexes, about 1,750 by 1,240 yards (1,600 by 1,130 m), north at the top.
 - Fire support: 105 mm howitzers at Falcon, 81 mm mortars, rocket helicopters (gunships) and
   Skyraiders and jets with bombs and napalm (fighter-bombers); North Vietnamese mortars.
 - The wound tables are Vietnam's (hospitalized wounded).
+- Self-play stops a run at 1,200 exchanges at the latest (`self_play.most`, 20 hours), short of the account's 1,556; every phase has begun by then, and the result as fought is settled before: 11 of 12 runs (the benchmark of 4 November 2026).
 
 *Playing time:* about 15 minutes with the commander's orders taken and adjusted, about 35 minutes moving every unit by hand, about a minute to watch with **Run** (self-play: 40 exchanges, ended with a side gone). See [selfplay-review.md](selfplay-review.md#playing-time-29-october-2026).
 
@@ -3809,6 +3811,7 @@ field is 140 × 120 hexes, about 1,530 by 1,140 yards (1,400 by 1,040 m), north 
 - German paratroops are in the cellars and ruins, at the hotel and by the station, with
   machine guns.
 - Fire support: guns and fighter-bombers; German mortars and guns. Overcast and wet.
+- Self-play stops a run at 1,200 exchanges at the latest (`self_play.most`, 20 hours), so it plays only the first day of the account's 10,801 (the week's stalemate); the attacker's taking Castle Hill, which is what the run is scored on, comes within it (12 of 12 runs locally on 4 November 2026, though every run ends with one side gone, well before the cap, rather than in the stalemate).
 
 *Playing time:* about 20 minutes with the commander's orders taken and adjusted, about 45 minutes moving every unit by hand, about 2 minutes to watch with **Run** (self-play: 71 exchanges, ended with a side gone). See [selfplay-review.md](selfplay-review.md#playing-time-29-october-2026).
 
@@ -3880,6 +3883,7 @@ hexes, about 1,750 by 1,240 yards (1,600 by 1,130 m), north at the top.
   in the west, and machine guns.
 - Fire support: the 7th Division's artillery ("flash fire" round the outposts), heavy
   howitzers, 4.2-inch mortars; Chinese mortars and guns.
+- Self-play stops a run at 1,200 exchanges at the latest (`self_play.most`, 20 hours), short of the account's 1,496; every phase has begun by then, and the result as fought is settled before: 12 of 12 runs (the benchmark of 4 November 2026).
 
 *Playing time:* about 1½ hours with the commander's orders taken and adjusted, about 2 hours moving every unit by hand, about 13 minutes to watch with **Run** (self-play: 553 exchanges, ended with the objective taken and held). See [selfplay-review.md](selfplay-review.md#playing-time-29-october-2026).
 
@@ -3939,6 +3943,7 @@ hexes, about 1,310 by 1,330 yards (1,200 by 1,210 m), north at the top.
   trenches, with machine guns, and a company coming in behind the Americans from the west.
 - Fire support: howitzers at the fire bases, fighter-bombers and the battalion's mortars;
   North Vietnamese mortars.
+- Self-play stops a run at 1,200 exchanges at the latest (`self_play.most`, 20 hours), so it plays only the first day of the account's 5,131 (to the crest taken four days later); the first day's result, which is what is scored, comes within it: 12 of 12 runs as fought (the benchmark of 4 November 2026).
 
 *Playing time:* about 5 minutes with the commander's orders taken and adjusted, about 10 minutes moving every unit by hand, under a minute to watch with **Run** (self-play: 17 exchanges, ended with a side gone). See [selfplay-review.md](selfplay-review.md#playing-time-29-october-2026).
 

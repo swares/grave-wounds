@@ -339,9 +339,13 @@ When an item is done, delete it here and note it in the pull request that closes
   stands (commander.objective). The station is also lit all battle by the burning train and oil
   tank car of the Novaya Gazeta account (lit; where and the radii ours). 12 local runs: 4 to 8 of
   12 (7 without the light); full benchmark 4 to 8. Across every field a net 15 more runs as fought: Hue 5 to 8, the Cassino Poles 4 to 7, Babuna, Burgos, Ciudad Rodrigo, Mogadishu and the Monastery up 2, Chipyong and Keating up 1; Badajoz and Tumbledown down 2, Goose Green, Snipe and Topolčani down 1. Checked on 24 fresh seeds (13-36) with and without the rule: Badajoz 18 and 16 British wins, Tumbledown 8 and 10, so both drops are the dice's spread, not the rule (4 November 2026). The battalion now breaks within about half an hour, where it held the
-  station into the next evening: the fight is short, not overnight. Still open: six fields run
-  past self_play.most (1,200): Bougainville (ends 4,171), Cassino town (10,801), Dak To (5,131),
-  Grozny (1,531), Pork Chop (1,496) and X-Ray (1,556).
+  station into the next evening: the fight is short, not overnight. Six fields run past
+  self_play.most (1,200): Bougainville (ends 4,171), Cassino town (10,801), Dak To (5,131),
+  Grozny (1,531), Pork Chop (1,496) and X-Ray (1,556). Looked at 4 November 2026: in the five
+  besides Grozny the result as fought is settled within the first 1,200 exchanges (Bougainville,
+  Dak To and Pork Chop 12 of 12, X-Ray 11, Cassino town 12 of 12 locally under report.py's own count, though every run ends with one side gone, well before the cap, rather than in the stalemate), so they are left as they are, the
+  cut documented in each field's units.md entry and by self_play.most; Grozny's breakout at
+  1,531 is still past it (its fight is too short as it stands, above).
 - **Tear gas, first cut** (`indirect.gas`, the `e8` kind; 4 November 2026). A CS launcher lays a
   cloud that thins and drifts as smoke does; unmasked men in it fire nothing and check Nerve or fall
   back out of it, masked men fire less (a unit's `masks`). On Hue's 6 February field: 2 to 5 of 12

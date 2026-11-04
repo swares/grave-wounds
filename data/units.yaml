@@ -1190,9 +1190,12 @@ commander:
   # the battlefield's phases have begun), or when
   # a side has no unit left standing (and none still to come); then the battle ends. A battlefield
   # with phases runs at least `after_phases` exchanges past its last phase's start, but never more
-  # than `most` (enough for every battlefield's last phase now, Chipyong-ni's at 1,156 the latest;
-  # a battle that goes on for days past its last phase is still cut short). A battlefield's `ends`
-  # (how long its account says the fight went on) makes a run at least that long, within `most`. On a
+  # than `most` (a battle that goes on for days is still cut short: Bougainville's last phase, at
+  # 3,531, never comes on). A battlefield's `ends` (how long its account says the fight went on)
+  # makes a run at least that long, within `most`: Bougainville, Cassino town, Dak To, Pork Chop
+  # and X-Ray end past it and play only their first 20 hours, the result as fought settled within
+  # them (4 November 2026); Hue's 4-6 February field did not (its headquarters fell on the third
+  # day), so it is now 6 February alone. On a
   # battlefield, the side its objective names attacks and the other holds (else its `stances`, as
   # fought); on open ground both attack. Design choices.
   # The objective counts as taken only with no standing enemy within `secure` hexes of it.
