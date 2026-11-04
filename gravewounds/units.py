@@ -1893,7 +1893,8 @@ def _nearest_on_line(d: Data, units: list, ctx: tuple, aim: tuple, best):
 def _shooters(d: Data, u: dict, field: dict | None = None) -> float:
     """Who shoots: a machine-gun team's served guns; any other unit's front hexes' first
     shoot_ranks ranks, less the front rank of each hex breaching the works. A pinned unit,
-    suppression.fire of them; none in a unit passing another's lines (commander.plans.relieve)."""
+    suppression.fire of them; one in gas (indirect.gas), masked_fire of them masked and none
+    unmasked; none in a unit passing another's lines (commander.plans.relieve)."""
     if u.get("passing"):
         return 0
     if is_mg(d, u["weapon"]):
@@ -1903,7 +1904,9 @@ def _shooters(d: Data, u: dict, field: dict | None = None) -> float:
         per_hex = ab * min(d.units["shoot_ranks"], form(d, u)["ranks"])
         busy = breaching(d, field, u)
         n = sum(max(0, min(per_hex, men[k]) - (min(ab, men[k]) if k in busy else 0)) for k in range(len(rows[0])))
-    return n * d.units["suppression"]["fire"] if u.get("pinned") else n
+    n = n * d.units["suppression"]["fire"] if u.get("pinned") else n
+    g = u.get("gassed")
+    return n if not g else n * d.units["indirect"]["gas"]["masked_fire"] if g["masked"] else 0
 
 
 def is_mg(d: Data, weapon: str) -> bool:
@@ -2676,6 +2679,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     log += _morale_all(d, us, occ, before, (lost, dealt, flanked, hand, braced), rng, table, field)
     log += _reform_all(d, us, lost, rng, field)
     log += _suppress_all(d, us, under, rng)
+    log += _gassed_all(d, us, field, rng)
     log += _give_way_all(d, us, field, struck)
     log += _heroes_after(d, us, rng, [not lost[i] and not under[i] and not in_contact(d, us, occ, i) for i in range(len(us))], cauterises(d, table), posts_moving(field))
     log += _parties_after(d, us, field)
@@ -2694,6 +2698,10 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
         _battery_after(d, u)
         if u.get("pinned"):
             u["pinned"] -= 1
+        if u.get("gassed"):
+            u["gassed"]["left"] -= 1
+            if u["gassed"]["left"] <= 0:
+                del u["gassed"]
         if u.get("lost"):
             u["lost"] -= 1
     _flashes(d, us, log, field)
@@ -2705,6 +2713,8 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     log += _overrun_all(d, us, field)
     _smoke_thins(field)
     _smoke_drifts(d, field)
+    _smoke_thins(field, "gas")
+    _smoke_drifts(d, field, "gas")
     _lit_fades(field)
     log += landings(d, us, table, rng, field)
     log += _air_drops(d, field, rng)
@@ -3159,11 +3169,11 @@ def downwind(d: Data, field: dict | None):
     return side
 
 
-def _smoke_drifts(d: Data, field: dict | None) -> None:
-    """Smoke moves `drift` hexes downwind; what leaves the map is gone."""
-    sm = (field or {}).get("smoke")
+def _smoke_drifts(d: Data, field: dict | None, cloud: str = "smoke") -> None:
+    """Smoke (or gas) moves `drift` hexes downwind; what leaves the map is gone."""
+    sm = (field or {}).get(cloud)
     side = downwind(d, field) if sm else None
-    n = d.units["indirect"]["smoke"].get("drift", {}).get(((field or {}).get("weather") or {}).get("wind") or "calm", 0)
+    n = d.units["indirect"][cloud].get("drift", {}).get(((field or {}).get("weather") or {}).get("wind") or "calm", 0)
     if side is None or not n:
         return
     size, out = field.get("size"), {}
@@ -3173,14 +3183,14 @@ def _smoke_drifts(d: Data, field: dict | None) -> None:
             continue
         k2 = f"{h[0]},{h[1]}"
         out[k2] = max(out.get(k2, 0), left)
-    field["smoke"] = out
+    field[cloud] = out
 
 
-def _smoke_thins(field: dict | None) -> None:
-    """Smoke hangs one exchange less; gone at none."""
-    sm = (field or {}).get("smoke")
+def _smoke_thins(field: dict | None, cloud: str = "smoke") -> None:
+    """Smoke (or gas) hangs one exchange less; gone at none."""
+    sm = (field or {}).get(cloud)
     if sm:
-        field["smoke"] = {h: n - 1 for h, n in sm.items() if n > 1}
+        field[cloud] = {h: n - 1 for h, n in sm.items() if n > 1}
 
 
 def _closing_all(d: Data, us: list, table: str, rng, acc: tuple, field: dict | None = None) -> list:
@@ -3914,8 +3924,8 @@ def _ground_fire(d: Data, us: list, flight: tuple, attacking: int, rng) -> list:
 
 def _bombard(d: Data, ctx: tuple, k: int, b: dict, shells: int, scatter: int | None = None) -> list:
     """A battery's shells on a hex (ctx: units, table, shell weapon, dice, tallies, field, under
-    fire): where each lands (0 to scatter hexes off; the kind's, unless given), then smoke laid,
-    or the men struck and bunkers knocked."""
+    fire): where each lands (0 to scatter hexes off; the kind's, unless given), then smoke or gas
+    (a kind with gas) laid, or the men struck and bunkers knocked."""
     us, table, weapon, rng, acc, field, under = ctx
     K, m, bursts = d.units["indirect"]["kinds"][b["kind"]], b["mission"], []
     scatter = (K["scatter"] if scatter is None else scatter) + (d.units["indirect"]["planned"]["scatter"] if m.get("planned") else 0)   # planned fire: on the place, not an observer's correction
@@ -3923,9 +3933,11 @@ def _bombard(d: Data, ctx: tuple, k: int, b: dict, shells: int, scatter: int | N
         dirn, far = rng.randint(0, 5), rng.randint(0, scatter)
         bursts.append(step(m["hex"], dirn, far))
     log = [{"kind": "barrage", "sup": k, "name": b["name"], "side": b["side"], "shells": shells, "at": m["hex"], "bursts": bursts,
-            "smoke": bool(m.get("smoke"))}]
+            "smoke": bool(m.get("smoke")), **({"gas": True} if K.get("gas") else {})}]
     if m.get("smoke"):
         _lay_smoke(d, field, bursts)
+    elif K.get("gas"):
+        _lay_smoke(d, field, bursts, "gas")
     else:
         log += _shell_units(d, us, (table, weapon), rng, acc, field, under, k, b, bursts)
         log += _shell_parties(d, us, field, bursts, K, {"table": table, "weapon": weapon, "kit": None, "quality": "regular"}, rng)
@@ -4106,11 +4118,12 @@ def _lit_fades(field: dict | None) -> None:
         field["lit"] = [x if x.get("fires") else {**x, "left": x["left"] - 1} for x in field["lit"] if x.get("fires") or x["left"] > 1]
 
 
-def _lay_smoke(d: Data, field: dict, bursts: list) -> None:
-    """Smoke over each burst's hex and those within the radius, for as long as the wind lets it hang."""
-    S = d.units["indirect"]["smoke"]
+def _lay_smoke(d: Data, field: dict, bursts: list, cloud: str = "smoke") -> None:
+    """Smoke (or gas: indirect.gas) over each burst's hex and those within the radius, for as long
+    as the wind lets it hang."""
+    S = d.units["indirect"][cloud]
     lasts = S["lasts"][((field.get("weather") or {}).get("wind")) or "calm"]
-    sm = field.setdefault("smoke", {})
+    sm = field.setdefault(cloud, {})
     for at in bursts:
         for h in within(at, S["radius"]):
             key = f"{h[0]},{h[1]}"
@@ -4374,6 +4387,41 @@ def _suppress_all(d: Data, us: list, under: list, rng) -> list:
         if roll > target:
             u["pinned"] = 2
             log.append({"kind": "pinned", "unit": i, "roll": roll, "target": target})
+    return log
+
+
+def _gassed_all(d: Data, us: list, field: dict | None, rng) -> list:
+    """Units with men in gas (indirect.gas) at the end of the exchange, not vehicles, not broken or
+    fleeing: masked, they fire masked_fire of their shots the next exchange; unmasked, the gas gets
+    in (in a bunker at `bunker` %), they fire none the next exchange and check Nerve, a failure
+    falling back `fall_back` hexes straight behind, out of the cloud, to hold there."""
+    gas = (field or {}).get("gas")
+    if not gas:
+        return []
+    G, log, size = d.units["indirect"]["gas"], [], (field or {}).get("size")
+    for i, u in enumerate(us):
+        if u["men"] <= 0 or u["state"] in ("broken", "fled") or u.get("vehicle"):
+            continue
+        if not any(f"{h[0]},{h[1]}" in gas for row in footprint(d, u) for h in row):
+            continue
+        if u.get("masks"):
+            u["gassed"] = {"left": 2, "masked": True}
+            continue
+        if in_bunker(d, field, u) and rng.randint(1, 100) > G["bunker"]:
+            continue
+        u["gassed"] = {"left": 2, "masked": False}
+        if u.get("withdraw"):
+            log.append({"kind": "gassed", "unit": i})
+            continue
+        target, roll = quality(d, u["quality"])["nerve"], rng.randint(1, 100)
+        out = roll > target
+        if out:
+            h = step(u["pos"], (int(u["facing"]) + 3) % 6, G["fall_back"])
+            if size:
+                h = [min(max(h[0], 0), size[0] - 1), min(max(h[1], 0), size[1] - 1)]
+            u["withdraw"] = {"at": 0, "to": h}
+            u.pop("hold", None)
+        log.append({"kind": "gassed", "unit": i, "roll": roll, "target": target, "falls_back": out})
     return log
 
 

@@ -151,15 +151,16 @@ works:
 # Batteries on call (off the map): loading the field fills the Fire support panel.
 support:
   - {name: "Marine 81 mm mortars", side: 0, kind: mortar, tubes: 8}
+  - {name: "E-8 tear gas launcher", side: 0, kind: e8, tubes: 1}
   - {name: "Marine 105 mm howitzers (observed missions only)", side: 0, kind: field, tubes: 6}
   - {name: "North Vietnamese mortars", side: 1, kind: mortar, tubes: 8}
   - {name: "North Vietnamese rockets and guns", side: 1, kind: field, tubes: 4}
 units:
-  - {name: "H Company, 2/5 Marines (before the headquarters)", side: 0, men: 100, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 10, pos: [100, 52], facing: 0, size: company, leaders: [{name: "Ron Christmas", rank: "Captain"}, {name: "Leo Myers", rank: "Lieutenant"}]}
-  - {name: "G Company, 2/5 Marines (at the hospital)", side: 0, men: 100, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 10, pos: [76, 24], facing: 0, size: company, leaders: [{name: "Chuck Meadows", rank: "Captain"}, {name: "Michael McNeil", rank: "Second Lieutenant"}]}
+  - {name: "H Company, 2/5 Marines (before the headquarters)", side: 0, men: 100, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 10, pos: [100, 52], facing: 0, masks: true, size: company, leaders: [{name: "Ron Christmas", rank: "Captain"}, {name: "Leo Myers", rank: "Lieutenant"}]}
+  - {name: "G Company, 2/5 Marines (at the hospital)", side: 0, men: 100, quality: regular, weapon: rifle_assault, kit: vietnam_usmc, formation: extended, width: 10, pos: [76, 24], facing: 0, masks: true, size: company, leaders: [{name: "Chuck Meadows", rank: "Captain"}, {name: "Michael McNeil", rank: "Second Lieutenant"}]}
   - {name: "Marine M48 tanks", side: 0, men: 8, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 2, pos: [88, 46], facing: 1, vehicle: tank, size: section}
   - {name: "Marine Ontos", side: 0, men: 6, quality: regular, weapon: machine_gun, kit: none, formation: armour, width: 2, pos: [88, 60], facing: 1, vehicle: ontos, size: section}
-  - {name: "106 mm recoilless rifle on a Mule", side: 0, men: 4, quality: regular, weapon: recoilless, kit: vietnam_usmc, formation: extended, width: 1, pos: [95, 57], facing: 0, size: section}
+  - {name: "106 mm recoilless rifle on a Mule", side: 0, men: 4, quality: regular, weapon: recoilless, kit: vietnam_usmc, formation: extended, width: 1, pos: [95, 57], facing: 0, masks: true, size: section}
   - {name: "North Vietnamese in the provincial headquarters", side: 1, men: 40, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 6, pos: [112, 52], facing: 3, prone: true, size: platoon}
   - {name: "North Vietnamese in the hospital", side: 1, men: 40, quality: veteran, weapon: rifle_assault, kit: none, formation: extended, width: 6, pos: [86, 24], facing: 3, prone: true, size: platoon}
   - {name: "North Vietnamese RPG teams", side: 1, men: 10, quality: veteran, weapon: rpg, kit: none, formation: extended, width: 2, pos: [108, 57], facing: 3, prone: true, size: section}

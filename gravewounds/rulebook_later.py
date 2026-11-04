@@ -86,7 +86,15 @@ def _support_values(d: Data) -> dict:
             "i_tree_prone": f"{I['tree_burst']['prone']:g}", "i_creep": I["creep"]["max"], "i_each": I["creep"]["every_max"],
             "i_cb_field": K["field"]["counter"], "i_cb_how": K["howitzer"]["counter"], "i_cb_among": I["counter_battery"]["among"],
             "i_cb_near": I["counter_battery"]["near"], "i_tank_knock": K["tank"]["knock"], "i_how_knock": K["howitzer"]["knock"],
-            "b_pinned": S["pinned"], "b_flame_dead": S["flame_dead"]}
+            "b_pinned": S["pinned"], "b_flame_dead": S["flame_dead"], **_gas_values(I)}
+
+
+def _gas_values(I: dict) -> dict:
+    """Tear gas (indirect.gas) for the rule book."""
+    G = I.get("gas") or {}
+    e8 = next((k for k in I["kinds"].values() if k.get("gas")), {})
+    return {"g_bunker": G.get("bunker"), "g_masked": f"{G.get('masked_fire', 1) * 100:g}", "g_back": G.get("fall_back"),
+            "g_range": e8.get("range"), "g_rounds": e8.get("rounds")}
 
 
 def _vehicle_values(d: Data) -> dict:
@@ -140,7 +148,7 @@ def _air_values(d: Data) -> dict:
 
 def tables(d: Data, only: set | None = None) -> dict:
     """The tables chapters 9-13 show, as Markdown, by name."""
-    return {"eras": _eras(d), "women": _women(d, only), "indirect": _indirect(d), "smoke": _smoke(d), "assault": _assault(d),
+    return {"eras": _eras(d), "women": _women(d, only), "indirect": _indirect(d), "smoke": _smoke(d), "gas": _smoke(d, "gas"), "assault": _assault(d),
             "vehicles": _vehicles(d), "fire_control": _fire_control(d), "armour": _armour(d), "dark": _dark(d), "nvd": _nvd(d), "air": _air(d), "mines": _mines(d)}
 
 
@@ -196,7 +204,7 @@ def _women(d: Data, only: set | None = None) -> str:
 def _indirect(d: Data) -> str:
     rows = []
     for k in d.units["indirect"]["kinds"].values():
-        if k.get("air"):
+        if k.get("air") or k.get("gas"):
             continue
         reach = _field(d, k["range"]) if k.get("range") else "in sight"
         lands = "next exchange" if k["delay"] else "this exchange"
@@ -205,10 +213,10 @@ def _indirect(d: Data) -> str:
     return _md(["Kind", "Reach", "Shells a minute a tube", "Rounds a tube", "Lands", "Scatter", "Struck % at 0, 1, 2 … hexes"], rows)
 
 
-def _smoke(d: Data) -> str:
-    S, names = d.units["indirect"]["smoke"], {w["id"]: w["name"] for w in d.weather["winds"]} if all("id" in w for w in d.weather["winds"]) else {}
+def _smoke(d: Data, cloud: str = "smoke") -> str:
+    S, names = d.units["indirect"][cloud], {w["id"]: w["name"] for w in d.weather["winds"]} if all("id" in w for w in d.weather["winds"]) else {}
     rows = [[names.get(w, w.capitalize()), S["lasts"][w] - 1 or "none: blown away", S["drift"][w] or "—"] for w in S["lasts"]]
-    return _md(["Wind", "Exchanges it screens after landing", "Drifts (hexes an exchange)"], rows)
+    return _md(["Wind", "Exchanges it screens after landing" if cloud == "smoke" else "Exchanges it hangs after landing", "Drifts (hexes an exchange)"], rows)
 
 
 def _assault(d: Data) -> str:

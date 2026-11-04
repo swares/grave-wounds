@@ -835,7 +835,8 @@ def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, how: tu
     battery lights an enemy it has lost sight of (_call_illum).
     Attacking, one battery lays smoke where its units are under fire (_call_smoke).
     Then one battery fires counter-battery on a located enemy battery (_call_counter), and,
-    attacking, one puts a creeping barrage ahead of a unit closing on the enemy (_call_creep). Then each
+    attacking, one puts a creeping barrage ahead of a unit closing on the enemy (_call_creep); gas
+    launchers (a kind with gas) do none of these. Then each
     of its other off-map batteries (not tanks) with no mission, rounds and tubes, not
     displacing, and its aircraft that can fly (_free_air), is called on the enemy unit it sees now that scores best as a
     target for the side's unit nearest it (threat_score), at the first of its hexes the side
@@ -844,10 +845,11 @@ def _call_fire(d: Data, us: list, side, field: dict | None, known: dict, how: tu
     stance, exchange, orders, table = how
     out = _displace(d, field, side)
     free = [k for k, b in enumerate((field or {}).get("support") or []) if _free_battery(d, b, side)]
-    out += _call_illum(d, us, side, field, (known, exchange), free)
-    out += _call_smoke(d, us, side, field, known, free) if stance == "attack" else []
-    out += _call_counter(d, field, side, free)
-    out += _call_creep(d, us, side, field, (known, orders), free) if stance == "attack" else []
+    shells = [k for k in free if not d.units["indirect"]["kinds"][field["support"][k]["kind"]].get("gas")]   # gas launchers are only called plain
+    out += _call_illum(d, us, side, field, (known, exchange), shells)
+    out += _call_smoke(d, us, side, field, known, shells) if stance == "attack" else []
+    out += _call_counter(d, field, side, shells)
+    out += _call_creep(d, us, side, field, (known, orders), shells) if stance == "attack" else []
     air = [k for k, b in enumerate((field or {}).get("support") or []) if _free_air(d, field, b, side)]
     return out + _call_plain(d, us, side, field, (known, sorted(free + air), table, stance == "attack"))
 

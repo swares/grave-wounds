@@ -69,6 +69,18 @@ guns, heavy howitzers, and tanks or autocannon firing over open sights. Each is 
 
 {{table:smoke}}
 
+- **Tear gas** (CS) comes from a launcher (an E-8: {{g_rounds}} volleys, out to {{g_range}}
+  hexes). It wounds no one. Each volley fills its hex and the hexes round it, and the cloud
+  thins and drifts like smoke, though it hides nothing:
+
+{{table:gas}}
+
+  A unit with men in the gas at the end of an exchange (not vehicles, not broken or fleeing):
+  - **masked**, it fires {{g_masked}}% of its shots the next exchange;
+  - **unmasked**, the gas gets in (in a bunker only on {{g_bunker}} or less on d100). It fires
+    nothing the next exchange and checks Nerve. If it fails, it falls back {{g_back}} hexes
+    straight behind it, out of the cloud, and holds there.
+
 - **Illumination** lights the ground round its aim as by day (see
   [Light and the dark](#light)). It needs no one to see the hex.
 - **A fire plan.** A creeping barrage lifts its aim 1 to {{i_creep}} hexes after 1 to
