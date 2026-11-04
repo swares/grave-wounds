@@ -1018,7 +1018,8 @@ function seenShare(field, u, at, weapon = null){  // share of aimed shots at u t
   if (!(low(u) || inBunker(field, u) || (at && hidesAt(field, at)))) return 1;
   return weapon && isMg(weapon) ? (H.mg_seen ?? H.seen) / 100 : H.seen / 100;
 }
-function shooters(u, field = null){               // a machine-gun team's served guns; any other unit's front hexes' first shoot_ranks ranks, less breaching front ranks; pinned, fewer
+function shooters(u, field = null){               // a machine-gun team's served guns; any other unit's front hexes' first shoot_ranks ranks, less breaching front ranks; pinned, fewer; none passing another's lines
+  if (u.passing) return 0;
   let n = 0;
   if (isMg(u.weapon)) n = mgGuns(u);
   else {
@@ -3375,7 +3376,7 @@ const tractor = u => !!vehicleKind(u)?.tows;      // gun tractors: not ordered a
 function commandable(us, i, exchange, field = null){   // standing, not a battery, anti-tank guns or gun tractors, not in contact (given the field, engaged: touching an enemy only across a wall no one fights over does not hold it), not just come on (as commander._free)
   const u = us[i];
   if (ROUTED.has(u.state) || u.men <= 0 || isBattery(u) || isAtGun(u) || tractor(u)) return false;
-  if (exchange !== null && u.arrived === exchange) return false;
+  if ((exchange !== null && u.arrived === exchange) || u.passing) return false;
   return !engaged(us, occupancy(us), i, field);
 }
 function spotter(us, i, o, [size, field, stance, known]){   // attacking, an air controller that would stand or turn moves up to see a target for its side's aircraft, when they can fly and no controller sees a known enemy (as commander._spotter)
@@ -3495,7 +3496,7 @@ function planSteps(us, side, ctx){                  // start and end the side's 
       if (u.side !== side || !st.units.includes(u.name) || u.men <= 0 || ROUTED.has(u.state)) continue;
       const run = u.task;
       if (run && run.step === k){
-        const why = taskDone(us, i, run) || gaveUp(us, i, st) || (st.until ? fires(us, [i, st], st.until, ctx) : null);
+        const why = (st.do === "relieve" ? relieving(us, i, st, ctx[0]) : null) || taskDone(us, i, run) || gaveUp(us, i, st) || (st.until ? fires(us, [i, st], st.until, ctx) : null);
         if (why){ endTask(us, i, !!why.stalled); out.push({ unit: i, act: "plan", step: k, do: st.do, start: false, why }) }
         continue;
       }
@@ -3520,6 +3521,7 @@ function startTask(us, i, k, st, exchange){        // step k's task on unit i (a
   if (d === "withdraw_if") u.withdraw = { at: exchange ?? 0, to: typeof st.to === "string" ? st.to : [...st.to] };
   else if (d === "envelop") u.via = st.via.map(h => [...h]);
   else if (d === "advance_to") u.goal = [...st.to];
+  else if (d === "relieve"){ const j = namedUnit(us, st.relieves, u.side, true); u.goal = j === null ? [...u.pos] : behindOf(us[j]) }
   if (st.target && (d === "envelop" || d === "pin")) u.focus = st.target;
 }
 function endTask(us, i, back = false){             // unit i's running step ends: its task, target and line go (an envelopment's route, a withdrawal not yet done); back: it gave up, and goes back to the reserve if it was held there (as commander._end_task)
@@ -3528,6 +3530,38 @@ function endTask(us, i, back = false){             // unit i's running step ends
   TASK_KEYS.forEach(key => { delete u[key] });
   if (d === "envelop") delete u.via;
   else if (d === "withdraw_if") delete u.withdraw;
+  else if (d === "relieve") stopPassing(us, i);
+}
+const behindOf = v => step(v.pos, mod6(v.facing + 3), footprint(v).length + 1);   // the hex a relieving unit makes for: behind v's rear rank, on its middle (as commander._relief_hex)
+function stopPassing(us, i){                        // unit i and the friend it was relieving are no longer passing (as commander._stop_passing)
+  const run = us[i].task || {};
+  delete us[i].passing;
+  const j = run.with ? namedUnit(us, run.with, us[i].side, true) : null;
+  if (j !== null) delete us[j].passing;
+}
+function relieving(us, i, st, field){               // a relieve step's progress: make for the ground behind the friend, pass each other's lines (commander.plans.relieve exchanges, neither firing nor moving), then change places; {relieved}, {gone}, {blocked} or null (as commander._relieving)
+  const u = us[i], run = u.task, j = namedUnit(us, st.relieves, u.side, true);
+  if (j === null) return { gone: st.relieves };
+  if (run.passing !== undefined){
+    const left = run.passing - 1;
+    if (left > 0){ u.task = { ...run, passing: left }; return null }
+    return changePlaces(us, i, j, field);
+  }
+  u.goal = behindOf(us[j]);
+  if (unitGap(u, us[j]) <= UD.commander.route.reach){
+    u.task = { ...run, passing: UD.commander.plans.relieve, with: st.relieves };
+    u.passing = us[j].passing = true;
+  }
+  return null;
+}
+function changePlaces(us, i, j, field){             // unit i takes friend j's place, facing as j faced, and j goes where i stood, if both fit: {relieved} or {blocked} (as commander._change_places)
+  const a = us[i], b = us[j];
+  const na = { ...a, pos: [...b.pos], facing: b.facing }, nb = { ...b, pos: [...a.pos], facing: b.facing };
+  delete na.passing; delete nb.passing; delete a.passing; delete b.passing;
+  const base = us.map((x, k) => k === i ? na : k === j ? nb : x), size = field?.size || [1e6, 1e6];
+  if (!(fits(base, i, na, size, field) && fits(base, j, nb, size, field))) return { blocked: b.name };
+  us[i] = na; us[j] = nb;
+  return { relieved: b.name };
 }
 function taskDone(us, i, run){                      // why unit i's running task is done, or null (as commander._task_done)
   const u = us[i];
@@ -3723,7 +3757,7 @@ function planTemplate(us, [pick, mine, foes, seen, roles], [front, flanks, mobil
   }
   return { template: pick, steps, ...(by ? { by } : {}) };
 }
-const planBehind = axis => ({ 0: "W", 1: "S", 2: "S", 3: "E", 4: "N", 5: "N" })[mod6(axis)];   // the map edge behind a side whose axis to the enemy is that direction (as commander._behind)
+const planBehind = axis => ({ 0: "W", 1: "S", 2: "S", 3: "E", 4: "N", 5: "N" })[mod6(axis)];   // the map edge behind a side whose axis to the enemy is that direction (as commander._relief_hex)
 const enveloping = u => u.task?.do === "envelop" && !u.via;   // on a plan's envelopment, its route done (as commander._enveloping)
 function focusOf(us, i, known, t){                  // the plan's target for unit i (focus, by name) if it stands and its side knows of it, else t (as commander._focus)
   const name = us[i].focus;
@@ -3733,7 +3767,7 @@ function focusOf(us, i, known, t){                  // the plan's target for uni
 }
 function taskOrder(us, i, t, ctx){                  // [order or null] for a unit on a plan's advance_to or pin; null for any other (as commander._task_order)
   const u = us[i], d = u.task?.do;
-  if (d === "advance_to"){
+  if (d === "advance_to" || d === "relieve"){
     const [size, field, stance, known, exchange] = ctx;
     if (hdist(u.pos, u.goal) > UD.commander.route.reach){
       const o = toward(us, i, t, [size, { ...(field || {}), objective: u.goal, objective_radius: null }, stance, known, exchange], "advance");

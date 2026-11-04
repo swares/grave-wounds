@@ -185,7 +185,7 @@ def _free(d: Data, us: list, i: int, exchange, field: dict | None = None) -> boo
     u = us[i]
     if u["state"] in ROUTED or u["men"] <= 0 or U.is_battery(d, u) or U.is_at_gun(d, u) or _tractor(d, u):
         return False
-    if exchange is not None and u.get("arrived") == exchange:
+    if (exchange is not None and u.get("arrived") == exchange) or u.get("passing"):
         return False
     return not U.engaged(d, us, U.occupancy(d, us), i, field)
 
@@ -1307,7 +1307,7 @@ def plan_steps(d: Data, us: list, side, ctx: tuple) -> list:
                 continue
             run = u.get("task")
             if run and run["step"] == k:
-                why = _task_done(us, i, run) or _gave_up(us, i, st) or (_fires(d, us, (i, st), st["until"], ctx) if st.get("until") else None)
+                why = (_relieving(d, us, i, st, field) if st["do"] == "relieve" else None) or _task_done(us, i, run) or _gave_up(us, i, st) or (_fires(d, us, (i, st), st["until"], ctx) if st.get("until") else None)
                 if why:
                     _end_task(us, i, back=bool(why.get("stalled")))
                     out.append({"unit": i, "act": "plan", "step": k, "do": st["do"], "start": False, "why": why})
@@ -1318,12 +1318,12 @@ def plan_steps(d: Data, us: list, side, ctx: tuple) -> list:
             if why:
                 if run:
                     _end_task(us, i)
-                _start_task(us, i, k, st, ctx[2])
+                _start_task(d, us, i, k, st, ctx[2])
                 out.append({"unit": i, "act": "plan", "step": k, "do": st["do"], "start": True, "why": why})
     return out
 
 
-def _start_task(us: list, i: int, k: int, st: dict, exchange) -> None:
+def _start_task(d: Data, us: list, i: int, k: int, st: dict, exchange) -> None:
     """Step k's task on unit i: withdraw_if gives it the account's withdrawal from now; envelop
     a route and its target; pin its target; advance_to its line; commit releases it from the
     reserve (to: the hex it goes to, as a unit plugging a gap). Any task but withdraw_if takes
@@ -1344,6 +1344,9 @@ def _start_task(us: list, i: int, k: int, st: dict, exchange) -> None:
         u["via"] = [list(h) for h in st["via"]]
     elif do == "advance_to":
         u["goal"] = list(st["to"])
+    elif do == "relieve":
+        j = _named(us, st["relieves"], u["side"], True)
+        u["goal"] = _relief_hex(d, us[j]) if j is not None else list(u["pos"])
     if st.get("target") and do in ("envelop", "pin"):
         u["focus"] = st["target"]
 
@@ -1362,6 +1365,62 @@ def _end_task(us: list, i: int, back: bool = False) -> None:
         u.pop("via", None)
     elif do == "withdraw_if":
         u.pop("withdraw", None)
+    elif do == "relieve":
+        _stop_passing(us, i)
+
+
+def _relief_hex(d: Data, v: dict) -> list:
+    """The hex a relieving unit makes for: a hex behind v's rear rank, on its middle."""
+    return list(U.step(v["pos"], (v["facing"] + 3) % 6, len(U.footprint(d, v)) + 1))
+
+
+def _stop_passing(us: list, i: int) -> None:
+    """Unit i and the friend it was relieving are no longer passing (they fire and move again)."""
+    run = us[i].get("task") or {}
+    us[i].pop("passing", None)
+    j = _named(us, run["with"], us[i]["side"], True) if run.get("with") else None
+    if j is not None:
+        us[j].pop("passing", None)
+
+
+def _relieving(d: Data, us: list, i: int, st: dict, field: dict | None) -> dict | None:
+    """A relieve step's progress (commander.plans.relieve): unit i makes for the hex behind the
+    friend it relieves; once within route.reach of it, the two pass each other's lines for that
+    many exchanges, neither firing nor moving (struck as usual), and then change places, the
+    friend going to where unit i stood. -> {relieved: name} once done, {gone: name} if the friend
+    has broken or gone, {blocked: name} if the two cannot change places; else None."""
+    u, run = us[i], us[i]["task"]
+    j = _named(us, st["relieves"], u["side"], True)
+    if j is None:
+        return {"gone": st["relieves"]}
+    if run.get("passing") is not None:
+        left = run["passing"] - 1
+        if left > 0:
+            u["task"] = {**run, "passing": left}
+            return None
+        return _change_places(d, us, i, j, field)
+    u["goal"] = _relief_hex(d, us[j])
+    if U.unit_gap(d, u, us[j]) <= d.units["commander"]["route"]["reach"]:
+        u["task"] = {**run, "passing": d.units["commander"]["plans"]["relieve"], "with": st["relieves"]}
+        u["passing"] = us[j]["passing"] = True
+    return None
+
+
+def _change_places(d: Data, us: list, i: int, j: int, field: dict | None) -> dict:
+    """Unit i takes friend j's place, facing as j faced, and j goes to where i stood, if both fit
+    there. -> {relieved: j's name} or {blocked: j's name}."""
+    a, b = us[i], us[j]
+    keep = ("passing",)
+    na = {k: v for k, v in {**a, "pos": list(b["pos"]), "facing": b["facing"]}.items() if k not in keep}
+    nb = {k: v for k, v in {**b, "pos": list(a["pos"]), "facing": b["facing"]}.items() if k not in keep}
+    base = [na if k == i else nb if k == j else x for k, x in enumerate(us)]
+    size = tuple((field or {}).get("size") or (10**6, 10**6))
+    a.pop("passing", None)
+    b.pop("passing", None)
+    if not (U._fits(d, base, i, na, size, field) and U._fits(d, base, j, nb, size, field)):
+        return {"blocked": b["name"]}
+    us[i], us[j] = na, nb
+    return {"relieved": b["name"]}
 
 
 def _task_done(us: list, i: int, run: dict) -> dict | None:
@@ -1712,7 +1771,7 @@ def _task_order(d: Data, us: list, i: int, t: int | None, ctx: tuple) -> tuple |
     it stays there facing its target. pin: see _pin_order."""
     u = us[i]
     do = (u.get("task") or {}).get("do")
-    if do == "advance_to":
+    if do in ("advance_to", "relieve"):
         size, field, stance, known, exchange = ctx
         if U.hdist(u["pos"], u["goal"]) > d.units["commander"]["route"]["reach"]:
             o = _toward(d, us, i, t, (size, {**(field or {}), "objective": u["goal"], "objective_radius": None}, stance, known, exchange), "advance")
