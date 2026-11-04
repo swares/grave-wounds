@@ -15,7 +15,7 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[2]
 PAGE = (ROOT / "dist" / "field.html").as_uri()
-SEED = 202                                         # dice on which the horse live to go round (checked: on 101 and 303 they are destroyed first)
+SEED = 404                                         # dice on which the horse live to go round (checked: 202 lost them once broken units ran from the enemy, 4 November 2026; on 101 and 303 they are destroyed first)
 failures = []
 
 

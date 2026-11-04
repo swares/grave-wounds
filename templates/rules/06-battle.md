@@ -81,7 +81,8 @@ twice as often, as long as the pursuers keep up. This is where most of a battle'
 fell, as at Towton and Agincourt, where the beaten side lost far more men in flight than in
 the press.
 
-On the field map it runs straight back as far as it can move. Its own side's units do not
+On the field map it runs straight away from the nearest enemy still standing (straight back if
+none is) as far as it can move. Its own side's units do not
 stop it: it runs on through them to the first clear ground beyond, and each unit it runs
 through loses half its move that exchange as the fugitives push through its ranks.
 

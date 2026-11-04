@@ -919,7 +919,10 @@ morale:
 # ranks have dissolved), with no defence for the fleeing, at +attack and `tempo` times the
 # melee tempo: most of a battle's dead fell in the rout. On the field map the pursuit lasts
 # while pursuers keep contact; the simulation assumes `exchanges` of it.
-# On the field map a broken unit runs straight back as far as its move. Running into its own
+# On the field map a broken unit runs straight away from the nearest enemy standing (of the hex
+# sides taking it furthest from that enemy's nearest hex, the one nearest straight back; straight
+# back with no enemy standing) as far as its move: from the enemy, not from its own facing (Wanat's
+# Afghan platoon, facing west, ran east into the fighters on the slopes; 4 November 2026). Running into its own
 # side's units, it runs on through them to the first free ground beyond (up to `through` times
 # its move in all; if there is none in that, it stops where it last stood clear). Each friendly
 # unit it runs through is jostled: that exchange its move is cut by `jostle` (rounded down).

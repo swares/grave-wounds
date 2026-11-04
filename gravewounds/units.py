@@ -5096,15 +5096,31 @@ def _vehicles_after(d: Data, us: list, field: dict | None) -> list:
     return log
 
 
+def rout_way(d: Data, units: list, i: int) -> int:
+    """The hex side broken unit i runs out of: straight away from the nearest enemy standing (from
+    its middle hex to that enemy's nearest hex), the side that takes it furthest from that hex, of
+    those as far the one nearest straight back (opposite its facing); straight back with no enemy
+    standing. Running from the enemy, not from its own facing: Wanat's Afghan platoon, facing the
+    village to the west, ran east past the post into the fighters on the slopes (4 November 2026)."""
+    u = units[i]
+    back = (u["facing"] + 3) % 6
+    near = [(hdist(u["pos"], h), h) for x in units if x["side"] != u["side"] and x["men"] > 0 and x["state"] not in ("broken", "fled")
+            for row in footprint(d, x) for h in row]
+    if not near:
+        return back
+    e = min(near, key=lambda t: t[0])[1]               # the first of the nearest, in unit order
+    return max(((back + k) % 6 for k in (0, 1, -1, 2, -2, 3)), key=lambda a: hdist(step(u["pos"], a), e))   # the first furthest, nearest straight back
+
+
 def flee(d: Data, units: list, i: int, size: tuple, field: dict | None = None) -> dict:
-    """A broken unit runs straight back as far as its allowance takes it; off the map, it has
+    """A broken unit runs away from the nearest enemy (rout_way) as far as its allowance takes it; off the map, it has
     fled the field (as has one with no men left in it). Running into its own side's units it runs on through them to the first
     free ground beyond (rout.through times its allowance at most), else it stops where it last
     stood clear. Returns the unit."""
     u = dict(units[i])
     if not any(footprint(d, u)):                 # no men left standing in it: it is gone
         return {**u, "state": "fled"}
-    back, allow = (u["facing"] + 3) % 6, allowance(d, u)
+    back, allow = rout_way(d, units, i), allowance(d, u)
     # Its own side's other units do not stop it: it may pass through them, but not end on them.
     others = [x for k, x in enumerate(units) if k == i or x["side"] != u["side"]]
     j = next(k for k, x in enumerate(others) if x is units[i])
@@ -5124,10 +5140,10 @@ def flee(d: Data, units: list, i: int, size: tuple, field: dict | None = None) -
 
 
 def ran_through(d: Data, units: list, i: int, after: dict) -> list:
-    """The friendly units unit i passed through running straight back from where it stands to
+    """The friendly units unit i passed through running away (rout_way) from where it stands to
     after (flee): indices, in order."""
     u, out = dict(units[i]), []
-    back = (u["facing"] + 3) % 6
+    back = rout_way(d, units, i)
     while list(u["pos"]) != list(after["pos"]) and after["state"] != "fled":
         u = {**u, "pos": step(u["pos"], back)}
         hexes = {C.hkey(h) for row in footprint(d, u) for h in row}

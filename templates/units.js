@@ -2702,10 +2702,22 @@ function chargePath(units, i, pos, size, most, field){   // [least movement, pas
   if (steps !== null || units[i].state !== "steady") return [steps, false];
   return [pathLen(units, i, pos, size, most, field, true), true];
 }
-function flee(units, i, size, field = null){      // a broken unit runs straight back; off the map it has fled; through its own side's units to the first free ground beyond (as units.flee)
+function routWay(units, i){                       // the hex side broken unit i runs out of: straight away from the nearest enemy standing, of the furthest sides the one nearest straight back; straight back with none (as units.rout_way)
+  const u = units[i], back = mod6(u.facing + 3);
+  let e = null, best = Infinity;
+  for (const x of units){
+    if (x.side === u.side || x.men <= 0 || x.state === "broken" || x.state === "fled") continue;
+    for (const row of footprint(x)) for (const h of row){ const dd = hdist(u.pos, h); if (dd < best){ best = dd; e = h } }
+  }
+  if (!e) return back;
+  let way = back, far = -1;
+  for (const k of [0, 1, -1, 2, -2, 3]){ const a = mod6(back + k), dd = hdist(step(u.pos, a), e); if (dd > far){ far = dd; way = a } }
+  return way;
+}
+function flee(units, i, size, field = null){      // a broken unit runs away from the nearest enemy (routWay); off the map it has fled; through its own side's units to the first free ground beyond (as units.flee)
   let u = { ...units[i] };
   if (!footprint(u).some(row => row.length)) return { ...u, state: "fled" };   // no men left standing in it: it is gone
-  const back = mod6(u.facing + 3), allow = allowance(u);
+  const back = routWay(units, i), allow = allowance(u);
   const others = units.filter((x, k) => k === i || x.side !== u.side), j = others.indexOf(units[i]);
   let clear = u;
   for (let n = 0; n < allow * UD.rout.through; n++){
@@ -2720,9 +2732,9 @@ function flee(units, i, size, field = null){      // a broken unit runs straight
   }
   return clear;
 }
-function ranThrough(units, i, after){             // indices of the friendly units unit i passed through running straight back to after (as units.ran_through)
+function ranThrough(units, i, after){             // indices of the friendly units unit i passed through running away (routWay) to after (as units.ran_through)
   let u = { ...units[i] };
-  const back = mod6(u.facing + 3), out = [];
+  const back = routWay(units, i), out = [];
   while ((u.pos[0] !== after.pos[0] || u.pos[1] !== after.pos[1]) && after.state !== "fled"){
     u = { ...u, pos: step(u.pos, back) };
     const hexes = new Set(footprint(u).flat().map(hk));
