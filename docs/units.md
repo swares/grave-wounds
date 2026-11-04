@@ -384,9 +384,9 @@ types on the field and each side's frame.
 each side is the flank; the two behind are the rear.
 
 **Turn order.** Each exchange (about a minute):
-1. Every broken unit runs straight away from the nearest enemy standing (of the hex sides
-   that take it furthest from it, the one nearest straight back; straight back with no enemy
-   standing), as far as it can move; a unit that runs off the map has fled the field. It runs
+1. Every broken unit runs straight back, unless that would take it nearer the nearest enemy
+   standing: then it runs straight away from that enemy (of the hex sides that take it furthest
+   from it, the one nearest straight back). It runs as far as it can move; a unit that runs off the map has fled the field. It runs
    from the enemy, not from its own facing: Wanat's Afghan platoon, facing the village to the
    west, used to run east past the post into the fighters on the slopes (4 November 2026). Its own side's units do not stop it: it runs on through them to
    the first clear ground beyond (up to six times its move in all, `rout.through`; with

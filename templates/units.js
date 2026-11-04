@@ -2702,14 +2702,14 @@ function chargePath(units, i, pos, size, most, field){   // [least movement, pas
   if (steps !== null || units[i].state !== "steady") return [steps, false];
   return [pathLen(units, i, pos, size, most, field, true), true];
 }
-function routWay(units, i){                       // the hex side broken unit i runs out of: straight away from the nearest enemy standing, of the furthest sides the one nearest straight back; straight back with none (as units.rout_way)
+function routWay(units, i){                       // the hex side broken unit i runs out of: straight back, unless that takes it nearer the nearest enemy standing; then straight away from it, of the furthest sides the one nearest straight back (as units.rout_way)
   const u = units[i], back = mod6(u.facing + 3);
   let e = null, best = Infinity;
   for (const x of units){
     if (x.side === u.side || x.men <= 0 || x.state === "broken" || x.state === "fled") continue;
     for (const row of footprint(x)) for (const h of row){ const dd = hdist(u.pos, h); if (dd < best){ best = dd; e = h } }
   }
-  if (!e) return back;
+  if (!e || hdist(step(u.pos, back), e) >= hdist(u.pos, e)) return back;   // straight back does not take it nearer: as ever
   let way = back, far = -1;
   for (const k of [0, 1, -1, 2, -2, 3]){ const a = mod6(back + k), dd = hdist(step(u.pos, a), e); if (dd > far){ far = dd; way = a } }
   return way;

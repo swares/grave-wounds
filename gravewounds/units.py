@@ -5097,10 +5097,10 @@ def _vehicles_after(d: Data, us: list, field: dict | None) -> list:
 
 
 def rout_way(d: Data, units: list, i: int) -> int:
-    """The hex side broken unit i runs out of: straight away from the nearest enemy standing (from
-    its middle hex to that enemy's nearest hex), the side that takes it furthest from that hex, of
-    those as far the one nearest straight back (opposite its facing); straight back with no enemy
-    standing. Running from the enemy, not from its own facing: Wanat's Afghan platoon, facing the
+    """The hex side broken unit i runs out of: straight back (opposite its facing), unless that
+    takes it nearer the nearest enemy standing (from its middle hex to that enemy's nearest hex);
+    then straight away from that enemy, the side that takes it furthest from that hex, of those as
+    far the one nearest straight back. Running from the enemy, not from its own facing: Wanat's Afghan platoon, facing the
     village to the west, ran east past the post into the fighters on the slopes (4 November 2026)."""
     u = units[i]
     back = (u["facing"] + 3) % 6
@@ -5109,6 +5109,8 @@ def rout_way(d: Data, units: list, i: int) -> int:
     if not near:
         return back
     e = min(near, key=lambda t: t[0])[1]               # the first of the nearest, in unit order
+    if hdist(step(u["pos"], back), e) >= hdist(u["pos"], e):
+        return back                                    # straight back does not take it nearer: as ever
     return max(((back + k) % 6 for k in (0, 1, -1, 2, -2, 3)), key=lambda a: hdist(step(u["pos"], a), e))   # the first furthest, nearest straight back
 
 
