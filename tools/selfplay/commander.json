@@ -791,27 +791,27 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 2.01
+      "ratio": 0.87
      },
      "drew": 0.0,
-     "lost_share": 0.26,
+     "lost_share": 0.311,
      "side": "United States and ARVN",
      "stance": "attack",
-     "won": 0.25
+     "won": 0.17
     },
     {
      "bar": {
       "outcome": "win",
-      "ratio": 0.57
+      "ratio": 1.23
      },
      "drew": 0.0,
-     "lost_share": 0.478,
+     "lost_share": 0.601,
      "side": "North Vietnamese",
      "stance": "hold",
-     "won": 0.75
+     "won": 0.83
     }
    ],
-   "stamp": "00d366d7c465"
+   "stamp": "ddf7097229db"
   },
   "jacobsford-1179": {
    "runs": 12,
