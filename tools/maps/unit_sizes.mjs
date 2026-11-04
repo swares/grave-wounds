@@ -503,6 +503,7 @@ export const UNIT_SIZES = {
     "Scott's brigade (9th, 11th, 22nd)": "brigade",
     "25th Infantry (Jesup)": "battalion",
     "Towson's battery": "battery",
+    "Hindman's guns brought up (Biddle's and Ritchie's companies)": "battery",
     "Ripley's brigade (21st, 23rd, coming up)": "brigade",
     "Porter's volunteers (coming up)": "battalion",
     "British guns on the crest": "battery",

@@ -244,10 +244,13 @@ def place_arrival(d: Data, bt: dict, u: dict, k: int) -> dict | None:
 def _phase_due(bt: dict, st: dict) -> bool:
     """A phase's time has come: its exchange (at the latest), or sooner on an event: when {fires: a
     unit's name, wait} that many exchanges after the unit first fired; when {after} that many after
-    the phase before began."""
+    the phase before began; when {broken: a unit's name} once that unit has broken, fled or has no
+    men left (the British guns at Lundy's Lane, taken)."""
     if st["at"] <= bt["exchange"]:
         return True
     on = st.get("when") or {}
+    if on.get("broken"):
+        return not any(u["name"] == on["broken"] and u["men"] > 0 and u["state"] not in ("broken", "fled") for u in bt["units"])
     if on.get("fires"):
         f = (bt.get("fired") or {}).get(on["fires"])
         return f is not None and f + on.get("wait", 0) <= bt["exchange"]
@@ -525,8 +528,14 @@ def stop_reason(d: Data, bt: dict, held: dict, how: list) -> dict | None:
 
 def phases_to_come(bt: dict) -> bool:
     """A phase of the battlefield's account has still to begin: holding the objective does not end
-    a self-played run yet."""
-    return any(s["at"] >= bt["exchange"] for s in bt.get("stages") or [])
+    a self-played run yet. A phase that begins only on a unit's breaking (when {broken}) does not
+    count: it may never come."""
+    return any(s["at"] >= bt["exchange"] for s in bt.get("stages") or [] if not _on_break(s))
+
+
+def _on_break(s: dict) -> bool:
+    """A phase that begins when a unit breaks (when {broken}): its `at` is only a latest."""
+    return bool((s.get("when") or {}).get("broken"))
 
 
 def play_limit(d: Data, bt: dict) -> int:
@@ -534,7 +543,7 @@ def play_limit(d: Data, bt: dict) -> int:
     phase's start, or as long as the battlefield's account says it was fought (ends) if later;
     never more than most."""
     P = d.units["commander"]["self_play"]
-    last = max([0] + [s["at"] for s in bt.get("stages") or []])
+    last = max([0] + [s["at"] for s in bt.get("stages") or [] if not _on_break(s)])
     return max(P["limit"], min(P["most"], max(last + P["after_phases"] if last else 0, bt.get("ends") or 0)))
 
 

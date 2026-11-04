@@ -251,8 +251,13 @@ When an item is done, delete it here and note it in the pull request that closes
   changed nothing (12 runs: 1 of 12, the same runs): posture needs a bunker, cover to lie in or
   works, and the crest is open ground, for the British on it too. Ripley holds some 70 exchanges
   under Hercules Scott's fire, falls past a quarter down (900 to 626), checks every exchange and
-  breaks at 228. What held it in 1814 is not on the map: the captured guns turned on their owners,
-  and the dark at point blank. Closed with no change (asked and answered).
+  breaks at 228. What held it in 1814 is not on the map: the dark at point blank, and the American guns
+  brought up among the captured British ones. (An earlier note here had the captured guns turned on
+  their owners: no source says so; corrected.) Closed with no change (asked and answered). The
+  American guns (3 November 2026): Hindman's six guns (Biddle's and Ritchie's companies) come up
+  on the crest once the British guns are taken (a phase on `when: {broken}`, new; Wikipedia,
+  HistoryNet). Traced: shot to pieces by Hercules Scott's column within 20 exchanges; Ripley holds
+  some 20 exchanges longer. Still 1 of 12 in 12 local runs (asked and answered: kept as sourced).
 - **Self-play against the battles as fought, first review** (`docs/selfplay-review.md`). Every
   battlefield was played with the commander on both sides and set against what happened; what has
   been changed since, and what was measured and not built, is in the review. To do, from the
