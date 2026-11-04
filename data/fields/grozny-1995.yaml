@@ -25,6 +25,8 @@ table: chechnya-wounds
 travel: {map: grozny-1995, place: "Grozny railway station", within: 1, sides: ["Russians", "Chechens"]}
 size: [140, 110]
 weather: {cond: overcast, wind: calm, light: dusk, ground: {mud: 1, snow: 0}}
+# Lit by fires all battle (as by a flare that never burns down): the hexes within radius of each.
+lit: [{at: [70, 68], radius: 9}, {at: [70, 38], radius: 7}]
 # The place the battle was fought for (side: the army that attacked it; radius: the hexes round it that count): the enemy commander's objective.
 objective: {at: [70, 58], side: 1, name: "the railway station", radius: 5}
 # How long the fight went on, in exchanges from the first, by the account (the survivors broke out about 18:00 on 1 January, from 16:30 on 31 December): self-play runs at least this long (never past commander.self_play.most).

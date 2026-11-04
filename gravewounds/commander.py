@@ -40,6 +40,8 @@ def _command(d: Data, units: list, side, where: tuple, stance: str, memory: dict
     _mark_stance(d, us, side, stance)
     memory = {} if memory is None else memory
     known = sightings(d, us, side, field, exchange, memory)
+    if stance == "attack":
+        _garrison_known(d, us, side, field, exchange, known)
     aim = aims(d, us, side, field, stance, memory)
     goal = aim[1]                                # the field with the objective most of its units go for (with a second one marked)
     us, orders = _hook_up(d, us, side, (goal, known, exchange, stance))
@@ -1212,6 +1214,20 @@ def sightings(d: Data, us: list, side, field: dict | None, exchange, memory: dic
         elif k in memory and ex - memory[k]["ex"] > d.units["commander"]["remember"]:
             del memory[k]
     return memory
+
+
+def _garrison_known(d: Data, us: list, side, field: dict | None, exchange, memory: dict) -> None:
+    """Attacking, the side knows where each enemy unit on its objective (within its radius) stands,
+    seen or not: it was sent to take the place, and knows who holds it (Grozny, 1994: the Chechens
+    had the station surrounded; the battalion inside it is seen from no hex outside the building).
+    memory is updated in place."""
+    obj = objective(field)
+    if not obj:
+        return
+    r = U.objective_radii(d, field)[0]
+    for j, e in enumerate(us):
+        if e["side"] != side and e["state"] not in ROUTED and e["men"] > 0 and U.off_objective(d, e, obj) <= r:
+            memory[str(j)] = {"pos": list(e["pos"]), "facing": e["facing"], "ex": exchange or 0}
 
 
 def _seen(d: Data, us: list, side, field: dict | None, e: dict) -> bool:

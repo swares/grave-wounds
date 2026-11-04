@@ -66,6 +66,12 @@ writeField({
   ],
   // The night's fight: the Chechens close in on the station the battalion holds (the afternoon's drive into it is over).
   ends: { at: 1531, why: "the survivors broke out about 18:00 on 1 January, from 16:30 on 31 December" },
+  // "A passenger train and a crude oil tank car were burning next to the station, brightly lighting
+  // our positions"; "the darkness was only relative: wagons and an oil tank car were burning on the
+  // tracks; on the other side fire was consuming houses and armoured vehicles" (the Novaya Gazeta
+  // account above). The train on the tracks south of the station and the houses and vehicles across
+  // the square lit all battle; where on the tracks and the radii are ours.
+  lit: [{ at: [STATION[0], STATION[1] + 10], radius: 9 }, { at: [SQUARE[0], SQUARE[1] - 6], radius: 7 }],
   objective: { at: STATION, side: 1, name: "the railway station", radius: 5 },
   id: "grozny-1995", name: "Grozny: the railway station, 31 December 1994", sides: ["Russians", "Chechens"], table: "chechnya-wounds",
   travel: { map: "grozny-1995", place: "Grozny railway station", within: 1, sides: ["Russians", "Chechens"] },

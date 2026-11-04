@@ -524,6 +524,10 @@ general. All its numbers are in units.yaml `commander`.
   exchanges; then it forgets it. It never targets an enemy it does not know of, and a unit
   with no enemy known holds where it is. On a dark night, then, a side waits until the
   enemy comes within sight, or shows itself by firing.
+  Attacking, it also knows where every enemy unit on its objective (within the objective's
+  radius) stands, seen or not: it was sent to take the place and knows who holds it. Without
+  this, a garrison deep in a building (the station at Grozny, 1994) was seen from no hex
+  outside it, and the attackers stood at the objective's edge all night (4 November 2026).
 - **Its target.** Each unit picks among the enemies it knows of. Green men take the
   nearest. Regulars, and veterans twice as much, weigh up as well:
   - each % of the enemy's men down, a point;

@@ -332,6 +332,16 @@ When an item is done, delete it here and note it in the pull request that closes
   the cheapest round known mines within its move, not the hexes actually clicked through (a
   hand move is a destination, not a route). No battlefield has minefields yet:
   to be laid only where the accounts name them. Crews who bail out simply leave the fight.
+- **Grozny, traced 4 November 2026 (4 of 12).** After dark the Chechens knew of no Russian unit
+  all night: the sight rule sees into a building only at its edge, and the 1st Battalion's middle
+  and front ends were inside the station, so it was never seen, lit or not; the Chechen attackers
+  stood at the objective's edge. An attacking side now knows where the enemy on its objective
+  stands (commander.objective). The station is also lit all battle by the burning train and oil
+  tank car of the Novaya Gazeta account (lit; where and the radii ours). 12 local runs: 4 to 8 of
+  12 (7 without the light). The battalion now breaks within about half an hour, where it held the
+  station into the next evening: the fight is short, not overnight. Still open: six fields run
+  past self_play.most (1,200): Bougainville (ends 4,171), Cassino town (10,801), Dak To (5,131),
+  Grozny (1,531), Pork Chop (1,496) and X-Ray (1,556).
 - **Tear gas, first cut** (`indirect.gas`, the `e8` kind; 4 November 2026). A CS launcher lays a
   cloud that thins and drifts as smoke does; unmasked men in it fire nothing and check Nerve or fall
   back out of it, masked men fire less (a unit's `masks`). On Hue's 6 February field: 2 to 5 of 12
