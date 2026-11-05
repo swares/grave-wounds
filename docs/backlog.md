@@ -29,7 +29,7 @@ not this repository.
   project doc `claude/human-ledger-handoff.md`, with the evidence in
   `claude/human-ledger-evidence.md`.
   The visit counter is in (Cloudflare Web Analytics, on the start page, How to play and the books; see
-  `templates/privacy.html`). The signup form waits on the Kit form's HTML.
+  `templates/privacy.html`). The news signup (`templates/signup.html`) is on the start page, under a battle's Beat history result and at the end of How to play, posting straight to Kit with no script; the books and the printed tables link to it.
 - **The email to The Fat Electrician: yet to send.** The draft, the one-page overview and the World
   Wars book copy were made on 25 October 2026. Before sending, rebuild the book from current main
   and fill in its share link. Then one follow-up after about two weeks.
