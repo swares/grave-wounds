@@ -309,10 +309,11 @@ ammunition:
   low: 0.25
   # hold_hidden: a unit whose ammunition counts (not a machine gun) holds its fire at a target it
   #   barely sees (hidden: seen at hidden.seen) in these range bands, saving its rounds for when the
-  #   enemy comes on. Without it Snipe's A Company riflemen fired 40 volleys at Bersaglieri lying in
+  #   enemy comes on (the long band only: with medium too the benchmark lost 21 runs as fought).
+  #   Without it Snipe's A Company riflemen fired 40 volleys at Bersaglieri lying in
   #   the scrub 420-600 m off, hit 6, and were out of rounds when they closed (4 November 2026).
   #   Machine guns fire on: beating ground at range is how they suppress. A design choice.
-  hold_hidden: [medium, long]
+  hold_hidden: [long]
   reach: 5
   vehicles: [lorry, apc, ifv]
   air_drop: {scatter: 2, battles: ["WWII", "Korea", "Vietnam", "Late 20th century", "Iraq & Afghanistan"]}
