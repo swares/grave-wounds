@@ -2226,6 +2226,7 @@ def main() -> int:
     chtml = chtml.replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":"))).replace("/*__NET_JS__*/", net_js)   # players online
     (DIST / "campaign.html").write_text(chtml.replace("/*__CAMPAIGN_DATA__*/null", json.dumps(campaign_bundle(d), separators=(",", ":"))), encoding="utf-8")
     (DIST / "council-card.html").write_text(council_card(d), encoding="utf-8")
+    (DIST / "privacy.html").write_text((ROOT / "templates" / "privacy.html").read_text(encoding="utf-8"), encoding="utf-8")
     (DIST / "guide.html").write_text((ROOT / "templates" / "guide.html").read_text(encoding="utf-8"), encoding="utf-8")   # how to play: the pages, mode by mode
     (ROOT / "index.html").write_text(index_page(d), encoding="utf-8")
     print("Built:", ", ".join(p.name for p in sorted(DIST.iterdir())), "+ index.html")
