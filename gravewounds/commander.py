@@ -1237,9 +1237,10 @@ def _seen(d: Data, us: list, side, field: dict | None, e: dict) -> bool:
 
 def _order(d: Data, us: list, i: int, ctx: tuple, roll: int) -> dict | None:
     """One unit's order, or None (it holds). ctx: (size, field, stance, known, exchange). A unit
-    that has gone round on a plan's envelopment attacks, whatever its side's stance."""
+    that has gone round on a plan's envelopment attacks, whatever its side's stance; so does one
+    whose last leg the enemy blocks (_last_leg_blocked)."""
     u, C = us[i], d.units["commander"]
-    if _enveloping(u):
+    if _enveloping(u) or _last_leg_blocked(d, us, i, ctx[3]):
         ctx = (ctx[0], ctx[1], "attack", ctx[3], ctx[4])
     obj = objective(ctx[1])
     t = _focus(us, i, ctx[3], target(d, us, i, ctx[3], ctx[1]))
@@ -1772,6 +1773,21 @@ def _behind(axis: int) -> str:
 def _enveloping(u: dict) -> bool:
     """On a plan's envelopment, its route done."""
     return (u.get("task") or {}).get("do") == "envelop" and not u.get("via")
+
+
+def _last_leg_blocked(d: Data, us: list, i: int, known: dict | None) -> bool:
+    """On a plan's envelopment, its last waypoint still to reach and an enemy it knows of across
+    the way to it (_route_blocked): it is at the enemy it was sent against. A counter-attack sent
+    at ground the enemy holds (the Germans' at Point 593, Cassino 1944) otherwise stood off it,
+    held by its holding side's stance (4 November 2026)."""
+    u = us[i]
+    if (u.get("task") or {}).get("do") != "envelop" or not u.get("via"):
+        return False
+    reach = d.units["commander"]["route"]["reach"]
+    via = list(u["via"])
+    while via and U.hdist(u["pos"], via[0]) <= reach:   # as _route_order drops those it has reached
+        via.pop(0)
+    return len(via) == 1 and _route_blocked(d, us, i, via[0], known)
 
 
 def _charging(u: dict, t: dict) -> bool:

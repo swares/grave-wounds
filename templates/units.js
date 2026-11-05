@@ -3496,7 +3496,7 @@ function seesFrom(field, u, ranked, foes){        // [rank, enemy, facing] of th
 }
 const unsteady = (us, i, t) => (!us[i].prone && !us[i].vehicle && underFire(us, i) ? { act: "ground", target: t } : null);   // a shaken unit holds, going to ground under missile fire (not vehicles) (as commander._unsteady)
 function unitOrder(us, i, ctx, roll){            // one unit's order, or null (it holds); ctx [size, field, stance, known, exchange]; a unit gone round on a plan's envelopment attacks, whatever its side's stance
-  if (enveloping(us[i])) ctx = [ctx[0], ctx[1], "attack", ctx[3], ctx[4]];
+  if (enveloping(us[i]) || lastLegBlocked(us, i, ctx[3])) ctx = [ctx[0], ctx[1], "attack", ctx[3], ctx[4]];
   const u = us[i], C = UD.commander, obj = objectiveOf(ctx[1]), t = focusOf(us, i, ctx[3], aiTarget(us, i, ctx[3], ctx[1]));
   if (u.state !== "steady") return unsteady(us, i, t);
   const away = withdrawOrder(us, i, ctx);
@@ -3797,6 +3797,14 @@ function planTemplate(us, [pick, mine, foes, seen, roles], [front, flanks, mobil
 }
 const planBehind = axis => ({ 0: "W", 1: "S", 2: "S", 3: "E", 4: "N", 5: "N" })[mod6(axis)];   // the map edge behind a side whose axis to the enemy is that direction (as commander._relief_hex)
 const enveloping = u => u.task?.do === "envelop" && !u.via;   // on a plan's envelopment, its route done (as commander._enveloping)
+function lastLegBlocked(us, i, known){           // on a plan's envelopment, its last waypoint still to reach and an enemy it knows of across the way to it: it attacks (as commander._last_leg_blocked)
+  const u = us[i];
+  if (u.task?.do !== "envelop" || !u.via?.length) return false;
+  const reach = UD.commander.route.reach;
+  const via = u.via.slice();
+  while (via.length && hdist(u.pos, via[0]) <= reach) via.shift();   // as routeOrder drops those it has reached
+  return via.length === 1 && routeBlocked(us, i, via[0], known);
+}
 const charging = (u, t) => enveloping(u) && !!u.task.charge && t.name === u.focus;   // on an envelopment marked charge, its route done, t its target: in with the bayonet from any side (as commander._charging)
 function focusOf(us, i, known, t){                  // the plan's target for unit i (focus, by name) if it stands and its side knows of it, else t (as commander._focus)
   const name = us[i].focus;
