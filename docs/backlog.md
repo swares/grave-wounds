@@ -387,7 +387,7 @@ When an item is done, delete it here and note it in the pull request that closes
   Hue, the Poles and Goose Green down), so the cellars are their own hex work (works.yaml cellar:
   as a bunker, shell 10, an estimate; in assault.works), used only at Cassino town. 12 local runs:
   every run now ends with the New Zealanders holding Castle Hill at exchange 331, the paratroops
-  about half down (35-58%), as fought.
+  about half down (35-58%), as fought. Full benchmark: only Cassino town moves (German losses 79% to 50%; still scored 12 of 12).
 - **Tear gas, first cut** (`indirect.gas`, the `e8` kind; 4 November 2026). A CS launcher lays a
   cloud that thins and drifts as smoke does; unmasked men in it fire nothing and check Nerve or fall
   back out of it, masked men fire less (a unit's `masks`). On Hue's 6 February field: 2 to 5 of 12
