@@ -725,7 +725,7 @@ heliborne: {aircraft: 16, carry: 5, turnaround: 30, at_once: 8, hit: 10, downed:
 high_ground: {shoot: 10, reach: 20}
 
 # ---------- storming bunkers ----------
-# Men in an intact bunker (a hex work in `works`) cannot be struck hand to hand, and do not
+# Men in an intact bunker or cellar (a hex work in `works`) cannot be struck hand to hand, and do not
 # strike out; they shoot out of it even with enemies next to it. A unit next to one, ordered
 # to assault with one of `means` (on a table with the blast weapon: `weapon`, or `fallback`),
 # rolls once an exchange for each such bunker across its front: d100 at or under the means'
@@ -735,7 +735,7 @@ high_ground: {shoot: 10, reach: 20}
 # (burns are not on the hit-location tables), `flame_dead` % of them killed outright. A
 # knocked-out bunker is a hex like any other. Design estimates.
 assault:
-  works: [bunker]
+  works: [bunker, cellar]
   weapon: hand_grenade
   fallback: explosive_fragment
   attack: 70

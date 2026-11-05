@@ -378,6 +378,16 @@ When an item is done, delete it here and note it in the pull request that closes
   (Combat Studies Institute, Wanat: Combat Action in Afghanistan, 2008), which no source reached
   gave (Wikipedia: 24 Afghans, 4 wounded; neither it nor Foreign Policy places them); the study
   was not reachable from here.
+- **Cassino town, traced 4 November 2026.** Every run ended with the paratroops gone inside the
+  first hour or two (German losses 66-91%), the week's stalemate never played: the barrage struck
+  their ranks in the open rubble (only the middle of each front row was a cellar). Cellars under
+  every hex they stand on stretched it only to about 110 exchanges: a bunker left its men 50% of
+  shellfire's struck % (no `shell` of its own), worse than a trench's 20%. Bunkers at shell 10 cost
+  9 runs as fought on the benchmark (Tumbledown 7 to 0: the Argentine crags all but shell-proof;
+  Hue, the Poles and Goose Green down), so the cellars are their own hex work (works.yaml cellar:
+  as a bunker, shell 10, an estimate; in assault.works), used only at Cassino town. 12 local runs:
+  every run now ends with the New Zealanders holding Castle Hill at exchange 331, the paratroops
+  about half down (35-58%), as fought. Full benchmark: only Cassino town moves (German losses 79% to 50%; still scored 12 of 12).
 - **Tear gas, first cut** (`indirect.gas`, the `e8` kind; 4 November 2026). A CS launcher lays a
   cloud that thins and drifts as smoke does; unmasked men in it fire nothing and check Nerve or fall
   back out of it, masked men fire less (a unit's `masks`). On Hue's 6 February field: 2 to 5 of 12

@@ -25677,6 +25677,16 @@
     "breach": null,
     "note": "A log-and-earth pillbox or dugout with firing slits (the 20th century)."
    },
+   "cellar": {
+    "name": "Cellar",
+    "each": 30,
+    "enter": 1,
+    "cover_here": 50,
+    "shell": 10,
+    "no_horse": true,
+    "breach": null,
+    "note": "The cellars of a bombed town, its garrison sheltering in them (Cassino, 1944): as a bunker, but deep under the rubble they keep out more shellfire than a trench (shell 10, an estimate). Bunkers at shell 10 cost 9 runs as fought on the benchmark (Tumbledown 7 to 0), so the cellars are their own work (4 November 2026)."
+   },
    "trench": {
     "name": "Trench",
     "each": 6,

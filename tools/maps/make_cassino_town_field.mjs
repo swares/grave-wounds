@@ -57,9 +57,15 @@ const units = [
   at("German machine guns (below the abbey)", DE, 10, MG, 2, [38, 70], 0),
 ];
 
-// The cellars the paratroops came up out of: a bunker under the middle of each paratroop unit's
-// front row (they were drawn a few hexes off the units before, so no unit stood in one).
-const CELLARS = units.filter(u => u.name.startsWith("German paratroops")).map(u => [...u.pos]);
+// The cellars the paratroops came up out of (works.yaml cellar): under every hex each paratroop unit stands on
+// (it sat out the bombing and the barrage in them). Under the middle of each front row alone, and
+// then under the front rows, the barrage struck its rear ranks in the open rubble and it was gone
+// within the hour (4 November 2026).
+const CELLARS = units.filter(u => u.name.startsWith("German paratroops")).flatMap(u => {   // the cellars under every hex the unit stands on (its front row and the ranks behind, facing north)
+  const c0 = u.pos[0] - Math.floor((u.width - 1) / 2) - 1, out = [];
+  for (let r = u.pos[1]; r <= u.pos[1] + 4; r++) for (let c = c0; c <= c0 + u.width + 1; c++) out.push([c, r]);
+  return out;
+});
 
 writeField({
   phases: [   // an exchange is about a minute; times and sources in the project's battle-phases research (round 2), rounded; (est.) marks an estimate
@@ -73,7 +79,7 @@ writeField({
   travel: { map: "cassino-1944", place: "Cassino", within: 1, sides: ["Allies", "Germans"] },
   weather: "{cond: overcast, wind: breeze, dir: S, ground: {mud: 2, snow: 0}}",
   grid, units,
-  hexWorks: { bunker: CELLARS },
+  hexWorks: { cellar: CELLARS },
   support: [
     { name: "New Zealand and British field guns", side: 0, kind: "field", tubes: 36 },
     { name: "Medium and heavy guns", side: 0, kind: "howitzer", tubes: 12 },
@@ -91,7 +97,7 @@ writeField({
     "The ruins, craters, castle and roads are drawn by hand, not traced from any map or photograph;",
     "the deployment is the attack going in, in our own words, with round numbers for play. The town",
     "is rubble (rubble) with flooded craters (marsh): tanks can keep only to the open road and the",
-    "fields, and the paratroops' cellars are bunkers. Overcast, the ground already wet; that evening",
+    "fields, and the paratroops' cellars are cellars (as bunkers, keeping out more shellfire). Overcast, the ground already wet; that evening",
     "the rain came down.",
     "",
     "What happened, briefly: on the morning of 15 March 1944 about 435 bombers and some 750 guns reduced",
