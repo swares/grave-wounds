@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-04",
+ "generated": "2026-11-05",
  "coins": {
   "civil_war": {
    "currencies": {
@@ -18605,6 +18605,260 @@
     "lower_leg_r": 5.9159999999999995,
     "foot_l": 2.4359999999999995,
     "foot_r": 2.4359999999999995
+   }
+  },
+  "tank-crews-nwe-1944-45": {
+   "id": "tank-crews-nwe-1944-45",
+   "name": "WWII NW Europe 1944-45 - tank crews hit inside their tanks",
+   "label": "Tank crews inside their tanks (NW Europe 1944-45)",
+   "variant": "evidence",
+   "context": "British and Canadian tank crewmen hit inside their tanks by armour-piercing shot and hollow-charge rounds, NW Europe 1944-45 (killed and wounded). The battlefield map rolls the struck crewmen of a knocked-out vehicle on this table in the Second World War.",
+   "confidence": "historical",
+   "armor_note": "Men inside the tank: steel helmets were rarely worn; the hull is the armour, and this table is for the men whose vehicle it failed to protect.",
+   "status": "Historical at region level, small sample. One theatre (NW Europe); used for the whole of the Second World War's tank battles. The desert of 1942 (Chute) is not reached.",
+   "sources": [
+    "Wright HB, 'A survey of casualties amongst armoured units in North West Europe', Medical Research Section, No. 2 Operational Research Section, 21st Army Group, January 1946 (B.P.C. 46/454), Wellcome Collection RAMC/1783/15: Table 52 (regional distribution of wounds by weapon), Table 59 (fatal injuries by region), Table 47 (A.P. 182 casualties, H.C. 130), p.85 and Table 56 (burns).",
+    "Chute AL, desert report, 1942 (cited by Wright p.85): burns 30% of casualties inside vehicles in the desert. His tables are not reached (project doc claude/tank-wounds-research)."
+   ],
+   "weapons": [
+    "at_gun",
+    "bazooka",
+    "mortar_artillery",
+    "explosive_fragment",
+    "dagger",
+    "bayonet",
+    "sword",
+    "axe",
+    "spiked_club",
+    "spear",
+    "punch",
+    "kick",
+    "elbow_knee"
+   ],
+   "own_weapons": [
+    "at_gun",
+    "bazooka",
+    "mortar_artillery",
+    "explosive_fragment"
+   ],
+   "resolve": {
+    "at_gun": "tank-crews-nwe-1944-45",
+    "bazooka": "tank-crews-nwe-1944-45",
+    "mortar_artillery": "tank-crews-nwe-1944-45",
+    "explosive_fragment": "tank-crews-nwe-1944-45",
+    "dagger": "knife-assault",
+    "bayonet": "peninsular-1808-14-officers",
+    "sword": "visby-1361-adjusted",
+    "axe": "visby-1361-adjusted",
+    "spiked_club": "visby-1361-adjusted",
+    "spear": "visby-1361-adjusted",
+    "punch": "unarmed-mma",
+    "kick": "unarmed-mma",
+    "elbow_knee": "unarmed-mma"
+   },
+   "wmult": {
+    "at_gun": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "bazooka": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "explosive_fragment": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ],
+    "mortar_artillery": [
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0,
+     1.0
+    ]
+   },
+   "armor": "baked_in",
+   "native": "gunfire",
+   "weapon_bias": "pooled",
+   "assumes_shield": false,
+   "battle": "WWII",
+   "confidence_note": "Region shares are our sums of the source's counts: single-region hits by armour-piercing (A.P.) and hollow-charge (H.C.) rounds, the wounded (Wright Table 52: head and neck 27, trunk 7, arms 29, legs 43) plus the killed whose wound was known (Table 59: head 8.5, chest and shoulder 11, abdomen 3.5, arms 2, legs 2), 133 in all. Multiple wounds (32) are left out, as Wright leaves them out of his regional shares, and so are the 64 dead with no region known, most of them bodies destroyed by the fire and explosion; the trunk is probably under-counted. A small sample. The thorax/abdomen split follows the dead (11 to 3.5); the split inside each region uses body exposure (design estimate).\n",
+   "regions": [
+    {
+     "label": "Head and neck",
+     "zone": "head",
+     "pct": 26.7
+    },
+    {
+     "label": "Thorax (chest and shoulders)",
+     "locs": [
+      "chest_l",
+      "chest_r",
+      "back_upper"
+     ],
+     "pct": 12.2
+    },
+    {
+     "label": "Abdomen",
+     "locs": [
+      "abdomen",
+      "back_lower",
+      "groin"
+     ],
+     "pct": 4.0
+    },
+    {
+     "label": "Arms",
+     "zone": "arms",
+     "pct": 23.3
+    },
+    {
+     "label": "Legs and buttocks",
+     "zone": "legs",
+     "pct": 33.8
+    }
+   ],
+   "regions_text": "Head and neck 26.7%; Thorax (chest and shoulders) 12.2%; Abdomen 4%; Arms 23.3%; Legs and buttocks 33.8%",
+   "modifiers": [],
+   "weapon_mix": [
+    {
+     "id": "0",
+     "pct": 58,
+     "lo": 1,
+     "hi": 58,
+     "weapon": "at_gun",
+     "label": "Anti-tank gun (towed: 6-pounder, 57 mm, Pak 38 and 40, 45 mm, 47 mm)"
+    },
+    {
+     "id": "1",
+     "pct": 42,
+     "lo": 59,
+     "hi": 100,
+     "weapon": "bazooka",
+     "label": "Bazooka or Panzerschreck (rocket launcher)"
+    }
+   ],
+   "weapon_mix_source": "Wright 1946, Table 47: casualties by A.P. (182) and H.C. (130); the table is pooled, the same for every weapon",
+   "weights": {
+    "skull_l": 6.675,
+    "skull_r": 6.675,
+    "face": 8.01,
+    "neck": 5.34,
+    "chest_l": 4.627586206896551,
+    "chest_r": 4.627586206896551,
+    "abdomen": 1.9047619047619047,
+    "groin": 0.9523809523809523,
+    "back_upper": 2.944827586206896,
+    "back_lower": 1.1428571428571428,
+    "shoulder_l": 2.33,
+    "shoulder_r": 2.33,
+    "upper_arm_l": 3.495,
+    "upper_arm_r": 3.495,
+    "forearm_l": 3.495,
+    "forearm_r": 3.495,
+    "hand_l": 2.33,
+    "hand_r": 2.33,
+    "thigh_l": 6.76,
+    "thigh_r": 6.76,
+    "knee_l": 2.0279999999999996,
+    "knee_r": 2.0279999999999996,
+    "lower_leg_l": 5.7459999999999996,
+    "lower_leg_r": 5.7459999999999996,
+    "foot_l": 2.3659999999999997,
+    "foot_r": 2.3659999999999997
    }
   },
   "korea-1950-53-hospitalized": {

@@ -1,6 +1,6 @@
 # Hit Location & Wound Tables
 
-Generated 2026-11-01 from the data folder. Roll d100 (00 = 100).
+Generated 2026-11-05 from the data folder. Roll d100 (00 = 100).
 
 © 2026 Scott Wares. All rights reserved.
 
@@ -2665,6 +2665,94 @@ Source: Owens et al. 2008 (National Academies 2014, Table 3-4): share of injurie
 
 Sources:
 - Owens BD et al., 'Combat wounds in Operation Iraqi Freedom and Operation Enduring Freedom', J Trauma 2008, comparison table (reproduced in National Academies, Review of DoD Test Protocols for Combat Helmets, 2014, Table 3-2): head and neck 21, thorax 14, abdomen 8, extremities 58.
+
+## WWII NW Europe 1944-45 - tank crews hit inside their tanks
+
+*British and Canadian tank crewmen hit inside their tanks by armour-piercing shot and hollow-charge rounds, NW Europe 1944-45 (killed and wounded). The battlefield map rolls the struck crewmen of a knocked-out vehicle on this table in the Second World War.*
+
+Confidence: **Historical - taken directly from a source** · Armour: **already reflected (do not apply)**
+
+| Location | AT gun | Bazooka | Mortar | Frags |
+|---|---|---|---|---|
+| Skull (left) | 01-07 | 01-07 | 01-07 | 01-07 |
+| Skull (right) | 08-14 | 08-14 | 08-14 | 08-14 |
+| Face | 15-22 | 15-22 | 15-22 | 15-22 |
+| Neck | 23-27 | 23-27 | 23-27 | 23-27 |
+| Chest (left) | 28-32 | 28-32 | 28-32 | 28-32 |
+| Chest (right) | 33-37 | 33-37 | 33-37 | 33-37 |
+| Abdomen | 38-39 | 38-39 | 38-39 | 38-39 |
+| Groin / pelvis | 40 | 40 | 40 | 40 |
+| Upper back | 41-43 | 41-43 | 41-43 | 41-43 |
+| Lower back | 44 | 44 | 44 | 44 |
+| Shoulder (left) | 45-46 | 45-46 | 45-46 | 45-46 |
+| Shoulder (right) | 47-48 | 47-48 | 47-48 | 47-48 |
+| Upper arm (left) | 49-52 | 49-52 | 49-52 | 49-52 |
+| Upper arm (right) | 53-56 | 53-56 | 53-56 | 53-56 |
+| Forearm (left) | 57-59 | 57-59 | 57-59 | 57-59 |
+| Forearm (right) | 60-62 | 60-62 | 60-62 | 60-62 |
+| Hand (left) | 63-64 | 63-64 | 63-64 | 63-64 |
+| Hand (right) | 65-66 | 65-66 | 65-66 | 65-66 |
+| Thigh (left) | 67-73 | 67-73 | 67-73 | 67-73 |
+| Thigh (right) | 74-80 | 74-80 | 74-80 | 74-80 |
+| Knee (left) | 81-82 | 81-82 | 81-82 | 81-82 |
+| Knee (right) | 83-84 | 83-84 | 83-84 | 83-84 |
+| Lower leg (left) | 85-90 | 85-90 | 85-90 | 85-90 |
+| Lower leg (right) | 91-96 | 91-96 | 91-96 | 91-96 |
+| Foot (left) | 97-98 | 97-98 | 97-98 | 97-98 |
+| Foot (right) | 99-00 | 99-00 | 99-00 | 99-00 |
+
+**Aimed** (d100 within the zone aimed at, when the aim is paid):
+
+| Zone | Location | AT gun | Bazooka | Mortar | Frags |
+|---|---|---|---|---|---|
+| head | Skull (left) | 01-25 | 01-25 | 01-25 | 01-25 |
+| head | Skull (right) | 26-50 | 26-50 | 26-50 | 26-50 |
+| head | Face | 51-80 | 51-80 | 51-80 | 51-80 |
+| head | Neck | 81-00 | 81-00 | 81-00 | 81-00 |
+| torso | Chest (left) | 01-29 | 01-29 | 01-29 | 01-29 |
+| torso | Chest (right) | 30-57 | 30-57 | 30-57 | 30-57 |
+| torso | Abdomen | 58-69 | 58-69 | 58-69 | 58-69 |
+| torso | Groin / pelvis | 70-75 | 70-75 | 70-75 | 70-75 |
+| torso | Upper back | 76-93 | 76-93 | 76-93 | 76-93 |
+| torso | Lower back | 94-00 | 94-00 | 94-00 | 94-00 |
+| arms | Shoulder (left) | 01-10 | 01-10 | 01-10 | 01-10 |
+| arms | Shoulder (right) | 11-20 | 11-20 | 11-20 | 11-20 |
+| arms | Upper arm (left) | 21-35 | 21-35 | 21-35 | 21-35 |
+| arms | Upper arm (right) | 36-50 | 36-50 | 36-50 | 36-50 |
+| arms | Forearm (left) | 51-65 | 51-65 | 51-65 | 51-65 |
+| arms | Forearm (right) | 66-80 | 66-80 | 66-80 | 66-80 |
+| arms | Hand (left) | 81-90 | 81-90 | 81-90 | 81-90 |
+| arms | Hand (right) | 91-00 | 91-00 | 91-00 | 91-00 |
+| legs | Thigh (left) | 01-20 | 01-20 | 01-20 | 01-20 |
+| legs | Thigh (right) | 21-40 | 21-40 | 21-40 | 21-40 |
+| legs | Knee (left) | 41-46 | 41-46 | 41-46 | 41-46 |
+| legs | Knee (right) | 47-52 | 47-52 | 47-52 | 47-52 |
+| legs | Lower leg (left) | 53-69 | 53-69 | 53-69 | 53-69 |
+| legs | Lower leg (right) | 70-86 | 70-86 | 70-86 | 70-86 |
+| legs | Foot (left) | 87-93 | 87-93 | 87-93 | 87-93 |
+| legs | Foot (right) | 94-00 | 94-00 | 94-00 | 94-00 |
+
+**Source totals:** Head and neck 26.7%; Thorax (chest and shoulders) 12.2%; Abdomen 4%; Arms 23.3%; Legs and buttocks 33.8%. Region shares are our sums of the source's counts: single-region hits by armour-piercing (A.P.) and hollow-charge (H.C.) rounds, the wounded (Wright Table 52: head and neck 27, trunk 7, arms 29, legs 43) plus the killed whose wound was known (Table 59: head 8.5, chest and shoulder 11, abdomen 3.5, arms 2, legs 2), 133 in all. Multiple wounds (32) are left out, as Wright leaves them out of his regional shares, and so are the 64 dead with no region known, most of them bodies destroyed by the fire and explosion; the trunk is probably under-counted. A small sample. The thorax/abdomen split follows the dead (11 to 3.5); the split inside each region uses body exposure (design estimate).
+
+
+**What hit them? (d100)**
+
+| d100 | Cause |
+|---|---|
+| 01-58 | Anti-tank gun (towed: 6-pounder, 57 mm, Pak 38 and 40, 45 mm, 47 mm) |
+| 59-00 | Bazooka or Panzerschreck (rocket launcher) |
+
+Source: Wright 1946, Table 47: casualties by A.P. (182) and H.C. (130); the table is pooled, the same for every weapon
+
+**Close combat:** Dagger: roll location on *Knife assault - stab wounds (forensic)*. Bayonet: roll location on *Peninsular War 1808-14 - French officers' wounds*. Sword, Axe, Spiked club, Spear: roll location on *Visby 1361 - gameplay-adjusted*. Punch, Kick, Elbow/knee: roll location on *Unarmed - landed strikes (MMA)*.
+
+**Reading it:** Men inside the tank: steel helmets were rarely worn; the hull is the armour, and this table is for the men whose vehicle it failed to protect.
+
+**Status:** Historical at region level, small sample. One theatre (NW Europe); used for the whole of the Second World War's tank battles. The desert of 1942 (Chute) is not reached.
+
+Sources:
+- Wright HB, 'A survey of casualties amongst armoured units in North West Europe', Medical Research Section, No. 2 Operational Research Section, 21st Army Group, January 1946 (B.P.C. 46/454), Wellcome Collection RAMC/1783/15: Table 52 (regional distribution of wounds by weapon), Table 59 (fatal injuries by region), Table 47 (A.P. 182 casualties, H.C. 130), p.85 and Table 56 (burns).
+- Chute AL, desert report, 1942 (cited by Wright p.85): burns 30% of casualties inside vehicles in the desert. His tables are not reached (project doc claude/tank-wounds-research).
 
 # Korea (1950-1953)
 
@@ -6037,6 +6125,37 @@ Modifiers stack in the roller and CLI (one per group). Printed columns below sho
 | Foot (left) | 96-98 | 99 | 94-97 | 95-97 | - |
 | Foot (right) | 99-00 | 00 | 98-00 | 98-00 | - |
 
+### WWII NW Europe 1944-45 - tank crews hit inside their tanks - AT gun / Bazooka / Mortar / Frags
+
+| Location | Normal |
+|---|---|
+| Skull (left) | 01-07 |
+| Skull (right) | 08-14 |
+| Face | 15-22 |
+| Neck | 23-27 |
+| Chest (left) | 28-32 |
+| Chest (right) | 33-37 |
+| Abdomen | 38-39 |
+| Groin / pelvis | 40 |
+| Upper back | 41-43 |
+| Lower back | 44 |
+| Shoulder (left) | 45-46 |
+| Shoulder (right) | 47-48 |
+| Upper arm (left) | 49-52 |
+| Upper arm (right) | 53-56 |
+| Forearm (left) | 57-59 |
+| Forearm (right) | 60-62 |
+| Hand (left) | 63-64 |
+| Hand (right) | 65-66 |
+| Thigh (left) | 67-73 |
+| Thigh (right) | 74-80 |
+| Knee (left) | 81-82 |
+| Knee (right) | 83-84 |
+| Lower leg (left) | 85-90 |
+| Lower leg (right) | 91-96 |
+| Foot (left) | 97-98 |
+| Foot (right) | 99-00 |
+
 ### Korea 1950-53 - hospitalized wounded - Rifle / AA gun / Pistol/SMG / Recoilless / Bazooka / AT gun / Frags
 
 | Location | Normal | Higher | Lower | Fleeing | Cover |
@@ -6677,6 +6796,7 @@ Penalties add up; each total is capped at -60%.
 | Wagon | hex | 0.25 man-h | blocks | -40% behind it | no horses | 10 man-rounds |
 | Barbed wire | hex | 2 man-h | +3 | - | no horses | 6 man-rounds |
 | Bunker | hex | 30 man-h | +1 | -50% in it | no horses | - |
+| Cellar | hex | 30 man-h | +1 | -50% in it | no horses | - |
 | Trench | hex | 6 man-h | +1 | -40% in it | no horses | - |
 | Downed helicopter | hex | carried | +2 | -30% in it | no horses | - |
 
@@ -6813,7 +6933,7 @@ Penalties add up; each total is capped at -60%.
 
 Light wounds and grazes fight on. Serious and critical wounds call for a stop check against the unit's Nerve; a failure is down. From breech-loaders (the 1860s on) and shell a serious or critical wound is always down and a light one calls for the stop check. A wound fatal within rounds kills. Flank +20, rear +30, a mounted charge +20 at x2 tempo (none onto a steady front of pikes in close order, whose men strike horse at +20), shaken -10. Men in an intact bunker can't be fought hand to hand; it is stormed with grenades, satchel charges or flamethrowers (10%, 25%, 40% an exchange to knock it out).
 
-**Unit morale:** after an exchange a unit checks if it lost the exchange, has 25% of its men down, lost 10% in the exchange, or was struck in flank or rear: d100 against Nerve, +20 while steady, +10 with a leader, -20 if he is down, -20 at half strength, -20 if flanked, +10 dug in, -5 a man it lost more than it put down (at most -30). Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +20, no parry, x2 tempo. On the field map it runs on through its own side's units to clear ground (up to 3 times its move); each it runs through moves 50% of its move that exchange.
+**Unit morale:** after an exchange a unit checks if it lost the exchange, has 25% of its men down, lost 10% in the exchange, or was struck in flank or rear: d100 against Nerve, +20 while steady, +10 with a leader, -20 if he is down, -20 at half strength, -20 if flanked, +10 dug in, -5 a man it lost more than it put down (at most -30). Steady fails: shaken; shaken fails: broken. A broken unit flees: every enemy in reach strikes it at +20, no parry, x2 tempo. On the field map it runs on through its own side's units to clear ground (up to 6 times its move); each it runs through moves 50% of its move that exchange.
 
 **Ground and works on the field map:** open ground (move 1); rough ground (move 2); woods (move 2, cover -20%); scrub and orchard (move 2, cover -10%); marsh (move 3, no horses); slope (move 2, height 5: -5% striking up at it, +5% shooting down from it); high ground (move 1, height 10: -10% striking up at it, +10% shooting down from it); buildings (move 2, cover -30%, no horses, hides men); tall buildings (move 3, cover -40%, height 10: -10% striking up at it, +10% shooting down from it, no horses, hides men); rubble (move 3, cover -40%, no horses, hides men); water (move 1). Works are the battle map's, along the 11 yd (10 m) hex sides: only reach-2 weapons strike over a palisade, wall or barred gate, from the front rank; striking up a bank, ditch or wall costs its height; a volley takes the best cover where it lands. Each step costs the worst of all the unit's hexes, and a turn adds the worst extra going of the ground its ends sweep; woods and buildings between block aimed fire, direct gun fire and the sight for calling fire, except the 1 hex next to either end (a man sees out of a wood's edge and into it); scrub and orchards thin sight instead: each hex of them between costs aimed fire 10%, and more than 3 block it as woods do; rubble's low heaps give cover but do not block sight; from higher ground a man sees over lower woods and roofs and shoots over units below; ground between higher than both ends is dead ground and blocks sight, except within 1 hex of either end (hull-down); shell fire and a machine gun's fixed line need no sight. A unit ordered to breach puts half its front rank to hacking at the work in front (a field-map side takes 5 times a battle-map side's breach figure). Escalade: men on foot marked with ladders fight across a palisade, wall or barred gate, 100% of each front hex's front rank (at least one) at -20%, the defenders' front rank striking back, and climb over it for 4 hexes of movement. The battle map's weather applies.
 
@@ -6829,9 +6949,9 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 **Ammunition:** a unit with a missile weapon (not vehicles or guns) carries its load in exchanges of fire: its rounds or arrows a man (a gun's for machine guns) over its rate a minute times 0.3 (the share it really spends), so a longbowman's 48 arrows last 20 exchanges of shooting. Each exchange it shoots uses one; at 25% or less it shoots at half rate; with none it cannot shoot and has -10 on morale. Resupply: an exchange out of contact, neither moving nor firing, within 5 hexes of its side's edge, a lorry or carrier, or a supply dump (placed in set-up, or by air drop from the Second World War on).
 
-**Indirect fire:** off-map batteries on call, on a hex one of the side's units can see (in the weather, no woods between). Each shell scatters (d6 direction, 0 to scatter hexes); every man within the radius is struck at the % for his distance (x0.35 gone to ground, less ground cover) and wounds as a shell fragment at 70%. mortars 3 a minute a tube, lands this exchange, scatter 2, struck % by distance 15/5/1; field guns 2 a minute a tube, lands next exchange, scatter 4, struck % by distance 20/8/3/1; heavy howitzers 1 a minute a tube, lands next exchange, scatter 5, struck % by distance 30/12/5/2/1/0.5; tanks (direct fire) 2 a minute a tube, lands this exchange, scatter 0, struck % by distance 25/5; autocannon (direct fire) 3 a minute a tube, lands this exchange, scatter 0, struck % by distance 20; fighter-bombers (bombs, napalm) 2 a minute an aircraft, lands in 2 exchanges, scatter 3, struck % by distance 45/25/12/5/2; helicopter gunships (rockets, guns) 4 a minute an aircraft, lands this exchange, scatter 1, struck % by distance 20/6.
+**Indirect fire:** off-map batteries on call, on a hex one of the side's units can see (in the weather, no woods between). Each shell scatters (d6 direction, 0 to scatter hexes); every man within the radius is struck at the % for his distance (x0.35 gone to ground, less ground cover) and wounds as a shell fragment at 70%. mortars 3 a minute a tube, lands this exchange, scatter 2, struck % by distance 15/5/1; field guns 2 a minute a tube, lands next exchange, scatter 4, struck % by distance 20/8/3/1; heavy howitzers 1 a minute a tube, lands next exchange, scatter 5, struck % by distance 30/12/5/2/1/0.5; tanks (direct fire) 2 a minute a tube, lands this exchange, scatter 0, struck % by distance 25/5; autocannon (direct fire) 3 a minute a tube, lands this exchange, scatter 0, struck % by distance 20; fighter-bombers (bombs, napalm) 2 a minute an aircraft, lands in 2 exchanges, scatter 3, struck % by distance 45/25/12/5/2; cs launcher (e-8) 1 a minute a tube, lands this exchange, scatter 1, struck % by distance 0; helicopter gunships (rockets, guns) 4 a minute an aircraft, lands this exchange, scatter 1, struck % by distance 20/6.
 
-**Counter-battery and fire plans:** crews a tube: mortars 4 (fires with 2), field guns 6 (fires with 3), heavy howitzers 8 (fires with 4). A located battery can be fired on with no one seeing it: each shell lands among the guns at the kind's counter %, knocking out a tube and striking 2 crewmen, or at 3 times that bursts close by, striking 1; struck crewmen roll wounds and those put down are lost (their wounds count with their side after the battle, as a unit's), and a tube without its men is silent. Displacing, a battery is silent for its exchanges (mortars 1, field guns 2, heavy howitzers 3) and then unlocated. Smoke drifts downwind each exchange, by hexes: calm 0, breeze 1, strong 2, gale 2. A creeping barrage keeps a fire plan: 1 to 3 hexes a lift, 1 to 4 exchanges on each line, a set number of lines, then up to eight more legs, each the same way or turned. A battery may be placed on the map: it then reaches only its range (mortars 360 hexes, field guns 1100 hexes, heavy howitzers 1450 hexes), counter-battery fire reaches it only from within range, an enemy within a hex of it overruns it, and displacing it moves it to a new place. Illumination (one round a tube, called on any hex) lights the hexes round it, out to 15 (mortars), 30 (field guns), 40 (heavy howitzers) hexes, for the light's exchanges after the one it is fired in. **Aircraft** are called like batteries (fighter-bombers (bombs, napalm): 2 sorties an aircraft, 2 exchanges later, not at night; helicopter gunships (rockets, guns): 6 sorties an aircraft, at once). They are never located, have no crews to lose, and do not fly in fog, storm, heavy snow, blizzard or sandstorm. **Ground fire:** each attack run, every aircraft attacking is brought down at 0.5% for each enemy machine gun served, 1% for each enemy unit with RPGs or recoilless rifles and 0.2% for every 100 enemy riflemen within 30 hexes of the aim (fighter-bombers x1; helicopter gunships x2), at most 12%; anti-aircraft guns within 100 hexes add 3% a gun served (times exposed), the whole at most 35%. Of the aircraft hit, 40% are brought down and the rest turn for home damaged; either way it takes its share of the flight's attacks with it. **Attack runs:** a strafing run strikes every man on a line of 5 hexes at 12% (less cover and going to ground), a napalm strip every man on 3 hexes at 45% (no cover helps; critical burns, 35% killed); vehicles on the line knocked out at 3% and 15% times their armour's shell. Napalm only from 1944. An aimed hex marked with smoke scatters an air attack half as far. **Forward air controllers:** with a unit marked as one seeing the aim, aircraft scatter 1/2 as far; without, they hold off any target within 10 hexes of their own men.
+**Counter-battery and fire plans:** crews a tube: mortars 4 (fires with 2), field guns 6 (fires with 3), heavy howitzers 8 (fires with 4), cs launcher (e-8) 2 (fires with 1). A located battery can be fired on with no one seeing it: each shell lands among the guns at the kind's counter %, knocking out a tube and striking 2 crewmen, or at 3 times that bursts close by, striking 1; struck crewmen roll wounds and those put down are lost (their wounds count with their side after the battle, as a unit's), and a tube without its men is silent. Displacing, a battery is silent for its exchanges (mortars 1, field guns 2, heavy howitzers 3) and then unlocated. Smoke drifts downwind each exchange, by hexes: calm 0, breeze 1, strong 2, gale 2. A creeping barrage keeps a fire plan: 1 to 3 hexes a lift, 1 to 4 exchanges on each line, a set number of lines, then up to eight more legs, each the same way or turned. A battery may be placed on the map: it then reaches only its range (mortars 360 hexes, field guns 1100 hexes, heavy howitzers 1450 hexes, cs launcher (e-8) 25 hexes), counter-battery fire reaches it only from within range, an enemy within a hex of it overruns it, and displacing it moves it to a new place. Illumination (one round a tube, called on any hex) lights the hexes round it, out to 15 (mortars), 30 (field guns), 40 (heavy howitzers) hexes, for the light's exchanges after the one it is fired in. **Aircraft** are called like batteries (fighter-bombers (bombs, napalm): 2 sorties an aircraft, 2 exchanges later, not at night; helicopter gunships (rockets, guns): 6 sorties an aircraft, at once). They are never located, have no crews to lose, and do not fly in fog, storm, heavy snow, blizzard or sandstorm. **Ground fire:** each attack run, every aircraft attacking is brought down at 0.5% for each enemy machine gun served, 1% for each enemy unit with RPGs or recoilless rifles and 0.2% for every 100 enemy riflemen within 30 hexes of the aim (fighter-bombers x1; helicopter gunships x2), at most 12%; anti-aircraft guns within 100 hexes add 3% a gun served (times exposed), the whole at most 35%. Of the aircraft hit, 40% are brought down and the rest turn for home damaged; either way it takes its share of the flight's attacks with it. **Attack runs:** a strafing run strikes every man on a line of 5 hexes at 12% (less cover and going to ground), a napalm strip every man on 3 hexes at 45% (no cover helps; critical burns, 35% killed); vehicles on the line knocked out at 3% and 15% times their armour's shell. Napalm only from 1944. An aimed hex marked with smoke scatters an air attack half as far. **Forward air controllers:** with a unit marked as one seeing the aim, aircraft scatter 1/2 as far; without, they hold off any target within 10 hexes of their own men.
 
 **Landing by air:** a field can mark landing zones. Each side has helicopters (by default 16 of 5 men each, back for the next load 30 exchanges after landing; at most 8 at a zone in an exchange). A unit can come on by air at a zone, its first men on the zone or the nearest spot within 4 hexes where they fit. None land while an enemy unit stands within 2 hexes of the zone. If an enemy unit could shoot at the zone it is hot: each man landing is struck at 10% and wounds as by shellfire, and each helicopter is hit at 10% (20% of those downed, a wreck on the zone; the rest damaged; either is lost for the battle). Helicopters also bring supply dumps to a zone (from Vietnam on) and lift units out. A downed helicopter's wreck is cover for the men in its hex.
 
@@ -6841,7 +6961,7 @@ Light wounds and grazes fight on. Serious and critical wounds call for a stop ch
 
 **Gun shields and emplacements:** shields (anti-tank guns, anti-aircraft guns; machine guns the GM marks shielded in set-up) take 30% off small arms from the gun's front only. In set-up the GM can emplace a gun unit (anti-tank, anti-aircraft, machine guns, batteries): while it stands it counts as gone to ground (-15%, hidden, steadier) and cannot move, though it may turn; a unit that breaks leaves its pits.
 
-**Minefields (1939 on):** painted before the battle, marked or hidden (shown once set off). A unit that moved into minefield hexes (its footprint along the cheapest way within its move from where it began that crosses the fewest known minefield hexes, nearest the straight line of equals) sets them off before the shooting, a hex's worth of men a hex struck at the kind's % (anti-personnel mines: men 10%, vehicles 0%; anti-tank mines: men 0%, vehicles 30%; mixed minefield: men 8%, vehicles 25%), wounded as by a mine at 70%; a vehicle struck is knocked out at 25% (heavy) or 60% (light), else immobilised. Sappers (a foot unit so marked), standing out of contact and neither moving nor firing, lay a hidden field in the row ahead of their front in 3 exchanges, or lift the known mines there in 2; their own side knows their mines, which do not strike it.
+**Minefields (1939 on):** painted before the battle, marked or hidden (shown once set off). A unit that moved into minefield hexes (its footprint along the cheapest way within its move from where it began that crosses the fewest known minefield hexes, nearest the straight line of equals) sets them off before the shooting, a hex's worth of men a hex struck at the kind's % (anti-personnel mines: men 10%, vehicles 0%; anti-tank mines: men 0%, vehicles 30%; mixed minefield: men 8%, vehicles 25%; a sprung mine: men 10%, vehicles 0%), wounded as by a mine at 70%; a vehicle struck is knocked out at 25% (heavy) or 60% (light), else immobilised. Sappers (a foot unit so marked), standing out of contact and neither moving nor firing, lay a hidden field in the row ahead of their front in 3 exchanges, or lift the known mines there in 2; their own side knows their mines, which do not strike it.
 
 **Suppression:** a unit shelled or under machine-gun fire checks Nerve at the end of the exchange (+10 gone to ground); a failure pins it for the next exchange: no move, 50% of its fire.
 
@@ -9136,9 +9256,9 @@ Men at serious or worse do not dig or fight. Grave and deadly cases go on litter
 
 | Disease | Caught from | Shows after | Outbreak chance a week | Peak (d100) | Deaths per case in the records |
 |---|---|---|---|---|---|
-| Bloody flux | Dirty water or food, latrines too near the water | 1-3 days | 3%; poor +22, good -5, staying +4, marsh +5, upland -5, hot +10 | 01-03 deadly, 04-15 grave, 16-00 serious | 2.6% (virulence 5) |
+| Bloody flux | Dirty water or food, latrines too near the water | 1-3 days | 3%; poor +22, good -5, staying +4, marsh +5, upland -5, hot +10, dead +10 | 01-03 deadly, 04-15 grave, 16-00 serious | 2.6% (virulence 5) |
 | Camp fever (typhus) | Lice in crowded, unwashed camps | 7-14 days | 0%; poor +4, good -5, staying +0.3, crowded +14, cold wet +10 | 01-30 deadly, 31-70 grave, 71-00 serious | 40% (virulence 16) |
-| Typhoid | Dirty water or food, often from a carrier in camp | 7-21 days | 0.3%; poor +5, good -5, town +5, hot +5 | 01-30 deadly, 31-60 grave, 61-00 serious | 36% (virulence 15) |
+| Typhoid | Dirty water or food, often from a carrier in camp | 7-21 days | 0.3%; poor +5, good -5, town +5, hot +5, dead +5 | 01-30 deadly, 31-60 grave, 61-00 serious | 36% (virulence 15) |
 | Ague (malaria) | Mosquitoes in marshes and low wetlands | 7-28 days | 15% (only with marsh and warm) | 01-02 deadly, 03-30 grave, 31-00 serious | 0.8% (virulence -9) |
 | Plague | Flea bites; worst in sieges and towns full of rats | 2-6 days | 5% (only with plague); staying +5, town +5 | 01-50 deadly, 51-80 grave, 81-00 serious | 45% (virulence 15) |
 
