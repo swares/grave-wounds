@@ -680,6 +680,19 @@ When an item is done, delete it here and note it in the pull request that closes
   its men down to the Axis 14%; in fact 72 of under 300 hit and some 37 tanks and SP guns burnt
   out): the first use of anti-tank guns on a battlefield, a lead for the self-play review, not
   tuned here.
+- **The tank-crew table, two follow-ups for later.** (1) *Korea.* Only the Second World War's
+  tables carry `crew_table` today; the Korean tables (owens-korea, korea-1950-53-hospitalized) could point at
+  tank-crews-nwe-1944-45 too, since the tanks and the armour-piercing shot were of the same
+  generation (Shermans, Centurions and T-34/85s), but no Korean tank-crew source has been found and
+  it would be a stretch, so it waits for one or for a decision to accept the stretch. (2) *Crews hit
+  after bailing out.* The rest of a knocked-out crew bail out unhurt and the rules never take them
+  on afterwards; Chute puts 15-25% of crews hit after bailing out, and Wright's Operation
+  Veritable report (RAMC/1783/2) found 40% of 80 tank-crew casualties hit outside the tank, over
+  a third of them out to brew up. Wright 1946 Table 52 has the regions for men outside (S.A.
+  outside 5 / 11 / 14 / 17, multiple 10; H.E. outside 18 / 11 / 21 / 31, multiple 27) and for the
+  partly exposed (head out of the hatch; S.A. 15 / 2 / 6 / 1). A rule would strike the bailed-out
+  men on the battle table as small-arms or shellfire on the open ground round the wreck, and the
+  partly exposed commander on the head line. Figures in project doc claude/tank-wounds-research.
 - **Beaumont-Hamel and the Newfoundland Regiment, first cut.** The Somme map from Doullens to
   Bapaume (1 km, from 30 June 1916), the battlefield on the ground of the Newfoundland Park (the
   87th Brigade at 07:30, the Newfoundlanders at 09:15, the Essex at 09:55), and Newfoundland as a
