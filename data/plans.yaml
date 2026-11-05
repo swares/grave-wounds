@@ -195,3 +195,26 @@ lundys-lane-1814:
         target: "British guns on the crest"
         charge: true
         when: {phase: "Ripley and Hercules Scott come up"}
+
+cassino-poles-1944:
+  source: "https://en.wikipedia.org/wiki/Battle_of_Monte_Cassino"
+  note: >-
+    The German counter-attacks on Point 593 (the project's point593-counterattacks notes): I./FJR 3
+    from the 569 side, "a series ... shortly after daylight" (Fisher), five in quick succession in
+    the morning (IPN); and at about 19:00 the 14th Company with 22 men of the reserve. Each party
+    goes for 593 when its phase brings it on, then attacks. Without this the parties, on the
+    holding side, stood where they came on, and the Poles held 593 in 5 of 12 runs.
+  sides:
+    1:
+      - units: ["I./FJR 3, a counter-attack party from Point 569 (first light)"]
+        do: envelop
+        via: [[60, 34]]
+        when: {phase: "Counter-attacks at first light"}
+      - units: ["I./FJR 3, a second party from Point 569 (morning)"]
+        do: envelop
+        via: [[60, 34]]
+        when: {phase: "Another counter-attack"}
+      - units: ["14th Company and 22 men of the reserve (evening)"]
+        do: envelop
+        via: [[60, 34]]
+        when: {phase: "The evening attack"}
