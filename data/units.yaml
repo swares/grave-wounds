@@ -538,7 +538,9 @@ indirect:
 # immobilised vehicle cannot move until it abandons it (its crew leave the fight unhurt). A shell
 # or bomb bursting in a vehicle's own hex knocks it out at the firing kind's `knock` % times its
 # armour's `shell`. A knocked-out vehicle's crew are out of the fight: each is struck at
-# `crew_struck` % and rolls a wound as one struck by shellfire.
+# `crew_struck` % and rolls a wound as one struck by shellfire, on the battle table's
+# `crew_table` when it has one (the Second World War's tables: tank-crews-nwe-1944-45), which may
+# burn some of them (its `crew_burns`; project doc "tank-wounds-research").
 # Riders: a carrier kind (`carry` men a vehicle) takes a foot unit of its side aboard (it
 # mounts from within a hex of the carriers on its own move). Riders do not fight, shoot or check
 # morale; they move with the carriers and get down beside them on the carriers' move (they can

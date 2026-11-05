@@ -1247,7 +1247,7 @@ function riderWho(l, nm){                          // who fired a volley: a unit
 function armourText(l, nm){                       // rockets at vehicles, a tank's main gun, a vehicle knocked out by shells or bombs
   const vk = l.dfd !== undefined && S.units[l.dfd]?.vehicle, what = vk ? FD.units.vehicles.kinds[vk].name.toLowerCase() : "vehicles";
   let out = "";
-  if (l.knocked) out = ` ${l.knocked} of ${nm(l.dfd)}'s ${what} knocked out; ${l.crew} crew out of the fight, ${l.down || 0} down` + (l.dead ? ` (${l.dead} dead)` : "") + ".";
+  if (l.knocked) out = ` ${l.knocked} of ${nm(l.dfd)}'s ${what} knocked out; ${l.crew} crew out of the fight, ${l.down || 0} down` + (l.dead ? ` (${l.dead} dead)` : "") + (l.burnt ? `, ${l.burnt} burnt` : "") + ".";
   out += damageText(l);
   out += ridersText(l);
   if (l.kill && l.hit) out = ` (${l.kill}% a hit to knock out)` + out;

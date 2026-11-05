@@ -3533,10 +3533,82 @@ def _riders_line(k: dict) -> dict:
     return {k2: k[k1] for k1, k2 in (("riders_struck", "rstruck"), ("riders_down", "rdown"), ("riders_dead", "rdead")) if k.get(k1)}
 
 
+def _tally_rank(t: dict) -> int:
+    """How bad a one-man tally is: 4 dead, 3 critical, 2 serious, 1 light, 0 unhurt."""
+    if t["dead"]:
+        return 4
+    return next((r for r, k in ((3, "critical"), (2, "serious"), (1, "light")) if t[k]), 0)
+
+
+def _add_tally(t: dict, w: dict) -> None:
+    """w's counts and wounded added onto t."""
+    for k, v in w.items():
+        if k != "hurt" and isinstance(v, int) and not isinstance(v, bool):
+            t[k] = t.get(k, 0) + v
+    for k, n in w["hurt"].items():
+        t["hurt"][k] = t["hurt"].get(k, 0) + n
+
+
+def _burn_tally(burns: dict, rng) -> dict:
+    """One crewman burnt: a degree from the crew table's crew_burns (a light burn stays up)."""
+    t, r, c, sev = _new_tally(), rng.randint(1, 100), 0, "critical"
+    for k in ("light", "serious", "critical"):
+        c += burns["degrees"][k]["pct"]
+        if r <= c:
+            sev = k
+            break
+    down = sev != "light"
+    t.update(blows=1, hits=1, down=1 if down else 0, burnt=1)
+    t[sev] = 1
+    _hurt(t, sev, burns["degrees"][sev], down)
+    return t
+
+
+def _burn_split(burns: dict, struck: int, rng) -> tuple:
+    """How many of the struck crewmen are burnt only and how many burnt and wounded."""
+    only = both = 0
+    for _ in range(struck):
+        r = rng.randint(1, 100)
+        if r <= burns["only"]:
+            only += 1
+        elif r <= burns["only"] + burns["both"]:
+            both += 1
+    return only, both
+
+
+def _crew_wounds(d: Data, u: dict, struck: int, tr: tuple) -> dict:
+    """A knocked-out vehicle's struck crewmen: wounded as by shellfire on the battle table's
+    crew_table (else the battle table), and burnt at that table's crew_burns: `only` % burnt
+    only, `both` % burnt and wounded (the worse of the two stands). -> the tally."""
+    table, rng = tr
+    ct = d.tables[table].get("crew_table") or table
+    burns, weapon = d.tables[ct].get("crew_burns"), shell_weapon(d, ct)
+
+    def wound(n):
+        if not (n and weapon):
+            return _new_tally()
+        return _blows(d, {"table": ct, "weapon": weapon, "kit": None, "quality": "regular"}, _side(u, ct), n, d.units["indirect"]["attack"], 0, rng, (), -1000)
+
+    if not burns or not struck:
+        return wound(struck)
+    only, both = _burn_split(burns, struck, rng)
+    t = wound(struck - only - both)
+    for _ in range(only):
+        _add_tally(t, _burn_tally(burns, rng))
+    for _ in range(both):
+        w = wound(1)
+        b = _burn_tally(burns, rng)
+        burn_worse = _tally_rank(b) > _tally_rank(w)
+        _add_tally(t, b if burn_worse else w)
+        if not burn_worse:
+            t["burnt"] = t.get("burnt", 0) + 1
+    return t
+
+
 def knock_out(d: Data, us: list, i: int, n: int, tr: tuple, acc: tuple) -> dict:
     """Knock out up to n of vehicle unit i's vehicles: their crews are out of the fight, each
     struck at vehicles.crew_struck % and wounded as by shellfire. -> {knocked, crew, struck, tally}."""
-    table, rng = tr
+    rng = tr[1]
     lost, dead, _ = acc
     u, K, V = us[i], vehicle_kind(d, us[i]), d.units["vehicles"]
     n = min(n, vehicles_left(d, u, lost[i]))
@@ -3544,10 +3616,7 @@ def knock_out(d: Data, us: list, i: int, n: int, tr: tuple, acc: tuple) -> dict:
         return {"knocked": 0, "crew": 0, "struck": 0, "tally": _new_tally()}
     crew = min(n * K["crew"], u["men"] - lost[i])
     struck = sum(1 for _ in range(crew) if rng.randint(1, 100) <= V["crew_struck"])
-    weapon = shell_weapon(d, table)
-    t = _blows(d, {"table": table, "weapon": weapon, "kit": None, "quality": "regular"}, _side(u, table), struck, d.units["indirect"]["attack"], 0, rng, (), -1000) \
-        if struck and weapon else _new_tally()
-    t = _take_hurt(u, t)
+    t = _take_hurt(u, _crew_wounds(d, u, struck, tr))
     left = vehicles_left(d, u, lost[i])
     lost[i] += crew
     dead[i] += min(t["dead"], crew)

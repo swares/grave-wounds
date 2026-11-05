@@ -2476,7 +2476,13 @@ crews (4 a tank, 3 an infantry fighting vehicle or carrier).
 - **Shells and bombs** bursting in a vehicle's own hex knock it out at the firing kind's knock
   %: a heavy howitzer 2%, fighter-bombers 15%. Light armour is three times as likely to go.
 - **Knocked out.** A knocked-out vehicle's crew are out of the fight. Each is struck at 50% and
-  rolls a wound as one hit by shellfire; the rest have bailed out. Vehicle units check morale
+  rolls a wound as one hit by shellfire; the rest have bailed out. A battle table with a
+  `crew_table` sends the struck crewmen to that table instead: in the Second World War, the tank
+  crews hit inside their tanks in NW Europe 1944-45 (Wright 1946: head and neck 27%, trunk 16%,
+  arms 23%, legs 34%). That table's `crew_burns` burns some of them: 22% burnt only, 13% burnt
+  and wounded (the worse of the two stands), with burns light, serious and critical at 12, 65 and
+  23% (Wright's first, second and third degree). A light burn stays up. The log counts the burnt.
+  Men hit after bailing out are not counted here (no rule takes the crews on after they leave). Vehicle units check morale
   like any other, but count whole vehicles lost, not crewmen hit in vehicles still fighting.
 - **Composite armour** (`armour: composite` on a battlefield's unit: the M1A1s at 73 Easting
   and Fallujah): as heavy, but a main gun's round from its front does not knock one out, nor
