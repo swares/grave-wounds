@@ -17,6 +17,8 @@ the camp. What is left is the judgement, and for that you ask the dice.
    the GM's script play the other side; **Play to my turn** runs it until it is yours. A battle goes
    to the field map: give the other side to the [enemy commander](#commander), attacking or holding
    as the battlefield says, and move your own units. Your team fights among them as heroes.
+   If you use [camp roles](#roles), you hold all four: the council still stops each evening to make
+   you look at the rations, the sick and the road, and who rolls is still your choice to live with.
 5. **After the fight**, bind the wounded, carry them to camp and roll their recovery, as in
    [Recovery](#recovery). On the roller, **Send the result to the travel map** takes the fight's
    dead, wounded and prisoners back to the forces, and the beaten one falls back; then rest in camp

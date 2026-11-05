@@ -116,6 +116,7 @@ class Data:
     stress: dict = field(default_factory=dict)      # combat stress (data/stress.yaml)
     prisoners: dict = field(default_factory=dict)   # capture and captivity (data/prisoners.yaml)
     hazards: dict = field(default_factory=dict)     # swimming, climbing, falls, chases (data/hazards.yaml)
+    council: dict = field(default_factory=dict)     # camp roles and the rolls they make (data/council.yaml)
     languages: dict = field(default_factory=dict)   # tongues by army, bands, passing (data/languages.yaml)
     patrons: dict = field(default_factory=dict)     # standing, favours, a patron's fate (data/patrons.yaml)
     followers: dict = field(default_factory=dict)   # how many followers a leader's Presence keeps (data/followers.yaml)
@@ -192,6 +193,7 @@ def load(root: str | Path = "data") -> Data:
     stress = _optional(root / "stress.yaml", {})
     prisoners = _optional(root / "prisoners.yaml", {})
     hazards = _optional(root / "hazards.yaml", {})
+    council = _optional(root / "council.yaml", {})
     languages = _optional(root / "languages.yaml", {})
     patrons = _optional(root / "patrons.yaml", {})
     papers = _optional(root / "papers.yaml", {})
@@ -238,6 +240,7 @@ def load(root: str | Path = "data") -> Data:
         stress=stress,
         prisoners=prisoners,
         hazards=hazards,
+        council=council,
         languages=languages,
         patrons=patrons,
         papers=papers,
@@ -666,6 +669,9 @@ def validate(d: Data) -> None:
         for e, n in (SX.get("names") or {}).items():
             if e not in d.teams or len(n) != 3:
                 errors.append(f"stress.yaml: names for {e} must be three, for a known era")
+    for rid, r in (d.council.get("rolls") or {}).items():
+        if r.get("role") not in (d.council.get("roles") or {}):
+            errors.append(f"council.yaml: roll {rid} names an unknown role {r.get('role')}")
     if d.hazards:
         HZ = d.hazards
         if any(e not in d.teams for e in HZ.get("swimmers", {})):

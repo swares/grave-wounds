@@ -1,5 +1,6 @@
 # Skills that do things on the travel map (templates/travel.html; research in the project doc
-# "skills-uses-research"). The best named man in the force rolls.
+# "skills-uses-research"). The best named man in the force rolls, or the man a council set
+# (data/council.yaml).
 #
 # billet - taking quarters in a village or town (the camp "Quartered") for a force its army does
 #          not feed: Persuade (capped by the local tongue). Fail, and no one will take them in.

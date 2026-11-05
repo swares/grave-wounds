@@ -97,6 +97,7 @@ iframe{display:block;width:100%;height:82vh;border:0;background:var(--bg)}
       <p class="notice" id="c-notice" hidden aria-live="polite"></p>
       <div id="c-guide"></div>
       <div class="march" id="c-march" hidden aria-labelledby="h-march"></div>
+      <div class="march" id="c-council" hidden aria-labelledby="h-council"></div>
       <div class="march" id="c-fight" hidden aria-labelledby="h-fight"></div>
       <div class="toolbar" id="c-actions"></div>
     </section>
@@ -364,6 +365,7 @@ function renderMarch(){
   if (!m){ box.innerHTML = '<h3 id="h-march">Run the march</h3><p class="muted" style="margin:0">Choose the map and put the forces on it on the travel map first.</p>'; return }
   const label = m.night ? "Pass the night" : "Until something happens";
   const why = m.night ? "The day's marching is done: the night passes, with its rest, food, sickness and incidents."
+    : councilViews().some(v => v.started) ? "Every force with a march order marches until one arrives, forces of different sides meet, a camp is finished, or evening comes and the council can sit."
     : "Every force with a march order marches until one arrives, forces of different sides meet, or a camp is finished; nights pass on the way.";
   const idle = !m.night && !m.working;
   box.innerHTML = `<h3 id="h-march">Run the march</h3>
@@ -373,6 +375,96 @@ function renderMarch(){
     <div class="toolbar"><button type="button" class="primary" id="c-run"${idle ? " disabled" : ""} title="${esc(why)}">${label}</button>${idle ? restButton() : ""}
       <span class="muted" style="font-size:.88rem">${idle ? "No force is marching or making camp: give one a route under <b>Orders</b>, or rest where they are." : "Routes, orders and camps: <b>Orders</b> on each force, or the travel map."}</span></div>
     <p id="c-march-said" aria-live="polite" style="margin:0">${esc(MARCH_SAID)}</p>${fightsHtml()}`;
+}
+/* ---------- The evening council: camp roles (data/council.yaml; the Rules' Camp roles) ----------
+   Roles and who makes each roll change only at a council. It is due in the evening when a role has
+   something to decide; a player may ask for one, and a role left empty says one is needed. */
+const asks = () => (REC.councilAsks ||= []);
+const COUNCIL_WHY = { roles: "to change the roles", rolls: "to change who makes a roll" };
+function councilViews(){ try { const d = newDay(); return d.councilForces().map(id => d.councilView(id)).filter(Boolean) } catch { return [] } }
+const councilDue = () => councilViews().some(v => v.evening && REC.councilOpen !== v.id);
+function manPick(v, now, attr, none){
+  return `<select ${attr}><option value="">${esc(none)}</option>${v.men.map(m => `<option value="${esc(m.uid)}"${m.uid === now ? " selected" : ""}>${esc(m.name)}</option>`).join("")}</select>`;
+}
+function roleRow(v, r, open){
+  const who = open ? manPick(v, r.uid, `data-c-role="${r.id}" data-id="${v.id}" aria-label="The ${esc(r.name)}"`, "No one") : esc(r.who || (r.lost ? r.lost + " (cannot serve)" : "No one"));
+  const stand = open ? `<label class="muted" style="font-size:.85rem"><input type="checkbox" data-c-stand="${r.id}" data-id="${v.id}"${r.standing ? " checked" : ""}> Standing order</label>` : r.standing ? '<span class="muted">Standing order</span>' : "";
+  return `<tr><th scope="row">${esc(r.name)}</th><td>${who}</td><td>${esc(r.decides)} <span class="muted">Now: ${esc(r.say)}${r.due ? "" : " · nothing to decide"}</span></td><td>${stand}</td></tr>`;
+}
+function rollRow(v, r){
+  return `<tr><th scope="row">${esc(r.name)}</th><td>${esc(r.role)}</td><td>${manPick(v, r.uid, `data-c-roll="${r.id}" data-id="${v.id}" aria-label="Who makes this roll: ${esc(r.name)}"`, "The role's man")}</td>
+    <td>${esc(r.who || "No one")} ${r.who ? r.value : ""} <span class="muted">(best: ${esc(r.best)})</span></td></tr>`;
+}
+function councilHtml(v){
+  const open = REC.councilOpen === v.id, waiting = asks().filter(a => a.force === v.id && a.state === "open");
+  const roles = `<div class="tablewrap"><table><thead><tr><th>Role</th><th>Held by</th><th>Decides</th><th></th></tr></thead><tbody>${v.roles.map(r => roleRow(v, r, open)).join("")}</tbody></table></div>`;
+  const rolls = open ? `<details><summary class="muted">Who makes each roll</summary><div class="tablewrap"><table><thead><tr><th>Roll</th><th>Role</th><th>Set to</th><th>Rolls now</th></tr></thead><tbody>${v.rolls.map(r => rollRow(v, r)).join("")}</tbody></table></div></details>` : "";
+  const needed = v.needs.length ? `<p class="bad" style="margin:0">A council is needed: ${esc(v.needs.join("; "))}.</p>` : "";
+  const asked = waiting.map(a => `<p style="margin:0"><b>${esc(a.who)}</b> asks for a council ${esc(COUNCIL_WHY[a.why] || "")}. <button type="button" class="small" data-council="decline" data-id="${v.id}" data-n="${a.n}">Decline</button></p>`).join("");
+  const evening = v.evening && !open ? `<p class="notice" style="margin:0">Evening council, day ${v.day}: ${esc(v.name)} has decisions to make before the night passes.</p>` : "";
+  const buttons = open
+    ? `<button type="button" class="primary" data-council="end" data-id="${v.id}">End the council</button>`
+    : `<button type="button" class="${v.evening || v.needs.length || waiting.length ? "primary" : "small"}" data-council="open" data-id="${v.id}">${v.started ? "Hold a council" : "Hold the first council"}</button>${v.evening ? `<button type="button" class="small" data-council="skip" data-id="${v.id}">Skip tonight</button>` : ""}`;
+  const intro = v.started ? "" : '<p class="muted" style="margin:0;font-size:.9rem">Give each player a role, and each role its decisions and rolls (<a href="rules.html#roles" target="_blank" rel="noopener">Camp roles</a>; <a href="council-card.html" target="_blank" rel="noopener">the printed card</a>). Without roles the best man makes every roll, as before.</p>';
+  return `<div style="display:flex;flex-direction:column;gap:6px"><b>${esc(v.name)}</b> ${intro}${evening}${needed}${asked}${v.started || open ? roles : ""}${rolls}<div class="toolbar">${buttons}</div></div>`;
+}
+function renderCouncil(){
+  const box = $("#c-council");
+  box.hidden = REC.phase !== "march";
+  if (box.hidden) return;
+  if (box.contains(document.activeElement) && document.activeElement.tagName === "SELECT") return;   // not while the GM picks
+  const views = councilViews();
+  box.hidden = !views.length;
+  box.innerHTML = `<h3 id="h-council">Council</h3>${views.map(councilHtml).join("")}`;
+}
+function councilSaved(){                              // the travel map in the frame reads it again, or it would save over this
+  const f = $("#c-frame");
+  try { f.contentWindow.location.reload() } catch { f.setAttribute("src", f.getAttribute("src")) }
+  render(); playersSync();
+}
+function councilAction(act, id, n){
+  const d = newDay(), v = d.councilView(id);
+  if (!v) return;
+  const held = () => { for (const a of asks()) if (a.force === id && a.state === "open") a.state = "heard" };
+  if (act === "open"){ REC.councilOpen = id; held(); saveRecord(); return render(), playersSync() }
+  if (act === "end"){
+    d.councilHeld(id);
+    REC.councilOpen = null;
+    held();
+    note(`${v.name}'s council, day ${v.day}: ${v.roles.map(r => `${r.name} ${r.who || "no one"}`).join(", ")}`);
+    return councilSaved();
+  }
+  if (act === "skip"){ d.councilHeld(id); note(`${v.name} holds no council tonight`, true); return councilSaved() }
+  if (act === "decline"){
+    const a = asks().find(x => x.n === n && x.state === "open");
+    if (a) a.state = "declined";
+    saveRecord(); render(); playersSync();
+  }
+}
+function askCouncil(pl, m){                            // he asks for a council: only for a force one of his men is with
+  let v;
+  try { v = newDay().seatView(pl.men) } catch { return }
+  const f = v.forces.find(x => x.id === m.force);
+  if (!f || !COUNCIL_WHY[m.why]) return;
+  if (asks().some(a => a.player === pl.id && a.force === f.id && a.state === "open")) return;
+  asks().push({ n: (asks().at(-1)?.n || 0) + 1, player: pl.id, who: pl.name, force: f.id, why: m.why, state: "open" });
+  noteFor(`${pl.name} asks for a council ${COUNCIL_WHY[m.why]}`, [seatOf(pl)]);
+  $("#c-notice").textContent = `${pl.name} asks for a council ${COUNCIL_WHY[m.why]}.`;
+  $("#c-notice").hidden = false;
+  saveRecord(); render(); playersSync();
+}
+function councilSeatHtml(pl, f){                       // his roles, what they decide tonight, and his way to ask for a council
+  const c = f.council;
+  if (!c) return "";
+  const line = r => `<li><b>${esc(r.name)}:</b> ${esc(r.who || "no one")}${r.mine ? ` (you). ${esc(r.decides)} <span class="muted">Now: ${esc(r.say)}</span>` : ""}</li>`;
+  const open = REC.councilOpen === f.id, asked = asks().find(a => a.player === pl.id && a.force === f.id && a.state !== "heard" && a.state !== "replaced");
+  const said = open ? '<p class="notice" style="margin:0">The council is sitting: tell the GM what you decide, and any change of roles.</p>'
+    : c.due && c.roles.some(r => r.mine && r.due) ? '<p class="notice" style="margin:0">Evening council: your role has a decision to make.</p>' : "";
+  const need = c.needs.length ? `<p class="bad" style="margin:0">A council is needed: ${esc(c.needs.join("; "))}.</p>` : "";
+  const ask = asked?.state === "open" ? '<p class="muted" style="margin:0">You have asked for a council.</p>'
+    : open ? "" : `<span class="toolbar"><button type="button" class="small" data-council-ask="roles" data-force="${f.id}">Ask for a council: change the roles</button><button type="button" class="small" data-council-ask="rolls" data-force="${f.id}">Ask for a council: change who rolls</button></span>`;
+  const no = asked?.state === "declined" ? '<p class="muted" style="margin:0">The GM declined your last request for a council.</p>' : "";
+  return `<div style="display:flex;flex-direction:column;gap:6px;border-top:1px dashed var(--line);padding-top:6px"><b style="font-size:.9rem">Council</b>${said}${need}<ul style="margin:0">${c.roles.map(line).join("")}</ul><span class="muted" style="font-size:.85rem">Roles change only at a council.</span>${no}${ask}</div>`;
 }
 const MAP_CHOICE = {};                                // the page each fight on offer goes to, as the GM chose it (kept across redraws)
 function fightHtml(x){
@@ -400,8 +492,8 @@ function sendFight(id, k){                             // the fight sent as the 
   show(page);
 }
 function restButton(){ return ' <button type="button" id="c-rest" title="Every force stays where it is: on to nightfall, and the night passes (rest, food, the sick and the wounded in camp)">Rest until tomorrow</button>' }
-function restDay(){                                   // nothing marches: the day runs out where they are, and the night passes
-  const a = newDay().marchStep("nightfall"), b = a.night ? newDay().marchStep("nightfall") : a;
+function restDay(){                                   // nothing marches: the day runs out where they are, and the night passes (or the evening council waits)
+  const a = newDay().marchStep("nightfall"), b = a.night && !councilDue() ? newDay().marchStep("nightfall") : a;
   MARCH_SAID = [a.text, b !== a ? b.text : ""].filter(Boolean).join(" ");
   if (MARCH_SAID) note(MARCH_SAID, false, "march");
   const f = $("#c-frame");
@@ -409,7 +501,7 @@ function restDay(){                                   // nothing marches: the da
   render();
 }
 function runMarch(){                                  // one press: the day moves on from what is saved, and is saved again
-  const r = newDay().marchStep("event");
+  const r = newDay().marchStep(councilViews().some(v => v.started) ? "nightfall" : "event");   // with roles, each day stops for its evening council
   MARCH_SAID = r.text || "";
   if (r.text) note(r.text, false, "march");
   if (r.met.length){
@@ -564,6 +656,7 @@ function render(){
   $("#c-actions").innerHTML = `<button type="button" class="primary" data-open="${page}">Open the ${PAGE_NAMES[page].toLowerCase()}</button>${alt}${travel}
     <span style="flex:1"></span><button type="button" id="c-next">Done: on to ${phaseOf(NEXT[ph.id]).name.toLowerCase()}</button>`;
   renderMarch();
+  renderCouncil();
   renderFight();
   renderCoach(st);
   if (ph.id === "fight"){ tellRoller("status"); tellField("status") }   // and the page answers with its fight as it stands
@@ -586,6 +679,17 @@ $("#c-actions").addEventListener("click", e => {
     return render();
   }
   if (e.target.id === "c-next"){ const next = NEXT[REC.phase]; setPhase(next); $("#c-notice").hidden = true; render(); show(phaseOf(next).page) }
+});
+$("#c-council").addEventListener("click", e => {
+  const b = e.target.closest("button[data-council]");
+  if (b) councilAction(b.dataset.council, +b.dataset.id, +b.dataset.n);
+});
+$("#c-council").addEventListener("change", e => {
+  const id = +e.target.dataset.id, d = newDay();
+  if (REC.councilOpen !== id) return;                  // roles and rolls change only at a council
+  if (e.target.dataset.cRole){ d.councilRole(id, e.target.dataset.cRole, e.target.value); e.target.blur(); councilSaved() }
+  else if (e.target.dataset.cRoll){ d.councilRollBy(id, e.target.dataset.cRoll, e.target.value); e.target.blur(); councilSaved() }
+  else if (e.target.dataset.cStand){ d.councilStanding(id, e.target.dataset.cStand, e.target.checked); councilSaved() }
 });
 $("#c-march").addEventListener("click", e => {
   if (e.target.id === "c-run") return runMarch();
@@ -919,7 +1023,7 @@ function forceHtml(v, pl = null){                      // the forces his men are
   const one = f => `<h3>${esc(f.name)} <span class="muted">(${esc(f.side)})</span></h3>
     <p style="margin:0">${esc(f.order)} · at ${esc(f.where)} · ${f.fit}/${f.men} fit · ${esc(f.fatigue)}</p>
     <p class="muted" style="margin:0">${f.route ? "Route: " + esc(f.route) : "No route."}</p>
-    ${f.log.length ? '<ol class="log" style="max-height:9rem">' + f.log.map(l => "<li>" + esc(l) + "</li>").join("") + "</ol>" : ""}${pl ? proposeHtml(pl, f) : ""}`;
+    ${f.log.length ? '<ol class="log" style="max-height:9rem">' + f.log.map(l => "<li>" + esc(l) + "</li>").join("") + "</ol>" : ""}${pl ? councilSeatHtml(pl, f) + proposeHtml(pl, f) : ""}`;
   return head + v.forces.map(one).join("");
 }
 function newsHtml(seat){                              // the campaign's log as this seat hears it, newest first
@@ -957,6 +1061,7 @@ function playersFollow(){                             // after the console draws
 function playerCommand(pl, m){                         // his proposed orders; his choices in his fight go on to the roller, which checks they are his to make
   if (!m || typeof m.t !== "string") return;
   if (m.t === "propose") return propose(pl, m);
+  if (m.t === "council") return askCouncil(pl, m);
   if (PL.fighting.has(pl.id)) tellRoller("player", { id: pl.id, m });
 }
 function propose(pl, m){                              // a proposal: only for a force one of his men is with, only one of its own choices
@@ -1320,6 +1425,12 @@ function pgPropose(e){                                // his proposal: the order
   $("#p-status").textContent = "Your proposal has gone to the GM.";
   pcMark("propose");
 }
+function pgCouncil(e){                                 // he asks the GM for a council
+  const b = e.target.closest("button[data-council-ask]");
+  if (!b) return;
+  PG.send({ t: "council", force: +b.dataset.force, why: b.dataset.councilAsk });
+  $("#p-status").textContent = "You have asked the GM for a council.";
+}
 function pgKeep(seat, m){ try { sessionStorage.setItem(PG_KEY, JSON.stringify({ seat, m })) } catch { /* storage off: a rejoin starts blank */ } }
 function pgKept(seat){ try { const k = JSON.parse(sessionStorage.getItem(PG_KEY) || "null"); return k?.seat === seat ? k.m : null } catch { return null } }
 function pgLost(){                                    // the GM's console is gone: his last screen stays; a new invitation can be pasted
@@ -1438,6 +1549,7 @@ if (PLAYER_PAGE){
   pgLayout();
   $("#p-coach").addEventListener("click", e => { const s = e.target.dataset?.pc; if (s) pcMark(s) });
   $("#p-force").addEventListener("click", pgPropose);
+  $("#p-force").addEventListener("click", pgCouncil);
   const go = () => (location.hash.startsWith("#room") ? pgRoom() : pgJoin()).catch(e => pgStatus(String(e.message || e)));
   window.addEventListener("hashchange", () => { if (/^#(join=|room)/.test(location.hash)) go() });   // a new invitation or room opened in this tab
   go();

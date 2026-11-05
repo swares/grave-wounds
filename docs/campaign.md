@@ -279,3 +279,23 @@ his side sees, nothing of the enemy it does not, and a faded mark where an enemy
 console and two players through room codes (the room Worker's own code, run locally): one by his
 link, one by typing her code, a wrong code told, and a player's page and then the console reloaded,
 both coming back by themselves. `node tools/net/roomscheck.mjs` checks the Worker itself.
+
+## The council
+
+The **Council** panel, on the march, keeps each force's camp roles (`data/council.yaml`; the Rules'
+*Camp roles*). **Hold the first council** opens it; each role is given a man, and **Who makes each
+roll** can set another man for any one roll. Roles and rolls change only while a council sits, and
+**End the council** logs who holds what. A force's council is saved on the force in the travel map's
+state, so a save file carries it.
+
+Once a force has roles, the console's clock stops each evening. If a role has something to decide, the
+panel says so and offers **Hold a council** or **Skip tonight**, but it does not hold the night up:
+**Pass the night** still works. The panel also says when a council is needed because a role's man is
+dead, too sick or away, or has left the force; the best man rolls until it is filled.
+
+A player's page shows the roles, what his own decide, and **Ask for a council**; the GM sees the
+request and may hold one or decline. The council records no decisions of its own: orders, camps and
+supplies are given where they always are.
+
+The rolls go through `rollerFor` in `templates/travelday.js`. A force with no roles uses `bestSkill`,
+as it did, so nothing changes for a campaign that does not use them.
