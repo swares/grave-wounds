@@ -668,7 +668,10 @@ When an item is done, delete it here and note it in the pull request that closes
   one regiment by crew position, injury and cause; about 30% flash burns; 15-25% hit after bailing
   out) lies in an archive not reached. Knocked-out crews now roll on Wright's NW Europe 1944-45
   table (35% burnt inside vehicles, near Chute's 30%), so the desert is played as Normandy; men
-  hit after bailing out are not counted.
+  hit after bailing out are not counted. With it the commander's Snipe moves (24 seeds: British
+  win 18 of 24 against 13 of 24 before, British losses about 18% against 30%; the Axis side is
+  gone in 9 of 12 runs against 4): a struck crewman is now down more often (70% against 58%) and
+  killed less often (5% against 7%). A lead for the self-play review, not tuned here.
   In self-play the battalion does not hold (0 of 3: every British unit gone by about 10:30, 40% of
   its men down to the Axis 14%; in fact 72 of under 300 hit and some 37 tanks and SP guns burnt
   out): the first use of anti-tank guns on a battlefield, a lead for the self-play review, not
