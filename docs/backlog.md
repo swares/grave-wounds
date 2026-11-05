@@ -399,6 +399,18 @@ When an item is done, delete it here and note it in the pull request that closes
   route counted as blocked by the Poles round 593 and the unit, handed back to its holding
   stance, went to ground and stood there to the end). Still not found: why the 14th Company
   (80 men) and, in some runs, both I./FJR 3 parties still end untouched with the stance switch in.
+- **Snipe, traced 4 November 2026 (5 of 12; British losses 42%, the account 72 killed and
+  wounded of about 300).** Two blows. At about 07:30 (exchange 77) the long-gunned Panzers from
+  the south come up on the carriers in the open middle of the hollow and knock out 21 of them in
+  five exchanges, 640 to 760 m off (the account's first carrier losses come just before noon). So
+  at 10:00 no carriers go out at the Bersaglieri, who cross the open almost untouched (200 to
+  about 165-190: the six-pounders and riflemen hardly hurt them) and reach A Company's guns, which
+  the overrun rule takes at once (19 crew). Then the 17:00 counter-attack breaks A Company's
+  riflemen within four exchanges and the north-west guns after them. Measured and not built
+  (branch snipe-panzers): a plan sending the long-gunned Panzers at 47th RTR, as the account has
+  them ambush the 24th Armoured Brigade, made it worse, 2 of 12. Next: why the Bersaglieri cross
+  unhurt (what fires at them, at what range, the six-pounders' HE on infantry), then the evening
+  attack.
 - **Tear gas, first cut** (`indirect.gas`, the `e8` kind; 4 November 2026). A CS launcher lays a
   cloud that thins and drifts as smoke does; unmasked men in it fire nothing and check Nerve or fall
   back out of it, masked men fire less (a unit's `masks`). On Hue's 6 February field: 2 to 5 of 12
