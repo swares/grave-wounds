@@ -3522,19 +3522,31 @@ def _add_tally(t: dict, w: dict) -> None:
         t["hurt"][k] = t["hurt"].get(k, 0) + n
 
 
-def _burn_tally(B: dict, rng) -> dict:
+def _burn_tally(burns: dict, rng) -> dict:
     """One crewman burnt: a degree from the crew table's crew_burns (a light burn stays up)."""
     t, r, c, sev = _new_tally(), rng.randint(1, 100), 0, "critical"
     for k in ("light", "serious", "critical"):
-        c += B["degrees"][k]["pct"]
+        c += burns["degrees"][k]["pct"]
         if r <= c:
             sev = k
             break
     down = sev != "light"
     t.update(blows=1, hits=1, down=1 if down else 0, burnt=1)
     t[sev] = 1
-    _hurt(t, sev, B["degrees"][sev], down)
+    _hurt(t, sev, burns["degrees"][sev], down)
     return t
+
+
+def _burn_split(burns: dict, struck: int, rng) -> tuple:
+    """How many of the struck crewmen are burnt only and how many burnt and wounded."""
+    only = both = 0
+    for _ in range(struck):
+        r = rng.randint(1, 100)
+        if r <= burns["only"]:
+            only += 1
+        elif r <= burns["only"] + burns["both"]:
+            both += 1
+    return only, both
 
 
 def _crew_wounds(d: Data, u: dict, struck: int, tr: tuple) -> dict:
@@ -3543,28 +3555,22 @@ def _crew_wounds(d: Data, u: dict, struck: int, tr: tuple) -> dict:
     only, `both` % burnt and wounded (the worse of the two stands). -> the tally."""
     table, rng = tr
     ct = d.tables[table].get("crew_table") or table
-    B, weapon = d.tables[ct].get("crew_burns"), shell_weapon(d, ct)
+    burns, weapon = d.tables[ct].get("crew_burns"), shell_weapon(d, ct)
 
     def wound(n):
         if not (n and weapon):
             return _new_tally()
         return _blows(d, {"table": ct, "weapon": weapon, "kit": None, "quality": "regular"}, _side(u, ct), n, d.units["indirect"]["attack"], 0, rng, (), -1000)
 
-    if not B or not struck:
+    if not burns or not struck:
         return wound(struck)
-    only = both = 0
-    for _ in range(struck):
-        r = rng.randint(1, 100)
-        if r <= B["only"]:
-            only += 1
-        elif r <= B["only"] + B["both"]:
-            both += 1
+    only, both = _burn_split(burns, struck, rng)
     t = wound(struck - only - both)
     for _ in range(only):
-        _add_tally(t, _burn_tally(B, rng))
+        _add_tally(t, _burn_tally(burns, rng))
     for _ in range(both):
         w = wound(1)
-        b = _burn_tally(B, rng)
+        b = _burn_tally(burns, rng)
         burn_worse = _tally_rank(b) > _tally_rank(w)
         _add_tally(t, b if burn_worse else w)
         if not burn_worse:
@@ -3575,7 +3581,7 @@ def _crew_wounds(d: Data, u: dict, struck: int, tr: tuple) -> dict:
 def knock_out(d: Data, us: list, i: int, n: int, tr: tuple, acc: tuple) -> dict:
     """Knock out up to n of vehicle unit i's vehicles: their crews are out of the fight, each
     struck at vehicles.crew_struck % and wounded as by shellfire. -> {knocked, crew, struck, tally}."""
-    table, rng = tr
+    rng = tr[1]
     lost, dead, _ = acc
     u, K, V = us[i], vehicle_kind(d, us[i]), d.units["vehicles"]
     n = min(n, vehicles_left(d, u, lost[i]))

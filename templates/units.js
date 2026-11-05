@@ -1947,7 +1947,7 @@ function knockOut(us, i, n, table, rng, acc){      // up to n vehicles out: thei
 }
 function tallyRank(t){                            // how bad a one-man tally is: 4 dead, 3 critical, 2 serious, 1 light, 0 unhurt
   if (t.dead) return 4;
-  return t.critical ? 3 : t.serious ? 2 : t.light ? 1 : 0;
+  return [[3, "critical"], [2, "serious"], [1, "light"]].find(([, k]) => t[k])?.[0] ?? 0;
 }
 function addTally(t, w){                          // w's counts and wounded added onto t
   for (const [k, v] of Object.entries(w)) if (k !== "hurt" && typeof v === "number") t[k] = (t[k] || 0) + v;
@@ -1962,12 +1962,16 @@ function burnTally(B, rng){                       // one crewman burnt: a degree
   noteHurt(t, sev, D, down);
   return t;
 }
+function burnSplit(B, struck, rng){              // how many struck crewmen are burnt only, and how many burnt and wounded
+  let only = 0, both = 0;
+  for (let s = 0; s < struck; s++){ const r = rng.randint(1, 100); if (r <= B.only) only++; else if (r <= B.only + B.both) both++ }
+  return [only, both];
+}
 function crewWounds(u, struck, table, rng){       // a knocked-out vehicle's struck crewmen, on the battle table's crew_table (or its own) as by shellfire; burnt at its crew_burns (as units._crew_wounds)
   const ct = FD.tables[table]?.crew_table || table, B = FD.tables[ct]?.crew_burns, weapon = shellWeapon(ct);
   const wound = n => n && weapon ? blows({ table: ct, weapon, kit: null, quality: "regular" }, sideOfUnit(u, ct), n, UD.indirect.attack, 0, rng, { exposed: [], shift: -1000 }) : newTally();
   if (!B || !struck) return wound(struck);
-  let only = 0, both = 0;
-  for (let s = 0; s < struck; s++){ const r = rng.randint(1, 100); if (r <= B.only) only++; else if (r <= B.only + B.both) both++ }
+  const [only, both] = burnSplit(B, struck, rng);
   const t = wound(struck - only - both);
   for (let s = 0; s < only; s++) addTally(t, burnTally(B, rng));
   for (let s = 0; s < both; s++){                 // burnt and wounded: the worse of the two
