@@ -415,8 +415,18 @@ When an item is done, delete it here and note it in the pull request that closes
   only at men they see. Full benchmark: still 5 of 12, British losses 42% to 38%, the Axis's 18%
   to 30%; no other field moved. Measured and not built: the same hold for every unit (Snipe 10 of
   12 locally, but 21 runs lost as fought across the benchmark), and in the long band only (worse);
-  Snipe's gain there came from the Axis infantry holding fire too, which no source gives. Next:
-  the 07:30 carriers, then the evening attack.
+  Snipe's gain there came from the Axis infantry holding fire too, which no source gives. The
+  07:30 carriers (5 November 2026): the hollow was flat open ground, and the long-gunned Panzers
+  coming up from the south saw the carriers parked in its middle 740 m off, the only British
+  vehicles in reach, and knocked out 16 of 22 in five exchanges, into their flank. The hollow's low
+  middle is now drawn inside a narrow ring of slope (the rules have no low ground; its size is ours),
+  dead ground from the flat outside: the Panzers fire at C Company's guns and 41st RTR instead, as
+  the account has them go for 24th Armoured Brigade. Snipe 5 to 6 of 12 (12 runs, the benchmark's
+  seeds; only Snipe's stamp moved), British losses 38% to 27% (the account 72 of about 300, 24%),
+  the Axis's 30% to 27%. Still left: the carriers are now lost at about 10:30, all of them, to the
+  dozen Italian tanks on the western ridge, who see down into the hollow from its crest 660 m off
+  (the account: 6 burned just before noon, 16 lost all day); the carriers never go out at the
+  Bersaglieri, who break on their own; then the evening attack.
 - **Marks dropped at load, fixed 5 November 2026.** A field unit's `masks` and `holds_fire` were
   not copied onto the playing unit (battle.make_unit's list, makeUnit in the page), so Hue's
   Marines fought unmasked from the first gas cut. With them copied, Hue is unchanged (8 of 12,
