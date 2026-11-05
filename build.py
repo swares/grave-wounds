@@ -1633,7 +1633,7 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
         canv.saveState()
         canv.setFont("Helvetica", 7)
         canv.setFillColor(colors.HexColor("#6b6255"))
-        canv.drawString(0.6 * inch, 0.45 * inch, "Hit Location & Wound Tables - generated from data/; weights marked 'fitted' are placeholders. " + COPYRIGHT)
+        canv.drawString(0.6 * inch, 0.45 * inch, "Hit Location & Wound Tables - generated from data/; weights marked 'fitted' are placeholders. News: swares.github.io/grave-wounds. " + COPYRIGHT)
         canv.drawRightString(letter[0] - 0.6 * inch, 0.45 * inch, f"{doc.page}")
         canv.restoreState()
 
@@ -2095,6 +2095,11 @@ def jobs_bundle(d, eid: str) -> dict | None:
     return {"jobs": [{k: j[k] for k in keep if k in j} for j in jobs(d, eid)["jobs"]], "trouble": J["trouble"]}
 
 
+def signup(base: str = "") -> str:
+    """templates/signup.html: the news signup. base: the way from the page to dist/."""
+    return (ROOT / "templates" / "signup.html").read_text(encoding="utf-8").replace("__BASE__", base)
+
+
 def council_card(d) -> str:
     """dist/council-card.html: the camp roles and the evening council on one printed page."""
     from html import escape as esc
@@ -2204,7 +2209,7 @@ def main() -> int:
     fb = field_bundle(d)
     stamps = field_stamps(fb, page_rules(ftpl.replace("/*__WORKS_JS__*/", works_js).replace("/*__LETHAL_JS__*/", lethal_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__UNITS_JS__*/", units_js)))
     fb["beat"] = beat_bundle(stamps)
-    fhtml = ftpl.replace("/*__WORKS_JS__*/", works_js).replace("/*__LETHAL_JS__*/", lethal_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__UNITS_JS__*/", units_js).replace("/*__FIELD_DATA__*/null", json.dumps(fb, separators=(",", ":")))
+    fhtml = ftpl.replace("/*__SIGNUP_JS__*/\"\"", json.dumps(signup()).replace("</", "<\\/")).replace("/*__WORKS_JS__*/", works_js).replace("/*__LETHAL_JS__*/", lethal_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__UNITS_JS__*/", units_js).replace("/*__FIELD_DATA__*/null", json.dumps(fb, separators=(",", ":")))
     (DIST / "field.html").write_text(fhtml, encoding="utf-8")
     (DIST / "field-stamps.json").write_text(json.dumps(stamps, indent=1, sort_keys=True) + "\n", encoding="utf-8")
     stale_commander(stamps)
@@ -2227,8 +2232,8 @@ def main() -> int:
     (DIST / "campaign.html").write_text(chtml.replace("/*__CAMPAIGN_DATA__*/null", json.dumps(campaign_bundle(d), separators=(",", ":"))), encoding="utf-8")
     (DIST / "council-card.html").write_text(council_card(d), encoding="utf-8")
     (DIST / "privacy.html").write_text((ROOT / "templates" / "privacy.html").read_text(encoding="utf-8"), encoding="utf-8")
-    (DIST / "guide.html").write_text((ROOT / "templates" / "guide.html").read_text(encoding="utf-8"), encoding="utf-8")   # how to play: the pages, mode by mode
-    (ROOT / "index.html").write_text(index_page(d), encoding="utf-8")
+    (DIST / "guide.html").write_text((ROOT / "templates" / "guide.html").read_text(encoding="utf-8").replace("<!--__SIGNUP__-->", signup()), encoding="utf-8")   # how to play: the pages, mode by mode
+    (ROOT / "index.html").write_text(index_page(d).replace("<!--__SIGNUP__-->", signup("dist/")), encoding="utf-8")
     print("Built:", ", ".join(p.name for p in sorted(DIST.iterdir())), "+ index.html")
     return 0
 

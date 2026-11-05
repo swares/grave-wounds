@@ -2024,6 +2024,7 @@ function beatScores(fid){                           // after a battle that ended
     return { k, o, r, hist: Math.sign(o - h), beat: !!bar && (o > barOutcome(bar) || (o === barOutcome(bar) && r > bar.ratio)), bar: !!bar };
   });
 }
+const SIGNUP = /*__SIGNUP_JS__*/"";                  // the news signup, under a battle's result (templates/signup.html)
 function beatResult(fid){                           // [html] after the battle: each side the commander did not play, against history and the bar
   const end = S.end, w = winnerAt(FD.fields[fid], end);
   if (!end.stop) return [`<p><b>Not scored:</b> the battle was ended before it was decided. The commander's runs go on until a side is gone, the objective is held, or the exchange limit; so must yours.</p>`];
@@ -2070,7 +2071,7 @@ function renderBeat(){
   const lines = fid && fid === S.fieldId ? beatLines(fid) : null;
   el.hidden = !lines;
   if (!lines) return;
-  if (S.phase === "over" && S.end) lines.push(...beatResult(fid));
+  if (S.phase === "over" && S.end) lines.push(...beatResult(fid), SIGNUP);
   lines.push(...beatCard(fid));
   el.innerHTML = lines.join("");
 }
