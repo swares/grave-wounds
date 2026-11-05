@@ -16,11 +16,13 @@ not this repository.
 - **Table playtests.** None has been recorded: every result so far is self-play. The four to run
   are in the README's *Next steps*, and `design.md` has the disease numbers to try over a few weeks
   of camp. The playability review (project doc `claude/playability-review.md`) ranks this first.
-- **The playtest packet.** Project doc *Grave Wounds: playtest packet outline* holds the plan:
-  quick rules, pregenerated characters, a fight and a week in camp, a feedback form and three
-  rounds. Not built. Its open questions still stand: the period, the lethality settings offered,
-  the format, the licence and the feedback channel. The same doc has the publishing path and the
-  formats to consider (itch.io, Foundry VTT, desktop, Android).
+- **The playtest packet, version 0.1** (`dist/playtest-packet.html`, built by `gravewounds/playtest.py`
+  from `templates/playtest/packet.md`). Wars of the Roses, four pregenerated men with camp roles, a
+  fight at the Aire crossing and a week in camp, played on the roller or on paper, with feedback by
+  email. Not yet run by people. Its scenario pages are ours and untested at the table; the weekly
+  rules are simplified for paper (the flux alone, at Endurance 50, and a fixed week's weather). Project
+  doc *Grave Wounds: playtest packet outline* holds the three rounds of testing, the publishing path
+  and the formats to consider (itch.io, Foundry VTT, desktop, Android).
 - **Feedback on the core rules.** The review's next step after a table playtest: post the core
   rules, not the whole book, to r/RPGdesign, BRP Central and the Hârn community, then the wider
   wargame, solo and video-game audiences. Check each community's self-promotion rules first.
