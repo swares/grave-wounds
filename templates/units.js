@@ -1954,7 +1954,9 @@ function knockOut(us, i, n, table, rng, acc){      // up to n vehicles out: thei
 }
 function tallyRank(t){                            // how bad a one-man tally is: 4 dead, 3 critical, 2 serious, 1 light, 0 unhurt
   if (t.dead) return 4;
-  return [[3, "critical"], [2, "serious"], [1, "light"]].find(([, k]) => t[k])?.[0] ?? 0;
+  const ranks = ["light", "serious", "critical"];
+  for (let r = ranks.length; r > 0; r--) if (t[ranks[r - 1]]) return r;
+  return 0;
 }
 function addTally(t, w){                          // w's counts and wounded added onto t
   for (const [k, v] of Object.entries(w)) if (k !== "hurt" && typeof v === "number") t[k] = (t[k] || 0) + v;
