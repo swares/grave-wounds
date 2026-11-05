@@ -1793,6 +1793,16 @@ def volleys(d: Data, units: list, field: dict | None = None) -> list:
     return out
 
 
+def _holds_fire(d: Data, u: dict, v: dict) -> bool:
+    """Fire discipline (ammunition.hold_hidden): a unit marked holds_fire whose ammunition counts,
+    not a machine gun, does not fire at a target it barely sees in those range bands."""
+    bands = d.units["ammunition"].get("hold_hidden") or []
+    if not u.get("holds_fire") or not bands or v["seen"] >= 1 or ammo_full(d, u) is None or is_mg(d, u["weapon"]):
+        return False
+    b = field_range(d, u["weapon"], v["dist"], v["reach"])
+    return b is not None and b["band"] in bands
+
+
 def _volley_of(d: Data, units: list, occ: dict, field: dict | None, i: int, men: int | None = None) -> list:
     """Unit i's volley at its target ([v] or []); men: the shooters (default its front ranks)."""
     u = units[i]
@@ -1812,6 +1822,8 @@ def _volley_of(d: Data, units: list, occ: dict, field: dict | None, i: int, men:
          "penalty": wx["penalty"] - up, "misfire": wx["misfire"], "reach": wx.get("reach", 0) + longer, "from": best[2], "to": best[3], "height": up,
          "over": line_fire(d, units, occ, field, i, best[1], best[2], best[3], best[0]), "seen": seen_share(d, field, units[best[1]], best[3], u["weapon"])}
     v.update({k: True for k in ("blind", "flash", "beam") if wx.get(k)})
+    if men is None and _holds_fire(d, u, v):
+        return []
     if men is None and spares_left(d, u):
         rate = d.units["missile"]["rate"].get(u["weapon"], d.units["missile"]["default_rate"])
         v["spare"] = (rate + u["spare_muskets"] - 1) / rate   # its loaded spares, fired with its first exchange of fire

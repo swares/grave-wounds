@@ -63,7 +63,7 @@ def field_leaders(d: Data, o: dict, uid: int) -> list:
 def _unit_marks(o: dict) -> dict:
     """The marks a drawn unit carries if set: flags, its vehicle, type and size, a machine gun's
     fixed line, a route's waypoints and its orders from the account (hold, withdraw; copied)."""
-    out = {k: True for k in ("prone", "emplaced", "fac", "ladders", "throws") if o.get(k)}
+    out = {k: True for k in ("prone", "emplaced", "fac", "ladders", "throws", "masks", "holds_fire") if o.get(k)}
     if o.get("spare_muskets"):
         out["spare_muskets"] = o["spare_muskets"]   # loaded spares beside each man: its first exchange of fire
     if o.get("ladders") == "short":

@@ -2573,8 +2573,9 @@ def _siege_errors(d: Data, f: dict, where: str) -> list[str]:
 
 def _flag_errors(f: dict, where: str) -> list[str]:
     """A battlefield's units' true-or-false marks: fac (a forward air controller), ladders (or
-    `short`: ladders that do not reach the top of a wall), masks (gas masks: indirect.gas)."""
-    names = {"fac": "fac (a forward air controller)", "ladders": "ladders", "masks": "masks (gas masks)"}
+    `short`: ladders that do not reach the top of a wall), masks (gas masks: indirect.gas),
+    holds_fire (fire discipline: ammunition.hold_hidden)."""
+    names = {"fac": "fac (a forward air controller)", "ladders": "ladders", "masks": "masks (gas masks)", "holds_fire": "holds_fire (fire discipline: ammunition.hold_hidden)"}
     return [f"{where}: unit {u.get('name')}: {names[k]} must be true or false" + (" (or short)" if k == "ladders" else "")
             for u in f.get("units", []) for k in names
             if k in u and not isinstance(u[k], bool) and not (k == "ladders" and u[k] == "short")]

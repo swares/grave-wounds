@@ -893,6 +893,12 @@ function volleys(units, field = null){            // [{att, dfd, men, dist, cove
   });
   return out;
 }
+function holdsFire(u, v){                         // fire discipline: a unit marked holds_fire, ammunition counted, not a machine gun, a barely seen target in a hold_hidden band (as units._holds_fire)
+  const bands = UD.ammunition.hold_hidden || [];
+  if (!u.holds_fire || !bands.length || v.seen >= 1 || ammoFull(u) === null || isMg(u.weapon)) return false;
+  const b = fieldRange(u.weapon, v.dist, v.reach);
+  return !!b && bands.includes(b.band);
+}
 function volleyOf(units, occ, field, i, men = null){   // unit i's volley at its target ([v] or []); men: the shooters (default its front ranks) (as units._volley_of)
   const u = units[i];
   let best = target(units, i, field, occ), blind = false;
@@ -904,6 +910,7 @@ function volleyOf(units, occ, field, i, men = null){   // unit i's volley at its
   const v = { att: i, dfd: best[1], men: men === null && ammoState(u) === "low" ? shots / 2 : shots, dist: best[0], cover: shareCover(field, best[2], units[best[1]]) + groundCover(units[best[1]]) + shieldCover(units[best[1]], best[3], best[2]), penalty: wx.penalty - up, misfire: wx.misfire, reach: (wx.reach || 0) + longer, from: best[2], to: best[3],
     height: up, over: lineFire(units, occ, field, i, best[1], [best[2], best[3], best[0]]), seen: seenShare(field, units[best[1]], best[3], u.weapon) };
   for (const k of ["blind", "flash", "beam"]) if (wx[k]) v[k] = true;
+  if (men === null && holdsFire(u, v)) return [];
   if (men === null && sparesLeft(u)){ const rate = UD.missile.rate[u.weapon] ?? UD.missile.default_rate; v.spare = (rate + u.spare_muskets - 1) / rate }   // its loaded spares, fired with its first exchange of fire
   if (men === null && isMg(u.weapon)) Object.assign(v, beaten(units, occ, field, i, best));
   return [v];
@@ -4524,7 +4531,7 @@ function fieldLeaders(o, id){                       // a battlefield unit's lead
 function unitMarks(o){                             // a drawn unit's optional marks, copied as given
   return { ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.armour ? { armour: o.armour } : {}),
     ...(o.via?.length ? { via: o.via.map(h => [...h]) } : {}), ...unitOrders(o), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: o.ladders === "short" ? "short" : true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}),
-    ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}), ...(o.fights_on ? { fights_on: true } : {}), ...(o.throws ? { throws: true } : {}), ...(o.spare_muskets ? { spare_muskets: o.spare_muskets } : {}), ...(o.unfit != null ? { unfit: o.unfit } : {}), ...(o.he === false ? { he: false } : {}), ...(o.asFought ? { asFought: true } : {}) };
+    ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}), ...(o.fights_on ? { fights_on: true } : {}), ...(o.throws ? { throws: true } : {}), ...(o.masks ? { masks: true } : {}), ...(o.holds_fire ? { holds_fire: true } : {}), ...(o.spare_muskets ? { spare_muskets: o.spare_muskets } : {}), ...(o.unfit != null ? { unfit: o.unfit } : {}), ...(o.he === false ? { he: false } : {}), ...(o.asFought ? { asFought: true } : {}) };
 }
 const unitOrders = o => ({ ...(o.hold ? { hold: true } : {}), ...(o.withdraw ? { withdraw: { ...o.withdraw } } : {}) });   // its orders from the accounts
 function ensureTags(B){                            // each unit's number on its side, kept for the battle (B3 stays B3) (as battle.ensure_tags)
