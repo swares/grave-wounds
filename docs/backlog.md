@@ -428,7 +428,8 @@ When an item is done, delete it here and note it in the pull request that closes
   (a main gun took the nearest vehicle first) while A and C Companies' six-pounders knocked them
   out. Threat first is now the rule: a main gun takes first an enemy that fired at it the exchange
   before and could knock it out (`threat_by`), then vehicles, then the rest. The carriers come
-  through 10:30 with 20 of 22. Full benchmark: Snipe 6 to 8 of 12, no other field moved. Still
+  through 10:30 with 20 of 22. Full benchmark: Snipe 6 to 8 of 12 before the tank-crew table, 9 to
+  10 with it (British losses 16% to 19%; the account 24%); no other field moved either time. Still
   left: the carriers never go out at the Bersaglieri, who break on their own; the evening attack.
 - **Marks dropped at load, fixed 5 November 2026.** A field unit's `masks` and `holds_fire` were
   not copied onto the playing unit (battle.make_unit's list, makeUnit in the page), so Hue's
