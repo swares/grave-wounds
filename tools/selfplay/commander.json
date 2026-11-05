@@ -1210,28 +1210,28 @@
    "sides": [
     {
      "bar": {
-      "outcome": "loss",
-      "ratio": 1.67
+      "outcome": "win",
+      "ratio": 2.53
      },
      "drew": 0.0,
-     "lost_share": 0.382,
+     "lost_share": 0.275,
      "side": "British",
      "stance": "hold",
-     "won": 0.42
+     "won": 0.5
     },
     {
      "bar": {
       "outcome": "win",
-      "ratio": 0.77
+      "ratio": 0.79
      },
      "drew": 0.0,
-     "lost_share": 0.305,
+     "lost_share": 0.274,
      "side": "Germans and Italians",
      "stance": "attack",
-     "won": 0.58
+     "won": 0.5
     }
    ],
-   "stamp": "df4d45db4189"
+   "stamp": "2715b7c215ca"
   },
   "topolcani-1915": {
    "runs": 12,
@@ -1430,5 +1430,5 @@
    "stamp": "ec9cf72685e8"
   }
  },
- "updated": "2026-11-05"
+ "updated": "2026-11-04"
 }
