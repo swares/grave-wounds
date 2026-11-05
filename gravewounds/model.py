@@ -413,6 +413,27 @@ def expand_regions(d: Data, t: dict) -> dict:
     return w
 
 
+def _crew_errors(d: Data, tid: str, t: dict) -> list[str]:
+    """A table's crew_table (the table a knocked-out vehicle's struck crewmen roll on) and its
+    crew_burns (only + both at most 100; degrees light, serious, critical summing to 100, with
+    known death clocks and infection risks)."""
+    errors, ct, B = [], t.get("crew_table"), t.get("crew_burns")
+    if ct is not None and (ct not in d.tables or ct == tid):
+        errors.append(f"tables/{tid}: crew_table {ct} is not another table")
+    if B is None:
+        return errors
+    V = d.wounds["vocabulary"]
+    degrees = B.get("degrees") or {}
+    if B.get("only", 0) < 0 or B.get("both", 0) < 0 or B.get("only", 0) + B.get("both", 0) > 100:
+        errors.append(f"tables/{tid}: crew_burns only + both must be 0 to 100")
+    if sorted(degrees) != ["critical", "light", "serious"] or sum(x.get("pct", 0) for x in degrees.values()) != 100:
+        errors.append(f"tables/{tid}: crew_burns degrees must be light, serious and critical, summing to 100")
+    for k, x in degrees.items():
+        if x.get("lethal") not in V["lethal"]["order"] or x.get("infection") not in V["infection"]["order"]:
+            errors.append(f"tables/{tid}: crew_burns {k} needs a known lethal and infection")
+    return errors
+
+
 def validate(d: Data) -> None:
     errors, warn = [], d.warnings
     classes = d.wounds["classes"]
@@ -978,6 +999,7 @@ def validate(d: Data) -> None:
                 errors.append(f"tables/{tid}: weapon_mix names unknown weapon {m['weapon']}")
             if not m.get("weapon") and not m.get("label"):
                 errors.append(f"tables/{tid}: weapon_mix entries need a weapon or a label")
+        errors += _crew_errors(d, tid, t)
         key = (t.get("battle"), t.get("label", t["name"]))
         if key in seen:
             errors.append(f"tables/{tid}: label '{key[1]}' duplicates {seen[key]} in group '{key[0]}'")

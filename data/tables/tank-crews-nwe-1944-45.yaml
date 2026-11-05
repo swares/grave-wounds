@@ -1,0 +1,47 @@
+id: tank-crews-nwe-1944-45
+order: 34.5
+name: "WWII NW Europe 1944-45 - tank crews hit inside their tanks"
+label: "Tank crews inside their tanks (NW Europe 1944-45)"
+battle: "WWII"
+context: "British and Canadian tank crewmen hit inside their tanks by armour-piercing shot and hollow-charge rounds, NW Europe 1944-45 (killed and wounded). The battlefield map rolls the struck crewmen of a knocked-out vehicle on this table in the Second World War."
+variant: evidence
+weapon_bias: pooled
+weapons: [at_gun, bazooka, mortar_artillery, explosive_fragment]
+modifiers: []
+confidence: historical
+confidence_note: >
+  Region shares are our sums of the source's counts: single-region hits by armour-piercing (A.P.)
+  and hollow-charge (H.C.) rounds, the wounded (Wright Table 52: head and neck 27, trunk 7, arms 29,
+  legs 43) plus the killed whose wound was known (Table 59: head 8.5, chest and shoulder 11,
+  abdomen 3.5, arms 2, legs 2), 133 in all. Multiple wounds (32) are left out, as Wright leaves them
+  out of his regional shares, and so are the 64 dead with no region known, most of them bodies
+  destroyed by the fire and explosion; the trunk is probably under-counted. A small sample. The
+  thorax/abdomen split follows the dead (11 to 3.5); the split inside each region uses body
+  exposure (design estimate).
+armor_note: "Men inside the tank: steel helmets were rarely worn; the hull is the armour, and this table is for the men whose vehicle it failed to protect."
+sources:
+  - "Wright HB, 'A survey of casualties amongst armoured units in North West Europe', Medical Research Section, No. 2 Operational Research Section, 21st Army Group, January 1946 (B.P.C. 46/454), Wellcome Collection RAMC/1783/15: Table 52 (regional distribution of wounds by weapon), Table 59 (fatal injuries by region), Table 47 (A.P. 182 casualties, H.C. 130), p.85 and Table 56 (burns)."
+  - "Chute AL, desert report, 1942 (cited by Wright p.85): burns 30% of casualties inside vehicles in the desert. His tables are not reached (project doc claude/tank-wounds-research)."
+status: "Historical at region level, small sample. One theatre (NW Europe); used for the whole of the Second World War's tank battles. The desert of 1942 (Chute) is not reached."
+regions:
+  - {label: "Head and neck", zone: head, pct: 26.7}
+  - {label: "Thorax (chest and shoulders)", locs: [chest_l, chest_r, back_upper], pct: 12.2}
+  - {label: "Abdomen", locs: [abdomen, back_lower, groin], pct: 4.0}
+  - {label: "Arms", zone: arms, pct: 23.3}
+  - {label: "Legs and buttocks", zone: legs, pct: 33.8}
+weapon_mix_source: "Wright 1946, Table 47: casualties by A.P. (182) and H.C. (130); the table is pooled, the same for every weapon"
+weapon_mix:
+  - {weapon: at_gun, pct: 58}
+  - {weapon: bazooka, pct: 42}
+# The burns of a struck crewman of a knocked-out vehicle (the battlefield map; burns are not on the
+# hit-location tables). Wright p.85: of 237 men injured inside vehicles, 52 were burnt only (22%) and
+# 30 wounded and burnt (13%); every burn was inside a vehicle, 54% of them face and hands, 81% face or
+# hands or both (Table 56). Of 60 with notes, first degree 7, second 39, third 14 (p.86): light,
+# serious and critical here. A man burnt and wounded keeps the worse of the two.
+crew_burns:
+  only: 22
+  both: 13
+  degrees:
+    light:    {pct: 12, lethal: none, infection: low}
+    serious:  {pct: 65, lethal: none, infection: medium}
+    critical: {pct: 23, lethal: days, infection: high}

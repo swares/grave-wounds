@@ -644,9 +644,11 @@ When an item is done, delete it here and note it in the pull request that closes
   take the British 18 to 41, its pay steps the American, its war supplement and any prices were not
   found; the M13s, M14s and Semoventi play as light armour and the Panzers as heavy, all with the
   tank kind's one gun; the camelthorn is not drawn (the rules' scrub keeps tanks out). No desert or
-  tank-crew wound table yet: Chute's 1942 Eighth Army report on tank casualties (every casualty of
+  desert tank-crew wound table: Chute's 1942 Eighth Army report on tank casualties (every casualty of
   one regiment by crew position, injury and cause; about 30% flash burns; 15-25% hit after bailing
-  out) would make one, but it lies in an archive not reached; until then the Owens table stands.
+  out) lies in an archive not reached. Knocked-out crews now roll on Wright's NW Europe 1944-45
+  table (35% burnt inside vehicles, near Chute's 30%), so the desert is played as Normandy; men
+  hit after bailing out are not counted.
   In self-play the battalion does not hold (0 of 3: every British unit gone by about 10:30, 40% of
   its men down to the Axis 14%; in fact 72 of under 300 hit and some 37 tanks and SP guns burnt
   out): the first use of anti-tank guns on a battlefield, a lead for the self-play review, not
