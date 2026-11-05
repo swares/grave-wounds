@@ -25673,6 +25673,7 @@
     "each": 30,
     "enter": 1,
     "cover_here": 50,
+    "shell": 10,
     "no_horse": true,
     "breach": null,
     "note": "A log-and-earth pillbox or dugout with firing slits (the 20th century)."

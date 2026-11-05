@@ -115,7 +115,7 @@ hex_works:
             note: "Wagons drawn up and chained, as in a wagon laager."}
   wire:    {name: "Barbed wire",       each: 2,  enter: 3,    no_horse: true, breach: 6,
             note: "Belts of barbed wire on stakes (from the 1900s): slow to cross, cut by hand."}
-  bunker:  {name: "Bunker",            each: 30, enter: 1,    cover_here: 50, no_horse: true, breach: null,
+  bunker:  {name: "Bunker",            each: 30, enter: 1,    cover_here: 50, shell: 10, no_horse: true, breach: null,   # shell 10: a dugout or cellar keeps out more of the shellfire than a trench (20); without it a bunker left 50%, and Cassino's paratroops in their cellars were shelled to nothing in the first hour (4 November 2026; an estimate)
             note: "A log-and-earth pillbox or dugout with firing slits (the 20th century)."}
   trench:  {name: "Trench",            each: 6, enter: 1,    cover_here: 40, shell: 20, hides: true, no_horse: true, breach: null,
             note: "A fire trench or communication trench, dug chest-deep (the 20th century): the men in it are hard to see and harder to hit."}
