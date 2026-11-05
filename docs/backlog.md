@@ -677,7 +677,7 @@ When an item is done, delete it here and note it in the pull request that closes
   out): the first use of anti-tank guns on a battlefield, a lead for the self-play review, not
   tuned here.
 - **The tank-crew table, two follow-ups for later.** (1) *Korea.* Only the Second World War's
-  tables carry `crew_table` today; the Korean tables (owens-korea, korea-1950-53-*) could point at
+  tables carry `crew_table` today; the Korean tables (owens-korea, korea-1950-53-hospitalized) could point at
   tank-crews-nwe-1944-45 too, since the tanks and the armour-piercing shot were of the same
   generation (Shermans, Centurions and T-34/85s), but no Korean tank-crew source has been found and
   it would be a stretch, so it waits for one or for a decision to accept the stretch. (2) *Crews hit
