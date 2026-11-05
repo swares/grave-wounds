@@ -196,6 +196,7 @@ python -m gravewounds selfplay --field wanat-2008   # the enemy commander on bot
 - `dist/gravewounds-data.json`
 - `dist/team.html`, the team builder (character generation)
 - `dist/campaign.html`, the campaign console (the GM's console over the pages)
+- `dist/playtest-packet.html`, the printable playtest packet
 - the start page `index.html`
 
 ## Next steps

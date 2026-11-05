@@ -50,6 +50,8 @@ jobs:
         run: python3 tools/campaign/team.py
       - name: The quick start, played by the coach's words
         run: python3 tools/campaign/quick.py
+      - name: The playtest packet's fight (team.html#playtest)
+        run: python3 tools/campaign/playtest.py
       - name: Camp roles and the evening council on the campaign console
         run: python3 tools/campaign/council.py
       - name: The GM's coached first session (the start page's link to campaign.html#gmstart)

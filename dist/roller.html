@@ -6308,6 +6308,26 @@ function quickSetup(){
   S.mapMsg = "The quick start: the retinue from the Rules' examples on the road to Towton, against three Lancastrian billmen. Follow the coach above the map.";
   save();
 }
+/* The playtest packet's fight (dist/playtest-packet.html, team.html#playtest): four of the same retinue at the
+   Aire crossing against Clifford's five, the GM's script playing them. gravewounds/playtest.py lists the same men. */
+const PLAYTEST = { side: "Clifford's men", keep: ["William of Ely", "Gilbert Cooper", "Edmund Miller", "Nicholas Fletcher"],
+  foes: [["Billman 1", "jack_sallet", "bill", "regular"], ["Billman 2", "jack_sallet", "bill", "regular"], ["Billman 3", "jack_sallet", "bill", "regular"],
+    ["Billman 4", "jack_sallet", "bill", "regular"], ["Archer", "jack_sallet", "longbow", "regular"]] };
+function playtestSetup(){
+  if (!freshWithTeam()) return;
+  S.chars = S.chars.filter(c => PLAYTEST.keep.includes(c.name));
+  for (const [name, kit, weapon, quality] of PLAYTEST.foes){
+    const c = newChar(name, kit, weapon, {}, PLAYTEST.side);
+    c.nerve = DATA.quality[quality].nerve;
+    S.chars.push(c);
+  }
+  placeUnplaced();
+  gmStart();
+  S.gm.sides[PLAYTEST.side] = { ...gmSide(PLAYTEST.side), ctl: "script", stance: "steady", quality: "regular" };
+  S.gm.auto = true;
+  S.mapMsg = "The playtest packet's fight: the four men at the Aire crossing, 28 March 1461, against five of Clifford's men. The GM's script plays them; roll initiative to begin.";
+  save();
+}
 /* The GM's coached first session (campaign.html#gmstart): the team builder sends the same retinue here
    with #gmstart; it is added as named men and put with Edward's army on the Towton map, which the
    campaign page has already chosen. The campaign page coaches the rest. */
@@ -6451,6 +6471,7 @@ function init(){
   applyFieldHeroes();
   if (location.hash === "#quickstart") quickSetup();
   if (location.hash === "#gmstart") gmQuickSetup();
+  if (location.hash === "#playtest") playtestSetup();
   unitToggle($("#units-toggle"), () => { renderResult(); renderChars() });
   lethalToggle($("#lethal-toggle"), () => {      // a new lethality: an unhurt player character's Blood is his new pool; a hurt one keeps what he has, up to it
     for (const c of S.chars.filter(isPC)) c.blood = c.wounds.length ? Math.min(c.blood, poolOf(c)) : poolOf(c);

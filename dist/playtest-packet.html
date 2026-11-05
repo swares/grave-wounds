@@ -1,0 +1,626 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Grave Wounds: playtest packet</title><style>
+:root{--ink:#1d2128;--muted:#5b6370;--red:#8c1a2b;--line:#b9bec6}
+*{box-sizing:border-box}body{margin:0;background:#fff;color:var(--ink);font:10.2pt/1.34 Georgia,"Times New Roman",serif}
+.page{width:8.5in;min-height:11in;padding:.36in .6in .48in;position:relative;margin:0 auto;page-break-after:always;break-after:page;overflow-wrap:break-word}
+h1{font-size:19pt;margin:0 0 6px;color:var(--ink)}h1.cover,.cover{font-size:34pt}h2{font-size:12pt;margin:8px 0 3px}p{margin:0 0 5px}ul,ol{margin:0 0 5px;padding-left:1.25em}li{margin-bottom:2px}
+a{color:var(--red)}table{border-collapse:collapse;width:100%;margin:2px 0 5px;font-size:8.6pt;font-family:Arial,Helvetica,sans-serif}th,td{border:1px solid var(--line);padding:2px 4px;text-align:left;vertical-align:top}th{background:#eef0f2}
+table.tight{font-size:8.2pt}table.tight td,table.tight th{padding:1px 4px}table.effects{font-size:7.3pt}table.effects td,table.effects th{padding:2px 3px}table.lined td{height:30px}table.log td{height:62px}
+.foot{position:absolute;left:.6in;right:.6in;bottom:.28in;display:flex;justify-content:space-between;font:7.5pt Arial,sans-serif;color:var(--muted)}
+.blank{height:1.1in;border:1px solid var(--line)}.blank.small{height:.4in}.sub{color:var(--muted)}.role{border-left:3px solid var(--red);padding-left:8px}
+.admonition{background:#f3f4f6;border-left:3px solid var(--red);padding:5px 9px;margin:5px 0}.admonition-title{font-weight:bold;margin:0}svg{display:block;width:100%;max-height:1.9in;margin:4px 0}
+@media screen{body{background:#dfe2e6}.page{background:#fff;margin:12px auto;box-shadow:0 1px 4px #0003}}@media print{@page{size:Letter;margin:0}.page{margin:0}}
+@media screen and (max-width:820px){.page{width:auto;min-height:0;padding:16px}.foot{position:static;margin-top:12px}table{display:block;overflow-x:auto}}
+</style></head><body><section class="page"><h1 class="cover">Grave Wounds</h1>
+<h2>Playtest packet: one fight and a week in camp</h2>
+<p>Version 0.1, 5 November 2026, for 3 to 5 people and about 3 hours. One person is the GM.</p>
+<p><strong>What this is.</strong> Grave Wounds is a d100 game built on real wound records. Where a man is hit comes from
+the graves and surgeons' returns of his own war. A fight usually ends with men stopping, not dying, and
+what happens afterwards can kill them just as well. This packet sets four men of a Yorkist retinue at a
+crossing of the River Aire on 28 March 1461, the day before Towton. They fight once, and then have to
+get through a week in camp.</p>
+<p><strong>What we want to learn.</strong> Are the fights tense and quick enough? Do wounds feel fair? Are the camp's
+decisions interesting, or a chore? Nobody has played this at a table yet, so a blunt "this dragged" is
+the most useful thing you can tell us.</p>
+<p><strong>What you need.</strong> Pencils, two ten-sided dice for d100, and these pages. For the fight, a phone or
+laptop is better still: <strong>the wound roller does the arithmetic</strong>. Open
+<a href="https://swares.github.io/grave-wounds/dist/team.html#playtest">swares.github.io/grave-wounds/dist/team.html#playtest</a>. It sets up the four men against Clifford's five, and the GM's script
+can play the enemy. Please tell us which way you played.</p>
+<table>
+<thead>
+<tr>
+<th>Pages</th>
+<th>Who needs them</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>The fight, Wounds, Where it lands, What it does</td>
+<td>Everyone</td>
+</tr>
+<tr>
+<td>The camp</td>
+<td>Everyone</td>
+</tr>
+<tr>
+<td>Four character sheets</td>
+<td>One to a player</td>
+</tr>
+<tr>
+<td>The crossing, The week</td>
+<td>The GM only</td>
+</tr>
+<tr>
+<td>Camp log and session log, Feedback</td>
+<td>The GM fills these in, with the table</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Which setting?</strong> Play <strong>Standard</strong> first. If you play again, try <strong>Gritty</strong>. The sheets show both.</p>
+<p><strong>After you play.</strong> Send the feedback pages, or a photo of them, to <a href="mailto:waresscott@gmail.com">waresscott@gmail.com</a>. To
+hear about later versions, sign up on the <a href="https://swares.github.io/grave-wounds/">start page</a>.</p>
+<p><strong>This packet</strong> is free to copy and share for playtesting. It is an early version: please don't sell it or
+post it as finished. The numbers and tables are generated from the game's own data.</p><div class="foot"><span>Grave Wounds playtest packet, version 0.1, 5 November 2026</span><span>© 2026 Scott Wares. All rights reserved. Free to copy for playtesting.</span></div></section><section class="page"><h1 id="fight">The fight</h1>
+<p>A round is 6 seconds. Every fighter gets one turn, highest <strong>initiative</strong> first. Each man rolls once at the
+start: d10 + Agility ÷ 10, rounded down.</p>
+<p><strong>The one roll.</strong> Roll d100. Equal to or under the number succeeds, and how far under is the <strong>margin</strong>. A roll
+at or under a tenth of the number is a <strong>critical</strong>.</p>
+<p><strong>On his turn</strong></p>
+<ol>
+<li><strong>Move.</strong> Stay, <strong>advance</strong> up to 4 hexes and still attack, or <strong>run</strong> up to 12 and not attack.
+   Walking away from an enemy beside you gives him a free attack.</li>
+<li><strong>Attack.</strong> d100 against Attack, less your penalties. You may first declare an <strong>aim</strong> at a zone, at a gap in
+   the armour, or both. Each costs 20 of your margin on a hit, and is free on a critical.</li>
+<li><strong>Defence.</strong> The defender rolls d100 against Defence, less his penalties. Success turns the blow. A critical
+   can't be defended.</li>
+<li><strong>Where it lands.</strong> d100 on <em>Where it lands</em>, under the attacker's weapon. With a sword, bill or dagger, the
+   attacker chooses <strong>cut</strong> or <strong>thrust</strong> before he rolls. A longbow pierces.</li>
+<li><strong>How bad.</strong> Margin under 20: <strong>light</strong>. 20 or more: <strong>serious</strong>. 50
+   or more, or a critical: <strong>critical</strong>. A margin of 2 or less only <strong>grazes</strong>, unless it is a
+   critical: a step less bleeding and pain, and no stop check.</li>
+<li><strong>Armour.</strong> Armour lowers the severity by steps. See <em>Where it lands</em>.</li>
+<li><strong>The wound.</strong> Read it from <em>What it does</em> and write it on the sheet.</li>
+<li><strong>Stop check.</strong> A serious or critical wound marked <strong>S</strong> needs d100 against the wounded man's Nerve, less his
+   pain and blood penalties, and 10 more for a critical. Players' men add their setting's bonus.</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Result</th>
+<th>He is</th>
+<th>Which means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Equal or under</td>
+<td>Fighting on</td>
+<td>No change</td>
+</tr>
+<tr>
+<td>Failed by 1–20</td>
+<td><strong>Defend only</strong> for 2 rounds</td>
+<td>No attack; he may move and defend</td>
+</tr>
+<tr>
+<td>Failed by 21–40</td>
+<td><strong>Stunned</strong> for 2 rounds</td>
+<td>No attack; −50% to his defence</td>
+</tr>
+<tr>
+<td>Failed by more than 40</td>
+<td><strong>Out of the fight</strong> until helped or the fight ends</td>
+<td>Takes no part: no attack, no defence</td>
+</tr>
+</tbody>
+</table>
+<p><strong>End of the round.</strong> Everyone bleeds. Then a side with 25% or more of its men down rolls d100 against
+the best Nerve among those still up: +10 while a leader is up, −20 if he is down, −20 once
+50% of the side is down. Over the target, the side breaks: it runs or surrenders.</p>
+<p><strong>Lethality.</strong> Standard: Blood ×1.5, +20 to Nerve on stop checks, and one <strong>fate</strong> point, which lowers a wound a
+step, or rerolls a stop check, recovery or fever roll. Gritty: Blood ×1, no bonus, no fate.</p>
+<div class="admonition example">
+<p class="admonition-title">A worked blow</p>
+<p>Gilbert shoots at 55% and rolls 31: a margin of 24, <strong>serious</strong>. The billman dodges
+at 35% and rolls 72, so it hits. On the longbow column, a 40 is the right chest. His jack would lower
+the wound a step, but the war bow takes a step off armour, so it stays serious. The thrust table gives bleed 2,
+pain 2, and <strong>S</strong>, so he loses 1 Blood a round and makes a stop check: Nerve 50, less 20 for pain.</p>
+</div><div class="foot"><span>Grave Wounds playtest packet, version 0.1, 5 November 2026</span><span>© 2026 Scott Wares. All rights reserved. Free to copy for playtesting.</span></div></section><section class="page"><h1 id="wounds">Wounds</h1>
+<p>A wound has five parts, and they add up across all of a man's wounds.</p>
+<p><strong>Bleeding.</strong> Every man has a <strong>Blood</strong> pool, on his sheet.</p>
+<table>
+<thead>
+<tr>
+<th>Bleed</th>
+<th>Blood lost</th>
+<th>What it is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B0</td>
+<td>none</td>
+<td>None</td>
+</tr>
+<tr>
+<td>B1</td>
+<td>1 a minute</td>
+<td>Slow: seeping; lose 1 Blood per minute</td>
+</tr>
+<tr>
+<td>B2</td>
+<td>1 a round</td>
+<td>Heavy: lose 1 Blood per round; bind within minutes</td>
+</tr>
+<tr>
+<td>B3</td>
+<td>3 a round</td>
+<td>Arterial: lose 3 Blood per round; tourniquet or pressure now</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>Blood left</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>75% or less</td>
+<td>Pale and weak: -10% to all actions</td>
+</tr>
+<tr>
+<td>50% or less</td>
+<td>Faint check each minute; -20% to all actions</td>
+</tr>
+<tr>
+<td>25% or less</td>
+<td>Barely conscious: -40% to all actions, can only crawl</td>
+</tr>
+<tr>
+<td>None</td>
+<td>Unconscious and dying</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Pain.</strong> −10% to attack and defence for each step, counted to 3 steps. Above that, a stop check every round.</p>
+<p><strong>Impairments.</strong> Each counts once. Attack and defence penalties are capped at −60%.</p>
+<table>
+<thead>
+<tr>
+<th>Impairment</th>
+<th>What it does</th>
+<th>Attack</th>
+<th>Defence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Dazed</td>
+<td>Stunned: lose next action, then -20% for 1d6 rounds</td>
+<td>−20%</td>
+<td>−20%</td>
+</tr>
+<tr>
+<td>Vision</td>
+<td>Vision impaired: -30% to sight-based actions; blinded if both eyes</td>
+<td>−30%</td>
+<td>−30%</td>
+</tr>
+<tr>
+<td>Breath</td>
+<td>Winded: no sustained exertion; fatigue doubled</td>
+<td>−10%</td>
+<td>−10%</td>
+</tr>
+<tr>
+<td>Collapse</td>
+<td>Collapses; can only crawl or crouch</td>
+<td>−20%</td>
+<td>−30%</td>
+</tr>
+<tr>
+<td>Stand</td>
+<td>Falls and cannot stand unaided</td>
+<td>−20%</td>
+<td>−30%</td>
+</tr>
+<tr>
+<td>Leg</td>
+<td>Movement halved; -20% to footwork and dodging</td>
+<td>—</td>
+<td>−20%</td>
+</tr>
+<tr>
+<td>Move</td>
+<td>Movement halved</td>
+<td>—</td>
+<td>−10%</td>
+</tr>
+<tr>
+<td>Unconscious</td>
+<td>Knocked out (check each minute to wake)</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Speech</td>
+<td>Cannot speak clearly</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Arm (weapon arm)</td>
+<td>That arm -20%; no two-handed use</td>
+<td>−20%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Arm (shield arm)</td>
+<td>That arm -20%; no two-handed use</td>
+<td>—</td>
+<td>−10%</td>
+</tr>
+<tr>
+<td>Grip (weapon arm)</td>
+<td>Drops anything held in that hand; cannot grip with it</td>
+<td>−30%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Grip (shield arm)</td>
+<td>Drops anything held in that hand; cannot grip with it</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Hand useless (weapon arm)</td>
+<td>That hand useless</td>
+<td>−30%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Hand useless (shield arm)</td>
+<td>That hand useless</td>
+<td>—</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Arm useless (weapon arm)</td>
+<td>That arm useless</td>
+<td>−40%</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Arm useless (shield arm)</td>
+<td>That arm useless</td>
+<td>—</td>
+<td>−10%</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The clock.</strong> How long the wound takes to kill if left untreated: days, hours, minutes, rounds or instant.</p>
+<p><strong>A man with an arm hurt</strong> can't use a two-handed weapon: a bow, a bill or a poleaxe. He can only defend until he
+takes up something else.</p>
+<p><strong>First aid.</strong> A friend beside him may treat a wound on his turn. Roll d100 against the side's best Leechcraft:</p>
+<ul>
+<li><strong>Bind:</strong> one step less bleeding, 2 steps on a success.</li>
+<li><strong>Tourniquet:</strong> an arm or leg only. The bleeding stops. Left on for hours, the limb is lost.</li>
+<li><strong>Cauterise:</strong> the bleeding stops, at one more step of pain. A success adds no pain.</li>
+</ul><div class="foot"><span>Grave Wounds playtest packet, version 0.1, 5 November 2026</span><span>© 2026 Scott Wares. All rights reserved. Free to copy for playtesting.</span></div></section><section class="page"><h1 id="where">Where it lands</h1>
+<p>Roll d100 under the attacker's weapon. These odds come from the Towton table, adjusted from the bone evidence for
+wounds that leave no mark on bone.</p>
+<table class="tight"><thead><tr><th>Place</th><th>Sword</th><th>Bill</th><th>Longbow</th><th>Dagger</th></tr></thead><tbody><tr><td>Skull (left)</td><td>01–12</td><td>01–13</td><td>01–12</td><td>01–11</td></tr><tr><td>Skull (right)</td><td>13–21</td><td>14–23</td><td>13–21</td><td>12–19</td></tr><tr><td>Face</td><td>22–27</td><td>24–30</td><td>22–27</td><td>20–27</td></tr><tr><td>Neck</td><td>28–31</td><td>31–34</td><td>28–31</td><td>28–34</td></tr><tr><td>Chest (left)</td><td>32–38</td><td>35–40</td><td>32–38</td><td>35–43</td></tr><tr><td>Chest (right)</td><td>39–44</td><td>41–45</td><td>39–44</td><td>44–50</td></tr><tr><td>Abdomen</td><td>45–51</td><td>46–51</td><td>45–51</td><td>51–59</td></tr><tr><td>Groin / pelvis</td><td>52–54</td><td>52–54</td><td>52–54</td><td>60–63</td></tr><tr><td>Upper back</td><td>55–58</td><td>55–58</td><td>55–58</td><td>64–68</td></tr><tr><td>Lower back</td><td>59–61</td><td>59–61</td><td>59–61</td><td>69–72</td></tr><tr><td>Shoulder (left)</td><td>62–63</td><td>62–63</td><td>62–63</td><td>73–74</td></tr><tr><td>Shoulder (right)</td><td>64</td><td>64</td><td>64</td><td>75</td></tr><tr><td>Upper arm (left)</td><td>65–66</td><td>65–66</td><td>65–66</td><td>76–77</td></tr><tr><td>Upper arm (right)</td><td>67–68</td><td>67–68</td><td>67–68</td><td>78–79</td></tr><tr><td>Forearm (left)</td><td>69–71</td><td>69–71</td><td>69–71</td><td>80–82</td></tr><tr><td>Forearm (right)</td><td>72–74</td><td>72–74</td><td>72–74</td><td>83–85</td></tr><tr><td>Hand (left)</td><td>75–78</td><td>75–78</td><td>75–78</td><td>86–89</td></tr><tr><td>Hand (right)</td><td>79–82</td><td>79–82</td><td>79–82</td><td>90–93</td></tr><tr><td>Thigh (left)</td><td>83–86</td><td>83–86</td><td>83–86</td><td>94–95</td></tr><tr><td>Thigh (right)</td><td>87–90</td><td>87–90</td><td>87–90</td><td>96–97</td></tr><tr><td>Knee (left)</td><td>91</td><td>91</td><td>91</td><td>–</td></tr><tr><td>Knee (right)</td><td>92</td><td>92</td><td>92</td><td>–</td></tr><tr><td>Lower leg (left)</td><td>93–95</td><td>93–95</td><td>93–95</td><td>98</td></tr><tr><td>Lower leg (right)</td><td>96–97</td><td>96–97</td><td>96–97</td><td>99</td></tr><tr><td>Foot (left)</td><td>98–99</td><td>98–99</td><td>98–99</td><td>00</td></tr><tr><td>Foot (right)</td><td>00</td><td>00</td><td>00</td><td>–</td></tr></tbody></table>
+<p><strong>Armour.</strong> Each kit below gives steps off the severity, Critical to Serious to Light to Stopped. A stopped blow
+is only a bruise. Where a place is only partly covered, read the <strong>units digit of the attack roll</strong>, with 0 as 10.
+At or under the cover shown in tens, the blow met the armour.</p>
+<table class="tight"><thead><tr><th>Part (steps: cut/pierce/crush)</th><th>Brigandine and sallet</th><th>Jack and sallet</th></tr></thead><tbody><tr><td>helm</td><td>3/2/1</td><td>3/2/1</td></tr><tr><td>gorget</td><td>2/1/0</td><td>2/1/0 on 5</td></tr><tr><td>torso upper</td><td>2/2/1</td><td>2/1/1</td></tr><tr><td>torso lower</td><td>2/2/1</td><td>2/1/1</td></tr><tr><td>skirt</td><td>2/1/0</td><td>2/1/1</td></tr><tr><td>pauldron</td><td>3/2/1 on 6</td><td>2/1/1</td></tr><tr><td>arm</td><td>3/2/1 on 5</td><td>2/1/1 on 7</td></tr><tr><td>gauntlet</td><td>3/2/1 on 5</td><td>–</td></tr><tr><td>leg</td><td>2/1/1 on 4</td><td>–</td></tr></tbody></table>
+<p>A longbow's arrows take 1 step off the armour's pierce figure, so a jack gives them nothing and a brigandine only 1.</p>
+<p><strong>Range.</strong> A longbow reaches 20, 60, 125 hexes: short, medium and long. Each hex is 2 yards. On paper take −20 at medium range and −40 at long; the roller does it for you.</p><div class="foot"><span>Grave Wounds playtest packet, version 0.1, 5 November 2026</span><span>© 2026 Scott Wares. All rights reserved. Free to copy for playtesting.</span></div></section><section class="page"><h1 id="effects">What it does</h1>
+<p>Find the place and the blow. Each entry gives <strong>bleed</strong> and <strong>pain</strong>, then <strong>S</strong> if it calls for a stop check, then how long it
+takes to kill and any impairments. Fever is the risk of wound fever in camp. A longbow's wound uses the thrust columns. A knee or
+foot may not bleed at all.</p>
+<table class="effects"><thead><tr><th>Place</th><th>Fever</th><th>Light cut</th><th>Serious cut</th><th>Critical cut</th><th>Light thrust</th><th>Serious thrust</th><th>Critical thrust</th></tr></thead><tbody><tr><td>Skull</td><td>high</td><td>B1 P1</td><td>B2 P2 S dazed</td><td>B3 P3 S hours unconscious</td><td>B1 P1</td><td>B1 P2 S days dazed</td><td>B2 P3 S minutes unconscious</td></tr><tr><td>Face</td><td>high</td><td>B1 P1</td><td>B3 P2 vision</td><td>B3 P3 S days vision speech</td><td>B1 P1</td><td>B2 P2 days vision</td><td>B2 P3 S hours vision speech</td></tr><tr><td>Neck</td><td>high</td><td>B1 P1</td><td>B3 P2 S hours</td><td>B3 P3 S rounds breath</td><td>B1 P1</td><td>B2 P2 S minutes</td><td>B3 P3 S rounds breath</td></tr><tr><td>Chest</td><td>high</td><td>B1 P1</td><td>B3 P2 S days breath</td><td>B3 P3 S minutes breath collapse</td><td>B1 P1</td><td>B2 P2 S hours breath</td><td>B3 P3 S rounds breath collapse</td></tr><tr><td>Abdomen</td><td>high</td><td>B1 P1</td><td>B2 P2 days</td><td>B3 P3 S hours collapse</td><td>B1 P1</td><td>B1 P2 hours</td><td>B2 P3 S rounds collapse</td></tr><tr><td>Groin</td><td>high</td><td>B1 P2</td><td>B3 P3 S leg</td><td>B3 P3 S minutes stand</td><td>B1 P2</td><td>B2 P3 S days leg</td><td>B3 P3 S rounds stand</td></tr><tr><td>Back upper</td><td>high</td><td>B1 P1</td><td>B2 P2 arm</td><td>B3 P3 S hours breath collapse</td><td>B1 P1</td><td>B1 P2 days arm</td><td>B2 P3 S rounds breath collapse</td></tr><tr><td>Back lower</td><td>high</td><td>B1 P1</td><td>B2 P2 move</td><td>B3 P3 S days stand</td><td>B1 P1</td><td>B1 P2 days move</td><td>B2 P3 S minutes stand</td></tr><tr><td>Shoulder</td><td>medium</td><td>B1 P1</td><td>B2 P2 arm</td><td>B3 P3 S days arm useless</td><td>B1 P1</td><td>B1 P2 arm</td><td>B2 P3 S days arm useless</td></tr><tr><td>Upper arm</td><td>medium</td><td>B1 P1</td><td>B2 P2 arm</td><td>B3 P3 S severed minutes arm useless</td><td>B1 P1</td><td>B1 P2 arm</td><td>B3 P3 S hours arm useless</td></tr><tr><td>Forearm</td><td>medium</td><td>B1 P1</td><td>B2 P2 grip</td><td>B3 P3 S severed minutes arm useless</td><td>B1 P1</td><td>B1 P2 grip</td><td>B2 P3 S hours arm useless</td></tr><tr><td>Hand</td><td>medium</td><td>B0 P1</td><td>B2 P2 grip</td><td>B3 P3 severed minutes hand useless</td><td>B0 P1</td><td>B1 P2 grip</td><td>B2 P3 hand useless</td></tr><tr><td>Thigh</td><td>high</td><td>B1 P1</td><td>B3 P2 leg</td><td>B3 P3 S severed minutes stand</td><td>B1 P1</td><td>B2 P2 leg</td><td>B3 P3 S minutes stand</td></tr><tr><td>Knee</td><td>high</td><td>B0 P1</td><td>B2 P2 leg</td><td>B2 P3 S stand</td><td>B0 P1</td><td>B1 P2 leg</td><td>B1 P3 S stand</td></tr><tr><td>Lower leg</td><td>high</td><td>B1 P1</td><td>B2 P2 leg</td><td>B3 P3 S severed minutes stand</td><td>B1 P1</td><td>B1 P2 leg</td><td>B2 P3 S hours stand</td></tr><tr><td>Foot</td><td>high</td><td>B0 P1</td><td>B2 P2 leg</td><td>B3 P3 severed minutes stand</td><td>B0 P1</td><td>B1 P2 leg</td><td>B1 P3 stand</td></tr></tbody></table><div class="foot"><span>Grave Wounds playtest packet, version 0.1, 5 November 2026</span><span>© 2026 Scott Wares. All rights reserved. Free to copy for playtesting.</span></div></section><section class="page"><h1 id="camp">The camp</h1>
+<p>After the fight, each day runs the same way. Use the camp log.</p>
+<ol>
+<li><strong>Evening council.</strong> The four roles decide, in this order. A role with nothing to decide is skipped.<ul>
+<li><strong>Leader:</strong> stay, move, and what kind of camp.</li>
+<li><strong>Scout:</strong> where to go, and how the watch is set.</li>
+<li><strong>Quartermaster:</strong> what the men eat, and what they try to find.</li>
+<li><strong>Leech:</strong> who gets the medical stores, and how clean the camp is kept.</li>
+</ul>
+</li>
+<li><strong>The day's weather</strong> is on the GM's page, and it can make a night hard.</li>
+<li><strong>The night.</strong> A man in camp gets back 4 Blood.</li>
+<li><strong>Wound fever.</strong> On the 3rd to 5th day after the fight, roll once for each wound: 5%
+   for low risk, 15% medium, 30% high. Add 5 with no camp, take off 5
+   in quarters, and take off a leech's Leechcraft ÷ 10. A septic wound moves a step worse, and is checked every night.</li>
+</ol>
+<p><strong>Every 7 days: the recovery check.</strong> Each wound rolls d100 against the man's <strong>Endurance</strong>, plus:</p>
+<table>
+<thead>
+<tr>
+<th>What</th>
+<th>To the roll</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Care: no camp</td>
+<td>-20</td>
+</tr>
+<tr>
+<td>Care: a camp</td>
+<td>+0</td>
+</tr>
+<tr>
+<td>Care: quarters in houses</td>
+<td>+10</td>
+</tr>
+<tr>
+<td>He marched that day</td>
+<td>-20</td>
+</tr>
+<tr>
+<td>He rested</td>
+<td>+10</td>
+</tr>
+<tr>
+<td>A night harder than the shelter (cold, wet)</td>
+<td>-10</td>
+</tr>
+<tr>
+<td>Poor hygiene</td>
+<td>-10</td>
+</tr>
+<tr>
+<td>A leech with the force</td>
+<td>+ his Leechcraft ÷ 10</td>
+</tr>
+<tr>
+<td>Battle wounds heal easily</td>
+<td>+20</td>
+</tr>
+<tr>
+<td>Wound fever is hard</td>
+<td>−25</td>
+</tr>
+</tbody>
+</table>
+<p>Succeed by 30 or more: two steps better. Succeed: one step better. Fail: it holds, and at <em>deadly</em> he dies. Fail
+by 30 or more: one step worse. A wound starts on the track at its severity: light is <strong>mending</strong>, serious is
+<strong>serious</strong>, critical is <strong>grave</strong>. A wound that would kill in days starts at serious at least, and one that would
+kill in hours or less at grave.</p>
+<table>
+<thead>
+<tr>
+<th>Step</th>
+<th>In a fight</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Healed</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Mending</td>
+<td>−10% to attack and defence</td>
+</tr>
+<tr>
+<td>Serious</td>
+<td>−25% to attack and defence, cannot run</td>
+</tr>
+<tr>
+<td>Grave</td>
+<td>−25% to attack and defence, crawls only, defends only</td>
+</tr>
+<tr>
+<td>Deadly</td>
+<td>too ill to fight</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Every 7 days: sickness.</strong> Each well man rolls d100. At or under the chance, he has the flux. A day or so later, roll d100 for how bad: 1–3 <strong>deadly</strong>, 4–15 <strong>grave</strong>, otherwise <strong>serious</strong>.</p>
+<table class="tight"><thead><tr><th>Camp</th><th>Flux this week, Endurance 50</th></tr></thead><tbody><tr><td>Quarters, dead buried or far off</td><td>0%</td></tr><tr><td>Watched camp</td><td>1.5%</td></tr><tr><td>Bivouac</td><td>12.5%</td></tr><tr><td>Quarters, dead unburied nearby</td><td>4%</td></tr><tr><td>Watched camp, dead unburied</td><td>6.5%</td></tr><tr><td>Bivouac, dead unburied</td><td>17.5%</td></tr></tbody></table>
+<p><strong>Food.</strong> A man carries 4 days' rations. With none left he goes hungry, so forage, buy or move while you can. <strong>Hunting</strong> in open
+country or woods: the Quartermaster rolls Fieldcraft at nightfall. A deer feeds 5 men for a day.</p>
+<p><strong>Camps.</strong> A <strong>bivouac</strong> needs nothing, and is poor hygiene. A <strong>watched camp</strong> needs nothing. <strong>Quarters</strong> in houses need
+the quartermaster to roll Persuade, and he must find somewhere that will take them.</p><div class="foot"><span>Grave Wounds playtest packet, version 0.1, 5 November 2026</span><span>© 2026 Scott Wares. All rights reserved. Free to copy for playtesting.</span></div></section><section class="page sheet"><h1>William of Ely</h1><p class="sub">Man-at-arms, aged 28. Sailor&#x27;s orphan. Climbs anything; cannot sit a horse. Old wound: thigh r.</p><p class="role"><b>Your role: Leader.</b> March, stay, or seek or avoid a fight; what kind of camp. You roll for: Drill in camp.</p><table class="tight"><thead><tr><th>Strength</th><th>Agility</th><th>Endurance</th><th>Wits</th><th>Nerve</th><th>Presence</th></tr></thead><tbody><tr><td>50</td><td>75</td><td>40</td><td>57</td><td>52</td><td>47</td></tr></tbody></table><p><b>Sword:</b> Attack 72. <b>Defence:</b> 52. <b>Initiative:</b> d10 + 7. <b>Armour:</b> Brigandine, sallet and arm splints (c.1460).</p><p><b>Blood:</b> Standard 28, Gritty 19. <b>Fate:</b> Standard 1, Gritty 0.</p><h2>Skills</h2><table class="tight"><tbody><tr><td>Blade 72</td><td>Polearm 25</td><td>Bow 37</td><td>Parry 52</td></tr><tr><td>Dodge 25</td><td>Leechcraft 14</td><td>Fieldcraft 19</td><td>Watch 43</td></tr><tr><td>Stealth 25</td><td>Persuade 23</td><td>Command 30</td></tr></tbody></table><h2>Blood now</h2><div class="blank small"></div><h2>Wounds</h2><table class="lined"><thead><tr><th>Place</th><th>Wound</th><th>Bleed, pain</th><th>On the track</th><th>Day</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr></tbody></table><h2>Notes</h2><div class="blank"></div><div class="foot"><span>Grave Wounds playtest packet, version 0.1, 5 November 2026</span><span>© 2026 Scott Wares. All rights reserved. Free to copy for playtesting.</span></div></section><section class="page sheet"><h1>Gilbert Cooper</h1><p class="sub">Archer, aged 24. Novice who left the cloister. Knows his herbs; faints at the sight of blood. Old wound: face; skull l.</p><p class="role"><b>Your role: Scout.</b> Which way to go, and how the watch is set. You roll for: Finding the way, The watch, against surprise, Stealth, to surprise the enemy.</p><table class="tight"><thead><tr><th>Strength</th><th>Agility</th><th>Endurance</th><th>Wits</th><th>Nerve</th><th>Presence</th></tr></thead><tbody><tr><td>35</td><td>60</td><td>50</td><td>56</td><td>21</td><td>21</td></tr></tbody></table><p><b>Longbow:</b> Attack 55. <b>Defence:</b> 45. <b>Initiative:</b> d10 + 6. <b>Armour:</b> Jack and sallet (archer or billman, c.1460).</p><p><b>Blood:</b> Standard 30, Gritty 20. <b>Fate:</b> Standard 1, Gritty 0.</p><h2>Skills</h2><table class="tight"><tbody><tr><td>Blade 45</td><td>Polearm 17</td><td>Bow 55</td><td>Parry 30</td></tr><tr><td>Dodge 45</td><td>Leechcraft 29</td><td>Fieldcraft 18</td><td>Watch 28</td></tr><tr><td>Stealth 20</td><td>Persuade 10</td><td>Command 7</td></tr></tbody></table><h2>Blood now</h2><div class="blank small"></div><h2>Wounds</h2><table class="lined"><thead><tr><th>Place</th><th>Wound</th><th>Bleed, pain</th><th>On the track</th><th>Day</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr></tbody></table><h2>Notes</h2><div class="blank"></div><div class="foot"><span>Grave Wounds playtest packet, version 0.1, 5 November 2026</span><span>© 2026 Scott Wares. All rights reserved. Free to copy for playtesting.</span></div></section><section class="page sheet"><h1>Edmund Miller</h1><p class="sub">Spearman or billman, aged 20. Huntsman&#x27;s son. Moves quietly; known as a poacher. Old wound: none.</p><p class="role"><b>Your role: Quartermaster.</b> Eat stores, forage, hunt or buy; what gets dropped; where to quarter. You roll for: Foraging on the march, Hunting for the pot, Finding billets, Mending kit.</p><table class="tight"><thead><tr><th>Strength</th><th>Agility</th><th>Endurance</th><th>Wits</th><th>Nerve</th><th>Presence</th></tr></thead><tbody><tr><td>40</td><td>60</td><td>80</td><td>35</td><td>50</td><td>40</td></tr></tbody></table><p><b>Bill:</b> Attack 35. <b>Defence:</b> 35. <b>Initiative:</b> d10 + 6. <b>Armour:</b> Jack and sallet (archer or billman, c.1460).</p><p><b>Blood:</b> Standard 34, Gritty 23. <b>Fate:</b> Standard 1, Gritty 0.</p><h2>Skills</h2><table class="tight"><tbody><tr><td>Blade 30</td><td>Polearm 35</td><td>Bow 45</td><td>Parry 35</td></tr><tr><td>Dodge 20</td><td>Leechcraft 8</td><td>Fieldcraft 11</td><td>Watch 32</td></tr><tr><td>Stealth 35</td><td>Persuade 20</td><td>Command 13</td></tr></tbody></table><h2>Blood now</h2><div class="blank small"></div><h2>Wounds</h2><table class="lined"><thead><tr><th>Place</th><th>Wound</th><th>Bleed, pain</th><th>On the track</th><th>Day</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr></tbody></table><h2>Notes</h2><div class="blank"></div><div class="foot"><span>Grave Wounds playtest packet, version 0.1, 5 November 2026</span><span>© 2026 Scott Wares. All rights reserved. Free to copy for playtesting.</span></div></section><section class="page sheet"><h1>Nicholas Fletcher</h1><p class="sub">Barber-surgeon, aged 20. Sailor&#x27;s orphan. Climbs anything; cannot sit a horse. Old wound: hand l.</p><p class="role"><b>Your role: Leech.</b> Who gets the medical stores, who is carried, and how clean the camp is kept. You roll for: Tending the sick and wounded.</p><table class="tight"><thead><tr><th>Strength</th><th>Agility</th><th>Endurance</th><th>Wits</th><th>Nerve</th><th>Presence</th></tr></thead><tbody><tr><td>45</td><td>55</td><td>30</td><td>70</td><td>75</td><td>40</td></tr></tbody></table><p><b>Dagger / knife:</b> Attack 27. <b>Defence:</b> 27. <b>Initiative:</b> d10 + 5. <b>Armour:</b> Jack and sallet (archer or billman, c.1460).</p><p><b>Blood:</b> Standard 27, Gritty 18. <b>Fate:</b> Standard 1, Gritty 0.</p><h2>Skills</h2><table class="tight"><tbody><tr><td>Blade 27</td><td>Polearm 22</td><td>Bow 27</td><td>Parry 27</td></tr><tr><td>Dodge 18</td><td>Leechcraft 32</td><td>Fieldcraft 23</td><td>Watch 35</td></tr><tr><td>Stealth 18</td><td>Persuade 35</td><td>Command 13</td></tr></tbody></table><h2>Blood now</h2><div class="blank small"></div><h2>Wounds</h2><table class="lined"><thead><tr><th>Place</th><th>Wound</th><th>Bleed, pain</th><th>On the track</th><th>Day</th></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td></tr></tbody></table><h2>Notes</h2><div class="blank"></div><div class="foot"><span>Grave Wounds playtest packet, version 0.1, 5 November 2026</span><span>© 2026 Scott Wares. All rights reserved. Free to copy for playtesting.</span></div></section><section class="page"><h1 id="crossing">The crossing</h1>
+<p><em>For the GM.</em></p>
+<p><strong>Where and when.</strong> Ferrybridge, on the River Aire, before dawn on 28 March 1461. The Lancastrians broke the bridge, and
+Warwick's men forced the crossing on the 27th. Before dawn Lord Clifford's men fall on the Yorkist camp there. Lord
+Fitzwalter is mortally wounded rallying his men. That much is history. Our four men, and the small ford they hold just
+upstream, are ours.</p>
+<p><strong>Read this out.</strong> <em>It is dark and bitterly cold. You've been set to watch a ford a bowshot from the broken bridge, in case
+anyone tries to come round. Then the shouting starts behind you at the bridge, and men with no badges you can see come
+wading out of the dark.</em></p>
+<svg viewBox="0 0 480 170" role="img" aria-label="Sketch of the ford: the river across the middle, the ford, the broken bridge to the east, Clifford's men to the north, the four men to the south"><rect width="480" height="170" fill="#fff" stroke="#555"/><path d="M0 70 C120 60 240 95 480 72 L480 108 C240 130 120 98 0 106Z" fill="#cdd9e3"/><rect x="190" y="74" width="62" height="42" fill="#e4dcc8" stroke="#777" stroke-dasharray="3 3"/><text x="221" y="99" font-size="11" text-anchor="middle">The ford</text><path d="M410 64 v50 M425 64 v50" stroke="#333" stroke-width="3" stroke-dasharray="9 7"/><text x="417" y="60" font-size="11" text-anchor="middle">Broken bridge</text><text x="221" y="26" font-size="12" text-anchor="middle">Clifford's men come from the north</text><text x="221" y="155" font-size="12" text-anchor="middle">Your four men, south bank</text><text x="40" y="92" font-size="11">River Aire</text></svg>
+<p><strong>The enemy.</strong> Five of Clifford's men, all regulars. They are on foot here. On the roller they are already set up.</p>
+<table class="tight"><thead><tr><th>Man</th><th>Weapon</th><th>Armour</th><th>Attack</th><th>Defence</th><th>Nerve</th><th>Blood</th></tr></thead><tbody><tr><td>Billman</td><td>Bill</td><td>Jack and sallet</td><td>50</td><td>35</td><td>50</td><td>20</td></tr><tr><td>Billman</td><td>Bill</td><td>Jack and sallet</td><td>50</td><td>35</td><td>50</td><td>20</td></tr><tr><td>Billman</td><td>Bill</td><td>Jack and sallet</td><td>50</td><td>35</td><td>50</td><td>20</td></tr><tr><td>Billman</td><td>Bill</td><td>Jack and sallet</td><td>50</td><td>35</td><td>50</td><td>20</td></tr><tr><td>Archer</td><td>Longbow</td><td>Jack and sallet</td><td>50</td><td>35</td><td>50</td><td>20</td></tr></tbody></table>
+<p><strong>How it runs.</strong></p>
+<ol>
+<li><strong>Set-up (10 minutes).</strong> Hand out the sheets and pick the setting. Each player places his man south of the water.</li>
+<li><strong>Arrows (2 rounds).</strong> The enemy start 30 hexes away. Gilbert may shoot as they wade, and Clifford's archer shoots back.</li>
+<li><strong>The fight (45 to 60 minutes).</strong> They close. Keep a note of the time.</li>
+<li><strong>The end.</strong> The side's nerve check decides it (<em>The fight</em>). A man who surrenders is a prisoner, and the Leader decides what happens to him. <strong>If the four lose,</strong> the game goes on: Yorkists come up from the bridge at sunrise, Clifford's men fall back north, and anyone left alive is found and carried to camp.</li>
+</ol>
+<p><strong>After the fight (10 minutes).</strong> Bind what can be bound. Carry the wounded back. Each of the four who can stand rolls d100 on the field:</p>
+<table>
+<thead>
+<tr>
+<th>d100</th>
+<th>He finds</th>
+<th>Worth (Days)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1–35</td>
+<td>nothing worth the carrying</td>
+<td>—</td>
+</tr>
+<tr>
+<td>36–60</td>
+<td>food, tobacco, a blanket</td>
+<td>1–3</td>
+</tr>
+<tr>
+<td>61–80</td>
+<td>boots, a good coat, a knife</td>
+<td>3–8</td>
+</tr>
+<tr>
+<td>81–92</td>
+<td>a purse or a watch</td>
+<td>10–30</td>
+</tr>
+<tr>
+<td>93–99</td>
+<td>silver, a fine weapon</td>
+<td>30–90</td>
+</tr>
+<tr>
+<td>100</td>
+<td>a windfall: jewels, a paymaster's chest</td>
+<td>200–1000</td>
+</tr>
+</tbody>
+</table>
+<p>The medieval captain's third goes to the lord. For this test, ignore pay and money otherwise.</p><div class="foot"><span>Grave Wounds playtest packet, version 0.1, 5 November 2026</span><span>© 2026 Scott Wares. All rights reserved. Free to copy for playtesting.</span></div></section><section class="page"><h1 id="week">The week</h1>
+<p><em>For the GM.</em></p>
+<p><strong>The news.</strong> Edward's army crosses and marches north. The four are left behind with whoever can't walk. On Palm Sunday,
+29 March, snow falls all day, and there's a noise far to the north that the wounded take for the wind. The next day the
+carts begin to come back. Towton was the bloodiest day anyone can remember, and Pontefract and every village round it are
+full of hurt men.</p>
+<p><strong>The week's weather.</strong> Use this table, so nobody rolls for it. It is from the game's weather rules for this place and date,
+and the snow of the 29th is from the record.</p>
+<table class="tight"><thead><tr><th>Day</th><th>Weather</th><th>High</th><th>Low</th><th>Hard night in the open?</th></tr></thead><tbody><tr><td>28 March</td><td>Heavy rain</td><td>43°F</td><td>30°F</td><td>Yes</td></tr><tr><td>29 March</td><td>Snow</td><td>34°F</td><td>28°F</td><td>Yes</td></tr><tr><td>30 March</td><td>Rain</td><td>52°F</td><td>39°F</td><td>Yes</td></tr><tr><td>31 March</td><td>Heavy rain</td><td>45°F</td><td>32°F</td><td>Yes</td></tr><tr><td>1 April</td><td>Rain</td><td>52°F</td><td>37°F</td><td>Yes</td></tr><tr><td>2 April</td><td>Overcast</td><td>50°F</td><td>36°F</td><td>No</td></tr><tr><td>3 April</td><td>Overcast</td><td>52°F</td><td>37°F</td><td>No</td></tr></tbody></table>
+<p><strong>The decision that costs something.</strong> Where do they wait?</p>
+<table>
+<thead>
+<tr>
+<th>Choice</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Stay at the crossing</td>
+<td>No march. But the dead lie unburied within reach for 14 days, unless the four spend a day burying them.</td>
+</tr>
+<tr>
+<td>Move to Pontefract, about 3 miles</td>
+<td>Each man who can't walk takes 2 men to carry him, so the four may not be able to take everyone. −20 on any recovery check rolled on the march day. Then quarters, if the Quartermaster can find any.</td>
+</tr>
+<tr>
+<td>Bury the dead, then stay</td>
+<td>A day's work for every fit man, and no one forages that day. The sickness chance drops.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Events.</strong> Use one on a slow day, or roll d6. Each should make someone decide something.</p>
+<table>
+<thead>
+<tr>
+<th>d6</th>
+<th>Event</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>A cart of wounded stops at the camp and asks for food. The Quartermaster must say yes or no.</td>
+</tr>
+<tr>
+<td>2</td>
+<td>A local man says the well by the camp has a dead horse in it. The Leech may move the water, at a day's work.</td>
+</tr>
+<tr>
+<td>3</td>
+<td>A stranger comes in with a Lancastrian badge under his coat, begging for a surgeon.</td>
+</tr>
+<tr>
+<td>4</td>
+<td>A priest offers to bury the dead for what the team found on the field.</td>
+</tr>
+<tr>
+<td>5</td>
+<td>Forage: the Quartermaster rolls Persuade or Fieldcraft. On a success, 2 days' rations.</td>
+</tr>
+<tr>
+<td>6</td>
+<td>A rider says Warwick wants every man who can walk at York. The Leader may send someone, or lie.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The end of the week.</strong> Make the recovery checks and the sickness rolls, then the feedback. Who is alive, and who can walk?</p>
+<p><strong>If you're using the roller only for the fight</strong>, that's fine. Keep the week on paper. The travel map can run a camp, but it isn't
+part of this test.</p><div class="foot"><span>Grave Wounds playtest packet, version 0.1, 5 November 2026</span><span>© 2026 Scott Wares. All rights reserved. Free to copy for playtesting.</span></div></section><section class="page"><h1 id="log">Camp log and session log</h1>
+<table class="lined log"><thead><tr><th>Day</th><th>Where, what camp</th><th>Food left</th><th>Council decided</th><th>Rolls and results</th><th>Who is worse or better</th></tr></thead><tbody><tr><td>28 Mar</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>29 Mar</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>30 Mar</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>31 Mar</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>1 Apr</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>2 Apr</td><td></td><td></td><td></td><td></td><td></td></tr><tr><td>3 Apr</td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table>
+<p><strong>Session log, GM</strong></p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Packet version</td>
+<td>0.1, 5 November 2026</td>
+</tr>
+<tr>
+<td>Date, number of players</td>
+<td></td>
+</tr>
+<tr>
+<td>Players' usual games (d100, D&amp;D, OSR, other)</td>
+<td></td>
+</tr>
+<tr>
+<td>Setting (Standard or Gritty)</td>
+<td></td>
+</tr>
+<tr>
+<td>Fight run on (roller or paper)</td>
+<td></td>
+</tr>
+<tr>
+<td>Minutes for the fight, and rounds</td>
+<td></td>
+</tr>
+<tr>
+<td>Lookups during the fight (tally)</td>
+<td></td>
+</tr>
+<tr>
+<td>Minutes for the week</td>
+<td></td>
+</tr>
+<tr>
+<td>Wounds taken, by man, place and severity</td>
+<td></td>
+</tr>
+<tr>
+<td>Down, dead or crippled at the end of the week</td>
+<td></td>
+</tr>
+<tr>
+<td>Decisions the council argued over</td>
+<td></td>
+</tr>
+</tbody>
+</table><div class="foot"><span>Grave Wounds playtest packet, version 0.1, 5 November 2026</span><span>© 2026 Scott Wares. All rights reserved. Free to copy for playtesting.</span></div></section><section class="page"><h1 id="feedback">Feedback</h1>
+<p>Score 1 (no) to 5 (yes), and add a comment if you can. Send it to waresscott@gmail.com.</p>
+<table class="lined"><thead><tr><th>Question</th><th>Score</th><th>Comment</th></tr></thead><tbody><tr><td>1. Did the margin-to-severity result feel fair?</td><td>1  2  3  4  5</td><td></td></tr><tr><td>2. Was the fight fast enough to stay tense?</td><td>1  2  3  4  5</td><td></td></tr><tr><td>3. Did you understand why a wound had the effect it did?</td><td>1  2  3  4  5</td><td></td></tr><tr><td>4. Were the daily and weekly checks interesting?</td><td>1  2  3  4  5</td><td></td></tr><tr><td>5. Did the weather and sickness change any decisions?</td><td>1  2  3  4  5</td><td></td></tr><tr><td>6. Was the evening council worth its time?</td><td>1  2  3  4  5</td><td></td></tr><tr><td>7. Did your role give you something to decide?</td><td>1  2  3  4  5</td><td></td></tr><tr><td>8. Was the lethality right for the setting?</td><td>1  2  3  4  5</td><td></td></tr><tr><td>9. Would you play a second session with these men?</td><td>1  2  3  4  5</td><td></td></tr></tbody></table>
+<p><strong>Which rule did you have to read twice?</strong></p>
+<div class="blank"></div>
+
+<p><strong>What would you cut?</strong></p>
+<div class="blank"></div>
+
+<p><strong>What did you expect the game to do that it didn't?</strong></p>
+<div class="blank"></div><div class="foot"><span>Grave Wounds playtest packet, version 0.1, 5 November 2026</span><span>© 2026 Scott Wares. All rights reserved. Free to copy for playtesting.</span></div></section></body></html>
