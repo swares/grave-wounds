@@ -388,6 +388,17 @@ When an item is done, delete it here and note it in the pull request that closes
   as a bunker, shell 10, an estimate; in assault.works), used only at Cassino town. 12 local runs:
   every run now ends with the New Zealanders holding Castle Hill at exchange 331, the paratroops
   about half down (35-58%), as fought. Full benchmark: only Cassino town moves (German losses 79% to 50%; still scored 12 of 12).
+- **The Cassino Poles, traced 4 November 2026 (7 of 12).** In the runs the Poles win they still
+  hold Point 593 at the end, and the German counter-attack parties (I./FJR 3's two from 569, the
+  14th Company in the evening) mostly never fight: they come on with their phases but, on the
+  holding side, have no order to go for 593. Measured on 12 local runs, none better than 7 of 12
+  (branch poles-counterattacks, not merged): a German plan sending each party at 593 by an
+  envelopment when its phase brings it on (6 of 12: the I./FJR 3 parties went in piecemeal, 30
+  men against a Polish battalion, and were destroyed, or stood untouched); with a plan's
+  envelopment whose last leg the enemy blocks counting as attacking (6 of 12: without it the
+  route counted as blocked by the Poles round 593 and the unit, handed back to its holding
+  stance, went to ground and stood there to the end). Still not found: why the 14th Company
+  (80 men) and, in some runs, both I./FJR 3 parties still end untouched with the stance switch in.
 - **Tear gas, first cut** (`indirect.gas`, the `e8` kind; 4 November 2026). A CS launcher lays a
   cloud that thins and drifts as smoke does; unmasked men in it fire nothing and check Nerve or fall
   back out of it, masked men fire less (a unit's `masks`). On Hue's 6 February field: 2 to 5 of 12
