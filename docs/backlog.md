@@ -7,7 +7,52 @@ checklist at the end of [design.md](design.md), not here.
 
 When an item is done, delete it here and note it in the pull request that closes it.
 
+## Playtests and release
+
+Work that is not a rule or a page. Most of the detail is kept elsewhere; this section says where,
+so that the backlog is the one place to start. Items in a project doc are in the Claude project,
+not this repository.
+
+- **Table playtests.** None has been recorded: every result so far is self-play. The four to run
+  are in the README's *Next steps*, and `design.md` has the disease numbers to try over a few weeks
+  of camp. The playability review (project doc `claude/playability-review.md`) ranks this first.
+- **The playtest packet.** Project doc *Grave Wounds: playtest packet outline* holds the plan:
+  quick rules, pregenerated characters, a fight and a week in camp, a feedback form and three
+  rounds. Not built. Its open questions still stand: the period, the lethality settings offered,
+  the format, the licence and the feedback channel. The same doc has the publishing path and the
+  formats to consider (itch.io, Foundry VTT, desktop, Android).
+- **Feedback on the core rules.** The review's next step after a table playtest: post the core
+  rules, not the whole book, to r/RPGdesign, BRP Central and the Hârn community, then the wider
+  wargame, solo and video-game audiences. Check each community's self-promotion rules first.
+- **Crowdfunding preparation, paused on purpose** (November 2026). The human work ledger, the
+  mailing-list signup, Kickstarter planning and the title art. The state and to-do list are in
+  project doc `claude/human-ledger-handoff.md`, with the evidence in
+  `claude/human-ledger-evidence.md`.
+- **The email to The Fat Electrician: yet to send.** The draft, the one-page overview and the World
+  Wars book copy were made on 25 October 2026. Before sending, rebuild the book from current main
+  and fill in its share link. Then one follow-up after about two weeks.
+- **Battlefield source disputes** (`docs/battlefield-open-questions.md`). Each is a dispute no
+  official history settles, or a point resting on one report; the data stands until better
+  evidence turns up. New ones go there, not here.
+- **The book pictures' licences.** None of the 68 picture slots in `data/pictures/` has its file
+  yet, and each licence must be checked before its picture goes in.
+- **Sources and Methods: the infringement check.** Before release, check every source for what may
+  be reprinted and what must be cited or re-derived. The play books can ship without waiting for it.
+
 ## Deferred work
+
+- **Camp roles and campaign frames** (playability review, 23 October 2026). The rules do not say
+  who decides what between fights, and give a team no default goal. One fix: a camp role for each
+  player (leader, leech, quartermaster, scout), with one decision each per day or week, and a page
+  of campaign frames per era (a lord's war, a company's contract, a tour to survive).
+- **Visby's evidence table is still a placeholder** (`data/tables/visby-1361-evidence.yaml`). Its
+  weights are fitted to published summaries. Replace them with Ingelmark's per-bone counts
+  (Thordeman, *Armour from the Battle of Wisby 1361*, vol. I, ch. IV, p. 149ff.), which have not
+  been read. The adjusted table derives from it, so it needs refitting too. A library copy, or the
+  Chivalry Bookshelf reprint of 2001, is the likeliest route.
+- **Overfitting to the benchmark.** The self-play benchmark is also what gets tuned against. Track
+  the match rate separately on the battlefields added most recently, which were tuned least. If it
+  stays near the overall rate, the gains are real.
 
 - **The campaign, first cut** (`docs/campaign.md`). A console page over the others: the phase,
   what to do, where things stand, the campaign's log, and save and load of the whole game as a
@@ -42,7 +87,7 @@ When an item is done, delete it here and note it in the pull request that closes
   checks, hazards, tongues, deeds, loot); the log is a record, not yet the save (the last 500 events); a strike's
   public part is fixed, not a GM setting; the field and travel pages have no log. Play online
   (first cut): the GM's page is the host over WebRTC; the campaign console's players can use
-  room codes through a small Cloudflare Worker (`worker/`, to be deployed), others pass codes by hand. Still left out: a
+  room codes through a small Cloudflare Worker (`worker/`, deployed), others pass codes by hand. Still left out: a
   TURN relay for strict networks, room codes for the roller's own Play online,
   rejoining without passing a new link and reply by hand (a lost player is invited again to the
   same seat, his page keeping his last screen; a blinked connection mends itself), sending changes of the whole picture (the panels that changed go as their changed tags, but a turn that lights every hex still sends them all), a player's
