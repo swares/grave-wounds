@@ -518,7 +518,11 @@ indirect:
 # formation, with the kind's `move`. Its machine guns fire as a machine-gun team's (its weapon is
 # the machine gun). A kind with a `gun` also fires its main gun each exchange, `rate` rounds a
 # vehicle whose gun still works, at the nearest enemy unit in range, in sight (as guns are) and
-# in front of it, enemy vehicles first: at a vehicle each round hits at the `hit` % for its range
+# in front of it: first an enemy that fired at it the exchange before with a main gun or an
+# anti-armour weapon that could knock it out (threat_by: the most dangerous threat, after the US
+# Army's gunnery training: "he can kill you, he has seen you, and he is preparing to engage you",
+# ARI Research Product 83-01E, 1983; for the earlier wars our reading), then enemy vehicles, then
+# the rest: at a vehicle each round hits at the `hit` % for its range
 # in field hexes and then knocks it out at its armour's `gun` %; at men it bursts on the nearest
 # of their hexes as the indirect-fire kind `he` does (no scatter).
 # Armour: small arms cannot hurt a vehicle (men with them do not shoot at one), and no one
@@ -639,7 +643,7 @@ vehicles:
 # A unit armed with an anti-tank gun (`weapons`; on the Second World War's and Korea's tables)
 # is guns and their crews, `crew` men a gun, in the at_gun formation (a gun a hex, manhandled).
 # It fires as a vehicle's main gun (`gun`, as vehicles.kinds): `rate` rounds a gun its crews
-# still serve each exchange, at the nearest enemy in range, in sight and in front, vehicles first;
+# still serve each exchange, at the nearest enemy in range, in sight and in front, threats first (above), then vehicles;
 # at a vehicle a hit knocks it out at its armour's `gun` %, at men a round bursts as the
 # indirect kind `he`. It does not shoot small arms. Its crews are men: rifles, machine guns and
 # shells strike them; hand to hand they fight with `crew_weapon`. Design estimates, from the

@@ -2047,14 +2047,14 @@ function gunAtVehicle(us, shot, G, ctx){          // a main gun's rounds at a ve
   log.push(...logged({ kind: "tankfire", att: i, dfd: j, dist, rounds, hit: hits, knocked: k.knocked, crew: k.crew, struck: k.struck, kill: p, ...harmLine(hm), ...ridersLine(k) }, k.tally));
 }
 const keyBefore = (a, b) => a[0] < b[0] || (a[0] === b[0] && a[1] < b[1]);   // a gun target's [vehicle first, distance] ranks before another's
-function gunTarget(us, i, field, G){              // [dist, index, gun hex, target hex]: the nearest enemy vehicle in range, sight and front with a line of fire, else the nearest such unit
-  const u = us[i], occ = occupancy(us), front = footprint(u)[0], fv = fvec(u.facing);
+function gunTarget(us, i, field, G){              // [dist, index, gun hex, target hex]: the nearest enemy in range, sight and front with a line of fire that fired at it and could knock it out (threat_by), else the nearest such vehicle, else the nearest such unit (as units._gun_target)
+  const u = us[i], occ = occupancy(us), front = footprint(u)[0], fv = fvec(u.facing), threat = new Set(u.threat_by || []);
   let best = null;
   us.forEach((e, j) => {
     if (e.side === u.side || e.men <= 0 || e.state === "fled" || (u.he === false && !e.vehicle)) return;   // he: false: no HE round, so only vehicles
     const clear = clearFn(us, occ, field, i, j);
     for (const t of footprint(e).flat()) for (const h of front){
-      const dist = hdist(h, t), key = [e.vehicle ? 0 : 1, dist];
+      const dist = hdist(h, t), key = [threat.has(e.id) ? 0 : e.vehicle ? 1 : 2, dist];
       if (dist <= G.range && (!best || keyBefore(key, best[0])) && canLay(field, clear, fv, [h, t, dist], seerOf(u))) best = [key, [dist, j, h, t]];
     }
   });
@@ -2139,6 +2139,11 @@ function heldAt(us, field){                        // {kind objective, hex, side
   return { kind: "objective", hex: [...obj], sides, held: sides.length === 1 ? sides[0] : null };
 }
 const FIRE = new Set(["volley", "beaten", "shelled", "tankfire", "antiarmour", "rocketfire", "cannon", "ricochet"]);
+function threatsOf(log, us){                     // Map vehicle unit index -> Set of ids of the units whose main gun or anti-armour weapon fired at it with a chance to knock it out (as units._threats)
+  const out = new Map();
+  log.forEach(l => { if ((l.kind === "tankfire" || l.kind === "antiarmour") && (l.kill || 0) > 0 && l.att !== undefined && l.att !== null){ if (!out.has(l.dfd)) out.set(l.dfd, new Set()); out.get(l.dfd).add(us[l.att].id) } });
+  return out;
+}
 function firedOn(log){                            // the units fired on in an exchange's log: missiles, guns, shells and rockets, not hand to hand (as units._fired_on)
   const out = new Set();
   log.forEach(l => { if (l.dfd !== undefined && l.dfd !== null && (FIRE.has(l.kind) || (l.kind === "hero" && l.dist !== undefined))) out.add(l.dfd) });
@@ -2183,9 +2188,10 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   if (field) field.blast = !!blastWeapon(table);   // demolition charges on this table (walls)
   breachAll(us, field, log);
   laddersAll(us, field, log);
-  const occ = occupancy(us), before = us.map(u => u.men), fired = firedOn(log);
+  const occ = occupancy(us), before = us.map(u => u.men), fired = firedOn(log), threats = threatsOf(log, us);
   us.forEach((u, i) => {
     if (fired.has(i)) u.fired_on = true; else delete u.fired_on;   // shot at this exchange, hit or not: for storming in bounds
+    if (threats.has(i)) u.threat_by = [...threats.get(i)].sort((a, b) => a - b); else delete u.threat_by;   // who fired at it and could knock it out: its main gun's first targets
     const cut = Math.min(acc.lost[i], u.men);
     Object.assign(u, { men: u.men - cut, down: (u.down || 0) + cut, dead: (u.dead || 0) + Math.min(acc.dead[i], cut) });
     if (cut > 0) u.hit = true; else delete u.hit;   // it lost men this exchange: under fire, for the next moves

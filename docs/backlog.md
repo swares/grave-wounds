@@ -423,10 +423,14 @@ When an item is done, delete it here and note it in the pull request that closes
   dead ground from the flat outside: the Panzers fire at C Company's guns and 41st RTR instead, as
   the account has them go for 24th Armoured Brigade. Snipe 5 to 6 of 12 (12 runs, the benchmark's
   seeds; only Snipe's stamp moved), British losses 38% to 27% (the account 72 of about 300, 24%),
-  the Axis's 30% to 27%. Still left: the carriers are now lost at about 10:30, all of them, to the
-  dozen Italian tanks on the western ridge, who see down into the hollow from its crest 660 m off
-  (the account: 6 burned just before noon, 16 lost all day); the carriers never go out at the
-  Bersaglieri, who break on their own; then the evening attack.
+  the Axis's 30% to 27%. The 10:30 carriers (5 November 2026): the dozen Italian tanks and the
+  Germans on their right, on the western ridge 590-660 m off, put every round into the carriers
+  (a main gun took the nearest vehicle first) while A and C Companies' six-pounders knocked them
+  out. Threat first is now the rule: a main gun takes first an enemy that fired at it the exchange
+  before and could knock it out (`threat_by`), then vehicles, then the rest. The carriers come
+  through 10:30 with 20 of 22. Full benchmark: Snipe 6 to 8 of 12 before the tank-crew table, 9 to
+  10 with it (British losses 16% to 19%; the account 24%); no other field moved either time. Still
+  left: the carriers never go out at the Bersaglieri, who break on their own; the evening attack.
 - **Marks dropped at load, fixed 5 November 2026.** A field unit's `masks` and `holds_fire` were
   not copied onto the playing unit (battle.make_unit's list, makeUnit in the page), so Hue's
   Marines fought unmasked from the first gas cut. With them copied, Hue is unchanged (8 of 12,

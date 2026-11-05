@@ -2370,8 +2370,12 @@ crews (4 a tank, 3 an infantry fighting vehicle or carrier).
   and deep going cost them what they cost men.
 - **Their machine guns** fire as a machine-gun team's, about a gun a vehicle.
 - **Main guns** fire each exchange at the nearest enemy in range, in sight (as guns are: the
-  weather and the light) and in front, enemy vehicles first, with a clear line of fire. A
-  vehicle whose gun is out does not fire it.
+  weather and the light) and in front, with a clear line of fire: first an enemy that fired at
+  it the exchange before with a main gun or an anti-armour weapon that could knock it out (the
+  most dangerous threat: it can kill you, it has seen you and it is engaging you, in the US
+  Army's gunnery training of 1983; for the earlier wars our reading), then enemy vehicles, then
+  the rest. Without it, at Snipe the Italian and German tanks on the western ridge shot the
+  carriers while the six-pounders knocked them out. A vehicle whose gun is out does not fire it.
 - **Fire control.** A tank's gun hits and reaches by its fire control (`vehicles.fire_control`):
   its war's (by the wound table's battle) unless the battlefield gives its own (`fc`). Hits at a
   standing target, first round, by range:
@@ -2503,7 +2507,8 @@ its crew of 5 to a hex, manhandled 2 hexes an exchange. They stand for the Briti
 the Japanese 47 mm (`anti_tank_guns` in `data/units.yaml`).
 - **Fire.** Each gun its crews still serve fires one round an exchange, as a tank's main
   gun does, out to 100 hexes (1,094 yards, 1,000 m). It fires at the nearest enemy in sight
-  and in front, vehicles first.
+  and in front: first a vehicle that fired at it the exchange before and could knock it out,
+  then vehicles, then men (as a tank's main gun).
   - At a vehicle it hits at 70%, 45% or 20% by range, and the hit knocks the vehicle out at
     its armour's main-gun %.
   - At men its high explosive bursts as a tank's round does. A battlefield can mark a gun unit
