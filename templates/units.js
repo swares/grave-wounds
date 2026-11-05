@@ -893,9 +893,9 @@ function volleys(units, field = null){            // [{att, dfd, men, dist, cove
   });
   return out;
 }
-function holdsFire(u, v){                         // fire discipline: ammunition counted, not a machine gun, a barely seen target in a hold_hidden band (as units._holds_fire)
+function holdsFire(u, v){                         // fire discipline: a unit marked holds_fire, ammunition counted, not a machine gun, a barely seen target in a hold_hidden band (as units._holds_fire)
   const bands = UD.ammunition.hold_hidden || [];
-  if (!bands.length || v.seen >= 1 || ammoFull(u) === null || isMg(u.weapon)) return false;
+  if (!u.holds_fire || !bands.length || v.seen >= 1 || ammoFull(u) === null || isMg(u.weapon)) return false;
   const b = fieldRange(u.weapon, v.dist, v.reach);
   return !!b && bands.includes(b.band);
 }

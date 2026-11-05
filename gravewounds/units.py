@@ -1794,10 +1794,10 @@ def volleys(d: Data, units: list, field: dict | None = None) -> list:
 
 
 def _holds_fire(d: Data, u: dict, v: dict) -> bool:
-    """Fire discipline (ammunition.hold_hidden): a unit whose ammunition counts, not a machine
-    gun, does not fire at a target it barely sees in those range bands."""
+    """Fire discipline (ammunition.hold_hidden): a unit marked holds_fire whose ammunition counts,
+    not a machine gun, does not fire at a target it barely sees in those range bands."""
     bands = d.units["ammunition"].get("hold_hidden") or []
-    if not bands or v["seen"] >= 1 or ammo_full(d, u) is None or is_mg(d, u["weapon"]):
+    if not u.get("holds_fire") or not bands or v["seen"] >= 1 or ammo_full(d, u) is None or is_mg(d, u["weapon"]):
         return False
     b = field_range(d, u["weapon"], v["dist"], v["reach"])
     return b is not None and b["band"] in bands

@@ -307,13 +307,15 @@ missile:
 ammunition:
   burn: 0.3
   low: 0.25
-  # hold_hidden: a unit whose ammunition counts (not a machine gun) holds its fire at a target it
-  #   barely sees (hidden: seen at hidden.seen) in these range bands, saving its rounds for when the
-  #   enemy comes on (the long band only: with medium too the benchmark lost 21 runs as fought).
+  # hold_hidden: a unit marked holds_fire on its battlefield (ammunition counting, not a machine
+  #   gun) holds its fire at a target it barely sees (hidden: seen at hidden.seen) in these range
+  #   bands, saving its rounds for when the enemy comes on. For everyone it cost 21 runs as fought on
+  #   the benchmark (attackers who fired their way in, defenders who wore attackers down at range),
+  #   and in the long band only it lost Snipe's gain too, so it is a unit's mark, not a rule.
   #   Without it Snipe's A Company riflemen fired 40 volleys at Bersaglieri lying in
   #   the scrub 420-600 m off, hit 6, and were out of rounds when they closed (4 November 2026).
   #   Machine guns fire on: beating ground at range is how they suppress. A design choice.
-  hold_hidden: [long]
+  hold_hidden: [medium, long]
   reach: 5
   vehicles: [lorry, apc, ifv]
   air_drop: {scatter: 2, battles: ["WWII", "Korea", "Vietnam", "Late 20th century", "Iraq & Afghanistan"]}

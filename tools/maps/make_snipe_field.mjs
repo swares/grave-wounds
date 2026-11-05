@@ -34,7 +34,11 @@ const grid = groundGrid(COLS, ROWS, kind);
 // ---------- the armies (pos is the middle of the front row) ----------
 const RB = { side: 0, facing: N }, AX = { side: 1, facing: S };
 const SIX_PDR = { quality: "veteran", weapon: "at_gun", kit: "ww2_rifleman", formation: "at_gun", mounted: false, prone: true, he: false };   // dug in by 03:45; armour-piercing only (no HE round for the 6-pounder until 1943: project doc "snipe-research", F2)
-const RIFLES = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true };
+const RIFLES = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true, holds_fire: true };
+// holds_fire (ammunition.hold_hidden): the riflemen hold their fire at men lying in the scrub beyond
+// short range. The account has A Company's last guns holding fire to 200 yd; the riflemen's is our
+// reading of the same discipline. Without it they shot themselves dry at Bersaglieri 420-600 m off
+// (40 volleys, 6 hit) and had no rounds when they closed (4 November 2026).
 const CARRIERS = { quality: "veteran", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "apc" };   // Universal Carriers with their Brens
 const SHERMANS = { quality: "regular", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank" };
 const PANZERS = { quality: "veteran", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank" };        // Panzer III and IV: heavy armour (50 mm fronts)
@@ -53,7 +57,7 @@ const units = [
   at(unit("C Company's riflemen", RB, 30, RIFLES, [10, 78, 102]), SW),
   at(unit("B Company's riflemen", RB, 30, RIFLES, [10, 110, 94]), SE),
   unit("The carriers (scout and carrier platoons)", RB, 66, CARRIERS, [11, 95, 78]),
-  unit("7th Field Squadron's sappers", RB, 16, { ...RIFLES, weapon: "rifle_service" }, [4, 100, 86]),
+  unit("7th Field Squadron's sappers", RB, 16, { ...RIFLES, weapon: "rifle_service", holds_fire: false }, [4, 100, 86]),
   at(unit("47th RTR (Shermans and Crusaders)", RB, 96, SHERMANS, [12, 182, 52]), NW),
   at(unit("41st RTR", RB, 96, SHERMANS, [12, 182, 104]), SW),
   at(unit("15th Panzer's tanks, passing north at dawn", AX, 60, PANZERS, [15, 128, 10]), SW),
