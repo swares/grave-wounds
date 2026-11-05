@@ -2816,7 +2816,7 @@ function shieldText(u){                          // "; shields: small arms from 
 }
 function teamInfo(u){                             // a machine-gun team's or anti-tank guns' line in the selected unit
   const A = FD.units.anti_tank_guns, G = FD.units.machine_guns;
-  if (isAtGun(u)) return `<dt>Guns</dt><dd>${gunsText(atGuns(u), "anti-tank gun")} served (${A.crew} men a gun): ${A.gun.rate} round a gun an exchange at the nearest vehicle (else men) in sight and in front, out to ${fmtM(A.gun.range * FD.units.hex_m)}; ${atRounds(u)} of ${Math.ceil(u.start / A.crew) * A.rounds} rounds left${u.resupplying ? " (resupplying)" : ""}${shieldText(u)}</dd>`;
+  if (isAtGun(u)) return `<dt>Guns</dt><dd>${gunsText(atGuns(u), "anti-tank gun")} served (${A.crew} men a gun): ${A.gun.rate} round a gun an exchange at the nearest vehicle firing on it, else vehicle, else men, in sight and in front, out to ${fmtM(A.gun.range * FD.units.hex_m)}; ${atRounds(u)} of ${Math.ceil(u.start / A.crew) * A.rounds} rounds left${u.resupplying ? " (resupplying)" : ""}${shieldText(u)}</dd>`;
   if (isMg(u.weapon)) return `<dt>Guns</dt><dd>${gunsText(mgGuns(u), "machine gun")} served (${G.crew} men a gun); beaten zone ${fmtM(G.beaten.beyond * FD.units.hex_m)} past the target${shieldText(u)}</dd>`;
   return "";
 }

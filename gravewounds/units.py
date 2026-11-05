@@ -2676,12 +2676,16 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     log += _ladders_all(d, us, field)
     occ = occupancy(d, us)
     before = [u["men"] for u in us]
-    fired = _fired_on(log)
+    fired, threats = _fired_on(log), _threats(log, us)
     for i, u in enumerate(us):
         if i in fired:
             u["fired_on"] = True                    # shot at this exchange, hit or not: for storming in bounds
         else:
             u.pop("fired_on", None)
+        if threats.get(i):
+            u["threat_by"] = sorted(threats[i])     # who fired at it this exchange and could knock it out: its main gun's first targets
+        else:
+            u.pop("threat_by", None)
         cut = min(lost[i], u["men"])
         u.update(men=u["men"] - cut, down=u.get("down", 0) + cut, dead=u.get("dead", 0) + min(dead[i], cut))
         if cut > 0:
@@ -3239,6 +3243,17 @@ def _closing_volleys(d: Data, us: list, table: str, rng, acc: tuple, field: dict
 _FIRE = {"volley", "beaten", "shelled", "tankfire", "antiarmour", "rocketfire", "cannon", "ricochet"}
 
 
+def _threats(log: list, us: list) -> dict:
+    """{vehicle unit index: ids of the units whose main gun or anti-armour weapon fired at it in
+    an exchange's log with a chance to knock it out}: the most dangerous threats, which its own
+    main gun takes first (_gun_target)."""
+    out = {}
+    for l in log:
+        if l.get("kind") in ("tankfire", "antiarmour") and (l.get("kill") or 0) > 0 and l.get("att") is not None:
+            out.setdefault(l["dfd"], set()).add(us[l["att"]]["id"])
+    return out
+
+
 def _fired_on(log: list) -> set:
     """The units fired on in an exchange's log: missiles, guns, shells and rockets, not hand to
     hand."""
@@ -3648,9 +3663,12 @@ def _gun_at_vehicle(d: Data, us: list, shot: tuple, gun: dict, ctx: tuple) -> li
 
 
 def _gun_target(d: Data, us: list, i: int, field: dict | None, gun: dict):
-    """(distance, index, gun hex, target hex) for vehicle unit i's main gun: the nearest enemy
-    vehicle in range, in sight and in front with a line of fire, else the nearest such unit."""
+    """(distance, index, gun hex, target hex) for vehicle unit i's main gun: the nearest enemy in
+    range, in sight and in front with a line of fire that fired at it last exchange and could knock
+    it out (threat_by: the most dangerous threat), else the nearest such vehicle, else the nearest
+    such unit."""
     u, occ = us[i], occupancy(d, us)
+    threat = set(u.get("threat_by") or ())
     front, fv, best = footprint(d, u)[0], _fvec(u["facing"]), None
     for j, e in enumerate(us):
         if e["side"] == u["side"] or e["men"] <= 0 or e["state"] == "fled" or (u.get("he") is False and not e.get("vehicle")):
@@ -3658,7 +3676,7 @@ def _gun_target(d: Data, us: list, i: int, field: dict | None, gun: dict):
         clear = _clear_fn(d, us, occ, field, i, j)
         for t, h in ((x, h) for row in footprint(d, e) for x in row for h in front):
             dist = hdist(h, t)
-            key = (0 if e.get("vehicle") else 1, dist)
+            key = (0 if e.get("id") in threat else 1 if e.get("vehicle") else 2, dist)
             if dist <= gun["range"] and (best is None or key < best[0]) and _can_lay(d, field, clear, fv, (h, t, dist), _seer(u)):
                 best = (key, (dist, j, h, t))
     return None if best is None else best[1]
