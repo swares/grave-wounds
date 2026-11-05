@@ -408,9 +408,19 @@ When an item is done, delete it here and note it in the pull request that closes
   the overrun rule takes at once (19 crew). Then the 17:00 counter-attack breaks A Company's
   riflemen within four exchanges and the north-west guns after them. Measured and not built
   (branch snipe-panzers): a plan sending the long-gunned Panzers at 47th RTR, as the account has
-  them ambush the 24th Armoured Brigade, made it worse, 2 of 12. Next: why the Bersaglieri cross
-  unhurt (what fires at them, at what range, the six-pounders' HE on infantry), then the evening
-  attack.
+  them ambush the 24th Armoured Brigade, made it worse, 2 of 12. Why the Bersaglieri cross unhurt
+  (5 November 2026): the riflemen spent their rounds early, some 40 volleys at 400-600 m at men
+  lying in the open they barely saw (seen 0.05-0.1), and were low by exchange 302. Fire discipline
+  (`ammunition.hold_hidden`, a unit's `holds_fire`) is now on the three rifle companies: they fire
+  only at men they see. Full benchmark: still 5 of 12, British losses 42% to 38%, the Axis's 18%
+  to 30%; no other field moved. Measured and not built: the same hold for every unit (Snipe 10 of
+  12 locally, but 21 runs lost as fought across the benchmark), and in the long band only (worse);
+  Snipe's gain there came from the Axis infantry holding fire too, which no source gives. Next:
+  the 07:30 carriers, then the evening attack.
+- **Marks dropped at load, fixed 5 November 2026.** A field unit's `masks` and `holds_fire` were
+  not copied onto the playing unit (battle.make_unit's list, makeUnit in the page), so Hue's
+  Marines fought unmasked from the first gas cut. With them copied, Hue is unchanged (8 of 12,
+  the same losses): the Marines were not in their own gas.
 - **Tear gas, first cut** (`indirect.gas`, the `e8` kind; 4 November 2026). A CS launcher lays a
   cloud that thins and drifts as smoke does; unmasked men in it fire nothing and check Nerve or fall
   back out of it, masked men fire less (a unit's `masks`). On Hue's 6 February field: 2 to 5 of 12
