@@ -408,9 +408,29 @@ When an item is done, delete it here and note it in the pull request that closes
   the overrun rule takes at once (19 crew). Then the 17:00 counter-attack breaks A Company's
   riflemen within four exchanges and the north-west guns after them. Measured and not built
   (branch snipe-panzers): a plan sending the long-gunned Panzers at 47th RTR, as the account has
-  them ambush the 24th Armoured Brigade, made it worse, 2 of 12. Next: why the Bersaglieri cross
-  unhurt (what fires at them, at what range, the six-pounders' HE on infantry), then the evening
-  attack.
+  them ambush the 24th Armoured Brigade, made it worse, 2 of 12. Why the Bersaglieri cross unhurt
+  (5 November 2026): the riflemen spent their rounds early, some 40 volleys at 400-600 m at men
+  lying in the open they barely saw (seen 0.05-0.1), and were low by exchange 302. Fire discipline
+  (`ammunition.hold_hidden`, a unit's `holds_fire`) is now on the three rifle companies: they fire
+  only at men they see. Full benchmark: still 5 of 12, British losses 42% to 38%, the Axis's 18%
+  to 30%; no other field moved. Measured and not built: the same hold for every unit (Snipe 10 of
+  12 locally, but 21 runs lost as fought across the benchmark), and in the long band only (worse);
+  Snipe's gain there came from the Axis infantry holding fire too, which no source gives. The
+  07:30 carriers (5 November 2026): the hollow was flat open ground, and the long-gunned Panzers
+  coming up from the south saw the carriers parked in its middle 740 m off, the only British
+  vehicles in reach, and knocked out 16 of 22 in five exchanges, into their flank. The hollow's low
+  middle is now drawn inside a narrow ring of slope (the rules have no low ground; its size is ours),
+  dead ground from the flat outside: the Panzers fire at C Company's guns and 41st RTR instead, as
+  the account has them go for 24th Armoured Brigade. Snipe 5 to 6 of 12 (12 runs, the benchmark's
+  seeds; only Snipe's stamp moved), British losses 38% to 27% (the account 72 of about 300, 24%),
+  the Axis's 30% to 27%. Still left: the carriers are now lost at about 10:30, all of them, to the
+  dozen Italian tanks on the western ridge, who see down into the hollow from its crest 660 m off
+  (the account: 6 burned just before noon, 16 lost all day); the carriers never go out at the
+  Bersaglieri, who break on their own; then the evening attack.
+- **Marks dropped at load, fixed 5 November 2026.** A field unit's `masks` and `holds_fire` were
+  not copied onto the playing unit (battle.make_unit's list, makeUnit in the page), so Hue's
+  Marines fought unmasked from the first gas cut. With them copied, Hue is unchanged (8 of 12,
+  the same losses): the Marines were not in their own gas.
 - **Tear gas, first cut** (`indirect.gas`, the `e8` kind; 4 November 2026). A CS launcher lays a
   cloud that thins and drifts as smoke does; unmasked men in it fire nothing and check Nerve or fall
   back out of it, masked men fire less (a unit's `masks`). On Hue's 6 February field: 2 to 5 of 12

@@ -1763,6 +1763,12 @@ numbers are in `ammunition` in `data/units.yaml`.
   or less it is **low** and shoots at half rate (half its shooters). With none it is **out**:
   it cannot shoot, still fights hand to hand, and checks morale at −10. Heroes with missile
   weapons shoot while their unit can.
+- **Fire discipline.** A unit a battlefield marks `holds_fire` (counting its ammunition, not
+  a machine gun) does not shoot at a target it barely sees (hidden, not fully seen) in the
+  medium or long band of its weapon (`ammunition.hold_hidden`): it saves its rounds for when
+  the enemy comes on, and shoots as usual at what it sees or at short range. Only Snipe's three
+  rifle companies carry it: without it they spent their rounds at 400-600 m on Bersaglieri lying
+  in the open. As a rule for every unit it lost runs across the benchmark, so it is a mark.
 - **Resupply.** On its side's move, out of contact and before it moves, **Resupply** sets a
   unit to resupply: it neither moves nor fires that exchange, and at its end it has a full
   load again (logged). It needs a source within 5 hexes:

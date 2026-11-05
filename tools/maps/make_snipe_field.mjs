@@ -21,7 +21,22 @@ import { N, S, wobble, groundGrid, unit, led, writeField, allRows } from "./fiel
 const COLS = 200, ROWS = 160;                 // 2000 m west to east, about 1390 m north to south
 const C = [100, 80];                          // the middle of the hollow
 const NE = 0, NW = 2, SW = 3, SE = 5;         // facings (corners; see docs/units.md)
-function kind(c, r){                          // flat desert with the two low ridges; the hollow and its camelthorn play as open ground (its depth is not known, and the rules' scrub would keep tanks out)
+// The hollow's low middle, where the carriers and sappers stand: the rules have no low ground, so it
+// is drawn as flat ground inside a narrow ring of slope (dead ground: a slope higher than both ends
+// of a line hides each from the other), which hides it from the flat outside, the gun and rifle
+// companies' ground included, until a unit comes within a hex of the ring or onto it. The accounts
+// give a shallow depression, the only cover in thousands of yards; its depth, and how big its low
+// middle was, are not known: the ring's size (about 240 by 145 m inside) is ours, drawn between the
+// carriers and the rifle companies. Without it the long-gunned Panzers knocked out 16 of the 22
+// carriers at 07:30, 740 m off in the open (the account's first carrier losses are just before noon).
+const AXES = [400, 240];                      // the hollow's half-axes in metres, north-east to south-west and across (1,000 by 500 yd: 457 by 229 m)
+function inHollow(c, r){                      // where hex c, r lies in the hollow: 1 at its rim, 0 at the middle
+  const x = (c - C[0]) * 10, y = (r - C[1]) * 8.69, along = (x - y) / Math.SQRT2, across = (x + y) / Math.SQRT2;
+  return Math.hypot(along / AXES[0], across / AXES[1]);
+}
+function kind(c, r){                          // flat desert with the two low ridges; the hollow and its camelthorn play as open ground (the rules' scrub would keep tanks out), its low middle ringed (above)
+  const h = inHollow(c, r);
+  if (h >= 0.30 && h <= 0.38) return "s";
   const west = 30 + Math.round(wobble(r / 11, 0.9, 2.2) * 1.5), east = 178 + Math.round(wobble(r / 13, 2.1, 0.4) * 1.5);
   if (Math.abs(c - west) <= 1) return "h";                                          // the low ridge to the west, its crest
   if (Math.abs(c - west) <= 4) return "s";
@@ -34,7 +49,11 @@ const grid = groundGrid(COLS, ROWS, kind);
 // ---------- the armies (pos is the middle of the front row) ----------
 const RB = { side: 0, facing: N }, AX = { side: 1, facing: S };
 const SIX_PDR = { quality: "veteran", weapon: "at_gun", kit: "ww2_rifleman", formation: "at_gun", mounted: false, prone: true, he: false };   // dug in by 03:45; armour-piercing only (no HE round for the 6-pounder until 1943: project doc "snipe-research", F2)
-const RIFLES = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true };
+const RIFLES = { quality: "veteran", weapon: "rifle_service", kit: "ww2_rifleman", formation: "extended", mounted: false, prone: true, holds_fire: true };
+// holds_fire (ammunition.hold_hidden): the riflemen hold their fire at men lying in the scrub beyond
+// short range. The account has A Company's last guns holding fire to 200 yd; the riflemen's is our
+// reading of the same discipline. Without it they shot themselves dry at Bersaglieri 420-600 m off
+// (40 volleys, 6 hit) and had no rounds when they closed (4 November 2026).
 const CARRIERS = { quality: "veteran", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "apc" };   // Universal Carriers with their Brens
 const SHERMANS = { quality: "regular", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank" };
 const PANZERS = { quality: "veteran", weapon: "machine_gun", kit: "none", formation: "armour", mounted: false, vehicle: "tank" };        // Panzer III and IV: heavy armour (50 mm fronts)
@@ -53,7 +72,7 @@ const units = [
   at(unit("C Company's riflemen", RB, 30, RIFLES, [10, 78, 102]), SW),
   at(unit("B Company's riflemen", RB, 30, RIFLES, [10, 110, 94]), SE),
   unit("The carriers (scout and carrier platoons)", RB, 66, CARRIERS, [11, 95, 78]),
-  unit("7th Field Squadron's sappers", RB, 16, { ...RIFLES, weapon: "rifle_service" }, [4, 100, 86]),
+  unit("7th Field Squadron's sappers", RB, 16, { ...RIFLES, weapon: "rifle_service", holds_fire: false }, [4, 100, 86]),
   at(unit("47th RTR (Shermans and Crusaders)", RB, 96, SHERMANS, [12, 182, 52]), NW),
   at(unit("41st RTR", RB, 96, SHERMANS, [12, 182, 104]), SW),
   at(unit("15th Panzer's tanks, passing north at dawn", AX, 60, PANZERS, [15, 128, 10]), SW),
@@ -118,6 +137,8 @@ writeField({
     "Panzers play as heavy armour, the Italian M13s, M14s and Semoventi as light. The British artillery",
     "is not on call (the observer was lost at 04:00), and the friendly fire is not played. Clock: GMT+3.",
     "The camelthorn is not drawn: the rules' scrub would keep tanks out of it, and it stopped none here.",
+    "The hollow's low middle, where the carriers and sappers stand, is drawn inside a narrow ring of slope:",
+    "dead ground from the flat outside (the rules have no low ground); its size is ours.",
   "The guns and riflemen are in the gun pits and slit trenches dug before dawn (a trench under each",
   "section, drawn to the units, not to any plan). The six-pounders fire armour-piercing only: there",
   "was no high-explosive round for them in October 1942.",
