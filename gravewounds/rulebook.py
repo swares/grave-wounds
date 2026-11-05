@@ -167,6 +167,7 @@ def values(d: Data) -> dict:
     E, DZ, RC = d.teams["medieval"], d.disease, d.disease["recovery"]
     res = SC["results"]
     v = {
+        "council_low": d.council.get("low_rations", 2),
         "pain_step": CB["pain_step"], "pain_cap": T["pain_cap"], "pain_cap_pct": T["pain_cap"] * CB["pain_step"],
         "cap": CB["cap"], "crit_tenth": round(1 / CB["critical_fraction"]), "graze": CB["graze_margin"],
         "band_serious": CB["margin_bands"]["default"]["serious"], "band_critical": CB["margin_bands"]["default"]["critical"],

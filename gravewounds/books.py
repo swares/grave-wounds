@@ -167,6 +167,7 @@ def render_book(d: Data, root: Path, books: dict, bid: str) -> str:
           f"The battlefields: {', '.join(f'[{_short(d.fields[f], d)}](#field-{f})' for f in fields)}."
           if fields else "",
           _content(root, bid, "intro.md"),
+          _content(root, bid, "frames.md"),
           "## What is switched on {#switched-on}",
           B["switched_on"],
           _switched_on(d, B),

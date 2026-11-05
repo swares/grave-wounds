@@ -1,0 +1,35 @@
+# Camp roles and the evening council (the Rules' "Camp roles"; templates/travelday.js; the campaign
+# console's Council panel). This is how a table shares out the decisions a force already makes
+# between fights; it adds no new rolls. A role's holder makes its rolls, even with a better man in
+# the force, and the GM may set another man for any one roll. These roles are ours, a table's way of
+# sharing the work, not a record of how any army ran itself.
+#
+# roles       - what each role decides at the council.
+# rolls       - each roll a named man makes for the force: its skill and the role that makes it.
+#               A force with no roles rolls with its best man, as before. So does a role whose
+#               holder is dead, sick or away, until a council fills it.
+# low_rations - days of rations at or under which the quartermaster's standing order reopens.
+low_rations: 2
+roles:
+  leader:
+    name: Leader
+    decides: "March, stay, or seek or avoid a fight; what kind of camp."
+  scout:
+    name: Scout
+    decides: "Which way to go, and how the watch is set."
+  quartermaster:
+    name: Quartermaster
+    decides: "Eat stores, forage, hunt or buy; what gets dropped; where to quarter."
+  leech:
+    name: Leech
+    decides: "Who gets the medical stores, who is carried, and how clean the camp is kept."
+rolls:
+  drill: {name: "Drill in camp", skill: command, role: leader}
+  way: {name: "Finding the way", skill: fieldcraft, role: scout}
+  watch: {name: "The watch, against surprise", skill: watch, role: scout}
+  stealth: {name: "Stealth, to surprise the enemy", skill: stealth, role: scout}
+  forage: {name: "Foraging on the march", skill: fieldcraft, role: quartermaster}
+  hunt: {name: "Hunting for the pot", skill: fieldcraft, role: quartermaster}
+  billet: {name: "Finding billets", skill: persuade, role: quartermaster}
+  mend: {name: "Mending kit", skill: craft, role: quartermaster}
+  leech: {name: "Tending the sick and wounded", skill: leechcraft, role: leech}

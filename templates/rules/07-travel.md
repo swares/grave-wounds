@@ -254,7 +254,7 @@ cannot attack or move in the first round.
 
 ## Skills on the march {#march-skills}
 
-The best named man in the force rolls; a skill used well is ticked.
+The best named man in the force rolls, or the man whose [camp role](#roles) it is; a skill used well is ticked.
 
 **Billets.** A force its army does not feed must find its own quarters in a village or town: his
 Persuade (no better than his tongue there). Fail, and no one will take them in. Quartered, its
@@ -270,6 +270,42 @@ short of food, and it is fresh.
 once a day (Hard in fog, a blizzard or a sandstorm). Fail, and the day's march goes {{way_slow}}
 times as long (night navigation ran about 40% slower in a 1979 US Army study); fumble, and an hour
 is lost going the wrong way first.
+
+## Camp roles {#roles}
+
+Between fights a force makes the same few decisions every day. Roles give each to a player, so that
+everyone at the table has something to decide. Each player's lead man takes one. With fewer than
+four players a man may hold two, and a player alone holds all four. These roles are the game's own,
+a table's way of sharing the work, and not how any army ran itself.
+
+| Role | Decides | Rolls |
+| --- | --- | --- |
+| **Leader** | March, stay, or seek or avoid a fight; what kind of camp | Drill |
+| **Scout** | Which way to go, and how the watch is set | Finding the way, Watch and Stealth against surprise |
+| **Quartermaster** | Eat stores, forage, hunt or buy; what gets dropped; where to quarter | Foraging, hunting, billets, mending kit |
+| **Leech** | Who gets the medical stores, who is carried, how clean the camp is kept | Tending the sick and wounded |
+
+**The evening council.** At the end of each day, before the night passes, each role with something to
+decide says what it will do. A role with nothing to decide is skipped: the leech when no one is sick,
+the scout in a camp with no route. A player may instead leave a **standing order**, and is asked again
+only when something changes: for the leader, the enemy within reach; for the scout, weather that hides
+the way; for the quartermaster, {{council_low}} days' rations or fewer, or no water; for the leech, more
+sick or wounded than at the last council.
+
+**Who rolls.** The role's man makes its rolls, even with a better man beside him, so who holds a role
+matters. The GM may set another man for any one roll. Roles and rolls change only at a council, which
+a player may ask for. If a role's man is dead, too sick or away, the best man rolls until a council
+fills it. A force with no roles rolls with its best man. On the [campaign page](campaign.html) the
+**Council** panel keeps all this and stops each day for the council; a table on paper can use the
+[council card](council-card.html). The travel map played on its own has no council, though its rolls
+follow the roles a council has set.
+
+## Why the team marches {#frames}
+
+A team needs a reason to be on the road. A **frame** gives it one: who pays, what the team is after,
+what ends it, a first job and what is likely to go wrong. Frames add no rules; they use the patrons,
+pay, jobs and purses already here. The Medieval Wars has [four](book-medieval.html#frames); frames for
+the other books are still to come.
 
 ## Finding work {#work}
 

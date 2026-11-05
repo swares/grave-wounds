@@ -253,7 +253,7 @@ function makeTravelDay(DATA, RULES, env = {}){
     return [DATA.languages.forage_without ?? -20, `, no one speaking ${tongueNames(ts)}`];
   }
   function foraged(f){                          // a named man's Fieldcraft roll finds fresh food on the day's march
-    const [skill, who, pid] = bestSkill([f], "fieldcraft");
+    const [skill, who, pid] = rollerFor([f], "forage", "fieldcraft");
     if (!skill) return false;
     const [mod, why] = forageTongue(f), target = Math.max(0, skill + mod);
     const roll = roll100(), ok = roll <= target;
@@ -265,11 +265,12 @@ function makeTravelDay(DATA, RULES, env = {}){
      finding the way off the road or in bad weather. The best named man in the force rolls; a skill
      used well is ticked. */
   const USES = () => DATA.uses || {};
-  function bestTalk(f, skill){                   // [figure, name, pid]: the best named man at a talk skill, capped by the local tongue (or by the interpreter's figure, through him)
+  function bestTalk(f, skill, roll = null){                   // [figure, name, pid]: the best named man at a talk skill, capped by the local tongue (or by the interpreter's figure, through him)
     const ts = localTongues(f), I = interpHere(f);
     let best = [0, null, null];
-    for (const [, n] of namedWith(readNamed(), f)){
-      if (!ableNow(n)) continue;
+    const all = readNamed(), set = roll ? councilMan(f, roll, all) : null;   // the council's man for this roll, if it set one and he can make it
+    for (const [uid, n] of namedWith(all, f)){
+      if (!ableNow(n) || (set && uid !== set[0])) continue;
       const raw = n.skills?.[skill] || 0;
       let v = ts.length && n.tongues ? Math.max(...ts.map(t => lgTalk(raw, n.tongues, n.native, t))) : raw;
       if (I && n.pid) v = Math.max(v, Math.min(raw, I.figure));
@@ -280,7 +281,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   function billetCheck(f){                       // null if billeted; else why not (a force its army does not feed must find its own)
     const U = USES().billet;
     if (!U || fedByArmy(f) || !namedWith(readNamed(), f).length) return null;
-    const [v, who, pid] = bestTalk(f, U.skill), k = skillCheck(v, U.difficulty, roll100());
+    const [v, who, pid] = bestTalk(f, U.skill, "billet"), k = skillCheck(v, U.difficulty, roll100());
     if (k.success){ xpTick(pid, U.skill, "finding billets"); f.log.unshift(`${dateText(f.day, true)}: ${who} finds them billets (Persuade ${k.target}, rolled ${k.roll}).`); return null }
     return `no one will take them in (${who || "no one"}'s Persuade ${k.target}, rolled ${k.roll})`;
   }
@@ -288,7 +289,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   function huntNight(f){                         // Hunt for the pot: how many men the game feeds tonight
     const U = USES().hunt;
     if (!U || !f.hunt || !U.terrain.includes(terrainAt(curMap(), f.pos).id)) return 0;
-    const [v, who, pid] = bestSkill([f], U.skill);
+    const [v, who, pid] = rollerFor([f], "hunt", U.skill);
     if (!who) return 0;
     const k = skillCheck(v, U.difficulty, roll100());
     if (!k.success){ f.log.unshift(`${dateText(f.day, true)}: ${who} hunts and finds nothing (Fieldcraft ${k.target}, rolled ${k.roll}).`); return 0 }
@@ -319,7 +320,7 @@ function makeTravelDay(DATA, RULES, env = {}){
     f.wayDay = f.day; f.waySlow = 1;
     const cond = dayWeather(f.day).w.cond, next = terrainAt(m, f.path[f.index + 1]).id;
     if (!U.when.includes(cond) && ["road", "bridge", "village", "town"].includes(next)) return 1;   // a road through: no need of a guide
-    const [v, who, pid] = bestSkill([f], U.skill);
+    const [v, who, pid] = rollerFor([f], "way", U.skill);
     if (!who) return 1;
     const k = skillCheck(v, U.hard_in.includes(cond) ? "hard" : U.difficulty, roll100());
     if (k.success){ xpTick(pid, U.skill, "finding the way"); return 1 }
@@ -563,7 +564,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   function healthNight(f, today, camp){         // the sick get better or worse; once a week, the outbreak roll
     const kind = camp ? camp.kind : null, hyg = hygieneOf(f, kind);
     const ctx = { care: campCare(kind, f), marched: (f.marched || 0) > 0, wet_cold: nightHard(today.w, kind), filth: hyg === "poor", fresh: (f.noFresh || 0) < DZ.week_days,
-      leech: leechBonus(bestSkill([f], "leechcraft")[0]), low: today.w.low, shelter: WXD.shelter[kind || "none"], hardness: nightHardness(today.w) };
+      leech: leechBonus(rollerFor([f], "leech", "leechcraft")[0]), low: today.w.low, shelter: WXD.shelter[kind || "none"], hardness: nightHardness(today.w) };
     namedNight(f, ctx, f.day % DZ.week_days === 0 ? weekFactorsFor(f, kind, hyg) : null);
     xpNight(f, ctx.wet_cold);
     const r = healthDay(healthOf(f), { ...ctx, men: f.men, unnursed: nursingOf(healthOf(f), f.men).unnursed }, roll100);
@@ -651,7 +652,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   function mendDay(f, mine){                      // a day out of the march: Mend kit on the most worn boots or clothing among the named men
     const worst = worstKit(mine);
     if (!worst) return;
-    const [v, who, pid] = bestSkill([f], "craft");
+    const [v, who, pid] = rollerFor([f], "mend", "craft");
     if (!who) return;
     const r = skillCheck(v, "ordinary", roll100()), kit = xpKit(worst.n.pid);
     kit[worst.part] = ktMend(kit[worst.part], r.success, r.fumble);
@@ -680,14 +681,14 @@ function makeTravelDay(DATA, RULES, env = {}){
     if ((f.marched || 0) <= 0) f.campWeek = (f.campWeek || 0) + 1;     // drill: days of the week not marching
     if (f.day % DZ.week_days !== 0) return;
     const sick = healthOf(f).cases.length > 0 || mine.some(([, n]) => hasCases(n));
-    if (sick){ const [lc, , pid] = bestSkill([f], "leechcraft", all); if (lc) xpTick(pid, "leechcraft", "nursing the sick") }
+    if (sick){ const [lc, , pid] = rollerFor([f], "leech", "leechcraft", all); if (lc) xpTick(pid, "leechcraft", "nursing the sick") }
     drillWeek(f, all, mine);
     f.campWeek = 0;
   }
   function drillWeek(f, all, mine){             // the week's drill for a force its army feeds: the best Command (or its sergeants) rolls
     const able = mine.filter(([, n]) => n.drill && ableNow(n));
     if (!fedByArmy(f) || !able.length) return;
-    const [cmd, who] = bestSkill([f], "command", all), r = trDrill(f.campWeek || 0, cmd, roll100());
+    const [cmd, who] = rollerFor([f], "drill", "command", all), r = trDrill(f.campWeek || 0, cmd, roll100());
     if (!r) return;
     if (r.success) for (const [, n] of able) xpTick(n.pid, n.drill, "drill in camp");
     const under = cmd > (DATA.training?.drill?.nco ?? 50) ? ` under ${who}` : "";
@@ -760,6 +761,78 @@ function makeTravelDay(DATA, RULES, env = {}){
       for (const [, n] of namedWith(all, f)) if (ableNow(n) && (n.skills?.[skill] || 0) > best[0]) best = [n.skills[skill], n.name, n.pid || null];
     return best;
   }
+  /* Camp roles and the evening council (data/council.yaml; the Rules' Camp roles). A force's council
+     names who holds each role and, if the GM sets it, who makes a roll instead. That man rolls, even
+     with a better man beside him; a force with no roles, or a man who cannot, falls back on the best. */
+  const COUNCIL = () => DATA.council || { roles: {}, rolls: {} };
+  const councilStarted = f => Object.values(f.council?.roles || {}).some(Boolean);
+  function councilMan(f, roll, all = readNamed()){  // [uid, man] the council set for this roll, or null
+    const c = f.council;
+    if (!c) return null;
+    const uid = c.rolls?.[roll] || c.roles?.[COUNCIL().rolls[roll]?.role], n = uid ? all[uid] : null;
+    return n && n.map === S.mapId && n.force === f.id && ableNow(n) ? [uid, n] : null;
+  }
+  function rollerFor(forces, roll, skill, all = readNamed()){   // [value, name, purse id]: the council's man, else the best
+    for (const f of forces){
+      const m = councilMan(f, roll, all);
+      if (m) return [m[1].skills?.[skill] || 0, m[1].name, m[1].pid || null];
+    }
+    return bestSkill(forces, skill, all);
+  }
+  function councilAgenda(f, all){                 // role -> {due, urgent, say}: what it has to decide, and whether that reopens a standing order
+    const c = clockNow(), low = COUNCIL().low_rations ?? 2, cond = dayWeather(c.day).w.cond;
+    const sick = healthOf(f).cases.length + namedWith(all, f).filter(([, n]) => hasCases(n)).length;
+    const enemy = Object.values(meetings()).some(p => p.some(o => o.id === f.id));
+    const camp = campHere(f), route = marching(f) || (f.path && f.index < f.path.length - 1);
+    const rations = f.sup?.rations, water = f.sup?.water;
+    const short = (rations !== undefined && rations <= low) || water === 0;
+    const stores = rations === undefined ? "no stores counted" : `rations ${+rations.toFixed(1)} days` + (water === undefined ? "" : `, water ${+water.toFixed(1)} litre${+water.toFixed(1) === 1 ? "" : "s"} a man`);
+    return {
+      leader: { due: true, urgent: enemy, say: orderText(f, c) + (enemy ? "; the enemy is within reach" : "") },
+      scout: { due: !!route || !camp, urgent: !!USES().way?.when?.includes(cond), say: (route ? `route to ${where(f.path[f.path.length - 1])}` : "no route") + (camp ? `; in its ${WK.camps[camp.kind].name.toLowerCase()}` : "; no camp") },
+      quartermaster: { due: rations !== undefined, urgent: short, say: stores },
+      leech: { due: sick > 0, urgent: sick > (f.council?.sick || 0), say: sick ? `${sick} sick or wounded` : "no one sick" },
+    };
+  }
+  function councilView(id){                       // the force's council, read from the saved day
+    restore();
+    const f = byId(id);
+    if (!f || !Array.isArray(f.pos)) return null;
+    const all = readNamed(), c = f.council || {}, R = COUNCIL(), ag = councilAgenda(f, all), clk = clockNow();
+    const men = namedWith(all, f).filter(([, n]) => ableNow(n)).map(([uid, n]) => ({ uid, name: n.name, skills: n.skills || {} }));
+    const able = u => men.some(m => m.uid === u), started = councilStarted(f);
+    const roles = Object.entries(R.roles).map(([rid, r]) => {
+      const uid = c.roles?.[rid] || null, ok = !!uid && able(uid), a = ag[rid] || {}, standing = !!c.standing?.[rid];
+      return { id: rid, name: r.name, decides: r.decides, uid: ok ? uid : null, who: ok ? all[uid].name : null, lost: uid && !ok ? all[uid]?.name || "its man" : null,
+        standing, say: a.say || "", urgent: !!a.urgent, due: ok && (!!a.urgent || (!!a.due && !standing)) };
+    });
+    const rolls = Object.entries(R.rolls).map(([rid, r]) => {
+      const uid = c.rolls?.[rid] || null, set = !!uid && able(uid), [value, who] = rollerFor([f], rid, r.skill, all), [bv, bw] = bestSkill([f], r.skill, all);
+      return { id: rid, name: r.name, skill: r.skill, role: R.roles[r.role]?.name || r.role, uid: set ? uid : null, who, value, best: bw ? `${bw} ${bv}` : "no one" };
+    });
+    const needs = started ? roles.filter(r => !r.uid).map(r => (r.lost ? `the ${r.name}, ${r.lost}, cannot serve` : `no one is ${r.name}`)) : [];
+    const night = clk.used >= dayEnd(clk.day) - 1e-9;
+    return { id, name: f.name, side: f.side, started, roles, rolls, men, day: clk.day, needs,
+      held: c.held ?? null, evening: started && night && c.held !== clk.day && roles.some(r => r.due) };
+  }
+  const councilForces = () => { restore(); const all = readNamed(); return forcesHere().filter(f => Array.isArray(f.pos) && namedWith(all, f).length).map(f => f.id) };
+  function councilChange(id, change){              // change(the force's council, its able men's ids): saved
+    restore();
+    const f = byId(id);
+    if (!f) return;
+    const c = (f.council ||= { roles: {}, rolls: {}, standing: {} });
+    change(c, new Set(namedWith(readNamed(), f).filter(([, n]) => ableNow(n)).map(([u]) => u)), f);
+    save();
+  }
+  const councilRole = (id, role, uid) => councilChange(id, (c, able) => { if (COUNCIL().roles[role] && (!uid || able.has(uid))) c.roles[role] = uid || null });
+  const councilRollBy = (id, roll, uid) => councilChange(id, (c, able) => { if (COUNCIL().rolls[roll] && (!uid || able.has(uid))) c.rolls[roll] = uid || null });
+  const councilStanding = (id, role, on) => councilChange(id, c => { if (COUNCIL().roles[role]) c.standing[role] = !!on });
+  const councilHeld = id => councilChange(id, (c, able, f) => {   // only a council held at evening answers that evening's
+    const k = clockNow();
+    if (k.used >= dayEnd(k.day) - 1e-9) c.held = k.day;
+    c.sick = councilSick(f);
+  });
+  function councilSick(f){ const all = readNamed(); return healthOf(f).cases.length + namedWith(all, f).filter(([, n]) => hasCases(n)).length }
   function namedLine(f){                        // the force's named men and how they are, for its panel
     const mine = Object.values(readNamed()).filter(n => n.map === S.mapId && n.force === f.id);
     if (!mine.length) return "";
@@ -904,7 +977,7 @@ function makeTravelDay(DATA, RULES, env = {}){
     f.nightWayDay = f.day; f.nightSlow = 1;
     if (!f.path || f.index + 1 >= f.path.length) return 1;
     const next = terrainAt(m, f.path[f.index + 1]).id, road = ["road", "bridge", "village", "town"].includes(next);
-    const [v, who, pid] = bestSkill([f], USES().way?.skill || "fieldcraft");
+    const [v, who, pid] = rollerFor([f], "way", USES().way?.skill || "fieldcraft");
     if (!who){ f.nightSlow = USES().way?.slow || 1.4; return f.nightSlow }
     const k = skillCheck(v, road ? U.road : U.difficulty, roll100());
     if (k.success){ xpTick(pid, "fieldcraft", "finding the way by night"); return 1 }
@@ -1334,7 +1407,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   }
   function surpriseFor(p){                      // this fight's odds: the camp as built, the hour, fog, and the named men's Stealth and Watch
     const dfd = byId(p.defender), st = campStatus(dfd, p), w = win(p.day), t = w.start + p.used, today = dayWeather(p.day);
-    const all = readNamed(), [stealth, sneak, sp] = bestSkill(p.attackers.map(byId), "stealth", all), [watch, guard, wp] = bestSkill([dfd, ...p.allies.map(byId)], "watch", all);
+    const all = readNamed(), [stealth, sneak, sp] = rollerFor(p.attackers.map(byId), "stealth", "stealth", all), [watch, guard, wp] = rollerFor([dfd, ...p.allies.map(byId)], "watch", "watch", all);
     const s = surpriseChance(st.camp && st.done === null ? st.camp.kind : null, t >= w.sunset || t < w.sunrise, today.w.cond === "fog", stealth, watch);
     return { ...s, who: { stealth: sneak, watch: guard }, pid: { stealth: stealth ? sp : null, watch: watch ? wp : null } };
   }
@@ -1651,7 +1724,9 @@ function makeTravelDay(DATA, RULES, env = {}){
     if (!sum) return { map: null, men, forces: [] };
     const forces = sum.forces.filter(f => here.has(f.id)).map(f => {
       const o = orderChoices(f.id), full = byId(f.id);
-      return { ...f, route: o?.led ? `with ${o.led}` : (o?.route || []).join(" → "), log: (full.log || []).slice(0, 6) };
+      const cv = councilView(f.id);
+      const council = cv?.started ? { due: cv.evening, needs: cv.needs, roles: cv.roles.map(r => ({ name: r.name, who: r.who, decides: r.decides, say: r.say, due: r.due, mine: uids.includes(r.uid) })) } : null;
+      return { ...f, route: o?.led ? `with ${o.led}` : (o?.route || []).join(" → "), log: (full.log || []).slice(0, 6), council };
     });
     return { map: sum.map, day: sum.day, date: sum.date, time: sum.time, men, forces };
   }
@@ -1732,7 +1807,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   const esc = s => String(s).replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll('"', "&quot;");
   function byId(id){ return forcesHere().find(o => o.id === id) }
 
-  return { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, seatView, hexChoice, mapChoices, setMap, sightOf, airUp, deviceKm, sightings, fortresses, siegeState, siegeNight, walledOff, termsChance, summon, noQuarterIn, sortie, buryDead, deadNow, hygieneOf, fireMine, countermine, stormWon, callOffSack, sacking, noteSightings, fogView, roll100 };
+  return { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, rollerFor, councilForces, councilView, councilRole, councilRollBy, councilStanding, councilHeld, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, seatView, hexChoice, mapChoices, setMap, sightOf, airUp, deviceKm, sightings, fortresses, siegeState, siegeNight, walledOff, termsChance, summon, noQuarterIn, sortie, buryDead, deadNow, hygieneOf, fireMine, countermine, stormWon, callOffSack, sacking, noteSightings, fogView, roll100 };
 }
 
 if (typeof module !== "undefined") module.exports = makeTravelDay;   // Node (the tests); the page has no `module`

@@ -1060,7 +1060,7 @@ def travel_bundle(d) -> dict:
         "terrain": d.terrain,
         "coins": {e: {"currencies": E["currencies"], "currency": E["currency"]} for e, E in d.equipment.items()},   # period money (purse.js)
         "uses": d.uses,                                # billets, hunting, finding the way
-        "checks": d.checks, "training": d.training, "loads": d.loads, "weights": d.weights, "supplies": d.supplies, "kit": d.kit, "stress": d.stress, "hazards": d.hazards, "languages": d.languages, "patrons": d.patrons,   # drill in camp, loads on the march (templates/ranks.js)
+        "checks": d.checks, "training": d.training, "loads": d.loads, "weights": d.weights, "supplies": d.supplies, "kit": d.kit, "stress": d.stress, "hazards": d.hazards, "languages": d.languages, "patrons": d.patrons, "council": d.council,   # drill in camp, loads on the march (templates/ranks.js)
         "works": d.works,
         "weather": d.weather,
         "disease": d.disease,
@@ -2095,6 +2095,30 @@ def jobs_bundle(d, eid: str) -> dict | None:
     return {"jobs": [{k: j[k] for k in keep if k in j} for j in jobs(d, eid)["jobs"]], "trouble": J["trouble"]}
 
 
+def council_card(d) -> str:
+    """dist/council-card.html: the camp roles and the evening council on one printed page."""
+    from html import escape as esc
+    C = d.council
+    rows = ""
+    for rid, r in C["roles"].items():
+        rolls = ", ".join(x["name"] for x in C["rolls"].values() if x["role"] == rid)
+        rows += f"<tr><th>{esc(r['name'])}</th><td>{esc(r['decides'])}</td><td>{esc(rolls)}</td><td class='blank'></td><td class='blank'></td></tr>"
+    return f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Grave Wounds: the council card</title>
+<style>body{{font:15px/1.4 Georgia,serif;max-width:48em;margin:1em auto;padding:0 16px;color:#222;background:#fff}}h1{{font-size:1.5em;margin:0}}h2{{font-size:1.05em;margin:1em 0 .3em}}
+table{{border-collapse:collapse;width:100%}}th,td{{border:1px solid #777;padding:6px;text-align:left;vertical-align:top}}td.blank{{min-width:6em}}ol,ul{{margin:.2em 0;padding-left:1.3em}}footer{{font-size:.8em;margin-top:1em}}
+@media print{{body{{margin:0;max-width:none}}}}</style></head><body>
+<h1>The council card</h1><p>Grave Wounds: one role a player. Write in who holds each role and any standing order.</p>
+<table><thead><tr><th>Role</th><th>Decides</th><th>Rolls</th><th>Held by</th><th>Standing order</th></tr></thead><tbody>{rows}</tbody></table>
+<h2>Each evening, before the night passes</h2>
+<ol><li>Leader: march, stay, or seek or avoid a fight?</li><li>Scout: which way tomorrow, and how is the watch set?</li><li>Quartermaster: what do we eat, and how much is left?</li><li>Leech: who is sick or wounded, and who gets the stores?</li><li>Anyone: do the roles need changing?</li></ol>
+<h2>Rules of the council</h2>
+<ul><li>A role with nothing to decide is skipped.</li><li>A standing order holds until something changes: the enemy within reach; weather that hides the way; {C.get('low_rations', 2)} days' rations or fewer, or no water; more sick or wounded than at the last council.</li>
+<li>The role's man makes its rolls, even with a better man beside him. The GM may set another man for any one roll.</li><li>Roles and rolls change only at a council, and a player may ask for one.</li><li>If a role's man is dead, too sick or away, the best man rolls until a council fills it.</li></ul>
+<footer>© 2026 Scott Wares. All rights reserved.</footer></body></html>
+"""
+
+
 def campaign_bundle(d) -> dict:
     """What the campaign page needs: the maps', eras', weather's and diseases' names, to say where the
     campaign stands and what happened."""
@@ -2201,6 +2225,7 @@ def main() -> int:
     chtml = chtml.replace("/*__TRAVELRULES_JS__*/", travelrules_js).replace(CAMP_MARK, camp_js).replace("/*__TRAVELDAY_JS__*/", travelday_js)
     chtml = chtml.replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":"))).replace("/*__NET_JS__*/", net_js)   # players online
     (DIST / "campaign.html").write_text(chtml.replace("/*__CAMPAIGN_DATA__*/null", json.dumps(campaign_bundle(d), separators=(",", ":"))), encoding="utf-8")
+    (DIST / "council-card.html").write_text(council_card(d), encoding="utf-8")
     (DIST / "guide.html").write_text((ROOT / "templates" / "guide.html").read_text(encoding="utf-8"), encoding="utf-8")   # how to play: the pages, mode by mode
     (ROOT / "index.html").write_text(index_page(d), encoding="utf-8")
     print("Built:", ", ".join(p.name for p in sorted(DIST.iterdir())), "+ index.html")
