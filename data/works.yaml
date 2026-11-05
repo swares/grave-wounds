@@ -115,8 +115,10 @@ hex_works:
             note: "Wagons drawn up and chained, as in a wagon laager."}
   wire:    {name: "Barbed wire",       each: 2,  enter: 3,    no_horse: true, breach: 6,
             note: "Belts of barbed wire on stakes (from the 1900s): slow to cross, cut by hand."}
-  bunker:  {name: "Bunker",            each: 30, enter: 1,    cover_here: 50, shell: 10, no_horse: true, breach: null,   # shell 10: a dugout or cellar keeps out more of the shellfire than a trench (20); without it a bunker left 50%, and Cassino's paratroops in their cellars were shelled to nothing in the first hour (4 November 2026; an estimate)
+  bunker:  {name: "Bunker",            each: 30, enter: 1,    cover_here: 50, no_horse: true, breach: null,
             note: "A log-and-earth pillbox or dugout with firing slits (the 20th century)."}
+  cellar:  {name: "Cellar",            each: 30, enter: 1,    cover_here: 50, shell: 10, no_horse: true, breach: null,
+            note: "The cellars of a bombed town, its garrison sheltering in them (Cassino, 1944): as a bunker, but deep under the rubble they keep out more shellfire than a trench (shell 10, an estimate). Bunkers at shell 10 cost 9 runs as fought on the benchmark (Tumbledown 7 to 0), so the cellars are their own work (4 November 2026)."}
   trench:  {name: "Trench",            each: 6, enter: 1,    cover_here: 40, shell: 20, hides: true, no_horse: true, breach: null,
             note: "A fire trench or communication trench, dug chest-deep (the 20th century): the men in it are hard to see and harder to hit."}
   wreck:   {name: "Downed helicopter", each: 0, enter: 2, cover_here: 30, no_horse: true, breach: null,

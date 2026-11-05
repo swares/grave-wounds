@@ -57,7 +57,7 @@ const units = [
   at("German machine guns (below the abbey)", DE, 10, MG, 2, [38, 70], 0),
 ];
 
-// The cellars the paratroops came up out of: a bunker under every hex each paratroop unit stands on
+// The cellars the paratroops came up out of (works.yaml cellar): under every hex each paratroop unit stands on
 // (it sat out the bombing and the barrage in them). Under the middle of each front row alone, and
 // then under the front rows, the barrage struck its rear ranks in the open rubble and it was gone
 // within the hour (4 November 2026).
@@ -79,7 +79,7 @@ writeField({
   travel: { map: "cassino-1944", place: "Cassino", within: 1, sides: ["Allies", "Germans"] },
   weather: "{cond: overcast, wind: breeze, dir: S, ground: {mud: 2, snow: 0}}",
   grid, units,
-  hexWorks: { bunker: CELLARS },
+  hexWorks: { cellar: CELLARS },
   support: [
     { name: "New Zealand and British field guns", side: 0, kind: "field", tubes: 36 },
     { name: "Medium and heavy guns", side: 0, kind: "howitzer", tubes: 12 },
@@ -97,7 +97,7 @@ writeField({
     "The ruins, craters, castle and roads are drawn by hand, not traced from any map or photograph;",
     "the deployment is the attack going in, in our own words, with round numbers for play. The town",
     "is rubble (rubble) with flooded craters (marsh): tanks can keep only to the open road and the",
-    "fields, and the paratroops' cellars are bunkers. Overcast, the ground already wet; that evening",
+    "fields, and the paratroops' cellars are cellars (as bunkers, keeping out more shellfire). Overcast, the ground already wet; that evening",
     "the rain came down.",
     "",
     "What happened, briefly: on the morning of 15 March 1944 about 435 bombers and some 750 guns reduced",
