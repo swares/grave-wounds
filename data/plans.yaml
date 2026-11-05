@@ -73,13 +73,22 @@ burgos-1812:
         target: "1st battalion, 34th Line (east half)"
 
 snipe-1942:
-  source: "project doc snipe-research, B3: Rommel's evening attack withdrew to 800 yd and fired until dark ([S]: Miskimon, Warfare History Network)"
+  source: "project doc snipe-research, B3: Rommel's evening attack withdrew to 800 yd and fired until dark ([S]: Miskimon, Warfare History Network); about 25 long-gunned German tanks moved from the south end to ambush 24th Armoured Brigade ([W])"
   note: >-
     Rommel's evening tanks, once the guns have hurt them, draw back and fire from range until
     dark rather than driving into the hollow. Sourced for the German tanks only. The loss that
     turns them (a tenth) is ours; the account gives 9 knocked out by 239 Battery before they drew back.
+    The long-gunned Panzers from the south go for the 24th Armoured Brigade, as the account has them,
+    keeping 47th RTR under fire until the brigade pulls back (its phase); without this they came up
+    on the carriers in the hollow and knocked out 21 of them in five exchanges at 07:30, where the
+    account's first carrier losses come just before noon (4 November 2026).
   sides:
     1:
+      - units: ["Long-gunned Panzers from the south"]
+        do: pin
+        target: "47th RTR (Shermans and Crusaders)"
+        when: {phase: "24th Armoured Brigade"}
+        until: {phase: "The brigade pulls back"}
       - units: ["German tanks of the evening attack, from the south-west"]
         do: pin
         target: "C Company's six-pounders (south-west)"
