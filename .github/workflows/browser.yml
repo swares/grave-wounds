@@ -50,6 +50,8 @@ jobs:
         run: python3 tools/campaign/team.py
       - name: The quick start, played by the coach's words
         run: python3 tools/campaign/quick.py
+      - name: The working pages on a phone
+        run: python3 tools/campaign/phone.py
       - name: The playtest packet's fight (team.html#playtest)
         run: python3 tools/campaign/playtest.py
       - name: Camp roles and the evening council on the campaign console
