@@ -8,7 +8,8 @@ use the phone's width (a viewport line), not scroll sideways, and give every vis
 40 px tap. On the roller a fighter can be tapped and placed on the map, and the hit can be rolled.
 On the maps, + twice makes a hex a fingertip, Fit shows the whole width, two fingers spread zoom in, and,
 zoomed in, a tap on the field map moves a unit. The field's order bar sits at the foot of the screen,
-steps through the units, scrolls the map to them, and presses the page's own buttons.
+steps through the units, scrolls the map to them, and presses the page's own buttons. Zoomed in, the
+field map follows the fighting after each exchange, unless unticked.
 Needs Python's playwright with Chromium and a built site. Exits non-zero on any failure.
 """
 import sys
@@ -66,6 +67,37 @@ def bar_checks(pg):
     pg.wait_for_timeout(200)
     check(not bar.is_visible(), "field: on a desktop the bar is not shown")
     pg.set_viewport_size({"width": 390, "height": 844})
+
+
+def follow_checks(pg):
+    """Zoomed in, after an exchange is fought the field map scrolls to the units in contact; untick it and it stays put."""
+    pg.goto(BASE + "field.html")
+    pg.wait_for_timeout(900)
+    pg.evaluate(FIELD)
+    pg.wait_for_timeout(1200)
+    pg.select_option("#sel-ai0", "attack")
+    pg.select_option("#sel-ai1", "attack")
+    for _ in range(2):
+        pg.locator(".zoombar button[data-z='in']").first.tap()
+    home = "() => { $('#map').scrollLeft = 0; $('#map').scrollTop = 0 }"
+    contact = "() => { const occ = occupancy(S.units); return S.units.filter((u, i) => u.pos && !out_(u) && inContact(S.units, occ, i)).map(u => u.pos) }"
+    seen = """(ps) => { const b = $('#map').getBoundingClientRect(), m = $('#map svg').getScreenCTM();
+      return ps.some(([c, r]) => { const p = new DOMPoint(...xy([c, r])).matrixTransform(m); return p.x > b.left && p.x < b.right && p.y > b.top && p.y < b.bottom }) }"""
+    for _ in range(30):
+        pg.evaluate(home)
+        pg.locator("#ob-phase").tap()
+        pg.wait_for_timeout(150)
+        if pg.evaluate("() => S.phase") == 0 and pg.evaluate(contact):
+            break
+    ps = pg.evaluate(contact)
+    check(bool(ps), f"follow: Towton's armies meet, both sides under the commander (exchange {pg.evaluate('() => S.exchange')})")
+    check(bool(ps) and pg.evaluate(seen, ps), "follow: after the exchange is fought, the zoomed map shows units in contact")
+    pg.locator("#chk-follow").tap()
+    pg.evaluate(home)
+    for _ in range(2):
+        pg.locator("#ob-phase").tap()
+        pg.wait_for_timeout(150)
+    check(pg.evaluate("() => $('#map').scrollLeft + $('#map').scrollTop") == 0, "follow: unticked, the map stays where it was")
 
 
 def page_ok(pg, name):
@@ -148,6 +180,7 @@ def run(p):
     else:
         check(False, "field: a hex next to the unit is found")
     bar_checks(pg)
+    follow_checks(pg)
     for name in ("team.html", "campaign.html"):
         pg.goto(BASE + name)
         pg.wait_for_timeout(800)

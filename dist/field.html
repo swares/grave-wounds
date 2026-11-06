@@ -225,6 +225,7 @@ legend{padding:0}
       <div class="row marks-row">
         <div style="flex:0 1 180px"><label for="sel-labels">Unit labels</label><select id="sel-labels"><option value="names">Names</option><option value="ids">IDs (B3)</option><option value="both">IDs and names</option></select></div>
         <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="chk-strength"> strength</label></div>
+        <div style="flex:0 0 auto;align-self:end"><label class="check" title="Zoomed in, after each exchange is fought the map scrolls to the units in contact nearest where you were looking"><input type="checkbox" id="chk-follow" checked> follow the fighting</label></div>
         <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="chk-size"> size marks</label> <span class="muted" id="size-note" style="font-size:.8rem" hidden>no unit here has a size set</span></div>
       </div>
       <fieldset class="row marks-row rules-row"><legend class="sr-only">Rules on the map</legend>
@@ -6819,6 +6820,7 @@ function next(){
   if (RUN && stop) return runOver(stop);
   aiMove();
   render();
+  if (marks().follow !== false) requestAnimationFrame(followFight);   // after the zoom has redrawn the map at its size
 }
 function newMove(){                               // a side's move begins: the commander has not yet ordered it, and no friends have been charged through
   S.aiDone = null;
@@ -8202,7 +8204,7 @@ function renderMap(){
   $("#stage").hidden = !stage; $("#stage").innerHTML = stage;
   const M = marks();
   const sized = S.units.some(u => u.size);          // size marks need a unit with a size: say so rather than tick a box that draws nothing
-  $("#sel-labels").value = M.labels; $("#chk-strength").checked = M.strength; $("#chk-size").checked = M.size && sized; $("#chk-size").disabled = !sized;
+  $("#sel-labels").value = M.labels; $("#chk-strength").checked = M.strength; $("#chk-follow").checked = M.follow !== false; $("#chk-size").checked = M.size && sized; $("#chk-size").disabled = !sized;
   $("#size-note").hidden = sized;
   const V = shows(); for (const k of ["reach", "edges", "refs", "oncall"]) $("#show-" + k).checked = V[k];
 }
@@ -8840,13 +8842,23 @@ function barStep(d){
   S.sel = us[(i + d + us.length) % us.length].id; S.msg = "";
   render(); requestAnimationFrame(barShow);         // after the zoom has redrawn the new map at its size
 }
-function barShow(){                                  // scroll the map (zoomed or not) so the selected unit's centre hex is in the middle of its box, and the box on the screen
-  const box = $("#map"), svg = box.querySelector("svg"), u = selUnit(); if (!svg || !u?.pos) return;
+function mapCentre(pos, bring){                     // scroll the map (zoomed or not) so a hex is in the middle of its box; bring: and the box onto the screen
+  const box = $("#map"), svg = box.querySelector("svg"); if (!svg || !pos) return;
   let b = box.getBoundingClientRect();
-  if (b.top < 0 || b.bottom > innerHeight - $("#orderbar").offsetHeight){ box.scrollIntoView({ block: "start" }); b = box.getBoundingClientRect() }
-  const [x, y] = xy(u.pos), p = new DOMPoint(x, y).matrixTransform(svg.getScreenCTM());
+  if (bring && (b.top < 0 || b.bottom > innerHeight - $("#orderbar").offsetHeight)){ box.scrollIntoView({ block: "start" }); b = box.getBoundingClientRect() }
+  const [x, y] = xy(pos), p = new DOMPoint(x, y).matrixTransform(svg.getScreenCTM());
   box.scrollLeft += p.x - (b.left + box.clientWidth / 2);
   box.scrollTop += p.y - (b.top + box.clientHeight / 2);
+}
+const barShow = () => mapCentre(selUnit()?.pos, true);
+function followFight(){                              // after an exchange is fought: the map scrolls to the units in contact nearest the middle of the view, if any
+  const box = $("#map"), svg = box.querySelector("svg"); if (!svg) return;
+  if (box.scrollWidth <= box.clientWidth + 2 && box.scrollHeight <= box.clientHeight + 2) return;   // the whole field is in view already
+  const occ = occupancy(S.units), fighting = S.units.filter((u, i) => u.pos && !out_(u) && inContact(S.units, occ, i));
+  if (!fighting.length) return;
+  const b = box.getBoundingClientRect(), c = new DOMPoint(b.left + box.clientWidth / 2, b.top + box.clientHeight / 2).matrixTransform(svg.getScreenCTM().inverse());
+  const far = u => { const [x, y] = xy(u.pos); return (x - c.x) ** 2 + (y - c.y) ** 2 };
+  mapCentre(fighting.reduce((a, u) => far(u) < far(a) ? u : a).pos, false);
 }
 function barWire(){
   $("#orderbar").querySelectorAll("[data-for]").forEach(b => b.onclick = () => $("#" + b.dataset.for).click());
@@ -9187,6 +9199,7 @@ function init(){
   for (const k of ["reach", "edges", "refs", "oncall"]) $("#show-" + k).onchange = e => { shows()[k] = e.target.checked; render() };
   $("#sel-labels").onchange = e => { marks().labels = e.target.value; render() };
   $("#chk-strength").onchange = e => { marks().strength = e.target.checked; render() };
+  $("#chk-follow").onchange = e => { marks().follow = e.target.checked; save() };
   $("#chk-size").onchange = e => { marks().size = e.target.checked; render() };
   $("#btn-remove").onclick = () => { const u = selUnit(); if (u){ S.units = S.units.filter(x => x.id !== u.id); S.sel = S.units[0] ? S.units[0].id : null; render() } };
   $("#btn-add").onclick = addUnit;
