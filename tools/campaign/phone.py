@@ -7,7 +7,8 @@ the campaign console must
 use the phone's width (a viewport line), not scroll sideways, and give every visible control at least a
 40 px tap. On the roller a fighter can be tapped and placed on the map, and the hit can be rolled.
 On the maps, + twice makes a hex a fingertip, Fit shows the whole width, two fingers spread zoom in, and,
-zoomed in, a tap on the field map moves a unit.
+zoomed in, a tap on the field map moves a unit. The field's order bar sits at the foot of the screen,
+steps through the units, scrolls the map to them, and presses the page's own buttons.
 Needs Python's playwright with Chromium and a built site. Exits non-zero on any failure.
 """
 import sys
@@ -34,6 +35,37 @@ PINCH = """() => { const box = document.querySelector('#map'), r = box.getBoundi
   const ev = (type, a, b) => box.dispatchEvent(new TouchEvent(type, { touches: [T(1, a), T(2, b)], targetTouches: [T(1, a), T(2, b)], changedTouches: [T(1, a), T(2, b)], bubbles: true, cancelable: true }));
   ev('touchstart', cx - 30, cx + 30); ev('touchmove', cx - 60, cx + 60); ev('touchmove', cx - 90, cx + 90);
   box.dispatchEvent(new TouchEvent('touchend', { touches: [], changedTouches: [T(1, cx - 90)], bubbles: true })) }"""
+
+
+def bar_checks(pg):
+    """The field's order bar: on the screen at the foot, its buttons press the page's own."""
+    bar = pg.locator("#orderbar")
+    check(bar.is_visible(), "field: the order bar shows on a phone")
+    box = bar.bounding_box() or {"y": 0, "height": 0}
+    check(abs(box["y"] + box["height"] - 844) < 2, f"field: and sits at the foot of the screen ({box})")
+    was = pg.evaluate("() => S.sel")
+    pg.locator("#ob-next-unit").tap()
+    pg.wait_for_timeout(300)
+    now = pg.evaluate("() => S.sel")
+    check(now != was and pg.locator("#ob-name").inner_text().endswith(pg.evaluate("() => selUnit().name")), f"field: ▶ selects the next unit ({was} to {now}), named in the bar")
+    inbox = """() => { const b = $('#map').getBoundingClientRect(), [hx, hy] = xy(selUnit().pos), p = new DOMPoint(hx, hy).matrixTransform($('#map svg').getScreenCTM());
+      return p.x > b.left && p.x < b.right && p.y > b.top && p.y < b.bottom && p.y < innerHeight - $('#orderbar').offsetHeight }"""
+    check(pg.evaluate(inbox), "field: and the zoomed map scrolls to it")
+    f0 = pg.evaluate("() => { S.msg = ''; render(); return selUnit().facing }")
+    pg.locator("#orderbar [data-for='btn-left']").tap()
+    pg.wait_for_timeout(200)
+    check(pg.evaluate("() => selUnit().facing") != f0 or pg.evaluate("() => !!S.msg"), "field: the bar's Turn left turns it, or says why not")
+    check(pg.locator("#ob-phase").inner_text() == pg.locator("#btn-next").inner_text(), "field: the bar's last button is the page's Start the battle / Next")
+    pg.locator("#ob-phase").tap()
+    pg.wait_for_timeout(600)
+    check(pg.evaluate("() => S.phase") != "setup" and pg.locator("#ob-phase").inner_text() == pg.locator("#btn-next").inner_text(), f"field: and pressing it starts the battle ({pg.locator('#ob-phase').inner_text()})")
+    pg.locator("#ob-more").tap()
+    pg.wait_for_timeout(300)
+    check(pg.evaluate("() => Math.abs($('#h-sel').getBoundingClientRect().top) < 60"), "field: More goes to the selected unit's full orders")
+    pg.set_viewport_size({"width": 1280, "height": 900})
+    pg.wait_for_timeout(200)
+    check(not bar.is_visible(), "field: on a desktop the bar is not shown")
+    pg.set_viewport_size({"width": 390, "height": 844})
 
 
 def page_ok(pg, name):
@@ -115,6 +147,7 @@ def run(p):
         check(pg.evaluate("() => S.units.find(x => x.id === S.sel).pos.join(',') !== window.__was || !!S.msg"), "field: and the selected unit is moved, or told why not")
     else:
         check(False, "field: a hex next to the unit is found")
+    bar_checks(pg)
     for name in ("team.html", "campaign.html"):
         pg.goto(BASE + name)
         pg.wait_for_timeout(800)

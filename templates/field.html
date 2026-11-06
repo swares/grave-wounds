@@ -47,6 +47,16 @@ button.primary{background:var(--blood);border-color:var(--blood);color:var(--pan
 button.primary:hover{filter:brightness(1.1);background:var(--blood)}
 button.small{font-size:.8rem;padding:3px 8px}
 /*__MAPCSS__*/
+/* Phones: the selected unit's main orders in a bar at the foot of the screen (tools/campaign/phone.py checks it). */
+.orderbar{display:none}
+@media (max-width:640px){
+  .orderbar:not([hidden]){display:flex;flex-direction:column;gap:4px;position:fixed;left:0;right:0;bottom:0;z-index:20;padding:6px 8px calc(6px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line);box-shadow:0 -2px 8px rgba(0,0,0,.15)}
+  .ob-row{display:flex;gap:6px;align-items:center}
+  .ob-row button{flex:1 1 auto;padding:8px 6px;min-height:44px}
+  .ob-row #ob-prev,.ob-row #ob-next-unit{flex:0 0 44px}
+  .ob-name{flex:2 1 0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;font-size:.9rem}
+  body.has-orderbar{padding-bottom:130px}
+}
 button:disabled{opacity:.45;cursor:default}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 110px;min-width:0}
@@ -301,7 +311,7 @@ legend{padding:0}
       <p class="muted" id="lifts" hidden></p>
       <div class="muted" id="helos" hidden></div>
 
-      <h2>Selected unit <span class="muted" id="sel-name"></span></h2>
+      <h2 id="h-sel">Selected unit <span class="muted" id="sel-name"></span></h2>
       <dl class="summary" id="sel-info"></dl>
       <div class="toolbar">
         <button class="small" id="btn-left" title="Turn the facing one step to the left">Turn left</button>
@@ -444,6 +454,11 @@ legend{padding:0}
       <ol class="log" id="log" aria-label="Battle log" aria-live="polite"></ol>
     </section>
   </div>
+</div>
+
+<div class="orderbar" id="orderbar" role="toolbar" aria-label="Orders for the selected unit" hidden>
+  <div class="ob-row"><button id="ob-prev" aria-label="Previous unit">◀</button><span class="ob-name" id="ob-name"></span><button id="ob-next-unit" aria-label="Next unit">▶</button><button id="ob-show" title="Scroll the map to the selected unit">Show</button><button id="ob-more" title="All the selected unit's orders, and what it is">More</button></div>
+  <div class="ob-row"><button data-for="btn-left">Turn left</button><button data-for="btn-right">Turn right</button><button data-for="btn-undo">Undo</button><button class="primary" data-for="btn-next" id="ob-phase"></button></div>
 </div>
 
 <script>
@@ -3347,8 +3362,44 @@ function renderPhase(){
   $("#chk-armies").disabled ||= !!S.forces;
   ["#in-side0", "#in-side1"].forEach(b => $(b).disabled = S.phase !== "setup" || !!S.forces);
 }
+/* ---------- phones: the order bar ----------
+   At the foot of a phone's screen, the selected unit's main orders. Its buttons press the page's own
+   buttons (data-for), so they do just what those do; ◀ ▶ step through the units that can take orders. */
+const barUnits = () => S.units.filter(u => u.pos && (S.phase === "setup" || (u.side === moving() && !out_(u))));
+function renderBar(){
+  const bar = $("#orderbar"), u = selUnit();
+  bar.hidden = !S.units.length || S.phase === "over";
+  document.body.classList.toggle("has-orderbar", !bar.hidden);
+  if (bar.hidden) return;
+  $("#ob-name").textContent = u ? unitTag(u) + " " + u.name : "No unit selected";
+  bar.querySelectorAll("[data-for]").forEach(b => { const o = $("#" + b.dataset.for); b.disabled = o.disabled || o.hidden; if (b.id === "ob-phase") b.textContent = o.textContent });
+  const us = barUnits();
+  $("#ob-prev").disabled = $("#ob-next-unit").disabled = !us.length || (us.length === 1 && us[0].id === S.sel);
+  $("#ob-show").disabled = $("#ob-more").disabled = !u;
+}
+function barStep(d){
+  const us = barUnits(); if (!us.length) return;
+  const i = us.findIndex(u => u.id === S.sel);
+  S.sel = us[(i + d + us.length) % us.length].id; S.msg = "";
+  render(); requestAnimationFrame(barShow);         // after the zoom has redrawn the new map at its size
+}
+function barShow(){                                  // scroll the map (zoomed or not) so the selected unit's centre hex is in the middle of its box, and the box on the screen
+  const box = $("#map"), svg = box.querySelector("svg"), u = selUnit(); if (!svg || !u?.pos) return;
+  let b = box.getBoundingClientRect();
+  if (b.top < 0 || b.bottom > innerHeight - $("#orderbar").offsetHeight){ box.scrollIntoView({ block: "start" }); b = box.getBoundingClientRect() }
+  const [x, y] = xy(u.pos), p = new DOMPoint(x, y).matrixTransform(svg.getScreenCTM());
+  box.scrollLeft += p.x - (b.left + box.clientWidth / 2);
+  box.scrollTop += p.y - (b.top + box.clientHeight / 2);
+}
+function barWire(){
+  $("#orderbar").querySelectorAll("[data-for]").forEach(b => b.onclick = () => $("#" + b.dataset.for).click());
+  $("#ob-prev").onclick = () => barStep(-1);
+  $("#ob-next-unit").onclick = () => barStep(1);
+  $("#ob-show").onclick = barShow;
+  $("#ob-more").onclick = () => $("#h-sel").scrollIntoView({ block: "start" });
+}
 function render(){
-  renderMap(); renderUnits(); renderSel(); renderPhase(); renderAfter(); renderBeat(); renderAccounts(); renderForces(); renderHeroes(); renderSupport(); renderWeather(); renderAi();
+  renderMap(); renderUnits(); renderSel(); renderPhase(); renderBar(); renderAfter(); renderBeat(); renderAccounts(); renderForces(); renderHeroes(); renderSupport(); renderWeather(); renderAi();
   $("#msg").textContent = S.msg || "";
   $("#log").innerHTML = S.log.map(l => `<li class="${l.cls}">${esc(l.text)}</li>`).join("");
   $("#in-side0").value = S.sides[0]; $("#in-side1").value = S.sides[1];
@@ -3660,6 +3711,7 @@ function init(){
   $("#units").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li){ S.sel = +li.dataset.id; S.msg = ""; render() } });
   $("#units").addEventListener("keydown", e => { if (e.key === "Enter"){ const li = e.target.closest("li[data-id]"); if (li){ S.sel = +li.dataset.id; render() } } });
   $("#btn-next").onclick = next;
+  barWire();
   $("#btn-reset").onclick = newBattle;
   narratorControls();
   $("#btn-end").onclick = () => endBattle();   // not the click event as the stop
