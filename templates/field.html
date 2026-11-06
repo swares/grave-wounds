@@ -1426,7 +1426,7 @@ function movedOf(o, orders, before){              // an order with what it came 
   if (o.cost == null || !was?.pos || !u?.pos) return o;
   return { ...o, hexes: hexDistance(was.pos, u.pos), allow: allowance({ ...was, prone: false }), wheel: (o.facing ?? was.facing) !== was.facing };
 }
-function movedText(o){                            // "1 hex (the ground takes all 5 of their move)": the hexes gone, and why it is short of the move spent
+function movedText(o){                            // "1 hex (the ground takes 5 of their move of 8)": the hexes gone, and why it is short of the move spent
   if (o.hexes == null) return nOf(o.cost, "hex", "hexes");
   if (o.cost <= o.hexes) return nOf(o.hexes, "hex", "hexes");
   const what = o.wheel ? "the ground and the wheel take" : "the ground takes";
