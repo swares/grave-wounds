@@ -47,6 +47,17 @@ button.primary{background:var(--blood);border-color:var(--blood);color:var(--pan
 button.primary:hover{filter:brightness(1.1);background:var(--blood)}
 button.small{font-size:.8rem;padding:3px 8px}
 /*__MAPCSS__*/
+/* Phones: the page in four tabs (Map, Battle, Units, Story) instead of one long page (tools/campaign/phone.py checks it). */
+.tabs{display:none}
+@media (max-width:640px){
+  .tabs{display:flex;flex-direction:column;gap:4px;position:sticky;top:0;z-index:15;background:var(--bg);padding:6px 0;margin-inline:-4px}
+  .tabs-row{display:flex;gap:4px}
+  .tabs-row button{flex:1 1 0;min-height:44px;padding:6px 4px}
+  .tabs-row button[aria-selected="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+  .tabs-line{font-size:.85rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:1.2em}
+  [data-pane]:not(.pane-on){display:none !important}
+  .mapbox,#h-sel{scroll-margin-top:100px}
+}
 /* Phones: the selected unit's main orders in a bar at the foot of the screen (tools/campaign/phone.py checks it). */
 .orderbar{display:none}
 @media (max-width:640px){
@@ -195,8 +206,12 @@ legend{padding:0}
     <nav><span class="units-toggle" id="lethal-toggle" title="Lethality for player characters (the GM's setting, shared by every page)"></span><span class="units-toggle" id="units-toggle" title="Units for distances and ranges"></span><a href="campaign.html" target="_top" title="The GM's console over the pages: the phase, the log, the march">Campaign</a><a href="roller.html">Wound roller</a><a href="team.html">Team builder</a><a href="travel.html">Travel map</a><a href="guide.html" target="_top" title="How to use the pages, mode by mode">How to play</a><a href="rules.html">Rule book</a><a href="../index.html">Start page</a></nav>
   </header>
 
+  <nav class="tabs" id="tabs" aria-label="Parts of the page">
+    <div class="tabs-row" role="tablist"><button role="tab" data-tab="map">Map</button><button role="tab" data-tab="battle">Battle</button><button role="tab" data-tab="units">Units</button><button role="tab" data-tab="story">Story</button></div>
+    <div class="tabs-line" id="tabs-line" aria-live="polite"></div>
+  </nav>
   <div class="grid">
-    <section class="panel" aria-labelledby="h-map">
+    <section class="panel" aria-labelledby="h-map" data-pane="map">
       <div class="toolbar" style="justify-content:space-between">
         <h2 id="h-map">The field</h2>
         <span class="muted" id="map-scale"></span>
@@ -228,7 +243,7 @@ legend{padding:0}
       <p class="muted" style="margin:0">Each unit is a block of hexes along its front (the dark edge), facing the arrow. The marker on its centre hex shows its side (rectangle or diamond) and type: see the key above. Close order holds 40 men a hex, open order 20. Units touching across a front fight; archers shoot at the nearest enemy in range in front of them.</p>
     </section>
 
-    <section class="panel" aria-labelledby="h-battle">
+    <section class="panel" aria-labelledby="h-battle" data-pane="battle units story">
       <h2 id="h-battle">Battle</h2>
       <div class="phase" id="phase"></div>
       <div class="banner" id="handoff" hidden>
@@ -3364,6 +3379,31 @@ function renderPhase(){
   $("#chk-armies").disabled ||= !!S.forces;
   ["#in-side0", "#in-side1"].forEach(b => $(b).disabled = S.phase !== "setup" || !!S.forces);
 }
+/* ---------- phones: the tabs ----------
+   On a phone the page is in four tabs: Map; Battle (the phase, commanders, after the battle, weather); Units
+   (the units, the selected unit, fire support, heroes, adding a unit); Story (narrative and log). The battle
+   panel's parts are given their tab here, from its headings; on a desktop every part shows. */
+let TAB = "map";
+function tabsInit(){
+  let pane = "battle";
+  for (const el of $("#h-battle").parentElement.children){
+    if (el.tagName === "H2" && /^Units$/.test(el.textContent.trim())) pane = "units";
+    if (el.tagName === "H2" && /^Narrative$/.test(el.textContent.trim())) pane = "story";
+    el.dataset.pane = pane;
+  }
+  document.querySelectorAll("#tabs [data-tab]").forEach(b => b.onclick = () => setTab(b.dataset.tab));
+  setTab(TAB);
+}
+function setTab(t){
+  TAB = t;
+  document.querySelectorAll("[data-pane]").forEach(el => el.classList.toggle("pane-on", el.dataset.pane.split(" ").includes(t)));
+  document.querySelectorAll("#tabs [data-tab]").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
+  if (matchMedia("(max-width:640px)").matches) scrollTo(0, 0);
+  renderTabsLine();
+}
+function renderTabsLine(){                           // under the tabs: the message if there is one, else the phase
+  $("#tabs-line").textContent = S.msg || $("#phase").textContent;
+}
 /* ---------- phones: the order bar ----------
    At the foot of a phone's screen, the selected unit's main orders. Its buttons press the page's own
    buttons (data-for), so they do just what those do; ◀ ▶ step through the units that can take orders. */
@@ -3372,6 +3412,7 @@ function renderBar(){
   const bar = $("#orderbar"), u = selUnit();
   bar.hidden = !S.units.length || S.phase === "over";
   document.body.classList.toggle("has-orderbar", !bar.hidden);
+  renderTabsLine();
   if (bar.hidden) return;
   $("#ob-name").textContent = u ? unitTag(u) + " " + u.name : "No unit selected";
   bar.querySelectorAll("[data-for]").forEach(b => { const o = $("#" + b.dataset.for); b.disabled = o.disabled || o.hidden; if (b.id === "ob-phase") b.textContent = o.textContent });
@@ -3388,7 +3429,7 @@ function barStep(d){
 function mapCentre(pos, bring){                     // scroll the map (zoomed or not) so a hex is in the middle of its box; bring: and the box onto the screen
   const box = $("#map"), svg = box.querySelector("svg"); if (!svg || !pos) return;
   let b = box.getBoundingClientRect();
-  if (bring && (b.top < 0 || b.bottom > innerHeight - $("#orderbar").offsetHeight)){ box.scrollIntoView({ block: "start" }); b = box.getBoundingClientRect() }
+  if (bring && (b.top < $("#tabs").getBoundingClientRect().bottom || b.bottom > innerHeight - $("#orderbar").offsetHeight)){ box.scrollIntoView({ block: "start" }); b = box.getBoundingClientRect() }
   const [x, y] = xy(pos), p = new DOMPoint(x, y).matrixTransform(svg.getScreenCTM());
   box.scrollLeft += p.x - (b.left + box.clientWidth / 2);
   box.scrollTop += p.y - (b.top + box.clientHeight / 2);
@@ -3407,8 +3448,8 @@ function barWire(){
   $("#orderbar").querySelectorAll("[data-for]").forEach(b => b.onclick = () => $("#" + b.dataset.for).click());
   $("#ob-prev").onclick = () => barStep(-1);
   $("#ob-next-unit").onclick = () => barStep(1);
-  $("#ob-show").onclick = barShow;
-  $("#ob-more").onclick = () => $("#h-sel").scrollIntoView({ block: "start" });
+  $("#ob-show").onclick = () => { setTab("map"); barShow() };
+  $("#ob-more").onclick = () => { setTab("units"); $("#h-sel").scrollIntoView({ block: "start" }) };
 }
 function render(){
   renderMap(); renderUnits(); renderSel(); renderPhase(); renderBar(); renderAfter(); renderBeat(); renderAccounts(); renderForces(); renderHeroes(); renderSupport(); renderWeather(); renderAi();
@@ -3724,6 +3765,7 @@ function init(){
   $("#units").addEventListener("keydown", e => { if (e.key === "Enter"){ const li = e.target.closest("li[data-id]"); if (li){ S.sel = +li.dataset.id; render() } } });
   $("#btn-next").onclick = next;
   barWire();
+  tabsInit();
   $("#btn-reset").onclick = newBattle;
   narratorControls();
   $("#btn-end").onclick = () => endBattle();   // not the click event as the stop
