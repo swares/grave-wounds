@@ -23,6 +23,7 @@ not this repository.
   rules are simplified for paper (the flux alone, at Endurance 50, and a fixed week's weather). Project
   doc *Grave Wounds: playtest packet outline* holds the three rounds of testing, the publishing path
   and the formats to consider (itch.io, Foundry VTT, desktop, Android).
+- **Comments from visitors.** A private Google Form, linked from the signup block, the Rules and books, and the packet. There is no public comment section yet.
 - **Feedback on the core rules.** The review's next step after a table playtest: post the core
   rules, not the whole book, to r/RPGdesign, BRP Central and the Hârn community, then the wider
   wargame, solo and video-game audiences. Check each community's self-promotion rules first.
