@@ -1,4 +1,5 @@
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Grave Wounds Roller</title>
 <link rel="stylesheet" href="fonts/fonts.css">
 <style>
@@ -84,6 +85,20 @@ button:hover{background:var(--blood-soft)}
 button.primary{background:var(--blood);border-color:var(--blood);color:var(--panel);font-weight:700;font-size:1.05rem;padding:10px 14px}
 button.primary:hover{filter:brightness(1.1);background:var(--blood)}
 button.small{font-size:.8rem;padding:3px 8px}
+/* Phones: a comfortable tap for every control (tools/campaign/phone.py checks it). */
+@media (max-width:640px){
+  button,select,input:not([type=checkbox]):not([type=radio]):not([type=range]){min-height:44px}
+  button,button.small{padding:9px 14px;font-size:.95rem}
+  input[type=checkbox],input[type=radio]{width:22px;height:22px}
+  body{padding:10px 8px}
+  .wrap{gap:12px}
+  .panel{padding:12px;gap:10px}
+  .mods button{font-size:.95rem;padding:9px 13px}
+  .hexmap{overflow:auto;max-height:62vh;border:1px solid var(--line);-webkit-overflow-scrolling:touch}
+  .hexmap svg{min-width:640px}
+  .dice{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .navlink{padding:6px 0;display:inline-block}
+}
 :focus-visible{outline:2px solid var(--blood);outline-offset:2px}
 .result{border-top:1px solid var(--line);padding-top:12px;display:flex;flex-direction:column;gap:10px}
 .rolls{display:flex;gap:6px;flex-wrap:wrap;font:500 .8rem var(--mono);color:var(--muted)}
