@@ -23,7 +23,7 @@ not this repository.
   rules are simplified for paper (the flux alone, at Endurance 50, and a fixed week's weather). Project
   doc *Grave Wounds: playtest packet outline* holds the three rounds of testing, the publishing path
   and the formats to consider (itch.io, Foundry VTT, desktop, Android).
-- **Phones.** The roller, team builder and campaign console have a phone layout with full-size taps, checked in a phone-sized browser (`tools/campaign/phone.py`), not yet on a real phone. The field and travel maps fit but are fiddly to play on a phone: their maps scroll in a box and their buttons are small.
+- **Phones.** The roller, team builder and campaign console have a phone layout with full-size taps, checked in a phone-sized browser (`tools/campaign/phone.py`), not yet on a real phone. The field and travel maps have full-size taps and zoom (−, +, Fit and two-finger pinch; `templates/mapzoom.js`). Still left out on phones: a bar of orders for the selected unit, the map following the fighting, and tabs instead of one long page.
 - **Comments from visitors.** A private Google Form, linked from the signup block, the Rules and books, and the packet. There is no public comment section yet.
 - **Feedback on the core rules.** The review's next step after a table playtest: post the core
   rules, not the whole book, to r/RPGdesign, BRP Central and the Hârn community, then the wider

@@ -43,6 +43,16 @@ button:hover{background:var(--blood-soft)}
 button.primary{background:var(--blood);border-color:var(--blood);color:var(--panel);font-weight:700}
 button.primary:hover{filter:brightness(1.1);background:var(--blood)}
 button.small{font-size:.8rem;padding:3px 8px}
+/* Phones: a comfortable tap for every control (tools/campaign/phone.py checks it). */
+@media (max-width:640px){
+  button,select,input:not([type=checkbox]):not([type=radio]):not([type=range]){min-height:44px}
+  button,button.small{padding:9px 14px;font-size:.95rem}
+  input[type=checkbox],input[type=radio]{width:22px;height:22px}
+  .mapbox{max-height:70vh}
+}
+.zoombar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0}.zoombar button{min-width:2.6em}.zoomno{font-variant-numeric:tabular-nums;min-width:3.5em}
+.mapbox svg{touch-action:pan-x pan-y}
+@media (hover:hover) and (pointer:fine){.zoomtip{display:none}}
 button[aria-pressed="true"]{background:var(--blood-soft);border-color:var(--blood);font-weight:700}
 button:disabled{opacity:.45;cursor:default}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -3766,6 +3776,69 @@ function makeTravelDay(DATA, RULES, env = {}){
 if (typeof module !== "undefined") module.exports = makeTravelDay;   // Node (the tests); the page has no `module`
 
 const { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, rollerFor, councilForces, councilView, councilRole, councilRollBy, councilStanding, councilHeld, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, sightings, fortresses, siegeState, termsChance, summon, sortie, buryDead, deadNow, fireMine, countermine, stormWon, callOffSack, sacking, roll100 } = makeTravelDay(DATA, RULES);
+/* Map zoom, for the field and travel maps (built into each page): − and + buttons, Fit, and two-finger
+   pinch on the map. The map's svg is drawn wider or narrower and the box scrolls, so a tap still lands
+   on the hex drawn under it. The page's own size is zoom 1; the zoom holds when the map is redrawn. */
+const MAPZOOM = (() => {
+  const STEP = 2, MAX = 4;
+  function attach(box){
+    let f = 1, base = 0, pinch = null, vb = "";
+    const bar = document.createElement("div");
+    bar.className = "zoombar";
+    bar.innerHTML = '<button type="button" class="small" data-z="out" aria-label="Zoom out">−</button>'
+      + '<button type="button" class="small" data-z="in" aria-label="Zoom in">+</button>'
+      + '<button type="button" class="small" data-z="fit">Fit</button><span class="muted zoomno" aria-live="polite"></span>'
+      + '<span class="muted zoomtip">Two fingers to zoom on a phone.</span>';
+    box.before(bar);
+    const svg = () => box.querySelector(":scope > svg");
+    const natural = s => {                       // the page's own width for the map, before any zoom
+      const st = s.style.width; s.style.width = ""; s.style.minWidth = s.dataset.minw ?? s.style.minWidth; s.style.maxWidth = s.dataset.maxw ?? s.style.maxWidth;
+      const w = s.getBoundingClientRect().width; s.style.width = st; return w;
+    };
+    const lo = () => { const s = svg(); if (s && (s.getAttribute("viewBox") || "") !== vb){ s.dataset.minw = s.style.minWidth; s.dataset.maxw = s.style.maxWidth; vb = s.getAttribute("viewBox") || ""; base = natural(s) } return base ? Math.min(1, box.clientWidth / base) : 1 };
+    function apply(at){                          // at: [x, y] in the box's view to hold still
+      const s = svg();
+      if (!s) return;
+      if (s.dataset.minw === undefined){ s.dataset.minw = s.style.minWidth; s.dataset.maxw = s.style.maxWidth }
+      const v = s.getAttribute("viewBox") || "";
+      if (!base || v !== vb){ vb = v; base = natural(s) }   // another map (or battlefield): its own size is zoom 1
+      f = Math.min(MAX, Math.max(lo(), f));
+      const old = s.getBoundingClientRect().width || base, w = base * f, k = w / old;
+      const [ax, ay] = at || [box.clientWidth / 2, box.clientHeight / 2];
+      const sx = box.scrollLeft, sy = box.scrollTop;
+      s.style.minWidth = "0"; s.style.maxWidth = "none"; s.style.width = `${w.toFixed(1)}px`;
+      if (k !== 1){ box.scrollLeft = (sx + ax) * k - ax; box.scrollTop = (sy + ay) * k - ay }
+      bar.querySelector(".zoomno").textContent = `${Math.round(f * 100)}%`;
+      bar.querySelector('[data-z="in"]').disabled = f >= MAX - 1e-6;
+      bar.querySelector('[data-z="out"]').disabled = f <= lo() + 1e-6;
+    }
+    bar.addEventListener("click", e => {
+      const b = e.target.closest("button[data-z]");
+      if (!b) return;
+      f = b.dataset.z === "in" ? f * STEP : b.dataset.z === "out" ? f / STEP : lo();
+      apply();
+    });
+    new MutationObserver(() => { const s = svg(); if (s && s.style.width !== `${(base * f).toFixed(1)}px`) apply([0, 0]) }).observe(box, { childList: true });
+    const gap = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+    const mid = t => { const r = box.getBoundingClientRect(); return [(t[0].clientX + t[1].clientX) / 2 - r.left, (t[0].clientY + t[1].clientY) / 2 - r.top] };
+    box.addEventListener("touchstart", e => {
+      if (e.touches.length !== 2) return;
+      pinch = { d: gap(e.touches), f };
+      e.preventDefault();
+    }, { passive: false });
+    box.addEventListener("touchmove", e => {
+      if (!pinch || e.touches.length !== 2) return;
+      e.preventDefault();
+      f = pinch.f * gap(e.touches) / pinch.d;
+      apply(mid(e.touches));
+    }, { passive: false });
+    box.addEventListener("touchend", e => { if (e.touches.length < 2) pinch = null });
+    window.addEventListener("resize", () => { if (svg()) apply() });
+    return { get zoom(){ return f }, set: z => { f = z; apply() } };
+  }
+  return { attach };
+})();
+
 /* ---------- drawing ---------- */
 const R = 12, W = Math.sqrt(3) * R;
 const xy = ([c, r]) => [W * (c + 0.5 * (r & 1)) + W / 2, 1.5 * R * r + R];
@@ -4252,6 +4325,7 @@ function seatMain(){
       <label><input type="radio" name="seat-how" value="to" checked> march to the hex</label><label><input type="radio" name="seat-how" value="via"> go by way of it</label></div>
     <p class="muted" id="seat-said" aria-live="polite" style="margin:0;font-size:.85rem"></p>
     <div class="mapbox plan" id="map"></div><p class="muted" id="seat-key" style="margin:0;font-size:.85rem"></p>`;
+  MAPZOOM.attach($("#map"));
   $("#map").addEventListener("click", seatClick);
   terrainCss();
   window.addEventListener("message", e => {
@@ -4275,6 +4349,7 @@ function init(){
   $("#in-ftype").innerHTML = Object.entries(FT).map(([k, v]) => `<option value="${k}">${esc(v.name)}</option>`).join("");
   document.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { S.mode = b.dataset.mode; S.msg = ""; render() });
   const mapEl = $("#map");
+  MAPZOOM.attach(mapEl);
   mapEl.addEventListener("click", e => {
     const fo = e.target.closest(".force");
     if (fo && S.mode !== "paint") return clickForce(+fo.dataset.id);

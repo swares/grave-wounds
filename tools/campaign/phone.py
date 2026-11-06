@@ -2,9 +2,12 @@
 
     python3 tools/campaign/phone.py
 
-The roller (set up with the playtest packet's fight), the team builder and the campaign console must
+The roller (set up with the playtest packet's fight), the field and travel maps, the team builder and
+the campaign console must
 use the phone's width (a viewport line), not scroll sideways, and give every visible control at least a
 40 px tap. On the roller a fighter can be tapped and placed on the map, and the hit can be rolled.
+On the maps, + twice makes a hex a fingertip, Fit shows the whole width, two fingers spread zoom in, and,
+zoomed in, a tap on the field map moves a unit.
 Needs Python's playwright with Chromium and a built site. Exits non-zero on any failure.
 """
 import sys
@@ -19,6 +22,18 @@ SIZE = """() => {
   return { width: innerWidth, over: document.documentElement.scrollWidth - innerWidth,
     small: ctl.filter(e => e.getBoundingClientRect().height < 40).map(e => (e.id || e.textContent.trim().slice(0, 18) || e.tagName)).slice(0, 5), n: ctl.length };
 }"""
+
+
+FIELD = """() => { const s = [...document.querySelectorAll('select')].find(x => [...x.options].some(o => /Towton/.test(o.text)));
+  s.value = [...s.options].find(o => /Towton/.test(o.text)).value; s.dispatchEvent(new Event('change', { bubbles: true }));
+  [...document.querySelectorAll('button')].find(b => /Lay it out/.test(b.textContent)).click() }"""
+HEXW = """() => { const p = [...document.querySelectorAll('#map svg [data-h]')].slice(0, 60).map(e => e.getBoundingClientRect().width).filter(w => w > 0).sort((a, b) => a - b);
+  return Math.round(p[Math.floor(p.length / 2)] || 0) }"""
+PINCH = """() => { const box = document.querySelector('#map'), r = box.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + Math.min(r.height, 300) / 2;
+  const T = (id, x) => new Touch({ identifier: id, target: box, clientX: x, clientY: cy });
+  const ev = (type, a, b) => box.dispatchEvent(new TouchEvent(type, { touches: [T(1, a), T(2, b)], targetTouches: [T(1, a), T(2, b)], changedTouches: [T(1, a), T(2, b)], bubbles: true, cancelable: true }));
+  ev('touchstart', cx - 30, cx + 30); ev('touchmove', cx - 60, cx + 60); ev('touchmove', cx - 90, cx + 90);
+  box.dispatchEvent(new TouchEvent('touchend', { touches: [], changedTouches: [T(1, cx - 90)], bubbles: true })) }"""
 
 
 def page_ok(pg, name):
@@ -57,6 +72,49 @@ def run(p):
     pg.get_by_role("button", name="Roll the hit").tap()
     pg.wait_for_timeout(300)
     check(len(pg.inner_text("#result") if pg.locator("#result").count() else pg.inner_text("body")) > 0, "the hit can be rolled")
+    for name, setup in (("field.html", FIELD), ("travel.html", "")):
+        pg.goto(BASE + name)
+        pg.wait_for_timeout(900)
+        if setup:
+            pg.evaluate(setup)
+            pg.wait_for_timeout(1200)
+        page = name.split(".")[0]
+        page_ok(pg, page)
+        hx = pg.evaluate(HEXW)
+        pg.locator(".zoombar button[data-z='in']").first.tap()
+        pg.locator(".zoombar button[data-z='in']").first.tap()
+        pg.wait_for_timeout(200)
+        big = pg.evaluate(HEXW)
+        check(big >= 40, f"{page}: + twice makes a hex a fingertip ({hx} to {big} px)")
+        pg.locator(".zoombar button[data-z='fit']").first.tap()
+        pg.wait_for_timeout(200)
+        check(pg.evaluate("() => { const b = document.querySelector('#map'), s = b.querySelector('svg'); return s.getBoundingClientRect().width <= b.clientWidth + 1 }"), f"{page}: Fit shows the whole width")
+        f0 = pg.evaluate(HEXW)
+        pg.evaluate(PINCH)
+        pg.wait_for_timeout(200)
+        check(pg.evaluate(HEXW) > f0 * 1.8, f"{page}: two fingers spread zoom in ({f0} to {pg.evaluate(HEXW)} px)")
+    pg.goto(BASE + "field.html")
+    pg.wait_for_timeout(900)
+    pg.evaluate(FIELD)
+    pg.wait_for_timeout(1200)
+    for _ in range(3):
+        pg.locator(".zoombar button[data-z='in']").first.tap()
+    pg.evaluate("() => { const u = S.units.find(x => x.pos); S.sel = u.id; S.tool = 'unit'; window.__was = u.pos.join(',') }")
+    target = pg.evaluate("""() => { const u = S.units.find(x => x.id === S.sel), occ = occupancy(S.units);
+      for (const d of [3, -3, 4, -4, 5, -5]) for (const e of [0, 1, -1, 2, -2]) {
+        const h = [u.pos[0] + e, u.pos[1] + d], k = h.join(',');
+        if (occ[hk(h)] === undefined && document.querySelector(`#map [data-h="${k}"]`)) return k }
+      return null }""")
+    if target:
+        h = pg.locator(f"#map [data-h='{target}']").first
+        h.scroll_into_view_if_needed()
+        pg.evaluate("() => { S.msg = ''; window.__seen = null; const m = $('#map'); m.addEventListener('click', e => { const p = e.target.closest('.hx'); window.__seen = p && p.dataset.h }, { capture: true, once: true }) }")
+        h.tap()
+        pg.wait_for_timeout(300)
+        check(pg.evaluate("() => window.__seen") == target, f"field: zoomed in, a tap lands on the hex under the finger ({target})")
+        check(pg.evaluate("() => S.units.find(x => x.id === S.sel).pos.join(',') !== window.__was || !!S.msg"), "field: and the selected unit is moved, or told why not")
+    else:
+        check(False, "field: a hex next to the unit is found")
     for name in ("team.html", "campaign.html"):
         pg.goto(BASE + name)
         pg.wait_for_timeout(800)
