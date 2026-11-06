@@ -46,16 +46,7 @@ button:hover{background:var(--blood-soft)}
 button.primary{background:var(--blood);border-color:var(--blood);color:var(--panel);font-weight:700}
 button.primary:hover{filter:brightness(1.1);background:var(--blood)}
 button.small{font-size:.8rem;padding:3px 8px}
-/* Phones: a comfortable tap for every control (tools/campaign/phone.py checks it). */
-@media (max-width:640px){
-  button,select,input:not([type=checkbox]):not([type=radio]):not([type=range]){min-height:44px}
-  button,button.small{padding:9px 14px;font-size:.95rem}
-  input[type=checkbox],input[type=radio]{width:22px;height:22px}
-  .mapbox{max-height:70vh}
-}
-.zoombar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0}.zoombar button{min-width:2.6em}.zoomno{font-variant-numeric:tabular-nums;min-width:3.5em}
-.mapbox svg{touch-action:pan-x pan-y}
-@media (hover:hover) and (pointer:fine){.zoomtip{display:none}}
+/*__MAPCSS__*/
 button:disabled{opacity:.45;cursor:default}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 110px;min-width:0}

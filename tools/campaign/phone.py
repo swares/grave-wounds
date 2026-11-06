@@ -97,7 +97,7 @@ def run(p):
     pg.wait_for_timeout(900)
     pg.evaluate(FIELD)
     pg.wait_for_timeout(1200)
-    for _ in range(3):
+    for _ in range(2):
         pg.locator(".zoombar button[data-z='in']").first.tap()
     pg.evaluate("() => { const u = S.units.find(x => x.pos); S.sel = u.id; S.tool = 'unit'; window.__was = u.pos.join(',') }")
     target = pg.evaluate("""() => { const u = S.units.find(x => x.id === S.sel), occ = occupancy(S.units);

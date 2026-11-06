@@ -46,6 +46,7 @@ button:hover{background:var(--blood-soft)}
 button.primary{background:var(--blood);border-color:var(--blood);color:var(--panel);font-weight:700}
 button.primary:hover{filter:brightness(1.1);background:var(--blood)}
 button.small{font-size:.8rem;padding:3px 8px}
+/* Shared by the field and travel maps; build.py inlines it. */
 /* Phones: a comfortable tap for every control (tools/campaign/phone.py checks it). */
 @media (max-width:640px){
   button,select,input:not([type=checkbox]):not([type=radio]):not([type=range]){min-height:44px}
@@ -56,6 +57,7 @@ button.small{font-size:.8rem;padding:3px 8px}
 .zoombar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0}.zoombar button{min-width:2.6em}.zoomno{font-variant-numeric:tabular-nums;min-width:3.5em}
 .mapbox svg{touch-action:pan-x pan-y}
 @media (hover:hover) and (pointer:fine){.zoomtip{display:none}}
+
 button:disabled{opacity:.45;cursor:default}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 110px;min-width:0}
