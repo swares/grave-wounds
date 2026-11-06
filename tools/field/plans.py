@@ -6,7 +6,9 @@ Lays out Cowpens with its armies as drawn up: the plan box shows for the side wi
 for the other, the strip lists the plan, unticking the box takes the plan off the field and ticking
 it puts it back. Then, with the commander on both sides and seeded dice, runs the battle until
 the horse's step starts and checks the log says when the militia fell back and the horse went
-round, and the strip shows a step running. Needs Python's playwright with
+round, and the strip shows a step running. Last, Fox Hill with the planner: the commander's move
+lines give the hexes a unit went (one, in the snow) and that the ground took its whole move, and a
+reserve committed with no move says it stays put. Needs Python's playwright with
 Chromium and a built site. Exits non-zero on any failure.
 """
 import sys
@@ -103,6 +105,26 @@ with sync_playwright() as p:
     stage = pg.inner_text("#stage")
     check("Danes: the commander has a plan" in stage and "Danish crossbowmen pinning" not in stage,
           f"its plan is hidden on the strip from the GM playing the other side ({stage})")
+
+    # the move lines say the hexes gone, not the move spent: Fox Hill's snow and slopes take a whole move a hex
+    pg.click("#btn-reset")
+    pg.select_option("#sel-field", "foxhill-1950")
+    pg.click("#btn-field")
+    pg.click("#chk-planner")
+    pg.select_option("#sel-ai0", index=2)          # the Marines holding
+    pg.select_option("#sel-ai1", index=1)          # the Chinese attacking
+    pg.evaluate("() => { const sd = new SeededDice(101); dice.randint = (a, b) => sd.randint(a, b); dice.random = () => sd.random() }")
+    advance = "() => S.log.filter(l => l.text.startsWith('Chinese company from the heights (north)') && l.text.includes(' advance ')).map(l => l.text)"
+    for _ in range(12):
+        if pg.evaluate(advance):
+            break
+        pg.click("#btn-next")
+    lines = pg.evaluate(advance)
+    check(any("advance 1 hex (the ground takes all 5 of their move) toward their line, as planned" in t for t in lines),
+          f"a move line gives the hexes gone and why it is short of the move spent ({lines})")
+    check(not pg.evaluate("() => S.log.some(l => / 5 hexes /.test(l.text))"), "no line gives the move spent as hexes")
+    stays = pg.evaluate("""() => orderText(movedOf({ unit: 0, act: "commit", why: "broke" }, [{ unit: 0, act: "commit", why: "broke" }], S.units))""")
+    check(stays.endswith("; they stay where they are this exchange."), f"a reserve committed with no move says it stays put ({stays})")
     check(not errors, f"no page errors {errors}")
     browser.close()
 

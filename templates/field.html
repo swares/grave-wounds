@@ -1409,7 +1409,7 @@ function aiMove(){                                // at the start of a side's mo
   const commits = commitsOf(S, orders);
   S.commits = [...(S.commits || []), ...commits];
   S.aiDone = { exchange: S.exchange, phase: S.phase, undo: before, mem, sup, start, commits };
-  const lines = orders.map(o => ({ cls: o.act === "charge" ? "morale" : "", text: orderText(o) }));
+  const lines = orders.map(o => ({ cls: o.act === "charge" ? "morale" : "", text: orderText(movedOf(o, orders, before)) }));
   S.log = [{ cls: "head", text: `The commander orders ${side} (${stanceWord(k)}): ${orders.length ? nOf(orders.length, "order") : "every unit stands"}${Object.keys(M.mem).length ? "" : " (it knows of no enemy: none is in its units' sight)"}.${onward}` }, ...lines, ...S.log].slice(0, 400);
 }
 const aimText = stance => (stance === "attack"   // why its units go for the second objective this move
@@ -1420,14 +1420,27 @@ function aiMemory(k){                             // side k's commander's memory
   if (!S.aiMemory[k]) S.aiMemory[k] = { n: -1, mem: {} };
   return S.aiMemory[k];
 }
+function movedOf(o, orders, before){              // an order with what it came to: the hexes the unit went and the move it had, or (a reserve committed) that it stays put this exchange
+  const was = o.unit == null ? null : before[o.unit], u = S.units[o.unit];
+  if (o.act === "commit") return orders.some(x => x.unit === o.unit && x.pos) ? o : { ...o, stays: true };
+  if (o.cost == null || !was?.pos || !u?.pos) return o;
+  return { ...o, hexes: hexDistance(was.pos, u.pos), allow: allowance({ ...was, prone: false }), wheel: (o.facing ?? was.facing) !== was.facing };
+}
+function movedText(o){                            // "1 hex (the ground takes all 5 of their move)": the hexes gone, and why it is short of the move spent
+  if (o.hexes == null) return nOf(o.cost, "hex", "hexes");
+  if (o.cost <= o.hexes) return nOf(o.hexes, "hex", "hexes");
+  const what = o.wheel ? "the ground and the wheel take" : "the ground takes";
+  const share = o.cost >= o.allow ? "all " + o.allow + " of their move" : o.cost + " of their move of " + o.allow;
+  return `${nOf(o.hexes, "hex", "hexes")} (${what} ${share})`;
+}
 function moveText(who, them, o, up){              // a move order's line: stepping aside for formed men, or toward the target
-  if (o.why === "give_way") return `${who} ${up}step aside ${nOf(o.cost, "hex", "hexes")} to let the formed men behind them through.`;
-  if (o.pin) return `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} to keep ${them} under fire from as far off as they can.`;
+  if (o.why === "give_way") return `${who} ${up}step aside ${movedText(o)} to let the formed men behind them through.`;
+  if (o.pin) return `${who} ${up}move ${movedText(o)} to keep ${them} under fire from as far off as they can.`;
   let past = "";
   if (o.through_screen) past = ", past their own skirmishers";
   else if (o.pursue) past = ", in pursuit";
   if (o.width) past += `, closing its front to ${nOf(o.width, "hex", "hexes")} to fit the ground`;
-  return `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} toward ${them}${past}.`;
+  return `${who} ${up}move ${movedText(o)} toward ${them}${past}.`;
 }
 const COMMIT_WHY = { broke: "one of its units has broken", gap: "the enemy is close", exploit: "to exploit an enemy unit that broke", stall: "the attack has stalled" };
 const TEMPLATE_TEXT = { assault: "fire and assault: its shooters pin the enemy's front while its assault troops wait at their start lines, then go in",
@@ -1465,28 +1478,28 @@ function planOrderText(who, o){                   // a plan step starting or end
 }
 const ORDER_TEXT = {                              // (who, them, o, up, facing) -> the order's line
   plan: (who, them, o) => planOrderText(who, o),
-  commit: (who, them, o) => `${who} are committed from the reserve: ${COMMIT_WHY[o.why] || o.why}${o.at ? "; they go to plug the gap at " + hexName(o.at) + ", where it stood" : ""}.`,
+  commit: (who, them, o) => `${who} are committed from the reserve: ${COMMIT_WHY[o.why] || o.why}${o.at ? "; they go to plug the gap at " + hexName(o.at) + ", where it stood" : ""}${o.stays ? "; they stay where they are this exchange" : ""}.`,
   charge: (who, them, o, up) => `${who} ${up}charge ${them}${throughText(o)}.`,
   move: (who, them, o, up) => moveText(who, them, o, up),
-  advance: (who, them, o, up, facing) => (o.gap ? `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} to plug the gap${facing}.` : o.line ? `${who} ${up}advance ${nOf(o.cost, "hex", "hexes")} toward their line, as planned${facing}.` : o.pin ? `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} nearer ${them}, to bring them under fire.` : `${who} ${up}advance ${nOf(o.cost, "hex", "hexes")} on the objective${facing}.`),
+  advance: (who, them, o, up, facing) => (o.gap ? `${who} ${up}move ${movedText(o)} to plug the gap${facing}.` : o.line ? `${who} ${up}advance ${movedText(o)} toward their line, as planned${facing}.` : o.pin ? `${who} ${up}move ${movedText(o)} nearer ${them}, to bring them under fire.` : `${who} ${up}advance ${movedText(o)} on the objective${facing}.`),
   leave: (who) => `${who} withdraw off the field, as ordered.`,
-  fall_back: (who, them, o, up, facing) => (o.gap ? `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} to plug the gap${facing}.` : `${who} ${up}fall back ${nOf(o.cost, "hex", "hexes")} toward the objective${facing}.`),
-  search: (who, them, o, up) => `${who} ${up}move ${nOf(o.cost, "hex", "hexes")} forward to find the enemy (none in sight, no objective).`,
+  fall_back: (who, them, o, up, facing) => (o.gap ? `${who} ${up}move ${movedText(o)} to plug the gap${facing}.` : `${who} ${up}fall back ${movedText(o)} toward the objective${facing}.`),
+  search: (who, them, o, up) => `${who} ${up}move ${movedText(o)} forward to find the enemy (none in sight, no objective).`,
   turn: (who, them) => `${who} turn to face ${them}.`,
   breach: who => `${who} set to hacking at the works in front of them.`,
   ground: who => `${who} go to ground under fire.`,
   abandon: (who, them, o) => `${who} leave ${nOf(o.n, "immobilised vehicle")} behind and go on without ${o.n === 1 ? "it" : "them"}; the crews bail out.`,
   lay: (who, them, o) => `${who} lay ${FD.units.mines.kinds[o.kind].name.toLowerCase()} ahead of them (${nOf(FD.units.mines.sappers.lay, "exchange")} without moving or firing).`,
   lift: who => `${who} lift the known mines ahead of them, a lane (${nOf(FD.units.mines.sappers.clear, "exchange")} without moving or firing).`,
-  spot: (who, them, o) => (o.toward ? `${who} move up ${nOf(o.cost, "hex", "hexes")} toward ${hexName(o.toward)}, from where they will see ${them} for the aircraft (air controller).`
-    : `${who} move up ${nOf(o.cost, "hex", "hexes")} to see ${them} for the aircraft (air controller).`),
-  close_up: (who, them, o) => `${who} close up ${nOf(o.cost, "hex", "hexes")} to the known minefield on their way to ${them}, to lift a lane through it.`,
-  fetch: (who, them, o) => `${who} drive ${nOf(o.cost, "hex", "hexes")} to fetch ${S.units[o.guns]?.name || "their guns"}: they hook up next move.`,
+  spot: (who, them, o) => (o.toward ? `${who} move up ${movedText(o)} toward ${hexName(o.toward)}, from where they will see ${them} for the aircraft (air controller).`
+    : `${who} move up ${movedText(o)} to see ${them} for the aircraft (air controller).`),
+  close_up: (who, them, o) => `${who} close up ${movedText(o)} to the known minefield on their way to ${them}, to lift a lane through it.`,
+  fetch: (who, them, o) => `${who} drive ${movedText(o)} to fetch ${S.units[o.guns]?.name || "their guns"}: they hook up next move.`,
   hook: (who, them, o) => `${who} hook up ${o.guns} to tow them forward: they do not fire until unhooked.`,
   mount: (who, them, o) => `${o.riders} get aboard ${who}: they ride with them and do not fight until they get down.`,
   dismount: (who, them, o) => `${o.riders} get down beside ${who}, to fight on foot from the next exchange.`,
   limber: (who, them, o) => (o.back ? `${who} limber up to pull back: ${them} could reach their guns (an exchange changing over).` : `${who} limber up to move forward (an exchange changing over).`),
-  pull_back: (who, them, o) => `${who} pull their guns back ${nOf(o.cost, "hex", "hexes")}, away from ${them}.`,
+  pull_back: (who, them, o) => `${who} pull their guns back ${movedText(o)}, away from ${them}.`,
   unlimber: who => `${who} unlimber to fire (an exchange changing over).`,
   unhook: (who, them) => `${who} unhook their guns facing ${them}: they fire from the next exchange.`,
   fix: (who, them, o) => (o.relay ? `${who} shift their fixed line onto ${hexName(o.hex)}, where ${them} stand: in the dark they will fire blind down it.`
