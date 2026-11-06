@@ -509,7 +509,9 @@ starts again from the starting units.
 **attacking** or **holding**; each side has its own choice, and *You move them* keeps it the
 GM's. At the start of each of that side's moves it orders the side's
 units, one after another, and logs each order ("Billmen (Lancastrians) move 6 hexes toward
-Billmen (Yorkists)."). **Undo its orders** puts the units back where they began the move, so
+Billmen (Yorkists)."). The hexes are those the unit went; when the ground or a wheel cost it more
+of its move than that, the line says so ("advance 1 hex (the ground takes 5 of their move of 8)"),
+and a reserve committed with no move that exchange says it stays where it is. **Undo its orders** puts the units back where they began the move, so
 you can move them yourself or press **Give its orders** for a fresh set. Nothing else
 changes: you still press the side's *done* button, and you can still adjust its units by
 hand before you do. It is a rule of thumb, as a GM would play the other side, not a
