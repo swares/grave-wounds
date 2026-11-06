@@ -17,6 +17,7 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[2]
 PAGE = (ROOT / "dist" / "field.html").as_uri()
+FIELD, RESET, PLANNER = "#sel-field", "#btn-reset", "#chk-planner"
 SEED = 202                                         # dice on which the horse live to go round (checked: on 101 and 303 they are destroyed first)
 failures = []
 
@@ -34,7 +35,7 @@ with sync_playwright() as p:
     pg.on("pageerror", lambda e: errors.append(str(e)))
     pg.goto(PAGE)
 
-    pg.select_option("#sel-field", "cowpens-1781")
+    pg.select_option(FIELD, "cowpens-1781")
     pg.click("#btn-field")
     check(pg.is_visible("#lbl-plan0") and pg.is_hidden("#lbl-plan1"), "the plan box shows for the side with a plan (the Americans) only")
     stage = pg.inner_text("#stage")
@@ -72,7 +73,7 @@ with sync_playwright() as p:
     check("Plans running:" in stage and "Washington's horse going round" in stage, "the strip shows the step running")
 
     # the procedural planner: always in a battle of the GM's own set-up
-    pg.click("#btn-reset")
+    pg.click(RESET)
     pg.click("#chk-armies")                        # the ground alone, the units the GM's own
     pg.click("#btn-field")
     check(pg.is_hidden("#lbl-planner"), "no planner box without a battlefield's armies (the planner is always on)")
@@ -89,12 +90,12 @@ with sync_playwright() as p:
     check(len(lines) == 2, f"the log says what each side's commander plans ({lines})")
 
     # on a battlefield only with the box, and hidden from the GM playing the other side
-    pg.click("#btn-reset")
+    pg.click(RESET)
     pg.click("#chk-armies")                        # the armies as drawn up again (set-up only)
-    pg.select_option("#sel-field", "visby-1361")
+    pg.select_option(FIELD, "visby-1361")
     pg.click("#btn-field")
-    check(pg.is_visible("#lbl-planner") and not pg.is_checked("#chk-planner"), "a battlefield's armies show the planner box, unticked")
-    pg.click("#chk-planner")
+    check(pg.is_visible("#lbl-planner") and not pg.is_checked(PLANNER), "a battlefield's armies show the planner box, unticked")
+    pg.click(PLANNER)
     pg.select_option("#sel-ai0", index=0)          # the GM plays the Gotlanders
     pg.select_option("#sel-ai1", index=1)
     for _ in range(8):
@@ -107,10 +108,10 @@ with sync_playwright() as p:
           f"its plan is hidden on the strip from the GM playing the other side ({stage})")
 
     # the move lines say the hexes gone, not the move spent: in Fox Hill's snow and slopes one hex takes 5 of a company's move of 8
-    pg.click("#btn-reset")
-    pg.select_option("#sel-field", "foxhill-1950")
+    pg.click(RESET)
+    pg.select_option(FIELD, "foxhill-1950")
     pg.click("#btn-field")
-    pg.set_checked("#chk-planner", True)           # (it may still be ticked from Visby)
+    pg.set_checked(PLANNER, True)           # (it may still be ticked from Visby)
     pg.select_option("#sel-ai0", index=2)          # the Marines holding
     pg.select_option("#sel-ai1", index=1)          # the Chinese attacking
     pg.evaluate("() => { const sd = new SeededDice(101); dice.randint = (a, b) => sd.randint(a, b); dice.random = () => sd.random() }")

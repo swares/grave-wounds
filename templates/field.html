@@ -1476,12 +1476,19 @@ function planOrderText(who, o){                   // a plan step starting or end
     relieve: `come up to relieve ${st.relieves}` }[o.do];
   return `Plan: ${who} ${what} (${triggerText(o.why)}).`;
 }
+function advanceText(who, them, o, up, facing){   // an advance's line: plugging a gap, to the planned line, nearer a target to fire, or on the objective
+  const moved = movedText(o);
+  if (o.gap) return `${who} ${up}move ${moved} to plug the gap${facing}.`;
+  if (o.line) return `${who} ${up}advance ${moved} toward their line, as planned${facing}.`;
+  if (o.pin) return `${who} ${up}move ${moved} nearer ${them}, to bring them under fire.`;
+  return `${who} ${up}advance ${moved} on the objective${facing}.`;
+}
 const ORDER_TEXT = {                              // (who, them, o, up, facing) -> the order's line
   plan: (who, them, o) => planOrderText(who, o),
   commit: (who, them, o) => `${who} are committed from the reserve: ${COMMIT_WHY[o.why] || o.why}${o.at ? "; they go to plug the gap at " + hexName(o.at) + ", where it stood" : ""}${o.stays ? "; they stay where they are this exchange" : ""}.`,
   charge: (who, them, o, up) => `${who} ${up}charge ${them}${throughText(o)}.`,
   move: (who, them, o, up) => moveText(who, them, o, up),
-  advance: (who, them, o, up, facing) => (o.gap ? `${who} ${up}move ${movedText(o)} to plug the gap${facing}.` : o.line ? `${who} ${up}advance ${movedText(o)} toward their line, as planned${facing}.` : o.pin ? `${who} ${up}move ${movedText(o)} nearer ${them}, to bring them under fire.` : `${who} ${up}advance ${movedText(o)} on the objective${facing}.`),
+  advance: (who, them, o, up, facing) => advanceText(who, them, o, up, facing),
   leave: (who) => `${who} withdraw off the field, as ordered.`,
   fall_back: (who, them, o, up, facing) => (o.gap ? `${who} ${up}move ${movedText(o)} to plug the gap${facing}.` : `${who} ${up}fall back ${movedText(o)} toward the objective${facing}.`),
   search: (who, them, o, up) => `${who} ${up}move ${movedText(o)} forward to find the enemy (none in sight, no objective).`,
