@@ -31,7 +31,7 @@ can play the enemy. Please tell us which way you played.
 **Which setting?** Play **Standard** first. If you play again, try **Gritty**. The sheets show both.
 
 **After you play.** Send the feedback pages, or a photo of them, to [{{pt_email}}](mailto:{{pt_email}}). To
-hear about later versions, sign up on the [start page]({{pt_site}}).
+hear about later versions, sign up on the [start page]({{pt_site}}). For a quick comment, use [the feedback form](https://docs.google.com/forms/d/e/1FAIpQLSfGgYKRfBpDth3odGXHWHI1iXSNCmscYczxBW7BE_2Pv9-Hwg/viewform).
 
 **This packet** is free to copy and share for playtesting. It is an early version: please don't sell it or
 post it as finished. The numbers and tables are generated from the game's own data.
