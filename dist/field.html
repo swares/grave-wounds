@@ -46,6 +46,18 @@ button:hover{background:var(--blood-soft)}
 button.primary{background:var(--blood);border-color:var(--blood);color:var(--panel);font-weight:700}
 button.primary:hover{filter:brightness(1.1);background:var(--blood)}
 button.small{font-size:.8rem;padding:3px 8px}
+/* Shared by the field and travel maps; build.py inlines it. */
+/* Phones: a comfortable tap for every control (tools/campaign/phone.py checks it). */
+@media (max-width:640px){
+  button,select,input:not([type=checkbox]):not([type=radio]):not([type=range]){min-height:44px}
+  button,button.small{padding:9px 14px;font-size:.95rem}
+  input[type=checkbox],input[type=radio]{width:22px;height:22px}
+  .mapbox{max-height:70vh}
+}
+.zoombar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0}.zoombar button{min-width:2.6em}.zoomno{font-variant-numeric:tabular-nums;min-width:3.5em}
+.mapbox svg{touch-action:pan-x pan-y}
+@media (hover:hover) and (pointer:fine){.zoomtip{display:none}}
+
 button:disabled{opacity:.45;cursor:default}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 110px;min-width:0}
@@ -5848,6 +5860,69 @@ function selfPlay(fid, rng, stances = null, planner = false){   // a battlefield
 
 
 /* ---------- the page ---------- */
+/* Map zoom, for the field and travel maps (built into each page): − and + buttons, Fit, and two-finger
+   pinch on the map. The map's svg is drawn wider or narrower and the box scrolls, so a tap still lands
+   on the hex drawn under it. The page's own size is zoom 1; the zoom holds when the map is redrawn. */
+const MAPZOOM = (() => {
+  const STEP = 2, MAX = 4;
+  function attach(box){
+    let f = 1, base = 0, pinch = null, vb = "";
+    const bar = document.createElement("div");
+    bar.className = "zoombar";
+    bar.innerHTML = '<button type="button" class="small" data-z="out" aria-label="Zoom out">−</button>'
+      + '<button type="button" class="small" data-z="in" aria-label="Zoom in">+</button>'
+      + '<button type="button" class="small" data-z="fit">Fit</button><span class="muted zoomno" aria-live="polite"></span>'
+      + '<span class="muted zoomtip">Two fingers to zoom on a phone.</span>';
+    box.before(bar);
+    const svg = () => box.querySelector(":scope > svg");
+    const natural = s => {                       // the page's own width for the map, before any zoom
+      const st = s.style.width; s.style.width = ""; s.style.minWidth = s.dataset.minw ?? s.style.minWidth; s.style.maxWidth = s.dataset.maxw ?? s.style.maxWidth;
+      const w = s.getBoundingClientRect().width; s.style.width = st; return w;
+    };
+    const lo = () => { const s = svg(); if (s && (s.getAttribute("viewBox") || "") !== vb){ s.dataset.minw = s.style.minWidth; s.dataset.maxw = s.style.maxWidth; vb = s.getAttribute("viewBox") || ""; base = natural(s) } return base ? Math.min(1, box.clientWidth / base) : 1 };
+    function apply(at){                          // at: [x, y] in the box's view to hold still
+      const s = svg();
+      if (!s) return;
+      if (s.dataset.minw === undefined){ s.dataset.minw = s.style.minWidth; s.dataset.maxw = s.style.maxWidth }
+      const v = s.getAttribute("viewBox") || "";
+      if (!base || v !== vb){ vb = v; base = natural(s) }   // another map (or battlefield): its own size is zoom 1
+      f = Math.min(MAX, Math.max(lo(), f));
+      const old = s.getBoundingClientRect().width || base, w = base * f, k = w / old;
+      const [ax, ay] = at || [box.clientWidth / 2, box.clientHeight / 2];
+      const sx = box.scrollLeft, sy = box.scrollTop;
+      s.style.minWidth = "0"; s.style.maxWidth = "none"; s.style.width = `${w.toFixed(1)}px`;
+      if (k !== 1){ box.scrollLeft = (sx + ax) * k - ax; box.scrollTop = (sy + ay) * k - ay }
+      bar.querySelector(".zoomno").textContent = `${Math.round(f * 100)}%`;
+      bar.querySelector('[data-z="in"]').disabled = f >= MAX - 1e-6;
+      bar.querySelector('[data-z="out"]').disabled = f <= lo() + 1e-6;
+    }
+    bar.addEventListener("click", e => {
+      const b = e.target.closest("button[data-z]");
+      if (!b) return;
+      f = b.dataset.z === "in" ? f * STEP : b.dataset.z === "out" ? f / STEP : lo();
+      apply();
+    });
+    new MutationObserver(() => { const s = svg(); if (s && s.style.width !== `${(base * f).toFixed(1)}px`) apply([0, 0]) }).observe(box, { childList: true });
+    const gap = t => Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY);
+    const mid = t => { const r = box.getBoundingClientRect(); return [(t[0].clientX + t[1].clientX) / 2 - r.left, (t[0].clientY + t[1].clientY) / 2 - r.top] };
+    box.addEventListener("touchstart", e => {
+      if (e.touches.length !== 2) return;
+      pinch = { d: gap(e.touches), f };
+      e.preventDefault();
+    }, { passive: false });
+    box.addEventListener("touchmove", e => {
+      if (!pinch || e.touches.length !== 2) return;
+      e.preventDefault();
+      f = pinch.f * gap(e.touches) / pinch.d;
+      apply(mid(e.touches));
+    }, { passive: false });
+    box.addEventListener("touchend", e => { if (e.touches.length < 2) pinch = null });
+    window.addEventListener("resize", () => { if (svg()) apply() });
+    return { get zoom(){ return f }, set: z => { f = z; apply() } };
+  }
+  return { attach };
+})();
+
 const $ = s => document.querySelector(s);
 const KEY = "gravewounds-field", DEFAULT_SIZE = [FD.units.map.cols, FD.units.map.rows];
 let SIZE = DEFAULT_SIZE.slice();                   // this battle's field, cols x rows: the default, or a battlefield's
@@ -9013,6 +9088,7 @@ function init(){
   lethalToggle($("#lethal-toggle"), () => render());
   fillChoices();
   fillTools();
+  MAPZOOM.attach($("#map"));
   $("#map").addEventListener("click", e => {
     const p = e.target.closest(".hx"); if (!p) return;
     const h = p.dataset.h.split(",").map(Number);

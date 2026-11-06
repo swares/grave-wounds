@@ -2202,14 +2202,14 @@ def main() -> int:
     events_js = (ROOT / "templates" / "events.js").read_text(encoding="utf-8")
     travelrules_js = (ROOT / "templates" / "travelrules.js").read_text(encoding="utf-8")   # the travel map's rules, with no page
     travelday_js = (ROOT / "templates" / "travelday.js").read_text(encoding="utf-8")       # the travel map's day: state, march, night, clock
-    thtml = ttpl.replace("/*__PURSE_JS__*/", purse_js).replace("/*__LETHAL_JS__*/", lethal_js).replace("/*__EVENTS_JS__*/", events_js).replace("/*__TRAVELRULES_JS__*/", travelrules_js).replace("/*__TRAVELDAY_JS__*/", travelday_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":")))
+    thtml = ttpl.replace("/*__MAPCSS__*/", (ROOT / "templates" / "mapzoom.css").read_text(encoding="utf-8")).replace("/*__MAPZOOM_JS__*/", (ROOT / "templates" / "mapzoom.js").read_text(encoding="utf-8")).replace("/*__PURSE_JS__*/", purse_js).replace("/*__LETHAL_JS__*/", lethal_js).replace("/*__EVENTS_JS__*/", events_js).replace("/*__TRAVELRULES_JS__*/", travelrules_js).replace("/*__TRAVELDAY_JS__*/", travelday_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":")))
     (DIST / "travel.html").write_text(thtml, encoding="utf-8")
     units_js = (ROOT / "templates" / "units.js").read_text(encoding="utf-8")
     ftpl = (ROOT / "templates" / "field.html").read_text(encoding="utf-8")
     fb = field_bundle(d)
     stamps = field_stamps(fb, page_rules(ftpl.replace("/*__WORKS_JS__*/", works_js).replace("/*__LETHAL_JS__*/", lethal_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__UNITS_JS__*/", units_js)))
     fb["beat"] = beat_bundle(stamps)
-    fhtml = ftpl.replace("/*__SIGNUP_JS__*/\"\"", json.dumps(signup()).replace("</", "<\\/")).replace("/*__WORKS_JS__*/", works_js).replace("/*__LETHAL_JS__*/", lethal_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__UNITS_JS__*/", units_js).replace("/*__FIELD_DATA__*/null", json.dumps(fb, separators=(",", ":")))
+    fhtml = ftpl.replace("/*__MAPCSS__*/", (ROOT / "templates" / "mapzoom.css").read_text(encoding="utf-8")).replace("/*__MAPZOOM_JS__*/", (ROOT / "templates" / "mapzoom.js").read_text(encoding="utf-8")).replace("/*__SIGNUP_JS__*/\"\"", json.dumps(signup()).replace("</", "<\\/")).replace("/*__WORKS_JS__*/", works_js).replace("/*__LETHAL_JS__*/", lethal_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__UNITS_JS__*/", units_js).replace("/*__FIELD_DATA__*/null", json.dumps(fb, separators=(",", ":")))
     (DIST / "field.html").write_text(fhtml, encoding="utf-8")
     (DIST / "field-stamps.json").write_text(json.dumps(stamps, indent=1, sort_keys=True) + "\n", encoding="utf-8")
     stale_commander(stamps)

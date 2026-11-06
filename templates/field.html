@@ -46,6 +46,7 @@ button:hover{background:var(--blood-soft)}
 button.primary{background:var(--blood);border-color:var(--blood);color:var(--panel);font-weight:700}
 button.primary:hover{filter:brightness(1.1);background:var(--blood)}
 button.small{font-size:.8rem;padding:3px 8px}
+/*__MAPCSS__*/
 button:disabled{opacity:.45;cursor:default}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 110px;min-width:0}
@@ -464,6 +465,7 @@ function hexDistance(a, b){
 /*__UNITS_JS__*/
 
 /* ---------- the page ---------- */
+/*__MAPZOOM_JS__*/
 const $ = s => document.querySelector(s);
 const KEY = "gravewounds-field", DEFAULT_SIZE = [FD.units.map.cols, FD.units.map.rows];
 let SIZE = DEFAULT_SIZE.slice();                   // this battle's field, cols x rows: the default, or a battlefield's
@@ -3629,6 +3631,7 @@ function init(){
   lethalToggle($("#lethal-toggle"), () => render());
   fillChoices();
   fillTools();
+  MAPZOOM.attach($("#map"));
   $("#map").addEventListener("click", e => {
     const p = e.target.closest(".hx"); if (!p) return;
     const h = p.dataset.h.split(",").map(Number);
