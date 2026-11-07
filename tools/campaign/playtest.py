@@ -58,6 +58,10 @@ def paper(br):
     check(len(own) == 8 and all(i % 2 == 0 and pages[i + 1] == "blank" for i in own),
           f"printed on both sides, the five sheets, the reference, the map and the counters each start a sheet with a blank back (pages {[i + 1 for i in own]})")
     check(pages.count("blank") == 8, f"and no other blank pages ({pages.count('blank')})")
+    rows = pg.evaluate("() => [...document.querySelectorAll('table.contents tbody tr')].map(r => [...r.cells].map(c => c.textContent))")
+    listed = {int(n) for r in rows for n in r[0].replace("–", ",").split(",")}
+    check(len(rows) == 8 and {i + 1 for i in own} <= listed and all((r[2] != "") == (int(r[0].split(",")[0].split("–")[0]) - 1 in own) for r in rows),
+          f"the cover lists what's on which page, marking the own sheets ({[r[0] for r in rows]})")
     pg.close()
 
 

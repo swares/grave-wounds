@@ -258,6 +258,43 @@ def _rates(d: Data) -> str:
             out.append(f"at {k}, " + (f"1 Blood every {round(1 / r)} rounds" if r < 1 else f"{r:g} a round"))
     return "; ".join(out)
 
+def _contents(pages: list) -> str:
+    """The cover's list of what is on which page, worked out from the pages as laid out: runs of pages
+    together, and the pages with a blank back ('own sheet') each on a row, the four characters on one."""
+    import re
+    def title(p):
+        m = re.search(r"<h1[^>]*>(.*?)</h1>", p, re.S)
+        return re.sub(r"<[^>]+>", "", m.group(1)).strip() if m else ""
+    rows, run = [], []
+    def flush():
+        if run:
+            n = f"{run[0][0]}–{run[-1][0]}" if len(run) > 1 else str(run[0][0])
+            rows.append((n, ", ".join(t for _, t in run), ""))
+            run.clear()
+    chars = []
+    for i, p in enumerate(pages, 1):
+        if "blankpage" in p:
+            continue
+        own = i < len(pages) and "blankpage" in pages[i]
+        t = "The cover" if i == 1 else "A blank character sheet" if t_is_blank(p) else title(p)
+        if own and 'class="page sheet"' in p and not t_is_blank(p):
+            flush(); chars.append((i, t)); continue
+        if chars:
+            rows.append((", ".join(str(n) for n, _ in chars), "The characters: " + ", ".join(t for _, t in chars), "Own sheet each"))
+            chars = []
+        if own:
+            flush(); rows.append((str(i), t, "Own sheet"))
+        else:
+            run.append((i, t))
+    flush()
+    body = "".join(f"<tr><td>{n}</td><td>{html.escape(t)}</td><td>{o}</td></tr>" for n, t, o in rows)
+    return f'<table class="contents"><thead><tr><th>Pages</th><th>What\'s there</th><th>Printed both sides</th></tr></thead><tbody>{body}</tbody></table>'
+
+
+def t_is_blank(p: str) -> bool:
+    return "Name: <span" in p
+
+
 def _foes(d: Data) -> str:
     Q = d.units["quality"]
     rows = []
@@ -354,6 +391,7 @@ def render(d: Data, root: Path) -> str:
         out.append(page)
         if own:
             out.append(blank)
+    out[0] = out[0].replace("<p>@@contents@@</p>", _contents(out))
     out = "".join(out)
     for n in range(1, out.count("__FOOT__") + 1):    # number the pages in order, one footer to a page
         out = out.replace("__FOOT__", foot.replace("__PAGE__", str(n)), 1)
