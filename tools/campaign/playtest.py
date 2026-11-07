@@ -7,7 +7,7 @@ the fight runs to an end and to see how it tends to go.
 Prints each fight's rounds, who won and how the four came out. The script stands in for the players,
 so this tests the set-up and the odds, not the players' tactics. It also opens the printed packet and checks
 the kit for playing on paper: the map, the counters (each fits a hex), the enemy's roster, the quick
-reference and a blank sheet, on 21 numbered Letter pages, the map and counters with blank backs. Exits non-zero if the set-up is wrong or a fight stalls. Needs Python's playwright with Chromium and a built site.
+reference and a blank sheet, on 27 numbered Letter pages; the sheets and the cut-ups have blank backs. Exits non-zero if the set-up is wrong or a fight stalls. Needs Python's playwright with Chromium and a built site.
 """
 import sys
 import traceback
@@ -48,12 +48,20 @@ def paper(br):
     check(not pg.evaluate("() => /\\{\\{|@@/.test(document.body.innerHTML)"), "no value left unfilled")
     pdf = pg.pdf(format="Letter", print_background=True, prefer_css_page_size=True)
     n = pdf.count(b"/Type /Page") - pdf.count(b"/Type /Pages")
-    check(n == 21, f"it prints on 21 Letter pages ({n})")
+    check(n == 27, f"it prints on 27 Letter pages ({n})")
     nos = pg.evaluate("() => [...document.querySelectorAll('.pageno')].map(e => +e.textContent.replace('Page ', ''))")
     check(nos == list(range(1, n + 1)), f"each page is numbered, 1 to {n} ({nos[:3]} … {nos[-2:]})")
-    backs = pg.evaluate("() => [...document.querySelectorAll('section.page')].map(s => s.classList.contains('blankpage') ? 'blank' : (s.querySelector('h1[id]') || {}).id || '')")
-    check([backs[i] for i in range(16, 21)] == ["battlemap", "blank", "counters", "blank", "roster"],
-          f"printed on both sides, the map and the counters each have a sheet, their backs blank ({backs[16:21]})")
+    kinds = """() => [...document.querySelectorAll('section.page')].map(s => s.classList.contains('blankpage') ? 'blank'
+      : s.classList.contains('sheet') ? 'sheet' : (s.querySelector('h1[id]') || {}).id || '')"""
+    pages = pg.evaluate(kinds)
+    own = [i for i, k in enumerate(pages) if k in ("sheet", "reference", "battlemap", "counters")]
+    check(len(own) == 8 and all(i % 2 == 0 and pages[i + 1] == "blank" for i in own),
+          f"printed on both sides, the five sheets, the reference, the map and the counters each start a sheet with a blank back (pages {[i + 1 for i in own]})")
+    check(pages.count("blank") == 8, f"and no other blank pages ({pages.count('blank')})")
+    rows = pg.evaluate("() => [...document.querySelectorAll('table.contents tbody tr')].map(r => [...r.cells].map(c => c.textContent))")
+    listed = {int(n) for r in rows for n in r[0].replace("–", ",").split(",")}
+    check(len(rows) == 8 and {i + 1 for i in own} <= listed and all((r[2] != "") == (int(r[0].split(",")[0].split("–")[0]) - 1 in own) for r in rows),
+          f"the cover lists what's on which page, marking the own sheets ({[r[0] for r in rows]})")
     pg.close()
 
 

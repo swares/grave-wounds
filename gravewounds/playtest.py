@@ -21,7 +21,7 @@ from .model import Data
 from .team import make_team
 from .units import SeededDice
 
-VERSION = "0.2.1, 7 November 2026"
+VERSION = "0.2.2, 7 November 2026"
 LINK = "https://swares.github.io/grave-wounds/dist/team.html#playtest"
 SITE = "https://swares.github.io/grave-wounds/"
 EMAIL = "waresscott@gmail.com"
@@ -258,6 +258,43 @@ def _rates(d: Data) -> str:
             out.append(f"at {k}, " + (f"1 Blood every {round(1 / r)} rounds" if r < 1 else f"{r:g} a round"))
     return "; ".join(out)
 
+def _contents(pages: list) -> str:
+    """The cover's list of what is on which page, worked out from the pages as laid out: runs of pages
+    together, and the pages with a blank back ('own sheet') each on a row, the four characters on one."""
+    import re
+    def title(p):
+        m = re.search(r"<h1[^>]*>(.*?)</h1>", p, re.S)
+        return re.sub(r"<[^>]+>", "", m.group(1)).strip() if m else ""
+    rows, run = [], []
+    def flush():
+        if run:
+            n = f"{run[0][0]}–{run[-1][0]}" if len(run) > 1 else str(run[0][0])
+            rows.append((n, ", ".join(t for _, t in run), ""))
+            run.clear()
+    chars = []
+    for i, p in enumerate(pages, 1):
+        if "blankpage" in p:
+            continue
+        own = i < len(pages) and "blankpage" in pages[i]
+        t = "The cover" if i == 1 else "A blank character sheet" if t_is_blank(p) else title(p)
+        if own and 'class="page sheet"' in p and not t_is_blank(p):
+            flush(); chars.append((i, t)); continue
+        if chars:
+            rows.append((", ".join(str(n) for n, _ in chars), "The characters: " + ", ".join(t for _, t in chars), "Own sheet each"))
+            chars = []
+        if own:
+            flush(); rows.append((str(i), t, "Own sheet"))
+        else:
+            run.append((i, t))
+    flush()
+    body = "".join(f"<tr><td>{n}</td><td>{html.escape(t)}</td><td>{o}</td></tr>" for n, t, o in rows)
+    return f'<table class="contents"><thead><tr><th>Pages</th><th>What\'s there</th><th>Printed both sides</th></tr></thead><tbody>{body}</tbody></table>'
+
+
+def t_is_blank(p: str) -> bool:
+    return "Name: <span" in p
+
+
 def _foes(d: Data) -> str:
     Q = d.units["quality"]
     rows = []
@@ -322,7 +359,7 @@ def render(d: Data, root: Path) -> str:
          "aim_cost": d.wounds["combat"]["aim"]["cost"], "dead_days": d.disease.get("dead_days", 14),
          "pt_bleed_rates": _rates(d), "pt_track": TRACK, "pt_short": d.weapons["longbow"]["range"][0], "pt_medium": d.weapons["longbow"]["range"][1], "pt_long": d.weapons["longbow"]["range"][2]}
     text = (root / "templates" / "playtest" / "packet.md").read_text(encoding="utf-8")
-    sheets = "".join(_sheet(d, team[n], r, v) for n, r, _ in MEN) + _blank_sheet()
+    sheets = [_sheet(d, team[n], r, v) for n, r, _ in MEN] + [_blank_sheet()]
     parts = {"hit": _hit(d), "armour": _armour(d), "effects": _effects(d), "sickness": _sickness(d), "map": _map(), "foes": _foes(d),
              "weather": _weather(d, root), "camplog": _camplog(), "feedback": _feedback(),
              "battlemap": _battlemap(), "counters": _counters(team), "roster": _roster(d)}
@@ -334,19 +371,28 @@ def render(d: Data, root: Path) -> str:
     text = RB._fill(text, v, tabs, "templates/playtest/packet.md")
     foot = (f'<div class="foot"><span>Grave Wounds playtest packet, version {html.escape(VERSION)}</span><span class="pageno">Page __PAGE__</span>'
             '<span>© 2026 Scott Wares. All rights reserved. Free to copy for playtesting.</span></div>')
-    blank = ('<section class="page blankpage"><p class="sub">This page is left blank, so that printed on both sides the map and the '
-             'counters each have a sheet of their own.</p>__FOOT__</section>')
+    blank = ('<section class="page blankpage"><p class="sub">This page is left blank, so that printed on both sides each character, '
+             'the quick reference, the map and the counters have a sheet of their own.</p>__FOOT__</section>')
     pages = []
     for i, md in enumerate(p for p in text.split("<!-- page -->") if p.strip()):
         body = markdown.markdown(md, extensions=["tables", "admonition", "attr_list"])
         for k, h in keep.items():
             body = body.replace(f"<p>{k}</p>", h).replace(k, h)
-        pages.append(f'<section class="page">{body}__FOOT__</section>')
+        own = any(f'id="{k}"' in body for k in ("reference", "battlemap", "counters"))
+        pages.append((f'<section class="page">{body}__FOOT__</section>', own))
         if '{#camp}' in md or 'id="camp"' in body:
-            pages.append(sheets)
-        if 'id="battlemap"' in body or 'id="counters"' in body:
-            pages.append(blank)              # the backs of the map and the counters, for printing on both sides
-    out = "".join(pages)
+            pages += [(sh, True) for sh in sheets]
+    # Printed on both sides, a page to hand out or cut up (each character, the blank sheet, the reference, the map,
+    # the counters) gets a sheet of its own: it starts on a front, and its back is left blank.
+    out = []
+    for page, own in pages:
+        if own and len(out) % 2:
+            out.append(blank)
+        out.append(page)
+        if own:
+            out.append(blank)
+    out[0] = out[0].replace("<p>@@contents@@</p>", _contents(out))
+    out = "".join(out)
     for n in range(1, out.count("__FOOT__") + 1):    # number the pages in order, one footer to a page
         out = out.replace("__FOOT__", foot.replace("__PAGE__", str(n)), 1)
     return ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
