@@ -46,7 +46,7 @@ button:hover{background:var(--blood-soft)}
 button.primary{background:var(--blood);border-color:var(--blood);color:var(--panel);font-weight:700}
 button.primary:hover{filter:brightness(1.1);background:var(--blood)}
 button.small{font-size:.8rem;padding:3px 8px}
-/* Shared by the field and travel maps; build.py inlines it. */
+/* Shared by the field and travel maps; build.py inlines it. tools/campaign/phone.py checks the phone parts. */
 /* Phones: a comfortable tap for every control (tools/campaign/phone.py checks it). */
 @media (max-width:640px){
   button,select,input:not([type=checkbox]):not([type=radio]):not([type=range]){min-height:44px}
@@ -57,8 +57,7 @@ button.small{font-size:.8rem;padding:3px 8px}
 .zoombar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0}.zoombar button{min-width:2.6em}.zoomno{font-variant-numeric:tabular-nums;min-width:3.5em}
 .mapbox svg{touch-action:pan-x pan-y}
 @media (hover:hover) and (pointer:fine){.zoomtip{display:none}}
-
-/* Phones: the page in four tabs (Map, Battle, Units, Story) instead of one long page (tools/campaign/phone.py checks it). */
+/* Phones: the page in tabs instead of one long page (PHONETABS in mapzoom.js), the latest news under them. */
 .tabs{display:none}
 @media (max-width:640px){
   .tabs{display:flex;flex-direction:column;gap:4px;position:sticky;top:0;z-index:15;background:var(--bg);padding:6px 0;margin-inline:-4px}
@@ -66,19 +65,20 @@ button.small{font-size:.8rem;padding:3px 8px}
   .tabs-row button{flex:1 1 0;min-height:44px;padding:6px 4px}
   .tabs-row button[aria-selected="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
   .tabs-line{font-size:.85rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:1.2em}
-  [data-pane]:not(.pane-on){display:none !important}
-  .mapbox,#h-sel{scroll-margin-top:100px}
+  [data-pane]:not([data-on]){display:none !important}
+  .mapbox,[data-pane] h2{scroll-margin-top:100px}
 }
-/* Phones: the selected unit's main orders in a bar at the foot of the screen (tools/campaign/phone.py checks it). */
+/* Phones: the main orders in a bar at the foot of the screen. */
 .orderbar{display:none}
 @media (max-width:640px){
   .orderbar:not([hidden]){display:flex;flex-direction:column;gap:4px;position:fixed;left:0;right:0;bottom:0;z-index:20;padding:6px 8px calc(6px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line);box-shadow:0 -2px 8px rgba(0,0,0,.15)}
   .ob-row{display:flex;gap:6px;align-items:center}
   .ob-row button{flex:1 1 auto;padding:8px 6px;min-height:44px}
-  .ob-row #ob-prev,.ob-row #ob-next-unit{flex:0 0 44px}
+  .ob-row .ob-nav{flex:0 0 44px}
   .ob-name{flex:2 1 0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;font-size:.9rem}
   body.has-orderbar{padding-bottom:130px}
 }
+
 button:disabled{opacity:.45;cursor:default}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1 1 110px;min-width:0}
@@ -484,7 +484,7 @@ legend{padding:0}
 </div>
 
 <div class="orderbar" id="orderbar" role="toolbar" aria-label="Orders for the selected unit" hidden>
-  <div class="ob-row"><button id="ob-prev" aria-label="Previous unit">◀</button><span class="ob-name" id="ob-name"></span><button id="ob-next-unit" aria-label="Next unit">▶</button><button id="ob-show" title="Scroll the map to the selected unit">Show</button><button id="ob-more" title="All the selected unit's orders, and what it is">More</button></div>
+  <div class="ob-row"><button class="ob-nav" id="ob-prev" aria-label="Previous unit">◀</button><span class="ob-name" id="ob-name"></span><button class="ob-nav" id="ob-next-unit" aria-label="Next unit">▶</button><button id="ob-show" title="Scroll the map to the selected unit">Show</button><button id="ob-more" title="All the selected unit's orders, and what it is">More</button></div>
   <div class="ob-row"><button data-for="btn-left">Turn left</button><button data-for="btn-right">Turn right</button><button data-for="btn-undo">Undo</button><button class="primary" data-for="btn-next" id="ob-phase"></button></div>
 </div>
 
@@ -5954,6 +5954,28 @@ const MAPZOOM = (() => {
   return { attach };
 })();
 
+/* Phone tabs, for the field and travel maps: buttons [data-tab] in #tabs; the page's parts carry
+   data-pane (one or more tab names) and show only on their tabs (data-on, an attribute, so a page
+   that rewrites an element's classes does not hide it). On a desktop the CSS shows every part.
+   body[data-tab] names the open tab, for a page's own rules. */
+const PHONETABS = (() => {
+  let now = null, after = () => {};
+  function set(t){
+    now = t;
+    document.body.dataset.tab = t;
+    document.querySelectorAll("[data-pane]").forEach(el => el.toggleAttribute("data-on", el.dataset.pane.split(" ").includes(t)));
+    document.querySelectorAll("#tabs [data-tab]").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
+    if (matchMedia("(max-width:640px)").matches) scrollTo(0, 0);
+    after();
+  }
+  function init(first, then){
+    after = then || after;
+    document.querySelectorAll("#tabs [data-tab]").forEach(b => b.onclick = () => set(b.dataset.tab));
+    set(first);
+  }
+  return { init, set, get now(){ return now } };
+})();
+
 const $ = s => document.querySelector(s);
 const KEY = "gravewounds-field", DEFAULT_SIZE = [FD.units.map.cols, FD.units.map.rows];
 let SIZE = DEFAULT_SIZE.slice();                   // this battle's field, cols x rows: the default, or a battlefield's
@@ -8840,7 +8862,6 @@ function renderPhase(){
    On a phone the page is in four tabs: Map; Battle (the phase, commanders, after the battle, weather); Units
    (the units, the selected unit, fire support, heroes, adding a unit); Story (narrative and log). The battle
    panel's parts are given their tab here, from its headings; on a desktop every part shows. */
-let TAB = "map";
 function tabsInit(){
   let pane = "battle";
   for (const el of $("#h-battle").parentElement.children){
@@ -8848,16 +8869,9 @@ function tabsInit(){
     if (el.tagName === "H2" && /^Narrative$/.test(el.textContent.trim())) pane = "story";
     el.dataset.pane = pane;
   }
-  document.querySelectorAll("#tabs [data-tab]").forEach(b => b.onclick = () => setTab(b.dataset.tab));
-  setTab(TAB);
+  PHONETABS.init("map", renderTabsLine);
 }
-function setTab(t){
-  TAB = t;
-  document.querySelectorAll("[data-pane]").forEach(el => el.classList.toggle("pane-on", el.dataset.pane.split(" ").includes(t)));
-  document.querySelectorAll("#tabs [data-tab]").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
-  if (matchMedia("(max-width:640px)").matches) scrollTo(0, 0);
-  renderTabsLine();
-}
+const setTab = t => PHONETABS.set(t);
 function renderTabsLine(){                           // under the tabs: the message if there is one, else the phase
   $("#tabs-line").textContent = S.msg || $("#phase").textContent;
 }

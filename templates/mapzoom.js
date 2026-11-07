@@ -60,3 +60,25 @@ const MAPZOOM = (() => {
   }
   return { attach };
 })();
+
+/* Phone tabs, for the field and travel maps: buttons [data-tab] in #tabs; the page's parts carry
+   data-pane (one or more tab names) and show only on their tabs (data-on, an attribute, so a page
+   that rewrites an element's classes does not hide it). On a desktop the CSS shows every part.
+   body[data-tab] names the open tab, for a page's own rules. */
+const PHONETABS = (() => {
+  let now = null, after = () => {};
+  function set(t){
+    now = t;
+    document.body.dataset.tab = t;
+    document.querySelectorAll("[data-pane]").forEach(el => el.toggleAttribute("data-on", el.dataset.pane.split(" ").includes(t)));
+    document.querySelectorAll("#tabs [data-tab]").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
+    if (matchMedia("(max-width:640px)").matches) scrollTo(0, 0);
+    after();
+  }
+  function init(first, then){
+    after = then || after;
+    document.querySelectorAll("#tabs [data-tab]").forEach(b => b.onclick = () => set(b.dataset.tab));
+    set(first);
+  }
+  return { init, set, get now(){ return now } };
+})();

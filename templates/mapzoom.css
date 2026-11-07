@@ -1,4 +1,4 @@
-/* Shared by the field and travel maps; build.py inlines it. */
+/* Shared by the field and travel maps; build.py inlines it. tools/campaign/phone.py checks the phone parts. */
 /* Phones: a comfortable tap for every control (tools/campaign/phone.py checks it). */
 @media (max-width:640px){
   button,select,input:not([type=checkbox]):not([type=radio]):not([type=range]){min-height:44px}
@@ -9,3 +9,24 @@
 .zoombar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0}.zoombar button{min-width:2.6em}.zoomno{font-variant-numeric:tabular-nums;min-width:3.5em}
 .mapbox svg{touch-action:pan-x pan-y}
 @media (hover:hover) and (pointer:fine){.zoomtip{display:none}}
+/* Phones: the page in tabs instead of one long page (PHONETABS in mapzoom.js), the latest news under them. */
+.tabs{display:none}
+@media (max-width:640px){
+  .tabs{display:flex;flex-direction:column;gap:4px;position:sticky;top:0;z-index:15;background:var(--bg);padding:6px 0;margin-inline:-4px}
+  .tabs-row{display:flex;gap:4px}
+  .tabs-row button{flex:1 1 0;min-height:44px;padding:6px 4px}
+  .tabs-row button[aria-selected="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+  .tabs-line{font-size:.85rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:1.2em}
+  [data-pane]:not([data-on]){display:none !important}
+  .mapbox,[data-pane] h2{scroll-margin-top:100px}
+}
+/* Phones: the main orders in a bar at the foot of the screen. */
+.orderbar{display:none}
+@media (max-width:640px){
+  .orderbar:not([hidden]){display:flex;flex-direction:column;gap:4px;position:fixed;left:0;right:0;bottom:0;z-index:20;padding:6px 8px calc(6px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line);box-shadow:0 -2px 8px rgba(0,0,0,.15)}
+  .ob-row{display:flex;gap:6px;align-items:center}
+  .ob-row button{flex:1 1 auto;padding:8px 6px;min-height:44px}
+  .ob-row .ob-nav{flex:0 0 44px}
+  .ob-name{flex:2 1 0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;font-size:.9rem}
+  body.has-orderbar{padding-bottom:130px}
+}
