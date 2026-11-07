@@ -28,7 +28,7 @@ can play the enemy. Please tell us which way you played.
 | Four character sheets, and a blank one | One to a player |
 | The crossing, The week | The GM only |
 | Camp log and session log, Feedback | The GM fills these in, with the table |
-| At the back: the quick reference, the map, the counters, the enemy's roster | On the table. Print the reference once for each player |
+| At the back: the quick reference, the map, the counters, the enemy's roster | On the table. Print the reference once for each player, and the map and counters at actual size (100%); each has a blank back, so they can be printed on both sides |
 
 **Which setting?** Play **Standard** first. If you play again, try **Gritty**. The sheets show both.
 
