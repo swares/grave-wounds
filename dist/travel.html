@@ -43,7 +43,7 @@ button:hover{background:var(--blood-soft)}
 button.primary{background:var(--blood);border-color:var(--blood);color:var(--panel);font-weight:700}
 button.primary:hover{filter:brightness(1.1);background:var(--blood)}
 button.small{font-size:.8rem;padding:3px 8px}
-/* Shared by the field and travel maps; build.py inlines it. */
+/* Shared by the field and travel maps; build.py inlines it. tools/campaign/phone.py checks the phone parts. */
 /* Phones: a comfortable tap for every control (tools/campaign/phone.py checks it). */
 @media (max-width:640px){
   button,select,input:not([type=checkbox]):not([type=radio]):not([type=range]){min-height:44px}
@@ -54,7 +54,30 @@ button.small{font-size:.8rem;padding:3px 8px}
 .zoombar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0}.zoombar button{min-width:2.6em}.zoomno{font-variant-numeric:tabular-nums;min-width:3.5em}
 .mapbox svg{touch-action:pan-x pan-y}
 @media (hover:hover) and (pointer:fine){.zoomtip{display:none}}
+/* Phones: the page in tabs instead of one long page (PHONETABS in mapzoom.js), the latest news under them. */
+.tabs{display:none}
+@media (max-width:640px){
+  .tabs{display:flex;flex-direction:column;gap:4px;position:sticky;top:0;z-index:15;background:var(--bg);padding:6px 0;margin-inline:-4px}
+  .tabs-row{display:flex;gap:4px}
+  .tabs-row button{flex:1 1 0;min-height:44px;padding:6px 4px}
+  .tabs-row button[aria-selected="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+  .tabs-line{font-size:.85rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:1.2em}
+  [data-pane]:not([data-on]){display:none !important}
+  .mapbox,[data-pane] h2{scroll-margin-top:100px}
+}
+/* Phones: the main orders in a bar at the foot of the screen. */
+.orderbar{display:none}
+@media (max-width:640px){
+  .orderbar:not([hidden]){display:flex;flex-direction:column;gap:4px;position:fixed;left:0;right:0;bottom:0;z-index:20;padding:6px 8px calc(6px + env(safe-area-inset-bottom));background:var(--panel);border-top:1px solid var(--line);box-shadow:0 -2px 8px rgba(0,0,0,.15)}
+  .ob-row{display:flex;gap:6px;align-items:center}
+  .ob-row button{flex:1 1 auto;padding:8px 6px;min-height:44px}
+  .ob-row .ob-nav{flex:0 0 44px}
+  .ob-name{flex:2 1 0;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:600;font-size:.9rem}
+  body.has-orderbar{padding-bottom:130px}
+}
 
+/* Phones, travel's own: the Map tab shows the forces panel only for the painting palette, the Day tab only for a log. */
+@media (max-width:640px){ body[data-tab="map"] aside:has(> #paint-box[hidden]),body[data-tab="day"] aside:has(> #log:empty){display:none !important} }
 button[aria-pressed="true"]{background:var(--blood-soft);border-color:var(--blood);font-weight:700}
 button:disabled{opacity:.45;cursor:default}
 .toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -134,8 +157,12 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
     <nav><span class="units-toggle" id="lethal-toggle" title="Lethality for player characters (the GM's setting, shared by every page)"></span><span class="units-toggle" id="units-toggle" title="Units for distances, speeds and temperatures"></span><a href="campaign.html" target="_top" title="The GM's console over the pages: the phase, the log, the march">Campaign</a><a href="roller.html">Wound roller</a><a href="team.html">Team builder</a><a href="field.html">Field map</a><a href="guide.html" target="_top" title="How to use the pages, mode by mode">How to play</a><a href="rules.html">Rule book</a><a href="../index.html">Start page</a></nav>
   </header>
 
+  <nav class="tabs" id="tabs" aria-label="Parts of the page">
+    <div class="tabs-row" role="tablist"><button role="tab" data-tab="map">Map</button><button role="tab" data-tab="forces">Forces</button><button role="tab" data-tab="camp">Camp</button><button role="tab" data-tab="day">Day</button></div>
+    <div class="tabs-line" id="tabs-line" aria-live="polite"></div>
+  </nav>
   <div class="grid">
-    <section class="panel" aria-labelledby="h-map">
+    <section class="panel" aria-labelledby="h-map" data-pane="map day">
       <div class="toolbar" style="justify-content:space-between">
         <h2 id="h-map">Map</h2>
         <div class="toolbar" style="min-width:0;max-width:100%">
@@ -170,7 +197,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
       <div class="legend" id="legend"></div>
     </section>
 
-    <aside class="panel" aria-labelledby="h-forces">
+    <aside class="panel" aria-labelledby="h-forces" data-pane="forces camp day map">
       <h2 id="h-forces">Forces</h2>
       <p id="clock-now" style="margin:0 0 6px"></p>
       <div class="toolbar" id="clock-box">
@@ -191,7 +218,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
         <div class="toolbar" style="margin-top:8px"><button class="small" id="btn-add">Add at the camp</button></div>
       </details>
 
-      <h2>Route</h2>
+      <h2 id="h-route">Route</h2>
       <div id="force-head" class="muted"></div>
       <div class="toolbar" id="force-kit">
         <label class="inline">Men <input id="in-men" type="number" min="1" style="width:5.5em"></label>
@@ -265,6 +292,11 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
       </div>
     </aside>
   </div>
+</div>
+
+<div class="orderbar" id="orderbar" role="toolbar" aria-label="The selected force and the clock" hidden>
+  <div class="ob-row"><button class="ob-nav" id="ob-prev" aria-label="Previous force">◀</button><span class="ob-name" id="ob-name"></span><button class="ob-nav" id="ob-next" aria-label="Next force">▶</button><button id="ob-show" title="Scroll the map to the selected force">Show</button><button id="ob-route" title="The selected force's route and orders">Route</button></div>
+  <div class="ob-row"><button class="primary" data-for="btn-clock-hour"></button><button data-for="btn-clock-night"></button><button data-for="btn-clock-event"></button></div>
 </div>
 
 <script>/* Purses (as gravewounds/money.py): one saved account for each character, shared by the team
@@ -3841,6 +3873,28 @@ const MAPZOOM = (() => {
   return { attach };
 })();
 
+/* Phone tabs, for the field and travel maps: buttons [data-tab] in #tabs; the page's parts carry
+   data-pane (one or more tab names) and show only on their tabs (data-on, an attribute, so a page
+   that rewrites an element's classes does not hide it). On a desktop the CSS shows every part.
+   body[data-tab] names the open tab, for a page's own rules. */
+const PHONETABS = (() => {
+  let now = null, after = () => {};
+  function set(t){
+    now = t;
+    document.body.dataset.tab = t;
+    document.querySelectorAll("[data-pane]").forEach(el => el.toggleAttribute("data-on", el.dataset.pane.split(" ").includes(t)));
+    document.querySelectorAll("#tabs [data-tab]").forEach(b => b.setAttribute("aria-selected", b.dataset.tab === t));
+    if (matchMedia("(max-width:640px)").matches) scrollTo(0, 0);
+    after();
+  }
+  function init(first, then){
+    after = then || after;
+    document.querySelectorAll("#tabs [data-tab]").forEach(b => b.onclick = () => set(b.dataset.tab));
+    set(first);
+  }
+  return { init, set, get now(){ return now } };
+})();
+
 /* ---------- drawing ---------- */
 const R = 12, W = Math.sqrt(3) * R;
 const xy = ([c, r]) => [W * (c + 0.5 * (r & 1)) + W / 2, 1.5 * R * r + R];
@@ -4194,11 +4248,57 @@ function renderWeather(){
   const X = wxState(), past = Object.keys(X.days).map(Number).filter(n => n < day).sort((a, b) => b - a).slice(0, 6);
   $("#wx-past").innerHTML = past.map(n => `<li>${dateText(n, true)}: ${esc(wxLine(X.days[n]))}</li>`).join("");
 }
+/* ---------- phones: the tabs and the bar ----------
+   On a phone the page is in four tabs: Map (the map and what clicking it does, and the painting palette);
+   Forces (the clock, the forces, the selected force's route); Camp (camp, fights, siege, health); Day (the
+   date and weather, resting, plague, and the log). The bar at the foot steps through the forces and moves
+   the clock; its clock buttons press the page's own. On a desktop every part shows and there is no bar. */
+function tabsInit(){
+  for (const el of $("#map").closest("section").children) el.dataset.pane = el.classList.contains("wxstrip") ? "day" : "map";
+  let pane = "forces";
+  for (const el of $("#h-forces").parentElement.children){
+    if (el.tagName === "H2" && /^Camp/.test(el.textContent.trim())) pane = "camp";
+    if (el.id === "log") pane = "day";
+    el.dataset.pane = el.id === "paint-box" ? "map" : pane;
+  }
+  PHONETABS.init("map", renderBar);
+  const bar = $("#orderbar");
+  bar.querySelectorAll("[data-for]").forEach(b => b.onclick = () => $("#" + b.dataset.for).click());
+  $("#ob-prev").onclick = () => barStep(-1);
+  $("#ob-next").onclick = () => barStep(1);
+  $("#ob-show").onclick = () => { PHONETABS.set("map"); requestAnimationFrame(barShow) };
+  $("#ob-route").onclick = () => { PHONETABS.set("forces"); $("#h-route").scrollIntoView({ block: "start" }) };
+}
+function renderBar(){
+  const bar = $("#orderbar"), f = selForce(), fs = forcesHere();
+  $("#tabs-line").textContent = S.msg || `${$("#wx-date").textContent.replace(/ \(.*\)$/, "")} · ${$("#wx-today").textContent}`;
+  bar.hidden = false;
+  document.body.classList.add("has-orderbar");
+  $("#ob-name").textContent = f ? f.name : "No force";
+  bar.querySelectorAll("[data-for]").forEach(b => { const o = $("#" + b.dataset.for); b.disabled = o.disabled; b.textContent = o.textContent });
+  $("#ob-prev").disabled = $("#ob-next").disabled = fs.length < 2;
+  $("#ob-show").disabled = $("#ob-route").disabled = !f;
+}
+function barStep(d){
+  const fs = forcesHere(); if (!fs.length) return;
+  const i = fs.indexOf(selForce());
+  S.sel[S.mapId] = fs[(i + d + fs.length) % fs.length].id; S.msg = "";
+  render(); requestAnimationFrame(barShow);         // after the zoom has redrawn the map at its size
+}
+function barShow(){                                  // scroll the map so the selected force is in the middle of its box, and the box onto the screen
+  const box = $("#map"), f = selForce(), g = f && box.querySelector(`.force[data-id="${f.id}"]`); if (!g) return;
+  let b = box.getBoundingClientRect();
+  if (b.top < $("#tabs").getBoundingClientRect().bottom || b.bottom > innerHeight - $("#orderbar").offsetHeight){ box.scrollIntoView({ block: "start" }); b = box.getBoundingClientRect() }
+  const r = g.getBoundingClientRect();
+  box.scrollLeft += (r.left + r.width / 2) - (b.left + box.clientWidth / 2);
+  box.scrollTop += (r.top + r.height / 2) - (b.top + box.clientHeight / 2);
+}
 function render(){
   renderMap(); renderSide(); renderWeather();
   $("#msg").textContent = S.msg || "";
   document.querySelectorAll("[data-mode]").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === S.mode));
   $("#paint-box").hidden = S.mode !== "paint";
+  if (PHONETABS.now) renderBar();
   $("#palette").innerHTML = Object.values(TT).map(t => `<button type="button" data-key="${esc(t.key)}" aria-pressed="${S.paint === t.id}" title="${esc(t.name)}${t.cost === null ? ": impassable" : `: ${t.cost}× road time`}"><span class="sw t-${t.id}"></span>${esc(t.name)}</button>`).join("");
   save();
 }
@@ -4377,6 +4477,7 @@ function init(){
   $("#btn-clock-hour").onclick = () => { moveClock("hour"); render() };
   $("#btn-clock-night").onclick = () => { moveClock("nightfall"); render() };
   $("#btn-clock-event").onclick = () => { moveClock("event"); render() };
+  tabsInit();
   $("#sel-order").onchange = e => { const f = selForce(); if (f){ setOrder(f, e.target.value); render() } };
   $("#btn-undo-wp").onclick = () => { const f = leaderOf(selForce()); if (f && f.waypoints.length){ f.waypoints.pop(); replan(f); render() } };
   $("#btn-clear").onclick = () => { const f = leaderOf(selForce()); if (f){ f.waypoints = []; replan(f); f.order = "halt"; render() } };

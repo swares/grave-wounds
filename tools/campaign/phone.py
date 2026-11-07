@@ -10,7 +10,8 @@ On the maps, + twice makes a hex a fingertip, Fit shows the whole width, two fin
 zoomed in, a tap on the field map moves a unit. The field's order bar sits at the foot of the screen,
 steps through the units, scrolls the map to them, and presses the page's own buttons. Zoomed in, the
 field map follows the fighting after each exchange, unless unticked. On a phone the field page is in
-four tabs (Map, Battle, Units, Story), each showing only its own part.
+four tabs (Map, Battle, Units, Story), each showing only its own part; the travel page in four (Map, Forces,
+Camp, Day), with a bar for the selected force and the clock.
 Needs Python's playwright with Chromium and a built site. Exits non-zero on any failure.
 """
 import sys
@@ -121,6 +122,53 @@ def tab_checks(pg):
     pg.set_viewport_size({"width": 390, "height": 844})
 
 
+def travel_checks(pg):
+    """On a phone the travel page is in four tabs, with a bar for the selected force and the clock."""
+    pg.goto(BASE + "travel.html")
+    pg.wait_for_timeout(1200)
+    vis = "(sel) => { const e = document.querySelector(sel); return !!e && e.getClientRects().length > 0 }"
+    parts = {"map": "#map", "forces": "#forces", "camp": "#sel-camp", "day": "#chk-plague"}   # the log hides itself while empty
+    for tab, own in parts.items():
+        pg.locator(f"#tabs [data-tab='{tab}']").tap()
+        pg.wait_for_timeout(150)
+        others = [sel for t, sel in parts.items() if t != tab and pg.evaluate(vis, sel)]
+        check(pg.evaluate(vis, own) and not others, f"travel tabs: {tab} shows {own} and hides the rest {others}")
+        page_ok(pg, f"travel ({tab} tab)")
+    check(pg.evaluate(vis, ".wxstrip") and pg.evaluate("() => $('#log').dataset.pane") == "day", "travel tabs: the weather and the log are on the Day tab")
+    pg.locator("#tabs [data-tab='map']").tap()
+    check(not pg.evaluate(vis, ".wxstrip") and not pg.evaluate(vis, "#h-forces"), "travel tabs: the Map tab is the map, without the weather or the forces panel")
+    pg.locator("[data-mode='paint']").tap()
+    pg.wait_for_timeout(200)
+    check(pg.evaluate(vis, "#palette") and pg.evaluate(vis, "#map"), "travel tabs: painting, the palette shows on the Map tab with the map")
+    pg.locator("[data-mode='plan']").tap()
+    line = pg.locator("#tabs-line").inner_text()
+    check(line.strip() != "", f"travel tabs: the line under the tabs gives the day and weather ({line[:50]})")
+    check(pg.locator("#orderbar").is_visible(), "travel bar: shows at the foot of the screen")
+    for _ in range(2):
+        pg.locator(".zoombar button[data-z='in']").first.tap()
+    was = pg.evaluate("() => selForce().id")
+    pg.locator("#ob-next").tap()
+    pg.wait_for_timeout(300)
+    now = pg.evaluate("() => selForce().id")
+    check(now != was and pg.locator("#ob-name").inner_text() == pg.evaluate("() => selForce().name"), f"travel bar: ▶ selects the next force ({was} to {now}), named in the bar")
+    shown = """() => { const b = $('#map').getBoundingClientRect(), g = $(`#map .force[data-id="${selForce().id}"]`), r = g && g.getBoundingClientRect();
+      if (!r) return 'hidden'; const x = r.left + r.width / 2, y = r.top + r.height / 2; return x > b.left && x < b.right && y > b.top && y < b.bottom }"""
+    check(pg.evaluate(shown) is True, f"travel bar: and the zoomed map scrolls to it ({pg.evaluate(shown)})")
+    check(pg.locator("#orderbar [data-for='btn-clock-hour']").inner_text() == pg.locator("#btn-clock-hour").inner_text(), "travel bar: its clock buttons are the page's")
+    t0 = pg.evaluate("() => JSON.stringify(clockNow())")
+    pg.locator("#orderbar [data-for='btn-clock-hour']").tap()
+    pg.wait_for_timeout(300)
+    check(pg.evaluate("() => JSON.stringify(clockNow())") != t0, f"travel bar: 1 hour moves the clock ({t0} to {pg.evaluate('() => JSON.stringify(clockNow())')})")
+    pg.locator("#ob-route").tap()
+    pg.wait_for_timeout(300)
+    check(pg.evaluate("() => { const t = $('#h-route').getBoundingClientRect().top, u = $('#tabs').getBoundingClientRect().bottom; return t >= u - 2 && t < u + 60 }"), "travel bar: Route goes to the force's route, on the Forces tab, below the tabs")
+    pg.set_viewport_size({"width": 1280, "height": 900})
+    pg.wait_for_timeout(200)
+    check(not pg.locator("#tabs").is_visible() and not pg.locator("#orderbar").is_visible() and all(pg.evaluate(vis, sel) for sel in list(parts.values()) + [".wxstrip", "#h-forces"]),
+          "travel: on a desktop there are no tabs or bar, and every part shows")
+    pg.set_viewport_size({"width": 390, "height": 844})
+
+
 def page_ok(pg, name):
     m = pg.evaluate(SIZE)
     check(m["width"] == 390, f"{name}: uses the phone's width ({m['width']})")
@@ -203,6 +251,7 @@ def run(p):
     bar_checks(pg)
     follow_checks(pg)
     tab_checks(pg)
+    travel_checks(pg)
     for name in ("team.html", "campaign.html"):
         pg.goto(BASE + name)
         pg.wait_for_timeout(800)
