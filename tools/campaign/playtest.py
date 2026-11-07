@@ -5,8 +5,9 @@ the fight runs to an end and to see how it tends to go.
     python3 tools/campaign/playtest.py [fights]
 
 Prints each fight's rounds, who won and how the four came out. The script stands in for the players,
-so this tests the set-up and the odds, not the players' tactics. Exits non-zero if the set-up is wrong
-or a fight stalls. Needs Python's playwright with Chromium and a built site.
+so this tests the set-up and the odds, not the players' tactics. It also opens the printed packet and checks
+the kit for playing on paper: the map, the counters (each fits a hex), the enemy's roster, the quick
+reference and a blank sheet, on 19 Letter pages. Exits non-zero if the set-up is wrong or a fight stalls. Needs Python's playwright with Chromium and a built site.
 """
 import sys
 import traceback
@@ -27,8 +28,31 @@ RUN = """seed => {
 }"""
 
 
+def paper(br):
+    """The packet as printed: the kit's pages are there and the counters fit the map's hexes."""
+    pg = br.new_page()
+    pg.goto(BASE + "playtest-packet.html")
+    ids = pg.evaluate("() => [...document.querySelectorAll('h1[id]')].map(h => h.id)")
+    check({"reference", "battlemap", "counters", "roster"} <= set(ids), f"the paper kit's pages are in the packet {ids[-4:]}")
+    hexes = pg.evaluate("() => document.querySelectorAll('svg.mapsheet path').length")
+    check(hexes == 12 * 17, f"the map has its 12 × 17 hexes ({hexes})")
+    hexw = pg.evaluate("() => { const r = document.querySelector('svg.mapsheet path').getBoundingClientRect(); return r.width }")
+    ctr = pg.evaluate("() => document.querySelector('.ctr').getBoundingClientRect().width")
+    check(abs(hexw - 0.55 * 96) < 1.5 and ctr < hexw, f"printed true to size, a counter ({ctr:.0f} px) fits a hex ({hexw:.0f} px)")
+    men = pg.evaluate("() => [...document.querySelectorAll('.ctr.york, .ctr.clifford')].length")
+    check(men == 9, f"a counter for each of the nine men ({men})")
+    check(pg.evaluate("() => document.querySelectorAll('table.roster tbody tr').length") == 5, "the roster has Clifford's five")
+    check(pg.evaluate("() => [...document.querySelectorAll('.sheet h1')].some(h => h.textContent.startsWith('Name:'))"), "a blank sheet to fill in")
+    check(not pg.evaluate("() => /\\{\\{|@@/.test(document.body.innerHTML)"), "no value left unfilled")
+    pdf = pg.pdf(format="Letter", print_background=True, prefer_css_page_size=True)
+    n = pdf.count(b"/Type /Page") - pdf.count(b"/Type /Pages")
+    check(n == 19, f"it prints on 19 Letter pages ({n})")
+    pg.close()
+
+
 def run(p):
     br = p.chromium.launch()
+    paper(br)
     wins, rounds, down = {}, [], 0
     for seed in range(1, FIGHTS + 1):
         ctx = br.new_context()
