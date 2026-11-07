@@ -1,6 +1,6 @@
 # Hit Location & Wound Tables
 
-Generated 2026-11-06 from the data folder. Roll d100 (00 = 100).
+Generated 2026-11-07 from the data folder. Roll d100 (00 = 100).
 
 © 2026 Scott Wares. All rights reserved.
 

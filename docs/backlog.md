@@ -16,14 +16,25 @@ not this repository.
 - **Table playtests.** None has been recorded: every result so far is self-play. The four to run
   are in the README's *Next steps*, and `design.md` has the disease numbers to try over a few weeks
   of camp. The playability review (project doc `claude/playability-review.md`) ranks this first.
-- **The playtest packet, version 0.1** (`dist/playtest-packet.html`, built by `gravewounds/playtest.py`
+- **The playtest packet, version 0.2** (`dist/playtest-packet.html`, built by `gravewounds/playtest.py`
   from `templates/playtest/packet.md`). Wars of the Roses, four pregenerated men with camp roles, a
   fight at the Aire crossing and a week in camp, played on the roller or on paper, with feedback by
-  email. Not yet run by people. Its scenario pages are ours and untested at the table; the weekly
+  email. Version 0.2 adds the kit to play it on paper, at the back: a one-page quick reference, a hex map
+  of the ford printed true to size (2 yards a hex, with an approach track for the enemy's first 18 hexes),
+  counters to cut out (the nine men, and Down, Stopped, Bound, Prisoner, Bleed, Aimed, Fate and Round
+  markers), the GM's roster of Clifford's five with Blood to tick off, and a blank character sheet. The
+  ford's rule (the river too deep elsewhere; advance only in the ford) is the scenario's own. Not yet run by people. Its scenario pages are ours and untested at the table; the weekly
   rules are simplified for paper (the flux alone, at Endurance 50, and a fixed week's weather). Project
   doc *Grave Wounds: playtest packet outline* holds the three rounds of testing, the publishing path
   and the formats to consider (itch.io, Foundry VTT, desktop, Android).
 - **Phones.** The roller, team builder and campaign console have a phone layout with full-size taps, checked in a phone-sized browser (`tools/campaign/phone.py`), not yet on a real phone. The field and travel maps have full-size taps and zoom (−, +, Fit and two-finger pinch; `templates/mapzoom.js`). On a phone the field page has an order bar at the foot of the screen for the selected unit (◀ ▶ through the units, Show, More, Turn left and right, Undo, and Start the battle / Next). Zoomed in, the field map follows the fighting: after each exchange it scrolls to the units in contact nearest the view (a "follow the fighting" tick under the map turns it off). On a phone the field page is in four tabs (Map, Battle, Units, Story), with the phase or latest message under them. The travel map is in four tabs too (Map, Forces, Camp, Day), with a bar for the selected force and the clock. Not done: a watch mode for spectators on a phone.
+- **Print-and-play modules.** More ways to play reach more people: the plan is to publish print-and-play
+  adventures like the old modules, each a scenario with its pregenerated men, map, counters, roster, the
+  tables it needs and a quick reference, playable on paper or on the pages. Ferrybridge (the playtest
+  packet) is the first. Still to come: a short table booklet of the common weapons and armour (the
+  packet carries only its own fight's), Ask the dice on the printed tables, paper rules for making a man
+  without the team builder, and further modules; field battles, travel and the campaign on paper are
+  further off, since the pages do their arithmetic.
 - **Comments from visitors.** A private Google Form, linked from the signup block, the Rules and books, and the packet. There is no public comment section yet.
 - **Feedback on the core rules.** The review's next step after a table playtest: post the core
   rules, not the whole book, to r/RPGdesign, BRP Central and the Hârn community, then the wider
