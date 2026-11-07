@@ -21,7 +21,7 @@ from .model import Data
 from .team import make_team
 from .units import SeededDice
 
-VERSION = "0.2, 7 November 2026"
+VERSION = "0.2.1, 7 November 2026"
 LINK = "https://swares.github.io/grave-wounds/dist/team.html#playtest"
 SITE = "https://swares.github.io/grave-wounds/"
 EMAIL = "waresscott@gmail.com"
@@ -163,7 +163,7 @@ def _map() -> str:
 
 # ---------- the kit for playing on paper: a hex map of the ford, counters, the enemy's roster and a blank sheet ----------
 # The map is pointy-topped hexes, odd rows pushed right, at HEX inches across, so the counters (CTR inches) sit in one.
-HEX, CTR = 0.55, 0.47
+HEX, CTR, CTR_H = 0.55, 0.47, 0.30          # a counter is CTR wide and CTR_H tall: inside a hex, no taller than its straight sides
 COLS, ROWS = 12, 17
 RIVER, FORD = range(5, 9), range(5, 8)            # rows of the Aire; columns of the ford
 TRACK = 18                                         # boxes north of the map: a man on box 18 is 30 hexes from row 12
@@ -300,8 +300,10 @@ table.tight{font-size:8.2pt}table.tight td,table.tight th{padding:1px 4px}table.
 .foot{position:absolute;left:.6in;right:.6in;bottom:.28in;display:flex;justify-content:space-between;font:7.5pt Arial,sans-serif;color:var(--muted)}
 .blank{height:1.1in;border:1px solid var(--line)}.blank.small{height:.4in}.sub{color:var(--muted)}.role{border-left:3px solid var(--red);padding-left:8px}
 svg.mapsheet{max-height:none;width:auto;margin:2px auto}
-.ctrs{display:flex;flex-wrap:wrap;gap:0;margin:2px 0 8px}.ctr{width:0.47in;height:0.47in;border:1px dashed #777;display:flex;flex-direction:column;align-items:center;justify-content:center;font:6.6pt/1.1 Arial,sans-serif;text-align:center;overflow:hidden}
-.ctr b{font-size:6.2pt;white-space:nowrap}.ctr.bleed{background:#fde8e8}
+.ctrs{display:flex;flex-wrap:wrap;gap:0;margin:2px 0 8px}.ctr{width:0.47in;height:0.30in;border:1px dashed #777;display:flex;flex-direction:column;align-items:center;justify-content:center;font:6.6pt/1.1 Arial,sans-serif;text-align:center;overflow:hidden}
+.ctr b{font-size:6.2pt;white-space:nowrap}.ctr span{font-size:5.8pt}
+.blankpage .sub{position:absolute;top:45%;left:.6in;right:.6in;text-align:center}
+@media screen{.blankpage{display:none}}.ctr.bleed{background:#fde8e8}
 section:has(#reference) p{font-size:11.2pt;line-height:1.38;margin-bottom:8px}.ctr.york{background:#e9eef7;border-left:4px solid #3c5a99}.ctr.clifford{background:#f7e6e6;border-left:4px solid #8c1a2b}.ctr.mark{background:#f4f4f4}.ctr.round{background:#fff6cc}
 table.roster td{height:62px}table.roster .ticks{font-size:11pt;letter-spacing:1px;line-height:1.3}table.rounds td{text-align:center;height:24px}
 .line{display:inline-block;border-bottom:1px solid var(--ink);min-width:3.2in;height:1em}.line.short{min-width:1.3in}.line.tiny{min-width:.45in}
@@ -330,15 +332,23 @@ def render(d: Data, root: Path) -> str:
         keep[f"@@{k}@@"] = h
         text = text.replace("{{pt:" + k + "}}", f"@@{k}@@")
     text = RB._fill(text, v, tabs, "templates/playtest/packet.md")
-    foot = f'<div class="foot"><span>Grave Wounds playtest packet, version {html.escape(VERSION)}</span><span>© 2026 Scott Wares. All rights reserved. Free to copy for playtesting.</span></div>'
+    foot = (f'<div class="foot"><span>Grave Wounds playtest packet, version {html.escape(VERSION)}</span><span class="pageno">Page __PAGE__</span>'
+            '<span>© 2026 Scott Wares. All rights reserved. Free to copy for playtesting.</span></div>')
+    blank = ('<section class="page blankpage"><p class="sub">This page is left blank, so that printed on both sides the map and the '
+             'counters each have a sheet of their own.</p>__FOOT__</section>')
     pages = []
     for i, md in enumerate(p for p in text.split("<!-- page -->") if p.strip()):
         body = markdown.markdown(md, extensions=["tables", "admonition", "attr_list"])
         for k, h in keep.items():
             body = body.replace(f"<p>{k}</p>", h).replace(k, h)
-        pages.append(f'<section class="page">{body}{foot}</section>')
+        pages.append(f'<section class="page">{body}__FOOT__</section>')
         if '{#camp}' in md or 'id="camp"' in body:
-            pages.append(sheets.replace("__FOOT__", foot))
+            pages.append(sheets)
+        if 'id="battlemap"' in body or 'id="counters"' in body:
+            pages.append(blank)              # the backs of the map and the counters, for printing on both sides
+    out = "".join(pages)
+    for n in range(1, out.count("__FOOT__") + 1):    # number the pages in order, one footer to a page
+        out = out.replace("__FOOT__", foot.replace("__PAGE__", str(n)), 1)
     return ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-            f'<title>Grave Wounds: playtest packet</title><style>{CSS}</style></head><body>{"".join(pages)}'
+            f'<title>Grave Wounds: playtest packet</title><style>{CSS}</style></head><body>{out}'
             '</body></html>\n')
