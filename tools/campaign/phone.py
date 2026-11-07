@@ -9,7 +9,8 @@ use the phone's width (a viewport line), not scroll sideways, and give every vis
 On the maps, + twice makes a hex a fingertip, Fit shows the whole width, two fingers spread zoom in, and,
 zoomed in, a tap on the field map moves a unit. The field's order bar sits at the foot of the screen,
 steps through the units, scrolls the map to them, and presses the page's own buttons. Zoomed in, the
-field map follows the fighting after each exchange, unless unticked.
+field map follows the fighting after each exchange, unless unticked. On a phone the field page is in
+four tabs (Map, Battle, Units, Story), each showing only its own part.
 Needs Python's playwright with Chromium and a built site. Exits non-zero on any failure.
 """
 import sys
@@ -62,7 +63,7 @@ def bar_checks(pg):
     check(pg.evaluate("() => S.phase") != "setup" and pg.locator("#ob-phase").inner_text() == pg.locator("#btn-next").inner_text(), f"field: and pressing it starts the battle ({pg.locator('#ob-phase').inner_text()})")
     pg.locator("#ob-more").tap()
     pg.wait_for_timeout(300)
-    check(pg.evaluate("() => Math.abs($('#h-sel').getBoundingClientRect().top) < 60"), "field: More goes to the selected unit's full orders")
+    check(pg.evaluate("() => { const t = $('#h-sel').getBoundingClientRect().top, u = $('#tabs').getBoundingClientRect().bottom; return t >= u - 2 && t < u + 60 }"), "field: More goes to the selected unit's full orders, on the Units tab, below the tabs")
     pg.set_viewport_size({"width": 1280, "height": 900})
     pg.wait_for_timeout(200)
     check(not bar.is_visible(), "field: on a desktop the bar is not shown")
@@ -75,8 +76,10 @@ def follow_checks(pg):
     pg.wait_for_timeout(900)
     pg.evaluate(FIELD)
     pg.wait_for_timeout(1200)
+    pg.locator("#tabs [data-tab='battle']").tap()
     pg.select_option("#sel-ai0", "attack")
     pg.select_option("#sel-ai1", "attack")
+    pg.locator("#tabs [data-tab='map']").tap()
     for _ in range(2):
         pg.locator(".zoombar button[data-z='in']").first.tap()
     home = "() => { $('#map').scrollLeft = 0; $('#map').scrollTop = 0 }"
@@ -98,6 +101,24 @@ def follow_checks(pg):
         pg.locator("#ob-phase").tap()
         pg.wait_for_timeout(150)
     check(pg.evaluate("() => $('#map').scrollLeft + $('#map').scrollTop") == 0, "follow: unticked, the map stays where it was")
+
+
+def tab_checks(pg):
+    """On a phone the field page is in four tabs; each shows its own part; a desktop shows them all."""
+    vis = "(sel) => { const e = document.querySelector(sel), r = e.getBoundingClientRect(); return r.width > 0 && r.height > 0 }"
+    parts = {"map": "#map", "battle": "#ai-box", "units": "#units", "story": "#log"}
+    for tab, own in parts.items():
+        pg.locator(f"#tabs [data-tab='{tab}']").tap()
+        pg.wait_for_timeout(150)
+        others = [sel for t, sel in parts.items() if t != tab and pg.evaluate(vis, sel)]
+        check(pg.evaluate(vis, own) and not others, f"tabs: {tab} shows {own} and hides the rest {others}")
+        page_ok(pg, f"field ({tab} tab)")
+    check(pg.locator("#tabs-line").inner_text().strip() != "", f"tabs: the line under the tabs says where the battle is ({pg.locator('#tabs-line').inner_text()[:50]})")
+    pg.locator("#tabs [data-tab='map']").tap()
+    pg.set_viewport_size({"width": 1280, "height": 900})
+    pg.wait_for_timeout(200)
+    check(not pg.locator("#tabs").is_visible() and all(pg.evaluate(vis, sel) for sel in parts.values()), "tabs: on a desktop there are no tabs, and every part shows")
+    pg.set_viewport_size({"width": 390, "height": 844})
 
 
 def page_ok(pg, name):
@@ -181,6 +202,7 @@ def run(p):
         check(False, "field: a hex next to the unit is found")
     bar_checks(pg)
     follow_checks(pg)
+    tab_checks(pg)
     for name in ("team.html", "campaign.html"):
         pg.goto(BASE + name)
         pg.wait_for_timeout(800)
