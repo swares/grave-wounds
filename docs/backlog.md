@@ -34,7 +34,18 @@ not this repository.
   packet) is the first. Still to come: a short table booklet of the common weapons and armour (the
   packet carries only its own fight's), Ask the dice on the printed tables, paper rules for making a man
   without the team builder, and further modules; field battles, travel and the campaign on paper are
-  further off, since the pages do their arithmetic.
+  further off, since the pages do their arithmetic. The plan, if the Ferrybridge playtest goes well:
+  - **Fix the shared parts first.** What the playtest finds slow or unclear on paper is fixed in what every
+    module shares (the quick reference, the table booklet, the counters and map style) before it is copied.
+  - **Skirmish modules next**, like Ferrybridge: a small action at the edge of a battle already researched,
+    with four pregenerated men, a hex map, counters, the enemy's roster and a quick reference. One or two
+    more, from other periods, so the series reaches medieval, Napoleonic and modern players (candidates:
+    the baggage raid at Agincourt, a breach at Badajoz, a patrol on Tumbledown, the ditch at Dornach).
+    Before the second, `gravewounds/playtest.py` becomes a module generator: each module a data file
+    (men, enemies, map, ford-style local rules) and its own pages, rather than a copy of Ferrybridge's code.
+  - **Then a battle module:** a battle such as Towton or Albuera on paper, with unit counters, a printed
+    battlefield and paper rules for formations, morale and losses, which the field page now works out.
+    Start small, a wing or a few units a side, to learn whether battle-scale play is quick enough at a table.
 - **Comments from visitors.** A private Google Form, linked from the signup block, the Rules and books, and the packet. There is no public comment section yet.
 - **Feedback on the core rules.** The review's next step after a table playtest: post the core
   rules, not the whole book, to r/RPGdesign, BRP Central and the Hârn community, then the wider
