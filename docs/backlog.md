@@ -13,6 +13,21 @@ Work that is not a rule or a page. Most of the detail is kept elsewhere; this se
 so that the backlog is the one place to start. Items in a project doc are in the Claude project,
 not this repository.
 
+- **Ways to play: where each stands** (reviewed 7 November 2026; revisit after the first table playtest).
+  More ways to play reach more people. Five are aimed at:
+
+  | Way to play | Support | What works | The main gap |
+  | --- | --- | --- | --- |
+  | Online: commander against commander (simulation) | Not yet | Two people on one screen, each side under its own commander; the commander against itself to check a battlefield | The field and travel maps are not online, so two commanders cannot play from two computers |
+  | Online: you against the commander (solo) | Strong | The enemy commander on the field map (sees only what its units see, reserves, guns, objectives), Beat history and its scorecard, the GM's script on the roller, the rules' chapter on playing alone, the commander running the travel map's day | Runs in the browser with no connection needed; the commander does not yet notice some campaign events |
+  | Online: a GM and his party (VTT) | First cut | The GM hosts from the roller or the campaign console; players join by room code and see their men, the public news and their fights, propose orders, and see only what their side has seen | The field and travel maps are not shared online; no TURN relay for strict networks; no voice or chat (groups bring their own); tested only with scripted players |
+  | At the table: an RPG with a GM | Good on paper, untested | The rule book and five period books, the team builder's sheets, the roller as the GM's aid, the council card, the tables | The 309-page tables PDF is a reference, not a table booklet; making a man by hand is not checked for pencil and dice; never played at a table |
+  | At the table: print-and-play modules | One module | Ferrybridge (the playtest packet 0.2.2): characters, map, counters, roster and reference, laid out for printing on both sides | The only module, and not yet played; the plan for more is under *Print-and-play modules* |
+
+  What would widen the reach most, in order: the Ferrybridge playtest (it tests both table rows);
+  the field map online (opens commander against commander and the field for a GM's party, building on the
+  roller's and console's rooms); a TURN relay before strangers are asked to play online. Solo is the
+  strongest today, which suits itch.io's Solo RPG category.
 - **Table playtests.** None has been recorded: every result so far is self-play. The four to run
   are in the README's *Next steps*, and `design.md` has the disease numbers to try over a few weeks
   of camp. The playability review (project doc `claude/playability-review.md`) ranks this first.
