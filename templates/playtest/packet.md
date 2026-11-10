@@ -81,13 +81,14 @@ step, or rerolls a stop check, recovery or fever roll. Gritty: Blood ×1, no bon
 !!! example "A worked blow"
     Gilbert shoots at {{pt_gil_attack}}% and rolls 31: a margin of {{pt_gil_margin}}, **serious**. The billman dodges
     at {{pt_foe_def}}% and rolls 72, so it hits. On the longbow column, a 40 is the right chest. His jack would lower
-    the wound a step, but the war bow takes a step off armour, so it stays serious. The thrust table gives bleed 2,
-    pain 2, and **S**, so he loses 1 Blood a round and makes a stop check: Nerve {{pt_foe_nerve}}, less {{pt_foe_pain}} for pain.
+    the wound a step, but the war bow takes a step off armour, so it stays serious. The thrust table gives **B2 P2 S**:
+    bleeding step B2, which the Bleeding table makes 1 Blood a round; pain step P2; and a stop check: Nerve {{pt_foe_nerve}}, less {{pt_foe_pain}} for pain.
 
 <!-- page -->
 # Wounds {#wounds}
 
-A wound has five parts, and they add up across all of a man's wounds.
+A wound has five parts, and they add up across all of a man's wounds. **Bleed (B) and pain (P) are steps, not points:**
+B2 is the second bleeding step, and the Bleeding table below gives the Blood it costs.
 
 **Bleeding.** Every man has a **Blood** pool, on his sheet.
 
@@ -133,7 +134,7 @@ A longbow's arrows take 1 step off the armour's pierce figure, so a jack gives t
 <!-- page -->
 # What it does {#effects}
 
-Find the place and the blow. Each entry gives **bleed** and **pain**, then **S** if it calls for a stop check, then how long it
+Find the place and the blow. Each entry gives its **bleeding step** (B) and **pain step** (P), then **S** if it calls for a stop check, then how long it
 takes to kill and any impairments. Fever is the risk of wound fever in camp. A longbow's wound uses the thrust columns. A knee or
 foot may not bleed at all.
 

@@ -21,7 +21,7 @@ from .model import Data
 from .team import make_team
 from .units import SeededDice
 
-VERSION = "0.2.2, 7 November 2026"
+VERSION = "0.2.3, 10 November 2026"
 LINK = "https://swares.github.io/grave-wounds/dist/team.html#playtest"
 SITE = "https://swares.github.io/grave-wounds/"
 EMAIL = "waresscott@gmail.com"
@@ -214,9 +214,9 @@ def _counters(team: dict) -> str:
     men = [ctr(n.split(" ")[0], short.get(team[n]["weapon"], team[n]["weapon"]), "york") for n, _, _ in MEN]
     foes = [ctr(f"Billman {i + 1}" if w == "bill" else "Archer", short[w], "clifford") for i, (_, _, w, _) in enumerate(FOES)]
     marks = ([ctr("Down", "", "mark")] * 9 + [ctr("Stopped", "", "mark")] * 6 + [ctr("Bound", "", "mark")] * 6 + [ctr("Prisoner", "", "mark")] * 3
-             + [ctr("Bleed", str(n), "mark bleed") for n in (1, 2, 3) for _ in range(5)] + [ctr("Aimed", "", "mark")] * 4
+             + [ctr("Bleed", f"B{n}", "mark bleed") for n in (1, 2, 3) for _ in range(5)] + [ctr("Aimed", "", "mark")] * 4
              + [ctr("Fate", "used", "mark")] * 4 + [ctr("Round", "", "mark round")] * 2)
-    return (f'<p class="sub">Print on card, or glue to card, and cut along the lines. Each fits in a hex of the map. A man\'s Bleed marker shows his bleeding step, his wounds\' bleed added up (<i>Wounds</i> gives the Blood it costs each round); swap it as wounds are bound.</p>'
+    return (f'<p class="sub">Print on card, or glue to card, and cut along the lines. Each fits in a hex of the map. A man\'s Bleed marker shows his bleeding step (B1 to B3), his wounds\' bleed added up (<i>Wounds</i> gives the Blood it costs each round); swap it as wounds are bound.</p>'
             f'<h2>The four</h2><div class="ctrs">{"".join(men)}</div><h2>Clifford\'s men</h2><div class="ctrs">{"".join(foes)}</div>'
             f'<h2>Markers</h2><div class="ctrs">{"".join(marks)}</div>')
 
@@ -255,7 +255,7 @@ def _rates(d: Data) -> str:
     out = []
     for k, r in sorted((int(k), r) for k, r in d.wounds["tracking"]["bleed_per_round"].items()):
         if k:
-            out.append(f"at {k}, " + (f"1 Blood every {round(1 / r)} rounds" if r < 1 else f"{r:g} a round"))
+            out.append(f"B{k}, " + (f"1 Blood every {round(1 / r)} rounds" if r < 1 else f"{r:g} a round"))
     return "; ".join(out)
 
 def _contents(pages: list) -> str:
