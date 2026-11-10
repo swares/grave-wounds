@@ -1594,6 +1594,22 @@ def render_figures(d, fig_js: str, out_dir: Path) -> dict:
     return found
 
 
+def packet_pdf(html_path: Path, pdf_path: Path) -> None:
+    """The playtest packet as a Letter PDF, printed by a headless browser from its page, so it is the
+    page's own layout (one section a page, the blank backs). Optional: without Playwright it is skipped."""
+    try:
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as pw:
+            browser = pw.chromium.launch()
+            page = browser.new_page()
+            page.goto(html_path.resolve().as_uri())
+            page.wait_for_load_state("load")
+            page.pdf(path=str(pdf_path), format="Letter", print_background=True, prefer_css_page_size=True)
+            browser.close()
+    except Exception as e:                      # Playwright or its browser missing
+        print(f"note: could not print the playtest packet's PDF ({e.__class__.__name__}); the page is built without it")
+
+
 def pdf(d, path: Path, figs: dict | None = None) -> None:
     from reportlab.lib import colors
     from reportlab.lib.pagesizes import letter
@@ -2232,7 +2248,11 @@ def main() -> int:
     (DIST / "campaign.html").write_text(chtml.replace("/*__CAMPAIGN_DATA__*/null", json.dumps(campaign_bundle(d), separators=(",", ":"))), encoding="utf-8")
     (DIST / "council-card.html").write_text(council_card(d), encoding="utf-8")
     from gravewounds.playtest import render as playtest_packet
-    (DIST / "playtest-packet.html").write_text(playtest_packet(d, ROOT), encoding="utf-8")
+    packet, packet_path = playtest_packet(d, ROOT), DIST / "playtest-packet.html"
+    changed = not packet_path.exists() or packet_path.read_text(encoding="utf-8") != packet
+    packet_path.write_text(packet, encoding="utf-8")
+    if changed or not (DIST / "playtest-packet.pdf").exists():   # only when the packet changes: a PDF's bytes differ each print
+        packet_pdf(packet_path, DIST / "playtest-packet.pdf")
     (DIST / "privacy.html").write_text((ROOT / "templates" / "privacy.html").read_text(encoding="utf-8"), encoding="utf-8")
     (DIST / "guide.html").write_text((ROOT / "templates" / "guide.html").read_text(encoding="utf-8").replace("<!--__SIGNUP__-->", signup()), encoding="utf-8")   # how to play: the pages, mode by mode
     (ROOT / "index.html").write_text(index_page(d).replace("<!--__SIGNUP__-->", signup("dist/")), encoding="utf-8")

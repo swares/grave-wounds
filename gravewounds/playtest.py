@@ -345,10 +345,18 @@ section:has(#reference) p{font-size:11.2pt;line-height:1.38;margin-bottom:8px}.c
 table.roster td{height:62px}table.roster .ticks{font-size:11pt;letter-spacing:1px;line-height:1.3}table.rounds td{text-align:center;height:24px}
 .line{display:inline-block;border-bottom:1px solid var(--ink);min-width:3.2in;height:1em}.line.short{min-width:1.3in}.line.tiny{min-width:.45in}
 .admonition{background:#f3f4f6;border-left:3px solid var(--red);padding:5px 9px;margin:5px 0}.admonition-title{font-weight:bold;margin:0}svg{display:block;width:100%;max-height:1.9in;margin:4px 0}
+.getpdf{max-width:8.5in;margin:12px auto 0;padding:10px 14px;background:#fff6cc;border:1px solid #d9c46a;font:11pt/1.4 Arial,sans-serif}.getpdf a{font-weight:bold}
+@media print{.getpdf{display:none}}
 @media screen{body{background:#dfe2e6}.page{background:#fff;margin:12px auto;box-shadow:0 1px 4px #0003}}@media print{@page{size:Letter;margin:0}.page{margin:0}}
 @media screen and (max-width:820px){.page{width:auto;min-height:0;padding:16px}.foot{position:static;margin-top:12px}table{display:block;overflow-x:auto}}
 """
 
+
+def _getpdf(out: str) -> str:
+    """On screen only: the packet as a PDF to download (build.py prints it beside this page)."""
+    n = out.count('<section class="page')
+    return (f'<div class="getpdf"><a href="playtest-packet.pdf" download>Download the packet as a PDF</a> ({n} Letter pages). '
+            'Print it at actual size (100%), on both sides: each character, the reference, the map and the counters then have a sheet of their own.</div>')
 
 def render(d: Data, root: Path) -> str:
     team, v, tabs = _team(d), RB.values(d), RB.tables(d, {"medieval"})
@@ -396,5 +404,5 @@ def render(d: Data, root: Path) -> str:
     for n in range(1, out.count("__FOOT__") + 1):    # number the pages in order, one footer to a page
         out = out.replace("__FOOT__", foot.replace("__PAGE__", str(n)), 1)
     return ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-            f'<title>Grave Wounds: playtest packet</title><style>{CSS}</style></head><body>{out}'
+            f'<title>Grave Wounds: playtest packet</title><style>{CSS}</style></head><body>{_getpdf(out)}{out}'
             '</body></html>\n')
