@@ -21,10 +21,13 @@ from .model import Data
 from .team import make_team
 from .units import SeededDice
 
-VERSION = "0.2.3, 10 November 2026"
+VERSION = "0.2.4, 14 November 2026"
 LINK = "https://swares.github.io/grave-wounds/dist/team.html#playtest"
 SITE = "https://swares.github.io/grave-wounds/"
-EMAIL = "waresscott@gmail.com"
+# Feedback goes through the Google Form, not a printed email address. The packet prints the short address of
+# feedback.html, which build.py writes to forward to the form, so it can be typed from paper.
+FORM = "https://docs.google.com/forms/d/e/1FAIpQLSfGgYKRfBpDth3odGXHWHI1iXSNCmscYczxBW7BE_2Pv9-Hwg/viewform"
+FEEDBACK = SITE + "feedback.html"
 MEN = (("William of Ely", "leader", "Leader"), ("Gilbert Cooper", "scout", "Scout"),
        ("Edmund Miller", "quartermaster", "Quartermaster"), ("Nicholas Fletcher", "leech", "Leech"))
 # Clifford's five (the roller's PLAYTEST in templates/roller.html lists the same men). Five, because the script
@@ -361,7 +364,7 @@ def _getpdf(out: str) -> str:
 def render(d: Data, root: Path) -> str:
     team, v, tabs = _team(d), RB.values(d), RB.tables(d, {"medieval"})
     gil = team["Gilbert Cooper"]
-    v = {**v, "pt_version": VERSION, "pt_link": LINK, "pt_link_short": "swares.github.io/grave-wounds/dist/team.html#playtest", "pt_site": SITE, "pt_email": EMAIL,
+    v = {**v, "pt_version": VERSION, "pt_link": LINK, "pt_link_short": "swares.github.io/grave-wounds/dist/team.html#playtest", "pt_site": SITE, "pt_feedback": FEEDBACK, "pt_feedback_short": FEEDBACK.removeprefix("https://"),
          "pt_gil_attack": gil["attack"], "pt_gil_margin": gil["attack"] - 31, "pt_foe_def": d.units["quality"]["regular"]["defence"], "pt_foe_nerve": d.units["quality"]["regular"]["nerve"], "pt_foe_pain": 2 * v["pain_step"],
          "pt_rations": d.supplies["rations"]["carried"]["medieval"], "pt_bow_range": ", ".join(str(x) for x in d.weapons["longbow"]["range"]),
          "aim_cost": d.wounds["combat"]["aim"]["cost"], "dead_days": d.disease.get("dead_days", 14),
