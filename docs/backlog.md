@@ -22,7 +22,7 @@ not this repository.
   | Online: you against the commander (solo) | Strong | The enemy commander on the field map (sees only what its units see, reserves, guns, objectives), Beat history and its scorecard, the GM's script on the roller, the rules' chapter on playing alone, the commander running the travel map's day | Runs in the browser with no connection needed; the commander does not yet notice some campaign events |
   | Online: a GM and his party (VTT) | First cut | The GM hosts from the roller or the campaign console; players join by room code and see their men, the public news and their fights, propose orders, and see only what their side has seen | The field and travel maps are not shared online; no TURN relay for strict networks; no voice or chat (groups bring their own); tested only with scripted players |
   | At the table: an RPG with a GM | Good on paper, untested | The rule book and five period books, the team builder's sheets, the roller as the GM's aid, the council card, the tables | The 309-page tables PDF is a reference, not a table booklet; making a man by hand is not checked for pencil and dice; never played at a table |
-  | At the table: print-and-play modules | One module | Ferrybridge (the playtest packet 0.2.2): characters, map, counters, roster and reference, laid out for printing on both sides | The only module, and not yet played; the plan for more is under *Print-and-play modules* |
+  | At the table: print-and-play modules | One module | Ferrybridge (the playtest packet 0.2.4): characters, map, counters, roster and reference, laid out for printing on both sides | The only module, and not yet played; the plan for more is under *Print-and-play modules* |
 
   What would widen the reach most, in order: the Ferrybridge playtest (it tests both table rows);
   the field map online (opens commander against commander and the field for a GM's party, building on the
@@ -33,8 +33,8 @@ not this repository.
   of camp. The playability review (project doc `claude/playability-review.md`) ranks this first.
 - **The playtest packet, version 0.2** (`dist/playtest-packet.html`, built by `gravewounds/playtest.py`
   from `templates/playtest/packet.md`). Wars of the Roses, four pregenerated men with camp roles, a
-  fight at the Aire crossing and a week in camp, played on the roller or on paper, with feedback by
-  email. Version 0.2 adds the kit to play it on paper, at the back: a one-page quick reference, a hex map
+  fight at the Aire crossing and a week in camp, played on the roller or on paper, with feedback
+  through the feedback form (`feedback.html`, which forwards to it; from 0.2.4 the packet prints no email address). Version 0.2 adds the kit to play it on paper, at the back: a one-page quick reference, a hex map
   of the ford printed true to size (2 yards a hex, with an approach track for the enemy's first 18 hexes),
   counters to cut out (the nine men, and Down, Stopped, Bound, Prisoner, Bleed, Aimed, Fate and Round
   markers), the GM's roster of Clifford's five with Blood to tick off, and a blank character sheet. The

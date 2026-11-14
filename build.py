@@ -2256,6 +2256,14 @@ def main() -> int:
     (DIST / "privacy.html").write_text((ROOT / "templates" / "privacy.html").read_text(encoding="utf-8"), encoding="utf-8")
     (DIST / "guide.html").write_text((ROOT / "templates" / "guide.html").read_text(encoding="utf-8").replace("<!--__SIGNUP__-->", signup()), encoding="utf-8")   # how to play: the pages, mode by mode
     (ROOT / "index.html").write_text(index_page(d).replace("<!--__SIGNUP__-->", signup("dist/")), encoding="utf-8")
+    from gravewounds.playtest import FORM
+    # The short address the playtest packet prints: forwards to the feedback form. GitHub Pages can't redirect on
+    # the server, and a meta refresh fails SonarCloud's Web:MetaRefreshCheck, so a script forwards and the link stays.
+    (ROOT / "feedback.html").write_text(
+        '<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Grave Wounds: feedback</title>'
+        f'<link rel="canonical" href="{FORM}"></head>'
+        f'<body><p>Taking you to the <a href="{FORM}">Grave Wounds feedback form</a>.</p>'
+        f'<script>location.replace({json.dumps(FORM)})</script></body></html>\n', encoding="utf-8")
     print("Built:", ", ".join(p.name for p in sorted(DIST.iterdir())), "+ index.html")
     return 0
 
