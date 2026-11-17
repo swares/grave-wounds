@@ -1,0 +1,271 @@
+# A season of service: the Peninsular War, 1808-1814 (gravewounds/service.py, templates/service.js).
+# A named man serving with a line battalion passes a season (experience.yaml season_days) in one
+# step: his sickness on the camp-disease track (disease.yaml), each named action of the season he
+# is at and that is not played on its battlefield (a hit is sent to the roller, which rolls the
+# wound), and the chance of a small fight. Design: project doc "between-battles-design".
+#
+# id, name, era (data/teams), regions (the armies whose men serve it), table (its weapon_mix
+# picks the weapon a hit comes from), season_days.
+# states   - what the battalion does in a season, for sickness: care (none, field, shelter: the
+#            disease track's), marched (he marches: worse recovery), staying (the battalion stays in
+#            one place: the disease track's "staying" factor, and "crowded" with poor hygiene).
+# positions - where his company stands in an unplayed action: the army's share lost times `mult`
+#            (ours), at most `cap` %. Calibrated on Albuera: the Anglo-Portuguese lost about 22%,
+#            the 1/57th, in the thick of it, 66% (three times).
+# small_war - the % chance a season that a small fight comes the team's way, by state (ours: the
+#            memoirs describe outpost fights, foraging parties and patrols, but no one counted them);
+#            the GM plays it on the roller, or rolls it: each man with the team is hit on `hit` %.
+# seasons  - a generic line battalion's war, season by season (winter: December to February):
+#            state, hygiene (fair, poor, good), factors (the disease track's hot, warm, cold_wet,
+#            marsh or town, each with the weeks of the season it holds, spread through it: ours,
+#            tuned so a man's deaths from disease over the war come near the records' totals, with
+#            the worst seasons the accounts name worse), where and what (one line), actions (ids,
+#            below), sources.
+# actions  - each named battle, siege or storm: name, date (the main day, YYYY-MM-DD), field (a
+#            modelled battlefield the GM can play instead), main (false: not the main army's: the
+#            GM ticks it if his battalion was there), share (% of those engaged killed and
+#            wounded, or lost where no split was found; null: not found, the GM sets it), engaged
+#            and lost as the sources give them, alt (another source's share), units (a battalion's
+#            own figure the GM may use instead), sources, single (one report only), note.
+# Figures: project doc "between-battles-design" (historyofwar.org, britishbattles.com, Wikipedia
+# mirrors and Smith via Fandom; Oman was not reached). Shares are our calculation from them.
+id: peninsula
+name: "The Peninsular War (1808-1814)"
+era: horse_musket
+regions: [british_pen]
+table: peninsular-1808-14-officers
+season_days: 91
+
+states:
+  quarters: {name: "In quarters", care: shelter, marched: false, staying: true}
+  campaign: {name: "On campaign", care: field, marched: true, staying: false}
+  march:    {name: "On the march", care: field, marched: true, staying: false}
+  siege:    {name: "At a siege", care: field, marched: false, staying: true}
+
+positions:
+  reserve: {name: "In reserve", mult: 0.25}
+  line:    {name: "In the line", mult: 1}
+  thick:   {name: "In the thick of it", mult: 3}
+cap: 90
+
+small_war:
+  chance: {quarters: 15, campaign: 40, march: 25, siege: 30}
+  hit: 10
+
+sources:
+  how: &how "https://www.historyofwar.org/articles/wars_peninsular.html"
+  dumas: &dumas "https://www.napoleon-series.org/research/abstract/military/army/britain/casualties/c_britcas.html"
+
+seasons:
+  - {id: 1808-summer, name: "Summer 1808", state: campaign, hygiene: fair, factors: {hot: 1}, actions: [rolica, vimeiro],
+     what: "Landed at Mondego Bay in August; Roliça and Vimeiro; the Convention of Cintra.", sources: [*how]}
+  - {id: 1808-autumn, name: "Autumn 1808", state: march, hygiene: good, factors: {}, actions: [],
+     what: "Moore's army marches from Lisbon into Spain.", sources: [*how]}
+  - {id: 1808-winter, name: "Winter 1808-09", state: march, hygiene: fair, factors: {cold_wet: 3}, actions: [corunna],
+     what: "The retreat over the mountains to Corunna in snow and rain; the battle and the evacuation.", sources: [*how]}
+  - {id: 1809-spring, name: "Spring 1809", state: campaign, hygiene: good, factors: {}, actions: [],
+     what: "Wellesley lands at Lisbon; the passage of the Douro and Oporto (12 May).", sources: [*how]}
+  - {id: 1809-summer, name: "Summer 1809", state: campaign, hygiene: fair, factors: {hot: 1}, actions: [talavera],
+     what: "Into Spain with Cuesta: Talavera, then back toward Portugal, short of food.", sources: [*how]}
+  - {id: 1809-autumn, name: "Autumn 1809", state: quarters, hygiene: fair, factors: {warm: 13, marsh: 13}, actions: [],
+     what: "Quarters on the Guadiana about Badajoz, late August to Christmas: nearly a third of the men fell seriously ill, over ten thousand sick (Leith-Hay).",
+     note: "The article calls it typhus; Leith-Hay, typhoid fever. The marsh is ours (the Guadiana's low ground).",
+     sources: ["https://chdetrujillo.com/fiebre-y-sabanas-el-otono-de-wellington-en-badajoz-i/?pdf=9735"]}
+  - {id: 1809-winter, name: "Winter 1809-10", state: quarters, hygiene: good, factors: {cold_wet: 3}, actions: [],
+     what: "Winter quarters in Portugal.", sources: [*how]}
+  - {id: 1810-spring, name: "Spring 1810", state: quarters, hygiene: good, factors: {}, actions: [],
+     what: "On the frontier, outposts on the Côa and the Agueda.", sources: [*how]}
+  - {id: 1810-summer, name: "Summer 1810", state: campaign, hygiene: good, factors: {hot: 1}, actions: [],
+     what: "Masséna invades: Ciudad Rodrigo and Almeida fall; the Light Division's fight on the Côa (24 July).", sources: [*how]}
+  - {id: 1810-autumn, name: "Autumn 1810", state: campaign, hygiene: good, factors: {}, actions: [busaco],
+     what: "Busaco, then the retreat into the Lines of Torres Vedras.", sources: [*how]}
+  - {id: 1810-winter, name: "Winter 1810-11", state: quarters, hygiene: good, factors: {cold_wet: 3}, actions: [],
+     what: "Behind the Lines while Masséna's army starves before them.", sources: [*how]}
+  - {id: 1811-spring, name: "Spring 1811", state: campaign, hygiene: good, factors: {}, actions: [fuentes, albuera],
+     what: "The pursuit of Masséna; Sabugal; Fuentes de Oñoro in the north, Albuera in the south.", sources: [*how]}
+  - {id: 1811-summer, name: "Summer 1811", state: siege, hygiene: fair, factors: {hot: 1, warm: 13, marsh: 6}, actions: [],
+     what: "The second siege of Badajoz fails; fevers on the Guadiana.", sources: [*how]}
+  - {id: 1811-autumn, name: "Autumn 1811", state: quarters, hygiene: good, factors: {}, actions: [],
+     what: "Blockading Ciudad Rodrigo from the frontier; El Bodón (25 September).", sources: [*how]}
+  - {id: 1811-winter, name: "Winter 1811-12", state: siege, hygiene: fair, factors: {cold_wet: 2}, actions: [ciudad_rodrigo],
+     what: "The siege of Ciudad Rodrigo in the frost, and its storm (19 January).", sources: [*how]}
+  - {id: 1812-spring, name: "Spring 1812", state: siege, hygiene: fair, factors: {cold_wet: 1}, actions: [badajoz],
+     what: "The third siege of Badajoz in the rain, and its storm (6-7 April).", sources: [*how]}
+  - {id: 1812-summer, name: "Summer 1812", state: campaign, hygiene: fair, factors: {hot: 1}, actions: [salamanca],
+     what: "Salamanca; into Madrid in August.", sources: [*how]}
+  - {id: 1812-autumn, name: "Autumn 1812", state: siege, hygiene: fair, factors: {cold_wet: 3}, actions: [burgos],
+     what: "The failed siege of Burgos, then the retreat to Portugal in the rain, short of food.", sources: [*how]}
+  - {id: 1812-winter, name: "Winter 1812-13", state: quarters, hygiene: good, factors: {cold_wet: 3}, actions: [],
+     what: "Winter quarters in Portugal; the army refitted.", sources: [*how]}
+  - {id: 1813-spring, name: "Spring 1813", state: march, hygiene: good, factors: {}, actions: [],
+     what: "Quarters until May, then the advance across northern Spain.", sources: [*how]}
+  - {id: 1813-summer, name: "Summer 1813", state: campaign, hygiene: fair, factors: {hot: 1}, actions: [vitoria, pyrenees, san_sebastian],
+     what: "Vitoria; the battles of the Pyrenees; the sieges of San Sebastián and Pamplona.", sources: [*how]}
+  - {id: 1813-autumn, name: "Autumn 1813", state: campaign, hygiene: good, factors: {cold_wet: 1}, actions: [nivelle],
+     what: "Across the Bidassoa (7 October) into France; the Nivelle.", sources: [*how]}
+  - {id: 1813-winter, name: "Winter 1813-14", state: campaign, hygiene: good, factors: {cold_wet: 1}, actions: [nive, orthez],
+     what: "The Nive before Bayonne; Orthez (27 February).", sources: [*how]}
+  - {id: 1814-spring, name: "Spring 1814", state: campaign, hygiene: good, factors: {}, actions: [toulouse],
+     what: "Toulouse (10 April); the war ends with Napoleon's abdication.", sources: [*how]}
+
+actions:
+  rolica:
+    name: "Roliça"
+    date: 1808-08-17
+    share: 3
+    engaged: "about 14,000 British and 1,600 Portuguese"
+    lost: "487 British (70 killed, 335 wounded, 82 missing; britishbattles); 474 (historyofwar)"
+    sources: ["https://britishbattles.com/peninsular-war/battle-of-rolica", "https://www.historyofwar.org/articles/battles_rolica.html"]
+  vimeiro:
+    name: "Vimeiro"
+    date: 1808-08-21
+    share: 4
+    engaged: "just under 17,000 British and 2,000 Portuguese"
+    lost: "720 (135 killed)"
+    sources: ["https://www.historyofwar.org/articles/battles_vimiero.html", "https://britishbattles.com/peninsular-war/battle-of-vimeiro"]
+  corunna:
+    name: "Corunna"
+    date: 1809-01-16
+    share: 6
+    engaged: "15,000-16,000"
+    lost: "about 900 killed and wounded and 300 missing (Wikipedia mirror); 800-900 (britishbattles)"
+    sources: ["https://www.historyofwar.org/articles/battles_corunna.html", "https://britishbattles.com/peninsular-war/battle-of-corunna", "https://wikiwand.com/en/Battle_of_Corunna"]
+  talavera:
+    name: "Talavera"
+    date: 1809-07-28
+    share: 26
+    alt: {share: 30, source: "Napier: 6,268 lost"}
+    engaged: "20,641 British"
+    lost: "5,363 (Oman, as quoted); 6,268 (Napier)"
+    sources: ["https://www.historyofwar.org/articles/armies_talavera.html", "https://military-history.fandom.com/wiki/Battle_of_Talavera"]
+    note: "The sources disagree: Oman's 26%, Napier's 30%."
+  busaco:
+    name: "Busaco"
+    date: 1810-09-27
+    share: 2
+    engaged: "52,000 (27,000 British, 25,500 Portuguese)"
+    lost: "1,252 (200 killed, 1,001 wounded, 51 missing)"
+    sources: ["https://www.historyofwar.org/articles/battles_bussaco.html"]
+  fuentes:
+    name: "Fuentes de Oñoro"
+    date: 1811-05-05
+    share: 4
+    engaged: "about 36,000 infantry and 1,850 cavalry"
+    lost: "about 1,800 (241 killed, 1,247 wounded, 312 missing: Smith); about 1,700 (historyofwar)"
+    sources: ["https://www.historyofwar.org/articles/battles_fuentes_de_onoro.html", "https://military-history.fandom.com/wiki/Battle_of_Fuentes_d%27Onor"]
+  albuera:
+    name: "Albuera"
+    date: 1811-05-16
+    field: albuera-1811
+    main: false
+    share: 22
+    alt: {share: 35, source: "the British alone: 3,615 killed and wounded of 10,449"}
+    engaged: "10,449 British, 10,201 Portuguese, about 14,500 Spanish"
+    lost: "British 882 killed, 2,733 wounded, 544 missing; Portuguese 389"
+    sources: ["https://www.historyofwar.org/articles/battles_albuera.html", "https://www.historyofwar.org/articles/armies_albuera.html"]
+    units:
+      - name: "1/57th Foot (Hoghton's brigade)"
+        share: 66
+        lost: "428 killed and wounded of 647 (2 officers and 87 men killed, 21 officers and 318 men wounded); NAM gives 75% of the men"
+        sources: ["https://www.military-history.org/feature/napoleonic/the-diehards-profile.htm", "https://www.noonans.co.uk/auctions/archive/lot-archive/results/168690/", "https://www.nam.ac.uk/explore/57th-west-middlesex-regiment-foot"]
+    note: "Beresford's corps in the south, not Wellington's army."
+  ciudad_rodrigo:
+    name: "Ciudad Rodrigo"
+    date: 1812-01-19
+    field: ciudad-rodrigo-1812
+    share: 10
+    engaged: "the storming divisions, about 10,700"
+    lost: "1,121 in the siege (195 killed, 916 wounded, 10 missing), 562 of them in the storm"
+    sources: ["https://www.historyofwar.org/articles/siege_ciudad_rodrigo_1812.html"]
+    note: "The whole siege against the storming force; the storm alone was about 5%."
+  badajoz:
+    name: "Badajoz"
+    date: 1812-04-06
+    field: badajoz-1812
+    share: 18
+    engaged: "about 27,000 (Wikipedia mirror only)"
+    lost: "4,760-4,924 killed and wounded in the siege; about 2,000 at the breaches in two hours"
+    sources: ["https://www.historyofwar.org/articles/siege_badajoz_3rd.html", "https://mobileapps.wikiwand.com/en/Siege_of_Badajoz_(1812)"]
+    single: true
+  salamanca:
+    name: "Salamanca"
+    date: 1812-07-22
+    share: 11
+    engaged: "about 48,500"
+    lost: "3,129 British, 2,037 Portuguese, 6 Spanish (Wellington's report)"
+    sources: ["https://www.historyofwar.org/articles/battles_salamanca.html"]
+  burgos:
+    name: "Burgos"
+    date: 1812-10-18
+    field: burgos-1812
+    share: null
+    engaged: "not found"
+    lost: "2,064 (509 killed, 1,555 wounded or missing)"
+    sources: ["https://www.historyofwar.org/articles/siege_burgos_1812.html"]
+    note: "The besieging force was not found: the GM sets the share, or plays the battlefield."
+  vitoria:
+    name: "Vitoria"
+    date: 1813-06-21
+    share: 7
+    engaged: "about 78,000-81,000"
+    lost: "3,675 British, 921 Portuguese, 562 Spanish"
+    sources: ["https://www.historyofwar.org/articles/battles_vittoria.html", "https://www.wikiwand.com/en/articles/Battle_of_Vitoria"]
+  pyrenees:
+    name: "The Pyrenees (Maya, Roncesvalles, Sorauren)"
+    date: 1813-07-28
+    share: 12
+    engaged: "55,000-62,000 in the campaign"
+    lost: "about 7,000"
+    sources: ["https://www.historyofwar.org/articles/battles_pyrenees.html"]
+    units:
+      - name: "At Maya (Stewart's 2nd Division brigades)"
+        share: 25
+        lost: "about 1,500 of about 6,000"
+        sources: ["https://www.historyofwar.org/articles/battles_maya.html"]
+  san_sebastian:
+    name: "San Sebastián"
+    date: 1813-08-31
+    main: false
+    share: null
+    engaged: "not found"
+    lost: "1,711 killed and wounded in the storm (historyofwar); 867 killed, 1,416 wounded, 44 missing (Wikipedia)"
+    sources: ["https://www.historyofwar.org/articles/siege_san_sebastian.html"]
+    note: "The storming force was not found: the GM sets the share."
+  nivelle:
+    name: "The Nivelle"
+    date: 1813-11-10
+    share: 3
+    engaged: "80,000-90,000"
+    lost: "about 2,450-2,700"
+    sources: ["https://britishbattles.com/battle-of-the-nivelle", "https://military-history.fandom.com/wiki/Battle_of_Nivelle"]
+  nive:
+    name: "The Nive"
+    date: 1813-12-11
+    share: 8
+    engaged: "about 64,000 (uncited); 90,000 (britishbattles)"
+    lost: "5,047 (Smith)"
+    sources: ["https://military-history.fandom.com/wiki/Battle_of_the_Nive", "https://britishbattles.com/battle-of-the-nive"]
+  orthez:
+    name: "Orthez"
+    date: 1814-02-27
+    share: 5
+    engaged: "30,000-44,000"
+    lost: "2,174 (367 killed, 1,727 wounded, 80 missing: Smith and Glover)"
+    sources: ["https://military-history.fandom.com/wiki/Battle_of_Orthez", "https://britishbattles.com/battle-of-orthez"]
+  toulouse:
+    name: "Toulouse"
+    date: 1814-04-10
+    share: 9
+    engaged: "about 49,500"
+    lost: "4,558 (Wikipedia mirror); 4,180 killed and wounded (britishbattles)"
+    sources: ["https://wikiwand.com/en/Battle_of_Toulouse_(1814)", "https://britishbattles.com/peninsular-war/battle-of-toulouse"]
+
+# The war's totals, for the calibration (python3 -m gravewounds service): Dumas and Vedel-Petersen,
+# Losses of Life Caused by War (1923), the men of the British army in the Peninsula.
+totals:
+  strength: 61511
+  killed: 6355
+  died_of_wounds: 3778
+  wounded: 30221
+  disease: 23696
+  source: *dumas

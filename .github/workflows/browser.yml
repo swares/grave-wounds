@@ -8,10 +8,10 @@ name: browser
 
 on:
   pull_request:
-    paths: ["dist/**", "templates/**", "tools/campaign/**", "tools/net/**", "tools/gm/**", "tools/field/**", "tools/selfplay/commander.json", "worker/**", ".github/workflows/browser.yml"]
+    paths: ["dist/**", "templates/**", "tools/campaign/**", "tools/service/**", "tools/net/**", "tools/gm/**", "tools/field/**", "tools/selfplay/commander.json", "worker/**", ".github/workflows/browser.yml"]
   push:
     branches: [main]
-    paths: ["dist/**", "templates/**", "tools/campaign/**", "tools/net/**", "tools/gm/**", "tools/field/**", "tools/selfplay/commander.json", "worker/**", ".github/workflows/browser.yml"]
+    paths: ["dist/**", "templates/**", "tools/campaign/**", "tools/service/**", "tools/net/**", "tools/gm/**", "tools/field/**", "tools/selfplay/commander.json", "worker/**", ".github/workflows/browser.yml"]
   workflow_dispatch:
 
 permissions:
@@ -68,6 +68,8 @@ jobs:
         run: python3 tools/campaign/handover.py
       - name: The players following a handover through their rooms
         run: python3 tools/net/handrooms.py
+      - name: A season with the battalion, from the team builder to the roller
+        run: python3 tools/service/season.py
       - name: Keep the pictures the tests take
         if: always()
         uses: actions/upload-artifact@v6

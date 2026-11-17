@@ -55,16 +55,20 @@ def season(d: Data, c: dict, ticks, served: int, rng) -> dict:
         c["age"] = c.get("age", 0) + T["age"]["per_term"]
         c["xp_terms"] = c.get("xp_terms", 0) + 1
         done += 1
-        lived.append(_term_lived(d, T, c, car, rng))
+        rolled = min(c.get("rolled_days", 0), per)    # days of it served as seasons rolled with his battalion (data/service)
+        c["rolled_days"] = c.get("rolled_days", 0) - rolled
+        lived.append(_term_lived(d, T, c, car, rng, wound_chance=2 * rolled < per))
     if done:
         finish(d, c)
     return {"rolls": rolls, "terms": done, "served": c["served"], "lived": lived}
 
 
-def _term_lived(d: Data, tables: dict, c: dict, car: dict, rng) -> dict:
+def _term_lived(d: Data, tables: dict, c: dict, car: dict, rng, wound_chance: bool = True) -> dict:
     """A term served in play, as one at creation: his career's event (its skill +gain, its story
     line), then its wound chance (an old wound: a scar or a lasting hurt). Dice: the event's d100,
     the wound chance's d100 unless the row always wounds, then the wound's location and kind.
+    wound_chance False: half or more of the term was seasons rolled with his battalion, whose hits
+    were rolled then, so only a row that always wounds gives one.
     -> {"event", "wound" (or None)}"""
     from .team import _fresh, _old_wound, old_wound_ranges
     c.setdefault("events", [])
@@ -73,7 +77,7 @@ def _term_lived(d: Data, tables: dict, c: dict, car: dict, rng) -> dict:
     c["gains"][row["skill"]] = c["gains"].get(row["skill"], 0) + tables["gain"]
     c["events"].append(row["text"])
     wound = None
-    if row.get("wound") or rng.randint(1, 100) <= car["wound"]:
+    if row.get("wound") or (wound_chance and rng.randint(1, 100) <= car["wound"]):
         ranges = old_wound_ranges(d, c["era"])[c["region"]][car["wound_weapon"]]
         wound = _old_wound(d, tables, ranges, car["wound_weapon"], c["stat_mods"], rng)
         c["old"].append(wound)

@@ -209,18 +209,20 @@ function xpSeason(c, ticks, served, rng){         // {rolls: [{skill, roll, was,
     c.age = (c.age || 0) + T.age.per_term;
     c.xp_terms = (c.xp_terms || 0) + 1;
     done++;
-    lived.push(termLived(T, c, car, rng));
+    const rolled = Math.min(c.rolled_days || 0, per);   // days of it served as seasons rolled with his battalion (service.js)
+    c.rolled_days = (c.rolled_days || 0) - rolled;
+    lived.push(termLived(T, c, car, rng, 2 * rolled < per));
   }
   if (done) finishChar(c);
   return { rolls, terms: done, served: c.served, lived };
 }
-function termLived(T, c, car, rng){                // a term served in play, as at creation: its event, then its wound chance
+function termLived(T, c, car, rng, woundChance = true){   // a term served in play, as at creation: its event, then its wound chance (none for a term mostly of rolled seasons, but a row that always wounds)
   c.events ||= []; c.old ||= [];
   const row = freshRow(car.terms, rng.randint(1, 100), c.events);
   c.gains[row.skill] = (c.gains[row.skill] || 0) + T.gain;
   c.events.push(row.text);
   let wound = null;
-  if (row.wound || rng.randint(1, 100) <= car.wound){
+  if (row.wound || (woundChance && rng.randint(1, 100) <= car.wound)){
     wound = oldWound(T, TD.ranges[c.region][car.wound_weapon], car.wound_weapon, c.stat_mods, rng);
     c.old.push(wound);
   }

@@ -2567,6 +2567,25 @@ function addTeam(){                             // the team from the team builde
   S.mapMsg = `${t.team.length} fighters from the team builder${plus} joined ${t.side}.`;
   renderChars();
 }
+/* Hits from a season with the battalion (the team builder's Serve the season, service.js): a named
+   man hit in an action not played, by a weapon; his wound is rolled here as a hit with no attack roll. */
+const SVC_HITS = "gravewounds-service-hits";
+function serviceHits(){ try{ return JSON.parse(localStorage.getItem(SVC_HITS) || "[]") || [] }catch(e){ return [] } }
+function rollServiceHit(){
+  const L = serviceHits(), h = L[0];
+  if (!h) return;
+  const i = S.chars.findIndex(c => c.sheet && c.sheet.pid === h.pid && !c.dead);
+  if (i < 0){ S.mapMsg = `${h.name} is not among the fighters here: add the team from the team builder first.`; return renderChars() }
+  if (h.table && DATA.tables[h.table]) switchTable(h.table);
+  if (DATA.tables[S.table].weapons.includes(h.weapon)){ S.weapon = h.weapon; $("#sel-weapon").value = h.weapon; syncArmor() }
+  S.attacker = -1;
+  selectChar(i);
+  L.shift();
+  try{ localStorage.setItem(SVC_HITS, JSON.stringify(L)) }catch(e){ /* storage off: it is rolled once all the same */ }
+  rollHit(true);
+  S.mapMsg = `${h.name}, hit at ${h.action}: the wound is rolled below.`;
+  renderChars();
+}
 function switchTable(tid){
   S.table = tid; $("#sel-table").value = tid;
   fillWeapons(); applyAttackerWeapon(); syncArmor(); renderHistory(); renderChars();
@@ -3645,6 +3664,10 @@ function renderMap(){
     const campBit = h.camp ? ", " + attr(WK.camps[h.camp].name.toLowerCase()) + builtBit : "";
     bits.push(`<span class="free"><b>From the travel map:</b> ${attr(h.force.name)} (${h.force.men} men)${alliesBit} at ${attr(h.place)}${campBit}, ${h.day}, ${h.time}${foesBit}. Set up the fight here? This replaces the fighters and works on this page.</span><button class="small" data-map="handoff">Set up the fight</button><button class="small" data-map="nohandoff">Not now</button>`);
   }
+  const svh = S.svcLater ? [] : serviceHits();
+  if (svh.length){
+    bits.push(`<span class="free"><b>From a season with the battalion:</b> ${svh.map(h => `${attr(h.name)} (${attr(h.action)})`).join(", ")}. Each is a hit with no attack roll.</span><button class="small" data-map="svcroll">Roll ${attr(svh[0].name)}'s wound</button><button class="small" data-map="svclater">Not now</button>`);
+  }
   if (S.teamIn){
     const nf = (S.teamIn.followers || []).length, names = S.teamIn.team.map(m => attr(m.name)).join(", ") + (nf ? `, and ${nf} followers` : "");
     bits.push(`<span class="free"><b>From the team builder:</b> ${names}, for ${attr(S.teamIn.side)}. Add them to the fighters here?</span><button class="small" data-map="addteam">Add the team</button><button class="small" data-map="noteam">Not now</button>`);
@@ -4271,6 +4294,7 @@ function init(){
     undo: undoMove, next: () => { nextFighter(); gmKick() }, cover: takeCover, handoff: setupHandoff, roll: () => rollHit(), stray: strayHit, apply: applyFromMap, addteam: addTeam,
     skipfree: () => { freeDone("skipped"); renderChars() },
     noteam: () => { S.teamIn = null; dropKey("gravewounds-team-handoff"); renderChars() },
+    svcroll: rollServiceHit, svclater: () => { S.svcLater = true; renderChars() },
     nohandoff: () => { S.handoff = null; dropKey("gravewounds-handoff"); renderChars() },
   };
   $("#map-actions").addEventListener("click", e => {

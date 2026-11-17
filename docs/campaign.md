@@ -13,7 +13,7 @@ the others, as before, and each still works on its own. The console reads what t
 | March | Travel map | The campaign's map, the team's force on it, each named man **With** it (on his roller card); route, march, camp; the day's weather, food, sickness and incidents. |
 | Fight | Roller or field map | **Fight here** on the travel map sends a skirmish to the roller or a battle to the field map. On the roller, **Run the fight** and **Play online** work as on their own. |
 | Aftermath | Roller and travel map | First aid, **After the fight** (deeds, loot, prisoners), **To camp**; the battle's result and the wounded reach the travel map's camp. |
-| Downtime | Team builder | Work, kit, the end of the season's rolls, replacements. Then back to the march. |
+| Downtime | Team builder | Work, kit, a season with the battalion (between the modelled battles: sickness, the season's actions rolled, a small fight), the end of the season's rolls, replacements. Then back to the march. |
 
 **Done: on to …** moves to the next phase and opens its page; the phase buttons jump to any phase.
 The console also follows the pages by itself, and says so at the top:
