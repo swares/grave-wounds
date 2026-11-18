@@ -84,6 +84,22 @@ not this repository.
 
 ## Deferred work
 
+- **Between the battles: seasons of service, first cut** (`data/service/`; docs/team.md, *A season
+  with the battalion*; project doc "between-battles-design"). The Peninsula is in: a line
+  battalion's 24 seasons, its actions' shares lost, sickness on the disease track, hits sent to the
+  roller. Still to do:
+  - **More wars.** Each needs a calendar and its actions' shares from the sources; the Civil War and
+    the World Wars have the best figures.
+  - **The small war, played** (layer 2 of the design): ready-made fights on the roller (a picket
+    attacked at night, a foraging party jumped, a patrol clash) in place of the GM's own.
+  - **The 1/57th's own calendar.** Its winters and 1812 were not found (the Napoleon Series'
+    "Wellington's Regiments" pages and Oman were not reached).
+  - **Sourcing the Peninsula's shares against Oman.** None was checked against him; Burgos and
+    San Sebastián have no engaged figure.
+  - **Sickness a little high**: about 2.0% dead a season against the records' 1.6%. Bamford,
+    *Sickness, Suffering, and the Sword* (2013), is the likeliest source for sick rates by season.
+  - **A sick man's case carried on.** A man still sick at the season's end starts the next one well.
+
 - **Camp roles, first cut** (`data/council.yaml`; docs/campaign.md, *The council*). Roles and the
   evening council are on the campaign page. Still left out: the travel map played on its own has no
   council and does not stop for one, the council records decisions by word only (its orders and

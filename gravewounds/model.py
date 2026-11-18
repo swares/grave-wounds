@@ -106,6 +106,7 @@ class Data:
     money: dict = field(default_factory=dict)       # money.yaml: purse per career term, pay for a day's work
     jobs: dict = field(default_factory=dict)        # era id -> jobs between fights and a trouble table (data/jobs)
     replacements: dict = field(default_factory=dict)   # era id -> how losses are replaced, and a lost man's effects (data/replacements)
+    service: dict = field(default_factory=dict)     # war id -> a season of service: a line battalion's calendar and its actions (data/service)
     events: dict = field(default_factory=dict)      # events on the march and in camp, by era (data/events.yaml)
     experience: dict = field(default_factory=dict)  # skills rising in play (data/experience.yaml)
     checks: dict = field(default_factory=dict)      # skill checks out of a fight (data/checks.yaml)
@@ -183,6 +184,10 @@ def load(root: str | Path = "data") -> Data:
     money = _optional(root / "money.yaml", {})
     jobs = _read_dir(root / "jobs")
     replacements = _read_dir(root / "replacements")
+    service = _read_dir(root / "service")
+    for W in service.values():                         # dates as text, as the pages read them
+        for a in W.get("actions", {}).values():
+            a["date"] = str(a.get("date", ""))
     events = _optional(root / "events.yaml", {})
     experience = _optional(root / "experience.yaml", {})
     checks = _optional(root / "checks.yaml", {})
@@ -230,6 +235,7 @@ def load(root: str | Path = "data") -> Data:
         money=money,
         jobs=jobs,
         replacements=replacements,
+        service=service,
         events=events,
         experience=experience,
         checks=checks,
@@ -614,6 +620,8 @@ def validate(d: Data) -> None:
         errors += _jobs_errors(d, J)
     for R in d.replacements.values():
         errors += _replacement_errors(d, R)
+    for W in d.service.values():
+        errors += _service_errors(d, W)
     if d.events:
         errors += _events_errors(d)
     if d.checks:
@@ -2076,6 +2084,74 @@ def _checks_errors(d: Data) -> list[str]:
 
 JOB_PLACES = {"town", "city", "village", "camp", "road", "frontier", "sea"}
 JOB_TERMS = {"day", "week", "month", "contract"}
+
+
+def _service_errors(d: Data, W: dict) -> list[str]:
+    """data/service: a war's era and armies, its table (with a weapon_mix), states, positions,
+    small war, seasons (state, hygiene, disease factors, actions) and actions (dates, shares,
+    battlefields, battalions' own figures)."""
+    import re
+    where, errors = f"service/{W.get('id')}", []
+    T = d.teams.get(W.get("era"))
+    if not T:
+        return [f"{where}: unknown era {W.get('era')}"]
+    regions = {r["id"] for r in T["regions"]}
+    errors += [f"{where}: unknown region {r}" for r in W.get("regions", []) if r not in regions]
+    t = d.tables.get(W.get("table"))
+    if not t or not any(m.get("weapon") for m in t.get("weapon_mix") or []):
+        errors.append(f"{where}: table {W.get('table')} must exist and have a weapon_mix that names weapons")
+    states, pos = W.get("states", {}), W.get("positions", {})
+    for k, st in states.items():
+        if st.get("care") not in d.disease["recovery"]["care"]:
+            errors.append(f"{where}: state {k}: care must be one of {list(d.disease['recovery']['care'])}")
+        errors += [f"{where}: state {k}: {f} must be true or false" for f in ("marched", "staying") if not isinstance(st.get(f), bool)]
+    errors += [f"{where}: position {k}: mult must be a number" for k, p in pos.items() if not isinstance(p.get("mult"), (int, float))]
+    if "line" not in pos:
+        errors.append(f"{where}: positions need a line")
+    if set(W.get("small_war", {}).get("chance", {})) != set(states):
+        errors.append(f"{where}: small_war chance must give every state")
+    known = set()
+    for x in d.disease["diseases"].values():
+        known |= set(x.get("mods", {})) | set(x.get("needs", []))
+    acts, seen = W.get("actions", {}), set()
+    for s in W.get("seasons", []):
+        sw = f"{where}: season {s.get('id')}"
+        if not re.fullmatch(r"\d{4}-(spring|summer|autumn|winter)", str(s.get("id"))):
+            errors.append(f"{sw}: id must be YEAR-spring, -summer, -autumn or -winter")
+        if s.get("id") in seen:
+            errors.append(f"{sw}: repeated")
+        seen.add(s.get("id"))
+        if s.get("state") not in states:
+            errors.append(f"{sw}: unknown state {s.get('state')}")
+        if s.get("hygiene") not in ("poor", "fair", "good"):
+            errors.append(f"{sw}: hygiene must be poor, fair or good")
+        fx = s.get("factors") or {}
+        errors += [f"{sw}: unknown disease factor {f}" for f in fx if f not in known]
+        errors += [f"{sw}: factor {f} must hold 1 to {W.get('season_days', 91) // 7} weeks" for f, n in fx.items()
+                   if not (isinstance(n, int) and 1 <= n <= W.get("season_days", 91) // 7)]
+        errors += [f"{sw}: unknown action {a}" for a in s.get("actions", []) if a not in acts]
+        if not errors:
+            from .service import season_start
+            from datetime import date
+            start = season_start(s["id"])
+            end = date(start.year + (start.month == 12), start.month % 12 + 3, 1)   # the next season's first day
+            errors += [f"{sw}: action {a} falls outside the season" for a in s.get("actions", [])
+                       if not start <= date.fromisoformat(str(acts[a]["date"])) < end]
+    for aid, a in acts.items():
+        aw = f"{where}: action {aid}"
+        sh = a.get("share")
+        if sh is not None and not (isinstance(sh, (int, float)) and 0 <= sh <= 100):
+            errors.append(f"{aw}: share must be 0-100 or null")
+        if a.get("field") and a["field"] not in d.fields:
+            errors.append(f"{aw}: unknown battlefield {a['field']}")
+        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(a.get("date"))):
+            errors.append(f"{aw}: date must be YYYY-MM-DD")
+        errors += [f"{aw}: a unit's share must be 0-100" for u in a.get("units", []) if not 0 <= u.get("share", -1) <= 100]
+        if not a.get("sources"):
+            errors.append(f"{aw}: needs sources")
+        if not any(aid in s.get("actions", []) for s in W.get("seasons", [])):
+            errors.append(f"{aw}: in no season")
+    return errors
 
 
 def _jobs_errors(d: Data, J: dict) -> list[str]:

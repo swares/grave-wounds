@@ -665,4 +665,46 @@ stay as rolled. The new sheet goes into the store with a stamp, and the roller s
 it next looks (focus, or the store changing); the travel map's copy of his skills is updated at
 once. The Python rules and the page give the same result from the same dice.
 
+## A season with the battalion
+
+`data/service/` (rules in `gravewounds/service.py`, repeated in `templates/service.js`; design in
+the project doc "between-battles-design"). Between the modelled battles, a team of the war's army
+serves a season (91 days) with a line battalion in one step. The war's calendar gives each season
+what the battalion did (in quarters, on campaign, on the march, at a siege), its hygiene, the weeks
+of the season its weather and ground made sickness worse, and its named actions. The first war is
+the Peninsula (1808-1814, the British in the Peninsula), 24 seasons from Roliça to Toulouse.
+
+On the team builder's **A season with the battalion** panel the GM picks the season, ticks the
+actions the team was at (those of the main army are ticked; Albuera and San Sebastián are not), and
+for each man whether he serves and where he stands. **Serve the season** then rolls:
+
+- **Sickness**, week by week on the camp-disease track (`data/disease.yaml`), for one man with his
+  own Endurance: the season's state gives the care and marching, its hygiene and factors the
+  weekly chances. A man unfit with sickness misses an action; one who dies is lost (died of
+  disease) unless he spends a fate point.
+- **Each action not played**, in its week: d100 against his hit chance, the army's share lost
+  (killed and wounded of those engaged, from the sources) times his position (in reserve ×0.25,
+  in the line ×1, in the thick of it ×3, at most 90%; ours, set from Albuera, where the
+  Anglo-Portuguese lost about 22% and the 1/57th 66%), or a battalion's own figure where one is
+  sourced (the 1/57th at Albuera, the brigades at Maya). Where the sources give no share (Burgos,
+  San Sebastián) the GM sets one. A hit takes a d100 for the weapon on the war's table's weapon
+  mix and goes to the roller (`gravewounds-service-hits`), which rolls the wound as a hit with no
+  attack roll on the man's own table. A man hit misses the season's later actions. An action with
+  a battlefield (Albuera, Ciudad Rodrigo, Badajoz, Burgos) can be played there instead.
+- **A small fight**: the team's d100 against the state's chance (ours). The GM plays it on the
+  roller, or presses Roll it: each man with the battalion is hit on 10% (ours).
+
+The season's days go toward each man's term (to his death, if he dies), and are counted as rolled:
+a term made half or more of rolled seasons gives no lifepath wound chance at End of season, since
+its hits were rolled (a career row that always wounds still does). A season with the battalion
+ticks his career's main skill. Then the GM presses End of season as usual.
+
+**Calibration** (`python3 -m gravewounds service`): men of Endurance 50 through the war's 24
+seasons, against Dumas and Vedel-Petersen's totals for the men of the British army in the
+Peninsula (23,696 dead of disease, 6,355 killed and 30,221 wounded, of 61,511 on average). Dead
+of disease: about 2.0% a season against the records' 1.6% (a little high; the retreat to
+Corunna is the worst season, about 11%, then the retreat from Burgos, about 7%). Hit: about 5% a season at every main action in the line,
+against 2.5% for the whole army, which was not all at every action. `tools/service/parity.py`
+holds the page to the Python; `tools/service/season.py` plays it in a browser.
+
 Not yet done (see the backlog): the Latin East and Gotland have no women blocks yet, and there are no careers for women as anti-aircraft gunners or pilots.

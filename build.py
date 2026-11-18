@@ -2153,6 +2153,20 @@ def campaign_bundle(d) -> dict:
                          ("scurvy", d.disease["scurvy"]), ("frostbite", d.disease.get("frostbite") or {})] if isinstance(v, dict) and v.get("name")}}
 
 
+def service_bundle(d) -> dict | None:
+    """A season of service (data/service, templates/service.js): the wars, each war's table's
+    weapon mix, and the camp-disease track a sick man runs (travelrules.js reads terrain, weather
+    and works as well when it is made)."""
+    if not d.service:
+        return None
+    mix = {W["table"]: [[m["weapon"], float(m["pct"])] for m in d.tables[W["table"]].get("weapon_mix") or [] if m.get("weapon")]
+           for W in d.service.values()}
+    names = {w: d.weapons[w]["name"] for m in mix.values() for w, _ in m}
+    return {"wars": d.service, "mix": mix, "weapons": names, "steps": d.disease["steps"], "unfit_from": d.disease["unfit_from"],
+            "rules": {"terrain": d.terrain, "weather": d.weather, "works": d.works, "disease": d.disease},
+            "fields": {W_a["field"]: d.fields[W_a["field"]]["name"] for W in d.service.values() for W_a in W["actions"].values() if W_a.get("field")}}
+
+
 def team_bundle(d) -> dict:
     """What the team builder needs: every era's tables and old-wound location ranges (TD.eras;
     the page points TD.era and TD.ranges at the one chosen), and the names, kits and weapons its
@@ -2166,7 +2180,7 @@ def team_bundle(d) -> dict:
     eras = {eid: {"era": d.teams[eid], "ranges": old_wound_ranges(d, eid), "equip": equip_bundle(d, eid), "jobs": jobs_bundle(d, eid), "keep": keep_bundle(d, eid), "repl": d.replacements.get(eid)} for eid in team_eras(d)}
     first = team_eras(d)[0]
     return {"eras": eras, "era": eras[first]["era"], "ranges": eras[first]["ranges"], "equip": eras[first]["equip"], "money": d.money, "xp": d.experience, "checks": d.checks, "ranks": d.ranks, "training": d.training, "ageing": d.ageing, "loads": d.loads, "weights": d.weights, "kit": d.kit, "stress": d.stress, "prisoners": d.prisoners, "hazards": d.hazards, "languages": d.languages, "patrons": d.patrons,
-            "papers": (d.papers or {}).get("eras", {}), "followers": d.followers,
+            "papers": (d.papers or {}).get("eras", {}), "followers": d.followers, "service": service_bundle(d),
             "locs": {l["id"]: {"name": l["name"], "zone": l["zone"], "class": l["class"]} for l in d.locations},
             "kits": {k: d.armor["kits"][k] for k in sorted(kits)},
             "fight": {"blood_pool": d.wounds["tracking"]["blood_pool"], "chr": d.wounds["combat"]["characteristics"]},
@@ -2232,6 +2246,7 @@ def main() -> int:
     team_js = (ROOT / "templates" / "team.js").read_text(encoding="utf-8")
     gtpl = (ROOT / "templates" / "team.html").read_text(encoding="utf-8")
     ghtml = gtpl.replace("/*__FIGURE_JS__*/", fig_js.replace("</script>", "<\\/script>")).replace("/*__LETHAL_JS__*/", lethal_js).replace("/*__PURSE_JS__*/", purse_js).replace("/*__TEAM_JS__*/", team_js)
+    ghtml = ghtml.replace("/*__SERVICE_JS__*/", (ROOT / "templates" / "travelrules.js").read_text(encoding="utf-8") + "\n" + (ROOT / "templates" / "service.js").read_text(encoding="utf-8"))   # a season of service and the disease track it runs
     (DIST / "team.html").write_text(ghtml.replace("/*__TEAM_DATA__*/null", json.dumps(team_bundle(d), separators=(",", ":"))), encoding="utf-8")
     from gravewounds.books import render_all as rule_books
     for name, page in rule_books(d, ROOT).items():     # the Rules and each period book (data/books.yaml)

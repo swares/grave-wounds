@@ -55,6 +55,10 @@ def _main(argv=None) -> int:
     ds = sub.add_parser("disease", help="simulate camp disease cases against the records (deaths per case)")
     ds.add_argument("-n", type=int, default=8000, help="cases per disease")
     ds.add_argument("--seed", type=int, default=3)
+    sv = sub.add_parser("service", help="a season of service: a battalion's men through a war, against the war's totals")
+    sv.add_argument("war", nargs="?", default=None, help="war id (default: each)")
+    sv.add_argument("-n", type=int, default=2000, help="men")
+    sv.add_argument("--seed", type=int, default=1)
     us = sub.add_parser("units", help="unit combat: melee pace by armour and example fights")
     us.add_argument("--table", default="towton-1461-all-hits")
     us.add_argument("--runs", type=int, default=40)
@@ -170,6 +174,19 @@ def _main(argv=None) -> int:
         if r["trouble"]:
             print(f"Trouble (d100 {r['trouble']['roll']} under {j['risk']}%): {r['trouble']['text']}")
             print(f"  The job's hook: {j['hook']}")
+        return 0
+    if a.cmd == "service":
+        from .service import calibrate
+        for wid in [a.war] if a.war else list(d.service):
+            W = d.service[wid]
+            print(f"{W['name']}: {a.n} men of Endurance 50, season by season (% a season):")
+            for label, pos, every in (("at every main action, in the line", "line", True),
+                                      ("at every main action, in the thick of it", "thick", True),
+                                      ("at no action (sickness alone)", "line", False)):
+                r = calibrate(d, wid, a.n, a.seed, pos, every)
+                print(f"  {label:<42} died of disease {r['disease']:4.2f}, hit {r['hits']:4.2f}")
+            t = calibrate(d, wid, 1, a.seed)["totals"]
+            print(f"  the war's totals, the whole army              died of disease {t['disease']:4.2f}, hit {t['hits']:4.2f}")
         return 0
     if a.cmd == "disease":
         from .disease import seeded_d100, simulate

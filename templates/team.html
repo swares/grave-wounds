@@ -196,6 +196,7 @@ body.papers-open{overflow:hidden}
       <div id="losses"></div>
       <div id="prisoners"></div>
       <div id="work"></div>
+      <div id="service"></div>
       <div id="xp"></div>
       <div id="rank"></div>
       <div id="patrons"></div>
@@ -210,6 +211,7 @@ const TD = /*__TEAM_DATA__*/null;
 /*__PURSE_JS__*/
 /*__LETHAL_JS__*/
 /*__TEAM_JS__*/
+/*__SERVICE_JS__*/
 
 /* ---------- the page ---------- */
 const $ = s => document.querySelector(s);
@@ -305,6 +307,7 @@ function render(){
   renderWomen();
   renderFollowers();
   renderWork();
+  renderService();
   renderXp();
   renderRank();
   renderPatrons();
@@ -1161,6 +1164,116 @@ function rollCheck(){
   S.chklog = S.chklog.slice(0, 30);
   render();
 }
+/* A season of service (service.js; data TD.service): the team serves a season with a line battalion
+   of its war, season by season. Each man's sickness runs on the disease track; each action of the
+   season the team was at and does not play on its battlefield rolls his hit (his position times the
+   army's share lost, or a battalion's own figure), and a hit goes to the roller, which rolls the
+   wound. The days count toward his term (and a term mostly of them gives no lifepath wound). */
+const SVC = TD.service ? makeService(TD.service, makeTravelRules(TD.service.rules)) : null;
+const SVC_HITS = "gravewounds-service-hits";
+const svcWars = () => (SVC ? SVC.warsFor(T.id, S.region) : []);
+function svcState(){                                // S.service for the team's war: {war, i, with, pos, at, played, unit, share}
+  const wars = svcWars();
+  if (!wars.length) return null;
+  const V = (S.service ||= {});
+  if (!wars.some(W => W.id === V.war)) Object.assign(V, { war: wars[0].id, i: 0, with: {}, pos: {}, at: {}, played: {}, unit: {}, share: {} });
+  return V;
+}
+function svcQueue(add){                             // the hits waiting on the roller; add: more to put on it
+  let L = [];
+  try{ L = JSON.parse(localStorage.getItem(SVC_HITS) || "[]") || [] }catch(e){ L = [] }
+  if (add){ L.push(...add); try{ localStorage.setItem(SVC_HITS, JSON.stringify(L)) }catch(e){ /* storage off: the GM rolls them by hand */ } }
+  return L;
+}
+function svcActionHtml(W, V, aid){                  // one action of the season: at it, played, or rolled at a share
+  const a = W.actions[aid], at = V.at[aid] ?? a.main !== false, played = !!V.played[aid];
+  const share = a.share == null ? `<label>share lost <input type="number" min="0" max="100" class="num" data-svshare="${aid}" value="${V.share[aid] ?? ""}" aria-label="${esc(a.name)}: the share lost, %"> %</label> <span class="muted">(${esc((a.note || "not found").replace(/\.$/, ""))})</span>`
+    : `<span class="muted">the army lost ${a.share}%${a.alt ? ` (${esc(a.alt.source)}: ${a.alt.share}%)` : ""}${a.single ? ", a single report" : ""}</span>`;
+  const units = (a.units || []).length ? ` <select data-svunit="${aid}" style="width:auto" aria-label="${esc(a.name)}: whose figure"><option value="">as the army, by position</option>${a.units.map((u, k) => `<option value="${k}" ${String(V.unit[aid]) === String(k) ? "selected" : ""}>as ${esc(u.name)} (${u.share}%)</option>`).join("")}</select>` : "";
+  const field = a.field ? ` <label><input type="checkbox" data-svplay="${aid}" ${played ? "checked" : ""}> play it on the field map (${esc(TD.service.fields[a.field])})</label>` : "";
+  return `<li><label><input type="checkbox" data-svat="${aid}" ${at ? "checked" : ""}> <b>${esc(a.name)}</b>, ${esc(a.date)}</label>${a.main === false ? ` <span class="muted">(${esc((a.note || "not the main army").replace(/\.$/, ""))})</span>` : ""}: ${share}${units}${field}</li>`;
+}
+function renderService(){
+  const box = $("#service"), V = svcState();
+  if (!V || !S.team.length){ box.innerHTML = ""; return }
+  const W = SVC.war(V.war), s = W.seasons[V.i];
+  if (!s){ box.innerHTML = `<section class="crew work" aria-labelledby="h-service"><h3 id="h-service">A season with the battalion</h3><p>${esc(W.name)} is over: its last season has been served.</p></section>`; return }
+  const st = W.states[s.state], fx = Object.entries(s.factors || {}).map(([k, n]) => `${k.replace("_", " ")} ${n} week${n > 1 ? "s" : ""}`).join(", ");
+  const men = S.team.map((c, k) => `<li><label><input type="checkbox" data-svwith="${k}" ${V.with[c.pid] !== false ? "checked" : ""}> ${esc(c.name)}</label>
+      <select data-svpos="${k}" style="width:auto" aria-label="${esc(c.name)}: where he stands">${Object.entries(W.positions).map(([id, p]) => `<option value="${id}" ${(V.pos[c.pid] || "line") === id ? "selected" : ""}>${esc(p.name)}${p.mult !== 1 ? ` (×${p.mult})` : ""}</option>`).join("")}</select></li>`).join("");
+  const acts = s.actions.length ? `<ul class="xp">${s.actions.map(a => svcActionHtml(W, V, a)).join("")}</ul>` : `<p class="muted">No named action this season.</p>`;
+  const log = (S.svclog || []).map(l => `<li>${esc(l)}</li>`).join("");
+  const waiting = svcQueue().length;
+  box.innerHTML = `<section class="crew work" aria-labelledby="h-service"><h3 id="h-service">A season with the battalion</h3>
+    <p class="muted note">${esc(W.name)}, as a line battalion served it. A season (${W.season_days} days) passes in one step: each man's sickness on the camp-disease track, a hit roll at each action the team was at and does not play (the army's share lost times where he stands, at most ${W.cap}%; or a battalion's own figure), and the chance of a small fight. A hit goes to the roller, which rolls the wound. The days count toward his term; then press End of season. Where he stands and the small fights are ours; the shares are from the sources, and the project doc "between-battles-design" has them.</p>
+    ${svcWars().length > 1 ? `<label>War <select id="sv-war">${svcWars().map(x => `<option value="${x.id}" ${x.id === V.war ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></label>` : ""}
+    <p><label>Season <select id="sv-season">${W.seasons.map((x, k) => `<option value="${k}" ${k === V.i ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></label>
+      <b>${esc(st.name)}</b>: ${esc(s.what)} <span class="muted">Hygiene ${esc(s.hygiene)}${fx ? "; " + esc(fx) : ""}; a small fight ${W.small_war.chance[s.state]}%.</span></p>
+    ${acts}
+    <h4>Who serves it</h4><ul class="xp">${men}</ul>
+    <div class="row"><button id="btn-serve" title="Roll the season for each man with the battalion">Serve the season</button></div>
+    ${S.svcSmall ? `<p><b>A small fight comes the team's way.</b> Play it on the roller, or <button class="small" id="btn-svsmall">Roll it</button> (each man with the battalion hit on ${W.small_war.hit}%).</p>` : ""}
+    ${waiting ? `<p class="muted">${waiting} hit${waiting > 1 ? "s" : ""} waiting on the roller: <a href="roller.html">roll the wound${waiting > 1 ? "s" : ""} there</a>.</p>` : ""}
+    ${log ? `<h4>Last season served</h4><ul class="log">${log}</ul>` : ""}</section>`;
+}
+const svcD100 = () => realDice.randint(1, 100);
+function svcHit(c, W, what, weapon){                // a hit for the roller to roll
+  const reg = byId(T.regions, c.region);
+  return { pid: c.pid, name: c.name, weapon, action: what, table: reg.table || W.table, war: W.name };
+}
+function serveSeason(){
+  const V = svcState(), W = SVC.war(V.war), s = W.seasons[V.i], days = W.season_days;
+  const serving = S.team.filter(c => V.with[c.pid] !== false);
+  const men = serving.map(c => ({ name: c.name, endurance: c.stats.end, position: V.pos[c.pid] || "line",
+    unit: Object.fromEntries(Object.entries(V.unit).filter(([, k]) => k !== "" && k != null).map(([a, k]) => [a, +k])),
+    share: Object.fromEntries(Object.entries(V.share).filter(([, v]) => v !== "" && v != null).map(([a, v]) => [a, +v])) }));
+  const rolled = s.actions.filter(a => (V.at[a] ?? W.actions[a].main !== false) && !V.played[a]);
+  const r = SVC.serve(V.war, s.id, men, rolled, svcD100), lines = [`${s.name}: ${W.states[s.state].name.toLowerCase()}.`], hits = [];
+  const played = s.actions.filter(a => (V.at[a] ?? W.actions[a].main !== false) && V.played[a]);
+  if (played.length) lines.push(`To play on the field map: ${played.map(a => W.actions[a].name).join(", ")}.`);
+  serving.forEach((c, k) => {
+    const m = r.men[k], bits = [], car = byId(T.careers, c.career);
+    const lived = m.dead ? m.dead_week * 7 : days;
+    xpServe(c.pid, lived); c.rolled_days = (c.rolled_days || 0) + lived;
+    if (!m.dead) xpTick(c.pid, car.main, "a season with the battalion");
+    for (const x of m.rolls) bits.push(`${W.actions[x.action].name}: ${x.pct}%, rolled ${x.roll}${x.roll <= x.pct ? "" : ", unhurt"}`);
+    for (const h of m.hits){
+      bits.push(`hit at ${W.actions[h.action].name} by ${TD.service.weapons[h.weapon].toLowerCase()}: roll his wound on the roller`);
+      hits.push(svcHit(c, W, `${W.actions[h.action].name}, ${s.name}`, h.weapon));
+    }
+    for (const x of m.missed) bits.push(`${x.why === "sick" ? "missed" : "not at"} ${W.actions[x.action].name} (${x.why === "no share" ? "no share set" : x.why})`);
+    if (m.sick_days) bits.push(`sick ${m.sick_days} days${m.worst ? `, still ${m.worst} at the season's end` : ""}`);
+    if (m.dead){
+      const dz = TD.service.rules.disease.diseases[m.dead]?.name || m.dead;
+      if (fateSpend(c.pid, `lived through ${dz.toLowerCase()}`)) bits.push(`would have died of ${dz.toLowerCase()} in week ${m.dead_week + 1}: fate spent, he lives`);
+      else { bits.push(`died of ${dz.toLowerCase()} in week ${m.dead_week + 1}`); c.svcDied = true }
+    }
+    lines.push(`${c.name}: ${bits.length ? bits.join("; ") : "a quiet season"}.`);
+  });
+  for (const c of serving.filter(x => x.svcDied)){ delete c.svcDied; loseMember(S.team.indexOf(c), "died of disease") }
+  if (hits.length) svcQueue(hits);
+  S.svcSmall = r.small;
+  lines.push(r.small ? `A small fight comes the team's way (rolled ${r.small_roll} against ${r.chance}).` : `No small fight (rolled ${r.small_roll} against ${r.chance}).`);
+  S.svclog = lines;
+  V.i += 1; V.at = {}; V.played = {}; V.unit = {}; V.share = {};
+  S.msg = `${s.name} served. ${hits.length ? "Roll the hits on the roller, then" : "Now"} press End of season.`;
+  render();
+}
+function svcSmallFight(){                           // the small fight rolled, not played: each man with the battalion
+  const V = svcState(), W = SVC.war(V.war), hits = [], bits = [];
+  for (const c of S.team.filter(x => V.with[x.pid] !== false)){
+    const roll = svcD100();
+    if (roll <= W.small_war.hit){
+      const weapon = SVC.weaponFor(W, svcD100());
+      hits.push(svcHit(c, W, "a small fight", weapon));
+      bits.push(`${c.name} hit (rolled ${roll}) by ${TD.service.weapons[weapon].toLowerCase()}`);
+    } else bits.push(`${c.name} unhurt (${roll})`);
+  }
+  if (hits.length) svcQueue(hits);
+  S.svcSmall = false;
+  (S.svclog ||= []).push(`The small fight, rolled: ${bits.join("; ")}.`);
+  render();
+}
 /* Experience (xp.js, xpSeason in team.js): what each man has ticked since the last End of season,
    his days toward a term, and the last season's rolls. End of season settles them, then puts his
    new sheet in the shared store for the roller and his skills on the travel map. */
@@ -1787,6 +1900,23 @@ function init(){
     (S.worklog ||= []).push({ pid: c.pid, earned: r.earned, text: workLine(c, j, r, pk) });
     if (j.skill && r.outcome === "success") xpTick(c.pid, j.skill, j.name);   // experience: a check that succeeds ticks it
     if (j.skill && r.outcome !== "fumble") xpServe(c.pid, r.days);            // and its days count toward a term
+    render();
+  });
+  $("#service").addEventListener("click", e => {
+    if (e.target.closest("#btn-serve")) return serveSeason();
+    if (e.target.closest("#btn-svsmall")) return svcSmallFight();
+  });
+  $("#service").addEventListener("change", e => {
+    const V = svcState(), t = e.target, ds = t.dataset;
+    if (!V) return;
+    if (t.id === "sv-war"){ V.war = t.value; V.i = 0 }
+    else if (t.id === "sv-season") V.i = +t.value;
+    else if (ds.svat) V.at[ds.svat] = t.checked;
+    else if (ds.svplay) V.played[ds.svplay] = t.checked;
+    else if (ds.svunit) V.unit[ds.svunit] = t.value;
+    else if (ds.svshare) V.share[ds.svshare] = t.value;
+    else if (ds.svwith) V.with[S.team[+ds.svwith].pid] = t.checked;
+    else if (ds.svpos) V.pos[S.team[+ds.svpos].pid] = t.value;
     render();
   });
   $("#xp").addEventListener("click", e => {
