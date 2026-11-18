@@ -2825,7 +2825,7 @@ function gmYield(side){                            // a scripted side has broken
 const isDown = c => { const th = charStats(c).th; return !!(th && (th.down || th.incapacitated)) || penalties(c).flags.some(f => f === "incapacitated" || f === "out") };
 // Out of the action this round: down, or on a side that has broken.
 function cardTag(c, isTurn, down, broken){          // a fighter card's tag: acting, off the field, down or broken
-  const tag = (text, bg) => `<span class="turn-tag"${bg ? ` style="background:var(--${bg})"` : ""}>${text}</span>`;
+  const tag = (text, bg) => '<span class="turn-tag"' + (bg ? ' style="background:var(--' + bg + ')"' : "") + ">" + text + "</span>";
   if (isTurn) return tag("Acting");
   if (c.taken || c.fled || c.away) return tag(goneTag(c), "muted");
   if (down) return tag("Down", "muted");
