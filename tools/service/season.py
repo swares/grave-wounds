@@ -215,6 +215,15 @@ def run(p):
     check(pg.evaluate("() => SVC.weaponFor(SVC.war('roses_edward'), 10)") == "longbow", "and its hits come first from the longbow")
     pg.evaluate("() => { const W = SVC.war('roses_edward'); S.svcSmall = SVC.smallFight(W, 'march', svcD100, 'bridge'); render() }")
     check("Clifford's horsemen" in pg.inner_text("#service"), "the bridge at dawn comes up as Ferrybridge's small fight")
+    # the seventh: the same English team on the other side, with the northern Lancastrians
+    pg.select_option("#sv-war", "roses_lancaster")
+    k = pg.evaluate("() => SVC.war('roses_lancaster').seasons.findIndex(s => s.id === '1461-spring')")
+    pg.select_option("#sv-season", str(k))
+    rs = pg.inner_text("#service")
+    check("Towton" in rs and "Ferrybridge" in rs and "40%" in rs, f"or with the northern Lancastrians: Towton lost at 40% (the dead times two) ({rs[:200]!r})")
+    pg.evaluate("() => { const W = SVC.war('roses_lancaster'); S.svcSmall = SVC.smallFight(W, 'march', svcD100, 'bridge'); render() }")
+    check("Clifford's horsemen" in pg.inner_text("#service") and pg.evaluate("() => SVC.war('roses_lancaster').small_fights[0].team_attacks"),
+          "and the bridge at dawn from Clifford's side, attacking")
     # the fifth war: a British section in Italy
     pg.goto(BASE + "team.html")
     pg.select_option("#sel-era", "wwii")

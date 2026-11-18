@@ -101,7 +101,7 @@ not this repository.
     of the Roses with Edward of March is in; for it, no Yorkist loss better than chroniclers' and
     modern guesses was found (Goodman's The Wars of the Roses, Boardman's Towton, Gravett's Osprey
     titles and the Arrivall itself were not reached), so most shares are ours (the dead times four).
-    A Lancastrian or Neville calendar could follow. Still to come: the
+    The northern Lancastrians (1459-64) are in too, a beaten side's share its dead times two (ours); a Neville calendar (Warwick's men, against Edward in 1469-71) or Somerset's to Tewkesbury could follow. Still to come: the
     Confederates (their counts are thinner), the West (Shiloh to Atlanta, sicker), and the World
     Wars; each needs a calendar, its actions' shares and its small fights from the sources. For
     the Civil War, Livermore's tables, the Official Records returns and the Medical and Surgical

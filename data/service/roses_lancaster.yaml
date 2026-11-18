@@ -1,0 +1,325 @@
+# A season of service: the Wars of the Roses with the northern Lancastrians, 1459-1464 (format as
+# data/service/peninsula.yaml). The calendar follows a retainer of the Percy and Clifford affinity
+# from Ludford Bridge to the fall of Bamburgh: Northampton lost, Wakefield and St Albans won,
+# Ferrybridge taken at dawn and Towton lost, the years with the Scots and in the Northumbrian
+# castles, Hedgeley Moor and Hexham. The other side of roses_edward.yaml's first five years.
+# Losses give the dead only. A winning side's share is its dead times four (three wounded for each
+# dead, ours, as for roses_edward); a beaten side's is its dead times two (ours), because most of
+# its dead were cut down in the rout ("the Lancastrians lost more troops in their rout than from
+# the battlefield" at Towton), not in the line where the wounded come from.
+# No army-wide totals were found. The sickness is kept low on the short campaigns (good hygiene,
+# ours, as roses_edward) and raised for the castles besieged by hunger.
+# Measured (python3 -m gravewounds service roses_lancaster): about 1.1% dead of disease a season
+# (cases carried over), 0.1% a season in the border years and the castles, 4.9% besieged in the
+# winter of 1462 (the worst; the garrisons ate their horses), about 1.6-1.9% on the winter campaigns
+# of Wakefield, St Albans and Towton. Hits: about 4% a season at every main action in the line.
+# Design and sources: project docs "between-battles-design" and "roses-seasons-research".
+id: roses_lancaster
+name: "The Wars of the Roses, with the northern Lancastrians (1459-1464)"
+era: medieval
+regions: [england]
+table: towton-1461-all-hits
+season_days: 91
+
+# As roses_edward (ours, from the Towton grave with arrows raised): the same arms on both sides.
+weapon_mix:
+  - {weapon: longbow, pct: 28}
+  - {weapon: bill, pct: 20}
+  - {weapon: sword, pct: 17}
+  - {weapon: poleaxe, pct: 15}
+  - {weapon: dagger, pct: 7}
+  - {weapon: axe, pct: 5}
+  - {weapon: spear, pct: 5}
+  - {weapon: crossbow, pct: 3}
+
+states:
+  household: {name: "At home in the household", care: shelter, marched: false, staying: true}
+  campaign:  {name: "On campaign", care: field, marched: true, staying: false}
+  march:     {name: "On the march", care: field, marched: true, staying: false}
+  border:    {name: "In the north, with the Scots", care: shelter, marched: false, staying: true}
+  garrison:  {name: "In a castle's garrison", care: shelter, marched: false, staying: true}
+  besieged:  {name: "Besieged", care: shelter, marched: false, staying: true}
+  siege:     {name: "At a siege", care: field, marched: false, staying: true}
+
+positions:
+  reserve: {name: "In the rearward", mult: 0.25}
+  line:    {name: "In the battle", mult: 1}
+  thick:   {name: "In the thick of it", mult: 3}
+cap: 90
+
+# No source counts the small fights. The chances a season are ours: the border years were raids
+# and counter-raids, the castles changed hands four times.
+small_war:
+  chance: {household: 0, campaign: 40, march: 30, border: 30, garrison: 25, besieged: 30, siege: 20}
+  hit: 10
+
+sides: {team: "Lancastrians", foes: "Yorkists"}
+
+sources:
+  north: &north "https://erenow.org/postclassical/abriefhistoryofthewarsoftheroses/16.php"
+  santiuste5: &santiuste5 "https://erenow.org/postclassical/edwardivandthewarsoftheroses/5.php"
+  hwtowton: &hwtowton "https://www.historyofwar.org/articles/battles_towton.html"
+  hwferry: &hwferry "https://www.historyofwar.org/articles/battles_ferrybridge.html"
+  wptowton: &wptowton "https://wikiwand.com/en/articles/Battle_of_Towton"
+  alnwick: &alnwick "https://www.historyofwar.org/articles/siege_alnwick_1462-3.html"
+  bamburgh: &bamburgh "https://www.historyofwar.org/articles/siege_bamburgh_1464.html"
+  borders: &borders "https://thehistoryjar.com/tag/lord-roos/"
+  plague: &plague "https://thewarsoftheroses.co.uk/plague"
+
+seasons:
+  - {id: 1459-autumn, name: "Autumn 1459", state: march, hygiene: good, factors: {cold_wet: 1}, actions: [],
+     what: "With the king's army against the Yorkists at Ludford Bridge (12 October): the Calais men come over in the night and the Yorkist lords flee. Audley's men have been beaten at Blore Heath (23 September).",
+     sources: [*santiuste5]}
+  - {id: 1459-winter, name: "Winter 1459-60", state: household, hygiene: good, factors: {cold_wet: 1}, actions: [],
+     what: "At home: the Yorkist lords attainted at Coventry.", sources: [*santiuste5]}
+  - {id: 1460-spring, name: "Spring 1460", state: household, hygiene: good, factors: {}, actions: [], what: "At home.", sources: [*santiuste5]}
+  - {id: 1460-summer, name: "Summer 1460", state: campaign, hygiene: good, factors: {hot: 1}, actions: [northampton],
+     what: "With the king behind his ramparts at Northampton (10 July), in driving rain: Grey's men let the Yorkists in, and Buckingham, Shrewsbury and the Percy Lord Egremont are killed by the king's tent.",
+     sources: ["https://en.wikipedia.org/wiki/Battle_of_Northampton_(1460)", "https://www.historyofwar.org/articles/battles_northampton.html"]}
+  - {id: 1460-autumn, name: "Autumn 1460", state: household, hygiene: good, factors: {}, actions: [],
+     what: "The northern lords gather their men at York and Pontefract against York's claim to the crown.", sources: [*santiuste5]}
+  - {id: 1460-winter, name: "Winter 1460-61", state: campaign, hygiene: good, factors: {cold_wet: 2}, actions: [wakefield, st_albans],
+     what: "York caught outside Sandal at Wakefield (30 December) and killed; then south with the queen's army, living off the country, to St Albans (17 February), where Warwick is beaten and the king recovered.",
+     sources: ["https://www.historyofwar.org/articles/battles_wakefield.html", "https://www.historyofwar.org/articles/battles_stalbans1461.html"]}
+  - {id: 1461-spring, name: "Spring 1461", state: march, hygiene: good, factors: {cold_wet: 2}, actions: [ferrybridge, towton],
+     what: "London shuts its gates; back north. Clifford's horsemen take the bridge at Ferrybridge at dawn (28 March) and are caught in Dinting Dale; Towton in the snow (29 March, Palm Sunday), and the rout to Cock Beck and Tadcaster.",
+     sources: [*hwferry, *hwtowton, *wptowton]}
+  - {id: 1461-summer, name: "Summer 1461", state: border, hygiene: good, factors: {}, actions: [],
+     what: "With the king and queen in Scotland; Berwick given to the Scots (25 April). Raids on the border.", sources: [*borders, *north]}
+  - {id: 1461-autumn, name: "Autumn 1461", state: border, hygiene: good, factors: {}, actions: [], what: "In the north, with the Scots.", sources: [*north]}
+  - {id: 1461-winter, name: "Winter 1461-62", state: border, hygiene: good, factors: {cold_wet: 2}, actions: [], what: "In the north, with the Scots.", sources: [*north]}
+  - {id: 1462-spring, name: "Spring 1462", state: border, hygiene: good, factors: {}, actions: [], what: "In the north; the queen goes to France for help (April).", sources: [*north]}
+  - {id: 1462-summer, name: "Summer 1462", state: border, hygiene: good, factors: {}, actions: [],
+     what: "In the north; Alnwick taken by the Yorkists (July).", sources: ["https://www.historyofwar.org/articles/siege_alnwick_1462.html"]}
+  - {id: 1462-autumn, name: "Autumn 1462", state: garrison, hygiene: good, factors: {cold_wet: 1}, actions: [],
+     what: "Margaret lands in Northumberland with Brézé's Frenchmen (October); Alnwick, Bamburgh and Dunstanburgh are garrisoned. A storm scatters her ships, and the French stranded on Holy Island are cut up.",
+     sources: [*north, *borders]}
+  - {id: 1462-winter, name: "Winter 1462-63", state: besieged, hygiene: fair, factors: {cold_wet: 4}, actions: [],
+     what: "Besieged in the castles by hunger: the garrisons eat their horses. Bamburgh and Dunstanburgh yield (26-27 December) and their men are let go; Alnwick's march out to the Scots who come to relieve it (5 January).",
+     sources: [*north, *alnwick]}
+  - {id: 1463-spring, name: "Spring 1463", state: garrison, hygiene: good, factors: {}, actions: [],
+     what: "Ralph Percy and Ralph Grey turn Bamburgh, Dunstanburgh and Alnwick back to King Henry (March-May).", sources: [*alnwick, *north]}
+  - {id: 1463-summer, name: "Summer 1463", state: siege, hygiene: fair, factors: {hot: 1}, actions: [],
+     what: "With the Scots and both queens before Norham for eighteen days (June-July), until Warwick and Montagu come and the besiegers flee in a panic.",
+     sources: ["https://www.historyofwar.org/articles/siege_norham_1463.html"]}
+  - {id: 1463-autumn, name: "Autumn 1463", state: garrison, hygiene: good, factors: {}, actions: [], what: "In the castles; the Scots make a truce with Edward (December), and Somerset comes back to King Henry.", sources: ["https://www.historyofwar.org/articles/siege_norham_1463.html"]}
+  - {id: 1463-winter, name: "Winter 1463-64", state: garrison, hygiene: good, factors: {cold_wet: 2}, actions: [], what: "In the castles.", sources: [*north]}
+  - {id: 1464-spring, name: "Spring 1464", state: campaign, hygiene: good, factors: {}, actions: [hedgeley_moor, hexham],
+     what: "Out against Montagu: at Hedgeley Moor (25 April) the left runs before the lines meet and Ralph Percy is killed; at Hexham (15 May) the army is broken against the river, and Somerset, Roos and Hungerford are taken and beheaded.",
+     sources: ["https://www.historyofwar.org/articles/battles_hedgeley.html", "https://www.historyofwar.org/articles/battles_hexham.html"]}
+  - {id: 1464-summer, name: "Summer 1464", state: besieged, hygiene: fair, factors: {hot: 1}, actions: [],
+     what: "In Bamburgh under the king's great guns, Newcastle, London and Dysyon (from 25 June): Grey is knocked senseless by falling masonry and the garrison yields; it is spared, Grey beheaded. The end of the northern cause.",
+     sources: [*bamburgh]}
+
+actions:
+  northampton:
+    name: "Northampton"
+    date: 1460-07-10
+    share: 12
+    engaged: "around 5,000, mainly men-at-arms (Wikipedia)"
+    lost: "300 killed (Wikipedia, after Goodman); perhaps as few as 300 casualties on both sides (historyofwar)"
+    sources: ["https://en.wikipedia.org/wiki/Battle_of_Northampton_(1460)", "https://www.historyofwar.org/articles/battles_northampton.html"]
+    note: "Beaten: the dead times two (ours), 300 of 5,000."
+  wakefield:
+    name: "Wakefield"
+    date: 1460-12-30
+    share: 4
+    engaged: "18,000 (Wikipedia's infobox, uncited)"
+    lost: "200 (Wikipedia's infobox, uncited); the Yorkists 700-2,500, or 2,800 by Hall"
+    sources: ["https://wikiwand.com/en/Battle_of_Wakefield", "https://www.historyofwar.org/articles/battles_wakefield.html"]
+    single: true
+    note: "Won: the dead times four (ours), 200 of 18,000."
+  st_albans:
+    name: "Second St Albans"
+    date: 1461-02-17
+    share: 5
+    engaged: "about 15,000 or 10,000 (Wikipedia's infobox does not say which side); the Lancastrian list of lords the longer (historyofwar)"
+    lost: "1,916 killed, mostly Yorkists (Wikipedia)"
+    sources: ["https://mobileapps.wikiwand.com/en/Second_Battle_of_St_Albans", "https://www.historyofwar.org/articles/battles_stalbans1461.html"]
+    note: "No Lancastrian figure: the share is ours, for a won battle where the Yorkist archers threw back two attacks in the town."
+  ferrybridge:
+    name: "Ferrybridge"
+    date: 1461-03-28
+    main: false
+    share: null
+    engaged: "about 500 under Clifford (Wikipedia, through wikiwand)"
+    lost: "not counted; Clifford killed in Dinting Dale"
+    sources: [*hwferry, *wptowton]
+    note: "No count: the GM sets the share, or plays it as the small fight Taking the bridge at dawn."
+  towton:
+    name: "Towton"
+    date: 1461-03-29
+    field: towton-1461
+    share: 40
+    engaged: "50,000-60,000 in both armies (modern estimates, via Wikipedia); the Lancastrians the larger, so about 30,000 (ours)"
+    lost: "6,000-8,500 dead (Wikipedia's infobox); 9,000 (the Annales, which Ross and Wolffe found the more believable); 20,000 (Milanese letters); 2,800-3,800 dead in all by a recent analysis"
+    alt: {share: 60, source: "the Annales' 9,000 dead, times two, of 30,000"}
+    sources: [*hwtowton, *wptowton]
+    note: "Beaten: the infobox's lowest dead, 6,000, times two, of about 30,000 (ours). Most died in the rout, at Cock Beck and on the road to Tadcaster."
+  hedgeley_moor:
+    name: "Hedgeley Moor"
+    date: 1464-04-25
+    share: 4
+    engaged: "as many as 5,000 (historyofwar)"
+    lost: "no figure; Sir Ralph Percy killed"
+    sources: ["https://www.historyofwar.org/articles/battles_hedgeley.html"]
+    note: "Beaten, but the left fled before the lines met and the rest drew off: the share is ours."
+  hexham:
+    name: "Hexham"
+    date: 1464-05-15
+    share: 15
+    engaged: "no figure"
+    lost: "no figure; about thirty senior Lancastrians killed in the aftermath (historyofwar)"
+    sources: ["https://www.historyofwar.org/articles/battles_hexham.html"]
+    note: "Beaten, the centre broken and forced back into the river: the share is ours."
+
+small_fights:
+  - id: bridge
+    name: "Taking the bridge at dawn"
+    what: "Lord Clifford's horsemen, about 500, ride down on the Yorkists who took the broken bridge the night before and slept by it; FitzWalter is killed coming out of his lodging, and the narrow way is held against Edward's men for hours (Ferrybridge, 28 March 1461, as Hall tells it)."
+    states: [march, campaign]
+    weight: 2
+    where: "a broken bridge over a river and its north bank"
+    time: "at dawn"
+    light: dusk
+    ground: bridge
+    weather: snow
+    team_attacks: true
+    side: {name: "Clifford's horsemen", men: [200, 500]}
+    foes: [{name: "The men at the bridge", men: [100, 500], kit: jack_sallet, weapon: bill}]
+    surprise: {text: "The Yorkists at the bridge are asleep", chance: 60}
+    aims: {team: "Take the crossing and hold it.", foes: "Hold the bridge until their army comes up."}
+    ends: "The horsemen hold the crossing if they are still there after 8 rounds; they are beaten once a third of theirs are down; the Yorkists are driven off once half of theirs are down."
+    end: {rounds: 8, wins: team, down: {team: 0.33, foes: 0.5}}
+    sources: [*hwferry, *wptowton]
+    note: "The Yorkist numbers are ours. The other side of roses_edward's The bridge at dawn."
+  - id: dale
+    name: "Caught in the dale"
+    what: "Falling back north from the bridge, Clifford's men are caught in Dinting Dale by Fauconberg's men, over the Aire by the ford upstream; Clifford, his gorget off, is killed by an arrow in the throat (28 March 1461)."
+    states: [march, campaign]
+    weight: 1
+    where: "a small dale on the road north"
+    time: "in the afternoon"
+    ground: heath
+    weather: snow
+    side: {name: "Clifford's rear-guard", men: [50, 300]}
+    foes: [{name: "Fauconberg's men", men: [100, 500], kit: jack_sallet, weapon: longbow}]
+    aims: {team: "Get away north to the main army.", foes: "Catch them before they reach it."}
+    ends: "The rear-guard gets away if it holds together for 6 rounds; it is cut down once half of those here are down."
+    end: {rounds: 6, wins: team, down: {team: 0.5}}
+    sources: [*hwferry, *wptowton]
+    note: "Numbers are not given: ours."
+  - id: town
+    name: "Into the town"
+    what: "Trollope's men come down the road into a town at first light and are thrown back by archers at the end of the market street, then try a lane round to the north end (St Albans, 17 February 1461)."
+    states: [campaign]
+    weight: 2
+    where: "a town's market street and the lanes off it"
+    time: "at first light"
+    light: dusk
+    ground: town
+    team_attacks: true
+    side: {name: "Trollope's men", men: [100, 500]}
+    foes: [{name: "The archers in the street", men: [50, 300], kit: jack_sallet, weapon: longbow}]
+    aims: {team: "Clear the street and get through the town.", foes: "Hold the street."}
+    ends: "The archers give the street up once a third of theirs are down; the attack is thrown back once a third of the attackers are down; after 6 rounds it is the GM's call."
+    end: {rounds: 6, wins: none, down: {team: 0.33, foes: 0.33}}
+    sources: ["https://www.historyofwar.org/articles/battles_stalbans1461.html"]
+    note: "Numbers are not given: ours."
+  - id: foragers
+    name: "Catching them outside the castle"
+    what: "The duke's men come out of their castle, to bring in foragers or to fight, and are caught in the open before they can get back (Wakefield, 30 December 1460: York out of Sandal, as Waurin and Hall tell it)."
+    states: [campaign]
+    weight: 1
+    where: "the fields below a castle"
+    time: "by day"
+    ground: farmland
+    team_attacks: true
+    side: {name: "The queen's men", men: [100, 500]}
+    foes: [{name: "The duke's men", men: [50, 300], kit: jack_sallet, weapon: bill}]
+    aims: {team: "Cut them off from the castle.", foes: "Get back inside."}
+    ends: "The duke's men get back in if they hold together for 6 rounds; they are cut off once half of theirs are down."
+    end: {rounds: 6, wins: foes, down: {foes: 0.5, team: 0.5}}
+    sources: ["https://www.historyofwar.org/articles/battles_wakefield.html"]
+    note: "The accounts differ on why York came out; the sizes are ours."
+  - id: raid
+    name: "A raid over the border"
+    what: "Lancastrians and Scots ride over the border to burn and lift cattle, and meet a Yorkist warden's men (the border years, 1461-63)."
+    states: [border]
+    weight: 3
+    where: "a border valley and its farms"
+    time: "by day"
+    ground: farmland
+    team_attacks: true
+    side: {name: "The raiders", men: [20, 200]}
+    foes: [{name: "The warden's men", men: [20, 200], kit: jack_sallet, weapon: spear}]
+    aims: {team: "Lift what they can and get back over the border.", foes: "Catch them before they get back."}
+    ends: "The raiders get away after 6 rounds; either side gives it up once half of those here are down."
+    end: {rounds: 6, wins: team, down: {team: 0.5, foes: 0.5}}
+    sources: [*north, *borders]
+    note: "No single raid is described in these accounts: the fight and its sizes are ours."
+  - id: island
+    name: "Stranded on the island"
+    what: "Brézé's Frenchmen, their ships wrecked by the storm, are stranded on Holy Island and set on by the Yorkists of the shore (1462; 400-500 killed or taken, by one account)."
+    states: [garrison]
+    weight: 1
+    where: "a tidal island's shore and its village"
+    time: "at low tide, by day"
+    ground: village
+    weather: rain
+    side: {name: "The stranded men", men: [50, 500]}
+    foes: [{name: "The shore's men", men: [50, 400], kit: jack_sallet, weapon: bill}]
+    aims: {team: "Hold out until the boats come, or the tide.", foes: "Take or kill them."}
+    ends: "The stranded men hold out if they hold together for 8 rounds; they are taken once half of theirs are down; the shore's men draw off once a third of theirs are down."
+    end: {rounds: 8, wins: team, down: {team: 0.5, foes: 0.33}}
+    sources: [*borders]
+    note: "One account (a blog, whose dates for these years run a year early in places); the date and the sizes are ours."
+  - id: sally
+    name: "A sally for food"
+    what: "A starving garrison comes out of its castle against the besiegers' guard to bring in food and fodder, or to break out (the Northumbrian castles, winter 1462: the garrisons eating their horses)."
+    states: [besieged]
+    weight: 2
+    where: "the besiegers' lines before a castle gate"
+    time: "before dawn"
+    light: dusk
+    ground: open
+    weather: snow
+    team_attacks: true
+    side: {name: "The sallying party", men: [20, 120]}
+    foes: [{name: "The guard on the lines", men: [20, 100], kit: jack_sallet, weapon: bill}]
+    surprise: {text: "The gate opens on the guard by the fires", chance: 30}
+    aims: {team: "Bring in what they can and get back inside.", foes: "Drive them back in."}
+    ends: "The party gets back in with what it has after 6 rounds; it is driven back once a third of theirs are down."
+    end: {rounds: 6, wins: team, down: {team: 0.33}}
+    sources: [*north, *alnwick]
+    note: "No sally is described in these accounts: the fight is ours. The other side of roses_edward's A foray from the castle."
+  - id: breach
+    name: "At the breach"
+    what: "The great guns have brought the wall down; the garrison stands in the breach against the storming party (Bamburgh, July 1464: great damage done to the walls)."
+    states: [besieged]
+    weight: 1
+    where: "a castle's breach and the rubble below it"
+    time: "by day"
+    ground: town
+    side: {name: "The garrison", men: [20, 100]}
+    foes: [{name: "The storming party", men: [50, 300], kit: brigandine_sallet, weapon: poleaxe}]
+    aims: {team: "Hold the breach.", foes: "Win the breach."}
+    ends: "The storm is called off after 8 rounds; the breach is lost once a third of the garrison are down; the storming party falls back once a third of theirs are down."
+    end: {rounds: 8, wins: team, down: {team: 0.33, foes: 0.33}}
+    sources: [*bamburgh]
+    note: "The accounts tell of the bombardment and the yielding, not of a storm: the fight is ours. The roller has no castle ground: lay walls on town ground."
+  - id: norham
+    name: "The relief comes on"
+    what: "Besiegers' outposts before a castle meet the scurriers of the army coming to relieve it, and must hold them long enough for the siege to get away (Norham, July 1463: the besiegers fled in a panic)."
+    states: [siege]
+    weight: 1
+    where: "the road to the siege lines"
+    time: "by day"
+    ground: open
+    side: {name: "The outposts", men: [20, 100]}
+    foes: [{name: "The relief's scurriers", men: [20, 150], kit: jack_sallet, weapon: spear}]
+    aims: {team: "Hold them while the siege gets away.", foes: "Break through to the siege."}
+    ends: "The outposts have done enough after 4 rounds; they are broken once half of theirs are down."
+    end: {rounds: 4, wins: team, down: {team: 0.5, foes: 0.5}}
+    sources: ["https://www.historyofwar.org/articles/siege_norham_1463.html"]
+    note: "The accounts tell only of the panic: the fight and the sizes are ours."
