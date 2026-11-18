@@ -1188,7 +1188,7 @@ function svcQueue(add){                             // the hits waiting on the r
 function svcActionHtml(W, V, aid){                  // one action of the season: at it, played, or rolled at a share
   const a = W.actions[aid], at = V.at[aid] ?? a.main !== false, played = !!V.played[aid];
   const share = a.share == null ? `<label>share lost <input type="number" min="0" max="100" class="num" data-svshare="${aid}" value="${V.share[aid] ?? ""}" aria-label="${esc(a.name)}: the share lost, %"> %</label> <span class="muted">(${esc((a.note || "not found").replace(/\.$/, ""))})</span>`
-    : `<span class="muted">the army lost ${a.share}%${a.alt ? ` (${esc(a.alt.source)}: ${a.alt.share}%)` : ""}${a.single ? ", a single report" : ""}</span>`;
+    : `<span class="muted">the army lost ${a.share}%${a.alt ? ` (${esc(a.alt.source)}: ${a.alt.share}%)` : ""}${a.single ? ", a single report" : ""}${a.taken ? ", " + a.taken + "% taken" : ""}</span>`;
   const units = (a.units || []).length ? ` <select data-svunit="${aid}" style="width:auto" aria-label="${esc(a.name)}: whose figure"><option value="">as the army, by position</option>${a.units.map((u, k) => `<option value="${k}" ${String(V.unit[aid]) === String(k) ? "selected" : ""}>as ${esc(u.name)} (${u.share}%)</option>`).join("")}</select>` : "";
   const field = a.field ? ` <label><input type="checkbox" data-svplay="${aid}" ${played ? "checked" : ""}> play it on the field map (${esc(TD.service.fields[a.field])})</label>` : "";
   return `<li><label><input type="checkbox" data-svat="${aid}" ${at ? "checked" : ""}> <b>${esc(a.name)}</b>, ${esc(a.date)}</label>${a.main === false ? ` <span class="muted">(${esc((a.note || "not the main army").replace(/\.$/, ""))})</span>` : ""}: ${share}${units}${field}</li>`;
@@ -1289,7 +1289,7 @@ function serveSeason(){
     const m = r.men[k], bits = [], car = byId(T.careers, c.career), start = men[k].health, rec = namedOf(named, c);
     const dz = m.dead ? (TD.service.rules.disease.diseases[m.dead] || TD.service.rules.disease.wounds[m.dead] || { name: m.dead }).name : null;
     const wounds = m.dead === "wound" || m.dead === "fever", saved = m.dead && fateSpend(c.pid, `lived through ${dz.toLowerCase()}`);
-    const lived = m.dead && !saved ? m.dead_week * 7 : days, was = start && (SVC.worstStep(start) || SVC.woundStep(start));
+    const lived = m.taken ? (m.taken.week + 1) * 7 : m.dead && !saved ? m.dead_week * 7 : days, was = start && (SVC.worstStep(start) || SVC.woundStep(start));
     const H = saved ? start : m.health, keep = H && (H.cases.length || Object.keys(H.immune).length || Object.keys(H.had).length);
     c.svcHealth = keep ? H : null;            // a case still running (and what he is immune to or may relapse with) goes on into his next season
     if (rec){                                 // and onto his shared record: the roller heals his wounds to scars as their cases close
@@ -1311,7 +1311,8 @@ function serveSeason(){
       const still = m.worst ? ", still " + m.worst + " at the season's end" : "";
       bits.push(`sick ${m.sick_days} day${m.sick_days === 1 ? "" : "s"}${still}`);
     }
-    if (m.wound && !m.dead) bits.push(`his wounds still ${m.wound} at the season's end`);
+    if (m.taken){ bits.push(`taken prisoner at ${actName(m.taken.action)} (${m.taken.pct}%, rolled ${m.taken.roll})`); c.svcTaken = true }
+    else if (m.wound && !m.dead) bits.push(`his wounds still ${m.wound} at the season's end`);
     if (m.dead){
       if (saved) bits.push(`would have died of ${dz.toLowerCase()} in week ${m.dead_week + 1}: fate spent, he lives the season out`);
       else { bits.push(`died of ${dz.toLowerCase()} in week ${m.dead_week + 1}`); c.svcDied = wounds ? "died of wounds" : "died of disease" }
@@ -1320,6 +1321,7 @@ function serveSeason(){
   });
   try{ localStorage.setItem(NAMED_STORE, JSON.stringify(named)) }catch(e){ /* storage off: the roller keeps his old record */ }
   for (const c of serving.filter(x => x.svcDied)){ const why = c.svcDied; delete c.svcDied; loseMember(S.team.indexOf(c), why) }
+  for (const c of serving.filter(x => x.svcTaken)){ delete c.svcTaken; loseMember(S.team.indexOf(c), "taken prisoner") }   // to the Prisoners, his fate rolled there
   if (hits.length) svcQueue(hits);
   S.svcSmall = r.small ? (r.fight || true) : false;
   lines.push(r.small ? `A small fight comes the team's way (rolled ${r.small_roll} against ${r.chance}).` : `No small fight (rolled ${r.small_roll} against ${r.chance}).`);

@@ -109,6 +109,7 @@ actions:
     date: 1861-07-21
     field: bull-run-1861
     share: 5
+    taken: 6
     alt: {share: 8, source: "Fry's 18,572 engaged, as quoted"}
     engaged: "28,450 (American Battlefield Trust); 18,572 engaged (Fry)"
     lost: "470 killed, 1,071 wounded, 1,793 missing (Fox)"
@@ -118,6 +119,7 @@ actions:
     date: 1861-10-21
     main: false
     share: 12
+    taken: 42
     engaged: "about 1,700"
     lost: "49 killed, 158 wounded, 714 missing (Fox)"
     sources: [*fox61, "https://www.historyofwar.org/articles/battles_balls_bluff.html"]
@@ -127,6 +129,7 @@ actions:
     name: "Williamsburg"
     date: 1862-05-05
     share: 5
+    taken: 1
     engaged: "40,768"
     lost: "456 killed, 1,410 wounded, 373 missing (Fox)"
     sources: [*fox62, "https://www.battlefields.org/learn/civil-war/battles/williamsburg"]
@@ -135,6 +138,7 @@ actions:
     name: "Seven Pines (Fair Oaks)"
     date: 1862-05-31
     share: 13
+    taken: 2
     engaged: "34,000"
     lost: "790 killed, 3,594 wounded, 647 missing (Fox)"
     sources: [*fox62, "https://www.battlefields.org/learn/civil-war/battles/seven-pines"]
@@ -143,6 +147,7 @@ actions:
     name: "The Seven Days"
     date: 1862-06-27
     share: 10
+    taken: 6
     engaged: "101,434 present for duty (Wikipedia mirror)"
     lost: "1,734 killed, 8,062 wounded, 6,053 missing (Encyclopedia Virginia)"
     sources: ["https://encyclopediavirginia.org/entries/seven-days-battles/", "https://origin-production.wikiwand.com/en/Seven_Days_Battle"]
@@ -155,6 +160,7 @@ actions:
     name: "Second Bull Run"
     date: 1862-08-29
     share: 15
+    taken: 6
     engaged: "70,000 (ABT); 75,696 (ACWS)"
     lost: "1,747 killed, 8,452 wounded, 4,263 missing (Fox and ABT)"
     sources: [*fox62, "https://www.battlefields.org/learn/civil-war/battles/second-manassas?tab=facts"]
@@ -175,6 +181,7 @@ actions:
     name: "Antietam"
     date: 1862-09-17
     share: 13
+    taken: 1
     alt: {share: 15, source: "Livermore's 75,316 engaged"}
     engaged: "87,000 (ABT); 75,316 (Livermore)"
     lost: "2,108 killed, 9,549 wounded, 753 missing (Fox)"
@@ -192,6 +199,7 @@ actions:
     name: "Fredericksburg"
     date: 1862-12-13
     share: 9
+    taken: 1
     engaged: "114,000-123,000"
     lost: "1,284 killed, 9,600 wounded, 1,769 missing (Fox)"
     sources: [*fox62, "https://battlefields.org/learn/civil-war/battles/fredericksburg"]
@@ -208,6 +216,7 @@ actions:
     name: "Chancellorsville"
     date: 1863-05-02
     share: 12
+    taken: 6
     engaged: "97,382 engaged (ABT)"
     lost: "1,606 killed, 9,762 wounded, 5,919 missing (Fox)"
     sources: [*fox63, "https://www.battlefields.org/learn/civil-war/battles/chancellorsville?tab=facts"]
@@ -215,6 +224,7 @@ actions:
     name: "Gettysburg"
     date: 1863-07-02
     share: 19
+    taken: 6
     engaged: "93,921 (ABT)"
     lost: "3,155 killed, 14,529 wounded, 5,365 missing (ABT); 3,070, 14,497, 5,434 (Fox)"
     sources: ["https://www.battlefields.org/learn/civil-war/battles/gettysburg?tab=facts", *fox63]
@@ -229,6 +239,7 @@ actions:
         sources: [*fox3]
       - name: "141st Pennsylvania"
         share: 65
+        taken: 11
         lost: "25 killed, 103 wounded, 21 missing of 198 (Fox)"
         sources: [*fox3]
   bristoe:
@@ -236,6 +247,7 @@ actions:
     date: 1863-10-14
     main: false
     share: 5
+    taken: 2
     engaged: "8,383 engaged"
     lost: "50 killed, 335 wounded, 161 missing (Fox)"
     sources: [*fox63, "https://www.battlefields.org/learn/civil-war/battles/bristoe-station"]
@@ -245,6 +257,7 @@ actions:
     name: "Mine Run"
     date: 1863-11-27
     share: 2
+    taken: 1
     engaged: "69,643"
     lost: "173 killed, 1,099 wounded, 381 missing (Fox)"
     sources: [*fox63, "https://www.battlefields.org/learn/civil-war/battles/mine-run"]
@@ -253,6 +266,7 @@ actions:
     name: "The Wilderness"
     date: 1864-05-05
     share: 14
+    taken: 3
     engaged: "101,895 (ABT)"
     lost: "2,246 killed, 12,037 wounded, 3,383 missing (Fox)"
     sources: [*fox64, "https://www.battlefields.org/battlefields/the-wilderness.html?tab=facts"]
@@ -265,6 +279,7 @@ actions:
     name: "Spotsylvania Court House"
     date: 1864-05-12
     share: 16
+    taken: 2
     alt: {share: 19, source: "83,000 engaged (ACWS)"}
     engaged: "100,000 (ABT); 83,000 (ACWS)"
     lost: "2,725 killed, 13,416 wounded, 2,258 missing (Fox and ABT)"
@@ -272,24 +287,28 @@ actions:
     units:
       - name: "15th New Jersey"
         share: 54
+        taken: 9
         lost: "75 killed, 159 wounded, 38 missing of 432 (Fox)"
         sources: [*fox3]
   cold_harbor:
     name: "Cold Harbor"
     date: 1864-06-03
     share: 10
+    taken: 2
     engaged: "108,000"
     lost: "1,844 killed, 9,077 wounded, 1,816 missing (Fox and ABT); about 6,000 in the assault of 3 June alone"
     sources: [*fox64, "https://battlefields.org/learn/civil-war/battles/cold-harbor"]
     units:
       - name: "25th Massachusetts"
         share: 62
+        taken: 9
         lost: "53 killed, 139 wounded, 28 missing of 310 (Fox)"
         sources: [*fox3]
   petersburg:
     name: "The assaults on Petersburg"
     date: 1864-06-18
     share: 17
+    taken: 2
     engaged: "62,000 (a Wikipedia mirror, no source given)"
     lost: "1,688 killed, 8,513 wounded, 1,185 missing (Fox)"
     sources: [*fox64]
@@ -304,6 +323,7 @@ actions:
     date: 1864-07-30
     main: false
     share: 28
+    taken: 17
     engaged: "8,500"
     lost: "504 killed, 1,881 wounded, 1,413 missing (Fox and ABT)"
     sources: [*fox64, "https://www.battlefields.org/learn/civil-war/battles/crater"]

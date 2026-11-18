@@ -209,15 +209,15 @@ def run(p):
     asat = pg.evaluate("""() => { const W = SVC.war('peninsula'), f = W.small_fights.find(x => x.id === 'picket');
       return [svcAsAt(W, f, W.seasons.find(x => x.id === f.at)), svcAsAt(W, f, W.seasons[0])] }""")
     check(asat[0] == "" and "a fight of this kind, as in spring 1810" in asat[1], f"a fight from another season says so in its notes ({asat})")
-    pg.evaluate("""() => { const c = S.team[0], H = { cases: [{ d: 'flux', inc: 0, step: 2, peak: 2, shown: 9, chronic: true }], immune: {}, had: {}, dead: 0 };
-      c.svcHealth = H; const all = namedStore(), n = namedOf(all, c); if (n){ n.health = H; localStorage.setItem(NAMED_STORE, JSON.stringify(all)) } render() }""")
+    pg.evaluate("""hurt => { const c = S.team.find(x => x.name !== hurt) || S.team[0], H = { cases: [{ d: 'flux', inc: 0, step: 2, peak: 2, shown: 9, chronic: true }], immune: {}, had: {}, dead: 0 };
+      c.svcHealth = H; const all = namedStore(), n = namedOf(all, c); if (n){ n.health = H; localStorage.setItem(NAMED_STORE, JSON.stringify(all)) } render() }""", wounded)   # not the man wounded last season: his wound stays on his track
     check("still serious from last season" in pg.inner_text("#service"), "a man still sick at the season's end shows so on the panel")
     pg.evaluate(SEEDED, 11)
     pg.click("#btn-serve")
-    first = pg.evaluate("() => S.svclog.find(l => l.startsWith(S.team[0]?.name)) || S.svclog.join(' ')")
+    first = pg.evaluate("() => S.svclog.join(' ')")
     check("began the season serious" in pg.inner_text("#service"), f"and his next season begins from it ({first[:120]})")
     check(f"{wounded}: began the season" in pg.inner_text("#service") and "(his wounds)" in pg.inner_text("#service"),
-          f"the man hit last season begins this one with his wounds on the track ({wounded})")
+          f"the man hit last season begins this one with his wounds on the track ({wounded}: {pg.evaluate('n => S.svclog.find(l => l.startsWith(n)) || S.svclog.join(' ')', wounded)[:300]!r})")
 
     # the second war: a Union company in the East
     pg.goto(BASE + "team.html")
@@ -242,6 +242,18 @@ def run(p):
     check("Chancellorsville" in cs and "4th Virginia (48%)" in pg.inner_text("select[data-svunit=chancellorsville]"),
           "a Confederate team serves with the Stonewall Brigade: spring 1863 has Chancellorsville, with the 4th Virginia's own 48%")
     check(pg.evaluate("() => SVC.warsFor('civil_war', 'confederacy').map(W => W.id).join()") == "acw_confederate_east", "and only the Confederate war is offered to it")
+    tk = pg.evaluate("""() => { const q = [99, 99, 10]; const rng = () => q.length ? q.shift() : 99;
+      const r = SVC.serve('acw_confederate_east', '1864-spring', [{ name: 'x', endurance: 50, unit: { spotsylvania: 0 } }], ['spotsylvania'], rng).men[0];
+      return r.taken }""")
+    check((tk or {}).get("action") == "spotsylvania" and tk.get("pct") == 63, f"at the Mule Shoe as the 4th Virginia, a man not hit is taken on 63% ({tk})")
+    pg.evaluate("""() => { const V = svcState(), W = SVC.war('acw_confederate_east'); V.war = W.id; V.i = W.seasons.findIndex(s => s.id === '1864-spring');
+      V.unit = { spotsylvania: 0 }; V.at = { wilderness: false, spotsylvania: true }; window.__q = [99, 99, 10];
+      realDice.randint = (a, b) => (window.__q.length ? window.__q.shift() : b); render() }""")
+    n0 = pg.evaluate("() => S.team.length")
+    pg.click("#btn-serve")
+    took = pg.evaluate("() => ({ log: S.svclog.join(' '), team: S.team.length, prisoners: (S.prisoners || []).length })")
+    check("taken prisoner at Spotsylvania" in took["log"] and took["team"] < n0 and took["prisoners"] >= 1,
+          f"served, a man taken goes to the Prisoners ({n0} -> {took['team']}, {took['prisoners']} prisoners: {took['log'][:300]!r})")
     # the third war: an English retinue in Henry V's war, and an escalade played (the team attacking)
     pg.goto(BASE + "team.html")
     pg.select_option("#sel-era", "medieval")

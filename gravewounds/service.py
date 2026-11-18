@@ -70,6 +70,21 @@ def hit_pct(W: dict, aid: str, position: str = "line", unit: int | None = None, 
     return min(W["cap"], round(s * W["positions"][position]["mult"]))
 
 
+def taken_pct(W: dict, aid: str, position: str = "line", unit: int | None = None) -> int:
+    """His % chance of being taken prisoner in an unplayed action he came through unhit: a
+    battalion's own `taken` (unit: its index), else the action's `taken` (the missing of those
+    engaged where only missing is counted: ours, most were prisoners) times his position's
+    multiplier, at most the cap. 0: none counted."""
+    a = W["actions"][aid]
+    if unit is not None:
+        u = a["units"][unit]
+        return int(u["taken"]) if u.get("taken") is not None else 0
+    t = a.get("taken")
+    if not t:
+        return 0
+    return min(W["cap"], round(t * W["positions"][position]["mult"]))
+
+
 def in_week(n: int, wk: int, of: int) -> bool:
     """Whether a factor that holds `n` weeks of `of` holds in week wk: spread evenly through the season."""
     return (wk + 1) * n // of > wk * n // of
@@ -129,6 +144,7 @@ def serve(d: Data, wid: str, sid: str, men: list[dict], rolled: list[str], rng) 
     rolled: the actions the team was at and does not play; rng: d100.
     -> {small (bool), small_roll, men: [{name, dead (disease id) and dead_week, sick_days, worst
        (his worst step at the season's end, or None), hits: [{action, pct, roll, weapon}],
+       taken ({action, pct, roll, week}: taken prisoner, his season over, or None),
        missed: [{action, why}], rolls: [{action, pct, roll}]}]}"""
     W, s = war(d, wid), season(war(d, wid), sid)
     chance = W["small_war"]["chance"][s["state"]]
@@ -183,11 +199,15 @@ def start_health(m: dict) -> dict:
 
 def _man(d: Data, W: dict, s: dict, m: dict, acts: list, rng) -> dict:
     h, r = start_health(m), {"name": m["name"], "dead": None, "dead_week": None, "sick_days": 0, "wound": None,
-                             "worst": None, "hits": [], "missed": [], "rolls": [], "health": None}
+                             "worst": None, "hits": [], "taken": None, "missed": [], "rolls": [], "health": None}
     end, sid = m.get("endurance"), s["id"]
     for wk in range(weeks(W)):
         for aid in [a for a in acts if action_week(W, sid, a) == wk]:
             _action(d, W, aid, m, h, r, rng)
+            if r["taken"]:                           # taken prisoner: his season with the battalion is over
+                r["taken"]["week"] = wk
+                r["worst"], r["wound"], r["health"] = dz.worst_step(d, h), wound_step(d, h), h
+                return r
         if wk == weeks(W) // 2 and (W.get("wastage") or {}).get(s["state"]):
             _wastage(d, W, s, h, r, rng)
         f, ctx = factors(d, W, s, wk), day_ctx(W, s, wk)
@@ -235,6 +255,12 @@ def _action(d: Data, W: dict, aid: str, m: dict, h: dict, r: dict, rng) -> None:
     r["rolls"].append({"action": aid, "pct": pct, "roll": roll})
     if roll <= pct:
         r["hits"].append({"action": aid, "pct": pct, "roll": roll, "weapon": weapon_for(d, W, rng())})
+        return
+    t = taken_pct(W, aid, m.get("position", "line"), (m.get("unit") or {}).get(aid))
+    if t:                                           # came through unhit: taken in the rout or the surrender?
+        roll = rng()
+        if roll <= t:
+            r["taken"] = {"action": aid, "pct": t, "roll": roll}
 
 
 def calibrate(d: Data, wid: str, n: int, seed: int, position: str = "line", every: bool = True) -> dict:
@@ -250,6 +276,8 @@ def calibrate(d: Data, wid: str, n: int, seed: int, position: str = "line", ever
             rolled = [a for a in s["actions"] if every and W["actions"][a].get("main", True) and W["actions"][a].get("share") is not None]
             res = serve(d, wid, s["id"], [{"name": "x", "endurance": 50, "position": position, "health": health}], rolled, rng)["men"][0]
             health = res["health"]                  # his case carried into the next season
+            if res["taken"]:                         # a prisoner: off the battalion's rolls
+                break
             hits += len(res["hits"])
             lives += 1
             if res["dead"]:

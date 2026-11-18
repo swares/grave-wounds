@@ -24,9 +24,12 @@
 # actions  - each named battle, siege or storm: name, date (the main day, YYYY-MM-DD), field (a
 #            modelled battlefield the GM can play instead), main (false: not the main army's: the
 #            GM ticks it if his battalion was there), share (% of those engaged killed and
-#            wounded, or lost where no split was found; null: not found, the GM sets it), engaged
-#            and lost as the sources give them, alt (another source's share), units (a battalion's
-#            own figure the GM may use instead), sources, single (one report only), note.
+#            wounded, or lost where no split was found; null: not found, the GM sets it), taken (%
+#            of those engaged taken prisoner: the missing where only missing is counted, ours, most
+#            of them prisoners; a man not hit rolls it and, taken, his season ends), engaged and
+#            lost as the sources give them, alt (another source's share), units (a battalion's own
+#            figure the GM may use instead, with its own taken), sources, single (one report
+#            only), note.
 # Figures: project doc "between-battles-design" (historyofwar.org, britishbattles.com, Wikipedia
 # mirrors and Smith via Fandom; Oman was not reached). Shares are our calculation from them.
 id: peninsula
@@ -278,6 +281,7 @@ actions:
     name: "Roliça"
     date: 1808-08-17
     share: 3
+    taken: 1
     engaged: "about 14,000 British and 1,600 Portuguese"
     lost: "487 British (70 killed, 335 wounded, 82 missing; britishbattles); 474 (historyofwar)"
     sources: ["https://britishbattles.com/peninsular-war/battle-of-rolica", "https://www.historyofwar.org/articles/battles_rolica.html"]
@@ -292,6 +296,7 @@ actions:
     name: "Corunna"
     date: 1809-01-16
     share: 6
+    taken: 2
     engaged: "15,000-16,000"
     lost: "about 900 killed and wounded and 300 missing (Wikipedia mirror); 800-900 (britishbattles)"
     sources: ["https://www.historyofwar.org/articles/battles_corunna.html", "https://britishbattles.com/peninsular-war/battle-of-corunna", "https://wikiwand.com/en/Battle_of_Corunna"]
@@ -315,6 +320,7 @@ actions:
     name: "Fuentes de Oñoro"
     date: 1811-05-05
     share: 4
+    taken: 1
     engaged: "about 36,000 infantry and 1,850 cavalry"
     lost: "about 1,800 (241 killed, 1,247 wounded, 312 missing: Smith); about 1,700 (historyofwar)"
     sources: ["https://www.historyofwar.org/articles/battles_fuentes_de_onoro.html", "https://military-history.fandom.com/wiki/Battle_of_Fuentes_d%27Onor"]
@@ -324,6 +330,7 @@ actions:
     field: albuera-1811
     main: false
     share: 22
+    taken: 3
     alt: {share: 35, source: "the British alone: 3,615 killed and wounded of 10,449"}
     engaged: "10,449 British, 10,201 Portuguese, about 14,500 Spanish"
     lost: "British 882 killed, 2,733 wounded, 544 missing; Portuguese 389"

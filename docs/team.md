@@ -702,7 +702,7 @@ of the season its weather and ground made sickness worse, and its named actions.
   against Livermore's mean strength (about 420,000, ours: the mean of five dates): disease about
   2.45% dead a season against 2.44%, worst on the Romney expedition and in the Centreville camps of
   1861; hits about 12.5% a season at every main action in the line, against 4.3% for the whole
-  army. The season roll counts hits, not men taken: the Mule Shoe took most of the brigade.
+  army. The Mule Shoe takes a man of the 4th Virginia who comes through unhit on 63%.
 - **Henry V's war in France** (`henry_v.yaml`, 1415-1422, an English retinue): 29 seasons from
   the siege of Harfleur to the king's death, following a retinue that stays in the Harfleur
   garrison under Dorset after Agincourt and joins the army of 1417 for the conquest of Normandy:
@@ -806,7 +806,12 @@ for each man whether he serves and where he stands. **Serve the season** then ro
   sourced (the 1/57th at Albuera, the brigades at Maya). Where the sources give no share (Burgos,
   San Sebastián) the GM sets one. A hit takes a d100 for the weapon on the war's table's weapon
   mix and goes to the roller (`gravewounds-service-hits`), which rolls the wound as a hit with no
-  attack roll on the man's own table. A man hit misses the season's later actions. An action with
+  attack roll on the man's own table. A man hit misses the season's later actions. A man not hit
+  rolls the action's `taken` share (the missing of those engaged where only missing is counted:
+  ours, most of them prisoners; a battalion's own taken where sourced, as the 4th Virginia's 63% at
+  the Mule Shoe), times his position; taken, his season ends there and he goes to the team
+  builder's Prisoners, his fate rolled there as for a man taken in a fight. Appomattox has none:
+  its missing are the surrender, paroled and sent home. An action with
   a battlefield (Albuera, Ciudad Rodrigo, Badajoz, Burgos) can be played there instead.
 - **A small fight**: the team's d100 against the state's chance (ours). The fight is then rolled by
   weight from the war's `small_fights` that fit the season's state, with d100s for the size of the

@@ -2159,6 +2159,9 @@ def _service_errors(d: Data, W: dict) -> list[str]:
         if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(a.get("date"))):
             errors.append(f"{aw}: date must be YYYY-MM-DD")
         errors += [f"{aw}: a unit's share must be 0-100" for u in a.get("units", []) if not 0 <= u.get("share", -1) <= 100]
+        ok = lambda t: t is None or (isinstance(t, (int, float)) and 0 <= t <= 100)   # taken prisoner: % of those engaged
+        if not ok(a.get("taken")) or not all(ok(u.get("taken")) for u in a.get("units", [])):
+            errors.append(f"{aw}: taken must be 0-100")
         if not a.get("sources"):
             errors.append(f"{aw}: needs sources")
         if not any(aid in s.get("actions", []) for s in W.get("seasons", [])):

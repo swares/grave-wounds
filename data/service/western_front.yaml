@@ -138,6 +138,7 @@ actions:
     date: 1914-08-26
     main: false
     share: 13
+    taken: 4
     engaged: "II Corps: 23 battalions, 18 cavalry regiments and 162 guns; about 40,000 (ours)"
     lost: "7,812, of them about 700 killed and 2,600 taken (a Wikipedia mirror, its source not named)"
     sources: ["https://wikiwand.com/EN/Battle_of_Le_Cateau"]
@@ -281,6 +282,7 @@ actions:
     name: "The German offensive of March 1918"
     date: 1918-03-21
     share: 19
+    taken: 16
     engaged: "26 divisions and 3 of cavalry for Michael (about 468,000, ours)"
     lost: "177,739 (the Official History, 1937); Middlebrook about 160,000: 22,000 killed, 65,000 wounded, 75,000 taken"
     sources: ["https://www.nam.ac.uk/explore/1918-victory", "https://en.wikipedia.org/wiki/Operation_Michael"]

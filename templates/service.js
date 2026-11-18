@@ -27,6 +27,12 @@ function makeService(SV, RULES){
     if (s == null) return null;
     return Math.min(W.cap, pyRound(s * W.positions[position].mult));
   }
+  function takenPct(W, aid, position = "line", unit = null){   // his % chance of being taken, unhit (as service.taken_pct)
+    const a = W.actions[aid];
+    if (unit != null) return a.units[unit].taken != null ? Math.trunc(a.units[unit].taken) : 0;
+    if (!a.taken) return 0;
+    return Math.min(W.cap, pyRound(a.taken * W.positions[position].mult));
+  }
   function pyRound(x){                           // Python's round(): halves to even
     const f = Math.floor(x), r = x - f;
     if (Math.abs(r - 0.5) > 1e-9) return Math.round(x);
@@ -106,10 +112,13 @@ function makeService(SV, RULES){
   }
   function manSeason(W, s, m, acts, rng){
     let h = startHealth(m);
-    const r = { name: m.name, dead: null, dead_week: null, sick_days: 0, wound: null, worst: null, hits: [], missed: [], rolls: [], health: null };
+    const r = { name: m.name, dead: null, dead_week: null, sick_days: 0, wound: null, worst: null, hits: [], taken: null, missed: [], rolls: [], health: null };
     const end = m.endurance ?? undefined, sid = s.id;   // none: the typical man's
     for (let wk = 0; wk < weeks(W); wk++){
-      for (const aid of acts.filter(a => actionWeek(W, sid, a) === wk)) action(W, aid, m, h, r, rng);
+      for (const aid of acts.filter(a => actionWeek(W, sid, a) === wk)){
+        action(W, aid, m, h, r, rng);
+        if (r.taken){ r.taken.week = wk; r.worst = worstStep(h); r.wound = woundStep(h); r.health = h; return r }   // a prisoner: his season is over
+      }
       if (wk === Math.floor(weeks(W) / 2) && (W.wastage || {})[s.state]) wastage(W, s, h, r, rng);
       const f = factors(W, s, wk);
       let ctx = dayCtx(W, s, wk);
@@ -139,9 +148,11 @@ function makeService(SV, RULES){
     if (pct === null){ r.missed.push({ action: aid, why: "no share" }); return }
     const roll = rng();
     r.rolls.push({ action: aid, pct, roll });
-    if (roll <= pct) r.hits.push({ action: aid, pct, roll, weapon: weaponFor(W, rng()) });
+    if (roll <= pct){ r.hits.push({ action: aid, pct, roll, weapon: weaponFor(W, rng()) }); return }
+    const t = takenPct(W, aid, m.position || "line", (m.unit || {})[aid] ?? null);
+    if (t){ const tr = rng(); if (tr <= t) r.taken = { action: aid, pct: t, roll: tr } }   // came through unhit: taken?
   }
-  return { war, warsFor, season, seasonStart, weeks, actionWeek, hitPct, inWeek, factors, dayCtx, weaponFor, worstStep, woundStep, serve, between, smallFight };
+  return { war, warsFor, season, seasonStart, weeks, actionWeek, hitPct, takenPct, inWeek, factors, dayCtx, weaponFor, worstStep, woundStep, serve, between, smallFight };
 }
 
 if (typeof module !== "undefined") module.exports = makeService;   // Node (the tests); the page has no `module`

@@ -106,6 +106,7 @@ actions:
     name: "First Kernstown"
     date: 1862-03-23
     share: 12
+    taken: 7
     engaged: "3,800 (CWSAC II)"
     lost: "80 killed, 375 wounded, 263 missing (Fox); the 4th Virginia, at a third of its strength, 5 killed and 23 wounded"
     sources: [*foxcs, *cws2, *wp4va]
@@ -136,6 +137,7 @@ actions:
     name: "The Seven Days"
     date: 1862-06-27
     share: 21
+    taken: 1
     engaged: "95,481 (Livermore)"
     lost: "3,478 killed, 16,261 wounded, 875 missing (Livermore); the 4th Virginia 8 killed and 48 wounded"
     sources: [*livermore, *wp4va]
@@ -162,6 +164,7 @@ actions:
     name: "Sharpsburg (Antietam)"
     date: 1862-09-17
     share: 23
+    taken: 4
     alt: {share: 29, source: "40,000 engaged (CWSAC II)"}
     engaged: "51,844 (Livermore); 40,000 (CWSAC II)"
     lost: "2,700 killed, 9,024 wounded, 2,000 missing (Livermore)"
@@ -175,6 +178,7 @@ actions:
     name: "Fredericksburg"
     date: 1862-12-13
     share: 6
+    taken: 1
     engaged: "72,497 (Livermore)"
     lost: "595 killed, 4,061 wounded, 653 missing (Livermore); the 4th Virginia 12 wounded, the brigade in reserve"
     sources: [*livermore, *wp4va]
@@ -182,18 +186,21 @@ actions:
     name: "Chancellorsville"
     date: 1863-05-03
     share: 19
+    taken: 4
     engaged: "57,352 (Livermore)"
     lost: "1,665 killed, 9,081 wounded, 2,018 missing (Livermore)"
     sources: [*livermore]
     units:
       - name: "4th Virginia"
         share: 48
+        taken: 1
         lost: "14 killed, 155 wounded, 3 missing of 355 (Fox)"
         sources: [*fox15r]
   gettysburg:
     name: "Gettysburg"
     date: 1863-07-02
     share: 30
+    taken: 7
     alt: {share: 20, source: "Fox's 2,592 killed and 12,706 wounded"}
     engaged: "75,054 (Livermore)"
     lost: "3,903 killed, 18,735 wounded, 5,425 missing (Livermore); 2,592, 12,706, 5,150 (Fox); the 4th Virginia 18 killed, 50 wounded, 69 taken"
@@ -217,12 +224,14 @@ actions:
     name: "Spotsylvania Court House"
     date: 1864-05-12
     share: 13
+    taken: 11
     engaged: "52,000 (ABT)"
     lost: "1,515 killed, 5,414 wounded, 5,758 missing and captured (ABT)"
     sources: ["https://www.battlefields.org/learn/civil-war/battles/spotsylvania-court-house?tab=facts"]
     units:
       - name: "4th Virginia at the Mule Shoe"
         share: 7
+        taken: 63
         lost: "7 killed, 6 wounded and 126 taken of about 200 (Wikipedia; the strength is the winter's, ours)"
         sources: [*wp4va]
     note: "The season roll counts hits, not men taken: the Mule Shoe took most of the brigade prisoner. The GM may play it as the small fight The salient rushed at dawn."
@@ -239,6 +248,7 @@ actions:
     name: "Third Winchester (Opequon)"
     date: 1864-09-19
     share: 12
+    taken: 12
     engaged: "15,200 (CWSAC II)"
     lost: "226 killed, 1,567 wounded, 1,818 missing (Fox); the 4th Virginia 3 wounded, 8 taken"
     sources: [*foxcs, *cws2, *wp4va]
@@ -246,6 +256,7 @@ actions:
     name: "Fisher's Hill"
     date: 1864-09-22
     share: 2
+    taken: 8
     engaged: "12,000 (CWSAC II)"
     lost: "30 killed, 210 wounded, 995 missing (Fox)"
     sources: [*foxcs, *cws2]
@@ -253,6 +264,7 @@ actions:
     name: "Cedar Creek"
     date: 1864-10-19
     share: 10
+    taken: 6
     engaged: "18,410 (Livermore)"
     lost: "320 killed, 1,540 wounded, 1,050 missing (Livermore); the 4th Virginia 1 killed, 5 wounded, 4 taken"
     sources: [*livermore, *wp4va]
@@ -261,6 +273,7 @@ actions:
     date: 1865-03-25
     main: false
     share: 17
+    taken: 10
     engaged: "just over 10,000 in the assault (ABT)"
     lost: "over 2,600 (2,900 by the battle summary), over 1,000 of them taken (ABT)"
     sources: ["https://www.battlefields.org/learn/articles/americas-civil-war-pre-dawn-assault-fort-stedman"]
@@ -272,6 +285,7 @@ actions:
     engaged: "49,496 (Livermore)"
     lost: "6,266 killed and wounded, 43,230 missing and surrendered (Livermore)"
     sources: [*livermore]
+    note: "No taken share: the missing are mostly the surrender, paroled and sent home, not prisoners."
 
 small_fights:
   - id: picket_raid

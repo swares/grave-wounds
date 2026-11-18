@@ -89,8 +89,8 @@ not this repository.
   battalion's 24 seasons, its actions' shares lost, sickness on the disease track, hits sent to the
   roller. Still to do:
   - **More wars.** The Civil War in the East for a Union regiment (and, from the other side, the
-    4th Virginia of the Stonewall Brigade: no Confederate wound-cause count, and the season roll has
-    no way to be taken prisoner, which at the Mule Shoe took most of the brigade) and Henry V's war
+    4th Virginia of the Stonewall Brigade: no Confederate wound-cause count; men taken prisoner are
+    rolled now, from the missing, which also counts stragglers who came back) and Henry V's war
     for an English retinue are in. For Henry V's war, Curry's sick-list totals, Wylie and Waugh, and the
     garrison muster totals of 1420-22 were not reached, and more is ours (the weapon mix, most
     shares). The Western Front for a Regular battalion is in too; for it, Dunn's The War the
