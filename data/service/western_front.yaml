@@ -11,7 +11,7 @@
 # (1,837,613 wounded and 3,496,388 sick or injured, August 1914-December 1918, Mitchell and Smith, as
 # quoted), and about five deaths from wounds to each from disease. Sickness is kept low, with the
 # winters' trench foot and frost; hits come mostly from the named actions and the wastage in the line.
-# Measured (python3 -m gravewounds service western_front): about 0.9% dead of disease a season, and
+# Measured (python3 -m gravewounds service western_front): about 1.0% dead of disease a season, and
 # about 20% hit a season for a man at every main action in the line (7% holding the line alone), so
 # that a man who served the whole war was nearly always hit at least once; of the infantry sent to
 # the Western Front about 20% died and 64% were wounded (Forces News, from the Statistics of the
@@ -302,6 +302,7 @@ small_fights:
     weight: 4
     where: "across no man's land to the German front trench"
     time: "at night"
+    light: night
     ground: open
     team_attacks: true
     side: {name: "The raiding party", men: [20, 60]}
@@ -318,6 +319,7 @@ small_fights:
     weight: 3
     where: "the forward posts of the British line"
     time: "at dawn, after a barrage"
+    light: dusk
     ground: open
     side: {name: "The company in the posts", men: [30, 120]}
     foes: [{name: "German raiders", men: [40, 123], weapon: hand_grenade}]
@@ -332,6 +334,7 @@ small_fights:
     weight: 3
     where: "no man's land, between the wires"
     time: "about half past midnight"
+    light: night
     ground: open
     side: {name: "The patrol", men: [4, 8]}
     foes: [{name: "A German covering party", men: [4, 12], weapon: rifle_service}]
@@ -345,6 +348,7 @@ small_fights:
     weight: 2
     where: "the wire in front of the line"
     time: "at night"
+    light: night
     ground: open
     team_attacks: true
     side: {name: "The patrol with a Lewis gun", men: [4, 10]}
@@ -360,6 +364,7 @@ small_fights:
     weight: 2
     where: "a new crater in the front line"
     time: "about 2 in the morning"
+    light: night
     ground: open
     side: {name: "The men left in the trench", men: [20, 100]}
     foes: [{name: "German stormers", men: [40, 1000], weapon: hand_grenade}]
@@ -375,6 +380,7 @@ small_fights:
     weight: 1
     where: "the front trench under a gas cloud"
     time: "about 5 in the morning"
+    light: dusk
     ground: open
     weather: fog
     side: {name: "The men in the trench, in their helmets", men: [30, 120]}

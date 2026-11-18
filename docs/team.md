@@ -683,7 +683,7 @@ of the season its weather and ground made sickness worse, and its named actions.
   the Civil War tables have none), and 7 small fights (Hartwood Church, Berryville, Dranesville,
   Morton's Ford, the Petersburg rifle pits, Mosby at Fairfax Court House, Auburn). In the thick of
   it is ×4 here (ours: the worst regiments lost four to five times the army's share). Disease
-  comes to about 1.0% dead a season against the whole Union army's 0.72% (Fox, on a three-year
+  comes to about 1.1% dead a season against the whole Union army's 0.72% (Fox, on a three-year
   basis); hit, about 10% a season at every main action in the line against 1.2% for the whole army,
   most of which was never at a battle in the East.
 - **Henry V's war in France** (`henry_v.yaml`, 1415-1422, an English retinue): 29 seasons from
@@ -697,8 +697,8 @@ of the season its weather and ground made sickness worse, and its named actions.
   (near Rouen, 1418), an escort attacked, storming a breach (Caen, Meaux), over the river at a
   ford (the Somme, Pont-de-l'Arche), a fight in the mine (Melun), quarters taken by surprise at
   night (Ferrifontaine) and an escalade at dawn (Pontoise). No army-wide totals were found: the
-  sickness is set to the seasons the accounts describe (about 7% dead of disease at Harfleur, 13%
-  in the winter at Meaux, 8% at Melun), about 3% a season over the war. The weapon mix is ours,
+  sickness is set to the seasons the accounts describe (about 6% dead of disease at Harfleur, 12%
+  in the winter at Meaux, 6% at Melun), about 2.5% a season over the war. The weapon mix is ours,
   from the Visby graves' cutting wounds against arrows and bolts (about 78% to 22%).
 - **The Western Front** (`western_front.yaml`, 1914-1918, a British Regular battalion): 18
   seasons from Mons to the Armistice, following the 2nd Royal Welch Fusiliers (the Long, Long
@@ -714,7 +714,7 @@ of the season its weather and ground made sickness worse, and its named actions.
   Trench), a German raid on the posts (Barnton Posts), a patrol in no man's land, a working party
   caught by fire, a mine blown under the trench (the Red Dragon, Queen's Crater), a gas attack
   (Hulluch; fog stands for the cloud), the rearguard that stayed (Étreux) and bombing along a trench
-  (the Hindenburg Line). No mean strength was found, so no war totals: disease comes to about 0.9%
+  (the Hindenburg Line). No mean strength was found, so no war totals: disease comes to about 1.0%
   dead a season, hits to about 20% a season at every main action in the line (7% holding the line
   alone).
 
@@ -724,8 +724,10 @@ for each man whether he serves and where he stands. **Serve the season** then ro
 
 - **Sickness**, week by week on the camp-disease track (`data/disease.yaml`), for one man with his
   own Endurance: the season's state gives the care and marching, its hygiene and factors the
-  weekly chances. A man unfit with sickness misses an action; one who dies is lost (died of
-  disease) unless he spends a fate point.
+  weekly chances. A man unfit with sickness misses an action and spends the week in hospital
+  (sheltered care, not marching); one who dies is lost (died of disease) unless he spends a fate
+  point. A case still running at the season's end (and what he is immune to, or may relapse
+  with) goes on into his next season, and the panel shows him still sick.
 - **Each action not played**, in its week: d100 against his hit chance, the army's share lost
   (killed and wounded of those engaged, from the sources) times his position (in reserve ×0.25,
   in the line ×1, in the thick of it ×3, at most 90%; ours, set from Albuera, where the
@@ -764,8 +766,8 @@ ticks his career's main skill. Then the GM presses End of season as usual.
 **Calibration** (`python3 -m gravewounds service`): men of Endurance 50 through the war's 24
 seasons, against Dumas and Vedel-Petersen's totals for the men of the British army in the
 Peninsula (23,696 dead of disease, 6,355 killed and 30,221 wounded, of 61,511 on average). Dead
-of disease: about 2.0% a season against the records' 1.6% (a little high; the retreat to
-Corunna is the worst season, about 11%, then the retreat from Burgos, about 7%). Hit: about 5% a season at every main action in the line,
+of disease: about 2.1% a season against the records' 1.6% (a little high; the retreat to
+Corunna is the worst season, about 7%, then the retreat from Burgos, about 5%). Hit: about 5% a season at every main action in the line,
 against 2.5% for the whole army, which was not all at every action. `tools/service/parity.py`
 holds the page to the Python; `tools/service/season.py` plays it in a browser.
 

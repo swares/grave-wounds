@@ -94,14 +94,22 @@ function makeService(SV, RULES){
     }
     return out;
   }
+  function startHealth(m){                       // his case carried from the last season, or well (as service.start_health)
+    if (!m.health) return RULES.newHealth();
+    const h = RULES.copyHealth(m.health);
+    h.dead = 0;
+    return h;
+  }
   function manSeason(W, s, m, acts, rng){
-    let h = RULES.newHealth();
-    const r = { name: m.name, dead: null, dead_week: null, sick_days: 0, worst: null, hits: [], missed: [], rolls: [] };
+    let h = startHealth(m);
+    const r = { name: m.name, dead: null, dead_week: null, sick_days: 0, worst: null, hits: [], missed: [], rolls: [], health: null };
     const end = m.endurance ?? undefined, sid = s.id;   // none: the typical man's
     for (let wk = 0; wk < weeks(W); wk++){
       for (const aid of acts.filter(a => actionWeek(W, sid, a) === wk)) action(W, aid, m, h, r, rng);
       if (wk === Math.floor(weeks(W) / 2) && (W.wastage || {})[s.state]) wastage(W, s, h, r, rng);
-      const f = factors(W, s, wk), ctx = dayCtx(W, s, wk);
+      const f = factors(W, s, wk);
+      let ctx = dayCtx(W, s, wk);
+      if (unfit(h)) ctx = { ...ctx, care: "shelter", marched: false, wet_cold: false };   // too sick to march or fight: in hospital this week
       h = RULES.healthWeek(h, 1, f, rng, end).health;
       for (let k = 0; k < 7; k++){
         const res = RULES.healthDay(h, ctx, rng, end);
@@ -111,7 +119,7 @@ function makeService(SV, RULES){
         if (h.cases.some(c => c.inc === 0 && c.step > 0)) r.sick_days++;
       }
     }
-    r.worst = worstStep(h);
+    r.worst = worstStep(h); r.health = h;     // his health carried into the next season
     return r;
   }
   function wastage(W, s, h, r, rng){             // the season's wastage in the line, as service._wastage

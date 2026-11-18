@@ -59,7 +59,8 @@ sides: {team: "British", foes: "French"}
 # small_fights - ready-made fights for the roller when a season's small fight comes (rolled by weight
 #   among those whose states include the season's; the GM may pick another): name, what (the accounts,
 #   one line), states, weight (ours), where, time, ground (the roller's ground: open, road, farmland,
-#   heath, forest, hills, mountains, marsh, ford, bridge, village, town), weather (optional), side (the
+#   heath, forest, hills, mountains, marsh, ford, bridge, village, town), weather (optional), light
+#   (optional: dusk, moonlit or night, weather.yaml's light levels, set on the roller; day if none), side (the
 #   team's party, the team in it: name, men [low, high]), foes ([{name, men, kit, weapon}]: the roller
 #   shows up to 8 a side and says the real odds), team_attacks (the team's party comes in from the edge
 #   against the foes, who hold the middle), surprise (the defenders may be caught unawares: text and
@@ -75,6 +76,7 @@ small_fights:
     weight: 3
     where: "a bridge on the outpost line"
     time: "about midnight"
+    light: night
     ground: bridge
     weather: rain
     side: {name: "The picket", men: [20, 53]}
@@ -105,6 +107,7 @@ small_fights:
     weight: 2
     where: "a cornfield by a village"
     time: "about 4 in the morning"
+    light: dusk
     ground: farmland
     team_attacks: true
     side: {name: "The light troops", men: [40, 120]}
@@ -136,6 +139,7 @@ small_fights:
     weight: 4
     where: "the parallel before the breach"
     time: "in the evening"
+    light: dusk
     ground: open
     side: {name: "The working party and its guard", men: [50, 200]}
     foes: [{name: "The French sortie", men: [150, 1500], weapon: musket_smoothbore}]
@@ -165,6 +169,7 @@ small_fights:
     weight: 2
     where: "an outlying redoubt"
     time: "at night"
+    light: night
     ground: hills
     team_attacks: true
     side: {name: "The volunteers", men: [100, 300]}
@@ -180,6 +185,7 @@ small_fights:
     weight: 1
     where: "a village held by the French"
     time: "about 6 in the morning"
+    light: dusk
     ground: village
     weather: fog
     team_attacks: true

@@ -116,6 +116,25 @@ def run(p):
     check(sides["fw"] == ["musket_smoothbore"], f"the French carry the fight's weapon ({sides['fw']})")
     check("Hold the bridge" in sides["notes"] and "It ends" in sides["notes"] and "Cope" in sides["notes"], "the aims, the end and the source are in the fight's notes")
     check(pg.evaluate("() => S.weather.cond") == "rain", "in the rain, as the fight says")
+    dark = pg.evaluate("""() => { S.weapon = 'musket_smoothbore'; const a = S.chars.find(c => c.uid);
+      return { light: S.weather.light, far: darkOnAttack({ blocked: null, penalty: 0, notes: [] }, 30, a).blocked || '',
+               near: darkOnAttack({ blocked: null, penalty: 0, notes: [] }, 10, a).penalty } }""")
+    check(dark["light"] == "night" and "Dark night" in dark["far"] and dark["near"] == 20,
+          f"in a dark night: no aimed shot beyond 25 hexes, and -20% within ({dark})")
+    count = pg.evaluate("() => S.mapMsg.match(/The picket \\(British\\), (\\d+ of its \\d+ men|its \\d+ men)/)?.[1] || ''")
+    check(count.startswith(str(sides["b"]) + " of its") or count == f"its {sides['b']} men" or (count.startswith("its ") and int(count.split()[1]) <= sides["b"]),
+          f"the setup counts the team's men in the picket ({count}; {sides['b']} on the map)")
+    # a case carried from the last season: the panel shows it, and the next season begins from it
+    pg.goto(BASE + "team.html")
+    pg.wait_for_selector("#h-service")
+    pg.evaluate("""() => { const c = S.team[0];
+      c.svcHealth = { cases: [{ d: 'flux', inc: 0, step: 2, peak: 2, shown: 9, chronic: true }], immune: {}, had: {}, dead: 0 }; render() }""")
+    check("still serious from last season" in pg.inner_text("#service"), "a man still sick at the season's end shows so on the panel")
+    pg.evaluate(SEEDED, 11)
+    pg.click("#btn-serve")
+    first = pg.evaluate("() => S.svclog.find(l => l.startsWith(S.team[0]?.name)) || S.svclog.join(' ')")
+    check("began the season serious" in pg.inner_text("#service"), f"and his next season begins from it ({first[:120]})")
+
     # the second war: a Union company in the East
     pg.goto(BASE + "team.html")
     pg.select_option("#sel-era", "civil_war")

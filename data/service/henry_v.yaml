@@ -5,8 +5,8 @@
 # numbers: only Harfleur and Agincourt have figures from the records (through Anne Curry), and no
 # army-wide totals were found, so the sickness is tuned to the few seasons the accounts describe
 # (Harfleur 1415, Meaux 1421-22), the rest kept low; more here is ours than in the later wars.
-# Measured (python3 -m gravewounds service henry_v): about 7% dead of disease at Harfleur, 13% in the
-# winter at Meaux, 8% at Melun and on the march to Agincourt, and about 3% a season over the war
+# Measured (python3 -m gravewounds service henry_v): about 6% dead of disease at Harfleur, 12% in the
+# winter at Meaux, 6% at Melun, 5% on the march to Agincourt, and about 2.5% a season over the war
 # (the Peninsula, 2%; the Union army in the East, 1%).
 # Design and sources: project doc "between-battles-design".
 id: henry_v
@@ -60,9 +60,9 @@ sources:
   seward16: &seward16 "https://erenow.org/biographies/henry-v-as-warlord/16.php"
 
 seasons:
-  - {id: 1415-summer, name: "Summer 1415", state: siege, hygiene: fair, factors: {hot: 8}, actions: [],
+  - {id: 1415-summer, name: "Summer 1415", state: siege, hygiene: fair, factors: {hot: 12}, actions: [],
      what: "Landed at the mouth of the Seine (14 August) and laid siege to Harfleur; dysentery in the camp.",
-     note: "The records: about 1,330 sent home sick (the sick lists are incomplete) and 37 dead at the siege of some 12,000; chroniclers give up to 2,000 dead. Its hot weeks are ours, set so a man dies of disease about 7% of the time there: between the records and the chroniclers.",
+     note: "The records: about 1,330 sent home sick (the sick lists are incomplete) and 37 dead at the siege of some 12,000; chroniclers give up to 2,000 dead. Its hot weeks are ours, set so a man dies of disease about 6% of the time there: between the records and the chroniclers.",
      sources: [*tna, *ms]}
   - {id: 1415-autumn, name: "Autumn 1415", state: march, hygiene: fair, factors: {cold_wet: 2}, actions: [agincourt],
      what: "Harfleur falls (22 September); the march to Calais in the rain, short of food, over the Somme (19 October) to Agincourt (25 October). Or the garrison of Harfleur under Dorset.",
@@ -116,7 +116,7 @@ seasons:
      what: "The king back at Calais with some 4,000 (11 June); Dreux and Beaugency.", sources: ["https://aristocraticfury.substack.com/p/the-bastard-of-vaurus", *mon5]}
   - {id: 1421-autumn, name: "Autumn 1421", state: siege, hygiene: fair, factors: {cold_wet: 2}, actions: [],
      what: "The siege of Meaux from 6 October, its ditches cleared at night by the defenders.", sources: ["https://aristocraticfury.substack.com/p/the-bastard-of-vaurus", *mon5]}
-  - {id: 1421-winter, name: "Winter 1421-22", state: siege, hygiene: fair, factors: {cold_wet: 6}, actions: [],
+  - {id: 1421-winter, name: "Winter 1421-22", state: siege, hygiene: fair, factors: {cold_wet: 9}, actions: [],
      what: "The winter siege of Meaux, with dysentery and smallpox: about a sixth of the army lost by Christmas, dead or deserted (Sumption, from the pay records); the town falls in March.",
      sources: ["https://aristocraticfury.substack.com/p/the-bastard-of-vaurus", *corrigan]}
   - {id: 1422-spring, name: "Spring 1422", state: siege, hygiene: fair, factors: {}, actions: [],
@@ -256,6 +256,7 @@ small_fights:
     weight: 1
     where: "a mine gallery under the walls"
     time: "underground, by torchlight"
+    light: moonlit
     ground: open
     side: {name: "The miners and their guard", men: [4, 12]}
     foes: [{name: "The countermine", men: [4, 12], kit: brigandine_sallet, weapon: spear}]
@@ -270,6 +271,7 @@ small_fights:
     weight: 1
     where: "a village where men are quartered"
     time: "at night"
+    light: night
     ground: village
     side: {name: "The quartered men", men: [50, 1000]}
     foes: [{name: "Men-at-arms from a French garrison", men: [100, 500], kit: full_plate, weapon: spear}]
@@ -285,6 +287,7 @@ small_fights:
     weight: 1
     where: "a town wall by the vineyards"
     time: "between daybreak and sunrise"
+    light: dusk
     ground: town
     team_attacks: true
     side: {name: "The escalade party", men: [40, 300]}
