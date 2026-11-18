@@ -3442,11 +3442,19 @@ function svcQueue(add){                             // the hits waiting on the r
   if (add){ L.push(...add); try{ localStorage.setItem(SVC_HITS, JSON.stringify(L)) }catch(e){ /* storage off: the GM rolls them by hand */ } }
   return L;
 }
+function svcShareInput(a, V, aid){                  // no share in the sources: the GM sets one
+  const why = esc((a.note || "not found").replace(/\.$/, ""));
+  return `<label>share lost <input type="number" min="0" max="100" class="num" data-svshare="${aid}" value="${V.share[aid] ?? ""}" aria-label="${esc(a.name)}: the share lost, %"> %</label> <span class="muted">(${why})</span>`;
+}
+function svcShareText(a){                           // the army's share lost, another source's, and the share taken
+  const alt = a.alt ? " (" + esc(a.alt.source) + ": " + a.alt.share + "%)" : "";
+  const single = a.single ? ", a single report" : "";
+  return `<span class="muted">the army lost ${a.share}%${alt}${single}${svcTakenText(a)}</span>`;
+}
 const svcTakenText = a => (a.taken ? ", " + a.taken + "% taken" : "");   // the share taken prisoner, where counted
 function svcActionHtml(W, V, aid){                  // one action of the season: at it, played, or rolled at a share
   const a = W.actions[aid], at = V.at[aid] ?? a.main !== false, played = !!V.played[aid];
-  const share = a.share == null ? `<label>share lost <input type="number" min="0" max="100" class="num" data-svshare="${aid}" value="${V.share[aid] ?? ""}" aria-label="${esc(a.name)}: the share lost, %"> %</label> <span class="muted">(${esc((a.note || "not found").replace(/\.$/, ""))})</span>`
-    : `<span class="muted">the army lost ${a.share}%${a.alt ? ` (${esc(a.alt.source)}: ${a.alt.share}%)` : ""}${a.single ? ", a single report" : ""}${svcTakenText(a)}</span>`;
+  const share = a.share == null ? svcShareInput(a, V, aid) : svcShareText(a);
   const units = (a.units || []).length ? ` <select data-svunit="${aid}" style="width:auto" aria-label="${esc(a.name)}: whose figure"><option value="">as the army, by position</option>${a.units.map((u, k) => `<option value="${k}" ${String(V.unit[aid]) === String(k) ? "selected" : ""}>as ${esc(u.name)} (${u.share}%)</option>`).join("")}</select>` : "";
   const field = a.field ? ` <label><input type="checkbox" data-svplay="${aid}" ${played ? "checked" : ""}> play it on the field map (${esc(TD.service.fields[a.field])})</label>` : "";
   return `<li><label><input type="checkbox" data-svat="${aid}" ${at ? "checked" : ""}> <b>${esc(a.name)}</b>, ${esc(a.date)}</label>${a.main === false ? ` <span class="muted">(${esc((a.note || "not the main army").replace(/\.$/, ""))})</span>` : ""}: ${share}${units}${field}</li>`;
