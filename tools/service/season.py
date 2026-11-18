@@ -217,7 +217,7 @@ def run(p):
     first = pg.evaluate("() => S.svclog.join(' ')")
     check("began the season serious" in pg.inner_text("#service"), f"and his next season begins from it ({first[:120]})")
     check(f"{wounded}: began the season" in pg.inner_text("#service") and "(his wounds)" in pg.inner_text("#service"),
-          f"the man hit last season begins this one with his wounds on the track ({wounded}: {pg.evaluate('n => S.svclog.find(l => l.startsWith(n)) || S.svclog.join(' ')', wounded)[:300]!r})")
+          f"the man hit last season begins this one with his wounds on the track ({wounded}: {pg.evaluate("n => S.svclog.find(l => l.startsWith(n)) || S.svclog.join(' ')", wounded)[:300]!r})")
 
     # the second war: a Union company in the East
     pg.goto(BASE + "team.html")
