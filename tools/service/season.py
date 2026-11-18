@@ -170,8 +170,8 @@ def run(p):
       return out }""")
     check(held["hold"] == "British" and held["midRound"] is None and (held["atEnd"] or {}).get("won") == "French"
           and "hold" in held["atEnd"]["why"], f"the picket's bridge: lost at a round's end once the French stand in it and the picket does not ({held})")
-    check((held["away"] or {}).get("won") == "French" and held["gone"] == held["need"] and held["isOut"],
-          f"and men on their own edge leave the field: once a share have got away, their side wins ({held['away']}, {held['gone']} of {held['need']})")
+    check((held["away"] or {}).get("won") == "French" and held["gone"] >= held["need"] and held["isOut"],
+          f"and men on their own edge leave the field: once a share have got away, their side wins ({held['away']}, {held['gone']} gone, {held['need']} needed; any already on the edge go too)")
     # a case carried from the last season: the panel shows it, and the next season begins from it
     pg.goto(BASE + "team.html")
     pg.wait_for_selector("#h-service")
