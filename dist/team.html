@@ -3440,7 +3440,7 @@ function svcSeasonOptions(W, V){                     // the next season first, t
 function svcStillHtml(c){                          // '(still serious from last season)', or his wounds'
   const H = svcHealthOf(namedStore(), c), sick = H && SVC.worstStep(H), hurt = H && SVC.woundStep(H);
   if (!sick && !hurt) return "";
-  return ` <span class="muted">(still ${esc([sick && sick, hurt && `wounded, ${hurt}`].filter(Boolean).join("; "))} from last season)</span>`;
+  return ` <span class="muted">(still ${esc([sick, hurt && `wounded, ${hurt}`].filter(Boolean).join("; "))} from last season)</span>`;
 }
 function renderService(){
   const box = $("#service"), V = svcState();
