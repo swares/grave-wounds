@@ -671,7 +671,7 @@ once. The Python rules and the page give the same result from the same dice.
 the project doc "between-battles-design"). Between the modelled battles, a team of the war's army
 serves a season (91 days) with a line battalion in one step. The war's calendar gives each season
 what the battalion did (in quarters, on campaign, on the march, at a siege), its hygiene, the weeks
-of the season its weather and ground made sickness worse, and its named actions. Six wars so far:
+of the season its weather and ground made sickness worse, and its named actions. Seven wars so far:
 
 - **The Peninsula** (`peninsula.yaml`, 1808-1814, the British in the Peninsula): 24 seasons from
   Roliça to Toulouse, 18 actions, 8 small fights.
@@ -718,6 +718,19 @@ of the season its weather and ground made sickness worse, and its named actions.
   found: disease comes to about 0.7% dead a season (6.5% in the winter sieges of 1462, 0.1% at
   home, plague in 1464 and 1467), with the short campaigns at good hygiene (ours); hits to about
   2.3% a season at every main action in the line, over a war of long peace.
+- **The Wars of the Roses with the northern Lancastrians** (`roses_lancaster.yaml`, 1459-1464, a
+  retainer of the Percy and Clifford affinity; England's third war): 20 seasons from Ludford Bridge
+  to the fall of Bamburgh. Northampton lost, Wakefield and Second St Albans won, Ferrybridge (taken
+  at dawn: the GM sets it, or plays it), Towton lost (its battlefield), the border years with the
+  Scots, the castles besieged by hunger in the winter of 1462, Norham, Hedgeley Moor and Hexham. A
+  winning side's share is its dead times four, as for Edward's men; a beaten side's is its dead
+  times two (ours), since most were cut down in the rout: Towton 40% (6,000 dead of about 30,000;
+  60% on the Annales' 9,000), Northampton 12%, Wakefield 4%; St Albans, Hedgeley Moor and Hexham
+  have no figure (ours). Nine small fights, from the other side where Edward's war has them
+  (taking the bridge at dawn, caught in the dale, a sally for food) and its own (into the town at
+  St Albans, catching them outside the castle at Wakefield, a raid over the border, stranded on
+  Holy Island, at the breach of Bamburgh, the relief coming on at Norham), most of them ours in
+  their sizes. Disease about 1.1% a season, 4.9% besieged in the winter of 1462.
 - **The Western Front** (`western_front.yaml`, 1914-1918, a British Regular battalion): 18
   seasons from Mons to the Armistice, following the 2nd Royal Welch Fusiliers (the Long, Long
   Trail, the 33rd Division's history, Graves); 17 actions. The battles are counted by divisions,
