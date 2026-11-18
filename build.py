@@ -2159,8 +2159,8 @@ def service_bundle(d) -> dict | None:
     and works as well when it is made)."""
     if not d.service:
         return None
-    mix = {W["table"]: [[m["weapon"], float(m["pct"])] for m in d.tables[W["table"]].get("weapon_mix") or [] if m.get("weapon")]
-           for W in d.service.values()}
+    from gravewounds.service import mix_of
+    mix = {wid: [[w, p] for w, p in mix_of(d, W)] for wid, W in d.service.items()}   # each war's weapon mix
     names = {w: d.weapons[w]["name"] for m in mix.values() for w, _ in m}
     return {"wars": d.service, "mix": mix, "weapons": names, "steps": d.disease["steps"], "unfit_from": d.disease["unfit_from"],
             "rules": {"terrain": d.terrain, "weather": d.weather, "works": d.works, "disease": d.disease},

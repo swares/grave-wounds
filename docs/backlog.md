@@ -88,8 +88,11 @@ not this repository.
   with the battalion*; project doc "between-battles-design"). The Peninsula is in: a line
   battalion's 24 seasons, its actions' shares lost, sickness on the disease track, hits sent to the
   roller. Still to do:
-  - **More wars.** Each needs a calendar and its actions' shares from the sources; the Civil War and
-    the World Wars have the best figures.
+  - **More wars.** The Civil War in the East for a Union regiment is in. Still to come: the
+    Confederates (their counts are thinner), the West (Shiloh to Atlanta, sicker), and the World
+    Wars; each needs a calendar, its actions' shares and its small fights from the sources. For
+    the Civil War, Livermore's tables, the Official Records returns and the Medical and Surgical
+    History's monthly sick rates were not reached; disease runs about 1.0% a season against 0.72%.
   - **The small war, more of it.** The Peninsula's eight small fights are in (played on the roller,
     the end in words). Still left: a British foraging party attacked (only the French side was
     found), a count of how often such fights came (Leach's *Rough Sketches*, Simmons's journal and

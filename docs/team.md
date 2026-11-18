@@ -671,8 +671,21 @@ once. The Python rules and the page give the same result from the same dice.
 the project doc "between-battles-design"). Between the modelled battles, a team of the war's army
 serves a season (91 days) with a line battalion in one step. The war's calendar gives each season
 what the battalion did (in quarters, on campaign, on the march, at a siege), its hygiene, the weeks
-of the season its weather and ground made sickness worse, and its named actions. The first war is
-the Peninsula (1808-1814, the British in the Peninsula), 24 seasons from Roliça to Toulouse.
+of the season its weather and ground made sickness worse, and its named actions. Two wars so far:
+
+- **The Peninsula** (`peninsula.yaml`, 1808-1814, the British in the Peninsula): 24 seasons from
+  Roliça to Toulouse, 18 actions, 8 small fights.
+- **The Civil War in the East** (`acw_union_east.yaml`, 1861-1865, a Union regiment of the Army of
+  the Potomac): 16 seasons from First Bull Run to Appomattox, following the 2nd Vermont's record in
+  Dyer's Compendium; 21 actions with Fox's losses (twelve regiments' own figures, from the 1st
+  Minnesota's 82% at Gettysburg down), the Medical and Surgical History's wounds by weapon (89.5%
+  small arms, 9.8% artillery, 0.65% sabre and bayonet: a war may give its own `weapon_mix`, since
+  the Civil War tables have none), and 7 small fights (Hartwood Church, Berryville, Dranesville,
+  Morton's Ford, the Petersburg rifle pits, Mosby at Fairfax Court House, Auburn). In the thick of
+  it is ×4 here (ours: the worst regiments lost four to five times the army's share). Disease
+  comes to about 1.0% dead a season against the whole Union army's 0.72% (Fox, on a three-year
+  basis); hit, about 10% a season at every main action in the line against 1.2% for the whole army,
+  most of which was never at a battle in the East.
 
 On the team builder's **A season with the battalion** panel the GM picks the season, ticks the
 actions the team was at (those of the main army are ticked; Albuera and San Sebastián are not), and
