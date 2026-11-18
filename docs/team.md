@@ -671,7 +671,7 @@ once. The Python rules and the page give the same result from the same dice.
 the project doc "between-battles-design"). Between the modelled battles, a team of the war's army
 serves a season (91 days) with a line battalion in one step. The war's calendar gives each season
 what the battalion did (in quarters, on campaign, on the march, at a siege), its hygiene, the weeks
-of the season its weather and ground made sickness worse, and its named actions. Three wars so far:
+of the season its weather and ground made sickness worse, and its named actions. Four wars so far:
 
 - **The Peninsula** (`peninsula.yaml`, 1808-1814, the British in the Peninsula): 24 seasons from
   Roliça to Toulouse, 18 actions, 8 small fights.
@@ -700,6 +700,23 @@ of the season its weather and ground made sickness worse, and its named actions.
   sickness is set to the seasons the accounts describe (about 7% dead of disease at Harfleur, 13%
   in the winter at Meaux, 8% at Melun), about 3% a season over the war. The weapon mix is ours,
   from the Visby graves' cutting wounds against arrows and bolts (about 78% to 22%).
+- **The Western Front** (`western_front.yaml`, 1914-1918, a British Regular battalion): 18
+  seasons from Mons to the Armistice, following the 2nd Royal Welch Fusiliers (the Long, Long
+  Trail, the 33rd Division's history, Graves); 17 actions. The battles are counted by divisions,
+  so a battle's share is its British loss against its divisions at 18,000 each (ours), with the
+  battalions' own figures where found (the Newfoundlanders' 87% and the Accrington Pals' 81% on 1
+  July 1916, the 1st Queen's 94% at First Ypres). A war may now give **wastage**: a hit chance a
+  season by state, rolled once at mid-season for a man not hit and not unfit (here 10% holding the
+  line, ours, from the 1/5th Lincolns' 87 casualties in 40 days in the line), with its own name on
+  the page and in the roller's queue. The weapon mix is Macpherson's 24-hour sample of 10,789
+  wounds (shell 56%, bullet 27%, grenade 0.7%, bayonet 0.2%, gas and uncertain left out); the often
+  quoted 58/39/2/0.3 could not be traced. Eight small fights: a trench raid (Givenchy, Kiel
+  Trench), a German raid on the posts (Barnton Posts), a patrol in no man's land, a working party
+  caught by fire, a mine blown under the trench (the Red Dragon, Queen's Crater), a gas attack
+  (Hulluch; fog stands for the cloud), the rearguard that stayed (Étreux) and bombing along a trench
+  (the Hindenburg Line). No mean strength was found, so no war totals: disease comes to about 0.9%
+  dead a season, hits to about 20% a season at every main action in the line (7% holding the line
+  alone).
 
 On the team builder's **A season with the battalion** panel the GM picks the season, ticks the
 actions the team was at (those of the main army are ticked; Albuera and San Sebastián are not), and

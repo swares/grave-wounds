@@ -169,6 +169,8 @@ def _man(d: Data, W: dict, s: dict, m: dict, acts: list, rng) -> dict:
     for wk in range(weeks(W)):
         for aid in [a for a in acts if action_week(W, sid, a) == wk]:
             _action(d, W, aid, m, h, r, rng)
+        if wk == weeks(W) // 2 and (W.get("wastage") or {}).get(s["state"]):
+            _wastage(d, W, s, h, r, rng)
         f, ctx = factors(d, W, s, wk), day_ctx(W, s, wk)
         h, _ = dz.week(d, h, 1, f, rng, end)
         for _ in range(7):
@@ -180,6 +182,20 @@ def _man(d: Data, W: dict, s: dict, m: dict, acts: list, rng) -> dict:
                 r["sick_days"] += 1
     r["worst"] = dz.worst_step(d, h)
     return r
+
+
+WASTAGE = "wastage"   # the hits of a season in the line, outside its named actions
+
+
+def _wastage(d: Data, W: dict, s: dict, h: dict, r: dict, rng) -> None:
+    """The season's wastage in the line (wastage: % by state), rolled once at mid-season for a man
+    neither hit already nor unfit: shelled or sniped on the quiet days between the named actions."""
+    if r["hits"] or _unfit(d, h):
+        return
+    pct, roll = W["wastage"][s["state"]], rng()
+    r["rolls"].append({"action": WASTAGE, "pct": pct, "roll": roll})
+    if roll <= pct:
+        r["hits"].append({"action": WASTAGE, "pct": pct, "roll": roll, "weapon": weapon_for(d, W, rng())})
 
 
 def _action(d: Data, W: dict, aid: str, m: dict, h: dict, r: dict, rng) -> None:

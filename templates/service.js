@@ -100,6 +100,7 @@ function makeService(SV, RULES){
     const end = m.endurance ?? undefined, sid = s.id;   // none: the typical man's
     for (let wk = 0; wk < weeks(W); wk++){
       for (const aid of acts.filter(a => actionWeek(W, sid, a) === wk)) action(W, aid, m, h, r, rng);
+      if (wk === Math.floor(weeks(W) / 2) && (W.wastage || {})[s.state]) wastage(W, s, h, r, rng);
       const f = factors(W, s, wk), ctx = dayCtx(W, s, wk);
       h = RULES.healthWeek(h, 1, f, rng, end).health;
       for (let k = 0; k < 7; k++){
@@ -112,6 +113,12 @@ function makeService(SV, RULES){
     }
     r.worst = worstStep(h);
     return r;
+  }
+  function wastage(W, s, h, r, rng){             // the season's wastage in the line, as service._wastage
+    if (r.hits.length || unfit(h)) return;
+    const pct = W.wastage[s.state], roll = rng();
+    r.rolls.push({ action: "wastage", pct, roll });
+    if (roll <= pct) r.hits.push({ action: "wastage", pct, roll, weapon: weaponFor(W, rng()) });
   }
   function action(W, aid, m, h, r, rng){         // one unplayed action: missed, or his hit roll
     if (r.hits.length){ r.missed.push({ action: aid, why: "wounded" }); return }

@@ -157,6 +157,20 @@ def run(p):
     check(esc["named"] == men and esc["fw"] == ["crossbow"] and esc["fk"] == ["brigandine_sallet"],
           f"the escalade: the retinue's {men} named men go up the ladders against the guard with crossbows ({esc['fw']}, {esc['fk']})")
     check("Defending: The guard on the wall" in esc["msg"], "the French guard holds the wall; the English come in from the edge")
+    # the fourth war: a British section on the Western Front, and its wastage in the line
+    pg.goto(BASE + "team.html")
+    pg.select_option("#sel-era", "wwi")
+    pg.select_option("#sel-region", "british")
+    pg.select_option("#sel-template", "section")
+    pg.click("#btn-roll")
+    pg.wait_for_selector("#h-service")
+    k = pg.evaluate("() => SVC.war('western_front').seasons.findIndex(s => s.id === '1916-spring')")
+    pg.select_option("#sv-season", str(k))
+    check("shelled or sniped in the line: 10% a man" in pg.inner_text("#service"), "holding the line, each man risks the wastage in the line")
+    pg.evaluate(SEEDED, 3)
+    pg.click("#btn-serve")
+    log = pg.inner_text("#service")
+    check(log.count("Shelled or sniped in the line: 10%") >= 1, "the season's log gives each man's wastage roll")
     check(not errors, f"no page errors {errors[:3]}")
     br.close()
 

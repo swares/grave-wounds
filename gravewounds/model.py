@@ -2118,6 +2118,11 @@ def _service_errors(d: Data, W: dict) -> list[str]:
     for x in d.disease["diseases"].values():
         known |= set(x.get("mods", {})) | set(x.get("needs", []))
     errors += _small_fight_errors(d, W, where, states)
+    wa = W.get("wastage") or {}
+    errors += [f"{where}: wastage: unknown state {k}" for k in wa if k not in states]
+    errors += [f"{where}: wastage {k} must be 0-100" for k, v in wa.items() if not (isinstance(v, (int, float)) and 0 <= v <= 100)]
+    if wa and not W.get("wastage_name"):
+        errors.append(f"{where}: wastage needs a wastage_name (what the hits are called on the page)")
     acts, seen = W.get("actions", {}), set()
     for s in W.get("seasons", []):
         sw = f"{where}: season {s.get('id')}"

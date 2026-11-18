@@ -91,7 +91,9 @@ not this repository.
   - **More wars.** The Civil War in the East for a Union regiment and Henry V's war for an
     English retinue are in. For Henry V's war, Curry's sick-list totals, Wylie and Waugh, and the
     garrison muster totals of 1420-22 were not reached, and more is ours (the weapon mix, most
-    shares). Still to come: the
+    shares). The Western Front for a Regular battalion is in too; for it, Dunn's The War the
+    Infantry Knew, the Statistics of the Military Effort's casualty tables and a mean strength were
+    not reached, and most battle shares are ours (divisions at 18,000). Still to come: the
     Confederates (their counts are thinner), the West (Shiloh to Atlanta, sicker), and the World
     Wars; each needs a calendar, its actions' shares and its small fights from the sources. For
     the Civil War, Livermore's tables, the Official Records returns and the Medical and Surgical

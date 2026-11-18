@@ -1,0 +1,412 @@
+# A season of service: a British Regular infantry battalion on the Western Front, 1914-1918 (format
+# as data/service/peninsula.yaml). The calendar follows the 2nd Royal Welch Fusiliers (19th Brigade,
+# then the 33rd and 38th Divisions), whose war Dunn's The War the Infantry Knew records and Graves
+# and Sassoon served in; Dunn himself was not reached, so the battalion's record comes from the Long,
+# Long Trail, the 33rd Division's history (1921), Graves and the battalion's memorial pages.
+# The battles are counted by divisions, not men: a battle's share is its British loss against its
+# divisions at 18,000 men each (ours, a division's establishment of all arms), so most shares are
+# ours, and for the long battles they include the drafts that came up during them.
+# No mean strength of the British Army in France was found, so there are no war totals for the
+# calibration. The records give the shape: about 1.9 admissions sick or injured to each wounded man
+# (1,837,613 wounded and 3,496,388 sick or injured, August 1914-December 1918, Mitchell and Smith, as
+# quoted), and about five deaths from wounds to each from disease. Sickness is kept low, with the
+# winters' trench foot and frost; hits come mostly from the named actions and the wastage in the line.
+# Measured (python3 -m gravewounds service western_front): about 0.9% dead of disease a season, and
+# about 20% hit a season for a man at every main action in the line (7% holding the line alone), so
+# that a man who served the whole war was nearly always hit at least once; of the infantry sent to
+# the Western Front about 20% died and 64% were wounded (Forces News, from the Statistics of the
+# Military Effort).
+# Design and sources: project doc "between-battles-design".
+id: western_front
+name: "The Western Front: a Regular battalion (1914-1918)"
+era: wwi
+regions: [british]
+table: wwi-1914-18-wounds
+season_days: 91
+
+# Wounds by cause in one 24-hour sample of 10,789 (Macpherson, Medical Services General History,
+# vol. 3, 1924, pp. 170-171, as quoted by Thom): high explosive 35.8%, shrapnel 19.9%, bullet 27.2%,
+# hand grenade 0.7%, bayonet 0.2%, gas 1.9%, uncertain 14.3%. Gas and the uncertain are left out and
+# the rest scaled to 100; the bullets are split evenly between rifle and machine gun (ours). The
+# often-quoted 58% shell, 39% bullet, 2% bomb, 0.3% bayonet could not be traced to its source.
+weapon_mix:
+  - {weapon: mortar_artillery, pct: 66.47}
+  - {weapon: rifle_service, pct: 16.23}
+  - {weapon: machine_gun, pct: 16.22}
+  - {weapon: hand_grenade, pct: 0.84}
+  - {weapon: bayonet, pct: 0.24}
+
+states:
+  trenches: {name: "Holding the line", care: field, marched: false, staying: true}
+  battle:   {name: "In a battle", care: field, marched: false, staying: false}
+  march:    {name: "On the march", care: field, marched: true, staying: false}
+  rest:     {name: "At rest and training", care: shelter, marched: false, staying: true}
+
+positions:
+  reserve: {name: "In support", mult: 0.25}
+  line:    {name: "In the attack", mult: 1}
+  thick:   {name: "In the thick of it", mult: 2}
+cap: 90
+
+# Wastage: the men lost in the line on the days between the named actions, shelled and sniped. The
+# 1/5th Lincolns lost 13 killed and 74 wounded in about 40 days in the line in 1915 (about 9% of a
+# battalion); "one fatality every day or two" in a quiet sector (a researcher, Great War Forum). A
+# season holding the line, about half of it in the front and support lines by the usual rotation
+# (four days in front, four in close reserve, four at rest; the Long, Long Trail), so 10% (ours).
+wastage: {trenches: 10, battle: 5}
+wastage_name: "Shelled or sniped in the line"
+
+# Small fights: Haig's raid map lists 225 raids on the British sector in 1916, British and German
+# (a single forum source); Third Army made nineteen significant raids in September 1917. The
+# chances a season are ours.
+small_war:
+  chance: {trenches: 50, battle: 30, march: 30, rest: 5}
+  hit: 15
+
+sides: {team: "British", foes: "German"}
+
+sources:
+  llt: &llt "https://www.longlongtrail.co.uk/army/regiments-and-corps/the-british-infantry-regiments-of-1914-1918/royal-welsh-fusiliers/"
+  div33: &div33 "https://www.electricscotland.com/History/scotreg/ThirtyThirdDivisionFrFl.pdf"
+  graves: &graves "https://www.gutenberg.org/cache/epub/76911/pg76911.txt"
+  mog: &mog "https://menonthegates.org.uk/men_front/bo-1914-2-bn-rwf-battle-of-the-marne-5-12-sept-1914-1-2/"
+  div38: &div38 "https://wiki.riteme.site/wiki/38th_(Welsh)_Division"
+  wfa: &wfa "https://www.westernfrontassociation.com/world-war-i-articles/trench-diseases-of-the-first-world-war/"
+
+seasons:
+  - {id: 1914-summer, name: "Summer 1914", state: march, hygiene: good, factors: {hot: 1}, actions: [mons, le_cateau],
+     what: "Landed at Rouen (11 August), joined the 19th Brigade near Valenciennes, and the retreat from Mons to south-east of Paris in the heat, with rearguards.",
+     sources: [*llt, "https://www.longlongtrail.co.uk/battles/battles-of-the-western-front-in-france-and-flanders/the-retreat-from-mons-and-the-battle-of-le-cateau"]}
+  - {id: 1914-autumn, name: "Autumn 1914", state: battle, hygiene: good, factors: {cold_wet: 2}, actions: [aisne, first_ypres],
+     what: "The Marne and the Aisne; attack and counter-attack about Armentières in October, short of ammunition; into the line at Frelinghien (25 November).",
+     sources: [*mog, "https://wartimememoriesproject.com/greatwar/allied/battalion.php?pid=7367"]}
+  - {id: 1914-winter, name: "Winter 1914-15", state: trenches, hygiene: good, factors: {cold_wet: 3}, actions: [],
+     what: "In the line at Frelinghien and Houplines, in water; the Christmas truce. Over 20,000 cases of trench foot in the British army that winter (Payne).",
+     sources: ["https://generalship.org/military-history-articles/royal-welch-fusiliers-christmas-truce.html", *wfa]}
+  - {id: 1915-spring, name: "Spring 1915", state: trenches, hygiene: good, factors: {}, actions: [neuve_chapelle, second_ypres, aubers, festubert],
+     what: "In the line about Armentières while the battles are fought to the south and at Ypres; gas first used by the Germans (22 April).",
+     sources: ["https://wartimememoriesproject.com/greatwar/allied/battalion.php?pid=7367", *llt]}
+  - {id: 1915-summer, name: "Summer 1915", state: trenches, hygiene: good, factors: {hot: 1}, actions: [],
+     what: "Laventie, then the brickstacks at Cambrin and Cuinchy: mines, bombs and snipers.", sources: [*graves]}
+  - {id: 1915-autumn, name: "Autumn 1915", state: battle, hygiene: good, factors: {cold_wet: 1}, actions: [loos],
+     what: "Loos (25 September): the battalion in support of a subsidiary attack at Cambrin, the British using gas for the first time.",
+     sources: [*graves, "https://royalwelchfusiliersmuseum.blogspot.com/2015/09"]}
+  - {id: 1915-winter, name: "Winter 1915-16", state: rest, hygiene: good, factors: {cold_wet: 2}, actions: [],
+     what: "Six weeks' training at Montagne, then the line at Cambrin, Cuinchy and Givenchy from late December.", sources: [*graves, *div33]}
+  - {id: 1916-spring, name: "Spring 1916", state: trenches, hygiene: good, factors: {}, actions: [],
+     what: "Givenchy and the La Bassée front: mines and raids.", sources: [*div33]}
+  - {id: 1916-summer, name: "Summer 1916", state: battle, hygiene: good, factors: {hot: 1}, actions: [somme_first_day, somme],
+     what: "The Red Dragon mine at Givenchy (22 June) and the raid that paid for it (5 July); then the Somme: Mametz Wood, High Wood (20 July) and High Wood again in August.",
+     sources: ["https://www.tunnellersmemorial.com/eye-witness-account/", *graves, "https://somme-roll-of-honour.com/Units/british/2nd_royal_welsh_fusiliers.htm"]}
+  - {id: 1916-autumn, name: "Autumn 1916", state: trenches, hygiene: good, factors: {cold_wet: 2}, actions: [],
+     what: "Hannescamps and Foncquevillers, then the front line at Lesboeufs in the mud to November.", sources: ["https://somme-roll-of-honour.com/Units/british/2nd_royal_welsh_fusiliers.htm"]}
+  - {id: 1916-winter, name: "Winter 1916-17", state: trenches, hygiene: good, factors: {cold_wet: 3}, actions: [],
+     what: "The Cléry and Bouchavesnes front: \"15 to 20 degrees of frost\" into February, and \"a new plague ... Trench Feet\".", sources: [*div33]}
+  - {id: 1917-spring, name: "Spring 1917", state: battle, hygiene: good, factors: {}, actions: [arras],
+     what: "Arras and the Hindenburg Line near Fontaine-lès-Croisilles: attacks on 13 and 23 April and 26-27 May.",
+     sources: [*div33, "https://menonthegates.org.uk/men_front/bo-1917-arras-2-battle-of-scarpe-place-2-bn-royal-welsh-fusiliers-23-april-1917/"]}
+  - {id: 1917-summer, name: "Summer 1917", state: trenches, hygiene: good, factors: {hot: 1}, actions: [messines],
+     what: "On the coast at Nieuport: the first mustard gas reaches the division; a 17-inch shell on the brigade's headquarters (26 August).", sources: [*div33]}
+  - {id: 1917-autumn, name: "Autumn 1917", state: battle, hygiene: good, factors: {cold_wet: 3}, actions: [third_ypres, cambrai],
+     what: "Polygon Wood and the Menin Road (25-27 September), where the division lost about 5,000 men; Third Ypres in the mud.", sources: [*div33]}
+  - {id: 1917-winter, name: "Winter 1917-18", state: trenches, hygiene: good, factors: {cold_wet: 3}, actions: [],
+     what: "The Passchendaele salient; to the 38th (Welsh) Division in February.", sources: [*div33, *llt]}
+  - {id: 1918-spring, name: "Spring 1918", state: battle, hygiene: good, factors: {}, actions: [spring_offensive],
+     what: "The German offensives: the line at Armentières, then south to Albert; attacks at Bouzincourt and Aveluy (22 April), a German attack thrown back (9 May).", sources: [*div38]}
+  - {id: 1918-summer, name: "Summer 1918", state: trenches, hygiene: fair, factors: {hot: 1}, actions: [hundred_days],
+     what: "Rest from 20 May, then Aveluy Wood; a raid on 11 July; influenza in the army (over 30,000 cases in June, a single source); the advance begins (21 August).",
+     sources: [*div38, "https://faroutliers.com/2014/02/23/1918-influenza-on-the-western-front"]}
+  - {id: 1918-autumn, name: "Autumn 1918", state: battle, hygiene: good, factors: {cold_wet: 1}, actions: [],
+     what: "The advance: Morval, Épehy, Villers-Outréaux, the Selle, the Forêt de Mormal (4 November); the Armistice (11 November).", sources: [*div38]}
+
+actions:
+  mons:
+    name: "Mons"
+    date: 1914-08-23
+    field: mons-1914
+    share: 2
+    engaged: "the four divisions of I and II Corps, the cavalry and the 19th Brigade, about 75,000 (a weak source)"
+    lost: "just over 1,600 (the Long, Long Trail); 1,642; about half in the 4th Middlesex (about 400) and the 2nd Royal Irish (about 300)"
+    sources: ["https://www.longlongtrail.co.uk/battles/battles-of-the-western-front-in-france-and-flanders/the-battle-of-mons/"]
+    units:
+      - name: "4th Middlesex"
+        share: 40
+        lost: "about 400 of a battalion of about 1,000 (ours, its strength)"
+        sources: ["https://www.longlongtrail.co.uk/battles/battles-of-the-western-front-in-france-and-flanders/the-battle-of-mons/"]
+  le_cateau:
+    name: "Le Cateau"
+    date: 1914-08-26
+    main: false
+    share: 13
+    engaged: "II Corps: 23 battalions, 18 cavalry regiments and 162 guns; about 40,000 (ours)"
+    lost: "7,812, of them about 700 killed and 2,600 taken (a Wikipedia mirror, its source not named)"
+    sources: ["https://wikiwand.com/EN/Battle_of_Le_Cateau"]
+    note: "Smith-Dorrien's II Corps; the share is the killed and wounded against about 40,000 (ours)."
+    single: true
+  aisne:
+    name: "The Aisne"
+    date: 1914-09-14
+    share: 7
+    engaged: "the BEF: six divisions and the cavalry (about 108,000 at 18,000 a division, ours)"
+    lost: "about 13,500 (uncited, and perhaps not British alone)"
+    sources: ["https://mobileapps.wikiwand.com/en/First_Battle_of_the_Aisne"]
+    single: true
+  first_ypres:
+    name: "First Ypres and the fighting about Armentières"
+    date: 1914-10-30
+    share: 36
+    engaged: "the BEF: about nine divisions with the Indians and the cavalry (about 160,000, ours)"
+    lost: "58,155 killed, wounded and missing (Defence-in-Depth, warning the sources are too variable)"
+    sources: ["https://defenceindepth.co/2014/09/23/the-first-battle-of-ypres-and-problem-of-counting-casualties/"]
+    units:
+      - name: "1st Queen's, to 31 October"
+        share: 94
+        lost: "9 officers and 624 other ranks of about 675; 2 officers and about 40 men left"
+        sources: ["https://surreycc.gov.uk/culture-and-leisure/history-centre/marvels/heavy-losses-to-the-1st-queens"]
+    note: "The 2nd Royal Welch Fusiliers fought about Armentières with III Corps, to the south of Ypres."
+  neuve_chapelle:
+    name: "Neuve Chapelle"
+    date: 1915-03-10
+    main: false
+    share: 31
+    engaged: "four divisions, 40,000 troops"
+    lost: "about 7,000 British and 4,200 Indian (Edmonds and Wynne); 12,592 (Boff)"
+    sources: ["https://www.nam.ac.uk/explore/1915-early-trench-battles"]
+    note: "First Army's attack."
+  second_ypres:
+    name: "Second Ypres"
+    date: 1915-04-24
+    main: false
+    share: 55
+    engaged: "six British divisions (about 108,000, ours)"
+    lost: "59,275 (the Official History, Edmonds and Wynne)"
+    sources: ["https://wikiwand.com/en/articles/Battle_of_St._Julien"]
+    note: "The salient under gas; the share counts the drafts that came up during the month."
+  aubers:
+    name: "Aubers Ridge"
+    date: 1915-05-09
+    main: false
+    share: 15
+    engaged: "the 1st, 7th, 8th, 47th and Meerut Divisions (about 72,000 for the four that attacked, ours)"
+    lost: "more than 11,000 (the Long, Long Trail); 12,000 (NAM); the 8th Division 4,682, the 1st 3,968"
+    sources: ["https://www.longlongtrail.co.uk/battles/battles-of-the-western-front-in-france-and-flanders/the-battle-of-aubers/"]
+    units:
+      - name: "2nd Rifle Brigade"
+        share: 65
+        lost: "654, 21 of them officers, of about 1,000 (ours, its strength)"
+        sources: ["https://www.longlongtrail.co.uk/battles/battles-of-the-western-front-in-france-and-flanders/the-battle-of-aubers/"]
+  festubert:
+    name: "Festubert"
+    date: 1915-05-16
+    main: false
+    share: 15
+    engaged: "six divisions (about 108,000, ours)"
+    lost: "16,648 (Edmonds 1928, p. 76)"
+    sources: ["https://www.nam.ac.uk/explore/1915-early-trench-battles"]
+  loos:
+    name: "Loos"
+    date: 1915-09-25
+    share: 38
+    engaged: "six divisions in the first attack, 75,000 infantry, and three more coming up (about 162,000, ours)"
+    lost: "more than 61,000, of whom 7,766 died (the Long, Long Trail); 50,380"
+    sources: ["https://www.longlongtrail.co.uk/battles/battles-of-the-western-front-in-france-and-flanders/the-battle-of-loos/"]
+    units:
+      - name: "2nd Royal Welch Fusiliers, in support at Cambrin"
+        share: 12
+        lost: "123 (the regiment's museum); Graves gives fifty in the ranks and three officers"
+        sources: ["https://royalwelchfusiliersmuseum.blogspot.com/2015/09", *graves]
+  somme_first_day:
+    name: "The first day on the Somme"
+    date: 1916-07-01
+    field: beaumont-hamel-1916
+    main: false
+    share: 23
+    engaged: "13-14 divisions (about 252,000, ours)"
+    lost: "57,470, of whom 19,240 were killed"
+    sources: ["https://www.nam.ac.uk/explore/battle-somme", "https://military-history.fandom.com/wiki/First_day_on_the_Somme"]
+    units:
+      - name: "1st Newfoundland Regiment at Beaumont-Hamel"
+        share: 87
+        lost: "684 (26 officers, 658 other ranks) of about 790 (Middlebrook); 68 answered the roll next day"
+        sources: ["https://www.greatwarforum.org/topic/713-somme-units-decimated/", "https://www.veterans.gc.ca/en/node/450804"]
+      - name: "11th East Lancashire (the Accrington Pals) at Serre"
+        share: 81
+        lost: "585 (235 killed, 350 wounded) of about 720"
+        sources: ["https://en.wikipedia.org/wiki/Accrington_Pals"]
+    note: "The 2nd Royal Welch Fusiliers were at Givenchy that day."
+  somme:
+    name: "The Somme (a division's tour)"
+    date: 1916-07-20
+    share: 45
+    engaged: "about 50 British divisions in turn (ours)"
+    lost: "419,654 for the whole battle (Edmonds and Miles); Prior and Wilson 432,000"
+    sources: ["https://wikipedia.com/wiki/Draft:Battle_of_the_Somme_casualties_controversy"]
+    note: "The whole battle's loss shared over about 50 divisions at 18,000 (ours), about one tour each; the 2nd Royal Welch Fusiliers' Somme roll of honour has 189 names, and High Wood on 20 July cost them 249 of a strength not found."
+  arras:
+    name: "Arras"
+    date: 1917-04-23
+    share: 38
+    engaged: "14 divisions on the first day and 9 in reserve (about 414,000, ours)"
+    lost: "158,000-160,000; 158,660"
+    sources: ["https://www.wikiwand.com/en/Battle_of_Arleux"]
+    note: "The 2nd Royal Welch Fusiliers at the Hindenburg Line, 23 April: 4 officers killed and 7 wounded, 32 men killed, 70 wounded and 5 missing, of a strength not given (Men on the Gates)."
+  messines:
+    name: "Messines"
+    date: 1917-06-07
+    main: false
+    share: 11
+    engaged: "twelve divisions of Second Army (about 216,000, ours)"
+    lost: "24,562 (uncited)"
+    sources: ["https://www.longlongtrail.co.uk/battles/battles-of-the-western-front-in-france-and-flanders/the-battle-of-messines-1917"]
+    single: true
+  third_ypres:
+    name: "Third Ypres (Polygon Wood)"
+    date: 1917-09-26
+    share: 27
+    alt: {share: 31, source: "Prior and Wilson's 275,000"}
+    engaged: "about 50 divisions (about 900,000, ours)"
+    lost: "244,897 (Edmonds); 240,000 (Falls); 275,000 (Prior and Wilson); 300,000 (Cruttwell)"
+    sources: ["https://bafybeiemxf5abjwjbikoz4mc3a3dla6ual3jsgpdr4cjr3oz3evfyavhwq.ipfs.4everland.io/wiki/Third_Ypres.html"]
+    note: "The 33rd Division lost about 5,000 men at Polygon Wood and the Menin Road, 25-27 September (its history)."
+  cambrai:
+    name: "Cambrai"
+    date: 1917-11-20
+    main: false
+    share: 35
+    alt: {share: 60, source: "75,681 lost (a Wikipedia mirror)"}
+    engaged: "two corps and 476 tanks (about seven divisions, 126,000, ours)"
+    lost: "44,207 (a tour company's fact file) or 75,681, 10,042 of them killed (a Wikipedia mirror)"
+    sources: ["https://wikiwand.com/en/Cambrai_1917", "https://www.rayburntours.com/wp-content/uploads/2022/11/battle_fact_files.pdf"]
+  spring_offensive:
+    name: "The German offensive of March 1918"
+    date: 1918-03-21
+    share: 19
+    engaged: "26 divisions and 3 of cavalry for Michael (about 468,000, ours)"
+    lost: "177,739 (the Official History, 1937); Middlebrook about 160,000: 22,000 killed, 65,000 wounded, 75,000 taken"
+    sources: ["https://www.nam.ac.uk/explore/1918-victory", "https://en.wikipedia.org/wiki/Operation_Michael"]
+    note: "The share counts Middlebrook's killed and wounded only: the 75,000 taken are not hits."
+  hundred_days:
+    name: "The Hundred Days"
+    date: 1918-08-21
+    share: 38
+    engaged: "about 60 divisions of the British Empire (about 1,080,000, ours)"
+    lost: "411,636 for the British Empire (an uncited infobox)"
+    sources: ["https://military-history.fandom.com/wiki/Hundred_Days_Offensive"]
+    single: true
+
+small_fights:
+  - id: raid
+    name: "A trench raid"
+    what: "After a bombardment, with smoke on the flanks, raiders cross no man's land, get into the German trench, bomb the dugouts and bring back prisoners (Givenchy, 5 July 1916, the 2nd RWF, some with butchers' knives tied to broomsticks); or the Germans raise the alarm at their wire and the raid fails in a bombing fight (Kiel Trench, 25 May 1916, 37 of the 1st RWF)."
+    states: [trenches]
+    weight: 4
+    where: "across no man's land to the German front trench"
+    time: "at night"
+    ground: open
+    team_attacks: true
+    side: {name: "The raiding party", men: [20, 60]}
+    foes: [{name: "The German trench garrison", men: [10, 40], weapon: rifle_service}]
+    surprise: {text: "The raiders are at the wire before the alarm", chance: 40}
+    aims: {team: "Get in, take prisoners, and get back.", foes: "Raise the alarm and drive them off the wire."}
+    ends: "The raiders go back after 4 rounds with what they have; they fail if a third of those here are down first; the Germans hold if the raiders never get in."
+    sources: [*graves, "https://roadstothegreatwar-ww1.blogspot.com/2016/06/100-years-ago-siegfried-sassoon.html?m=0"]
+    note: "Kiel Trench: Lt Stansfield wounded and Cpl O'Brien killed; Sassoon brought in the wounded and won the MC. The Givenchy raid's numbers are not given."
+  - id: german_raid
+    name: "A German raid on the posts"
+    what: "A barrage at dawn, then three officers and about 120 men come over, take a post and are gone in half an hour (Barnton Posts, Festubert, 7 March 1918: 6 killed, 31 wounded and 23 missing of a company of the 1/5th South Lancashire)."
+    states: [trenches]
+    weight: 3
+    where: "the forward posts of the British line"
+    time: "at dawn, after a barrage"
+    ground: open
+    side: {name: "The company in the posts", men: [30, 120]}
+    foes: [{name: "German raiders", men: [40, 123], weapon: hand_grenade}]
+    surprise: {text: "The raiders come in behind their barrage", chance: 40}
+    aims: {team: "Hold the posts and keep the men.", foes: "Take a post, prisoners and papers, and get back."}
+    ends: "The raiders go back after 5 rounds (half an hour) or once a third of those here are down; the company is beaten if it loses a post."
+    sources: ["https://www.longlongtrail.co.uk/?p=6279"]
+  - id: patrol
+    name: "A patrol in no man's land"
+    what: "A patrol crawls out to the German wire; a flare goes up and the Germans open fire; an officer and a corporal are killed and one man gets back next morning (Rue du Bois, 13 January 1916, 10th Duke of Wellington's); at Cuinchy a 2nd RWF patrol held its fire thirty yards from a German covering party and called down shrapnel on it (Graves)."
+    states: [trenches]
+    weight: 3
+    where: "no man's land, between the wires"
+    time: "about half past midnight"
+    ground: open
+    side: {name: "The patrol", men: [4, 8]}
+    foes: [{name: "A German covering party", men: [4, 12], weapon: rifle_service}]
+    aims: {team: "See what the Germans are doing and get back.", foes: "Catch the patrol in the open."}
+    ends: "The patrol wins if it gets back to its own edge; either side breaks off once half of those here are down."
+    sources: ["https://tunstillsmen.blogspot.com/2016/01/thursday-13th-january-1916.html", *graves]
+  - id: working_party
+    name: "A working party caught by fire"
+    what: "A patrol with a Lewis gun finds a German working party chattering behind its wire and opens fire, and several are seen to fall (14 July 1916); wiring parties often let each other be and \"as good as borrowed each other's mallets\" (Graves)."
+    states: [trenches]
+    weight: 2
+    where: "the wire in front of the line"
+    time: "at night"
+    ground: open
+    team_attacks: true
+    side: {name: "The patrol with a Lewis gun", men: [4, 10]}
+    foes: [{name: "A German working party", men: [8, 30], weapon: rifle_service}]
+    aims: {team: "Catch the working party and get back.", foes: "Get under cover and back to their trench."}
+    ends: "The patrol goes back after 3 rounds; the working party is beaten if half of those here are down."
+    sources: ["https://www.tcd.ie/library/fitasfiddles/we-went-out-from-the-gap-into-no-mans-land-where-we-remained-over-two-hours/", *graves]
+    note: "The unit of the 14 July patrol is not named in the source. No dated instance of a British wiring party caught by fire was found."
+  - id: mine
+    name: "A mine blown under the trench"
+    what: "A German mine goes up under a company at night and the Germans rush the crater and the trench before being driven out (the Red Dragon, Givenchy, 22 June 1916: only 28 of the 2nd RWF's B Company escaped); or the battalion's bombers take the crater's lip and hold it (Queen's Crater, Auchy, 6 May 1916: 4 killed and 8 wounded of the 1st Queen's)."
+    states: [trenches]
+    weight: 2
+    where: "a new crater in the front line"
+    time: "about 2 in the morning"
+    ground: open
+    side: {name: "The men left in the trench", men: [20, 100]}
+    foes: [{name: "German stormers", men: [40, 1000], weapon: hand_grenade}]
+    surprise: {text: "The mine goes up under them", chance: 70}
+    aims: {team: "Hold the crater's near lip and the trench.", foes: "Take the crater and the trench."}
+    ends: "The Germans are driven out once a third of those here are down; the trench is lost if the defenders are broken."
+    sources: ["https://www.tunnellersmemorial.com/eye-witness-account/", "https://www.longlongtrail.co.uk/german-mine-explodes-at-auchy-left-6-may-1916/"]
+    note: "The war diary's 1,000 Germans at the Red Dragon is the battalion's own figure."
+  - id: gas
+    name: "A gas attack on the trench"
+    what: "A gas cloud comes over at dawn and raiding parties of about thirty follow it (Hulluch, 27 and 29 April 1916: the 16th Irish Division lost 1,980, of whom 1,260 were gassed and 338 died; on the 29th the wind blew it back on the Germans)."
+    states: [trenches]
+    weight: 1
+    where: "the front trench under a gas cloud"
+    time: "about 5 in the morning"
+    ground: open
+    weather: fog
+    side: {name: "The men in the trench, in their helmets", men: [30, 120]}
+    foes: [{name: "German raiders behind the gas", men: [20, 30], weapon: hand_grenade}]
+    surprise: {text: "The cloud is on them before the gongs are beaten", chance: 30}
+    aims: {team: "Get the helmets on and hold the trench.", foes: "Get in behind the gas and take prisoners."}
+    ends: "The raiders go back after 4 rounds or once a third of those here are down; the trench is lost if the defenders are broken. The roller has no gas: the fog stands for the cloud."
+    sources: ["https://www.westernfrontassociation.com/world-war-i-articles/2026/march/the-16th-irish-division-and-the-gas-attacks-at-hulluch-april-1916/", "https://cavac.at/cavacopedia/Gas%20attacks%20at%20Hulluch"]
+  - id: rearguard
+    name: "The rearguard that stayed"
+    what: "A battalion with two guns left as rearguard on the retreat holds off a far larger force for about fourteen hours and surrenders only when surrounded and out of ammunition (Étreux, 27 August 1914: about 240 men and 4 officers of the 2nd Royal Munster Fusiliers' 800 left)."
+    states: [march]
+    weight: 3
+    where: "an orchard and a crossroads on the line of retreat"
+    time: "all day"
+    ground: farmland
+    side: {name: "The rearguard", men: [100, 800]}
+    foes: [{name: "German infantry", men: [400, 5000], weapon: rifle_service}]
+    aims: {team: "Hold until the column is clear, then get away.", foes: "Break through and cut off the column."}
+    ends: "The rearguard wins if it holds for 10 rounds and gets off its own edge; it is beaten if it is broken or surrounded."
+    sources: ["https://ipfs.aleph.im/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/wiki/Battle_of_%C3%89treux.html"]
+    note: "German losses are given as up to 1,500 (a Wikipedia mirror)."
+  - id: bombing
+    name: "Bombing along a trench"
+    what: "Two companies clear the dugouts of a captured trench, build a barricade and bomb back two counter-attacks along it (the Hindenburg Line, 23 April 1917, the 2nd RWF: over 400 prisoners; 4 officers killed and 7 wounded, 32 men killed, 70 wounded and 5 missing; Sassoon took about a hundred bombers up the Hindenburg Trench that month)."
+    states: [battle]
+    weight: 3
+    where: "a captured German trench and its barricade"
+    time: "about half past ten in the morning"
+    ground: open
+    side: {name: "The bombers at the barricade", men: [20, 200]}
+    foes: [{name: "German bombers counter-attacking", men: [20, 200], weapon: hand_grenade}]
+    aims: {team: "Hold the barricade until relieved.", foes: "Bomb their way back along the trench."}
+    ends: "The bombers are relieved after 8 rounds; the counter-attack breaks once a third of those here are down; the barricade is lost if the bombers are broken."
+    sources: ["https://menonthegates.org.uk/men_front/bo-1917-arras-2-battle-of-scarpe-place-2-bn-royal-welsh-fusiliers-23-april-1917/", "https://www.pressreader.com/uk/western-mail/20160722/282020441647921"]

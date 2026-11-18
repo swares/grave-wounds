@@ -1208,7 +1208,7 @@ function renderService(){
     <p class="muted note">${esc(W.name)}, as a line battalion served it. A season (${W.season_days} days) passes in one step: each man's sickness on the camp-disease track, a hit roll at each action the team was at and does not play (the army's share lost times where he stands, at most ${W.cap}%; or a battalion's own figure), and the chance of a small fight. A hit goes to the roller, which rolls the wound. The days count toward his term; then press End of season. Where he stands and the small fights are ours; the shares are from the sources, and the project doc "between-battles-design" has them.</p>
     ${svcWars().length > 1 ? `<label>War <select id="sv-war">${svcWars().map(x => `<option value="${x.id}" ${x.id === V.war ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></label>` : ""}
     <p><label>Season <select id="sv-season">${W.seasons.map((x, k) => `<option value="${k}" ${k === V.i ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></label>
-      <b>${esc(st.name)}</b>: ${esc(s.what)} <span class="muted">Hygiene ${esc(s.hygiene)}${fx ? "; " + esc(fx) : ""}; a small fight ${W.small_war.chance[s.state]}%.</span></p>
+      <b>${esc(st.name)}</b>: ${esc(s.what)} <span class="muted">Hygiene ${esc(s.hygiene)}${fx ? "; " + esc(fx) : ""}; a small fight ${W.small_war.chance[s.state]}%${(W.wastage || {})[s.state] ? `; ${esc(W.wastage_name.toLowerCase())}: ${W.wastage[s.state]}% a man` : ""}.</span></p>
     ${acts}
     <h4>Who serves it</h4><ul class="xp">${men}</ul>
     <div class="row"><button id="btn-serve" title="Roll the season for each man with the battalion">Serve the season</button></div>
@@ -1264,10 +1264,11 @@ function serveSeason(){
     const lived = m.dead ? m.dead_week * 7 : days;
     xpServe(c.pid, lived); c.rolled_days = (c.rolled_days || 0) + lived;
     if (!m.dead) xpTick(c.pid, car.main, "a season with the battalion");
-    for (const x of m.rolls) bits.push(`${W.actions[x.action].name}: ${x.pct}%, rolled ${x.roll}${x.roll <= x.pct ? "" : ", unhurt"}`);
+    const actName = a => (a === "wastage" ? W.wastage_name : W.actions[a].name);   // a named action, or the season's wastage in the line
+    for (const x of m.rolls) bits.push(`${actName(x.action)}: ${x.pct}%, rolled ${x.roll}${x.roll <= x.pct ? "" : ", unhurt"}`);
     for (const h of m.hits){
-      bits.push(`hit at ${W.actions[h.action].name} by ${TD.service.weapons[h.weapon].toLowerCase()}: roll his wound on the roller`);
-      hits.push(svcHit(c, W, `${W.actions[h.action].name}, ${s.name}`, h.weapon));
+      bits.push(`${h.action === "wastage" ? "hit" : "hit at"} ${actName(h.action)} by ${TD.service.weapons[h.weapon].toLowerCase()}: roll his wound on the roller`);
+      hits.push(svcHit(c, W, `${actName(h.action)}, ${s.name}`, h.weapon));
     }
     for (const x of m.missed) bits.push(`${x.why === "sick" ? "missed" : "not at"} ${W.actions[x.action].name} (${x.why === "no share" ? "no share set" : x.why})`);
     if (m.sick_days) bits.push(`sick ${m.sick_days} days${m.worst ? `, still ${m.worst} at the season's end` : ""}`);
