@@ -730,7 +730,7 @@ function markLost(pid, why){                      // the team builder takes him 
 function unmarkLost(pid, why){                    // he is back after all (a man taken, retaken when his side won the field): only while the team builder has not yet taken him off
   if (!pid) return;
   const all = readPurses();
-  if (!all[pid] || !all[pid].lost || all[pid].lost.why !== why) return;
+  if (all[pid]?.lost?.why !== why) return;
   delete all[pid].lost;
   writePurses(all);
 }

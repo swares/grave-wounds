@@ -542,7 +542,7 @@ function markLost(pid, why){                      // the team builder takes him 
 function unmarkLost(pid, why){                    // he is back after all (a man taken, retaken when his side won the field): only while the team builder has not yet taken him off
   if (!pid) return;
   const all = readPurses();
-  if (!all[pid] || !all[pid].lost || all[pid].lost.why !== why) return;
+  if (all[pid]?.lost?.why !== why) return;
   delete all[pid].lost;
   writePurses(all);
 }
@@ -3553,7 +3553,10 @@ function serveSeason(){
       hits.push(svcHit(c, W, `${actName(h.action)}, ${s.name}`, h.weapon));
     }
     for (const x of m.missed) bits.push(`${x.why === "sick" ? "missed" : "not at"} ${W.actions[x.action].name} (${x.why === "no share" ? "no share set" : x.why})`);
-    if (m.sick_days) bits.push(`sick ${m.sick_days} day${m.sick_days === 1 ? "" : "s"}${m.worst ? `, still ${m.worst} at the season's end` : ""}`);
+    if (m.sick_days){
+      const still = m.worst ? ", still " + m.worst + " at the season's end" : "";
+      bits.push(`sick ${m.sick_days} day${m.sick_days === 1 ? "" : "s"}${still}`);
+    }
     if (m.wound && !m.dead) bits.push(`his wounds still ${m.wound} at the season's end`);
     if (m.dead){
       if (saved) bits.push(`would have died of ${dz.toLowerCase()} in week ${m.dead_week + 1}: fate spent, he lives the season out`);
