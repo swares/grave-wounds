@@ -126,10 +126,10 @@ not this repository.
     season, a shorter panel, and a small fight's end called by the roller (rounds and men down;
     the GM's script stops there) are done. From the fourth (the Roses, both sides): the foes at the
     rolled odds, men retaken when their side wins, a season's hit no longer called a stray shot,
-    and fights from another season marked "as in" are done. Found when the odds were kept: when the
-    GM's script plays the team's side and it breaks, the script's yield takes every man down or next
-    to a foe, and in a small fight that is often the whole team (Edward's six all taken at Newnham
-    Bridge); a player's side never yields so. Still left: a company template musters more followers than an
+    and fights from another season marked "as in" are done. Found when the odds were kept, and done: a
+    broken scripted side took every man down or next to a foe (Edward's six all at Newnham Bridge);
+    now only the down beside an enemy are taken, the held break away on their Agility or Dodge
+    (ours), the down with no enemy by are left, and the rest run. Still left: a company template musters more followers than an
     officer of middling Presence keeps (they drift each season).
 
 - **Camp roles, first cut** (`data/council.yaml`; docs/campaign.md, *The council*). Roles and the
@@ -170,8 +170,8 @@ not this repository.
   (`templates/gamelog.js`), and Run the fight plays each side as a player, the GM by hand, or the
   GM's script (`templates/fighter.js`), with Step, Play to my turn and Undo. Its men give first
   aid out of contact (themselves when bleeding badly; comrades by the side's stance) and surrender
-  (a man down beside an enemy asks for quarter; a broken side's cornered and down are taken, the
-  rest run). Still left out: the script does not aim at a zone, use works, drop packs, swim or
+  (a man down beside an enemy asks for quarter; a broken side's down beside an enemy are taken,
+  its men held in close combat break away on their Agility or are taken, the rest run). Still left out: the script does not aim at a zone, use works, drop packs, swim or
   climb, and its priorities are guesses with nothing to calibrate them against; men with no
   sheet take their side's quality, with no per-man setting; a side's Screen hides the enemy's
   state on the cards, roll form, result, messages and logs, but it is a filter anyone at the

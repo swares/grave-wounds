@@ -2808,7 +2808,9 @@ function moraleChecks(){
 }
 /* Surrender by the GM's script (rules: a side that breaks runs or surrenders; a man who is down asks for
    quarter): a scripted man down, conscious, with an enemy next to him asks for quarter and is taken; when a
-   scripted side breaks, its men down or next to an enemy are taken prisoner and the rest run. */
+   scripted side breaks, a man down with an enemy beside him is taken, a man down with none is left where he
+   lies, a man on his feet beside an enemy breaks away on a d100 at or under his Agility (or his Dodge, the
+   better; ours) or is taken, and the rest run. */
 const nextToFoe = c => !!c.pos && S.chars.some(o => o.pos && sideOf(o) !== sideOf(c) && !isOut(o) && hexDistance(c.pos, o.pos) <= 1);
 function takenBy(c, text){
   c.taken = true;
@@ -2821,10 +2823,17 @@ function gmQuarter(){                              // the end of the round: scri
   return S.chars.filter(c => scripted(c) && !c.taken && !(S.broken || {})[sideOf(c)] && isDown(c) && !charStats(c).th?.incapacitated && nextToFoe(c))
     .map(c => takenBy(c, `${c.name} is down and asks for quarter: taken prisoner`));
 }
-function gmYield(side){                            // a scripted side has broken: the cornered and the down are taken, the rest run
+function gmYield(side){                            // a scripted side has broken: the down beside an enemy are taken, the held may break away, the rest run
   if (!gmOn() || gmSide(side).ctl !== "script") return [];
-  return S.chars.filter(c => sideOf(c) === side && !c.taken && !c.fled).map(c => {
-    if (isDown(c) || nextToFoe(c)) return takenBy(c, `${c.name} surrenders: taken prisoner`);
+  return S.chars.filter(c => sideOf(c) === side && !c.taken && !c.fled && !c.away).map(c => {
+    const held = nextToFoe(c);
+    if (isDown(c)) return held ? takenBy(c, `${c.name} is down with an enemy over him: taken prisoner`) : `${c.name} is left where he lies`;
+    if (held){
+      const target = Math.max(statOf(c, "agi"), skillAt(c, "dodge")), roll = d100();
+      if (roll > target) return takenBy(c, `${c.name} cannot break away (d100 ${d2(roll)} vs ${target}): taken prisoner`);
+      c.fled = true;
+      return `${c.name} breaks away (d100 ${d2(roll)} vs ${target}) and runs`;
+    }
     c.fled = true;
     return `${c.name} runs`;
   });
@@ -3610,7 +3619,7 @@ function keepOdds(h, named){
 function forceChars(o, positions, named = null){  // up to 8 of a travel-map force's men, its named men first, at these hexes if given
   const out = [];
   for (const c of named?.by.get(o.id) || []){       // his own fighter, wounds and all, ready for a new fight
-    Object.assign(c, { side: o.side, state: null, init: null, rounds: 0, fatigue: o.fatigue || 0 });
+    Object.assign(c, { side: o.side, state: null, init: null, rounds: 0, fatigue: o.fatigue || 0, fled: false, away: false });   // whoever ran or got away last time is here again
     delete c.pos;
     out.push(c);
   }
