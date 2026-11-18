@@ -1185,10 +1185,11 @@ function svcQueue(add){                             // the hits waiting on the r
   if (add){ L.push(...add); try{ localStorage.setItem(SVC_HITS, JSON.stringify(L)) }catch(e){ /* storage off: the GM rolls them by hand */ } }
   return L;
 }
+const svcTakenText = a => (a.taken ? ", " + a.taken + "% taken" : "");   // the share taken prisoner, where counted
 function svcActionHtml(W, V, aid){                  // one action of the season: at it, played, or rolled at a share
   const a = W.actions[aid], at = V.at[aid] ?? a.main !== false, played = !!V.played[aid];
   const share = a.share == null ? `<label>share lost <input type="number" min="0" max="100" class="num" data-svshare="${aid}" value="${V.share[aid] ?? ""}" aria-label="${esc(a.name)}: the share lost, %"> %</label> <span class="muted">(${esc((a.note || "not found").replace(/\.$/, ""))})</span>`
-    : `<span class="muted">the army lost ${a.share}%${a.alt ? ` (${esc(a.alt.source)}: ${a.alt.share}%)` : ""}${a.single ? ", a single report" : ""}${a.taken ? ", " + a.taken + "% taken" : ""}</span>`;
+    : `<span class="muted">the army lost ${a.share}%${a.alt ? ` (${esc(a.alt.source)}: ${a.alt.share}%)` : ""}${a.single ? ", a single report" : ""}${svcTakenText(a)}</span>`;
   const units = (a.units || []).length ? ` <select data-svunit="${aid}" style="width:auto" aria-label="${esc(a.name)}: whose figure"><option value="">as the army, by position</option>${a.units.map((u, k) => `<option value="${k}" ${String(V.unit[aid]) === String(k) ? "selected" : ""}>as ${esc(u.name)} (${u.share}%)</option>`).join("")}</select>` : "";
   const field = a.field ? ` <label><input type="checkbox" data-svplay="${aid}" ${played ? "checked" : ""}> play it on the field map (${esc(TD.service.fields[a.field])})</label>` : "";
   return `<li><label><input type="checkbox" data-svat="${aid}" ${at ? "checked" : ""}> <b>${esc(a.name)}</b>, ${esc(a.date)}</label>${a.main === false ? ` <span class="muted">(${esc((a.note || "not the main army").replace(/\.$/, ""))})</span>` : ""}: ${share}${units}${field}</li>`;
@@ -1275,6 +1276,10 @@ const NAMED_STORE = "gravewounds-named";              // the named men's shared 
 function namedStore(){ try{ return JSON.parse(localStorage.getItem(NAMED_STORE) || "{}") || {} }catch(e){ return {} } }
 function namedOf(all, c){ return Object.values(all).find(n => n.pid && n.pid === c.pid && !n.dead) || null }   // his record there, if the roller knows him
 const svcHealthOf = (all, c) => { const n = namedOf(all, c); return n ? n.health || null : c.svcHealth || null };   // one health: the shared record's, else the team builder's own
+function svcLived(m, saved, days){                  // the days of the season he served: to the week he was taken or died, else all of it
+  if (m.taken) return (m.taken.week + 1) * 7;
+  return m.dead && !saved ? m.dead_week * 7 : days;
+}
 function serveSeason(){
   const V = svcState(), W = SVC.war(V.war), s = W.seasons[V.i], days = W.season_days, named = namedStore();
   const serving = S.team.filter(c => V.with[c.pid] !== false);
@@ -1289,7 +1294,7 @@ function serveSeason(){
     const m = r.men[k], bits = [], car = byId(T.careers, c.career), start = men[k].health, rec = namedOf(named, c);
     const dz = m.dead ? (TD.service.rules.disease.diseases[m.dead] || TD.service.rules.disease.wounds[m.dead] || { name: m.dead }).name : null;
     const wounds = m.dead === "wound" || m.dead === "fever", saved = m.dead && fateSpend(c.pid, `lived through ${dz.toLowerCase()}`);
-    const lived = m.taken ? (m.taken.week + 1) * 7 : m.dead && !saved ? m.dead_week * 7 : days, was = start && (SVC.worstStep(start) || SVC.woundStep(start));
+    const lived = svcLived(m, saved, days), was = start && (SVC.worstStep(start) || SVC.woundStep(start));
     const H = saved ? start : m.health, keep = H && (H.cases.length || Object.keys(H.immune).length || Object.keys(H.had).length);
     c.svcHealth = keep ? H : null;            // a case still running (and what he is immune to or may relapse with) goes on into his next season
     if (rec){                                 // and onto his shared record: the roller heals his wounds to scars as their cases close

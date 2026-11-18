@@ -149,7 +149,7 @@ function makeService(SV, RULES){
     const roll = rng();
     r.rolls.push({ action: aid, pct, roll });
     if (roll <= pct){ r.hits.push({ action: aid, pct, roll, weapon: weaponFor(W, rng()) }); return }
-    const t = takenPct(W, aid, m.position || "line", (m.unit || {})[aid] ?? null);
+    const t = takenPct(W, aid, m.position || "line", m.unit?.[aid] ?? null);
     if (t){ const tr = rng(); if (tr <= t) r.taken = { action: aid, pct: t, roll: tr } }   // came through unhit: taken?
   }
   return { war, warsFor, season, seasonStart, weeks, actionWeek, hitPct, takenPct, inWeek, factors, dayCtx, weaponFor, worstStep, woundStep, serve, between, smallFight };
