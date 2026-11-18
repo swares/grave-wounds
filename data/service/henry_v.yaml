@@ -174,6 +174,7 @@ small_fights:
     foes: [{name: "French men-at-arms", men: [200, 4000], kit: full_plate, weapon: spear}]
     aims: {team: "Hold together until dark and get away.", foes: "Break them and take prisoners for ransom."}
     ends: "The English win if they hold for 8 rounds (nightfall); the French draw off once a third of those here are down; the English are beaten if they are broken."
+    end: {rounds: 8, then: team, down: {foes: 0.33}}
     sources: ["https://kids.kiddle.co/Battle_of_Valmont", "https://wikiwand.com/EN/Battle_of_Valmont"]
     note: "About 1,000-1,100 against about 4,000; about 160 English killed the first day (Wikipedia, through mirrors)."
   - id: sally
@@ -189,6 +190,7 @@ small_fights:
     surprise: {text: "The gate opens on men at their work", chance: 30}
     aims: {team: "Hold the lines and drive them back in.", foes: "Burn the siege works, take prisoners, and go back in."}
     ends: "The sally goes back in after 6 rounds or once a third of those here are down; the guard is beaten if it is driven off the works."
+    end: {rounds: 6, then: team, down: {foes: 0.33}}
     sources: [*mon5, *seward14]
   - id: ambush
     name: "An ambush on the road"
@@ -203,6 +205,7 @@ small_fights:
     surprise: {text: "The ambush breaks out of the trees", chance: 40}
     aims: {team: "Break the ambush and go on.", foes: "Cut the column up and take prisoners."}
     ends: "The ambush breaks once a third of those here are down; the English are beaten if they are broken."
+    end: {down: {foes: 0.33}}
     sources: [*mon5]
     note: "Monstrelet, ch. XV."
   - id: escort
@@ -218,6 +221,7 @@ small_fights:
     surprise: {text: "The riders come on the escort on the road", chance: 40}
     aims: {team: "Keep the travellers and the baggage.", foes: "Take the baggage and the horses."}
     ends: "The attackers ride off once a third of those here are down or after 6 rounds; the escort is beaten if it is broken."
+    end: {rounds: 6, then: team, down: {foes: 0.33}}
     sources: [*mon5]
     note: "Monstrelet, ch. XVIII: the envoys' escort against Tanneguy du Châtel. The sizes are ours."
   - id: breach
@@ -233,6 +237,7 @@ small_fights:
     foes: [{name: "The defenders of the breach", men: [50, 300], kit: brigandine_sallet, weapon: poleaxe}]
     aims: {team: "Carry the breach.", foes: "Hold it."}
     ends: "The stormers win when they hold the breach with the defenders down or gone; they fall back once a third of those here are down."
+    end: {down: {team: 0.33}}
     sources: ["https://thehundredyearswar.co.uk/caen-surrender-agreement", *mon5]
     note: "No numbers in the accounts: the sizes are ours."
   - id: ford
@@ -247,6 +252,7 @@ small_fights:
     foes: [{name: "French men-at-arms", men: [100, 800], kit: full_plate, weapon: spear}]
     aims: {team: "Hold the far bank until the men-at-arms come over.", foes: "Throw them back into the river."}
     ends: "The men-at-arms come over after 6 rounds; the French fall back once a third of those here are down; the archers are beaten if they are driven into the river."
+    end: {rounds: 6, then: team, down: {foes: 0.33}}
     sources: ["https://erenow.org/biographies/henry-v-as-warlord/11.php", *seward14, *mon5]
     note: "Béthencourt: 200 archers, then Umfraville and Cornwall with 500 men-at-arms. Pont-de-l'Arche: the French 800 men-at-arms and 12,000 commoners are Monstrelet's figure."
   - id: mine
@@ -262,6 +268,7 @@ small_fights:
     foes: [{name: "The countermine", men: [4, 12], kit: brigandine_sallet, weapon: spear}]
     aims: {team: "Hold the gallery.", foes: "Drive them out and break the mine."}
     ends: "Either side gives up the gallery once half of those here are down; a deed of arms may end it by agreement."
+    end: {down: {team: 0.5, foes: 0.5}}
     sources: [*mon5, "https://www.medievalists.net/2022/12/fighting-mine-deed-of-arms/"]
     note: "The roller has no tunnel ground: lay a narrow strip of open ground between walls of works. At Harfleur the English had 6 master miners and 114 miners (TNA)."
   - id: quarters
@@ -278,6 +285,7 @@ small_fights:
     surprise: {text: "The men are asleep without a guard", chance: 70}
     aims: {team: "Stand to, hold the houses, and get away.", foes: "Kill or take them and burn the village."}
     ends: "The attackers go off after 8 rounds or once a third of those here are down; the quartered men are beaten if they are broken."
+    end: {rounds: 8, then: team, down: {foes: 0.33}}
     sources: [*mon5]
     note: "Monstrelet, ch. XIX. The attackers' numbers are not given: ours."
   - id: escalade
@@ -295,5 +303,6 @@ small_fights:
     surprise: {text: "The guard sees nothing until the ladders are up", chance: 60}
     aims: {team: "Get onto the wall and open the gate.", foes: "Raise the alarm and throw the ladders down."}
     ends: "The party wins if it holds the gate for 4 rounds; it fails if a third of those here are down first."
+    end: {rounds: 4, then: team, down: {team: 0.33}}
     sources: [*mon5, *seward16]
     note: "The Captal de Buch's about 3,000 at Pontoise; no losses given. Here the first party up the ladders."

@@ -2166,6 +2166,22 @@ def _service_errors(d: Data, W: dict) -> list[str]:
     return errors
 
 
+def _fight_end_errors(fw: str, e) -> list[str]:
+    """A small fight's end the roller can count: rounds (then: who wins when they are up) and down
+    (a side with that share of its men down, or that many, loses)."""
+    if not isinstance(e, dict) or not (e.get("rounds") or e.get("down")):
+        return [f"{fw}: needs an end: rounds (with then) or down"]
+    errors = []
+    if "rounds" in e and not (isinstance(e["rounds"], int) and e["rounds"] >= 1 and e.get("then") in ("team", "foes", "none")):
+        errors.append(f"{fw}: end: rounds must be a whole number of 1 or more, with then: team, foes or none")
+    for k, v in (e.get("down") or {}).items():
+        if k not in ("team", "foes"):
+            errors.append(f"{fw}: end: down is by team or foes, not {k}")
+        elif not (isinstance(v, float) and 0 < v < 1 or isinstance(v, int) and v >= 1):
+            errors.append(f"{fw}: end: down {k} must be a share (0-1) or a count of men")
+    return errors
+
+
 def _small_fight_errors(d: Data, W: dict, where: str, states: dict) -> list[str]:
     """A war's small fights (data/service small_fights): ready-made fights for the roller."""
     errors, ids = [], set()
@@ -2206,6 +2222,7 @@ def _small_fight_errors(d: Data, W: dict, where: str, states: dict) -> list[str]
             errors.append(f"{fw}: needs aims (team, foes) and ends")
         if not f.get("sources"):
             errors.append(f"{fw}: needs sources")
+        errors += _fight_end_errors(fw, f.get("end"))
     if W.get("small_fights") and not (W.get("sides") or {}).get("foes"):
         errors.append(f"{where}: small fights need sides: {{team, foes}}")
     return errors

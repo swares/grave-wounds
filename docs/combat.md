@@ -301,6 +301,8 @@ count goes on from there.
     **Play to my turn** plays on until a person must choose; with **Play the script by itself**
     ticked, the script plays on after each Next fighter. **Undo the script** puts the page back as
     it was before the script's last step.
+  - The script stops when one side is left standing, or, in a small fight from a season with the
+    battalion, at the fight's own end (below).
   - In the event log the script's moves are public; why it chose them is for the GM.
 - **Screen** (in the Run the fight panel) shows the page as the GM sees it (everything) or as one
   side does. On a side's screen an enemy's card shows his name, side, kit, weapon, where he has

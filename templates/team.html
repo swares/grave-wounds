@@ -1248,7 +1248,13 @@ function svcFightHandoff(W, s){                     // the small fight as a setu
   return { from: "service", title: f.name, team: "team", force, allies, foes: against, place: f.where || f.name, day: s.name, time: f.time,
     ground: f.ground, groundSeed: `${f.id}:${s.id}`, camp: null, surprise: sp, light: f.light || "day",
     weather: f.weather ? { cond: f.weather, wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } } : null,
-    notes: [`Aims: ${side}: ${f.aims.team} ${W.sides.foes}: ${f.aims.foes}`, `It ends: ${f.ends} Mark the winner when it does.`, `From the accounts: ${f.what} (${f.sources.join("; ")})`] };
+    end: svcFightEnd(f.end, side, W.sides.foes),
+    notes: [`Aims: ${side}: ${f.aims.team} ${W.sides.foes}: ${f.aims.foes}`, `It ends: ${f.ends} The roller calls the rounds and the men down; holding a place is the GM's call.`, `From the accounts: ${f.what} (${f.sources.join("; ")})`] };
+}
+function svcFightEnd(e, team, foes){                 // the fight's countable end, by the roller's side names
+  if (!e) return null;
+  const name = k => (k === "team" ? team : k === "foes" ? foes : null);
+  return { rounds: e.rounds || null, then: name(e.then), down: Object.fromEntries(Object.entries(e.down || {}).map(([k, v]) => [name(k), v])) };
 }
 function svcPlayFight(){
   const V = svcState(), W = SVC.war(V.war), s = W.seasons[Math.max(0, V.i - 1)];

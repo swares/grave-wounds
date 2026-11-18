@@ -121,14 +121,34 @@ def run(p):
     check(sides["fw"] == ["musket_smoothbore"], f"the French carry the fight's weapon ({sides['fw']})")
     check("Hold the bridge" in sides["notes"] and "It ends" in sides["notes"] and "Cope" in sides["notes"], "the aims, the end and the source are in the fight's notes")
     check(pg.evaluate("() => S.weather.cond") == "rain", "in the rain, as the fight says")
-    dark = pg.evaluate("""() => { S.weapon = 'musket_smoothbore'; const a = S.chars.find(c => c.uid);
-      return { light: S.weather.light, far: darkOnAttack({ blocked: null, penalty: 0, notes: [] }, 30, a).blocked || '',
-               near: darkOnAttack({ blocked: null, penalty: 0, notes: [] }, 10, a).penalty } }""")
+    dark = pg.evaluate("""() => { const was = S.weapon; S.weapon = 'musket_smoothbore'; const a = S.chars.find(c => c.uid);
+      const out = { light: S.weather.light, far: darkOnAttack({ blocked: null, penalty: 0, notes: [] }, 30, a).blocked || '',
+               near: darkOnAttack({ blocked: null, penalty: 0, notes: [] }, 10, a).penalty };
+      S.weapon = was; return out }""")
     check(dark["light"] == "night" and "Dark night" in dark["far"] and dark["near"] == 20,
           f"in a dark night: no aimed shot beyond 25 hexes, and -20% within ({dark})")
     count = pg.evaluate("() => S.mapMsg.match(/The picket \\(British\\), (\\d+ of its \\d+ men|its \\d+ men)/)?.[1] || ''")
     check(count.startswith(str(sides["b"]) + " of its") or count == f"its {sides['b']} men" or (count.startswith("its ") and int(count.split()[1]) <= sides["b"]),
           f"the setup counts the team's men in the picket ({count}; {sides['b']} on the map)")
+    # the picket's own end: the GM's script plays both sides and stops when the roller calls it
+    end = pg.evaluate("""() => {
+      S.gm = { on: true, auto: false, sides: {} };
+      for (const sd of new Set(S.chars.map(sideOf))) S.gm.sides[sd] = { ...gmSide(sd), ctl: "script", stance: "steady", quality: "regular" };
+      let r = "acted", n = 0;
+      try{ while (r === "acted" && n++ < 6000) r = gmStep() }catch(e){ return { err: e.stack } }
+      renderChars();
+      const fd = S.chars.filter(c => sideOf(c) === 'French'), down = fd.filter(c => isDown(c) || c.taken || c.fled).length;
+      return { r, round: S.round, msg: S.gmMsg, called: S.fightEnd && S.fightEnd.called, won: S.wonBy, frac: down / fd.length,
+               bar: (document.querySelector('#btn-fight-on') || {}).id || '', log: S.log.map(l => l.lines.join(' ')).join(' ') + ' ' + (S.pending || []).join(' ') } }""")
+    check(not end.get("err"), f"the script plays the picket ({end.get('err', '')[:300]})")
+    called = end.get("called") or {}
+    check(end["r"] == "over" and "The fight's end" in end["msg"], f"the script stops at the fight's own end ({end['msg']}, round {end['round']})")
+    check((called.get("won") == "British" and (end["frac"] >= 0.33 or end["round"] > 6 or called.get("why") == "French break")) or called.get("won") == "French",
+          f"called by its end: 6 rounds, a third of the French down, or a side broken ({called}, French down {end['frac']:.2f})")
+    check(end["won"] == called.get("won") and end["bar"] == "btn-fight-on", "the winner is marked, and the GM may fight on")
+    pg.click("#btn-fight-on")
+    on = pg.evaluate("() => ({ won: S.wonBy, r: gmStep(), on: S.fightEnd.on })")
+    check(on["on"] and on["r"] != "over" or "still stand" in pg.evaluate("() => S.gmMsg"), f"Fight on sets the call aside and the script plays on ({on})")
     # a case carried from the last season: the panel shows it, and the next season begins from it
     pg.goto(BASE + "team.html")
     pg.wait_for_selector("#h-service")

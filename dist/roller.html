@@ -2390,7 +2390,7 @@ function strainAtEnd(){                           // once a side has won: the fi
 }
 function newFightMarks(){                         // a new fight: no downs, coups, winner or marks carried over
   for (const c of S.chars){ delete c.downs; delete c.downedLeader; delete c.coups; delete c.fieldWon }
-  S.wonBy = null; S.deedsDone = []; S.afterLog = []; S.afterOpen = false; S.packsDropped = {}; S.packsLost = []; S.strainDone = false; S.travelFrom = null; S.quick = false;
+  S.wonBy = null; S.fightEnd = null; S.deedsDone = []; S.afterLog = []; S.afterOpen = false; S.packsDropped = {}; S.packsLost = []; S.strainDone = false; S.travelFrom = null; S.quick = false;
   for (const c of S.chars) delete c.loadOrder;
 }
 function creditDown(a, c){                         // a put c down with his hit
@@ -2430,11 +2430,18 @@ function wonSelect(sides, auto){                  // who won: still standing, or
   const opt = sd => `<option value="${attr(sd)}"${S.wonBy === sd ? " selected" : ""}>${attr(sd)}</option>`;
   return `<select id="sel-won" aria-label="Who won"><option value="">${first}</option>${sides.map(opt).join("")}</select>`;
 }
+function fightEndBar(){                           // a small fight's end, called: and the way to fight on
+  const E = S.fightEnd;
+  if (!E) return "";
+  if (E.on) return `<p class="muted" style="margin:0">Fighting on past the fight's end; the GM marks the winner.</p>`;
+  return E.called ? `<div class="toolbar"><span>${attr(fightEndText(E.called))}</span><button class="small" id="btn-fight-on" title="Set the call aside and fight on: the GM marks the winner">Fight on</button></div>` : "";
+}
 function renderAfterFight(){
   const box = $("#after-fight"); if (!box) return;
+  fightEndCheck();
   const sides = [...new Set(S.chars.map(sideOf))], auto = winningSide(), men = afterMen(), team = S.chars.filter(c => c.sheet && c.sheet.pid);
   const sel = wonSelect(sides, auto);
-  if (!team.length || !DATA.ranks){ box.innerHTML = S.travelFrom ? `<details class="after" open><summary><b>After the fight</b> <span class="muted">back to the travel map</span></summary><div class="toolbar"><label>Won by ${sel}</label></div>${travelButton()}</details>` : ""; return }
+  if (!team.length || !DATA.ranks){ box.innerHTML = S.travelFrom ? `<details class="after" open><summary><b>After the fight</b> <span class="muted">back to the travel map</span></summary><div class="toolbar"><label>Won by ${sel}</label></div>${travelButton()}</details>` : S.fightEnd ? `<details class="after" open><summary><b>After the fight</b></summary>${fightEndBar()}<div class="toolbar"><label>Won by ${sel}</label></div></details>` : ""; return }
   const eras = [...new Set(men.map(eraOfChar).filter(Boolean))], kinds = [...new Set(eras.flatMap(lootKindsFor))];
   const K = (S.afterK ||= { kind: "field", who: "all" }); if (!kinds.includes(K.kind)) K.kind = kinds[0];
   if (K.who !== "all" && !men.some(c => String(c.id) === String(K.who))) K.who = "all";
@@ -2447,7 +2454,7 @@ function renderAfterFight(){
   }).join("");
   const log = (S.afterLog || []).map(l => `<li>${attr(l)}</li>`).join("");
   box.innerHTML = `<details class="after" ${S.afterOpen || auto || S.wonBy ? "open" : ""}><summary><b>After the fight</b> <span class="muted">deeds and loot for the team builder's men</span></summary>
-    <div class="toolbar"><label>Won by ${sel}</label>${dropButtons()}</div>${packsLostText()}${(strainAtEnd(), "")}${travelButton()}
+    ${fightEndBar()}<div class="toolbar"><label>Won by ${sel}</label>${dropButtons()}</div>${packsLostText()}${(strainAtEnd(), "")}${travelButton()}
     <ul class="xp">${rows}</ul>
     <div class="toolbar"><button class="small" id="btn-deeds" title="The ticked men did a deed: +20 to their next promotion roll on the team builder, and the wait waived">Mark deeds</button></div>
     ${men.length && kinds.length ? `<div class="toolbar"><select id="sel-loot" aria-label="What to loot">${kinds.map(k => `<option value="${k}"${k === K.kind ? " selected" : ""}>${LOOT_NAMES[k]}</option>`).join("")}</select>${whoSel}<button class="small" id="btn-loot" title="Each of the winners who is still up rolls, by his era's rules; winnings go into his purse">Loot (${men.filter(c => !isDown(c)).length} able)</button></div>` : `<p class="muted" style="margin:0">${wonBy() ? "None of the team builder's men are on the winning side." : "Loot once a side has won."}</p>`}
@@ -3537,7 +3544,7 @@ const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
 let SAVED_AS = null;                                 // the fight as this page last wrote or read it: another page changing it means a reload, not a save over it
-function save(){ try{ SAVED_AS = JSON.stringify({chars:S.chars,events:S.events,gm:S.gm,screen:S.screen,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone,travelFrom:S.travelFrom,quick:S.quick}); localStorage.setItem("gravewounds-chars", SAVED_AS) }catch(e){ /* storage off: the fight lasts while the page is open */ } }
+function save(){ try{ SAVED_AS = JSON.stringify({chars:S.chars,events:S.events,gm:S.gm,screen:S.screen,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,fightEnd:S.fightEnd,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone,travelFrom:S.travelFrom,quick:S.quick}); localStorage.setItem("gravewounds-chars", SAVED_AS) }catch(e){ /* storage off: the fight lasts while the page is open */ } }
 function restore(){
   try {
     SAVED_AS = localStorage.getItem("gravewounds-chars");
@@ -3962,7 +3969,35 @@ function gmFree(f){                                // a scripted man's free atta
   rollHit();
   if ((S.free || [])[0] === f) freeDone(a ? "taken" : "");   // a miss or a parry has closed it already
 }
+/* A small fight's own end (data/service small_fights `end`, handed over as S.fightEnd by side name):
+   a side loses once it breaks, or once its share of men down (or that many) is reached, counting the
+   taken and the gone;
+   when the rounds are up, `then` wins (or nobody: the GM marks it). The roller calls it once: it sets
+   the winner and the GM's script stops; Fight on sets the call aside for the rest of the fight. */
+function fightEndCheck(){
+  const E = S.fightEnd;
+  if (!E || E.on) return null;
+  if (E.called) return E.called;
+  const lost = Object.entries(E.down || {}).filter(([sd, v]) => {
+    const men = S.chars.filter(c => sideOf(c) === sd), n = men.filter(c => isDown(c) || c.taken || c.fled).length;
+    return men.length && (v < 1 ? n >= v * men.length - 1e-9 : n >= v);
+  }).map(([sd]) => sd);
+  const sides = [...new Set(S.chars.map(sideOf))], broke = sides.filter(sd => (S.broken || {})[sd]);
+  let call = null;
+  if (broke.length === 1) call = { won: sides.find(sd => sd !== broke[0]) || null, why: `${broke[0]} break` };
+  else if (lost.length === 1) call = { won: sides.find(sd => sd !== lost[0]) || null, why: `${lost[0]} have lost enough men to give it up` };
+  else if (lost.length > 1) call = { won: null, why: "both sides have lost enough men to give it up" };
+  else if (E.rounds && S.round > E.rounds) call = { won: E.then || null, why: `${E.rounds} rounds are up` };
+  if (!call) return null;
+  E.called = call;
+  if (call.won && !S.wonBy){ S.wonBy = call.won; S.afterOpen = true }
+  (S.pending ||= []).push(`The fight's end: ${call.why}${call.won ? `; ${call.won} win` : "; the GM marks the winner"} (Fight on, under After the fight, to go on)`);
+  return call;
+}
+const fightEndText = e => `The fight's end: ${e.why}${e.won ? `; ${e.won} win` : ""}.`;
 function gmOver(){                                 // the fight's end, or null
+  const end = fightEndCheck();
+  if (end) return fightEndText(end);
   const won = winningSide();
   if (won) return `${won} still stand: the fight is over.`;
   return S.chars.some(c => !isOut(c)) ? null : "No one is left fighting: the fight is over.";
@@ -4860,6 +4895,7 @@ function advance(rounds){
   lines.push(...gmQuarter());
   lines.push(...moraleChecks());
   S.round += rounds;
+  fightEndCheck();                           // a small fight's rounds up, or its losses enough
   const label = rounds === 1 ? `Round ${from}` : `Rounds ${from}\u2013${S.round - 1}`;
   const all = [...(S.pending || []), ...lines]; S.pending = [];
   S.log.unshift({ label, lines: all.length ? all : ["no bleeding"] });
@@ -5761,6 +5797,7 @@ function setupHandoff(){                     // a camp or position sent from the
   if (h.light) S.weather = { ...(S.weather || { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } }), light: h.light === "day" ? undefined : h.light };   // a small fight's light
   S.hauled = !!h.hauled;
   S.round = 1; S.log = []; S.turn = null; S.tm = null; S.free = []; S.broken = {}; S.attacker = -1; S.active = 0; S.hit = null; newFightMarks();
+  S.fightEnd = h.end ? { rounds: h.end.rounds || null, then: h.end.then || null, down: h.end.down || {}, called: null, on: false } : null;
   S.addSide = foe ? foe.side : "Attackers";                                // Add brings in the other side
   if (!foe && h.force.side === "Attackers") S.addSide = "Defenders";
   const unfinished = h.camp && h.done !== null && h.done !== undefined ? `, ${h.built}% built` : "";
@@ -6107,6 +6144,10 @@ $("#team-with")?.addEventListener("change", e => {
   renderChars();
 });
 $("#after-fight").addEventListener("click", e => {
+  if (e.target.id === "btn-fight-on" && S.fightEnd){
+    if (S.fightEnd.called && S.wonBy === S.fightEnd.called.won) S.wonBy = null;
+    S.fightEnd.on = true; S.pending.push("The GM fights on past the fight's end"); renderChars(); return;
+  }
   const dp = e.target.closest("button[data-drop]");
   if (dp){ const sd = dp.dataset.drop; S.packsDropped ||= {}; S.packsDropped[sd] = true; S.chars.filter(c => sideOf(c) === sd && loadEra(c)).forEach(c => { c.loadOrder = "fighting" }); S.afterOpen = true; return renderChars() }
   const tk = e.target.closest("button[data-takenman]");
