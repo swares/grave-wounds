@@ -2118,6 +2118,8 @@ def _service_errors(d: Data, W: dict) -> list[str]:
     for x in d.disease["diseases"].values():
         known |= set(x.get("mods", {})) | set(x.get("needs", []))
     errors += _small_fight_errors(d, W, where, states)
+    if not isinstance(W.get("medicine", 0), int) or not 0 <= W.get("medicine", 0) <= 50:
+        errors.append(f"{where}: medicine must be a whole number 0-50")
     wa = W.get("wastage") or {}
     errors += [f"{where}: wastage: unknown state {k}" for k in wa if k not in states]
     errors += [f"{where}: wastage {k} must be 0-100" for k, v in wa.items() if not (isinstance(v, (int, float)) and 0 <= v <= 100)]

@@ -671,7 +671,7 @@ once. The Python rules and the page give the same result from the same dice.
 the project doc "between-battles-design"). Between the modelled battles, a team of the war's army
 serves a season (91 days) with a line battalion in one step. The war's calendar gives each season
 what the battalion did (in quarters, on campaign, on the march, at a siege), its hygiene, the weeks
-of the season its weather and ground made sickness worse, and its named actions. Four wars so far:
+of the season its weather and ground made sickness worse, and its named actions. Five wars so far:
 
 - **The Peninsula** (`peninsula.yaml`, 1808-1814, the British in the Peninsula): 24 seasons from
   Roliça to Toulouse, 18 actions, 8 small fights.
@@ -717,6 +717,23 @@ of the season its weather and ground made sickness worse, and its named actions.
   (the Hindenburg Line). No mean strength was found, so no war totals: disease comes to about 1.0%
   dead a season, hits to about 20% a season at every main action in the line (7% holding the line
   alone).
+- **Sicily and Italy** (`italy_british.yaml`, 1943-1945, a British battalion): 8 seasons from
+  Sicily to the Po, following the 38th (Irish) Brigade of the 78th Division through its war diaries
+  (irishbrigade.co.uk, the London Irish Rifles Association) and the official medical history (Army
+  Medical Services: Campaigns, vol. III). Nine actions, among them Cassino's Snakeshead (its
+  battlefield; the 1st Royal Sussex's 53%) and Anzio (the 2nd Sherwood Foresters at Campoleone, the
+  1st London Irish), neither the Irish Brigade's, so not ticked. Wastage 8% a season holding the line
+  (ours, from Monte Castellone and the mountain winter's dead). The weapon mix is ours, from a New
+  Zealand casualty clearing station's 1,004 cases in April 1945 (shell and mortar 69%, bullets 27%,
+  mines 4%): no British count was found. Seven small fights from the war diaries: a night patrol
+  (Monte Castellone, Casa Tamagnin), Germans in white rush the forward platoon (Il Calvario), the
+  posts hit in falling snow, a fighting patrol on a farmhouse, clearing the houses (San Fatucchio,
+  Centuripe), over the canal on the broken bridge (Conselice) and grenades over the floodbank (the
+  Senio). A war may give **medicine** (ours): added to every recovery check, as a leech's bonus is;
+  here 20, for the sulfa drugs, penicillin, mepacrine, DDT and vaccines that made the sick many and
+  the dead few (6.5 sick to each battle casualty in X Corps in autumn 1943, about 10 to 1 in the
+  mountain winter of 1944-45). Disease comes to about 0.6% dead a season; hits to about 12% a season
+  at every main action in the line (5% holding the line alone).
 
 On the team builder's **A season with the battalion** panel the GM picks the season, ticks the
 actions the team was at (those of the main army are ticked; Albuera and San Sebastián are not), and

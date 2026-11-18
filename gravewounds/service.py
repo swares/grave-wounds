@@ -92,7 +92,7 @@ def day_ctx(W: dict, s: dict, wk: int) -> dict:
     """The disease track's day in a week of the season: care, marching, cold and wet, filth."""
     st = W["states"][s["state"]]
     return {"care": st["care"], "marched": st["marched"], "wet_cold": "cold_wet" in factors(None, W, s, wk),
-            "filth": s["hygiene"] == "poor"}
+            "filth": s["hygiene"] == "poor", "leech": W.get("medicine", 0)}   # the era's medicine, on every recovery check
 
 
 def mix_of(d: Data, W: dict) -> list:
