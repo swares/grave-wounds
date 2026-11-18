@@ -727,6 +727,13 @@ function markLost(pid, why){                      // the team builder takes him 
   all[pid].lost = { why };
   writePurses(all);
 }
+function unmarkLost(pid, why){                    // he is back after all (a man taken, retaken when his side won the field): only while the team builder has not yet taken him off
+  if (!pid) return;
+  const all = readPurses();
+  if (all[pid]?.lost?.why !== why) return;
+  delete all[pid].lost;
+  writePurses(all);
+}
 function payKeep(have, days, food, bed){          // {paid, hungry, rough}: each day's food before its bed
   let paid = 0, hungry = 0, rough = 0;
   for (let i = 0; i < days; i++){
@@ -3980,6 +3987,18 @@ function gmFree(f){                                // a scripted man's free atta
    the other side's do; and a side that is to get away wins once its share has left by its own edge
    (a man ending on it leaves the field). The roller calls it once: it sets
    the winner and the GM's script stops; Fight on sets the call aside for the rest of the fight. */
+// The winner marked: by the GM under After the fight, or by a small fight's end. Men of the winning
+// side taken in this fight (down and asking quarter) are retaken: the field is theirs.
+function setWon(side){
+  S.wonBy = side || null; S.afterOpen = true;
+  if (!side) return;
+  for (const c of S.chars) if (c.taken && sideOf(c) === side){
+    c.taken = false;
+    if (c.sheet?.pid) unmarkLost(c.sheet.pid, "taken prisoner");
+    S.pending = S.pending || [];
+    S.pending.push(`${c.name} is retaken: ${side} hold the field`);
+  }
+}
 function onOwnEdge(sd, h){                         // h on the map's edge that side sd came in by
   const { cols, rows } = mapSize(), k = (S.fightEnd.edges || {})[sd];
   return !!h && [h[0] === 0, h[0] === cols - 1, h[1] === 0, h[1] === rows - 1][k ?? 0];
@@ -4023,7 +4042,7 @@ function fightEndCheck(roundEnd = false){
   else if (E.rounds && S.round > E.rounds) call = { won: E.wins || null, why: `${E.rounds} rounds are up` };
   if (!call) return null;
   E.called = call;
-  if (call.won && !S.wonBy){ S.wonBy = call.won; S.afterOpen = true }
+  if (call.won && !S.wonBy) setWon(call.won);
   const who = call.won ? "; " + call.won + " win" : "; the GM marks the winner";
   S.pending.push(`The fight's end: ${call.why}${who} (Fight on, under After the fight, to go on)`);
   return call;
@@ -4558,7 +4577,7 @@ function renderResult(){
     <p class="hitname">${LOC[h.loc].name}</p>
     ${sit ? `<div class="sitline">${sit}</div>` : ""}
     ${aimLine(h)}
-    ${h.strayHit ? `<div class="sitline">A stray shot: no attack roll, severity rolled</div>` : ""}
+    ${h.strayHit ? `<div class="sitline">${strayWhat(h)}: no attack roll, severity rolled</div>` : ""}
     ${h.range ? `<div class="sitline">${sitLine(h)}</div>` : ""}
     ${h.ltable !== h.table ? `<div class="sitline">Close combat: location from ${DATA.tables[h.ltable].label}</div>` : ""}
     <div class="chips"><span class="chip sev-${h.sev === "stopped" ? "light" : h.sev}">${sevLabel(h.sev)}</span>${h.graze ? `<span class="chip graze" title="Hit by the barest margin: bleed and pain one step lower, no stop check">Graze</span>` : ""}<span class="chip">${DATA.mechanisms[h.mech].name}</span><span class="chip">${shortName(h.weapon)}</span></div>
@@ -4822,6 +4841,7 @@ function rollServiceHit(){
   const turn = S.turn, free = S.free;               // a hit from a season is rolled outside any fight's turn on this page
   S.turn = null; S.free = [];
   rollHit(true);
+  if (S.hit){ S.hit.season = h.action; renderResult() }   // a season's hit, not a stray shot
   S.turn = turn; S.free = free;
   S.mapMsg = `${h.name}, hit at ${h.action}: the wound is rolled below.`;
   renderChars();
@@ -5429,6 +5449,7 @@ function shotWay(a, dd){                        // who stands in the way of a's 
   if (!w.range || w.off_map) return { men: [], penalty: 0, stray: 0 };
   return inTheWay(S.weapon, a.pos, dd.pos, S.chars.filter(o => o !== a && o !== dd && o.pos && !isOut(o)).map(o => [o.id, o.pos]), S.ground);
 }
+const strayWhat = h => (h.season ? "A hit from the season (" + h.season + ")" : "A stray shot");   // what a hit rolled without an attack was
 function strayHit(){                            // roll the stray shot's hit on the man it went into
   const h = S.hit, i = h && h.stray && h.stray.hit ? S.chars.findIndex(c => c.id === h.stray.id) : -1;
   if (i < 0) return;
@@ -5748,7 +5769,16 @@ function teamForce(team){                           // {map, id} of the force a 
   const n = named[(men.find(c => c.leader) || men[0])?.uid];
   return n ? { map: n.map, id: n.force } : null;
 }
-const forceCount = (o, named) => Math.max(Math.min(o.men, 8), (named?.by.get(o.id) || []).length);   // its fighters here: up to 8, its named men and their team's followers always
+const forceCount = (o, named) => Math.max(o.here ?? Math.min(o.men, 8), (named?.by.get(o.id) || []).length);   // its fighters here: up to 8 (or as set), its named men and their team's followers always
+// A season's small fight keeps its odds: the team brings all its named men and followers, so each
+// other force comes in the same proportion to the rolled numbers (at least 1, at most 40).
+function keepOdds(h, named){
+  if (h.from !== "service") return;
+  const all = [h.force, ...(h.allies || []), ...(h.foes || [])], team = all.find(o => o.id === "team");
+  if (!team) return;
+  const here = forceCount(team, named);
+  for (const o of all) if (o !== team) o.here = Math.max(1, Math.min(40, Math.round(here * o.men / team.men)));
+}
 function forceChars(o, positions, named = null){  // up to 8 of a travel-map force's men, its named men first, at these hexes if given
   const out = [];
   for (const c of named?.by.get(o.id) || []){       // his own fighter, wounds and all, ready for a new fight
@@ -5829,6 +5859,7 @@ function setupHandoff(){                     // a camp or position sent from the
   // do not fit go to their side's edge. The enemy forces wait at the far edge (side 2's edge).
   const spots = campSpots(L, cols, rows, gate), defenders = [h.force, ...(h.allies || [])], foes = h.foes || [], foe = foes[0];
   const named = handoffNamed(h, [...defenders, ...foes]);   // the named men with these forces come as themselves
+  keepOdds(h, named);
   const overflow = defenders.reduce((t, o) => t + forceCount(o, named), 0) > spots.length;
   S.chars = [];
   for (const o of defenders) S.chars.push(...forceChars(o, spots.splice(0, forceCount(o, named)), named));
@@ -6132,7 +6163,7 @@ function consoleCommand(e){                         // a command from the consol
   else if (d.cmd === "play" && gmOn()) gmPlay();
   else if (d.cmd === "undo" && gmOn()) gmUndo();
   else if (d.cmd === "next" && gmOn() && actingChar() && !scripted(actingChar())){ nextFighter(); gmKick() }   // as Next fighter: a person's turn ends
-  else if (d.cmd === "won" && sidesInOrder().includes(d.side)){ S.wonBy = d.side; S.afterOpen = true; renderChars() }
+  else if (d.cmd === "won" && sidesInOrder().includes(d.side)){ setWon(d.side); renderChars() }
   else if (d.cmd === "seats" && Array.isArray(d.list)){ RELAY.list = d.list; relayFollow(); renderChars() }
   else if (d.cmd === "resend") relayResend(d.id);
   else if (d.cmd === "player") relayCommand(d.id, d.m);
@@ -6176,7 +6207,7 @@ function relayCommand(id, m){
   if (p) netCommand(p, m);
 }
 $("#after-fight").addEventListener("change", e => {
-  if (e.target.id === "sel-won"){ S.wonBy = e.target.value || null; S.afterOpen = true; renderChars() }
+  if (e.target.id === "sel-won"){ setWon(e.target.value); renderChars() }
   else if (e.target.id === "sel-loot"){ S.afterK.kind = e.target.value; renderChars() }
   else if (e.target.id === "sel-loot-who"){ S.afterK.who = e.target.value; renderChars() }
 });

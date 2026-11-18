@@ -58,7 +58,7 @@ sides: {team: "British", foes: "French"}
 
 # small_fights - ready-made fights for the roller when a season's small fight comes (rolled by weight
 #   among those whose states include the season's; the GM may pick another): name, what (the accounts,
-#   one line), states, weight (ours), where, time, ground (the roller's ground: open, road, farmland,
+#   one line), states, weight (ours), at (the season of the instance it is sourced to), where, time, ground (the roller's ground: open, road, farmland,
 #   heath, forest, hills, mountains, marsh, ford, bridge, village, town), weather (optional), light
 #   (optional: dusk, moonlit or night, weather.yaml's light levels, set on the roller; day if none), side (the
 #   team's party, the team in it: name, men [low, high]), foes ([{name, men, kit, weapon}]: the roller
@@ -78,6 +78,7 @@ small_fights:
     what: "French grenadiers and voltigeurs rush the bridge in the dark and rain; the sentries are overrun and the picket fights for half an hour until the supports come up (Barba del Puerco, 19-20 March 1810; the bridge of Vera, 1 September 1813, where the rain had wet the sentries' rifles)."
     states: [quarters, campaign]
     weight: 3
+    at: 1810-spring
     where: "a bridge on the outpost line"
     time: "about midnight"
     light: night
@@ -96,6 +97,7 @@ small_fights:
     what: "A company sent to see who holds a village finds French cavalry in it, skirmishes and falls back (Barba del Puerco, 27 February 1810); a French cavalry patrol draws off at a few shots from the pickets (Espeja, 8 May 1811)."
     states: [quarters, campaign, march]
     weight: 3
+    at: 1809-winter
     where: "a village before the outposts"
     time: "by day"
     ground: village
@@ -111,6 +113,7 @@ small_fights:
     what: "Light troops and dragoons fall on French grenadiers covering a foraging party in a cornfield; the grenadiers form square, beat off the dragoons and get away to the next village (Barquilla, 11 July 1810)."
     states: [campaign]
     weight: 2
+    at: 1810-summer
     where: "a cornfield by a village"
     time: "about 4 in the morning"
     light: dusk
@@ -128,6 +131,7 @@ small_fights:
     what: "On the retreat, French dragoons ride into the oak woods and plunder a battalion's baggage until a company of riflemen drives them off (the Huebra, 17 November 1812)."
     states: [march, campaign]
     weight: 2
+    at: 1812-autumn
     where: "the baggage train in an oak wood"
     time: "in the morning"
     ground: forest
@@ -145,6 +149,7 @@ small_fights:
     what: "The garrison bursts out on the working parties in the trenches, drives them off and carries away their picks and shovels (Badajoz, 19 March 1812: 1,500 infantry and 40 cavalry; Burgos, 5 and 8 October 1812)."
     states: [siege]
     weight: 4
+    at: 1812-spring
     where: "the parallel before the breach"
     time: "in the evening"
     light: dusk
@@ -162,6 +167,7 @@ small_fights:
     what: "The rear-guard holds a bridge and its defile while the column gets clear; French cavalry come at it four abreast and are broken by fire from both sides (Cacabelos, 3 January 1809)."
     states: [march]
     weight: 3
+    at: 1808-winter
     where: "a bridge and defile on the line of retreat"
     time: "from the afternoon to dusk"
     ground: bridge
@@ -177,6 +183,7 @@ small_fights:
     what: "A party of volunteers storms an outlying redoubt by night and carries it, taking its guns and garrison (Fort San Francisco, Ciudad Rodrigo, 8 January 1812)."
     states: [siege]
     weight: 2
+    at: 1811-winter
     where: "an outlying redoubt"
     time: "at night"
     light: night
@@ -194,6 +201,7 @@ small_fights:
     what: "After a night march the column closes on French quarters in thick fog and charges down the village street; light companies make a column surrender (Arroyo dos Molinos, 28 October 1811, a division's attack, here a company's part of it)."
     states: [campaign, quarters]
     weight: 1
+    at: 1811-autumn
     where: "a village held by the French"
     time: "about 6 in the morning"
     light: dusk

@@ -211,6 +211,7 @@ small_fights:
     what: "Calais men cross the Channel by night and fall on Sandwich early in the morning: Lord Rivers is taken in his bed, with his son and his wife, and the king's new fleet is taken or burned (15 January 1460; Dinham with 800 men, the Paston letters)."
     states: [garrison]
     weight: 2
+    at: 1459-winter
     where: "a port town's streets and quays"
     time: "early in the morning"
     light: dusk
@@ -229,6 +230,7 @@ small_fights:
     what: "Somerset's men from Guînes come against Newnham Bridge, on the way into Calais, and are beaten off by the Calais garrison (23 April 1460, St George's Day)."
     states: [garrison]
     weight: 3
+    at: 1460-spring
     where: "a bridge over the dykes of the Calais marshes"
     time: "by day"
     ground: bridge
@@ -244,6 +246,7 @@ small_fights:
     what: "Lord Clifford's horsemen, about 500, fall on the Yorkists who took the broken bridge the night before and slept by it; FitzWalter is killed coming out of his lodging, and the Lancastrians hold the narrow way against the reinforcements (Ferrybridge, 28 March 1461, as Hall tells it)."
     states: [march, campaign]
     weight: 2
+    at: 1461-spring
     where: "a broken bridge over a river and its north bank"
     time: "at dawn"
     light: dusk
@@ -262,6 +265,7 @@ small_fights:
     what: "Fauconberg's men, over the Aire by the ford upstream, catch Clifford's men falling back north and kill them in Dinting Dale, Clifford by an arrow in the throat (28 March 1461)."
     states: [march, campaign]
     weight: 1
+    at: 1461-spring
     where: "a small dale on the road north"
     time: "in the afternoon"
     ground: heath
@@ -279,6 +283,7 @@ small_fights:
     what: "The king's fore-riders find the enemy's scurriers in a town at nightfall and chase them out of it, and the army lodges close before the enemy in the dark (Barnet, 13 April 1471, the Arrivall)."
     states: [march, campaign]
     weight: 3
+    at: 1471-spring
     where: "a town's street at nightfall"
     time: "at nightfall"
     light: dusk
@@ -296,6 +301,7 @@ small_fights:
     what: "A lord's men lay siege to a household's castle in a quarrel over land: about thirty men and four hired soldiers hold Caister for a month against the Duke of Norfolk's men (three hundred, or three thousand by William Worcester), with guns and crossbows on both sides; John Daubeney is killed by a bolt and two of the duke's men by gunshot, and the garrison yields for want of powder (21 August-September 1469)."
     states: [household]
     weight: 2
+    at: 1469-summer
     where: "a house's walls and gatehouse"
     time: "by day"
     ground: town
@@ -311,6 +317,7 @@ small_fights:
     what: "A neighbour's men come at midnight to sack a manor while its lord is away, pull down the house and lodge, and rob the church (Hellesdon, 15 October 1465: the Duke of Suffolk's men, against Margaret Paston's household)."
     states: [household]
     weight: 1
+    at: 1465-autumn
     where: "a manor house and its lodge"
     time: "at midnight"
     light: night
@@ -328,6 +335,7 @@ small_fights:
     what: "A starving garrison comes out of its castle to bring in food and fodder, or to break out, against the besiegers' guard (the Northumbrian castles, winter 1462: Dunstanburgh's 120, eating their horses)."
     states: [siege]
     weight: 1
+    at: 1462-winter
     where: "the besiegers' lines before a castle gate"
     time: "before dawn"
     light: dusk

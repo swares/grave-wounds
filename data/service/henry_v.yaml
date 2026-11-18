@@ -167,6 +167,7 @@ small_fights:
     what: "A garrison's raiding party, burning villages, is caught by a larger French force; the French horse break the line but stop to loot the baggage, and the English hold a hedged garden until dark (Valmont, 9-11 March 1416)."
     states: [garrison, campaign]
     weight: 2
+    at: 1416-spring
     where: "a hedged garden by a village"
     time: "in the afternoon"
     ground: village
@@ -197,6 +198,7 @@ small_fights:
     what: "French captains lay two ambushes and take a village to draw an English force out; the English rout them (near Rouen, December 1418: Harcourt's about 2,000 against Cornwall's 600, the French losing 240 men-at-arms killed or taken, the English very few)."
     states: [siege, garrison, campaign]
     weight: 3
+    at: 1418-winter
     where: "a road through a wood by a village"
     time: "in the morning"
     ground: forest
@@ -213,6 +215,7 @@ small_fights:
     what: "French men-at-arms fall on the escort of travellers on the road and take horses and baggage, but are beaten off and leave forty and more dead (near Chammes, early 1419)."
     states: [garrison, campaign]
     weight: 2
+    at: 1418-winter
     where: "a road in open country"
     time: "by day"
     ground: road
@@ -229,6 +232,7 @@ small_fights:
     what: "After several breaches, assault follows assault until one division gets onto the walls and takes the defenders from behind (Caen, 4 September 1417); at Meaux an assault of seven or eight hours was thrown back."
     states: [siege]
     weight: 2
+    at: 1417-autumn
     where: "a breach in a town wall"
     time: "by day"
     ground: town
@@ -245,6 +249,7 @@ small_fights:
     what: "Archers wade a ford waist-deep over broken causeways; the French attack the bridgehead and men-at-arms come over to drive them off (the Somme at Béthencourt, 19 October 1415); at Pont-de-l'Arche (14 July 1418) sixty went over first in eight boats under the archers' cover."
     states: [march, campaign]
     weight: 2
+    at: 1415-autumn
     where: "a ford on a broad river"
     time: "in the morning"
     ground: ford
@@ -260,6 +265,7 @@ small_fights:
     what: "A French countermine breaks into an English mine under the walls, and the two sides fight at a barrier in the dark gallery with lances (Melun, 1420: the king and the Duke of Burgundy fought two Dauphinists there, Monstrelet ch. XLII)."
     states: [siege]
     weight: 1
+    at: 1420-autumn
     where: "a mine gallery under the walls"
     time: "underground, by torchlight"
     light: moonlit
@@ -276,6 +282,7 @@ small_fights:
     what: "Burgundians from Gisors find Irish and English in a village disarmed, asleep and without a guard; the survivors barricade the houses, which are burned (Ferrifontaine, early 1419: about 400 killed and 100 taken of 800 Irish and 200 English)."
     states: [garrison, campaign]
     weight: 1
+    at: 1418-winter
     where: "a village where men are quartered"
     time: "at night"
     light: night
@@ -293,6 +300,7 @@ small_fights:
     what: "A force waits in the vineyards by the ditch, climbs the walls with ladders between daybreak and sunrise without alarming the guard, and opens the gate (Pontoise, 31 July 1419)."
     states: [campaign, garrison]
     weight: 1
+    at: 1419-summer
     where: "a town wall by the vineyards"
     time: "between daybreak and sunrise"
     light: dusk

@@ -179,6 +179,7 @@ small_fights:
     what: "Lord Clifford's horsemen, about 500, ride down on the Yorkists who took the broken bridge the night before and slept by it; FitzWalter is killed coming out of his lodging, and the narrow way is held against Edward's men for hours (Ferrybridge, 28 March 1461, as Hall tells it)."
     states: [march, campaign]
     weight: 2
+    at: 1461-spring
     where: "a broken bridge over a river and its north bank"
     time: "at dawn"
     light: dusk
@@ -198,6 +199,7 @@ small_fights:
     what: "Falling back north from the bridge, Clifford's men are caught in Dinting Dale by Fauconberg's men, over the Aire by the ford upstream; Clifford, his gorget off, is killed by an arrow in the throat (28 March 1461)."
     states: [march, campaign]
     weight: 1
+    at: 1461-spring
     where: "a small dale on the road north"
     time: "in the afternoon"
     ground: heath
@@ -214,6 +216,7 @@ small_fights:
     what: "Trollope's men come down the road into a town at first light and are thrown back by archers at the end of the market street, then try a lane round to the north end (St Albans, 17 February 1461)."
     states: [campaign]
     weight: 2
+    at: 1460-winter
     where: "a town's market street and the lanes off it"
     time: "at first light"
     light: dusk
@@ -231,6 +234,7 @@ small_fights:
     what: "The duke's men come out of their castle, to bring in foragers or to fight, and are caught in the open before they can get back (Wakefield, 30 December 1460: York out of Sandal, as Waurin and Hall tell it)."
     states: [campaign]
     weight: 1
+    at: 1460-winter
     where: "the fields below a castle"
     time: "by day"
     ground: farmland
@@ -263,6 +267,7 @@ small_fights:
     what: "Brézé's Frenchmen, their ships wrecked by the storm, are stranded on Holy Island and set on by the Yorkists of the shore (1462; 400-500 killed or taken, by one account)."
     states: [garrison]
     weight: 1
+    at: 1462-autumn
     where: "a tidal island's shore and its village"
     time: "at low tide, by day"
     ground: village
@@ -279,6 +284,7 @@ small_fights:
     what: "A starving garrison comes out of its castle against the besiegers' guard to bring in food and fodder, or to break out (the Northumbrian castles, winter 1462: the garrisons eating their horses)."
     states: [besieged]
     weight: 2
+    at: 1462-winter
     where: "the besiegers' lines before a castle gate"
     time: "before dawn"
     light: dusk
@@ -298,6 +304,7 @@ small_fights:
     what: "The great guns have brought the wall down; the garrison stands in the breach against the storming party (Bamburgh, July 1464: great damage done to the walls)."
     states: [besieged]
     weight: 1
+    at: 1464-summer
     where: "a castle's breach and the rubble below it"
     time: "by day"
     ground: town
@@ -313,6 +320,7 @@ small_fights:
     what: "Besiegers' outposts before a castle meet the scurriers of the army coming to relieve it, and must hold them long enough for the siege to get away (Norham, July 1463: the besiegers fled in a panic)."
     states: [siege]
     weight: 1
+    at: 1463-summer
     where: "the road to the siege lines"
     time: "by day"
     ground: open

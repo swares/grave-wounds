@@ -334,6 +334,7 @@ small_fights:
     what: "Cavalry comes over the river in the snow, takes the vedettes and rolls up the picket line until the infantry pickets' fire and a counter-charge stop them (Hartwood Church, 25 February 1863)."
     states: [quarters, siege]
     weight: 3
+    at: 1862-winter
     where: "the picket line on the Rappahannock"
     time: "in the morning"
     ground: forest
@@ -351,6 +352,7 @@ small_fights:
     what: "At dawn as the train starts out, partisans with two guns hit its front, centre and rear; the guard, a company to every 20 wagons, is overpowered at the rear but drives them from the town (Berryville, 13 August 1864)."
     states: [campaign, march]
     weight: 3
+    at: 1864-summer
     where: "the wagon train in a town street"
     time: "about 4 in the morning"
     light: dusk
@@ -368,6 +370,7 @@ small_fights:
     what: "Both sides out foraging with their wagons meet on a road; the Union holds a hill and the Confederates attack through the pine woods, then draw off after two hours (Dranesville, 20 December 1861)."
     states: [quarters, campaign]
     weight: 2
+    at: 1861-winter
     where: "a hill by a crossroads"
     time: "about noon"
     ground: hills
@@ -383,6 +386,7 @@ small_fights:
     what: "Troops cross a ford to see what holds the far bank, fight all day and come back after dark (Morton's Ford, 6-7 February 1864)."
     states: [quarters]
     weight: 2
+    at: 1863-winter
     where: "a ford on the Rapidan"
     time: "by day"
     ground: ford
@@ -399,6 +403,7 @@ small_fights:
     what: "Picked sharpshooters creep on the picket rifle pits at 4 in the morning, carry part of the line and are gone by sunrise with blankets and food (Petersburg, 31 December 1864; Fort Stedman's pickets, 25 March 1865)."
     states: [siege]
     weight: 4
+    at: 1864-winter
     where: "the picket rifle pits before the works"
     time: "about 4 in the morning"
     light: night
@@ -416,6 +421,7 @@ small_fights:
     what: "Partisans slip through a gap in the pickets in the rain with a deserter for a guide and take a general, his officers, men and horses without a shot (Fairfax Court House, 8-9 March 1863)."
     states: [quarters]
     weight: 1
+    at: 1863-spring
     where: "a headquarters in a village behind the lines"
     time: "about 2 in the morning"
     light: night
@@ -434,6 +440,7 @@ small_fights:
     what: "A battery opens on the rear-guard at daybreak as it cooks breakfast; later its flank and rear are attacked and a regiment is briefly cut off, but it falls back in order, fighting (Auburn, 14 October 1863)."
     states: [campaign, march]
     weight: 2
+    at: 1863-autumn
     where: "a hill on the line of retreat"
     time: "at daybreak"
     light: dusk
