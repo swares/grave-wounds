@@ -2436,12 +2436,15 @@ function fightEndBar(){                           // a small fight's end, called
   if (E.on) return `<p class="muted" style="margin:0">Fighting on past the fight's end; the GM marks the winner.</p>`;
   return E.called ? `<div class="toolbar"><span>${attr(fightEndText(E.called))}</span><button class="small" id="btn-fight-on" title="Set the call aside and fight on: the GM marks the winner">Fight on</button></div>` : "";
 }
+function afterFightBare(sel){                    // After the fight with no team builder's men: back to the travel map, or a small fight's end
+  if (S.travelFrom) return `<details class="after" open><summary><b>After the fight</b> <span class="muted">back to the travel map</span></summary><div class="toolbar"><label>Won by ${sel}</label></div>${travelButton()}</details>`;
+  return S.fightEnd ? `<details class="after" open><summary><b>After the fight</b></summary>${fightEndBar()}<div class="toolbar"><label>Won by ${sel}</label></div></details>` : "";
+}
 function renderAfterFight(){
   const box = $("#after-fight"); if (!box) return;
-  fightEndCheck();
   const sides = [...new Set(S.chars.map(sideOf))], auto = winningSide(), men = afterMen(), team = S.chars.filter(c => c.sheet && c.sheet.pid);
   const sel = wonSelect(sides, auto);
-  if (!team.length || !DATA.ranks){ box.innerHTML = S.travelFrom ? `<details class="after" open><summary><b>After the fight</b> <span class="muted">back to the travel map</span></summary><div class="toolbar"><label>Won by ${sel}</label></div>${travelButton()}</details>` : S.fightEnd ? `<details class="after" open><summary><b>After the fight</b></summary>${fightEndBar()}<div class="toolbar"><label>Won by ${sel}</label></div></details>` : ""; return }
+  if (!team.length || !DATA.ranks){ box.innerHTML = afterFightBare(sel); return }
   const eras = [...new Set(men.map(eraOfChar).filter(Boolean))], kinds = [...new Set(eras.flatMap(lootKindsFor))];
   const K = (S.afterK ||= { kind: "field", who: "all" }); if (!kinds.includes(K.kind)) K.kind = kinds[0];
   if (K.who !== "all" && !men.some(c => String(c.id) === String(K.who))) K.who = "all";
@@ -3987,14 +3990,16 @@ function fightEndCheck(){
   if (broke.length === 1) call = { won: sides.find(sd => sd !== broke[0]) || null, why: `${broke[0]} break` };
   else if (lost.length === 1) call = { won: sides.find(sd => sd !== lost[0]) || null, why: `${lost[0]} have lost enough men to give it up` };
   else if (lost.length > 1) call = { won: null, why: "both sides have lost enough men to give it up" };
-  else if (E.rounds && S.round > E.rounds) call = { won: E.then || null, why: `${E.rounds} rounds are up` };
+  else if (E.rounds && S.round > E.rounds) call = { won: E.wins || null, why: `${E.rounds} rounds are up` };
   if (!call) return null;
   E.called = call;
   if (call.won && !S.wonBy){ S.wonBy = call.won; S.afterOpen = true }
-  (S.pending ||= []).push(`The fight's end: ${call.why}${call.won ? `; ${call.won} win` : "; the GM marks the winner"} (Fight on, under After the fight, to go on)`);
+  const who = call.won ? "; " + call.won + " win" : "; the GM marks the winner";
+  S.pending = S.pending || [];
+  S.pending.push(`The fight's end: ${call.why}${who} (Fight on, under After the fight, to go on)`);
   return call;
 }
-const fightEndText = e => `The fight's end: ${e.why}${e.won ? `; ${e.won} win` : ""}.`;
+const fightEndText = e => `The fight's end: ${e.why}${e.won ? "; " + e.won + " win" : ""}.`;
 function gmOver(){                                 // the fight's end, or null
   const end = fightEndCheck();
   if (end) return fightEndText(end);
@@ -5797,7 +5802,7 @@ function setupHandoff(){                     // a camp or position sent from the
   if (h.light) S.weather = { ...(S.weather || { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } }), light: h.light === "day" ? undefined : h.light };   // a small fight's light
   S.hauled = !!h.hauled;
   S.round = 1; S.log = []; S.turn = null; S.tm = null; S.free = []; S.broken = {}; S.attacker = -1; S.active = 0; S.hit = null; newFightMarks();
-  S.fightEnd = h.end ? { rounds: h.end.rounds || null, then: h.end.then || null, down: h.end.down || {}, called: null, on: false } : null;
+  S.fightEnd = h.end ? { rounds: h.end.rounds || null, wins: h.end.wins || null, down: h.end.down || {}, called: null, on: false } : null;
   S.addSide = foe ? foe.side : "Attackers";                                // Add brings in the other side
   if (!foe && h.force.side === "Attackers") S.addSide = "Defenders";
   const unfinished = h.camp && h.done !== null && h.done !== undefined ? `, ${h.built}% built` : "";
@@ -6055,7 +6060,7 @@ function renderChars(){
   renderMap();
   save();
   veilInputs();
-  renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); renderAfterFight(); renderTeamWith(); renderCoach(); renderHazards(); renderWords(); renderEvents(); renderGM(); relayFollow(); netSides(); netSync();
+  renderRounds(); renderRoles(); renderMods(); shadeFigure(); renderTable(); fightEndCheck(); renderAfterFight(); renderTeamWith(); renderCoach(); renderHazards(); renderWords(); renderEvents(); renderGM(); relayFollow(); netSides(); netSync();
   consolePush();
 }
 /* ---------- the campaign console: this page in its frame, run from there ----------

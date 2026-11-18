@@ -1253,8 +1253,8 @@ function svcFightHandoff(W, s){                     // the small fight as a setu
 }
 function svcFightEnd(e, team, foes){                 // the fight's countable end, by the roller's side names
   if (!e) return null;
-  const name = k => (k === "team" ? team : k === "foes" ? foes : null);
-  return { rounds: e.rounds || null, then: name(e.then), down: Object.fromEntries(Object.entries(e.down || {}).map(([k, v]) => [name(k), v])) };
+  const names = { team, foes }, name = k => names[k] || null;
+  return { rounds: e.rounds || null, wins: name(e.wins), down: Object.fromEntries(Object.entries(e.down || {}).map(([k, v]) => [name(k), v])) };
 }
 function svcPlayFight(){
   const V = svcState(), W = SVC.war(V.war), s = W.seasons[Math.max(0, V.i - 1)];

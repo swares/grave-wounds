@@ -310,7 +310,7 @@ small_fights:
     surprise: {text: "The raiders are at the wire before the alarm", chance: 40}
     aims: {team: "Get in, take prisoners, and get back.", foes: "Raise the alarm and drive them off the wire."}
     ends: "The raiders go back after 4 rounds with what they have; they fail if a third of those here are down first; the Germans hold if the raiders never get in."
-    end: {rounds: 4, then: team, down: {team: 0.33}}
+    end: {rounds: 4, wins: team, down: {team: 0.33}}
     sources: [*graves, "https://roadstothegreatwar-ww1.blogspot.com/2016/06/100-years-ago-siegfried-sassoon.html?m=0"]
     note: "Kiel Trench: Lt Stansfield wounded and Cpl O'Brien killed; Sassoon brought in the wounded and won the MC. The Givenchy raid's numbers are not given."
   - id: german_raid
@@ -327,7 +327,7 @@ small_fights:
     surprise: {text: "The raiders come in behind their barrage", chance: 40}
     aims: {team: "Hold the posts and keep the men.", foes: "Take a post, prisoners and papers, and get back."}
     ends: "The raiders go back after 5 rounds (half an hour) or once a third of those here are down; the company is beaten if it loses a post."
-    end: {rounds: 5, then: team, down: {foes: 0.33}}
+    end: {rounds: 5, wins: team, down: {foes: 0.33}}
     sources: ["https://www.longlongtrail.co.uk/?p=6279"]
   - id: patrol
     name: "A patrol in no man's land"
@@ -358,7 +358,7 @@ small_fights:
     foes: [{name: "A German working party", men: [8, 30], weapon: rifle_service}]
     aims: {team: "Catch the working party and get back.", foes: "Get under cover and back to their trench."}
     ends: "The patrol goes back after 3 rounds; the working party is beaten if half of those here are down."
-    end: {rounds: 3, then: team, down: {foes: 0.5}}
+    end: {rounds: 3, wins: team, down: {foes: 0.5}}
     sources: ["https://www.tcd.ie/library/fitasfiddles/we-went-out-from-the-gap-into-no-mans-land-where-we-remained-over-two-hours/", *graves]
     note: "The unit of the 14 July patrol is not named in the source. No dated instance of a British wiring party caught by fire was found."
   - id: mine
@@ -393,7 +393,7 @@ small_fights:
     surprise: {text: "The cloud is on them before the gongs are beaten", chance: 30}
     aims: {team: "Get the helmets on and hold the trench.", foes: "Get in behind the gas and take prisoners."}
     ends: "The raiders go back after 4 rounds or once a third of those here are down; the trench is lost if the defenders are broken. The roller has no gas: the fog stands for the cloud."
-    end: {rounds: 4, then: team, down: {foes: 0.33}}
+    end: {rounds: 4, wins: team, down: {foes: 0.33}}
     sources: ["https://www.westernfrontassociation.com/world-war-i-articles/2026/march/the-16th-irish-division-and-the-gas-attacks-at-hulluch-april-1916/", "https://cavac.at/cavacopedia/Gas%20attacks%20at%20Hulluch"]
   - id: rearguard
     name: "The rearguard that stayed"
@@ -407,7 +407,7 @@ small_fights:
     foes: [{name: "German infantry", men: [400, 5000], weapon: rifle_service}]
     aims: {team: "Hold until the column is clear, then get away.", foes: "Break through and cut off the column."}
     ends: "The rearguard wins if it holds for 10 rounds and gets off its own edge; it is beaten if it is broken or surrounded."
-    end: {rounds: 10, then: team}
+    end: {rounds: 10, wins: team}
     sources: ["https://ipfs.aleph.im/ipfs/QmXoypizjW3WknFiJnKLwHCnL72vedxjQkDDP1mXWo6uco/wiki/Battle_of_%C3%89treux.html"]
     note: "German losses are given as up to 1,500 (a Wikipedia mirror)."
   - id: bombing
@@ -422,5 +422,5 @@ small_fights:
     foes: [{name: "German bombers counter-attacking", men: [20, 200], weapon: hand_grenade}]
     aims: {team: "Hold the barricade until relieved.", foes: "Bomb their way back along the trench."}
     ends: "The bombers are relieved after 8 rounds; the counter-attack breaks once a third of those here are down; the barricade is lost if the bombers are broken."
-    end: {rounds: 8, then: team, down: {foes: 0.33}}
+    end: {rounds: 8, wins: team, down: {foes: 0.33}}
     sources: ["https://menonthegates.org.uk/men_front/bo-1917-arras-2-battle-of-scarpe-place-2-bn-royal-welsh-fusiliers-23-april-1917/", "https://www.pressreader.com/uk/western-mail/20160722/282020441647921"]

@@ -254,7 +254,7 @@ small_fights:
     surprise: {text: "\"Complete initial surprise\" (the battalion's report)", chance: 60}
     aims: {team: "Hold the post until the reserve platoon comes up.", foes: "Overrun the post and take prisoners."}
     ends: "The reserve platoon comes up after 6 rounds; the Germans go back once a third of those here are down; the post is lost if the platoon is broken."
-    end: {rounds: 6, then: team, down: {foes: 0.33}}
+    end: {rounds: 6, wins: team, down: {foes: 0.33}}
     sources: ["https://www.londonirishrifles.com/?p=18688"]
     note: "A single company report and the battalion's."
   - id: snow_post
@@ -272,7 +272,7 @@ small_fights:
     surprise: {text: "They come out of the falling snow", chance: 30}
     aims: {team: "Hold the posts.", foes: "Drive in the posts."}
     ends: "The Germans draw off after 10 rounds (an hour) or once a third of those here are down; the posts are lost if their men are broken."
-    end: {rounds: 10, then: team, down: {foes: 0.33}}
+    end: {rounds: 10, wins: team, down: {foes: 0.33}}
     sources: [*bde43]
   - id: farmhouse
     name: "A fighting patrol on a farmhouse"
@@ -288,7 +288,7 @@ small_fights:
     foes: [{name: "Germans in the farmhouse", men: [4, 12], kit: ww2_rifleman, weapon: machine_gun}]
     aims: {team: "Get to the house, burn it, and get back.", foes: "Hold the house."}
     ends: "The patrol wins if it holds the house for 2 rounds; it goes back once a third of those here are down. The roller has no booby traps: the GM may roll a hit for the first man to the door."
-    end: {rounds: 2, then: team, down: {team: 0.33}}
+    end: {rounds: 2, wins: team, down: {team: 0.33}}
     sources: [*jan45]
   - id: houses
     name: "Clearing the houses"
@@ -319,7 +319,7 @@ small_fights:
     foes: [{name: "German infantry on the far bank", men: [30, 90], kit: ww2_rifleman, weapon: machine_gun}]
     aims: {team: "Get over and hold the far bank.", foes: "Throw them back over the canal."}
     ends: "The company wins if it holds the far bank for 8 rounds; it is beaten if it is thrown back over."
-    end: {rounds: 8, then: team}
+    end: {rounds: 8, wins: team}
     sources: [*apr45]
   - id: floodbank
     name: "Grenades over the floodbank"
@@ -333,5 +333,5 @@ small_fights:
     foes: [{name: "Germans over the bank", men: [6, 12], kit: ww2_rifleman, weapon: hand_grenade}]
     aims: {team: "Hold its face of the bank.", foes: "Drive them off the bank."}
     ends: "Either side gives up its face of the bank once half of those here are down, or the GM ends it after 10 rounds."
-    end: {rounds: 10, then: none, down: {team: 0.5, foes: 0.5}}
+    end: {rounds: 10, wins: none, down: {team: 0.5, foes: 0.5}}
     sources: ["https://www.royal-irish.com/events/irish-brigade-fighting-on-the-senio-river"]

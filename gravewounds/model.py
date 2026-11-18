@@ -2167,13 +2167,13 @@ def _service_errors(d: Data, W: dict) -> list[str]:
 
 
 def _fight_end_errors(fw: str, e) -> list[str]:
-    """A small fight's end the roller can count: rounds (then: who wins when they are up) and down
+    """A small fight's end the roller can count: rounds (wins: who wins when they are up) and down
     (a side with that share of its men down, or that many, loses)."""
     if not isinstance(e, dict) or not (e.get("rounds") or e.get("down")):
-        return [f"{fw}: needs an end: rounds (with then) or down"]
+        return [f"{fw}: needs an end: rounds (with wins) or down"]
     errors = []
-    if "rounds" in e and not (isinstance(e["rounds"], int) and e["rounds"] >= 1 and e.get("then") in ("team", "foes", "none")):
-        errors.append(f"{fw}: end: rounds must be a whole number of 1 or more, with then: team, foes or none")
+    if "rounds" in e and not (isinstance(e["rounds"], int) and e["rounds"] >= 1 and e.get("wins") in ("team", "foes", "none")):
+        errors.append(f"{fw}: end: rounds must be a whole number of 1 or more, with wins: team, foes or none")
     for k, v in (e.get("down") or {}).items():
         if k not in ("team", "foes"):
             errors.append(f"{fw}: end: down is by team or foes, not {k}")
