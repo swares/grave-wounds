@@ -2113,6 +2113,7 @@ def _service_errors(d: Data, W: dict) -> list[str]:
     known = set()
     for x in d.disease["diseases"].values():
         known |= set(x.get("mods", {})) | set(x.get("needs", []))
+    errors += _small_fight_errors(d, W, where, states)
     acts, seen = W.get("actions", {}), set()
     for s in W.get("seasons", []):
         sw = f"{where}: season {s.get('id')}"
@@ -2151,6 +2152,49 @@ def _service_errors(d: Data, W: dict) -> list[str]:
             errors.append(f"{aw}: needs sources")
         if not any(aid in s.get("actions", []) for s in W.get("seasons", [])):
             errors.append(f"{aw}: in no season")
+    return errors
+
+
+def _small_fight_errors(d: Data, W: dict, where: str, states: dict) -> list[str]:
+    """A war's small fights (data/service small_fights): ready-made fights for the roller."""
+    errors, ids = [], set()
+    grounds = set(d.wounds["combat"]["ground"]["seed"])
+    conds = set((d.weather or {}).get("conditions", {}))
+    span = lambda m: isinstance(m, list) and len(m) == 2 and all(isinstance(x, int) for x in m) and 1 <= m[0] <= m[1]   # noqa: E731
+    for f in W.get("small_fights", []):
+        fw = f"{where}: small fight {f.get('id')}"
+        if f.get("id") in ids:
+            errors.append(f"{fw}: repeated")
+        ids.add(f.get("id"))
+        errors += [f"{fw}: unknown state {x}" for x in f.get("states", []) if x not in states]
+        if not f.get("states"):
+            errors.append(f"{fw}: needs states")
+        if not (isinstance(f.get("weight"), int) and f["weight"] > 0):
+            errors.append(f"{fw}: weight must be a whole number over 0")
+        if not span((f.get("side") or {}).get("men")):
+            errors.append(f"{fw}: side.men must be [low, high]")
+        if not f.get("foes"):
+            errors.append(f"{fw}: needs foes")
+        for o in f.get("foes", []):
+            if not span(o.get("men")):
+                errors.append(f"{fw}: {o.get('name')}: men must be [low, high]")
+            if o.get("kit") and o["kit"] not in d.armor["kits"]:
+                errors.append(f"{fw}: {o.get('name')}: unknown kit {o['kit']}")
+            if o.get("weapon") and o["weapon"] not in d.weapons:
+                errors.append(f"{fw}: {o.get('name')}: unknown weapon {o['weapon']}")
+        if f.get("ground") not in grounds:
+            errors.append(f"{fw}: ground must be one of {sorted(grounds)}")
+        if f.get("weather") and f["weather"] not in conds:
+            errors.append(f"{fw}: unknown weather {f['weather']}")
+        sp = f.get("surprise")
+        if sp and not (sp.get("text") and isinstance(sp.get("chance"), int) and 0 < sp["chance"] <= 100):
+            errors.append(f"{fw}: surprise needs text and a chance (on the defenders: the party unless team_attacks)")
+        if not (f.get("aims") or {}).get("team") or not (f.get("aims") or {}).get("foes") or not f.get("ends"):
+            errors.append(f"{fw}: needs aims (team, foes) and ends")
+        if not f.get("sources"):
+            errors.append(f"{fw}: needs sources")
+    if W.get("small_fights") and not (W.get("sides") or {}).get("foes"):
+        errors.append(f"{where}: small fights need sides: {{team, foes}}")
     return errors
 
 

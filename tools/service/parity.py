@@ -54,8 +54,9 @@ def cases(d, n: int, seed: int) -> list[dict]:
 
 
 def fixed(d) -> dict:
-    """Every action's hit chance at each position, and the weapon for every d100."""
-    pct, weapons, weeks = {}, {}, {}
+    """Every action's hit chance at each position, the weapon for every d100, and small fights
+    rolled for each state and picked by the GM (20 seeds each)."""
+    pct, weapons, weeks, fights = {}, {}, {}, {}
     for wid, W in d.service.items():
         for s in W["seasons"]:
             for aid in s["actions"]:
@@ -64,7 +65,11 @@ def fixed(d) -> dict:
             for p in W["positions"]:
                 pct[f"{wid}/{aid}/{p}"] = sv.hit_pct(W, aid, p, None, 20)
         weapons[wid] = [sv.weapon_for(d, W, r) for r in range(1, 101)]
-    return {"pct": pct, "weapons": weapons, "weeks": weeks}
+        for key in list(W["states"]) + ["=" + f["id"] for f in W.get("small_fights", [])]:
+            for seed in range(1, 21):
+                st, fid = (key, None) if key[0] != "=" else (next(iter(W["states"])), key[1:])
+                fights[f"{wid}/{key}/{seed}"] = sv.small_fight(W, st, seeded_d100(seed), fid) if W.get("small_fights") else None
+    return {"pct": pct, "weapons": weapons, "weeks": weeks, "fights": fights}
 
 
 def main() -> int:

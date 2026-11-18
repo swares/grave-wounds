@@ -52,6 +52,145 @@ small_war:
   chance: {quarters: 15, campaign: 40, march: 25, siege: 30}
   hit: 10
 
+# The two sides of a small fight on the roller: the team's (its side on the team builder, else this)
+# and the enemy's.
+sides: {team: "British", foes: "French"}
+
+# small_fights - ready-made fights for the roller when a season's small fight comes (rolled by weight
+#   among those whose states include the season's; the GM may pick another): name, what (the accounts,
+#   one line), states, weight (ours), where, time, ground (the roller's ground: open, road, farmland,
+#   heath, forest, hills, mountains, marsh, ford, bridge, village, town), weather (optional), side (the
+#   team's party, the team in it: name, men [low, high]), foes ([{name, men, kit, weapon}]: the roller
+#   shows up to 8 a side and says the real odds), team_attacks (the team's party comes in from the edge
+#   against the foes, who hold the middle), surprise (the defenders may be caught unawares: text and
+#   a % chance, ours), aims (each side's, in words), ends (what ends it, in words; the GM marks the
+#   winner), sources, note. The sizes come from the instances in the sources, the weights, chances and
+#   end conditions are ours. No source found counts how often such fights happened (Leach's Rough
+#   Sketches and Simmons's journal, the likeliest, were not reached).
+small_fights:
+  - id: picket
+    name: "A picket attacked at night"
+    what: "French grenadiers and voltigeurs rush the bridge in the dark and rain; the sentries are overrun and the picket fights for half an hour until the supports come up (Barba del Puerco, 19-20 March 1810; the bridge of Vera, 1 September 1813, where the rain had wet the sentries' rifles)."
+    states: [quarters, campaign]
+    weight: 3
+    where: "a bridge on the outpost line"
+    time: "about midnight"
+    ground: bridge
+    weather: rain
+    side: {name: "The picket", men: [20, 53]}
+    foes: [{name: "French grenadiers", men: [60, 600], weapon: musket_smoothbore}]
+    surprise: {text: "The French come on in the dark and the noise of the river", chance: 40}
+    aims: {team: "Hold the bridge until the supports come up.", foes: "Drive in the picket and get across."}
+    ends: "The supports come up after 6 rounds (\"fought for half an hour\", Cope); the French fall back once a third of those here are down; the picket is beaten if it is driven off the bridge."
+    sources: ["Cope, History of the Rifle Brigade, ch. II: https://m.gutenberg.org/files/60048/60048-0.txt", "https://www.historyofwar.org/articles/skirmish_barba_del_puerco.html"]
+    note: "Ferey's 600 grenadiers (Cope) against companies of the 1/95th; O'Hare's company of 53 is a living-history site's figure. Losses (Cope): 4 killed and 10 wounded against the French 9 killed and 6 taken left behind. Costello dates it 19 May."
+  - id: patrol
+    name: "A patrol meets French cavalry"
+    what: "A company sent to see who holds a village finds French cavalry in it, skirmishes and falls back (Barba del Puerco, 27 February 1810); a French cavalry patrol draws off at a few shots from the pickets (Espeja, 8 May 1811)."
+    states: [quarters, campaign, march]
+    weight: 3
+    where: "a village before the outposts"
+    time: "by day"
+    ground: village
+    side: {name: "The patrol", men: [10, 40]}
+    foes: [{name: "French chasseurs", men: [10, 40], weapon: saber}]
+    aims: {team: "Find out who holds the village and bring word back.", foes: "Keep the village and drive the patrol off."}
+    ends: "Either side falls back once two of those here are down or it has seen enough; the patrol wins if it gets back to its own edge with word."
+    sources: ["Cope, ch. II: https://m.gutenberg.org/files/60048/60048-0.txt", "Kincaid, Adventures in the Rifle Brigade, ch. VI: https://m.gutenberg.org/files/28981/28981.txt"]
+    note: "Neither account gives the French numbers or losses: the sizes are ours."
+  - id: foragers
+    name: "French foragers caught at dawn"
+    what: "Light troops and dragoons fall on French grenadiers covering a foraging party in a cornfield; the grenadiers form square, beat off the dragoons and get away to the next village (Barquilla, 11 July 1810)."
+    states: [campaign]
+    weight: 2
+    where: "a cornfield by a village"
+    time: "about 4 in the morning"
+    ground: farmland
+    team_attacks: true
+    side: {name: "The light troops", men: [40, 120]}
+    foes: [{name: "French grenadiers", men: [100, 200], weapon: musket_smoothbore}, {name: "French cavalry", men: [30, 40], weapon: saber}]
+    aims: {team: "Take the foragers and their escort.", foes: "Form, hold together and get back to the next village."}
+    ends: "The French win if they reach their own edge in order; they give up if half of those here are down."
+    sources: ["https://www.historyofwar.org/articles/combat_barquilla.html", "https://military-history.fandom.com/wiki/Combat_of_Barquilla_(1810)"]
+    note: "About 200 grenadiers of the 22nd Line and 30-40 cavalry (Fandom, citing Oman and Beamish). British 9 killed and 23 wounded, French 31 taken (Rickard). Rickard dates it 10 July."
+  - id: baggage
+    name: "Dragoons at the baggage"
+    what: "On the retreat, French dragoons ride into the oak woods and plunder a battalion's baggage until a company of riflemen drives them off (the Huebra, 17 November 1812)."
+    states: [march, campaign]
+    weight: 2
+    where: "the baggage train in an oak wood"
+    time: "in the morning"
+    ground: forest
+    weather: rain
+    side: {name: "The baggage guard", men: [10, 40]}
+    foes: [{name: "French dragoons", men: [10, 60], weapon: saber}]
+    surprise: {text: "The dragoons come out of the trees on the baggage", chance: 40}
+    aims: {team: "Save the baggage and the mules.", foes: "Plunder the baggage and get away with it."}
+    ends: "The dragoons ride off once a third of those here are down, or with what they hold after 6 rounds; the guard is beaten if it is broken."
+    sources: ["Urban, Rifles, ch. 18: https://erenow.org/ww/rifles-six-years-with-wellingtons-legendary-sharpshooters/18.php"]
+    note: "No numbers in the account: the sizes are ours. The rain of the retreat from Burgos is ours too."
+  - id: sortie
+    name: "A sortie on the trenches"
+    what: "The garrison bursts out on the working parties in the trenches, drives them off and carries away their picks and shovels (Badajoz, 19 March 1812: 1,500 infantry and 40 cavalry; Burgos, 5 and 8 October 1812)."
+    states: [siege]
+    weight: 4
+    where: "the parallel before the breach"
+    time: "in the evening"
+    ground: open
+    side: {name: "The working party and its guard", men: [50, 200]}
+    foes: [{name: "The French sortie", men: [150, 1500], weapon: musket_smoothbore}]
+    surprise: {text: "The sortie comes out on men digging", chance: 50}
+    aims: {team: "Hold the trench and keep the tools.", foes: "Drive off the workers, take the tools and go back in."}
+    ends: "The French go back in after 6 rounds or once a third of those here are down; the working party is beaten if it is driven from the trench."
+    sources: ["https://www.historyofwar.org/articles/siege_badajoz_3rd.html", "https://www.historyofwar.org/articles/siege_burgos_1812.html", "Kincaid, ch. IX: https://m.gutenberg.org/files/28981/28981.txt"]
+    note: "Burgos, 5 October: 142 Allied casualties and 200 picks and shovels lost; 8-9 October: 184 against 33 French (Rickard). Trench duty was six hours by day and the same by night (Kincaid)."
+  - id: rearguard
+    name: "The rear-guard at a bridge"
+    what: "The rear-guard holds a bridge and its defile while the column gets clear; French cavalry come at it four abreast and are broken by fire from both sides (Cacabelos, 3 January 1809)."
+    states: [march]
+    weight: 3
+    where: "a bridge and defile on the line of retreat"
+    time: "from the afternoon to dusk"
+    ground: bridge
+    side: {name: "The rear-guard", men: [50, 200]}
+    foes: [{name: "French chasseurs", men: [50, 300], weapon: saber}]
+    aims: {team: "Hold the bridge until the column is clear.", foes: "Break through and cut off the stragglers."}
+    ends: "The rear-guard wins if it holds for 8 rounds; the French draw off once a third of those here are down; the rear-guard is beaten if it is broken."
+    sources: ["https://www.historyofwar.org/articles/action_cacabellos_defile.html"]
+    note: "Both sides lost about 200, with 40-50 British taken, mostly riflemen; the strengths are not given (Rickard)."
+  - id: redoubt
+    name: "Storming a redoubt"
+    what: "A party of volunteers storms an outlying redoubt by night and carries it, taking its guns and garrison (Fort San Francisco, Ciudad Rodrigo, 8 January 1812)."
+    states: [siege]
+    weight: 2
+    where: "an outlying redoubt"
+    time: "at night"
+    ground: hills
+    team_attacks: true
+    side: {name: "The volunteers", men: [100, 300]}
+    foes: [{name: "The redoubt's garrison", men: [40, 60], weapon: musket_smoothbore}]
+    aims: {team: "Carry the redoubt.", foes: "Hold it until relieved."}
+    ends: "The volunteers win when the garrison is down or gives up; they fall back if a third of those here are down."
+    sources: ["Cope, ch. III: https://m.gutenberg.org/files/60048/60048-0.txt", "Kincaid, ch. VIII: https://m.gutenberg.org/files/28981/28981.txt"]
+    note: "About 300 volunteers, 100 from each regiment (Kincaid); 3 guns, 2 captains and 48 men taken; the Rifles lost 1 killed and 16 wounded (Cope)."
+  - id: surprise
+    name: "A French post surprised at dawn"
+    what: "After a night march the column closes on French quarters in thick fog and charges down the village street; light companies make a column surrender (Arroyo dos Molinos, 28 October 1811, a division's attack, here a company's part of it)."
+    states: [campaign, quarters]
+    weight: 1
+    where: "a village held by the French"
+    time: "about 6 in the morning"
+    ground: village
+    weather: fog
+    team_attacks: true
+    side: {name: "The light companies", men: [100, 200]}
+    foes: [{name: "French infantry in the village", men: [100, 300], weapon: musket_smoothbore}]
+    surprise: {text: "The French are in their quarters in the fog", chance: 60}
+    aims: {team: "Take the village and its men.", foes: "Form and get out of the village."}
+    ends: "The French give up once half of those here are down, or get away if they reach their own edge; the attack fails if a third of the light companies here are down."
+    sources: ["https://britishbattles.com/peninsular-war/battle-of-arroyo-molinos"]
+    note: "Blakeney's light companies, about 200, made a column of about 1,500 surrender; the Allies lost under 100 in all (britishbattles). The whole was a division's attack, not a small fight."
+
 sources:
   how: &how "https://www.historyofwar.org/articles/wars_peninsular.html"
   dumas: &dumas "https://www.napoleon-series.org/research/abstract/military/army/britain/casualties/c_britcas.html"
