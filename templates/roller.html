@@ -2824,6 +2824,13 @@ function gmYield(side){                            // a scripted side has broken
 // Down: cannot fight on (blood loss, an incapacitating wound, or out of the fight after a stop check).
 const isDown = c => { const th = charStats(c).th; return !!(th && (th.down || th.incapacitated)) || penalties(c).flags.some(f => f === "incapacitated" || f === "out") };
 // Out of the action this round: down, or on a side that has broken.
+function cardTag(c, isTurn, down, broken){          // a fighter card's tag: acting, off the field, down or broken
+  const tag = (text, bg) => `<span class="turn-tag"${bg ? ` style="background:var(--${bg})"` : ""}>${text}</span>`;
+  if (isTurn) return tag("Acting");
+  if (c.taken || c.fled || c.away) return tag(goneTag(c), "muted");
+  if (down) return tag("Down", "muted");
+  return broken ? tag("Broken", "crit") : "";
+}
 const goneTag = c => [["taken", "Taken"], ["away", "Got away"]].find(([k]) => c[k])?.[1] || "Ran";   // off the field: taken, got away, or ran
 const isOut = c => isDown(c) || !!c.away || !!(S.broken || {})[sideOf(c)];   // away: left the field by his own edge (a small fight's end)
 const initOf = c => Number.isFinite(+c.init) ? +c.init : 0;
@@ -3892,7 +3899,7 @@ function renderChars(){
         ${slow ? `<span class="order slow" title="Wound penalty (shown only; the order is not changed)">wounds −${slow}%</span>` : ""}
         <button class="small" data-act="up" ${tieUp ? "" : "disabled"} aria-label="Act before the fighter above (same initiative)">▲</button>
         <button class="small" data-act="down" ${tieDn ? "" : "disabled"} aria-label="Act after the fighter below (same initiative)">▼</button>
-        ${isTurn ? `<span class="turn-tag">Acting</span>` : c.taken || c.fled || c.away ? `<span class="turn-tag" style="background:var(--muted)">${goneTag(c)}</span>` : down ? `<span class="turn-tag" style="background:var(--muted)">Down</span>` : broken ? `<span class="turn-tag" style="background:var(--crit)">Broken</span>` : ""}</div>
+        ${cardTag(c, isTurn, down, broken)}</div>
       <div class="siderow">
         <label class="order" title="Side: fighters with the same side name check morale together">Side
           <input type="text" data-act="side" value="${attr(sideOf(c))}" aria-label="Side for ${attr(c.name)}"></label>
