@@ -66,8 +66,10 @@ sides: {team: "British", foes: "French"}
 #   against the foes, who hold the middle), surprise (the defenders may be caught unawares: text and
 #   a % chance, ours), aims (each side's, in words), ends (what ends it, in words), end (what of it the
 #   roller counts and calls: rounds, wins: the side that wins when they are up, team, foes or none; down,
-#   a side that loses once that share of its men, or that many, are down, taken or gone; holding a
-#   place is the GM's call), sources, note. The sizes come from the instances in the sources, the weights, chances and
+#   a side that loses once that share of its men, or that many, are down, taken or gone; hold, the
+#   defending side, beaten at a round's end once none of its men stand in the hexes it started in
+#   and the other side's do; away: {side, share}, a side that wins once that share of its men have
+#   left by their own map edge; what the roller cannot count is the GM's call), sources, note. The sizes come from the instances in the sources, the weights, chances and
 #   end conditions are ours. No source found counts how often such fights happened (Leach's Rough
 #   Sketches and Simmons's journal, the likeliest, were not reached).
 small_fights:
@@ -86,7 +88,7 @@ small_fights:
     surprise: {text: "The French come on in the dark and the noise of the river", chance: 40}
     aims: {team: "Hold the bridge until the supports come up.", foes: "Drive in the picket and get across."}
     ends: "The supports come up after 6 rounds (\"fought for half an hour\", Cope); the French fall back once a third of those here are down; the picket is beaten if it is driven off the bridge."
-    end: {rounds: 6, wins: team, down: {foes: 0.33}}
+    end: {rounds: 6, wins: team, down: {foes: 0.33}, hold: team}
     sources: ["Cope, History of the Rifle Brigade, ch. II: https://m.gutenberg.org/files/60048/60048-0.txt", "https://www.historyofwar.org/articles/skirmish_barba_del_puerco.html"]
     note: "Ferey's 600 grenadiers (Cope) against companies of the 1/95th; O'Hare's company of 53 is a living-history site's figure. Losses (Cope): 4 killed and 10 wounded against the French 9 killed and 6 taken left behind. Costello dates it 19 May."
   - id: patrol
@@ -101,7 +103,7 @@ small_fights:
     foes: [{name: "French chasseurs", men: [10, 40], weapon: saber}]
     aims: {team: "Find out who holds the village and bring word back.", foes: "Keep the village and drive the patrol off."}
     ends: "Either side falls back once two of those here are down or it has seen enough; the patrol wins if it gets back to its own edge with word."
-    end: {down: {team: 2, foes: 2}}
+    end: {down: {team: 2, foes: 2}, away: {side: team, share: 0.5}}
     sources: ["Cope, ch. II: https://m.gutenberg.org/files/60048/60048-0.txt", "Kincaid, Adventures in the Rifle Brigade, ch. VI: https://m.gutenberg.org/files/28981/28981.txt"]
     note: "Neither account gives the French numbers or losses: the sizes are ours."
   - id: foragers
@@ -118,7 +120,7 @@ small_fights:
     foes: [{name: "French grenadiers", men: [100, 200], weapon: musket_smoothbore}, {name: "French cavalry", men: [30, 40], weapon: saber}]
     aims: {team: "Take the foragers and their escort.", foes: "Form, hold together and get back to the next village."}
     ends: "The French win if they reach their own edge in order; they give up if half of those here are down."
-    end: {down: {foes: 0.5}}
+    end: {down: {foes: 0.5}, away: {side: foes, share: 0.5}}
     sources: ["https://www.historyofwar.org/articles/combat_barquilla.html", "https://military-history.fandom.com/wiki/Combat_of_Barquilla_(1810)"]
     note: "About 200 grenadiers of the 22nd Line and 30-40 cavalry (Fandom, citing Oman and Beamish). British 9 killed and 23 wounded, French 31 taken (Rickard). Rickard dates it 10 July."
   - id: baggage
@@ -152,7 +154,7 @@ small_fights:
     surprise: {text: "The sortie comes out on men digging", chance: 50}
     aims: {team: "Hold the trench and keep the tools.", foes: "Drive off the workers, take the tools and go back in."}
     ends: "The French go back in after 6 rounds or once a third of those here are down; the working party is beaten if it is driven from the trench."
-    end: {rounds: 6, wins: team, down: {foes: 0.33}}
+    end: {rounds: 6, wins: team, down: {foes: 0.33}, hold: team}
     sources: ["https://www.historyofwar.org/articles/siege_badajoz_3rd.html", "https://www.historyofwar.org/articles/siege_burgos_1812.html", "Kincaid, ch. IX: https://m.gutenberg.org/files/28981/28981.txt"]
     note: "Burgos, 5 October: 142 Allied casualties and 200 picks and shovels lost; 8-9 October: 184 against 33 French (Rickard). Trench duty was six hours by day and the same by night (Kincaid)."
   - id: rearguard
@@ -184,7 +186,7 @@ small_fights:
     foes: [{name: "The redoubt's garrison", men: [40, 60], weapon: musket_smoothbore}]
     aims: {team: "Carry the redoubt.", foes: "Hold it until relieved."}
     ends: "The volunteers win when the garrison is down or gives up; they fall back if a third of those here are down."
-    end: {down: {team: 0.33}}
+    end: {down: {team: 0.33}, hold: foes}
     sources: ["Cope, ch. III: https://m.gutenberg.org/files/60048/60048-0.txt", "Kincaid, ch. VIII: https://m.gutenberg.org/files/28981/28981.txt"]
     note: "About 300 volunteers, 100 from each regiment (Kincaid); 3 guns, 2 captains and 48 men taken; the Rifles lost 1 killed and 16 wounded (Cope)."
   - id: surprise
@@ -203,7 +205,7 @@ small_fights:
     surprise: {text: "The French are in their quarters in the fog", chance: 60}
     aims: {team: "Take the village and its men.", foes: "Form and get out of the village."}
     ends: "The French give up once half of those here are down, or get away if they reach their own edge; the attack fails if a third of the light companies here are down."
-    end: {down: {foes: 0.5, team: 0.33}}
+    end: {down: {foes: 0.5, team: 0.33}, away: {side: foes, share: 0.5}}
     sources: ["https://britishbattles.com/peninsular-war/battle-of-arroyo-molinos"]
     note: "Blakeney's light companies, about 200, made a column of about 1,500 surrender; the Allies lost under 100 in all (britishbattles). The whole was a division's attack, not a small fight."
 

@@ -221,7 +221,7 @@ small_fights:
     surprise: {text: "The garrison is abed", chance: 60}
     aims: {team: "Take the lords and the ships and get back to the boats.", foes: "Stand to and hold the town."}
     ends: "The raiders win once they hold the quay for 6 rounds; the townsmen give up once a third of those here are down; the raiders fail if a third of theirs are down first."
-    end: {rounds: 6, wins: team, down: {foes: 0.33, team: 0.33}}
+    end: {rounds: 6, wins: team, down: {foes: 0.33, team: 0.33}, hold: foes}
     sources: ["https://www.historyofwar.org/articles/raid_sandwich_1460.html", *calais]
     note: "The garrison's size is not given: ours."
   - id: newnham
@@ -236,7 +236,7 @@ small_fights:
     foes: [{name: "Somerset's men from Guînes", men: [50, 400], kit: jack_sallet, weapon: bill}]
     aims: {team: "Hold the bridge.", foes: "Force the bridge and the way to Calais."}
     ends: "Somerset's men fall back once a third of those here are down or after 8 rounds; the guard is beaten if it is driven off the bridge."
-    end: {rounds: 8, wins: team, down: {foes: 0.33}}
+    end: {rounds: 8, wins: team, down: {foes: 0.33}, hold: team}
     sources: [*calais, *santiuste5]
     note: "No numbers in the accounts: the sizes are ours."
   - id: bridge
@@ -254,7 +254,7 @@ small_fights:
     surprise: {text: "The men at the bridge are asleep", chance: 60}
     aims: {team: "Hold the bridge until the army comes up.", foes: "Drive them off and hold the crossing."}
     ends: "The army's reinforcements come up after 8 rounds; Clifford's men fall back once a third of those here are down; the men at the bridge are beaten if they are driven over it."
-    end: {rounds: 8, wins: team, down: {foes: 0.33}}
+    end: {rounds: 8, wins: team, down: {foes: 0.33}, hold: team}
     sources: [*hwferry, "https://wikiwand.com/en/articles/Battle_of_Towton"]
     note: "Accounts differ (Waurin has a fight between scouts south of the bridge). The Yorkist numbers are ours; the playtest packet (templates/playtest/packet.md) has a fuller Ferrybridge."
   - id: dale
@@ -271,7 +271,7 @@ small_fights:
     foes: [{name: "Clifford's rear-guard", men: [50, 300], kit: jack_sallet, weapon: spear}]
     aims: {team: "Catch them before they reach their army.", foes: "Get away north to the main army."}
     ends: "The rear-guard escapes if it holds together for 6 rounds; it is cut down once half of those here are down."
-    end: {rounds: 6, wins: foes, down: {foes: 0.5}}
+    end: {rounds: 6, wins: foes, down: {foes: 0.5}, away: {side: foes, share: 0.5}}
     sources: [*hwferry, "https://wikiwand.com/en/articles/Battle_of_Towton"]
     note: "Numbers are not given: ours."
   - id: scurriers
@@ -303,7 +303,7 @@ small_fights:
     foes: [{name: "The duke's men", men: [100, 300], kit: jack_sallet, weapon: crossbow}]
     aims: {team: "Hold the house.", foes: "Take the house."}
     ends: "The attackers give up for the day after 8 rounds; the garrison yields once a third of those here are down."
-    end: {rounds: 8, wins: team, down: {team: 0.33}}
+    end: {rounds: 8, wins: team, down: {team: 0.33}, hold: team}
     sources: ["https://thisispaston.co.uk/caistersiege.html"]
     note: "The roller has no castle ground: lay walls on town ground. The foes here are a Yorkist duke's men: the sides' names are the roller's, not the quarrel's."
   - id: raid
@@ -320,7 +320,7 @@ small_fights:
     surprise: {text: "The household is asleep", chance: 50}
     aims: {team: "Keep the house, or get away with the household.", foes: "Sack the house."}
     ends: "The raiders take the house if the household is broken; they go off once a third of those here are down."
-    end: {down: {foes: 0.33}}
+    end: {down: {foes: 0.33}, hold: team}
     sources: ["https://thisispaston.co.uk/hellesdonhub.html"]
     note: "The raiders' 300 is the duke's force sent to Drayton the same night; the household's size is not given: ours."
   - id: foray
@@ -338,6 +338,6 @@ small_fights:
     surprise: {text: "The gate opens on the guard by the fires", chance: 30}
     aims: {team: "Drive them back in.", foes: "Bring in what they can and get back inside."}
     ends: "The garrison goes back in after 6 rounds or once a third of those here are down; the guard is beaten if it is driven off."
-    end: {rounds: 6, wins: team, down: {foes: 0.33}}
+    end: {rounds: 6, wins: team, down: {foes: 0.33}, hold: team}
     sources: [*north, "https://www.historyofwar.org/articles/siege_dunstanburgh_1462.html"]
     note: "No sally is described in these accounts: the fight is ours, sized from Dunstanburgh's garrison of 120 (21 December 1462)."

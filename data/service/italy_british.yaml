@@ -238,7 +238,7 @@ small_fights:
     foes: [{name: "A German patrol", men: [4, 9], kit: ww2_rifleman, weapon: pistol_smg}]
     aims: {team: "Find the enemy, take a prisoner if it can, and get back.", foes: "The same."}
     ends: "Either side breaks off once half of those here are down; the patrol wins if it gets back to its own edge, better with a prisoner."
-    end: {down: {team: 0.5, foes: 0.5}}
+    end: {down: {team: 0.5, foes: 0.5}, away: {side: team, share: 0.5}}
     sources: [*apr44, *jan45]
   - id: raid
     name: "Germans in white rush the forward platoon"
@@ -254,7 +254,7 @@ small_fights:
     surprise: {text: "\"Complete initial surprise\" (the battalion's report)", chance: 60}
     aims: {team: "Hold the post until the reserve platoon comes up.", foes: "Overrun the post and take prisoners."}
     ends: "The reserve platoon comes up after 6 rounds; the Germans go back once a third of those here are down; the post is lost if the platoon is broken."
-    end: {rounds: 6, wins: team, down: {foes: 0.33}}
+    end: {rounds: 6, wins: team, down: {foes: 0.33}, hold: team}
     sources: ["https://www.londonirishrifles.com/?p=18688"]
     note: "A single company report and the battalion's."
   - id: snow_post
@@ -272,7 +272,7 @@ small_fights:
     surprise: {text: "They come out of the falling snow", chance: 30}
     aims: {team: "Hold the posts.", foes: "Drive in the posts."}
     ends: "The Germans draw off after 10 rounds (an hour) or once a third of those here are down; the posts are lost if their men are broken."
-    end: {rounds: 10, wins: team, down: {foes: 0.33}}
+    end: {rounds: 10, wins: team, down: {foes: 0.33}, hold: team}
     sources: [*bde43]
   - id: farmhouse
     name: "A fighting patrol on a farmhouse"
@@ -288,7 +288,7 @@ small_fights:
     foes: [{name: "Germans in the farmhouse", men: [4, 12], kit: ww2_rifleman, weapon: machine_gun}]
     aims: {team: "Get to the house, burn it, and get back.", foes: "Hold the house."}
     ends: "The patrol wins if it holds the house for 2 rounds; it goes back once a third of those here are down. The roller has no booby traps: the GM may roll a hit for the first man to the door."
-    end: {rounds: 2, wins: team, down: {team: 0.33}}
+    end: {rounds: 2, wins: team, down: {team: 0.33}, hold: foes}
     sources: [*jan45]
   - id: houses
     name: "Clearing the houses"
@@ -304,7 +304,7 @@ small_fights:
     foes: [{name: "German infantry in the houses", men: [20, 70], kit: ww2_rifleman, weapon: machine_gun}]
     aims: {team: "Clear the buildings room by room.", foes: "Hold the houses."}
     ends: "The platoon wins when the buildings are clear; it falls back if a third of those here are down."
-    end: {down: {team: 0.33}}
+    end: {down: {team: 0.33}, hold: foes}
     sources: ["https://www.royal-irish.com/events/battle-for-san-fatucchio-38-irish-brigade-italy", "https://www.londonirishrifles.com/?p=18487"]
   - id: canal
     name: "Over the canal on the broken bridge"
@@ -319,7 +319,7 @@ small_fights:
     foes: [{name: "German infantry on the far bank", men: [30, 90], kit: ww2_rifleman, weapon: machine_gun}]
     aims: {team: "Get over and hold the far bank.", foes: "Throw them back over the canal."}
     ends: "The company wins if it holds the far bank for 8 rounds; it is beaten if it is thrown back over."
-    end: {rounds: 8, wins: team}
+    end: {rounds: 8, wins: team, hold: foes}
     sources: [*apr45]
   - id: floodbank
     name: "Grenades over the floodbank"
