@@ -1199,7 +1199,7 @@ function renderService(){
   const W = SVC.war(V.war), s = W.seasons[V.i];
   if (!s){ box.innerHTML = `<section class="crew work" aria-labelledby="h-service"><h3 id="h-service">A season with the battalion</h3><p>${esc(W.name)} is over: its last season has been served.</p></section>`; return }
   const st = W.states[s.state], fx = Object.entries(s.factors || {}).map(([k, n]) => `${k.replace("_", " ")} ${n} week${n > 1 ? "s" : ""}`).join(", ");
-  const men = S.team.map((c, k) => `<li><label><input type="checkbox" data-svwith="${k}" ${V.with[c.pid] !== false ? "checked" : ""}> ${esc(c.name)}</label>
+  const men = S.team.map((c, k) => `<li><label><input type="checkbox" data-svwith="${k}" ${V.with[c.pid] !== false ? "checked" : ""}> ${esc(c.name)}</label>${c.svcHealth && SVC.worstStep(c.svcHealth) ? ` <span class="muted">(still ${esc(SVC.worstStep(c.svcHealth))} from last season)</span>` : ""}
       <select data-svpos="${k}" style="width:auto" aria-label="${esc(c.name)}: where he stands">${Object.entries(W.positions).map(([id, p]) => `<option value="${id}" ${(V.pos[c.pid] || "line") === id ? "selected" : ""}>${esc(p.name)}${p.mult !== 1 ? ` (×${p.mult})` : ""}</option>`).join("")}</select></li>`).join("");
   const acts = s.actions.length ? `<ul class="xp">${s.actions.map(a => svcActionHtml(W, V, a)).join("")}</ul>` : `<p class="muted">No named action this season.</p>`;
   const log = (S.svclog || []).map(l => `<li>${esc(l)}</li>`).join("");
@@ -1223,7 +1223,7 @@ function svcFightHtml(W){                           // the season's small fight:
   const pick = `<select id="sv-fight" style="width:auto" aria-label="Another small fight">${W.small_fights.map(x => `<option value="${x.id}" ${x.id === f.id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select>`;
   const foes = f.foes.map((o, k) => `${esc(o.name)}, ${F.foes[k]}`).join("; "), sp = f.surprise ? ` ${esc(f.surprise.text)}: rolled ${F.surprise_roll} against ${f.surprise.chance}, ${F.surprised ? "caught unawares" : "not surprised"}.` : "";
   return `<div class="spend"><p><b>A small fight comes the team's way${F.roll ? ` (rolled ${F.roll})` : ""}:</b> ${pick}</p>
-    <p>${esc(f.what)} <span class="muted">${esc(f.time)}, ${esc(f.ground)}${f.weather ? ", " + esc(f.weather) : ""}.</span></p>
+    <p>${esc(f.what)} <span class="muted">${esc(f.time)}${f.light ? " (" + esc(f.light === "night" ? "a dark night" : f.light === "moonlit" ? "moonlit" : "dusk or dawn") + ")" : ""}, ${esc(f.ground)}${f.weather ? ", " + esc(f.weather) : ""}.</span></p>
     <p>${esc(f.side.name)} (the team with them), ${F.side}; against ${foes}.${sp}</p>
     <p class="muted">The team: ${esc(f.aims.team)} ${esc(W.sides.foes)}: ${esc(f.aims.foes)} It ends: ${esc(f.ends)}</p>
     <div class="row"><button class="small" id="btn-svplay">Play it on the roller</button> or ${roll}</div></div>`;
@@ -1235,7 +1235,7 @@ function svcFightHandoff(W, s){                     // the small fight as a setu
   const [force, allies, against] = f.team_attacks ? [foes[0], foes.slice(1), [party]] : [party, [], foes];
   const sp = f.surprise ? { text: f.surprise.text, roll: F.surprise_roll, surprised: F.surprised } : null;
   return { from: "service", title: f.name, team: "team", force, allies, foes: against, place: f.where || f.name, day: s.name, time: f.time,
-    ground: f.ground, groundSeed: `${f.id}:${s.id}`, camp: null, surprise: sp,
+    ground: f.ground, groundSeed: `${f.id}:${s.id}`, camp: null, surprise: sp, light: f.light || "day",
     weather: f.weather ? { cond: f.weather, wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } } : null,
     notes: [`Aims: ${side}: ${f.aims.team} ${W.sides.foes}: ${f.aims.foes}`, `It ends: ${f.ends} Mark the winner when it does.`, `From the accounts: ${f.what} (${f.sources.join("; ")})`] };
 }
@@ -1252,7 +1252,7 @@ function svcHit(c, W, what, weapon){                // a hit for the roller to r
 function serveSeason(){
   const V = svcState(), W = SVC.war(V.war), s = W.seasons[V.i], days = W.season_days;
   const serving = S.team.filter(c => V.with[c.pid] !== false);
-  const men = serving.map(c => ({ name: c.name, endurance: c.stats.end, position: V.pos[c.pid] || "line",
+  const men = serving.map(c => ({ name: c.name, endurance: c.stats.end, position: V.pos[c.pid] || "line", health: c.svcHealth || null,
     unit: Object.fromEntries(Object.entries(V.unit).filter(([, k]) => k !== "" && k != null).map(([a, k]) => [a, +k])),
     share: Object.fromEntries(Object.entries(V.share).filter(([, v]) => v !== "" && v != null).map(([a, v]) => [a, +v])) }));
   const rolled = s.actions.filter(a => (V.at[a] ?? W.actions[a].main !== false) && !V.played[a]);
@@ -1261,7 +1261,10 @@ function serveSeason(){
   if (played.length) lines.push(`To play on the field map: ${played.map(a => W.actions[a].name).join(", ")}.`);
   serving.forEach((c, k) => {
     const m = r.men[k], bits = [], car = byId(T.careers, c.career);
-    const lived = m.dead ? m.dead_week * 7 : days;
+    const lived = m.dead ? m.dead_week * 7 : days, was = c.svcHealth && SVC.worstStep(c.svcHealth);
+    const H = m.health, keep = H && (H.cases.length || Object.keys(H.immune).length || Object.keys(H.had).length);
+    c.svcHealth = keep ? H : null;            // a case still running (and what he is immune to or may relapse with) goes on into his next season
+    if (was) bits.push(`began the season ${was}`);
     xpServe(c.pid, lived); c.rolled_days = (c.rolled_days || 0) + lived;
     if (!m.dead) xpTick(c.pid, car.main, "a season with the battalion");
     const actName = a => (a === "wastage" ? W.wastage_name : W.actions[a].name);   // a named action, or the season's wastage in the line

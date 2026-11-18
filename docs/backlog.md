@@ -97,19 +97,19 @@ not this repository.
     Confederates (their counts are thinner), the West (Shiloh to Atlanta, sicker), and the World
     Wars; each needs a calendar, its actions' shares and its small fights from the sources. For
     the Civil War, Livermore's tables, the Official Records returns and the Medical and Surgical
-    History's monthly sick rates were not reached; disease runs about 1.0% a season against 0.72%.
+    History's monthly sick rates were not reached; disease runs about 1.1% a season against 0.72%.
   - **The small war, more of it.** The Peninsula's eight small fights are in (played on the roller,
     the end in words). Still left: a British foraging party attacked (only the French side was
     found), a count of how often such fights came (Leach's *Rough Sketches*, Simmons's journal and
-    Burnham and McGuigan's *Wellington's Light Division* not reached), night on the roller (the
-    picket and the redoubt are fought in daylight rules), and ends the roller checks itself.
+    Burnham and McGuigan's *Wellington's Light Division* not reached), and ends the roller checks
+    itself. Night on the roller is in (the field map's light levels: sight and aim for missiles);
+    moving slower and losing the way in the dark are still the field map's alone.
   - **The 1/57th's own calendar.** Its winters and 1812 were not found (the Napoleon Series'
     "Wellington's Regiments" pages and Oman were not reached).
   - **Sourcing the Peninsula's shares against Oman.** None was checked against him; Burgos and
     San Sebastián have no engaged figure.
-  - **Sickness a little high**: about 2.0% dead a season against the records' 1.6%. Bamford,
+  - **Sickness a little high**: about 2.1% dead a season against the records' 1.6%. Bamford,
     *Sickness, Suffering, and the Sword* (2013), is the likeliest source for sick rates by season.
-  - **A sick man's case carried on.** A man still sick at the season's end starts the next one well.
 
 - **Camp roles, first cut** (`data/council.yaml`; docs/campaign.md, *The council*). Roles and the
   evening council are on the campaign page. Still left out: the travel map played on its own has no

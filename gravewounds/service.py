@@ -9,7 +9,9 @@ in one step, against his war's calendar.
     GM picks; or the GM's share where the sources give none); a hit takes a d100 for the weapon
     (the war's table's weapon_mix) and is sent to the roller, which rolls the wound;
   - then the week's sickness on the camp-disease track (disease.week for one man, then disease.day
-    seven times), with his own Endurance, under the season's state and hygiene.
+    seven times), with his own Endurance, under the season's state and hygiene; a man unfit with
+    sickness at the week's start spends it in hospital (sheltered care, not marching, dry). A case
+    still running at the season's end goes on into his next season.
 
 The team builder (templates/service.js) repeats serve exactly, taking the dice in the same order.
 Design: project doc "between-battles-design"."""
@@ -115,7 +117,8 @@ def _unfit(d: Data, health: dict) -> bool:
 
 
 def serve(d: Data, wid: str, sid: str, men: list[dict], rolled: list[str], rng) -> dict:
-    """A season for the team. men: [{name, endurance, position, unit: {aid: index}, share: {aid: %}}];
+    """A season for the team. men: [{name, endurance, position, unit: {aid: index}, share: {aid: %},
+    health (his case carried from the last season, or none)}];
     rolled: the actions the team was at and does not play; rng: d100.
     -> {small (bool), small_roll, men: [{name, dead (disease id) and dead_week, sick_days, worst
        (his worst step at the season's end, or None), hits: [{action, pct, roll, weapon}],
@@ -162,9 +165,18 @@ def small_fight(W: dict, state: str, rng, fid: str | None = None) -> dict:
     return out
 
 
+def start_health(m: dict) -> dict:
+    """A man's health at the season's start: his case carried from the last season (m health), or well."""
+    if not m.get("health"):
+        return dz.new_health()
+    h = dz._copy(m["health"])
+    h["dead"] = 0
+    return h
+
+
 def _man(d: Data, W: dict, s: dict, m: dict, acts: list, rng) -> dict:
-    h, r = dz.new_health(), {"name": m["name"], "dead": None, "dead_week": None, "sick_days": 0,
-                             "worst": None, "hits": [], "missed": [], "rolls": []}
+    h, r = start_health(m), {"name": m["name"], "dead": None, "dead_week": None, "sick_days": 0,
+                             "worst": None, "hits": [], "missed": [], "rolls": [], "health": None}
     end, sid = m.get("endurance"), s["id"]
     for wk in range(weeks(W)):
         for aid in [a for a in acts if action_week(W, sid, a) == wk]:
@@ -172,6 +184,8 @@ def _man(d: Data, W: dict, s: dict, m: dict, acts: list, rng) -> dict:
         if wk == weeks(W) // 2 and (W.get("wastage") or {}).get(s["state"]):
             _wastage(d, W, s, h, r, rng)
         f, ctx = factors(d, W, s, wk), day_ctx(W, s, wk)
+        if _unfit(d, h):                             # too sick to march or fight: in hospital this week
+            ctx = {**ctx, "care": "shelter", "marched": False, "wet_cold": False}
         h, _ = dz.week(d, h, 1, f, rng, end)
         for _ in range(7):
             h, ev = dz.day(d, h, ctx, rng, end)
@@ -180,7 +194,7 @@ def _man(d: Data, W: dict, s: dict, m: dict, acts: list, rng) -> dict:
                 return r
             if any(c["inc"] == 0 and c["step"] > 0 for c in h["cases"]):
                 r["sick_days"] += 1
-    r["worst"] = dz.worst_step(d, h)
+    r["worst"], r["health"] = dz.worst_step(d, h), h   # his health carried into the next season
     return r
 
 
@@ -224,10 +238,11 @@ def calibrate(d: Data, wid: str, n: int, seed: int, position: str = "line", ever
     W = war(d, wid)
     dead = hits = lives = 0
     for k in range(n):
-        rng = dz.seeded_d100(seed * 1000003 + k)
+        rng, health = dz.seeded_d100(seed * 1000003 + k), None
         for s in W["seasons"]:
             rolled = [a for a in s["actions"] if every and W["actions"][a].get("main", True) and W["actions"][a].get("share") is not None]
-            res = serve(d, wid, s["id"], [{"name": "x", "endurance": 50, "position": position}], rolled, rng)["men"][0]
+            res = serve(d, wid, s["id"], [{"name": "x", "endurance": 50, "position": position, "health": health}], rolled, rng)["men"][0]
+            health = res["health"]                  # his case carried into the next season
             hits += len(res["hits"])
             lives += 1
             if res["dead"]:

@@ -270,6 +270,7 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
       <label class="muted">Weather <select id="sel-wx"></select></label>
       <label class="muted">Wind <select id="sel-wind"></select></label>
       <label class="muted">Blowing <select id="sel-wdir"></select></label>
+      <label class="muted">Light <select id="sel-light"></select></label>
       <label class="muted">Ground <select id="sel-ground"></select></label>
       <span class="muted" id="wx-note"></span>
     </fieldset>
@@ -2865,7 +2866,7 @@ function rangeCheck(){
   if (S.tm && S.tm.id === a.id && S.tm.covered) return { blocked: `${a.name} took cover this turn and cannot attack.` };
   if (a.cover && !isShot(S.weapon) && S.turn === a.id && GRD.rise > allowanceOf(a).advance)
     return { blocked: `${a.name} cannot get up from cover and strike this turn (getting up takes ${hexes(GRD.rise)} of his move).` };
-  const dist = hexDistance(a.pos, dd.pos), wx = weatherAttack(S.weather, S.weather ? S.weapon : null, dist, a.pos, dd.pos);
+  const dist = hexDistance(a.pos, dd.pos), wx = darkOnAttack(weatherAttack(S.weather, S.weather ? S.weapon : null, dist, a.pos, dd.pos), dist, a);
   const ranged = isShot(S.weapon), ht = heightEffects(S.ground, a.pos, dd.pos, !ranged);
   const r = weaponReach(S.weapon, windDist(dist, { reach: (wx.reach || 0) + ht.reach }));
   if (!r) return { blocked: `${dd.name} is ${hexes(dist)} away, out of reach of the ${shortName(S.weapon).toLowerCase()} (${reachText(S.weapon)}).` };
@@ -2879,6 +2880,28 @@ function rangeCheck(){
     penalty: r.penalty + (wk.cover || 0) + (wk.height || 0) + wx.penalty + way.penalty } };
 }
 const isShot = wid => !!DATA.weapons[wid].range && !DATA.weapons[wid].off_map;
+/* The light (weather.yaml light, as the field map's): in the dark no one can be seen to aim a
+   missile at beyond the light's sight (battle hexes of 2 m, as the roller's), and aimed fire is its
+   aim % off; a man whose kit carries night vision sees and aims by his device where it is better.
+   Moving and losing the way in the dark are the field map's (units), not the roller's. */
+const lightLevel = () => (WXD && WXD.light ? WXD.light.levels[(S.weather || {}).light || "day"] : null);
+function darkSight(a){                             // [sight, aim, device name] for this shooter in this light
+  const L = lightLevel(), NV = (WXD.light || {}).night_vision || {};
+  let sight = L.sight, aim = L.aim, dev = null;
+  if (sight !== null && (NV.kits || []).includes(a && a.kit)){
+    const D = NV.devices[NV.kit_device];
+    if (D && D.sight > sight){ sight = D.sight; dev = D.name }
+    if (D && D.aim < aim){ aim = D.aim; dev = D.name }
+  }
+  return [sight, aim, dev];
+}
+function darkOnAttack(wx, dist, a){                // the light's effect on a missile attack, after the weather's
+  const L = lightLevel();
+  if (wx.blocked || !L || L.sight === null || !isShot(S.weapon)) return wx;
+  const [sight, aim, dev] = darkSight(a);
+  if (dist > sight) return { ...wx, blocked: `${L.name}: no one can be seen to aim at beyond ${sight} hexes (${fmtM(sight * 2)})${dev ? ", with " + dev.toLowerCase() : ""}.` };
+  return aim ? { ...wx, penalty: wx.penalty + aim, notes: [...(wx.notes || []), `${L.name.toLowerCase()} -${aim}%`] } : wx;
+}
 // What the ground and height add to an attack by a on dd, over the works': better cover in
 // rocks or woods, or taking cover (missiles); an uphill penalty if worse than a work's (close combat).
 function groundOnAttack(a, dd, ranged, ht){
@@ -3178,7 +3201,7 @@ function worksOnAttack(a, dd){
 }
 function canTarget(a, o){                    // ringed on the map: an enemy the acting fighter can strike now
   if (!a.pos || !o.pos || sideOf(o) === sideOf(a)) return false;
-  const dist = hexDistance(a.pos, o.pos), wx = weatherAttack(S.weather, S.weapon, dist, a.pos, o.pos), ranged = isShot(S.weapon);
+  const dist = hexDistance(a.pos, o.pos), wx = darkOnAttack(weatherAttack(S.weather, S.weapon, dist, a.pos, o.pos), dist, a), ranged = isShot(S.weapon);
   const ht = heightEffects(S.ground, a.pos, o.pos, !ranged);
   return !!weaponReach(S.weapon, windDist(dist, { reach: (wx.reach || 0) + ht.reach })) && !worksOnAttack(a, o).blocked && !wx.blocked
     && (!ranged || sightClear(S.ground, a.pos, o.pos));
@@ -3506,7 +3529,7 @@ function oddsHidden(defenders, foes, named){
     `The roller fights a few of each force, so this is the few who met. Whether ${few.map(o => o.name).join(" and ")} stand${few.length > 1 ? "" : "s"} at all, ` +
     `or slip${few.length > 1 ? "" : "s"} away, is the GM's call: playing alone, Ask the dice (Rules, Playing alone).`;
 }
-const menOf = o => { const n = Math.min(o.men, 8); return n < o.men ? `${n} of its ${o.men} men` : `its ${n} men` };
+const menOf = (o, named = null) => { const n = Math.min(forceCount(o, named), o.men); return n < o.men ? `${n} of its ${o.men} men` : `its ${o.men} men` };   // its fighters here: up to 8, and its named men and followers
 // Where men coming from one side of the travel hex arrive: the dry, empty hexes nearest the map's
 // edge in that direction (across a river, the far bank or the ford).
 function arrivalSpots(side, n){
@@ -3565,6 +3588,7 @@ function setupHandoff(){                     // a camp or position sent from the
   if (sp && sp.surprised) S.chars.forEach(c => { c.state = { id: "surprised", rounds: 1 } });   // the defenders and their friends lose round 1
   for (const o of foes) S.chars.push(...forceChars(o, o.from ? arrivalSpots(o.from, forceCount(o, named)) : null, named));
   if (h.weather) S.weather = h.weather;
+  if (h.light) S.weather = { ...(S.weather || { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } }), light: h.light === "day" ? undefined : h.light };   // a small fight's light
   S.hauled = !!h.hauled;
   S.round = 1; S.log = []; S.turn = null; S.tm = null; S.free = []; S.broken = {}; S.attacker = -1; S.active = 0; S.hit = null; newFightMarks();
   S.addSide = foe ? foe.side : "Attackers";                                // Add brings in the other side
@@ -3577,7 +3601,7 @@ function setupHandoff(){                     // a camp or position sent from the
   const where = h.camp ? campName : "position", cut = L.fits ? "" : ` (too big for the map: only the stretch with the gate, ${facingCut}, is shown, at full size)`;
   const facing = lay ? "facing the way in" : "facing them";
   const unplaced = overflow ? " Those who did not fit inside wait at their side's edge." : "";
-  const forceLine = o => o.name + " (" + o.side + "), " + menOf(o);
+  const forceLine = o => o.name + " (" + o.side + "), " + menOf(o, named);
   const defNote = defenders.map(forceLine).join("; ");
   const cameFrom = foes.every(o => o.from) ? `coming in from the ${[...new Set(foes.map(o => o.from))].join(" and ")}, as on the travel map` : `at the far edge ${facing}`;
   const foeNote = foe ? `Attacking: ${foes.map(forceLine).join("; ")}, ${cameFrom}. ` : "";
@@ -3620,10 +3644,13 @@ function renderWeather(){
   $("#sel-wx").innerHTML = Object.entries(WXD.conditions).map(([k, c]) => `<option value="${k}" ${W.cond === k ? "selected" : ""}>${c.name}</option>`).join("");
   $("#sel-wind").innerHTML = WXD.winds.map(x => `<option value="${x.id}" ${W.wind === x.id ? "selected" : ""}>${x.name}</option>`).join("");
   $("#sel-wdir").innerHTML = windDirOptions(W.dir || "");
+  if (WXD.light) $("#sel-light").innerHTML = Object.entries(WXD.light.levels).map(([k, L]) => `<option value="${k}" ${(W.light || "day") === k ? "selected" : ""}>${L.name}</option>`).join("");
   const gk = groundKey(W.ground);
   $("#sel-ground").innerHTML = GROUNDS.map(([k, , n]) => `<option value="${k}" ${gk === k ? "selected" : ""}>${n}</option>`).join("");
   const c = WXD.conditions[W.cond], wind = WXD.winds.find(x => x.id === W.wind), bits = [];
   if (c.visibility) bits.push(`sight for missiles ${c.visibility} hexes`);
+  const Ld = lightLevel();
+  if (Ld && Ld.sight !== null) bits.push(`${Ld.name.toLowerCase()}: missiles seen to ${Ld.sight} hexes, aimed \u2212${Ld.aim}%`);
   if (c.wet) bits.push(`bows and crossbows \u2212${WXD.battle.string_wet[c.wet]}%, firearms may misfire`);
   if (wind.missile) bits.push(`missiles \u2212${wind.missile}%`);
   if (windDirNote(W)) bits.push(windDirNote(W) + " (north is at the top of the map)");
@@ -4329,6 +4356,7 @@ function init(){
   };
   $("#sel-wind").onchange = e => { S.weather.wind = e.target.value; renderChars() };
   $("#sel-wdir").onchange = e => { S.weather.dir = e.target.value || undefined; renderChars() };
+  $("#sel-light").onchange = e => { S.weather.light = e.target.value === "day" ? undefined : e.target.value; renderChars() };
   $("#sel-ground").onchange = e => { const g = GROUNDS.find(x => x[0] === e.target.value)[1]; S.weather.ground = { ...S.weather.ground, ...g }; renderChars() };
   $("#chk-haul").onchange = e => {
     S.hauled = e.target.checked;

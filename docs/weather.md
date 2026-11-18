@@ -162,6 +162,24 @@ the wheellock, which have none (a gap, not a finding). The wet steps are design 
 found, about half of Austrian flintlocks failing in rain, is a single report. Automatic weapons
 also lose fire to stoppages on the field map (see units.md, *Reliability*).
 
+## Light (the roller)
+
+The roller's weather has the same **Light** (the bar under the battle map), at its own scale of
+2 m a hex: in the dark no one can be seen to aim a missile at beyond the light's sight, and aimed
+fire is harder. The weather's own limit still applies; whichever is shorter counts.
+
+| Light | No aiming beyond | Aimed fire |
+|---|---|---|
+| Daylight | (the weather's limit) | – |
+| Dusk or dawn | 100 hexes (219 yards, 200 m) | −5% |
+| Moonlit night | 50 hexes (109 yards, 100 m) | −10% |
+| Dark night | 25 hexes (55 yards, 50 m) | −20% |
+
+A man whose kit carries night vision (the field map's `kits`) sees and aims by its device where
+that is better. Flares, muzzle flashes, slower movement and losing direction are the field map's
+alone. A small fight from a season with the battalion sets the light from its time (`light` in
+`data/service`): the picket at midnight in a dark night, the escalade at dawn.
+
 ## Light (the field map)
 
 The field map's weather has a **Light**: daylight, dusk or dawn, a moonlit night or a dark

@@ -3,9 +3,9 @@
 # Compendium), which served with the Army of the Potomac throughout but for the VI Corps in the
 # Valley in 1864. Losses from Fox, Regimental Losses (1889), and the American Battlefield Trust;
 # shares are our calculation (killed and wounded of those engaged). Each season's hygiene and sickly
-# weeks are ours, tuned toward the records: about 1.0% dead of disease a season against the whole
+# weeks are ours, tuned toward the records: about 1.1% dead of disease a season against the whole
 # Union army's 0.72% (Fox, on a three-year basis), the most of it in summer 1862 on the Peninsula
-# and at Harrison's Landing (about 8%; Letterman gives a fifth sick, but no deaths). "In the thick
+# and at Harrison's Landing (about 4%; Letterman gives a fifth sick, but no deaths). "In the thick
 # of it" is ×4 (ours): the army's share against the worst regiments' (Gettysburg 19% and the 1st
 # Minnesota 82%; Antietam 13% and the 12th Massachusetts 64%). Design and sources: project doc
 # "between-battles-design".
@@ -352,6 +352,7 @@ small_fights:
     weight: 3
     where: "the wagon train in a town street"
     time: "about 4 in the morning"
+    light: dusk
     ground: town
     side: {name: "The train guard", men: [20, 80]}
     foes: [{name: "Mosby's partisans", men: [30, 200], weapon: revolver}]
@@ -396,6 +397,7 @@ small_fights:
     weight: 4
     where: "the picket rifle pits before the works"
     time: "about 4 in the morning"
+    light: night
     ground: open
     side: {name: "The picket detail", men: [20, 60]}
     foes: [{name: "Confederate sharpshooters", men: [16, 60], weapon: rifle_musket}]
@@ -411,6 +413,7 @@ small_fights:
     weight: 1
     where: "a headquarters in a village behind the lines"
     time: "about 2 in the morning"
+    light: night
     ground: village
     weather: rain
     side: {name: "The headquarters guard", men: [10, 40]}
@@ -427,6 +430,7 @@ small_fights:
     weight: 2
     where: "a hill on the line of retreat"
     time: "at daybreak"
+    light: dusk
     ground: hills
     side: {name: "The rear-guard", men: [100, 300]}
     foes: [{name: "Confederate infantry", men: [100, 400], weapon: rifle_musket}]

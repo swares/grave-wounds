@@ -2195,6 +2195,8 @@ def _small_fight_errors(d: Data, W: dict, where: str, states: dict) -> list[str]
             errors.append(f"{fw}: ground must be one of {sorted(grounds)}")
         if f.get("weather") and f["weather"] not in conds:
             errors.append(f"{fw}: unknown weather {f['weather']}")
+        if f.get("light") and f["light"] not in ((d.weather or {}).get("light") or {}).get("levels", {}):
+            errors.append(f"{fw}: unknown light {f['light']}")
         sp = f.get("surprise")
         if sp and not (sp.get("text") and isinstance(sp.get("chance"), int) and 0 < sp["chance"] <= 100):
             errors.append(f"{fw}: surprise needs text and a chance (on the defenders: the party unless team_attacks)")

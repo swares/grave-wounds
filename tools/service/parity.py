@@ -45,6 +45,8 @@ def cases(d, n: int, seed: int) -> list[dict]:
                     m.setdefault("unit", {})[aid] = t.randrange(len(a["units"]))   # NOSONAR: as above
                 if a.get("share") is None and t.random() < 0.7:   # NOSONAR: as above
                     m.setdefault("share", {})[aid] = t.randint(1, 60)   # NOSONAR: as above
+            if t.random() < 0.4:   # NOSONAR: as above (a case carried from a season before)
+                m["health"] = sv.serve(d, wid, s["id"], [{"name": m["name"], "endurance": m["endurance"]}], [], seeded_d100(seed * 31 + k * 7 + j))["men"][0]["health"]
             men.append(m)
         rolled = [a for a in s["actions"] if t.random() < 0.8]   # NOSONAR: as above
         dice = seed * 7919 + k
