@@ -805,9 +805,14 @@ for each man whether he serves and where he stands. **Serve the season** then ro
   says who wins: the team, the foes, or none, for the GM to mark) and `down` (a side loses once that share
   of its men, or that many, are down, taken or gone; a side that breaks on morale loses too). The
   roller calls it the moment it is reached: it marks the winner under After the fight, logs why,
-  and the GM's script stops; **Fight on** sets the call aside for the rest of the fight. Holding a
-  place (a breach, a bridge, the far bank) and getting off an edge stay the GM's call; the words
-  say them. Or **Roll it**: each man with the battalion is hit on
+  and the GM's script stops; **Fight on** sets the call aside for the rest of the fight. Two more
+  count ground: `hold` (the defending side: at a round's end, once none of its men stand in the
+  position, the hexes it started in, and some of the other side's do, the other side wins: the
+  bridge, the breach, the post or the trench taken) and `away` (a side that wins once that share of
+  its men have left by their own map edge; a man of that side who ends on it leaves the field, out
+  of the fight and not counted lost: the patrol home with word, the rear-guard escaped). What none
+  of these counts (a general taken, a deed of arms, getting in and back out) stays the GM's call;
+  the words say it. Or **Roll it**: each man with the battalion is hit on
   10% (ours).
 
   The Peninsula's eight, each from dated instances in the accounts (Cope's history of the Rifle

@@ -190,7 +190,7 @@ small_fights:
     surprise: {text: "The Yorkists at the bridge are asleep", chance: 60}
     aims: {team: "Take the crossing and hold it.", foes: "Hold the bridge until their army comes up."}
     ends: "The horsemen hold the crossing if they are still there after 8 rounds; they are beaten once a third of theirs are down; the Yorkists are driven off once half of theirs are down."
-    end: {rounds: 8, wins: team, down: {team: 0.33, foes: 0.5}}
+    end: {rounds: 8, wins: team, down: {team: 0.33, foes: 0.5}, hold: foes}
     sources: [*hwferry, *wptowton]
     note: "The Yorkist numbers are ours. The other side of roses_edward's The bridge at dawn."
   - id: dale
@@ -206,7 +206,7 @@ small_fights:
     foes: [{name: "Fauconberg's men", men: [100, 500], kit: jack_sallet, weapon: longbow}]
     aims: {team: "Get away north to the main army.", foes: "Catch them before they reach it."}
     ends: "The rear-guard gets away if it holds together for 6 rounds; it is cut down once half of those here are down."
-    end: {rounds: 6, wins: team, down: {team: 0.5}}
+    end: {rounds: 6, wins: team, down: {team: 0.5}, away: {side: team, share: 0.5}}
     sources: [*hwferry, *wptowton]
     note: "Numbers are not given: ours."
   - id: town
@@ -223,7 +223,7 @@ small_fights:
     foes: [{name: "The archers in the street", men: [50, 300], kit: jack_sallet, weapon: longbow}]
     aims: {team: "Clear the street and get through the town.", foes: "Hold the street."}
     ends: "The archers give the street up once a third of theirs are down; the attack is thrown back once a third of the attackers are down; after 6 rounds it is the GM's call."
-    end: {rounds: 6, wins: none, down: {team: 0.33, foes: 0.33}}
+    end: {rounds: 6, wins: none, down: {team: 0.33, foes: 0.33}, hold: foes}
     sources: ["https://www.historyofwar.org/articles/battles_stalbans1461.html"]
     note: "Numbers are not given: ours."
   - id: foragers
@@ -271,7 +271,7 @@ small_fights:
     foes: [{name: "The shore's men", men: [50, 400], kit: jack_sallet, weapon: bill}]
     aims: {team: "Hold out until the boats come, or the tide.", foes: "Take or kill them."}
     ends: "The stranded men hold out if they hold together for 8 rounds; they are taken once half of theirs are down; the shore's men draw off once a third of theirs are down."
-    end: {rounds: 8, wins: team, down: {team: 0.5, foes: 0.33}}
+    end: {rounds: 8, wins: team, down: {team: 0.5, foes: 0.33}, hold: team}
     sources: [*borders]
     note: "One account (a blog, whose dates for these years run a year early in places); the date and the sizes are ours."
   - id: sally
@@ -305,7 +305,7 @@ small_fights:
     foes: [{name: "The storming party", men: [50, 300], kit: brigandine_sallet, weapon: poleaxe}]
     aims: {team: "Hold the breach.", foes: "Win the breach."}
     ends: "The storm is called off after 8 rounds; the breach is lost once a third of the garrison are down; the storming party falls back once a third of theirs are down."
-    end: {rounds: 8, wins: team, down: {team: 0.33, foes: 0.33}}
+    end: {rounds: 8, wins: team, down: {team: 0.33, foes: 0.33}, hold: team}
     sources: [*bamburgh]
     note: "The accounts tell of the bombardment and the yielding, not of a storm: the fight is ours. The roller has no castle ground: lay walls on town ground."
   - id: norham

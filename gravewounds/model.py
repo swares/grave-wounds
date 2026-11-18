@@ -2166,14 +2166,21 @@ def _service_errors(d: Data, W: dict) -> list[str]:
     return errors
 
 
-def _fight_end_errors(fw: str, e) -> list[str]:
-    """A small fight's end the roller can count: rounds (wins: who wins when they are up) and down
-    (a side with that share of its men down, or that many, loses)."""
-    if not isinstance(e, dict) or not (e.get("rounds") or e.get("down")):
-        return [f"{fw}: needs an end: rounds (with wins) or down"]
+def _fight_end_errors(fw: str, e, holder: str) -> list[str]:
+    """A small fight's end the roller can count: rounds (wins: who wins when they are up), down
+    (a side with that share of its men down, or that many, loses), hold (the defending side, who
+    lose once the position is empty of them and held by the other side) and away (a side that wins
+    once that share of its men have left by their own edge)."""
+    if not isinstance(e, dict) or not (e.get("rounds") or e.get("down") or e.get("hold") or e.get("away")):
+        return [f"{fw}: needs an end: rounds (with wins), down, hold or away"]
     errors = []
     if "rounds" in e and not (isinstance(e["rounds"], int) and e["rounds"] >= 1 and e.get("wins") in ("team", "foes", "none")):
         errors.append(f"{fw}: end: rounds must be a whole number of 1 or more, with wins: team, foes or none")
+    if "hold" in e and e["hold"] != holder:
+        errors.append(f"{fw}: end: hold is the side that starts in the position, here {holder}")
+    a = e.get("away")
+    if a is not None and not (isinstance(a, dict) and a.get("side") in ("team", "foes") and isinstance(a.get("share"), float) and 0 < a["share"] <= 1):
+        errors.append(f"{fw}: end: away needs a side (team or foes) and a share (0-1)")
     for k, v in (e.get("down") or {}).items():
         if k not in ("team", "foes"):
             errors.append(f"{fw}: end: down is by team or foes, not {k}")
@@ -2222,7 +2229,7 @@ def _small_fight_errors(d: Data, W: dict, where: str, states: dict) -> list[str]
             errors.append(f"{fw}: needs aims (team, foes) and ends")
         if not f.get("sources"):
             errors.append(f"{fw}: needs sources")
-        errors += _fight_end_errors(fw, f.get("end"))
+        errors += _fight_end_errors(fw, f.get("end"), "foes" if f.get("team_attacks") else "team")
     if W.get("small_fights") and not (W.get("sides") or {}).get("foes"):
         errors.append(f"{where}: small fights need sides: {{team, foes}}")
     return errors

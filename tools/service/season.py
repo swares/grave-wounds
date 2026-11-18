@@ -149,6 +149,29 @@ def run(p):
     pg.click("#btn-fight-on")
     on = pg.evaluate("() => ({ won: S.wonBy, r: gmStep(), on: S.fightEnd.on })")
     check(on["on"] and on["r"] != "over" or "still stand" in pg.evaluate("() => S.gmMsg"), f"Fight on sets the call aside and the script plays on ({on})")
+    # held ground: the position lost at a round's end, and men getting away by their own edge
+    held = pg.evaluate("""() => {
+      const snap = JSON.stringify({ chars: S.chars, end: S.fightEnd, won: S.wonBy, broken: S.broken }), E = S.fightEnd, { cols, rows } = mapSize();
+      const out = { hold: E.hold, radius: E.position.radius };
+      S.broken = {}; S.wonBy = null; E.called = null; E.on = false; E.down = {}; E.rounds = null;
+      const br = S.chars.filter(c => sideOf(c) === 'British'), fr = S.chars.filter(c => sideOf(c) === 'French');
+      for (const c of S.chars){ c.taken = false; c.fled = false; c.away = false; c.blood = 100; c.wounds = []; c.state = null }
+      br.forEach((c, i) => { c.pos = [cols - 1, i] });                       // all the picket out of the position
+      fr[0].pos = E.position.centre.slice();                                  // a Frenchman in it
+      out.midRound = fightEndCheck(false);
+      out.atEnd = fightEndCheck(true);
+      E.called = null; S.wonBy = null; E.hold = null; E.away = { side: 'French', share: 0.25 };
+      const k = E.edges.French, edge = [[0, null], [cols - 1, null], [null, 0], [null, rows - 1]][k];
+      fr.slice(0, Math.ceil(fr.length / 4)).forEach((c, i) => { c.pos = [edge[0] ?? i, edge[1] ?? i] });
+      out.away = fightEndCheck(false);
+      out.gone = fr.filter(c => c.away && !c.pos).length; out.need = Math.ceil(fr.length / 4);
+      out.isOut = fr.filter(c => c.away).every(isOut);
+      const was = JSON.parse(snap); S.chars = was.chars; S.fightEnd = was.end; S.wonBy = was.won; S.broken = was.broken;
+      return out }""")
+    check(held["hold"] == "British" and held["midRound"] is None and (held["atEnd"] or {}).get("won") == "French"
+          and "hold" in held["atEnd"]["why"], f"the picket's bridge: lost at a round's end once the French stand in it and the picket does not ({held})")
+    check((held["away"] or {}).get("won") == "French" and held["gone"] == held["need"] and held["isOut"],
+          f"and men on their own edge leave the field: once a share have got away, their side wins ({held['away']}, {held['gone']} of {held['need']})")
     # a case carried from the last season: the panel shows it, and the next season begins from it
     pg.goto(BASE + "team.html")
     pg.wait_for_selector("#h-service")

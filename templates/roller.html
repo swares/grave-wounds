@@ -796,7 +796,7 @@ const DIES = { instant: "killed", rounds: "died", minutes: "died" };
 function worstWound(c){ return campable(c).sort((a, b) => DZR.steps.indexOf(DZR.wounds.start[b.sev]) - DZR.steps.indexOf(DZR.wounds.start[a.sev]))[0] }
 function fighterFate(c, won){                       // "taken", "killed", "died", "left", "wounded" or null (came through, or ran)
   if (c.taken) return "taken";
-  if (c.fled) return null;
+  if (c.fled || c.away) return null;
   const d = DIES[charStats(c).worst];
   if (d) return d;
   if (!won && isDown(c)) return "left";
@@ -1535,7 +1535,7 @@ function veiledCard(c, i){                          // an enemy's card as the ta
   const isAtt = i === S.attacker, isDef = i === S.active, isTurn = c.id === S.turn, down = isDown(c), broken = !!(S.broken || {})[sideOf(c)];
   let tag = "";
   if (isTurn) tag = `<span class="turn-tag">Acting</span>`;
-  else if (c.taken || c.fled) tag = `<span class="turn-tag" style="background:var(--muted)">${c.taken ? "Taken" : "Ran"}</span>`;
+  else if (c.taken || c.fled || c.away) tag = `<span class="turn-tag" style="background:var(--muted)">${c.taken ? "Taken" : c.away ? "Got away" : "Ran"}</span>`;
   else if (down) tag = `<span class="turn-tag" style="background:var(--muted)">Down</span>`;
   else if (broken) tag = `<span class="turn-tag" style="background:var(--crit)">Broken</span>`;
   const state = c.state && !down ? `<div class="state"><span><b>${CMB.states[c.state.id].name}</b></span></div>` : "";
@@ -1810,19 +1810,49 @@ function gmFree(f){                                // a scripted man's free atta
 /* A small fight's own end (data/service small_fights `end`, handed over as S.fightEnd by side name):
    a side loses once it breaks, or once its share of men down (or that many) is reached, counting the
    taken and the gone;
-   when the rounds are up, `then` wins (or nobody: the GM marks it). The roller calls it once: it sets
+   when the rounds are up, `wins` wins (or nobody: the GM marks it); at a round's end, the side that
+   holds the position (the hexes the defenders start in) loses once none of its men stand in it and
+   the other side's do; and a side that is to get away wins once its share has left by its own edge
+   (a man ending on it leaves the field). The roller calls it once: it sets
    the winner and the GM's script stops; Fight on sets the call aside for the rest of the fight. */
-function fightEndCheck(){
+function onOwnEdge(sd, h){                         // h on the map's edge that side sd came in by
+  const { cols, rows } = mapSize(), k = (S.fightEnd.edges || {})[sd];
+  return !!h && [h[0] === 0, h[0] === cols - 1, h[1] === 0, h[1] === rows - 1][k ?? 0];
+}
+const inPosition = h => !!h && hexDistance(S.fightEnd.position.centre, h) <= S.fightEnd.position.radius;
+function goneAway(E){                              // the away side's men standing on their own edge leave the field
+  const A = E.away;
+  if (!A) return null;
+  const men = S.chars.filter(c => sideOf(c) === A.side);
+  for (const c of men) if (!c.away && !isOut(c) && !c.taken && onOwnEdge(A.side, c.pos)){
+    c.away = true; c.pos = null;
+    S.pending.push(`${c.name} gets away off the ${A.side}' own edge`);
+  }
+  const n = men.filter(c => c.away).length;
+  return men.length && n >= A.share * men.length - 1e-9 ? { won: A.side, why: `${A.side} have got away` } : null;
+}
+function positionLost(E){                          // at a round's end: the position empty of its holders and held by the other side
+  if (!E.hold || !E.position) return null;
+  const fit = c => !isOut(c) && !c.taken && c.pos && inPosition(c.pos);
+  if (S.chars.some(c => sideOf(c) === E.hold && fit(c))) return null;
+  const taker = S.chars.find(c => sideOf(c) !== E.hold && fit(c));
+  return taker ? { won: sideOf(taker), why: `${sideOf(taker)} hold ${E.place || "the position"}, and ${E.hold} are out of it` } : null;
+}
+function fightEndCheck(roundEnd = false){
   const E = S.fightEnd;
   if (!E || E.on) return null;
   if (E.called) return E.called;
+  S.pending = S.pending || [];
   const lost = Object.entries(E.down || {}).filter(([sd, v]) => {
     const men = S.chars.filter(c => sideOf(c) === sd), n = men.filter(c => isDown(c) || c.taken || c.fled).length;
     return men.length && (v < 1 ? n >= v * men.length - 1e-9 : n >= v);
   }).map(([sd]) => sd);
   const sides = [...new Set(S.chars.map(sideOf))], broke = sides.filter(sd => (S.broken || {})[sd]);
   let call = null;
+  const away = goneAway(E), lostIt = roundEnd ? positionLost(E) : null;
   if (broke.length === 1) call = { won: sides.find(sd => sd !== broke[0]) || null, why: `${broke[0]} break` };
+  else if (away) call = away;
+  else if (lostIt) call = lostIt;
   else if (lost.length === 1) call = { won: sides.find(sd => sd !== lost[0]) || null, why: `${lost[0]} have lost enough men to give it up` };
   else if (lost.length > 1) call = { won: null, why: "both sides have lost enough men to give it up" };
   else if (E.rounds && S.round > E.rounds) call = { won: E.wins || null, why: `${E.rounds} rounds are up` };
@@ -1830,7 +1860,6 @@ function fightEndCheck(){
   E.called = call;
   if (call.won && !S.wonBy){ S.wonBy = call.won; S.afterOpen = true }
   const who = call.won ? "; " + call.won + " win" : "; the GM marks the winner";
-  S.pending = S.pending || [];
   S.pending.push(`The fight's end: ${call.why}${who} (Fight on, under After the fight, to go on)`);
   return call;
 }
@@ -2735,7 +2764,7 @@ function advance(rounds){
   lines.push(...gmQuarter());
   lines.push(...moraleChecks());
   S.round += rounds;
-  fightEndCheck();                           // a small fight's rounds up, or its losses enough
+  fightEndCheck(true);                       // a small fight's rounds up, its losses enough, or its position lost
   const label = rounds === 1 ? `Round ${from}` : `Rounds ${from}\u2013${S.round - 1}`;
   const all = [...(S.pending || []), ...lines]; S.pending = [];
   S.log.unshift({ label, lines: all.length ? all : ["no bleeding"] });
@@ -2795,7 +2824,7 @@ function gmYield(side){                            // a scripted side has broken
 // Down: cannot fight on (blood loss, an incapacitating wound, or out of the fight after a stop check).
 const isDown = c => { const th = charStats(c).th; return !!(th && (th.down || th.incapacitated)) || penalties(c).flags.some(f => f === "incapacitated" || f === "out") };
 // Out of the action this round: down, or on a side that has broken.
-const isOut = c => isDown(c) || !!(S.broken || {})[sideOf(c)];
+const isOut = c => isDown(c) || !!c.away || !!(S.broken || {})[sideOf(c)];   // away: left the field by his own edge (a small fight's end)
 const initOf = c => Number.isFinite(+c.init) ? +c.init : 0;
 function reorder(arr){                       // replace S.chars, keeping attacker/defender by id
   const att = attackerChar(), def = defenderChar();
@@ -2866,7 +2895,7 @@ const deepAt = h => !!groundSpec(S.ground, h).deep;   // deep water: no one ente
 function placeUnplaced(){                    // new fighters go near their side's edge
   const { cols, rows } = mapSize(), sides = sidesInOrder();
   for (const c of S.chars){
-    if (c.pos && c.pos[0] < cols && c.pos[1] < rows && !deepAt(c.pos) && S.chars.find(o => sameHex(o.pos, c.pos)) === c) continue;
+    if (c.away || c.pos && c.pos[0] < cols && c.pos[1] < rows && !deepAt(c.pos) && S.chars.find(o => sameHex(o.pos, c.pos)) === c) continue;
     c.pos = null;
     const anchor = [[1, rows >> 1], [cols - 2, rows >> 1], [cols >> 1, 1], [cols >> 1, rows - 2]][sides.indexOf(sideOf(c)) % 4];
     let best = null, bd = Infinity;
@@ -3637,7 +3666,9 @@ function setupHandoff(){                     // a camp or position sent from the
   if (h.light) S.weather = { ...(S.weather || { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } }), light: h.light === "day" ? undefined : h.light };   // a small fight's light
   S.hauled = !!h.hauled;
   S.round = 1; S.log = []; S.turn = null; S.tm = null; S.free = []; S.broken = {}; S.attacker = -1; S.active = 0; S.hit = null; newFightMarks();
-  S.fightEnd = h.end ? { rounds: h.end.rounds || null, wins: h.end.wins || null, down: h.end.down || {}, called: null, on: false } : null;
+  S.fightEnd = h.end ? { rounds: h.end.rounds || null, wins: h.end.wins || null, down: h.end.down || {}, hold: h.end.hold || null, away: h.end.away || null,
+    place: h.place, position: { centre: L.centre, radius: Math.max(1, L.radius - 1) },   // the hexes the defenders start in
+    edges: Object.fromEntries(sidesInOrder().map((sd, i) => [sd, i % 4])), called: null, on: false } : null;   // each side's own edge, as placeUnplaced puts them
   S.addSide = foe ? foe.side : "Attackers";                                // Add brings in the other side
   if (!foe && h.force.side === "Attackers") S.addSide = "Defenders";
   const unfinished = h.camp && h.done !== null && h.done !== undefined ? `, ${h.built}% built` : "";
@@ -3860,7 +3891,7 @@ function renderChars(){
         ${slow ? `<span class="order slow" title="Wound penalty (shown only; the order is not changed)">wounds −${slow}%</span>` : ""}
         <button class="small" data-act="up" ${tieUp ? "" : "disabled"} aria-label="Act before the fighter above (same initiative)">▲</button>
         <button class="small" data-act="down" ${tieDn ? "" : "disabled"} aria-label="Act after the fighter below (same initiative)">▼</button>
-        ${isTurn ? `<span class="turn-tag">Acting</span>` : c.taken || c.fled ? `<span class="turn-tag" style="background:var(--muted)">${c.taken ? "Taken" : "Ran"}</span>` : down ? `<span class="turn-tag" style="background:var(--muted)">Down</span>` : broken ? `<span class="turn-tag" style="background:var(--crit)">Broken</span>` : ""}</div>
+        ${isTurn ? `<span class="turn-tag">Acting</span>` : c.taken || c.fled || c.away ? `<span class="turn-tag" style="background:var(--muted)">${c.taken ? "Taken" : c.away ? "Got away" : "Ran"}</span>` : down ? `<span class="turn-tag" style="background:var(--muted)">Down</span>` : broken ? `<span class="turn-tag" style="background:var(--crit)">Broken</span>` : ""}</div>
       <div class="siderow">
         <label class="order" title="Side: fighters with the same side name check morale together">Side
           <input type="text" data-act="side" value="${attr(sideOf(c))}" aria-label="Side for ${attr(c.name)}"></label>

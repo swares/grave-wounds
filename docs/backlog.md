@@ -109,9 +109,10 @@ not this repository.
   - **The small war, more of it.** The Peninsula's eight small fights are in (played on the roller,
     the end in words). Still left: a British foraging party attacked (only the French side was
     found), a count of how often such fights came (Leach's *Rough Sketches*, Simmons's journal and
-    Burnham and McGuigan's *Wellington's Light Division* not reached), and ends tied to a place
-    (holding a breach or a bridge, getting off an edge): the roller now calls the rounds and the
-    men down itself, but not ground held. Night on the roller is in (the field map's light levels: sight and aim for missiles);
+    Burnham and McGuigan's *Wellington's Light Division* not reached), and ends the roller cannot
+    count (a general taken, getting in and back out, a deed of arms): it now calls the rounds, the
+    men down, the position held (the hexes the defenders start in, not the ground itself: a
+    bridge's own hexes would be more exact) and men got away by their own edge. Night on the roller is in (the field map's light levels: sight and aim for missiles);
     moving slower and losing the way in the dark are still the field map's alone.
   - **The 1/57th's own calendar.** Its winters and 1812 were not found (the Napoleon Series'
     "Wellington's Regiments" pages and Oman were not reached).

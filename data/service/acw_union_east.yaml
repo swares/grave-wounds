@@ -375,7 +375,7 @@ small_fights:
     foes: [{name: "Confederate infantry", men: [40, 200], weapon: rifle_musket}]
     aims: {team: "Hold the hill and get the wagons away.", foes: "Drive them off the road and cover their own wagons."}
     ends: "The Confederates draw off once a third of those here are down or after 10 rounds; the guard is beaten if it is driven off the hill."
-    end: {rounds: 10, wins: team, down: {foes: 0.33}}
+    end: {rounds: 10, wins: team, down: {foes: 0.33}, hold: team}
     sources: ["https://warfarehistorynetwork.com/article/battle-of-dranesville/"]
     note: "Ord's about 4,500 with 40 wagons against Stuart's about 2,500 covering 200; the Union lost 73, the Confederates 195. Here a company's part of it."
   - id: reconnaissance
@@ -408,7 +408,7 @@ small_fights:
     surprise: {text: "The raiders are among the pits before the alarm", chance: 40}
     aims: {team: "Hold the pits and raise the alarm.", foes: "Take the pits, prisoners and supplies, and get back before light."}
     ends: "The raiders go back after 6 rounds (sunrise) or once a third of those here are down; the pickets are beaten if they lose the pits."
-    end: {rounds: 6, wins: team, down: {foes: 0.33}}
+    end: {rounds: 6, wins: team, down: {foes: 0.33}, hold: team}
     sources: ["https://www.beyondthecrater.com/news-and-notes/siege-of-petersburg-sesquicentennial/150-years-ago-today/150-18641231-scales-mcgowan-ss-vs-6th-corps/", "https://www.battlefields.org/learn/articles/americas-civil-war-pre-dawn-assault-fort-stedman"]
     note: "31 December: led by 16 picked men of Scales's and McGowan's sharpshooters; the Union lost 2 killed, 3 wounded and 37 missing, the raiders 1 wounded by his own gun. A deserter had warned the Union side."
   - id: post
