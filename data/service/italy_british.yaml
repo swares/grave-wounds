@@ -1,0 +1,330 @@
+# A season of service: a British infantry battalion in Sicily and Italy, 1943-1945 (format as
+# data/service/peninsula.yaml). The calendar follows the 38th (Irish) Brigade of the 78th Division
+# (6th Inniskillings, 1st Royal Irish Fusiliers, 2nd London Irish Rifles), whose war diaries are on
+# irishbrigade.co.uk and the London Irish Rifles Association's site; the 2nd London Irish's are the
+# fullest. Sickness and the army's figures come from the British official medical history, Army
+# Medical Services: Campaigns, vol. III (Sicily, Italy, Greece), read as an OCR text (some tables
+# unreadable). Strengths are seldom given in men: a battle's share is its British loss against its
+# divisions at 18,000 men each (ours), or a battalion's against about 800 (ours) unless its own
+# strength is given. In Italy the sick far outnumbered the battle casualties (6.5 to 1 in X Corps in
+# October-November 1943; about 10 to 1 in the mountain winter of 1944-45) but few of them died:
+# sickness here is set for many sick and few deaths. No average British strength was found, so no
+# war totals. Design and sources: project doc "between-battles-design".
+id: italy_british
+name: "Sicily and Italy: a British battalion (1943-1945)"
+era: wwii
+regions: [commonwealth]
+table: owens-wwii
+season_days: 91
+
+# The era's medicine (ours): added to every recovery check on the disease track, as a skilled leech's
+# bonus is (disease.yaml leech). The track was set for armies before antibiotics; by 1943 sulfa
+# drugs, penicillin (from 1943-44), mepacrine against malaria, DDT and vaccines against typhus and
+# typhoid meant many sick and few dead.
+medicine: 20
+
+# No British count of wounds by cause was found. Ours, from the nearest: a New Zealand casualty
+# clearing station, April 1945 (1,004 cases; AMS-III p. 495): shell 29.3%, mortar 29.1%, bullet
+# 22.6%, mine 3.4%, other 3.5% and an unlabelled 12.1% (left out), scaled to 100; the bullets split
+# evenly between rifle and machine gun (ours).
+weapon_mix:
+  - {weapon: mortar_artillery, pct: 69.2}
+  - {weapon: rifle_service, pct: 13.4}
+  - {weapon: machine_gun, pct: 13.4}
+  - {weapon: mine_ied, pct: 4.0}
+
+states:
+  line:    {name: "Holding the line", care: field, marched: false, staying: true}
+  battle:  {name: "In a battle", care: field, marched: false, staying: false}
+  pursuit: {name: "On the move", care: field, marched: true, staying: false}
+  rest:    {name: "Out at rest", care: shelter, marched: false, staying: true}
+
+positions:
+  reserve: {name: "In reserve", mult: 0.25}
+  line:    {name: "In the attack", mult: 1}
+  thick:   {name: "In the thick of it", mult: 3}
+cap: 90
+
+# Wastage in a static line: on Monte Castellone in April 1944 the brigade had 19 dead in about 25
+# days and the 2nd London Irish logged about 20 wounded by shell and mortar in 21 days; in the
+# mountain winter the brigade had 12 dead in November 1944, 16 in December, 7 in January. With two
+# battalions forward and one resting, about 8% a season holding the line (ours).
+wastage: {line: 8, battle: 4}
+wastage_name: "Shelled, mortared or sniped in the line"
+
+# Small fights: in a static line the 2nd London Irish's diary itemises about 2 to 7 patrols a week
+# (January 1945), with contacts most nights in November-December 1944; the chances are ours.
+small_war:
+  chance: {line: 60, battle: 30, pursuit: 30, rest: 5}
+  hit: 12
+
+sides: {team: "British", foes: "German"}
+
+sources:
+  ams: &ams "https://www.generalstaff.org/WW2/Hist_UK/ArmyMedicalServicesCampVol3.pdf"
+  inn43: &inn43 "https://www.irishbrigade.co.uk/original-war-diaries-1942-to-1945/war-diaries-of-6-royal-inniskilling-fusiliers/war-diaries-6-royal-inniskilling-fusiliers-194243/6-innisks-august-1943/"
+  oct43: &oct43 "https://www.irishbrigade.co.uk/month-by-month-campaign-narrative/italian-campaign-month-by-month/october-1943/"
+  nov43: &nov43 "https://www.londonirishrifles.com/?p=16209"
+  bde43: &bde43 "https://www.irishbrigade.co.uk/original-war-diaries-1942-to-1945/war-diaries-of-38-irish-brigade/war-diaries-of-38-irish-brigade-194243/38-irish-brigade-december-1943/"
+  apr44: &apr44 "https://www.londonirishrifles.com/?p=16618"
+  nov44: &nov44 "https://www.londonirishrifles.com/?p=16713"
+  jan45: &jan45 "https://www.londonirishrifles.com/?p=16719"
+  apr45: &apr45 "https://www.irishbrigade.co.uk/the-story-of-the-irish-brigade-1942-1947-2/london-irish-rifles/the-london-irish-at-war-1939-1945/2-lir-april-1945/"
+
+seasons:
+  - {id: 1943-summer, name: "Summer 1943", state: battle, hygiene: good, factors: {hot: 2, warm: 13, marsh: 8}, actions: [sicily],
+     what: "Sicily: Centuripe taken house by house (2-3 August), patrols toward Adrano, rest by the sea; malaria from a river valley, two or three cases a day. Eighth Army lost 11,590 men to malaria against about 9,000 battle casualties.",
+     sources: [*inn43, *ams]}
+  - {id: 1943-autumn, name: "Autumn 1943", state: battle, hygiene: good, factors: {warm: 6, marsh: 4, cold_wet: 2}, actions: [termoli, sangro],
+     what: "Landed at Termoli in a German counter-attack (5-6 October); the Trigno and San Salvo; the Sangro in flood, two weeks' patrolling across it, then the break-through (29-30 November). Malaria and jaundice: 6.5 sick to each battle casualty in X Corps.",
+     sources: [*oct43, *nov43, *ams]}
+  - {id: 1943-winter, name: "Winter 1943-44", state: line, hygiene: good, factors: {cold_wet: 5}, actions: [cassino_feb, anzio],
+     what: "The high Apennines: Capracotta in 12-18 inches of snow, supplied from the air; Montenero and Castel di Sangro; \"weather conditions continued to be absolutely appalling\".",
+     sources: [*bde43, "https://www.londonirishrifles.com/?p=16222"]}
+  - {id: 1944-spring, name: "Spring 1944", state: line, hygiene: good, factors: {}, actions: [diadem],
+     what: "River training on the Volturno; Monte Castellone, supplied by jeep and mule at night, Caira \"the most heavily shelled pinpoint in Italy\"; then the Liri valley (Sinagoga, 16 May).",
+     sources: ["https://www.irishbrigade.co.uk/month-by-month-campaign-narrative/italian-campaign-month-by-month/march-1944/", *apr44]}
+  - {id: 1944-summer, name: "Summer 1944", state: pursuit, hygiene: good, factors: {hot: 1, warm: 8, marsh: 3}, actions: [trasimene],
+     what: "The pursuit north and Trasimene (San Fatucchio, 21-22 June); then out to Egypt to rest and refit, Qassassin and Sidi Bishr, until late August.",
+     sources: ["https://www.royal-irish.com/events/battle-for-san-fatucchio-38-irish-brigade-italy", "https://www.londonirishrifles.com/?p=16267"]}
+  - {id: 1944-autumn, name: "Autumn 1944", state: battle, hygiene: good, factors: {cold_wet: 3}, actions: [gothic_line, spaduro],
+     what: "Back for the Gothic Line: the Monte Spaduro battles (19-24 October), tracks turned to bogs and mules drowned; then a static line at Gesso in the cold and wet, the first snow on 9-10 November.",
+     sources: ["https://www.irishbrigade.co.uk/brigadier-narratives/irish-brigade-in-italy-by-brigadier-tpd-scott/the-spaduro-battles/", *nov44]}
+  - {id: 1944-winter, name: "Winter 1944-45", state: line, hygiene: good, factors: {cold_wet: 5}, actions: [],
+     what: "The mountain line: two battalions forward and one at rest; raids on Casa Tamagnin; snow a foot deep in January; about 10 sick to each battle casualty in V Corps.",
+     sources: ["https://www.irishbrigade.co.uk/month-by-month-campaign-narrative/italian-campaign-month-by-month/december-1944/", *jan45, *ams]}
+  - {id: 1945-spring, name: "Spring 1945", state: battle, hygiene: good, factors: {}, actions: [argenta],
+     what: "The Senio floodbank in March, grenades and snipers \"like WW1\"; then the offensive in Kangaroos: the Conselice canal (13 April), the Reno, Argenta (18 April) and the Po.",
+     sources: ["https://www.royal-irish.com/events/irish-brigade-fighting-on-the-senio-river", *apr45]}
+
+actions:
+  sicily:
+    name: "Sicily"
+    date: 1943-08-02
+    share: 11
+    engaged: "four infantry divisions and a brigade (about 80,000, ours)"
+    lost: "11,843 (Mitcham: 2,062 killed or missing, 7,137 wounded, 2,644 taken); 13,994 (AMS-III Table 14); about 9,000 battle casualties (AMS-III p. 53)"
+    sources: ["https://military-history.fandom.com/wiki/Allied_invasion_of_Sicily", *ams]
+    units:
+      - name: "6th Inniskillings at Centuripe"
+        share: 6
+        lost: "8 killed, 4 officers and 36 others wounded (the war diary), of about 800 (ours)"
+        sources: [*inn43]
+      - name: "1st Parachute Brigade at the Primosole bridge"
+        share: 39
+        lost: "115 of the 295 who reached the bridge"
+        sources: ["https://military-history.fandom.com/wiki/Operation_Fustian"]
+    note: "The share counts Mitcham's killed, missing and wounded (not the taken)."
+  termoli:
+    name: "Termoli"
+    date: 1943-10-05
+    share: null
+    engaged: "about 650 commandos, then the 78th Division"
+    lost: "the commandos 32 killed, 85 wounded, 23 missing; the 78th Division's not found"
+    sources: ["https://wikiwand.com/EN/Operation_Devon", *ams]
+    units:
+      - name: "The commandos (No. 3, No. 40 and the SRS)"
+        share: 18
+        lost: "117 killed and wounded of about 650"
+        sources: ["https://wikiwand.com/EN/Operation_Devon"]
+    note: "The 78th Division's loss was not found: the GM sets the share, or uses the commandos'."
+  sangro:
+    name: "The Sangro"
+    date: 1943-11-29
+    share: 15
+    engaged: "the 78th Division (about 18,000, ours)"
+    lost: "the 78th Division \"over 7,000 casualties in less than six months\" (Hingston, as quoted); no British figure for the battle itself"
+    sources: ["https://en.wikipedia.org/wiki/Moro_River_campaign"]
+    note: "Ours: the division's 7,000 in six months, taken as two seasons of about 19%, less for the one battle."
+  cassino_feb:
+    name: "Cassino: Snakeshead and the abbey"
+    date: 1944-02-16
+    field: cassino-monastery-1944
+    main: false
+    share: null
+    engaged: "the 4th Indian Division"
+    lost: "4/6 Rajputana Rifles 196, 1/9 Gurkhas 149, 1/2 Gurkhas 96"
+    sources: ["https://ipfs.ssi.eecc.de/ipns/en.wikipedia-on-ipfs.org/wiki/Battle_of_Monte_Cassino"]
+    units:
+      - name: "1st Royal Sussex on Snakeshead and Point 593"
+        share: 53
+        lost: "12 officers and 162 men of 15 officers and 313 men, in two nights (Holmes, as quoted)"
+        sources: ["https://ipfs.ssi.eecc.de/ipns/en.wikipedia-on-ipfs.org/wiki/Battle_of_Monte_Cassino"]
+    note: "The 4th Indian Division's attack, not the Irish Brigade's: it has a battlefield; the GM sets the share or plays it."
+  anzio:
+    name: "Anzio"
+    date: 1944-02-16
+    main: false
+    share: 21
+    engaged: "the 1st and 56th Divisions (about 36,000, ours)"
+    lost: "1,308 killed, 6,125 wounded, 5,510 missing, January-March 1944, and 5,698 sick and injured (AMS-III Table 27)"
+    sources: [*ams]
+    units:
+      - name: "2nd Sherwood Foresters at Campoleone"
+        share: 69
+        lost: "8 officers and 250 men left at the day's end of 35 and 786 (31 January; stragglers among them)"
+        sources: ["https://warhistory.org/article/anzio-beach-head-23-january-2-february-ii?amp=1"]
+      - name: "1st London Irish Rifles"
+        share: 73
+        lost: "D Company: about 15 killed and 40 wounded of 75 (2-3 March); the battalion 32 officers and 550 men in six weeks"
+        sources: ["https://www.londonirishrifles.com/?p=727"]
+    note: "The beachhead's British divisions, not the 78th's."
+  diadem:
+    name: "The Liri valley (Diadem)"
+    date: 1944-05-15
+    share: 8
+    engaged: "Eighth Army: about eight divisions (about 144,000, ours)"
+    lost: "11,639 in Eighth Army, 11-16 May (custermen.com, its source not given)"
+    sources: ["https://custermen.com/ItalyWW2/Statistics.htm"]
+    units:
+      - name: "2nd London Irish Rifles at Sinagoga"
+        share: 13
+        lost: "about 40 on the start line (the CO among them) and 5 officers and 60 men at Sinagoga, of about 800 (ours)"
+        sources: ["https://www.londonirishrifles.com/?p=729"]
+    single: true
+  trasimene:
+    name: "Trasimene"
+    date: 1944-06-21
+    share: 5
+    engaged: "X and XIII Corps (about 126,000, ours)"
+    lost: "6,176 battle casualties, 1 July-4 August (AMS-III p. 330); none found for June"
+    sources: [*ams]
+    units:
+      - name: "2nd London Irish Rifles at San Fatucchio"
+        share: 12
+        lost: "14 killed and 80 wounded, of about 800 (ours)"
+        sources: ["https://www.royal-irish.com/events/battle-for-san-fatucchio-38-irish-brigade-italy"]
+  gothic_line:
+    name: "The Gothic Line"
+    date: 1944-09-15
+    main: false
+    share: 19
+    engaged: "Eighth Army's 92 infantry battalions (about 74,000, ours; by 25 September only 10 had over 400 men)"
+    lost: "14,000 killed, wounded and missing (historyofwar.org)"
+    sources: ["https://www.historyofwar.org/articles/battles_rimini.html", *ams]
+    note: "Eighth Army on the Adriatic; the Irish Brigade came back to Fifth Army's sector in October."
+  spaduro:
+    name: "Monte Spaduro"
+    date: 1944-10-21
+    share: 12
+    engaged: "the 78th Division (about 18,000, ours)"
+    lost: "not found for the division; the 2nd London Irish 5 officers and 14 men killed and 50 wounded; two companies of the 1st Royal Irish Fusiliers, \"only a handful returned\""
+    sources: ["https://londonirishrifles.com/?p=736", "https://www.irishbrigade.co.uk/brigadier-narratives/irish-brigade-in-italy-by-brigadier-tpd-scott/the-spaduro-battles/"]
+    units:
+      - name: "2nd London Irish Rifles, understrength"
+        share: 17
+        lost: "69 killed and wounded of about 400 (ours: battalions were half strength by then)"
+        sources: ["https://londonirishrifles.com/?p=736"]
+    note: "The division's share is ours: no figure was found."
+  argenta:
+    name: "The Argenta Gap and the Po"
+    date: 1945-04-18
+    share: 4
+    engaged: "Eighth Army: about eight divisions (about 144,000, ours)"
+    lost: "6,210 battle casualties in April-May; 4,303 wounded admitted on 9-18 April (AMS-III Tables 32 and 47)"
+    sources: [*ams, *apr45]
+
+small_fights:
+  - id: patrol
+    name: "A night patrol meets a German patrol"
+    what: "A patrol out at night meets German patrols or a party on a road and opens fire at twenty yards (Monte Castellone, 9 April 1944: two German patrols of four; Casa Tamagnin, 14 January 1945: nine Germans, 2 killed and 2 wounded, no loss); or an ambush patrol of four exchanges fire twice and never comes back (6-7 January 1945)."
+    states: [line]
+    weight: 4
+    where: "a road and a culvert between the lines"
+    time: "about half past seven at night"
+    light: night
+    ground: hills
+    side: {name: "The patrol", men: [4, 12]}
+    foes: [{name: "A German patrol", men: [4, 9], kit: ww2_rifleman, weapon: pistol_smg}]
+    aims: {team: "Find the enemy, take a prisoner if it can, and get back.", foes: "The same."}
+    ends: "Either side breaks off once half of those here are down; the patrol wins if it gets back to its own edge, better with a prisoner."
+    sources: [*apr44, *jan45]
+  - id: raid
+    name: "Germans in white rush the forward platoon"
+    what: "German mountain troops in white suits lie up in the snow within fifty yards of a platoon post from three in the morning; at half past eight twenty shells cut the mule track and two groups of twenty rush the platoon of fourteen with machine pistols, grenades and bayonets; the reserve platoon counter-attacks (Il Calvario, near Montenero, 19 January 1944: 5 killed, 12 wounded and 19 taken against 6 German dead and 1 taken)."
+    states: [line]
+    weight: 3
+    where: "a platoon post on a snowy hilltop"
+    time: "half past eight in the morning"
+    ground: hills
+    weather: snow
+    side: {name: "The forward platoon", men: [13, 30]}
+    foes: [{name: "German mountain troops in white", men: [20, 50], kit: ww2_rifleman, weapon: pistol_smg}]
+    surprise: {text: "\"Complete initial surprise\" (the battalion's report)", chance: 60}
+    aims: {team: "Hold the post until the reserve platoon comes up.", foes: "Overrun the post and take prisoners."}
+    ends: "The reserve platoon comes up after 6 rounds; the Germans go back once a third of those here are down; the post is lost if the platoon is broken."
+    sources: ["https://www.londonirishrifles.com/?p=18688"]
+    note: "A single company report and the battalion's."
+  - id: snow_post
+    name: "The posts hit in falling snow"
+    what: "About forty Germans come at the forward posts at a quarter to four in the morning in falling snow; an hour's fight, and they draw off (31 December 1943: the brigade lost one man)."
+    states: [line]
+    weight: 2
+    where: "forward posts in the mountains"
+    time: "a quarter to four in the morning"
+    light: night
+    ground: mountains
+    weather: snow
+    side: {name: "The forward posts", men: [10, 40]}
+    foes: [{name: "German infantry", men: [20, 40], kit: ww2_rifleman, weapon: rifle_service}]
+    surprise: {text: "They come out of the falling snow", chance: 30}
+    aims: {team: "Hold the posts.", foes: "Drive in the posts."}
+    ends: "The Germans draw off after 10 rounds (an hour) or once a third of those here are down; the posts are lost if their men are broken."
+    sources: [*bde43]
+  - id: farmhouse
+    name: "A fighting patrol on a farmhouse"
+    what: "A fighting patrol goes out at four in the morning to burn a farmhouse the Germans hold, runs into booby traps and comes back with four casualties (Casa Tamagnin, 2 January 1945)."
+    states: [line]
+    weight: 2
+    where: "a farmhouse in no man's land"
+    time: "about four in the morning"
+    light: night
+    ground: farmland
+    team_attacks: true
+    side: {name: "The fighting patrol", men: [10, 20]}
+    foes: [{name: "Germans in the farmhouse", men: [4, 12], kit: ww2_rifleman, weapon: machine_gun}]
+    aims: {team: "Get to the house, burn it, and get back.", foes: "Hold the house."}
+    ends: "The patrol wins if it holds the house for 2 rounds; it goes back once a third of those here are down. The roller has no booby traps: the GM may roll a hit for the first man to the door."
+    sources: [*jan45]
+  - id: houses
+    name: "Clearing the houses"
+    what: "Fighting hand to hand in a cemetery and a church at night, then at dawn clearing two groups of buildings room by room with three tanks (San Fatucchio, 21-22 June 1944: about 70 Germans still in the houses; the 2nd London Irish lost 14 killed and 80 wounded); or house to house with a tank in the street (Centuripe, 2-3 August 1943)."
+    states: [battle, pursuit]
+    weight: 3
+    where: "a village of stone houses"
+    time: "at dawn"
+    light: dusk
+    ground: village
+    team_attacks: true
+    side: {name: "The platoon clearing the houses", men: [20, 40]}
+    foes: [{name: "German infantry in the houses", men: [20, 70], kit: ww2_rifleman, weapon: machine_gun}]
+    aims: {team: "Clear the buildings room by room.", foes: "Hold the houses."}
+    ends: "The platoon wins when the buildings are clear; it falls back if a third of those here are down."
+    sources: ["https://www.royal-irish.com/events/battle-for-san-fatucchio-38-irish-brigade-italy", "https://www.londonirishrifles.com/?p=18487"]
+  - id: canal
+    name: "Over the canal on the broken bridge"
+    what: "The bridge is blown: a company dismounts under the tanks' cover and crosses on the wreckage, takes about eighty prisoners and holds the bridgehead by ten at night (the Conselice canal, 13 April 1945); next day a bridgehead over the Reno, put across under smoke, is thrown back by a counter-attack the tanks cannot reach."
+    states: [battle]
+    weight: 3
+    where: "a canal with a blown bridge between floodbanks"
+    time: "in the afternoon"
+    ground: bridge
+    team_attacks: true
+    side: {name: "The company over the canal", men: [40, 100]}
+    foes: [{name: "German infantry on the far bank", men: [30, 90], kit: ww2_rifleman, weapon: machine_gun}]
+    aims: {team: "Get over and hold the far bank.", foes: "Throw them back over the canal."}
+    ends: "The company wins if it holds the far bank for 8 rounds; it is beaten if it is thrown back over."
+    sources: [*apr45]
+  - id: floodbank
+    name: "Grenades over the floodbank"
+    what: "Each side holds one face of a river's high floodbank, a few yards apart: grenades thrown over it, and snipers shooting at periscopes (the Senio, March 1945, \"like WW1\")."
+    states: [line]
+    weight: 2
+    where: "the two faces of a river's floodbank"
+    time: "by day"
+    ground: open
+    side: {name: "The section on the floodbank", men: [6, 12]}
+    foes: [{name: "Germans over the bank", men: [6, 12], kit: ww2_rifleman, weapon: hand_grenade}]
+    aims: {team: "Hold its face of the bank.", foes: "Drive them off the bank."}
+    ends: "Either side gives up its face of the bank once half of those here are down, or the GM ends it after 10 rounds."
+    sources: ["https://www.royal-irish.com/events/irish-brigade-fighting-on-the-senio-river"]

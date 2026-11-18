@@ -45,7 +45,7 @@ function makeService(SV, RULES){
   }
   function dayCtx(W, s, wk){
     const st = W.states[s.state];
-    return { care: st.care, marched: st.marched, wet_cold: factors(W, s, wk).includes("cold_wet"), filth: s.hygiene === "poor" };
+    return { care: st.care, marched: st.marched, wet_cold: factors(W, s, wk).includes("cold_wet"), filth: s.hygiene === "poor", leech: W.medicine || 0 };   // the era's medicine, on every recovery check
   }
   function weaponFor(W, roll){                   // d100 on the war's table's weapon_mix
     const mix = SV.mix[W.id], total = mix.reduce((t, [, p]) => t + p, 0);

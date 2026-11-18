@@ -93,7 +93,12 @@ not this repository.
     garrison muster totals of 1420-22 were not reached, and more is ours (the weapon mix, most
     shares). The Western Front for a Regular battalion is in too; for it, Dunn's The War the
     Infantry Knew, the Statistics of the Military Effort's casualty tables and a mean strength were
-    not reached, and most battle shares are ours (divisions at 18,000). Still to come: the
+    not reached, and most battle shares are ours (divisions at 18,000). Sicily and Italy for a
+    British battalion is in; for it, Mellor's British wound causes, the official medical history's
+    unreadable tables (Salerno, Sicily's 50th Division, XIII Corps in the Liri) and an average
+    strength were not reached. Its `medicine` (20) is ours, and the earlier wars have none: the
+    Western Front might take some (anti-tetanus serum, the Carrel-Dakin wound treatment). Still to
+    come: the
     Confederates (their counts are thinner), the West (Shiloh to Atlanta, sicker), and the World
     Wars; each needs a calendar, its actions' shares and its small fights from the sources. For
     the Civil War, Livermore's tables, the Official Records returns and the Medical and Surgical

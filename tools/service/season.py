@@ -176,6 +176,19 @@ def run(p):
     check(esc["named"] == men and esc["fw"] == ["crossbow"] and esc["fk"] == ["brigandine_sallet"],
           f"the escalade: the retinue's {men} named men go up the ladders against the guard with crossbows ({esc['fw']}, {esc['fk']})")
     check("Defending: The guard on the wall" in esc["msg"], "the French guard holds the wall; the English come in from the edge")
+    # the fifth war: a British section in Italy
+    pg.goto(BASE + "team.html")
+    pg.select_option("#sel-era", "wwii")
+    pg.select_option("#sel-region", "commonwealth")
+    pg.click("#btn-roll")
+    pg.wait_for_selector("#h-service")
+    k = pg.evaluate("() => SVC.war('italy_british').seasons.findIndex(s => s.id === '1943-winter')")
+    pg.select_option("#sv-season", str(k))
+    it = pg.inner_text("#service")
+    check("Capracotta" in it and "1st Royal Sussex on Snakeshead" in pg.inner_text("select[data-svunit=cassino_feb]"),
+          "a British section in Italy: the mountain winter of 1943-44, and Snakeshead with the Royal Sussex's own figure")
+    check(pg.evaluate("() => SVC.war('italy_british').medicine") == 20, "with the era's medicine on the sick")
+
     # the fourth war: a British section on the Western Front, and its wastage in the line
     pg.goto(BASE + "team.html")
     pg.select_option("#sel-era", "wwi")
