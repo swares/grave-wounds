@@ -92,6 +92,7 @@ def run(p):
     check(hit["who"] == first["name"] and hit["weapon"] == first["weapon"] and hit["table"] == first["table"] and hit["attacker"] == -1,
           f"the roller rolls {first['name']}'s wound with the season's weapon and no attacker ({hit})")
     check(len(pg.evaluate(QUEUE)) == len(q) - 1, "and it leaves the queue")
+    check("A hit from the season (" in pg.inner_text("#result"), f"the roll says it is a hit from the season, not a stray shot ({pg.inner_text('#result')[:200]!r})")
     pg.click("#btn-apply")
     track = pg.evaluate(f"""() => {{ const n = Object.values(readNamed()).find(x => x.name === {json.dumps(first['name'])}); return n ? (n.health.cases || []).filter(k => k.d === 'wound').length : -1 }}""")
     check(track >= 1, f"applied, his wound goes onto his wound track in the shared record ({track})")
@@ -130,6 +131,10 @@ def run(p):
     count = pg.evaluate("() => S.mapMsg.match(/The picket \\(British\\), (\\d+ of its \\d+ men|its \\d+ men)/)?.[1] || ''")
     check(count.startswith(str(sides["b"]) + " of its") or count == f"its {sides['b']} men" or (count.startswith("its ") and int(count.split()[1]) <= sides["b"]),
           f"the setup counts the team's men in the picket ({count}; {sides['b']} on the map)")
+    odds = pg.evaluate("""() => { const m = S.mapMsg, b = m.match(/The picket \\(British\\), (?:(\\d+) of )?its (\\d+) men/), f = m.match(/\\(French\\), (?:(\\d+) of )?its (\\d+) men/);
+      return { bHere: +(b[1] || b[2]), bAll: +b[2], fHere: +(f[1] || f[2]), fAll: +f[2] } }""")
+    want = max(1, min(40, round(odds["bHere"] * odds["fAll"] / odds["bAll"])))
+    check(odds["fHere"] == min(want, odds["fAll"]), f"the French come in at the rolled odds, not capped at 8 against the whole team ({odds}, wanted {want})")
     # the picket's own end: the GM's script plays both sides and stops when the roller calls it
     end = pg.evaluate("""() => {
       S.gm = { on: true, auto: false, sides: {} };
@@ -172,9 +177,19 @@ def run(p):
           and "hold" in held["atEnd"]["why"], f"the picket's bridge: lost at a round's end once the French stand in it and the picket does not ({held})")
     check((held["away"] or {}).get("won") == "French" and held["gone"] >= held["need"] and held["isOut"],
           f"and men on their own edge leave the field: once a share have got away, their side wins ({held['away']}, {held['gone']} gone, {held['need']} needed; any already on the edge go too)")
+    # a man taken in a fight his side then wins is retaken
+    rt = pg.evaluate("""() => { const c = S.chars.find(x => sideOf(x) === 'British' && x.sheet?.pid), was = S.wonBy;
+      c.taken = true; markLost(c.sheet.pid, 'taken prisoner'); setWon('British');
+      const out = { taken: c.taken, lost: !!(readPurses()[c.sheet.pid] || {}).lost, log: (S.pending || []).at(-1) }; S.wonBy = was; return out }""")
+    check(not rt["taken"] and not rt["lost"] and "retaken" in (rt["log"] or ""), f"a man taken in a fight his side wins is retaken ({rt})")
+    # the picket was played only to see its end: its losses do not go on to the team builder
+    pg.evaluate("() => { const all = readPurses(); for (const k in all) delete all[k].lost; writePurses(all); for (const c of S.chars) c.taken = false; save() }")
     # a case carried from the last season: the panel shows it, and the next season begins from it
     pg.goto(BASE + "team.html")
     pg.wait_for_selector("#h-service")
+    asat = pg.evaluate("""() => { const W = SVC.war('peninsula'), f = W.small_fights.find(x => x.id === 'picket');
+      return [svcAsAt(W, f, W.seasons.find(x => x.id === f.at)), svcAsAt(W, f, W.seasons[0])] }""")
+    check(asat[0] == "" and "a fight of this kind, as in spring 1810" in asat[1], f"a fight from another season says so in its notes ({asat})")
     pg.evaluate("""() => { const c = S.team[0], H = { cases: [{ d: 'flux', inc: 0, step: 2, peak: 2, shown: 9, chronic: true }], immune: {}, had: {}, dead: 0 };
       c.svcHealth = H; const all = namedStore(), n = namedOf(all, c); if (n){ n.health = H; localStorage.setItem(NAMED_STORE, JSON.stringify(all)) } render() }""")
     check("still serious from last season" in pg.inner_text("#service"), "a man still sick at the season's end shows so on the panel")

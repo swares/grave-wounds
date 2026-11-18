@@ -124,7 +124,12 @@ not this repository.
     season roll reads and writes his shared record, and a wound from the roller mends on his
     track), a small fight's party never smaller than the team, a man saved by fate keeping his
     season, a shorter panel, and a small fight's end called by the roller (rounds and men down;
-    the GM's script stops there) are done. Still left: a company template musters more followers than an
+    the GM's script stops there) are done. From the fourth (the Roses, both sides): the foes at the
+    rolled odds, men retaken when their side wins, a season's hit no longer called a stray shot,
+    and fights from another season marked "as in" are done. Found when the odds were kept: when the
+    GM's script plays the team's side and it breaks, the script's yield takes every man down or next
+    to a foe, and in a small fight that is often the whole team (Edward's six all taken at Newnham
+    Bridge); a player's side never yields so. Still left: a company template musters more followers than an
     officer of middling Presence keeps (they drift each season).
 
 - **Camp roles, first cut** (`data/council.yaml`; docs/campaign.md, *The council*). Roles and the

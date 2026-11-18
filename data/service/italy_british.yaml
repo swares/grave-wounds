@@ -230,6 +230,7 @@ small_fights:
     what: "A patrol out at night meets German patrols or a party on a road and opens fire at twenty yards (Monte Castellone, 9 April 1944: two German patrols of four; Casa Tamagnin, 14 January 1945: nine Germans, 2 killed and 2 wounded, no loss); or an ambush patrol of four exchanges fire twice and never comes back (6-7 January 1945)."
     states: [line]
     weight: 4
+    at: 1944-spring
     where: "a road and a culvert between the lines"
     time: "about half past seven at night"
     light: night
@@ -245,6 +246,7 @@ small_fights:
     what: "German mountain troops in white suits lie up in the snow within fifty yards of a platoon post from three in the morning; at half past eight twenty shells cut the mule track and two groups of twenty rush the platoon of fourteen with machine pistols, grenades and bayonets; the reserve platoon counter-attacks (Il Calvario, near Montenero, 19 January 1944: 5 killed, 12 wounded and 19 taken against 6 German dead and 1 taken)."
     states: [line]
     weight: 3
+    at: 1943-winter
     where: "a platoon post on a snowy hilltop"
     time: "half past eight in the morning"
     ground: hills
@@ -262,6 +264,7 @@ small_fights:
     what: "About forty Germans come at the forward posts at a quarter to four in the morning in falling snow; an hour's fight, and they draw off (31 December 1943: the brigade lost one man)."
     states: [line]
     weight: 2
+    at: 1943-winter
     where: "forward posts in the mountains"
     time: "a quarter to four in the morning"
     light: night
@@ -279,6 +282,7 @@ small_fights:
     what: "A fighting patrol goes out at four in the morning to burn a farmhouse the Germans hold, runs into booby traps and comes back with four casualties (Casa Tamagnin, 2 January 1945)."
     states: [line]
     weight: 2
+    at: 1944-winter
     where: "a farmhouse in no man's land"
     time: "about four in the morning"
     light: night
@@ -295,6 +299,7 @@ small_fights:
     what: "Fighting hand to hand in a cemetery and a church at night, then at dawn clearing two groups of buildings room by room with three tanks (San Fatucchio, 21-22 June 1944: about 70 Germans still in the houses; the 2nd London Irish lost 14 killed and 80 wounded); or house to house with a tank in the street (Centuripe, 2-3 August 1943)."
     states: [battle, pursuit]
     weight: 3
+    at: 1944-summer
     where: "a village of stone houses"
     time: "at dawn"
     light: dusk
@@ -311,6 +316,7 @@ small_fights:
     what: "The bridge is blown: a company dismounts under the tanks' cover and crosses on the wreckage, takes about eighty prisoners and holds the bridgehead by ten at night (the Conselice canal, 13 April 1945); next day a bridgehead over the Reno, put across under smoke, is thrown back by a counter-attack the tanks cannot reach."
     states: [battle]
     weight: 3
+    at: 1945-spring
     where: "a canal with a blown bridge between floodbanks"
     time: "in the afternoon"
     ground: bridge
@@ -326,6 +332,7 @@ small_fights:
     what: "Each side holds one face of a river's high floodbank, a few yards apart: grenades thrown over it, and snipers shooting at periscopes (the Senio, March 1945, \"like WW1\")."
     states: [line]
     weight: 2
+    at: 1945-spring
     where: "the two faces of a river's floodbank"
     time: "by day"
     ground: open

@@ -67,6 +67,13 @@ function markLost(pid, why){                      // the team builder takes him 
   all[pid].lost = { why };
   writePurses(all);
 }
+function unmarkLost(pid, why){                    // he is back after all (a man taken, retaken when his side won the field): only while the team builder has not yet taken him off
+  if (!pid) return;
+  const all = readPurses();
+  if (!all[pid] || !all[pid].lost || all[pid].lost.why !== why) return;
+  delete all[pid].lost;
+  writePurses(all);
+}
 function payKeep(have, days, food, bed){          // {paid, hungry, rough}: each day's food before its bed
   let paid = 0, hungry = 0, rough = 0;
   for (let i = 0; i < days; i++){

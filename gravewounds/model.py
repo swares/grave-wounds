@@ -2230,6 +2230,8 @@ def _small_fight_errors(d: Data, W: dict, where: str, states: dict) -> list[str]
         if not f.get("sources"):
             errors.append(f"{fw}: needs sources")
         errors += _fight_end_errors(fw, f.get("end"), "foes" if f.get("team_attacks") else "team")
+        if "at" in f and f["at"] not in {x.get("id") for x in W.get("seasons", [])}:
+            errors.append(f"{fw}: at {f['at']} is not one of the war's seasons")
     if W.get("small_fights") and not (W.get("sides") or {}).get("foes"):
         errors.append(f"{where}: small fights need sides: {{team, foes}}")
     return errors

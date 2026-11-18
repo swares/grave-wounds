@@ -799,8 +799,13 @@ for each man whether he serves and where he stands. **Serve the season** then ro
   set up (`gravewounds-handoff`, `from: service`): the team's named men and followers on the roller
   fight in the party (a picket, a working party, a rear-guard; never fewer than
   the team and its followers who come) with comrades up to 8, against the
-  enemy with the fight's weapon, on the fight's ground and in its weather, with the defenders
+  enemy in the same proportion to the rolled sizes (the team's men here times the foes' rolled
+  number over the party's, at least 1 and at most 40: the odds the dice gave, not 8 against the
+  whole team), with the fight's weapon, on the fight's ground and in its weather, with the defenders
   caught unawares on the surprise roll; the aims, the end and the source are in the fight's notes.
+  A fight's `at` is the season of the instance it is sourced to; rolled in another season, its
+  notes call it "a fight of this kind, as in spring 1461". A man of the team taken in it (down
+  and asking quarter) is retaken if his side is then marked the winner: the field is theirs.
   Each fight's `end` gives what of it the roller can count: `rounds` (when they are up, `wins`
   says who wins: the team, the foes, or none, for the GM to mark) and `down` (a side loses once that share
   of its men, or that many, are down, taken or gone; a side that breaks on morale loses too). The

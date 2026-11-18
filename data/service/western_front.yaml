@@ -300,6 +300,7 @@ small_fights:
     what: "After a bombardment, with smoke on the flanks, raiders cross no man's land, get into the German trench, bomb the dugouts and bring back prisoners (Givenchy, 5 July 1916, the 2nd RWF, some with butchers' knives tied to broomsticks); or the Germans raise the alarm at their wire and the raid fails in a bombing fight (Kiel Trench, 25 May 1916, 37 of the 1st RWF)."
     states: [trenches]
     weight: 4
+    at: 1916-summer
     where: "across no man's land to the German front trench"
     time: "at night"
     light: night
@@ -318,6 +319,7 @@ small_fights:
     what: "A barrage at dawn, then three officers and about 120 men come over, take a post and are gone in half an hour (Barnton Posts, Festubert, 7 March 1918: 6 killed, 31 wounded and 23 missing of a company of the 1/5th South Lancashire)."
     states: [trenches]
     weight: 3
+    at: 1918-spring
     where: "the forward posts of the British line"
     time: "at dawn, after a barrage"
     light: dusk
@@ -334,6 +336,7 @@ small_fights:
     what: "A patrol crawls out to the German wire; a flare goes up and the Germans open fire; an officer and a corporal are killed and one man gets back next morning (Rue du Bois, 13 January 1916, 10th Duke of Wellington's); at Cuinchy a 2nd RWF patrol held its fire thirty yards from a German covering party and called down shrapnel on it (Graves)."
     states: [trenches]
     weight: 3
+    at: 1915-winter
     where: "no man's land, between the wires"
     time: "about half past midnight"
     light: night
@@ -349,6 +352,7 @@ small_fights:
     what: "A patrol with a Lewis gun finds a German working party chattering behind its wire and opens fire, and several are seen to fall (14 July 1916); wiring parties often let each other be and \"as good as borrowed each other's mallets\" (Graves)."
     states: [trenches]
     weight: 2
+    at: 1916-summer
     where: "the wire in front of the line"
     time: "at night"
     light: night
@@ -366,6 +370,7 @@ small_fights:
     what: "A German mine goes up under a company at night and the Germans rush the crater and the trench before being driven out (the Red Dragon, Givenchy, 22 June 1916: only 28 of the 2nd RWF's B Company escaped); or the battalion's bombers take the crater's lip and hold it (Queen's Crater, Auchy, 6 May 1916: 4 killed and 8 wounded of the 1st Queen's)."
     states: [trenches]
     weight: 2
+    at: 1916-summer
     where: "a new crater in the front line"
     time: "about 2 in the morning"
     light: night
@@ -383,6 +388,7 @@ small_fights:
     what: "A gas cloud comes over at dawn and raiding parties of about thirty follow it (Hulluch, 27 and 29 April 1916: the 16th Irish Division lost 1,980, of whom 1,260 were gassed and 338 died; on the 29th the wind blew it back on the Germans)."
     states: [trenches]
     weight: 1
+    at: 1916-spring
     where: "the front trench under a gas cloud"
     time: "about 5 in the morning"
     light: dusk
@@ -400,6 +406,7 @@ small_fights:
     what: "A battalion with two guns left as rearguard on the retreat holds off a far larger force for about fourteen hours and surrenders only when surrounded and out of ammunition (Étreux, 27 August 1914: about 240 men and 4 officers of the 2nd Royal Munster Fusiliers' 800 left)."
     states: [march]
     weight: 3
+    at: 1914-summer
     where: "an orchard and a crossroads on the line of retreat"
     time: "all day"
     ground: farmland
@@ -415,6 +422,7 @@ small_fights:
     what: "Two companies clear the dugouts of a captured trench, build a barricade and bomb back two counter-attacks along it (the Hindenburg Line, 23 April 1917, the 2nd RWF: over 400 prisoners; 4 officers killed and 7 wounded, 32 men killed, 70 wounded and 5 missing; Sassoon took about a hundred bombers up the Hindenburg Trench that month)."
     states: [battle]
     weight: 3
+    at: 1917-spring
     where: "a captured German trench and its barricade"
     time: "about half past ten in the morning"
     ground: open

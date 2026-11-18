@@ -1249,7 +1249,11 @@ function svcFightHandoff(W, s){                     // the small fight as a setu
     ground: f.ground, groundSeed: `${f.id}:${s.id}`, camp: null, surprise: sp, light: f.light || "day",
     weather: f.weather ? { cond: f.weather, wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } } : null,
     end: svcFightEnd(f.end, side, W.sides.foes),
-    notes: [`Aims: ${side}: ${f.aims.team} ${W.sides.foes}: ${f.aims.foes}`, `It ends: ${f.ends} The roller calls what it can count: the rounds, the men down, the position held (the hexes the defenders start in) and men got away off their own edge; the rest is the GM's call.`, `From the accounts: ${f.what} (${f.sources.join("; ")})`] };
+    notes: [`Aims: ${side}: ${f.aims.team} ${W.sides.foes}: ${f.aims.foes}`, `It ends: ${f.ends} The roller calls what it can count: the rounds, the men down, the position held (the hexes the defenders start in) and men got away off their own edge; the rest is the GM's call.`, `From the accounts${svcAsAt(W, f, s)}: ${f.what} (${f.sources.join("; ")})`] };
+}
+function svcAsAt(W, f, s){                          // a fight sourced to another season: a fight of the kind, as there
+  const at = f.at && f.at !== s.id ? W.seasons.find(x => x.id === f.at) : null;
+  return at ? `, a fight of this kind, as in ${at.name.toLowerCase()}` : "";
 }
 function svcFightEnd(e, team, foes){                 // the fight's countable end, by the roller's side names
   if (!e) return null;
@@ -1303,7 +1307,7 @@ function serveSeason(){
       hits.push(svcHit(c, W, `${actName(h.action)}, ${s.name}`, h.weapon));
     }
     for (const x of m.missed) bits.push(`${x.why === "sick" ? "missed" : "not at"} ${W.actions[x.action].name} (${x.why === "no share" ? "no share set" : x.why})`);
-    if (m.sick_days) bits.push(`sick ${m.sick_days} days${m.worst ? `, still ${m.worst} at the season's end` : ""}`);
+    if (m.sick_days) bits.push(`sick ${m.sick_days} day${m.sick_days === 1 ? "" : "s"}${m.worst ? `, still ${m.worst} at the season's end` : ""}`);
     if (m.wound && !m.dead) bits.push(`his wounds still ${m.wound} at the season's end`);
     if (m.dead){
       if (saved) bits.push(`would have died of ${dz.toLowerCase()} in week ${m.dead_week + 1}: fate spent, he lives the season out`);
