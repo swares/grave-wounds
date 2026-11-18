@@ -671,7 +671,7 @@ once. The Python rules and the page give the same result from the same dice.
 the project doc "between-battles-design"). Between the modelled battles, a team of the war's army
 serves a season (91 days) with a line battalion in one step. The war's calendar gives each season
 what the battalion did (in quarters, on campaign, on the march, at a siege), its hygiene, the weeks
-of the season its weather and ground made sickness worse, and its named actions. Seven wars so far:
+of the season its weather and ground made sickness worse, and its named actions. Eight wars so far:
 
 - **The Peninsula** (`peninsula.yaml`, 1808-1814, the British in the Peninsula): 24 seasons from
   Roliça to Toulouse, 18 actions, 8 small fights.
@@ -686,6 +686,23 @@ of the season its weather and ground made sickness worse, and its named actions.
   comes to about 1.1% dead a season against the whole Union army's 0.72% (Fox, on a three-year
   basis); hit, about 10% a season at every main action in the line against 1.2% for the whole army,
   most of which was never at a battle in the East.
+- **The Civil War in the East, the other side** (`acw_confederate_east.yaml`, 1861-1865, a
+  Confederate regiment of the Army of Northern Virginia; the Confederacy's team): 16 seasons from
+  First Manassas to Appomattox, following the 4th Virginia of the Stonewall Brigade (Wikipedia's
+  regimental history): Jackson's Valley campaign, the Seven Days, Second Manassas, Antietam,
+  Chancellorsville, Culp's Hill, the Mule Shoe and Early's Valley campaign of 1864. 22 actions
+  with Livermore's and Fox's Confederate losses (via the acw_battle_data transcriptions) and the
+  NPS survey's strengths where Livermore has none; the 4th Virginia's own figures at Second
+  Manassas (54%) and Chancellorsville (48%), the brigade's at Antietam (35%). The weapon mix is the
+  Union's (no Confederate count). 9 small fights, four of them the Union file's from the other side
+  (raiding the picket line at Hartwood Church, foragers at Dranesville, holding the ford at Morton's
+  Ford, raiding the rifle pits at Petersburg) and five more (Fort Stedman before dawn, Kearneysville,
+  the Mule Shoe rushed at dawn, Mosby at Berryville, cutting off the rear-guard at Auburn). The war's
+  totals are the National Park Service's (164,000 dead of disease, 94,000 killed, 194,026 wounded)
+  against Livermore's mean strength (about 420,000, ours: the mean of five dates): disease about
+  2.45% dead a season against 2.44%, worst on the Romney expedition and in the Centreville camps of
+  1861; hits about 12.5% a season at every main action in the line, against 4.3% for the whole
+  army. The season roll counts hits, not men taken: the Mule Shoe took most of the brigade.
 - **Henry V's war in France** (`henry_v.yaml`, 1415-1422, an English retinue): 29 seasons from
   the siege of Harfleur to the king's death, following a retinue that stays in the Harfleur
   garrison under Dorset after Agincourt and joins the army of 1417 for the conquest of Normandy:

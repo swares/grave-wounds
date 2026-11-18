@@ -230,6 +230,18 @@ def run(p):
     check("Summer 1863" in pg.inner_text("#sv-season option:checked") and "Gettysburg" in pg.inner_text("#service"), "a Union team serves the war in the East: summer 1863 has Gettysburg")
     check("1st Minnesota (82%)" in pg.inner_text("select[data-svunit=gettysburg]"), "with the 1st Minnesota's own 82%")
     check(pg.evaluate("() => SVC.weaponFor(SVC.war('acw_union_east'), 50)") == "rifle_musket", "and its hits come mostly from the rifle-musket")
+    # and the other side: a Confederate team with the 4th Virginia
+    pg.goto(BASE + "team.html")
+    pg.select_option("#sel-era", "civil_war")
+    pg.select_option("#sel-region", "confederacy")
+    pg.click("#btn-roll")
+    pg.wait_for_selector("#h-service")
+    k = pg.evaluate("() => SVC.war('acw_confederate_east').seasons.findIndex(s => s.id === '1863-spring')")
+    pg.select_option("#sv-season", str(k))
+    cs = pg.inner_text("#service")
+    check("Chancellorsville" in cs and "4th Virginia (48%)" in pg.inner_text("select[data-svunit=chancellorsville]"),
+          "a Confederate team serves with the Stonewall Brigade: spring 1863 has Chancellorsville, with the 4th Virginia's own 48%")
+    check(pg.evaluate("() => SVC.warsFor('civil_war', 'confederacy').map(W => W.id).join()") == "acw_confederate_east", "and only the Confederate war is offered to it")
     # the third war: an English retinue in Henry V's war, and an escalade played (the team attacking)
     pg.goto(BASE + "team.html")
     pg.select_option("#sel-era", "medieval")
