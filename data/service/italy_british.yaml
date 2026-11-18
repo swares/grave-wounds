@@ -102,6 +102,7 @@ actions:
     name: "Sicily"
     date: 1943-08-02
     share: 11
+    taken: 3
     engaged: "four infantry divisions and a brigade (about 80,000, ours)"
     lost: "11,843 (Mitcham: 2,062 killed or missing, 7,137 wounded, 2,644 taken); 13,994 (AMS-III Table 14); about 9,000 battle casualties (AMS-III p. 53)"
     sources: ["https://military-history.fandom.com/wiki/Allied_invasion_of_Sicily", *ams]
@@ -156,6 +157,7 @@ actions:
     date: 1944-02-16
     main: false
     share: 21
+    taken: 15
     engaged: "the 1st and 56th Divisions (about 36,000, ours)"
     lost: "1,308 killed, 6,125 wounded, 5,510 missing, January-March 1944, and 5,698 sick and injured (AMS-III Table 27)"
     sources: [*ams]
