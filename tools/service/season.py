@@ -11,6 +11,7 @@ on any failure. Then the season's small fight: shown with its sizes, aims and so
 the picket at night played on the roller, the team's named men in the picket against French with muskets,
 with the aims, the end and the source in the fight's notes.
 """
+import json
 import sys
 from pathlib import Path
 
@@ -91,6 +92,10 @@ def run(p):
     check(hit["who"] == first["name"] and hit["weapon"] == first["weapon"] and hit["table"] == first["table"] and hit["attacker"] == -1,
           f"the roller rolls {first['name']}'s wound with the season's weapon and no attacker ({hit})")
     check(len(pg.evaluate(QUEUE)) == len(q) - 1, "and it leaves the queue")
+    pg.click("#btn-apply")
+    track = pg.evaluate(f"""() => {{ const n = Object.values(readNamed()).find(x => x.name === {json.dumps(first['name'])}); return n ? (n.health.cases || []).filter(k => k.d === 'wound').length : -1 }}""")
+    check(track >= 1, f"applied, his wound goes onto his wound track in the shared record ({track})")
+    wounded = first["name"]
     named = pg.evaluate("() => S.chars.filter(c => c.uid && !c.dead).length")
 
     # the season's small fight, played: back on the team builder, the picket at night goes to the roller
@@ -127,13 +132,15 @@ def run(p):
     # a case carried from the last season: the panel shows it, and the next season begins from it
     pg.goto(BASE + "team.html")
     pg.wait_for_selector("#h-service")
-    pg.evaluate("""() => { const c = S.team[0];
-      c.svcHealth = { cases: [{ d: 'flux', inc: 0, step: 2, peak: 2, shown: 9, chronic: true }], immune: {}, had: {}, dead: 0 }; render() }""")
+    pg.evaluate("""() => { const c = S.team[0], H = { cases: [{ d: 'flux', inc: 0, step: 2, peak: 2, shown: 9, chronic: true }], immune: {}, had: {}, dead: 0 };
+      c.svcHealth = H; const all = namedStore(), n = namedOf(all, c); if (n){ n.health = H; localStorage.setItem(NAMED_STORE, JSON.stringify(all)) } render() }""")
     check("still serious from last season" in pg.inner_text("#service"), "a man still sick at the season's end shows so on the panel")
     pg.evaluate(SEEDED, 11)
     pg.click("#btn-serve")
     first = pg.evaluate("() => S.svclog.find(l => l.startsWith(S.team[0]?.name)) || S.svclog.join(' ')")
     check("began the season serious" in pg.inner_text("#service"), f"and his next season begins from it ({first[:120]})")
+    check(f"{wounded}: began the season" in pg.inner_text("#service") and "(his wounds)" in pg.inner_text("#service"),
+          f"the man hit last season begins this one with his wounds on the track ({wounded})")
 
     # the second war: a Union company in the East
     pg.goto(BASE + "team.html")

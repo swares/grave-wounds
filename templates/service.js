@@ -60,9 +60,13 @@ function makeService(SV, RULES){
     const shown = h.cases.filter(c => c.inc === 0 && c.step > 0 && c.d !== "wound").map(c => c.step);
     return shown.length ? SV.steps[Math.max(...shown)] : null;
   }
-  function unfit(h){
-    const st = worstStep(h);
-    return st !== null && SV.steps.indexOf(st) >= SV.steps.indexOf(SV.unfit_from);
+  function woundStep(h){                         // as service.wound_step: his worst battle wound on the track
+    const shown = h.cases.filter(c => (c.d === "wound" || c.d === "fever") && c.step > 0).map(c => c.step);
+    return shown.length ? SV.steps[Math.max(...shown)] : null;
+  }
+  function unfit(h){                              // too sick or too badly wounded to march or fight
+    const at = SV.steps.indexOf(SV.unfit_from);
+    return h.cases.some(c => c.inc === 0 && c.step >= at);
   }
   function serve(wid, sid, men, rolled, rng){    // a season for the team, as service.serve
     const W = war(wid), s = season(W, sid), chance = W.small_war.chance[s.state], smallRoll = rng();
@@ -102,7 +106,7 @@ function makeService(SV, RULES){
   }
   function manSeason(W, s, m, acts, rng){
     let h = startHealth(m);
-    const r = { name: m.name, dead: null, dead_week: null, sick_days: 0, worst: null, hits: [], missed: [], rolls: [], health: null };
+    const r = { name: m.name, dead: null, dead_week: null, sick_days: 0, wound: null, worst: null, hits: [], missed: [], rolls: [], health: null };
     const end = m.endurance ?? undefined, sid = s.id;   // none: the typical man's
     for (let wk = 0; wk < weeks(W); wk++){
       for (const aid of acts.filter(a => actionWeek(W, sid, a) === wk)) action(W, aid, m, h, r, rng);
@@ -116,10 +120,10 @@ function makeService(SV, RULES){
         h = res.health;
         const dead = Object.keys(res.events.dead);
         if (dead.length){ r.dead = dead[0]; r.dead_week = wk; return r }
-        if (h.cases.some(c => c.inc === 0 && c.step > 0)) r.sick_days++;
+        if (h.cases.some(c => c.inc === 0 && c.step > 0 && c.d !== "wound")) r.sick_days++;
       }
     }
-    r.worst = worstStep(h); r.health = h;     // his health carried into the next season
+    r.worst = worstStep(h); r.wound = woundStep(h); r.health = h;     // his health carried into the next season
     return r;
   }
   function wastage(W, s, h, r, rng){             // the season's wastage in the line, as service._wastage
@@ -137,7 +141,7 @@ function makeService(SV, RULES){
     r.rolls.push({ action: aid, pct, roll });
     if (roll <= pct) r.hits.push({ action: aid, pct, roll, weapon: weaponFor(W, rng()) });
   }
-  return { war, warsFor, season, seasonStart, weeks, actionWeek, hitPct, inWeek, factors, dayCtx, weaponFor, worstStep, serve, between, smallFight };
+  return { war, warsFor, season, seasonStart, weeks, actionWeek, hitPct, inWeek, factors, dayCtx, weaponFor, worstStep, woundStep, serve, between, smallFight };
 }
 
 if (typeof module !== "undefined") module.exports = makeService;   // Node (the tests); the page has no `module`

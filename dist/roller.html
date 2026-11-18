@@ -4746,9 +4746,14 @@ function rollServiceHit(){
   if (DATA.tables[S.table].weapons.includes(h.weapon)){ S.weapon = h.weapon; $("#sel-weapon").value = h.weapon; syncArmor() }
   S.attacker = -1;
   selectChar(i);
+  if (!readNamed()[S.chars[i].uid]) attachNamed(S.chars[i], "");   // known to the campaign, so his wound can go on his track
+  S.svcHitFor = S.chars[i].id;                       // applied, the wound goes onto his track for the season
   L.shift();
   try{ localStorage.setItem(SVC_HITS, JSON.stringify(L)) }catch(e){ /* storage off: it is rolled once all the same */ }
+  const turn = S.turn, free = S.free;               // a hit from a season is rolled outside any fight's turn on this page
+  S.turn = null; S.free = [];
   rollHit(true);
+  S.turn = turn; S.free = free;
   S.mapMsg = `${h.name}, hit at ${h.action}: the wound is rolled below.`;
   renderChars();
 }
@@ -6299,6 +6304,11 @@ function applyCurrentHit(){                       // Apply hit to defender: the 
     strainFor(c, ["serious", "critical"].includes(h.sev) ? "wounded_badly" : "wounded");
     if (!wasDown && isDown(c)){ creditDown(attackerChar(), c); strainOnDown(c) }
     logWound(c, h, line, stop);
+    if (S.svcHitFor === c.id){                       // a hit from a season with the battalion: onto his wound track, to mend through the next season
+      S.svcHitFor = null;
+      toCamp(c);
+      S.pending.push(`${c.name}'s wound goes onto his wound track: it mends (or turns septic) through his next season with the battalion`);
+    }
   } else msg = `Armour stopped that blow: nothing to add to ${c.name}.`;
   if (veiled(c) && h.loc) $("#apply-msg").textContent = `${c.name} is hit in the ${LOC[h.loc].name.toLowerCase()}.${isDown(c) ? " He goes down." : ""}`;
   else $("#apply-msg").innerHTML = msg + (line ? `<br>${line}` : "") + fateButtons();

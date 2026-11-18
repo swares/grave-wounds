@@ -742,9 +742,15 @@ for each man whether he serves and where he stands. **Serve the season** then ro
 - **Sickness**, week by week on the camp-disease track (`data/disease.yaml`), for one man with his
   own Endurance: the season's state gives the care and marching, its hygiene and factors the
   weekly chances. A man unfit with sickness misses an action and spends the week in hospital
-  (sheltered care, not marching); one who dies is lost (died of disease) unless he spends a fate
-  point. A case still running at the season's end (and what he is immune to, or may relapse
-  with) goes on into his next season, and the panel shows him still sick.
+  (sheltered care, not marching); one who dies is lost (died of disease, or of wounds when a
+  wound or its fever kills him) unless he spends a fate point, and then he lives the whole
+  season, its days and its tick. A man's health is one record, shared with the roller and the
+  travel map (his entry in `gravewounds-named`, or on the team builder for a man never added to
+  the roller): the season starts from it and writes back to it. A wound rolled on the roller
+  goes onto his wound track there (*To camp*), so in his next season it mends week by week, may
+  turn to wound fever, and keeps him out of actions while it leaves him unfit. A case still
+  running at the season's end goes on into his next season, and the panel shows him still sick
+  or wounded.
 - **Each action not played**, in its week: d100 against his hit chance, the army's share lost
   (killed and wounded of those engaged, from the sources) times his position (in reserve ×0.25,
   in the line ×1, in the thick of it ×3, at most 90%; ours, set from Albuera, where the
@@ -760,7 +766,8 @@ for each man whether he serves and where he stands. **Serve the season** then ro
   another (its sizes rolled anew). The panel gives what the accounts say, the sizes, each side's
   aim and what ends it. **Play it on the roller** sets it up as a fight from the travel map is
   set up (`gravewounds-handoff`, `from: service`): the team's named men and followers on the roller
-  fight in the party (a picket, a working party, a rear-guard) with comrades up to 8, against the
+  fight in the party (a picket, a working party, a rear-guard; never fewer than
+  the team and its followers who come) with comrades up to 8, against the
   enemy with the fight's weapon, on the fight's ground and in its weather, with the defenders
   caught unawares on the surprise roll; the aims, the end and the source are in the fight's notes,
   and the GM marks the winner when it ends. Or **Roll it**: each man with the battalion is hit on

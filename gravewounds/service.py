@@ -111,9 +111,16 @@ def weapon_for(d: Data, W: dict, roll: int) -> str:
     return mix[-1][0]
 
 
+def wound_step(d: Data, health: dict) -> str | None:
+    """His worst battle wound on the wound track (wound and wound fever), or None."""
+    shown = [c["step"] for c in health["cases"] if c["d"] in ("wound", "fever") and c["step"] > 0]
+    return d.disease["steps"][max(shown)] if shown else None
+
+
 def _unfit(d: Data, health: dict) -> bool:
-    step = dz.worst_step(d, health)
-    return step is not None and d.disease["steps"].index(step) >= d.disease["steps"].index(d.disease["unfit_from"])
+    """Too sick or too badly wounded to march or fight: a case at unfit_from or worse."""
+    at = d.disease["steps"].index(d.disease["unfit_from"])
+    return any(c["inc"] == 0 and c["step"] >= at for c in health["cases"])
 
 
 def serve(d: Data, wid: str, sid: str, men: list[dict], rolled: list[str], rng) -> dict:
@@ -175,7 +182,7 @@ def start_health(m: dict) -> dict:
 
 
 def _man(d: Data, W: dict, s: dict, m: dict, acts: list, rng) -> dict:
-    h, r = start_health(m), {"name": m["name"], "dead": None, "dead_week": None, "sick_days": 0,
+    h, r = start_health(m), {"name": m["name"], "dead": None, "dead_week": None, "sick_days": 0, "wound": None,
                              "worst": None, "hits": [], "missed": [], "rolls": [], "health": None}
     end, sid = m.get("endurance"), s["id"]
     for wk in range(weeks(W)):
@@ -192,9 +199,9 @@ def _man(d: Data, W: dict, s: dict, m: dict, acts: list, rng) -> dict:
             if ev["dead"]:
                 r["dead"], r["dead_week"] = next(iter(ev["dead"])), wk
                 return r
-            if any(c["inc"] == 0 and c["step"] > 0 for c in h["cases"]):
+            if any(c["inc"] == 0 and c["step"] > 0 and c["d"] != "wound" for c in h["cases"]):
                 r["sick_days"] += 1
-    r["worst"], r["health"] = dz.worst_step(d, h), h   # his health carried into the next season
+    r["worst"], r["wound"], r["health"] = dz.worst_step(d, h), wound_step(d, h), h   # his health carried into the next season
     return r
 
 

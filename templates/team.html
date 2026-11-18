@@ -1193,21 +1193,31 @@ function svcActionHtml(W, V, aid){                  // one action of the season:
   const field = a.field ? ` <label><input type="checkbox" data-svplay="${aid}" ${played ? "checked" : ""}> play it on the field map (${esc(TD.service.fields[a.field])})</label>` : "";
   return `<li><label><input type="checkbox" data-svat="${aid}" ${at ? "checked" : ""}> <b>${esc(a.name)}</b>, ${esc(a.date)}</label>${a.main === false ? ` <span class="muted">(${esc((a.note || "not the main army").replace(/\.$/, ""))})</span>` : ""}: ${share}${units}${field}</li>`;
 }
+function svcSeasonOptions(W, V){                     // the next season first, then those after it; the earlier ones below
+  const opt = k => `<option value="${k}" ${k === V.i ? "selected" : ""}>${esc(W.seasons[k].name)}</option>`, ks = W.seasons.map((_, k) => k);
+  const later = ks.filter(k => k >= V.i).map(opt).join(""), earlier = ks.filter(k => k < V.i).map(opt).join("");
+  return later + (earlier ? `<optgroup label="Earlier seasons">${earlier}</optgroup>` : "");
+}
+function svcStillHtml(c){                          // '(still serious from last season)', or his wounds'
+  const H = svcHealthOf(namedStore(), c), sick = H && SVC.worstStep(H), hurt = H && SVC.woundStep(H);
+  if (!sick && !hurt) return "";
+  return ` <span class="muted">(still ${esc([sick && sick, hurt && `wounded, ${hurt}`].filter(Boolean).join("; "))} from last season)</span>`;
+}
 function renderService(){
   const box = $("#service"), V = svcState();
   if (!V || !S.team.length){ box.innerHTML = ""; return }
   const W = SVC.war(V.war), s = W.seasons[V.i];
   if (!s){ box.innerHTML = `<section class="crew work" aria-labelledby="h-service"><h3 id="h-service">A season with the battalion</h3><p>${esc(W.name)} is over: its last season has been served.</p></section>`; return }
   const st = W.states[s.state], fx = Object.entries(s.factors || {}).map(([k, n]) => `${k.replace("_", " ")} ${n} week${n > 1 ? "s" : ""}`).join(", ");
-  const men = S.team.map((c, k) => `<li><label><input type="checkbox" data-svwith="${k}" ${V.with[c.pid] !== false ? "checked" : ""}> ${esc(c.name)}</label>${c.svcHealth && SVC.worstStep(c.svcHealth) ? ` <span class="muted">(still ${esc(SVC.worstStep(c.svcHealth))} from last season)</span>` : ""}
+  const men = S.team.map((c, k) => `<li><label><input type="checkbox" data-svwith="${k}" ${V.with[c.pid] !== false ? "checked" : ""}> ${esc(c.name)}</label>${svcStillHtml(c)}
       <select data-svpos="${k}" style="width:auto" aria-label="${esc(c.name)}: where he stands">${Object.entries(W.positions).map(([id, p]) => `<option value="${id}" ${(V.pos[c.pid] || "line") === id ? "selected" : ""}>${esc(p.name)}${p.mult !== 1 ? ` (×${p.mult})` : ""}</option>`).join("")}</select></li>`).join("");
   const acts = s.actions.length ? `<ul class="xp">${s.actions.map(a => svcActionHtml(W, V, a)).join("")}</ul>` : `<p class="muted">No named action this season.</p>`;
   const log = (S.svclog || []).map(l => `<li>${esc(l)}</li>`).join("");
   const waiting = svcQueue().length;
   box.innerHTML = `<section class="crew work" aria-labelledby="h-service"><h3 id="h-service">A season with the battalion</h3>
-    <p class="muted note">${esc(W.name)}, as a line battalion served it. A season (${W.season_days} days) passes in one step: each man's sickness on the camp-disease track, a hit roll at each action the team was at and does not play (the army's share lost times where he stands, at most ${W.cap}%; or a battalion's own figure), and the chance of a small fight. A hit goes to the roller, which rolls the wound. The days count toward his term; then press End of season. Where he stands and the small fights are ours; the shares are from the sources, and the project doc "between-battles-design" has them.</p>
+    <details><summary class="muted">How it works: ${esc(W.name)}, as a battalion served it</summary><p class="muted note">A season (${W.season_days} days) passes in one step: each man's sickness on the camp-disease track, a hit roll at each action the team was at and does not play (the army's share lost times where he stands, at most ${W.cap}%; or a battalion's own figure), and the chance of a small fight. A hit goes to the roller, which rolls the wound. The days count toward his term; then press End of season. Where he stands and the small fights are ours; the shares are from the sources, and the project doc "between-battles-design" has them.</p></details>
     ${svcWars().length > 1 ? `<label>War <select id="sv-war">${svcWars().map(x => `<option value="${x.id}" ${x.id === V.war ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></label>` : ""}
-    <p><label>Season <select id="sv-season">${W.seasons.map((x, k) => `<option value="${k}" ${k === V.i ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></label>
+    <p><label>Season <select id="sv-season">${svcSeasonOptions(W, V)}</select></label>
       <b>${esc(st.name)}</b>: ${esc(s.what)} <span class="muted">Hygiene ${esc(s.hygiene)}${fx ? "; " + esc(fx) : ""}; a small fight ${W.small_war.chance[s.state]}%${(W.wastage || {})[s.state] ? `; ${esc(W.wastage_name.toLowerCase())}: ${W.wastage[s.state]}% a man` : ""}.</span></p>
     ${acts}
     <h4>Who serves it</h4><ul class="xp">${men}</ul>
@@ -1230,7 +1240,8 @@ function svcFightHtml(W){                           // the season's small fight:
 }
 function svcFightHandoff(W, s){                     // the small fight as a setup for the roller (as the travel map's, with the team)
   const F = S.svcSmall, f = W.small_fights.find(x => x.id === F.id), own = (S.side || "").trim(), side = own && own !== "Side A" ? own : W.sides.team;   // the team's side as set, else the war's
-  const party = { id: "team", name: f.side.name, side, men: F.side, type: "foot" };
+  const coming = S.team.filter(c => (svcState().with || {})[c.pid] !== false).length + (S.crew || []).length;   // the team and its followers come too
+  const party = { id: "team", name: f.side.name, side, men: Math.max(F.side, coming), type: "foot" };
   const foes = f.foes.map((o, k) => ({ id: "foe" + k, name: o.name, side: W.sides.foes, men: F.foes[k], type: "foot", kit: o.kit || null, weapon: o.weapon || null }));
   const [force, allies, against] = f.team_attacks ? [foes[0], foes.slice(1), [party]] : [party, [], foes];
   const sp = f.surprise ? { text: f.surprise.text, roll: F.surprise_roll, surprised: F.surprised } : null;
@@ -1249,10 +1260,14 @@ function svcHit(c, W, what, weapon){                // a hit for the roller to r
   const reg = byId(T.regions, c.region);
   return { pid: c.pid, name: c.name, weapon, action: what, table: reg.table || W.table, war: W.name };
 }
+const NAMED_STORE = "gravewounds-named";              // the named men's shared record (the roller's and the travel map's): his health, wounds and all
+function namedStore(){ try{ return JSON.parse(localStorage.getItem(NAMED_STORE) || "{}") || {} }catch(e){ return {} } }
+function namedOf(all, c){ return Object.values(all).find(n => n.pid && n.pid === c.pid && !n.dead) || null }   // his record there, if the roller knows him
+const svcHealthOf = (all, c) => { const n = namedOf(all, c); return n ? n.health || null : c.svcHealth || null };   // one health: the shared record's, else the team builder's own
 function serveSeason(){
-  const V = svcState(), W = SVC.war(V.war), s = W.seasons[V.i], days = W.season_days;
+  const V = svcState(), W = SVC.war(V.war), s = W.seasons[V.i], days = W.season_days, named = namedStore();
   const serving = S.team.filter(c => V.with[c.pid] !== false);
-  const men = serving.map(c => ({ name: c.name, endurance: c.stats.end, position: V.pos[c.pid] || "line", health: c.svcHealth || null,
+  const men = serving.map(c => ({ name: c.name, endurance: c.stats.end, position: V.pos[c.pid] || "line", health: svcHealthOf(named, c),
     unit: Object.fromEntries(Object.entries(V.unit).filter(([, k]) => k !== "" && k != null).map(([a, k]) => [a, +k])),
     share: Object.fromEntries(Object.entries(V.share).filter(([, v]) => v !== "" && v != null).map(([a, v]) => [a, +v])) }));
   const rolled = s.actions.filter(a => (V.at[a] ?? W.actions[a].main !== false) && !V.played[a]);
@@ -1260,13 +1275,20 @@ function serveSeason(){
   const played = s.actions.filter(a => (V.at[a] ?? W.actions[a].main !== false) && V.played[a]);
   if (played.length) lines.push(`To play on the field map: ${played.map(a => W.actions[a].name).join(", ")}.`);
   serving.forEach((c, k) => {
-    const m = r.men[k], bits = [], car = byId(T.careers, c.career);
-    const lived = m.dead ? m.dead_week * 7 : days, was = c.svcHealth && SVC.worstStep(c.svcHealth);
-    const H = m.health, keep = H && (H.cases.length || Object.keys(H.immune).length || Object.keys(H.had).length);
+    const m = r.men[k], bits = [], car = byId(T.careers, c.career), start = men[k].health, rec = namedOf(named, c);
+    const dz = m.dead ? (TD.service.rules.disease.diseases[m.dead] || TD.service.rules.disease.wounds[m.dead] || { name: m.dead }).name : null;
+    const wounds = m.dead === "wound" || m.dead === "fever", saved = m.dead && fateSpend(c.pid, `lived through ${dz.toLowerCase()}`);
+    const lived = m.dead && !saved ? m.dead_week * 7 : days, was = start && (SVC.worstStep(start) || SVC.woundStep(start));
+    const H = saved ? start : m.health, keep = H && (H.cases.length || Object.keys(H.immune).length || Object.keys(H.had).length);
     c.svcHealth = keep ? H : null;            // a case still running (and what he is immune to or may relapse with) goes on into his next season
-    if (was) bits.push(`began the season ${was}`);
+    if (rec){                                 // and onto his shared record: the roller heals his wounds to scars as their cases close
+      rec.health = keep ? H : { cases: [], immune: {}, had: {}, dead: 0 };
+      rec.rest = (rec.rest || 0) + lived;     // a season's nights: his blood comes back on the roller
+      if (m.dead && !saved) rec.dead = true;
+    }
+    if (was) bits.push(`began the season ${was}${start && SVC.woundStep(start) ? " (his wounds)" : ""}`);
     xpServe(c.pid, lived); c.rolled_days = (c.rolled_days || 0) + lived;
-    if (!m.dead) xpTick(c.pid, car.main, "a season with the battalion");
+    if (!m.dead || saved) xpTick(c.pid, car.main, "a season with the battalion");
     const actName = a => (a === "wastage" ? W.wastage_name : W.actions[a].name);   // a named action, or the season's wastage in the line
     for (const x of m.rolls) bits.push(`${actName(x.action)}: ${x.pct}%, rolled ${x.roll}${x.roll <= x.pct ? "" : ", unhurt"}`);
     for (const h of m.hits){
@@ -1275,14 +1297,15 @@ function serveSeason(){
     }
     for (const x of m.missed) bits.push(`${x.why === "sick" ? "missed" : "not at"} ${W.actions[x.action].name} (${x.why === "no share" ? "no share set" : x.why})`);
     if (m.sick_days) bits.push(`sick ${m.sick_days} days${m.worst ? `, still ${m.worst} at the season's end` : ""}`);
+    if (m.wound && !m.dead) bits.push(`his wounds still ${m.wound} at the season's end`);
     if (m.dead){
-      const dz = TD.service.rules.disease.diseases[m.dead]?.name || m.dead;
-      if (fateSpend(c.pid, `lived through ${dz.toLowerCase()}`)) bits.push(`would have died of ${dz.toLowerCase()} in week ${m.dead_week + 1}: fate spent, he lives`);
-      else { bits.push(`died of ${dz.toLowerCase()} in week ${m.dead_week + 1}`); c.svcDied = true }
+      if (saved) bits.push(`would have died of ${dz.toLowerCase()} in week ${m.dead_week + 1}: fate spent, he lives the season out`);
+      else { bits.push(`died of ${dz.toLowerCase()} in week ${m.dead_week + 1}`); c.svcDied = wounds ? "died of wounds" : "died of disease" }
     }
     lines.push(`${c.name}: ${bits.length ? bits.join("; ") : "a quiet season"}.`);
   });
-  for (const c of serving.filter(x => x.svcDied)){ delete c.svcDied; loseMember(S.team.indexOf(c), "died of disease") }
+  try{ localStorage.setItem(NAMED_STORE, JSON.stringify(named)) }catch(e){ /* storage off: the roller keeps his old record */ }
+  for (const c of serving.filter(x => x.svcDied)){ const why = c.svcDied; delete c.svcDied; loseMember(S.team.indexOf(c), why) }
   if (hits.length) svcQueue(hits);
   S.svcSmall = r.small ? (r.fight || true) : false;
   lines.push(r.small ? `A small fight comes the team's way (rolled ${r.small_roll} against ${r.chance}).` : `No small fight (rolled ${r.small_roll} against ${r.chance}).`);

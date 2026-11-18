@@ -115,6 +115,12 @@ not this repository.
     San Sebastián have no engaged figure.
   - **Sickness a little high**: about 2.1% dead a season against the records' 1.6%. Bamford,
     *Sickness, Suffering, and the Sword* (2013), is the likeliest source for sick rates by season.
+  - **From the third solo playtest** (project doc "solo-playtest-3"): one health for the man (the
+    season roll reads and writes his shared record, and a wound from the roller mends on his
+    track), a small fight's party never smaller than the team, a man saved by fate keeping his
+    season, and a shorter panel are done. Still left: the GM's script plays a small fight to a
+    finish rather than to its end in words, and a company template musters more followers than an
+    officer of middling Presence keeps (they drift each season).
 
 - **Camp roles, first cut** (`data/council.yaml`; docs/campaign.md, *The council*). Roles and the
   evening council are on the campaign page. Still left out: the travel map played on its own has no
