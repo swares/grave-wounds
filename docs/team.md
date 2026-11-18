@@ -787,8 +787,14 @@ for each man whether he serves and where he stands. **Serve the season** then ro
   fight in the party (a picket, a working party, a rear-guard; never fewer than
   the team and its followers who come) with comrades up to 8, against the
   enemy with the fight's weapon, on the fight's ground and in its weather, with the defenders
-  caught unawares on the surprise roll; the aims, the end and the source are in the fight's notes,
-  and the GM marks the winner when it ends. Or **Roll it**: each man with the battalion is hit on
+  caught unawares on the surprise roll; the aims, the end and the source are in the fight's notes.
+  Each fight's `end` gives what of it the roller can count: `rounds` (when they are up, `wins`
+  says who wins: the team, the foes, or none, for the GM to mark) and `down` (a side loses once that share
+  of its men, or that many, are down, taken or gone; a side that breaks on morale loses too). The
+  roller calls it the moment it is reached: it marks the winner under After the fight, logs why,
+  and the GM's script stops; **Fight on** sets the call aside for the rest of the fight. Holding a
+  place (a breach, a bridge, the far bank) and getting off an edge stay the GM's call; the words
+  say them. Or **Roll it**: each man with the battalion is hit on
   10% (ours).
 
   The Peninsula's eight, each from dated instances in the accounts (Cope's history of the Rifle

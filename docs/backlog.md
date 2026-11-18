@@ -109,8 +109,9 @@ not this repository.
   - **The small war, more of it.** The Peninsula's eight small fights are in (played on the roller,
     the end in words). Still left: a British foraging party attacked (only the French side was
     found), a count of how often such fights came (Leach's *Rough Sketches*, Simmons's journal and
-    Burnham and McGuigan's *Wellington's Light Division* not reached), and ends the roller checks
-    itself. Night on the roller is in (the field map's light levels: sight and aim for missiles);
+    Burnham and McGuigan's *Wellington's Light Division* not reached), and ends tied to a place
+    (holding a breach or a bridge, getting off an edge): the roller now calls the rounds and the
+    men down itself, but not ground held. Night on the roller is in (the field map's light levels: sight and aim for missiles);
     moving slower and losing the way in the dark are still the field map's alone.
   - **The 1/57th's own calendar.** Its winters and 1812 were not found (the Napoleon Series'
     "Wellington's Regiments" pages and Oman were not reached).
@@ -121,8 +122,8 @@ not this repository.
   - **From the third solo playtest** (project doc "solo-playtest-3"): one health for the man (the
     season roll reads and writes his shared record, and a wound from the roller mends on his
     track), a small fight's party never smaller than the team, a man saved by fate keeping his
-    season, and a shorter panel are done. Still left: the GM's script plays a small fight to a
-    finish rather than to its end in words, and a company template musters more followers than an
+    season, a shorter panel, and a small fight's end called by the roller (rounds and men down;
+    the GM's script stops there) are done. Still left: a company template musters more followers than an
     officer of middling Presence keeps (they drift each season).
 
 - **Camp roles, first cut** (`data/council.yaml`; docs/campaign.md, *The council*). Roles and the
