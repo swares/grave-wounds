@@ -88,6 +88,10 @@ not this repository.
   with the battalion*; project doc "between-battles-design"). The Peninsula is in: a line
   battalion's 24 seasons, its actions' shares lost, sickness on the disease track, hits sent to the
   roller. Still to do:
+  - **The edge of a battle (layer 3).** Badajoz has one: four scenes before the storm, the choices
+    and checks setting where each man stands at it. Next could be Barnet in the mist, Agincourt's
+    eve or Culp's Hill; the scenes have no rewards yet (the forlorn hope's promised promotion), and
+    the ditch's works are laid by hand on the roller.
   - **More wars.** The Civil War in the East for a Union regiment (and, from the other side, the
     4th Virginia of the Stonewall Brigade: no Confederate wound-cause count; men taken prisoner are
     rolled now, from the missing, which also counts stragglers who came back) and Henry V's war

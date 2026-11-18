@@ -85,7 +85,7 @@ function makeService(SV, RULES){
   }
   const between = (lo, hi, roll) => lo + Math.floor((roll - 1) * (hi - lo + 1) / 100);
   function smallFight(W, state, rng, fid = null){   // the season's small fight, as service.small_fight
-    const all = W.small_fights, fitting = all.filter(f => f.states.includes(state)), fits = fitting.length ? fitting : all;
+    const all = W.small_fights, rolled = all.filter(f => !f.edge_only), fitting = rolled.filter(f => f.states.includes(state)), fits = fitting.length ? fitting : rolled;   // an edge's own fights come only with their battle
     let roll = null, f;
     if (fid === null){
       roll = rng();
@@ -144,12 +144,13 @@ function makeService(SV, RULES){
   function action(W, aid, m, h, r, rng){         // one unplayed action: missed, or his hit roll
     if (r.hits.length){ r.missed.push({ action: aid, why: "wounded" }); return }
     if (unfit(h)){ r.missed.push({ action: aid, why: "sick" }); return }
-    const pct = hitPct(W, aid, m.position || "line", (m.unit || {})[aid] ?? null, (m.share || {})[aid] ?? null);
+    const pos = (m.pos_at || {})[aid] || m.position || "line";   // where he stands at this action (an edge's choice), else for the season
+    const pct = hitPct(W, aid, pos, (m.unit || {})[aid] ?? null, (m.share || {})[aid] ?? null);
     if (pct === null){ r.missed.push({ action: aid, why: "no share" }); return }
     const roll = rng();
     r.rolls.push({ action: aid, pct, roll });
     if (roll <= pct){ r.hits.push({ action: aid, pct, roll, weapon: weaponFor(W, rng()) }); return }
-    const t = takenPct(W, aid, m.position || "line", m.unit?.[aid] ?? null);
+    const t = takenPct(W, aid, pos, m.unit?.[aid] ?? null);
     if (t){ const tr = rng(); if (tr <= t) r.taken = { action: aid, pct: t, roll: tr } }   // came through unhit: taken?
   }
   return { war, warsFor, season, seasonStart, weeks, actionWeek, hitPct, takenPct, inWeek, factors, dayCtx, weaponFor, worstStep, woundStep, serve, between, smallFight };

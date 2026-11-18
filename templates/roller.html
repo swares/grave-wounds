@@ -3563,7 +3563,7 @@ function applyFromMap(){                    // the Strike panel's Apply, with it
 function handoffNamed(h, forces){
   const by = new Map(), missing = [];
   if (h.team){                                    // a season's small fight: the team's named men and followers here go with its party
-    for (const c of S.chars) if (c.team && !c.dead && !c.taken && (c.uid || c.follower)) addTo(by, h.team, c);
+    for (const c of S.chars) if (c.team && !c.dead && !c.taken && (c.uid || c.follower) && (!h.only || h.only.includes(c.sheet?.pid))) addTo(by, h.team, c);   // an edge's scene: only its men
     if (!by.size) missing.push("the team (send it to the roller from the team builder, then set the fight up again)");
     return { by, missing };
   }

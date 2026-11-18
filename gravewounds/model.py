@@ -2159,6 +2159,8 @@ def _service_errors(d: Data, W: dict) -> list[str]:
         if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(a.get("date"))):
             errors.append(f"{aw}: date must be YYYY-MM-DD")
         errors += [f"{aw}: a unit's share must be 0-100" for u in a.get("units", []) if not 0 <= u.get("share", -1) <= 100]
+        if a.get("edge"):
+            errors += _edge_errors(d, W, aw, a["edge"])
         ok = lambda t: t is None or (isinstance(t, (int, float)) and 0 <= t <= 100)   # taken prisoner: % of those engaged
         if not ok(a.get("taken")) or not all(ok(u.get("taken")) for u in a.get("units", [])):
             errors.append(f"{aw}: taken must be 0-100")
@@ -2166,6 +2168,36 @@ def _service_errors(d: Data, W: dict) -> list[str]:
             errors.append(f"{aw}: needs sources")
         if not any(aid in s.get("actions", []) for s in W.get("seasons", [])):
             errors.append(f"{aw}: in no season")
+    return errors
+
+
+def _edge_errors(d: Data, W: dict, aw: str, e: dict) -> list[str]:
+    """An action's edge (layer 3): name, what, sources and its scenes in order: a fight (one of the
+    war's small fights), a choice (the men chosen stand at `position` at the action) or a check (d100
+    against a stat; failed, he stands at `fail_position`); `only` limits a scene to an earlier
+    choice's men."""
+    errors, seen = [], set()
+    if not (e.get("name") and e.get("what") and e.get("sources") and e.get("scenes")):
+        return [f"{aw}: edge needs name, what, sources and scenes"]
+    fights = {f["id"] for f in W.get("small_fights", [])}
+    stats = {x["id"] for x in d.teams[W["era"]].get("characteristics", [])} if W.get("era") in d.teams else set()
+    for sc in e["scenes"]:
+        sw = f"{aw}: edge scene {sc.get('id')}"
+        k = sc.get("kind")
+        if not (sc.get("id") and sc.get("name") and sc.get("what")):
+            errors.append(f"{sw}: needs id, name and what")
+        if k == "fight" and sc.get("fight") not in fights:
+            errors.append(f"{sw}: fight {sc.get('fight')} is not one of the war's small fights")
+        elif k == "choice" and (sc.get("position") not in W["positions"] or not sc.get("label")):
+            errors.append(f"{sw}: a choice needs a label and one of the war's positions")
+        elif k == "check" and (sc.get("stat") not in stats or sc.get("fail_position") not in W["positions"]):
+            errors.append(f"{sw}: a check needs a stat of the era and a fail_position of the war's")
+        elif k not in ("fight", "choice", "check"):
+            errors.append(f"{sw}: kind must be fight, choice or check")
+        if sc.get("only") and sc["only"] not in seen:
+            errors.append(f"{sw}: only must name an earlier choice")
+        if k == "choice":
+            seen.add(sc.get("id"))
     return errors
 
 

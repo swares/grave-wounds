@@ -1200,7 +1200,81 @@ function svcActionHtml(W, V, aid){                  // one action of the season:
   const share = a.share == null ? svcShareInput(a, V, aid) : svcShareText(a);
   const units = (a.units || []).length ? ` <select data-svunit="${aid}" style="width:auto" aria-label="${esc(a.name)}: whose figure"><option value="">as the army, by position</option>${a.units.map((u, k) => `<option value="${k}" ${String(V.unit[aid]) === String(k) ? "selected" : ""}>as ${esc(u.name)} (${u.share}%)</option>`).join("")}</select>` : "";
   const field = a.field ? ` <label><input type="checkbox" data-svplay="${aid}" ${played ? "checked" : ""}> play it on the field map (${esc(TD.service.fields[a.field])})</label>` : "";
-  return `<li><label><input type="checkbox" data-svat="${aid}" ${at ? "checked" : ""}> <b>${esc(a.name)}</b>, ${esc(a.date)}</label>${a.main === false ? ` <span class="muted">(${esc((a.note || "not the main army").replace(/\.$/, ""))})</span>` : ""}: ${share}${units}${field}</li>`;
+  return `<li><label><input type="checkbox" data-svat="${aid}" ${at ? "checked" : ""}> <b>${esc(a.name)}</b>, ${esc(a.date)}</label>${a.main === false ? ` <span class="muted">(${esc((a.note || "not the main army").replace(/\.$/, ""))})</span>` : ""}: ${share}${units}${field}${a.edge && at ? svcEdgeHtml(W, V, aid) : ""}</li>`;
+}
+/* An action's edge (layer 3): its scenes in order before the action is rolled or played. A fight is
+   played on the roller or rolled; a choice ticks the men it takes; a check rolls each man's d100
+   against a characteristic. The choices and failed checks set where each man stands at the action
+   (pos_at in the season roll). */
+function svcEdge(V, aid){ V.edge ||= {}; V.edge[aid] ||= { done: {}, chosen: {}, failed: {} }; return V.edge[aid] }
+function svcEdgeMen(V, sc, st){                     // the men a scene takes: those with the battalion, or an earlier choice's
+  const serving = S.team.filter(c => V.with[c.pid] !== false);
+  return sc.only ? serving.filter(c => (st.chosen[sc.only] || {})[c.pid]) : serving;
+}
+function svcEdgeScene(W, V, aid, sc, st){            // a scene's controls
+  if (sc.kind === "choice") return S.team.filter(c => V.with[c.pid] !== false).map(c => `<label><input type="checkbox" data-svedgechoice="${aid}:${sc.id}:${c.pid}" ${(st.chosen[sc.id] || {})[c.pid] ? "checked" : ""}> ${esc(c.name)}</label>`).join(" ")
+    + ` <span class="muted">(the ${esc(sc.label)} stand ${esc(W.positions[sc.position].name.toLowerCase())} at ${esc(W.actions[aid].name)})</span>`;
+  const men = svcEdgeMen(V, sc, st);
+  if (!men.length) return `<span class="muted">No one: ${sc.only ? "no one is chosen in the scene before" : "no one is with the battalion"}.</span>`;
+  if (sc.kind === "fight") return `<button class="small" data-svedgeplay="${aid}:${sc.id}">Play it on the roller</button> or <button class="small" data-svedgeroll="${aid}:${sc.id}">Roll it</button> <span class="muted">(${esc(men.map(c => c.name).join(", "))})</span>`;
+  return `<button class="small" data-svedgecheck="${aid}:${sc.id}">Roll ${esc(statName(sc.stat))}</button> <span class="muted">(failed: ${esc(W.positions[sc.fail_position].name.toLowerCase())} at ${esc(W.actions[aid].name)})</span>`;
+}
+function svcEdgeHtml(W, V, aid){
+  const E = W.actions[aid].edge, st = svcEdge(V, aid);
+  const rows = E.scenes.map((sc, k) => `<li><b>${k + 1}. ${esc(sc.name)}</b>: ${esc(sc.what)}${st.done[sc.id] ? ` <span class="muted">(${esc(st.done[sc.id])})</span>` : ""}
+    <div class="row">${svcEdgeScene(W, V, aid, sc, st)}</div></li>`).join("");
+  return `<div class="edge"><p><b>${esc(E.name)}</b>, before the battle: ${esc(E.what)}</p><ol class="xp">${rows}</ol></div>`;
+}
+function svcEdgeAt(W, V, aid){                       // {pid: position} the edge's choices and failed checks set at the action
+  const out = {}, a = W.actions[aid], st = (V.edge || {})[aid];
+  if (!a.edge || !st) return out;
+  for (const sc of a.edge.scenes){
+    if (sc.kind === "choice") for (const pid of Object.keys(st.chosen[sc.id] || {}).filter(p => st.chosen[sc.id][p])) out[pid] = sc.position;
+    if (sc.kind === "check") for (const [pid, sid] of Object.entries(st.failed)) if (sid === sc.id) out[pid] = sc.fail_position;
+  }
+  return out;
+}
+function svcEdgeFind(key){                           // "aid:sceneId" -> [W, V, a, scene, its state]
+  const V = svcState(), W = SVC.war(V.war), [aid, sid] = key.split(":"), a = W.actions[aid];
+  return [W, V, aid, a.edge.scenes.find(x => x.id === sid), svcEdge(V, aid)];
+}
+function svcEdgePlay(key){                           // a scene's fight, to the roller: only its men come
+  const [W, V, aid, sc, st] = svcEdgeFind(key), s = W.seasons[V.i], men = svcEdgeMen(V, sc, st), prev = S.svcSmall, F = SVC.smallFight(W, s.state, svcD100, sc.fight);
+  S.svcSmall = F;
+  const h = svcFightHandoff(W, s);
+  S.svcSmall = prev;
+  h.only = men.map(c => c.pid);                      // the scene's men, not the whole team and its followers
+  for (const o of [h.force, ...h.foes]) if (o.id === "team") o.men = Math.max(F.side, men.length);
+  h.notes.unshift(`${W.actions[aid].edge.name}, ${sc.name}: ${sc.what}`);
+  try{ localStorage.setItem("gravewounds-handoff", JSON.stringify(h)) }catch(e){ S.msg = "The browser would not keep the fight, so it cannot go to the roller."; return render() }
+  st.done[sc.id] = "played on the roller"; save();
+  location.href = "roller.html";
+}
+function svcEdgeRoll(key){                           // a scene's fight, rolled: each of its men hit at the small war's chance
+  const [W, V, aid, sc, st] = svcEdgeFind(key), hits = [], bits = [];
+  for (const c of svcEdgeMen(V, sc, st)){
+    const roll = svcD100();
+    if (roll <= W.small_war.hit){
+      const weapon = SVC.weaponFor(W, svcD100());
+      hits.push(svcHit(c, W, sc.name, weapon));
+      bits.push(`${c.name} hit (rolled ${roll}) by ${TD.service.weapons[weapon].toLowerCase()}`);
+    } else bits.push(`${c.name} unhurt (${roll})`);
+  }
+  if (hits.length) svcQueue(hits);
+  st.done[sc.id] = "rolled";
+  (S.svclog ||= []).push(`${sc.name}, rolled: ${bits.join("; ")}.`);
+  render();
+}
+function svcEdgeCheck(key){                          // a scene's check: each of its men's d100 against the characteristic
+  const [W, V, aid, sc, st] = svcEdgeFind(key), bits = [];
+  for (const c of svcEdgeMen(V, sc, st)){
+    const roll = svcD100(), target = c.stats[sc.stat];
+    if (roll > target){ st.failed[c.pid] = sc.id; bits.push(`${c.name} fails (${roll} against ${target}): ${W.positions[sc.fail_position].name.toLowerCase()} at ${W.actions[aid].name}`) }
+    else { delete st.failed[c.pid]; bits.push(`${c.name} holds (${roll} against ${target})`) }
+  }
+  st.done[sc.id] = "rolled";
+  (S.svclog ||= []).push(`${sc.name}: ${bits.join("; ")}.`);
+  render();
 }
 function svcSeasonOptions(W, V){                     // the next season first, then those after it; the earlier ones below
   const opt = k => `<option value="${k}" ${k === V.i ? "selected" : ""}>${esc(W.seasons[k].name)}</option>`, ks = W.seasons.map((_, k) => k);
@@ -1239,7 +1313,7 @@ const svcD100 = () => realDice.randint(1, 100);
 function svcFightHtml(W){                           // the season's small fight: what it is, the sizes rolled, play or roll it
   const F = S.svcSmall, f = F && F.id ? W.small_fights.find(x => x.id === F.id) : null, roll = `<button class="small" id="btn-svsmall">Roll it</button> (each man with the battalion hit on ${W.small_war.hit}%)`;
   if (!f) return `<p><b>A small fight comes the team's way.</b> Play it on the roller, or ${roll}.</p>`;
-  const pick = `<select id="sv-fight" style="width:auto" aria-label="Another small fight">${W.small_fights.map(x => `<option value="${x.id}" ${x.id === f.id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select>`;
+  const pick = `<select id="sv-fight" style="width:auto" aria-label="Another small fight">${W.small_fights.filter(x => !x.edge_only).map(x => `<option value="${x.id}" ${x.id === f.id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select>`;
   const foes = f.foes.map((o, k) => `${esc(o.name)}, ${F.foes[k]}`).join("; "), sp = f.surprise ? ` ${esc(f.surprise.text)}: rolled ${F.surprise_roll} against ${f.surprise.chance}, ${F.surprised ? "caught unawares" : "not surprised"}.` : "";
   return `<div class="spend"><p><b>A small fight comes the team's way${F.roll ? ` (rolled ${F.roll})` : ""}:</b> ${pick}</p>
     <p>${esc(f.what)} <span class="muted">${esc(f.time)}${f.light ? " (" + esc(f.light === "night" ? "a dark night" : f.light === "moonlit" ? "moonlit" : "dusk or dawn") + ")" : ""}, ${esc(f.ground)}${f.weather ? ", " + esc(f.weather) : ""}.</span></p>
@@ -1291,7 +1365,9 @@ function svcLived(m, saved, days){                  // the days of the season he
 function serveSeason(){
   const V = svcState(), W = SVC.war(V.war), s = W.seasons[V.i], days = W.season_days, named = namedStore();
   const serving = S.team.filter(c => V.with[c.pid] !== false);
+  const at = Object.fromEntries(s.actions.map(a => [a, svcEdgeAt(W, V, a)]));   // where an edge put each man at its action
   const men = serving.map(c => ({ name: c.name, endurance: c.stats.end, position: V.pos[c.pid] || "line", health: svcHealthOf(named, c),
+    pos_at: Object.fromEntries(Object.entries(at).filter(([, P]) => P[c.pid]).map(([a, P]) => [a, P[c.pid]])),
     unit: Object.fromEntries(Object.entries(V.unit).filter(([, k]) => k !== "" && k != null).map(([a, k]) => [a, +k])),
     share: Object.fromEntries(Object.entries(V.share).filter(([, v]) => v !== "" && v != null).map(([a, v]) => [a, +v])) }));
   const rolled = s.actions.filter(a => (V.at[a] ?? W.actions[a].main !== false) && !V.played[a]);
@@ -1314,6 +1390,7 @@ function serveSeason(){
     xpServe(c.pid, lived); c.rolled_days = (c.rolled_days || 0) + lived;
     if (!m.dead || saved) xpTick(c.pid, car.main, "a season with the battalion");
     const actName = a => (a === "wastage" ? W.wastage_name : W.actions[a].name);   // a named action, or the season's wastage in the line
+    for (const [a, p] of Object.entries(men[k].pos_at)) if (s.actions.includes(a)) bits.push(`${W.positions[p].name.toLowerCase()} at ${actName(a)}, as its edge set`);
     for (const x of m.rolls) bits.push(`${actName(x.action)}: ${x.pct}%, rolled ${x.roll}${x.roll <= x.pct ? "" : ", unhurt"}`);
     for (const h of m.hits){
       bits.push(`${h.action === "wastage" ? "hit" : "hit at"} ${actName(h.action)} by ${TD.service.weapons[h.weapon].toLowerCase()}: roll his wound on the roller`);
@@ -1339,7 +1416,7 @@ function serveSeason(){
   S.svcSmall = r.small ? (r.fight || true) : false;
   lines.push(r.small ? `A small fight comes the team's way (rolled ${r.small_roll} against ${r.chance}).` : `No small fight (rolled ${r.small_roll} against ${r.chance}).`);
   S.svclog = lines;
-  V.i += 1; V.at = {}; V.played = {}; V.unit = {}; V.share = {};
+  V.i += 1; V.at = {}; V.played = {}; V.unit = {}; V.share = {}; V.edge = {};
   S.msg = `${s.name} served. ${hits.length ? "Roll the hits on the roller, then" : "Now"} press End of season.`;
   render();
 }
@@ -1990,6 +2067,13 @@ function init(){
     if (e.target.closest("#btn-serve")) return serveSeason();
     if (e.target.closest("#btn-svsmall")) return svcSmallFight();
     if (e.target.closest("#btn-svplay")) return svcPlayFight();
+    const ed = e.target.closest("button[data-svedgeplay], button[data-svedgeroll], button[data-svedgecheck]");
+    if (ed){
+      const ds = ed.dataset;
+      if (ds.svedgeplay) return svcEdgePlay(ds.svedgeplay);
+      if (ds.svedgeroll) return svcEdgeRoll(ds.svedgeroll);
+      return svcEdgeCheck(ds.svedgecheck);
+    }
   });
   $("#service").addEventListener("change", e => {
     const V = svcState(), t = e.target, ds = t.dataset;
@@ -2003,6 +2087,7 @@ function init(){
     else if (ds.svshare) V.share[ds.svshare] = t.value;
     else if (ds.svwith) V.with[S.team[+ds.svwith].pid] = t.checked;
     else if (ds.svpos) V.pos[S.team[+ds.svpos].pid] = t.value;
+    else if (ds.svedgechoice){ const [aid, sid, pid] = ds.svedgechoice.split(":"), st = svcEdge(V, aid); (st.chosen[sid] ||= {})[pid] = t.checked; st.done[sid] = "chosen" }
     render();
   });
   $("#xp").addEventListener("click", e => {

@@ -799,6 +799,20 @@ for each man whether he serves and where he stands. **Serve the season** then ro
   turn to wound fever, and keeps him out of actions while it leaves him unfit. A case still
   running at the season's end goes on into his next season, and the panel shows him still sick
   or wounded.
+- **The edge of a battle** (an action's `edge`; the first is Badajoz, spring 1812). Before the
+  season is served, the panel shows the action's scenes in order under it. A **fight** is one of the
+  war's small fights (an edge's own are `edge_only`, never rolled as the season's small fight),
+  played on the roller (**Play it on the roller**; a scene limited to an earlier choice's men takes
+  only them, not the team's followers) or rolled (each of its men hit at the small war's chance). A
+  **choice** ticks the men it takes (the forlorn hope's volunteers), who stand at the choice's
+  `position` at the action (in the thick of it). A **check** rolls each man's d100 against a
+  characteristic (Nerve for two hours at the breaches); a man who fails stands at its
+  `fail_position` (in reserve, kept back). A later scene's position overrides an earlier one's.
+  The season roll then rolls the action with each man's position there (`pos_at`), and the log
+  says so ("in the thick of it at Badajoz, as its edge set"); or the GM plays the storm on its field.
+  Badajoz: the sortie on the parallels (19 March), volunteers for the forlorn hope, into the ditch
+  (the volunteers at night: the flooded ditch, the fireballs, three muskets a man and the sword
+  blades, its sizes ours) and two hours at the breaches.
 - **Each action not played**, in its week: d100 against his hit chance, the army's share lost
   (killed and wounded of those engaged, from the sources) times his position (in reserve ×0.25,
   in the line ×1, in the thick of it ×3, at most 90%; ours, set from Albuera, where the
