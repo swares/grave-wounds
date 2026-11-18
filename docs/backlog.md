@@ -90,8 +90,11 @@ not this repository.
   roller. Still to do:
   - **More wars.** Each needs a calendar and its actions' shares from the sources; the Civil War and
     the World Wars have the best figures.
-  - **The small war, played** (layer 2 of the design): ready-made fights on the roller (a picket
-    attacked at night, a foraging party jumped, a patrol clash) in place of the GM's own.
+  - **The small war, more of it.** The Peninsula's eight small fights are in (played on the roller,
+    the end in words). Still left: a British foraging party attacked (only the French side was
+    found), a count of how often such fights came (Leach's *Rough Sketches*, Simmons's journal and
+    Burnham and McGuigan's *Wellington's Light Division* not reached), night on the roller (the
+    picket and the redoubt are fought in daylight rules), and ends the roller checks itself.
   - **The 1/57th's own calendar.** Its winters and 1812 were not found (the Napoleon Series'
     "Wellington's Regiments" pages and Oman were not reached).
   - **Sourcing the Peninsula's shares against Oman.** None was checked against him; Burgos and

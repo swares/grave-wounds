@@ -7,7 +7,9 @@ hit roll and sickness are logged, the season's days go toward his term (counted 
 moves on, and the hits wait for the roller. A term made mostly of rolled seasons gives no lifepath wound
 chance. On the roller the first hit is rolled on the man as a hit with no attack roll, with the weapon the
 season gave, and leaves the queue. Needs Python's playwright with Chromium and a built site. Exits non-zero
-on any failure.
+on any failure. Then the season's small fight: shown with its sizes, aims and sources, another picked, and
+the picket at night played on the roller, the team's named men in the picket against French with muskets,
+with the aims, the end and the source in the fight's notes.
 """
 import sys
 from pathlib import Path
@@ -89,6 +91,31 @@ def run(p):
     check(hit["who"] == first["name"] and hit["weapon"] == first["weapon"] and hit["table"] == first["table"] and hit["attacker"] == -1,
           f"the roller rolls {first['name']}'s wound with the season's weapon and no attacker ({hit})")
     check(len(pg.evaluate(QUEUE)) == len(q) - 1, "and it leaves the queue")
+    named = pg.evaluate("() => S.chars.filter(c => c.uid && !c.dead).length")
+
+    # the season's small fight, played: back on the team builder, the picket at night goes to the roller
+    pg.goto(BASE + "team.html")
+    pg.wait_for_selector("#h-service")
+    pg.evaluate("() => { const W = SVC.war('peninsula'); S.svcSmall = SVC.smallFight(W, 'quarters', svcD100, 'picket'); render() }")
+    box = pg.inner_text("#service")
+    check("A picket attacked at night" in box and "Hold the bridge" in box and "Barba del Puerco" in box, "the small fight is shown: what the accounts say, the sizes and the aims")
+    check(pg.locator("#sv-fight option").count() == 8, "the GM can pick any of the war's 8 small fights")
+    pg.select_option("#sv-fight", "foragers")
+    check("French foragers caught at dawn" in pg.inner_text("#service"), "picking another rolls its sizes")
+    pg.select_option("#sv-fight", "picket")
+    pg.click("#btn-svplay")
+    pg.wait_for_function("() => location.pathname.endsWith('roller.html')", timeout=15000)
+    pg.wait_for_selector("button[data-map=handoff]", timeout=10000)
+    check("From a season with the battalion" in pg.inner_text("#map-actions"), "the roller offers the small fight")
+    pg.click("button[data-map=handoff]")
+    pg.wait_for_function("() => !S.handoff", timeout=8000)
+    sides = pg.evaluate("""() => { const b = S.chars.filter(c => sideOf(c) === 'British'), f = S.chars.filter(c => sideOf(c) === 'French');
+      return { b: b.length, named: b.filter(c => c.uid).length, f: f.length, fw: [...new Set(f.map(c => c.weapon))], notes: S.pending.join(' | ') } }""")
+    check(sides["named"] == named and sides["b"] >= named and sides["f"] >= 1,
+          f"the team's {named} named men fight in the picket with its comrades, against the French ({sides['b']} and {sides['f']})")
+    check(sides["fw"] == ["musket_smoothbore"], f"the French carry the fight's weapon ({sides['fw']})")
+    check("Hold the bridge" in sides["notes"] and "It ends" in sides["notes"] and "Cope" in sides["notes"], "the aims, the end and the source are in the fight's notes")
+    check(pg.evaluate("() => S.weather.cond") == "rain", "in the rain, as the fight says")
     check(not errors, f"no page errors {errors[:3]}")
     br.close()
 

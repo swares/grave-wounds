@@ -120,9 +120,41 @@ def serve(d: Data, wid: str, sid: str, men: list[dict], rolled: list[str], rng) 
     chance = W["small_war"]["chance"][s["state"]]
     small_roll = rng()
     out = {"small": small_roll <= chance, "small_roll": small_roll, "chance": chance, "men": []}
+    if out["small"] and W.get("small_fights"):
+        out["fight"] = small_fight(W, s["state"], rng)
     acts = sorted([a for a in s["actions"] if a in rolled], key=lambda a: (action_week(W, sid, a), s["actions"].index(a)))
     for m in men:
         out["men"].append(_man(d, W, s, m, acts, rng))
+    return out
+
+
+def between(lo: int, hi: int, roll: int) -> int:
+    """A number from lo to hi on a d100."""
+    return lo + (roll - 1) * (hi - lo + 1) // 100
+
+
+def small_fight(W: dict, state: str, rng, fid: str | None = None) -> dict:
+    """The season's small fight: d100 on the fights that fit the state, by weight (or the GM's
+    `fid`, with no roll), then a d100 for the size of the team's party, one for each enemy force,
+    and one for surprise where the fight has a chance of it.
+    -> {id, roll, side (men), foes ([men]), surprise_roll, surprised}"""
+    fits = [f for f in W["small_fights"] if state in f["states"]] or W["small_fights"]
+    roll = None
+    if fid is None:
+        roll, total, cum = rng(), sum(f["weight"] for f in fits), 0
+        f = fits[-1]
+        for x in fits:
+            cum += x["weight"]
+            if roll * total <= cum * 100:
+                f = x
+                break
+    else:
+        f = next(x for x in W["small_fights"] if x["id"] == fid)
+    out = {"id": f["id"], "roll": roll, "side": between(*f["side"]["men"], rng()),
+           "foes": [between(*o["men"], rng()) for o in f["foes"]], "surprise_roll": None, "surprised": False}
+    if f.get("surprise"):
+        out["surprise_roll"] = rng()
+        out["surprised"] = out["surprise_roll"] <= f["surprise"]["chance"]
     return out
 
 

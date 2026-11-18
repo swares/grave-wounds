@@ -37,6 +37,12 @@ for (const [k, want] of Object.entries(fixed.weeks)){
 for (const [wid, want] of Object.entries(fixed.weapons)){
   check(`weapons ${wid}`, () => assert.deepEqual(want.map((_, i) => S.weaponFor(S.war(wid), i + 1)), want));
 }
+for (const [k, want] of Object.entries(fixed.fights)){
+  const [wid, key, seed] = k.split("/"), W = S.war(wid);
+  if (want === null) continue;
+  const [st, fid] = key[0] === "=" ? [Object.keys(W.states)[0], key.slice(1)] : [key, null];
+  check(`small fight ${k}`, () => assert.deepEqual(S.smallFight(W, st, seededD100(+seed), fid), want));
+}
 cases.forEach((c, i) => check(`season ${i} (${c.war} ${c.season})`, () => {
   const men = c.men.map(m => ({ ...m, endurance: m.endurance ?? undefined }));
   assert.deepEqual(S.serve(c.war, c.season, men, c.rolled, seededD100(c.dice)), c.want);

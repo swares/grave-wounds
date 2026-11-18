@@ -67,9 +67,31 @@ function makeService(SV, RULES){
   function serve(wid, sid, men, rolled, rng){    // a season for the team, as service.serve
     const W = war(wid), s = season(W, sid), chance = W.small_war.chance[s.state], smallRoll = rng();
     const out = { small: smallRoll <= chance, small_roll: smallRoll, chance, men: [] };
+    if (out.small && (W.small_fights || []).length) out.fight = smallFight(W, s.state, rng);
     const acts = s.actions.filter(a => rolled.includes(a))
       .sort((a, b) => actionWeek(W, sid, a) - actionWeek(W, sid, b) || s.actions.indexOf(a) - s.actions.indexOf(b));
     for (const m of men) out.men.push(manSeason(W, s, m, acts, rng));
+    return out;
+  }
+  const between = (lo, hi, roll) => lo + Math.floor((roll - 1) * (hi - lo + 1) / 100);
+  function smallFight(W, state, rng, fid = null){   // the season's small fight, as service.small_fight
+    const all = W.small_fights, fitting = all.filter(f => f.states.includes(state)), fits = fitting.length ? fitting : all;
+    let roll = null, f;
+    if (fid === null){
+      roll = rng();
+      const total = fits.reduce((t, x) => t + x.weight, 0);
+      let cum = 0;
+      f = fits[fits.length - 1];
+      for (const x of fits){
+        cum += x.weight;
+        if (roll * total <= cum * 100){ f = x; break }
+      }
+    } else f = all.find(x => x.id === fid);
+    const out = { id: f.id, roll, side: between(...f.side.men, rng()), foes: f.foes.map(o => between(...o.men, rng())), surprise_roll: null, surprised: false };
+    if (f.surprise){
+      out.surprise_roll = rng();
+      out.surprised = out.surprise_roll <= f.surprise.chance;
+    }
     return out;
   }
   function manSeason(W, s, m, acts, rng){
@@ -100,7 +122,7 @@ function makeService(SV, RULES){
     r.rolls.push({ action: aid, pct, roll });
     if (roll <= pct) r.hits.push({ action: aid, pct, roll, weapon: weaponFor(W, rng()) });
   }
-  return { war, warsFor, season, seasonStart, weeks, actionWeek, hitPct, inWeek, factors, dayCtx, weaponFor, worstStep, serve };
+  return { war, warsFor, season, seasonStart, weeks, actionWeek, hitPct, inWeek, factors, dayCtx, weaponFor, worstStep, serve, between, smallFight };
 }
 
 if (typeof module !== "undefined") module.exports = makeService;   // Node (the tests); the page has no `module`
