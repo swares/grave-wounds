@@ -1211,9 +1211,13 @@ function svcEdgeMen(V, sc, st){                     // the men a scene takes: th
   const serving = S.team.filter(c => V.with[c.pid] !== false);
   return sc.only ? serving.filter(c => (st.chosen[sc.only] || {})[c.pid]) : serving;
 }
+function svcEdgeChoice(W, V, aid, sc, st){           // a choice's ticks, one for each man with the battalion
+  const picked = st.chosen[sc.id] || {};
+  const boxes = S.team.filter(c => V.with[c.pid] !== false).map(c => `<label><input type="checkbox" data-svedgechoice="${aid}:${sc.id}:${c.pid}" ${picked[c.pid] ? "checked" : ""}> ${esc(c.name)}</label>`).join(" ");
+  return boxes + ` <span class="muted">(the ${esc(sc.label)} stand ${esc(W.positions[sc.position].name.toLowerCase())} at ${esc(W.actions[aid].name)})</span>`;
+}
 function svcEdgeScene(W, V, aid, sc, st){            // a scene's controls
-  if (sc.kind === "choice") return S.team.filter(c => V.with[c.pid] !== false).map(c => `<label><input type="checkbox" data-svedgechoice="${aid}:${sc.id}:${c.pid}" ${(st.chosen[sc.id] || {})[c.pid] ? "checked" : ""}> ${esc(c.name)}</label>`).join(" ")
-    + ` <span class="muted">(the ${esc(sc.label)} stand ${esc(W.positions[sc.position].name.toLowerCase())} at ${esc(W.actions[aid].name)})</span>`;
+  if (sc.kind === "choice") return svcEdgeChoice(W, V, aid, sc, st);
   const men = svcEdgeMen(V, sc, st);
   if (!men.length) return `<span class="muted">No one: ${sc.only ? "no one is chosen in the scene before" : "no one is with the battalion"}.</span>`;
   if (sc.kind === "fight") return `<button class="small" data-svedgeplay="${aid}:${sc.id}">Play it on the roller</button> or <button class="small" data-svedgeroll="${aid}:${sc.id}">Roll it</button> <span class="muted">(${esc(men.map(c => c.name).join(", "))})</span>`;
@@ -1221,7 +1225,8 @@ function svcEdgeScene(W, V, aid, sc, st){            // a scene's controls
 }
 function svcEdgeHtml(W, V, aid){
   const E = W.actions[aid].edge, st = svcEdge(V, aid);
-  const rows = E.scenes.map((sc, k) => `<li><b>${k + 1}. ${esc(sc.name)}</b>: ${esc(sc.what)}${st.done[sc.id] ? ` <span class="muted">(${esc(st.done[sc.id])})</span>` : ""}
+  const done = sc => (st.done[sc.id] ? ' <span class="muted">(' + esc(st.done[sc.id]) + ")</span>" : "");
+  const rows = E.scenes.map((sc, k) => `<li><b>${k + 1}. ${esc(sc.name)}</b>: ${esc(sc.what)}${done(sc)}
     <div class="row">${svcEdgeScene(W, V, aid, sc, st)}</div></li>`).join("");
   return `<div class="edge"><p><b>${esc(E.name)}</b>, before the battle: ${esc(E.what)}</p><ol class="xp">${rows}</ol></div>`;
 }
@@ -1251,7 +1256,7 @@ function svcEdgePlay(key){                           // a scene's fight, to the 
   location.href = "roller.html";
 }
 function svcEdgeRoll(key){                           // a scene's fight, rolled: each of its men hit at the small war's chance
-  const [W, V, aid, sc, st] = svcEdgeFind(key), hits = [], bits = [];
+  const [W, V, , sc, st] = svcEdgeFind(key), hits = [], bits = [];
   for (const c of svcEdgeMen(V, sc, st)){
     const roll = svcD100();
     if (roll <= W.small_war.hit){
@@ -1262,7 +1267,8 @@ function svcEdgeRoll(key){                           // a scene's fight, rolled:
   }
   if (hits.length) svcQueue(hits);
   st.done[sc.id] = "rolled";
-  (S.svclog ||= []).push(`${sc.name}, rolled: ${bits.join("; ")}.`);
+  S.svclog = S.svclog || [];
+  S.svclog.push(`${sc.name}, rolled: ${bits.join("; ")}.`);
   render();
 }
 function svcEdgeCheck(key){                          // a scene's check: each of its men's d100 against the characteristic
@@ -1273,7 +1279,8 @@ function svcEdgeCheck(key){                          // a scene's check: each of
     else { delete st.failed[c.pid]; bits.push(`${c.name} holds (${roll} against ${target})`) }
   }
   st.done[sc.id] = "rolled";
-  (S.svclog ||= []).push(`${sc.name}: ${bits.join("; ")}.`);
+  S.svclog = S.svclog || [];
+  S.svclog.push(`${sc.name}: ${bits.join("; ")}.`);
   render();
 }
 function svcSeasonOptions(W, V){                     // the next season first, then those after it; the earlier ones below
@@ -1313,7 +1320,8 @@ const svcD100 = () => realDice.randint(1, 100);
 function svcFightHtml(W){                           // the season's small fight: what it is, the sizes rolled, play or roll it
   const F = S.svcSmall, f = F && F.id ? W.small_fights.find(x => x.id === F.id) : null, roll = `<button class="small" id="btn-svsmall">Roll it</button> (each man with the battalion hit on ${W.small_war.hit}%)`;
   if (!f) return `<p><b>A small fight comes the team's way.</b> Play it on the roller, or ${roll}.</p>`;
-  const pick = `<select id="sv-fight" style="width:auto" aria-label="Another small fight">${W.small_fights.filter(x => !x.edge_only).map(x => `<option value="${x.id}" ${x.id === f.id ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select>`;
+  const opt = x => '<option value="' + x.id + '"' + (x.id === f.id ? " selected" : "") + ">" + esc(x.name) + "</option>";
+  const pick = `<select id="sv-fight" style="width:auto" aria-label="Another small fight">${W.small_fights.filter(x => !x.edge_only).map(opt).join("")}</select>`;
   const foes = f.foes.map((o, k) => `${esc(o.name)}, ${F.foes[k]}`).join("; "), sp = f.surprise ? ` ${esc(f.surprise.text)}: rolled ${F.surprise_roll} against ${f.surprise.chance}, ${F.surprised ? "caught unawares" : "not surprised"}.` : "";
   return `<div class="spend"><p><b>A small fight comes the team's way${F.roll ? ` (rolled ${F.roll})` : ""}:</b> ${pick}</p>
     <p>${esc(f.what)} <span class="muted">${esc(f.time)}${f.light ? " (" + esc(f.light === "night" ? "a dark night" : f.light === "moonlit" ? "moonlit" : "dusk or dawn") + ")" : ""}, ${esc(f.ground)}${f.weather ? ", " + esc(f.weather) : ""}.</span></p>
@@ -2087,7 +2095,11 @@ function init(){
     else if (ds.svshare) V.share[ds.svshare] = t.value;
     else if (ds.svwith) V.with[S.team[+ds.svwith].pid] = t.checked;
     else if (ds.svpos) V.pos[S.team[+ds.svpos].pid] = t.value;
-    else if (ds.svedgechoice){ const [aid, sid, pid] = ds.svedgechoice.split(":"), st = svcEdge(V, aid); (st.chosen[sid] ||= {})[pid] = t.checked; st.done[sid] = "chosen" }
+    else if (ds.svedgechoice){
+      const [aid, sid, pid] = ds.svedgechoice.split(":"), st = svcEdge(V, aid);
+      st.chosen[sid] = st.chosen[sid] || {};
+      st.chosen[sid][pid] = t.checked; st.done[sid] = "chosen";
+    }
     render();
   });
   $("#xp").addEventListener("click", e => {

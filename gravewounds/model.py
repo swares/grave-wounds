@@ -2176,28 +2176,35 @@ def _edge_errors(d: Data, W: dict, aw: str, e: dict) -> list[str]:
     war's small fights), a choice (the men chosen stand at `position` at the action) or a check (d100
     against a stat; failed, he stands at `fail_position`); `only` limits a scene to an earlier
     choice's men."""
-    errors, seen = [], set()
     if not (e.get("name") and e.get("what") and e.get("sources") and e.get("scenes")):
         return [f"{aw}: edge needs name, what, sources and scenes"]
+    errors, seen = [], set()
     fights = {f["id"] for f in W.get("small_fights", [])}
     stats = {x["id"] for x in d.teams[W["era"]].get("characteristics", [])} if W.get("era") in d.teams else set()
     for sc in e["scenes"]:
-        sw = f"{aw}: edge scene {sc.get('id')}"
-        k = sc.get("kind")
-        if not (sc.get("id") and sc.get("name") and sc.get("what")):
-            errors.append(f"{sw}: needs id, name and what")
-        if k == "fight" and sc.get("fight") not in fights:
-            errors.append(f"{sw}: fight {sc.get('fight')} is not one of the war's small fights")
-        elif k == "choice" and (sc.get("position") not in W["positions"] or not sc.get("label")):
-            errors.append(f"{sw}: a choice needs a label and one of the war's positions")
-        elif k == "check" and (sc.get("stat") not in stats or sc.get("fail_position") not in W["positions"]):
-            errors.append(f"{sw}: a check needs a stat of the era and a fail_position of the war's")
-        elif k not in ("fight", "choice", "check"):
-            errors.append(f"{sw}: kind must be fight, choice or check")
-        if sc.get("only") and sc["only"] not in seen:
-            errors.append(f"{sw}: only must name an earlier choice")
-        if k == "choice":
+        errors += _edge_scene_errors(f"{aw}: edge scene {sc.get('id')}", W, sc, fights, stats, seen)
+        if sc.get("kind") == "choice":
             seen.add(sc.get("id"))
+    return errors
+
+
+def _edge_scene_errors(sw: str, W: dict, sc: dict, fights: set, stats: set, seen: set) -> list[str]:
+    """One scene of an edge (see _edge_errors); seen: the choices before it."""
+    errors, k, pos = [], sc.get("kind"), W["positions"]
+    if not (sc.get("id") and sc.get("name") and sc.get("what")):
+        errors.append(f"{sw}: needs id, name and what")
+    bad = {"fight": lambda: sc.get("fight") not in fights,
+           "choice": lambda: sc.get("position") not in pos or not sc.get("label"),
+           "check": lambda: sc.get("stat") not in stats or sc.get("fail_position") not in pos}
+    why = {"fight": f"fight {sc.get('fight')} is not one of the war's small fights",
+           "choice": "a choice needs a label and one of the war's positions",
+           "check": "a check needs a stat of the era and a fail_position of the war's"}
+    if k not in bad:
+        errors.append(f"{sw}: kind must be fight, choice or check")
+    elif bad[k]():
+        errors.append(f"{sw}: {why[k]}")
+    if sc.get("only") and sc["only"] not in seen:
+        errors.append(f"{sw}: only must name an earlier choice")
     return errors
 
 

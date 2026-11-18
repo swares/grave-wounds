@@ -144,8 +144,8 @@ function makeService(SV, RULES){
   function action(W, aid, m, h, r, rng){         // one unplayed action: missed, or his hit roll
     if (r.hits.length){ r.missed.push({ action: aid, why: "wounded" }); return }
     if (unfit(h)){ r.missed.push({ action: aid, why: "sick" }); return }
-    const pos = (m.pos_at || {})[aid] || m.position || "line";   // where he stands at this action (an edge's choice), else for the season
-    const pct = hitPct(W, aid, pos, (m.unit || {})[aid] ?? null, (m.share || {})[aid] ?? null);
+    const pos = m.pos_at?.[aid] || m.position || "line";   // where he stands at this action (an edge's choice), else for the season
+    const pct = hitPct(W, aid, pos, m.unit?.[aid] ?? null, m.share?.[aid] ?? null);
     if (pct === null){ r.missed.push({ action: aid, why: "no share" }); return }
     const roll = rng();
     r.rolls.push({ action: aid, pct, roll });
