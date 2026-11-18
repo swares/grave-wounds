@@ -88,7 +88,10 @@ not this repository.
   with the battalion*; project doc "between-battles-design"). The Peninsula is in: a line
   battalion's 24 seasons, its actions' shares lost, sickness on the disease track, hits sent to the
   roller. Still to do:
-  - **More wars.** The Civil War in the East for a Union regiment is in. Still to come: the
+  - **More wars.** The Civil War in the East for a Union regiment and Henry V's war for an
+    English retinue are in. For Henry V's war, Curry's sick-list totals, Wylie and Waugh, and the
+    garrison muster totals of 1420-22 were not reached, and more is ours (the weapon mix, most
+    shares). Still to come: the
     Confederates (their counts are thinner), the West (Shiloh to Atlanta, sicker), and the World
     Wars; each needs a calendar, its actions' shares and its small fights from the sources. For
     the Civil War, Livermore's tables, the Official Records returns and the Medical and Surgical

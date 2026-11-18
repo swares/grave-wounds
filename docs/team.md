@@ -671,7 +671,7 @@ once. The Python rules and the page give the same result from the same dice.
 the project doc "between-battles-design"). Between the modelled battles, a team of the war's army
 serves a season (91 days) with a line battalion in one step. The war's calendar gives each season
 what the battalion did (in quarters, on campaign, on the march, at a siege), its hygiene, the weeks
-of the season its weather and ground made sickness worse, and its named actions. Two wars so far:
+of the season its weather and ground made sickness worse, and its named actions. Three wars so far:
 
 - **The Peninsula** (`peninsula.yaml`, 1808-1814, the British in the Peninsula): 24 seasons from
   Roliça to Toulouse, 18 actions, 8 small fights.
@@ -686,6 +686,20 @@ of the season its weather and ground made sickness worse, and its named actions.
   comes to about 1.0% dead a season against the whole Union army's 0.72% (Fox, on a three-year
   basis); hit, about 10% a season at every main action in the line against 1.2% for the whole army,
   most of which was never at a battle in the East.
+- **Henry V's war in France** (`henry_v.yaml`, 1415-1422, an English retinue): 29 seasons from
+  the siege of Harfleur to the king's death, following a retinue that stays in the Harfleur
+  garrison under Dorset after Agincourt and joins the army of 1417 for the conquest of Normandy:
+  more sieges and garrisons than battles. Four actions: Agincourt (its battlefield; the records'
+  112 named dead, about 1.3%, and three wounded for each dead, ours), Valmont, the storm of Caen
+  (no English loss found: the GM sets it, or plays it as a small fight) and Baugé (Clarence's
+  force). Nine small fights from the chronicles (Monstrelet's fifth volume most of all): a raiding
+  party caught by French horse (Valmont), a sally from the gate (Rouen), an ambush on the road
+  (near Rouen, 1418), an escort attacked, storming a breach (Caen, Meaux), over the river at a
+  ford (the Somme, Pont-de-l'Arche), a fight in the mine (Melun), quarters taken by surprise at
+  night (Ferrifontaine) and an escalade at dawn (Pontoise). No army-wide totals were found: the
+  sickness is set to the seasons the accounts describe (about 7% dead of disease at Harfleur, 13%
+  in the winter at Meaux, 8% at Melun), about 3% a season over the war. The weapon mix is ours,
+  from the Visby graves' cutting wounds against arrows and bolts (about 78% to 22%).
 
 On the team builder's **A season with the battalion** panel the GM picks the season, ticks the
 actions the team was at (those of the main army are ticked; Albuera and San Sebastián are not), and

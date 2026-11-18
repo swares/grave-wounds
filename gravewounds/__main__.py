@@ -186,7 +186,10 @@ def _main(argv=None) -> int:
                 r = calibrate(d, wid, a.n, a.seed, pos, every)
                 print(f"  {label:<42} died of disease {r['disease']:4.2f}, hit {r['hits']:4.2f}")
             t = calibrate(d, wid, 1, a.seed)["totals"]
-            print(f"  the war's totals, the whole army              died of disease {t['disease']:4.2f}, hit {t['hits']:4.2f}")
+            if t:
+                print(f"  the war's totals, the whole army              died of disease {t['disease']:4.2f}, hit {t['hits']:4.2f}")
+            else:
+                print("  the war's totals: none in the records (see its seasons' notes)")
         return 0
     if a.cmd == "disease":
         from .disease import seeded_d100, simulate

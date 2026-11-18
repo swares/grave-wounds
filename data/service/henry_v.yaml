@@ -1,0 +1,296 @@
+# A season of service: an English retinue in Henry V's war in France, 1415-1422 (format as
+# data/service/peninsula.yaml). The calendar follows a retinue that stays in the Harfleur garrison
+# after Agincourt (as Dorset's 1,200 did; Hegyn Tomson mustered there from 1416 to 1445) and
+# joins the army of 1417 for the conquest of Normandy. Medieval losses are mostly chroniclers'
+# numbers: only Harfleur and Agincourt have figures from the records (through Anne Curry), and no
+# army-wide totals were found, so the sickness is tuned to the few seasons the accounts describe
+# (Harfleur 1415, Meaux 1421-22), the rest kept low; more here is ours than in the later wars.
+# Measured (python3 -m gravewounds service henry_v): about 7% dead of disease at Harfleur, 13% in the
+# winter at Meaux, 8% at Melun and on the march to Agincourt, and about 3% a season over the war
+# (the Peninsula, 2%; the Union army in the East, 1%).
+# Design and sources: project doc "between-battles-design".
+id: henry_v
+name: "Henry V's war in France (1415-1422)"
+era: medieval
+regions: [england]
+table: towton-1461-all-hits
+season_days: 91
+
+# What wounded English soldiers in this war is not counted. Ours, from the Visby graves' 456 wounds
+# by cutting weapons against 126 by arrows and bolts (1361; about 78% to 22%), split among the
+# era's weapons; French missiles were mostly crossbows. Guns (Meaux, where Cornwall's son was
+# killed by a gunstone) are not among the tables' weapons.
+weapon_mix:
+  - {weapon: sword, pct: 28}
+  - {weapon: poleaxe, pct: 12}
+  - {weapon: spear, pct: 12}
+  - {weapon: axe, pct: 8}
+  - {weapon: bill, pct: 8}
+  - {weapon: dagger, pct: 10}
+  - {weapon: crossbow, pct: 17}
+  - {weapon: bow, pct: 5}
+
+states:
+  garrison: {name: "In garrison", care: shelter, marched: false, staying: true}
+  campaign: {name: "On campaign", care: field, marched: true, staying: false}
+  march:    {name: "On the march", care: field, marched: true, staying: false}
+  siege:    {name: "At a siege", care: field, marched: false, staying: true}
+
+positions:
+  reserve: {name: "In the rearward", mult: 0.25}
+  line:    {name: "In the battle", mult: 1}
+  thick:   {name: "In the thick of it", mult: 3}
+cap: 90
+
+# No source counts the small fights of 1415-22. Monstrelet's fifth volume (June 1418-August 1422)
+# reports about 15 clashes involving English troops, about one every two to three months, besides
+# the sallies of every siege. The chances a season are ours.
+small_war:
+  chance: {garrison: 30, campaign: 40, march: 30, siege: 50}
+  hit: 10
+
+sides: {team: "English", foes: "French"}
+
+sources:
+  tna: &tna "https://blog.nationalarchives.gov.uk/baptism-fire-steel-stone-henry-vs-army-siege-harfleur/"
+  ms: &ms "https://medievalsoldier.org/about/agincourt/the-english-army-in-1415/"
+  mon5: &mon5 "https://dev4.gutenberg.org/ebooks/73983.txt.utf-8"
+  corrigan: &corrigan "https://erenow.org/postclassical/agreatandgloriousadventure/11.php"
+  seward14: &seward14 "https://erenow.org/biographies/henry-v-as-warlord/14.php"
+  seward16: &seward16 "https://erenow.org/biographies/henry-v-as-warlord/16.php"
+
+seasons:
+  - {id: 1415-summer, name: "Summer 1415", state: siege, hygiene: fair, factors: {hot: 8}, actions: [],
+     what: "Landed at the mouth of the Seine (14 August) and laid siege to Harfleur; dysentery in the camp.",
+     note: "The records: about 1,330 sent home sick (the sick lists are incomplete) and 37 dead at the siege of some 12,000; chroniclers give up to 2,000 dead. Its hot weeks are ours, set so a man dies of disease about 7% of the time there: between the records and the chroniclers.",
+     sources: [*tna, *ms]}
+  - {id: 1415-autumn, name: "Autumn 1415", state: march, hygiene: fair, factors: {cold_wet: 2}, actions: [agincourt],
+     what: "Harfleur falls (22 September); the march to Calais in the rain, short of food, over the Somme (19 October) to Agincourt (25 October). Or the garrison of Harfleur under Dorset.",
+     sources: [*tna, "https://deremilitari.org/RESOURCES/SOURCES/agincourt.htm"]}
+  - {id: 1415-winter, name: "Winter 1415-16", state: garrison, hygiene: fair, factors: {cold_wet: 2}, actions: [],
+     what: "The Harfleur garrison: 300 men-at-arms and 900 archers under Dorset, short of food.", sources: [*ms, *tna]}
+  - {id: 1416-spring, name: "Spring 1416", state: garrison, hygiene: fair, factors: {}, actions: [valmont],
+     what: "Dorset's raid into the Pays de Caux and Valmont (9-11 March).", sources: ["https://wikiwand.com/EN/Battle_of_Valmont"]}
+  - {id: 1416-summer, name: "Summer 1416", state: garrison, hygiene: fair, factors: {}, actions: [],
+     what: "Harfleur blockaded by land and sea, until Bedford's fleet wins the battle of the Seine (15 August).", sources: [*corrigan]}
+  - {id: 1416-autumn, name: "Autumn 1416", state: garrison, hygiene: good, factors: {}, actions: [],
+     what: "The Harfleur garrison, relieved and fed.", sources: [*ms]}
+  - {id: 1416-winter, name: "Winter 1416-17", state: garrison, hygiene: good, factors: {cold_wet: 1}, actions: [],
+     what: "The Harfleur garrison, while the second expedition is made ready in England.", sources: [*ms]}
+  - {id: 1417-spring, name: "Spring 1417", state: garrison, hygiene: good, factors: {}, actions: [],
+     what: "The Harfleur garrison.", sources: [*ms]}
+  - {id: 1417-summer, name: "Summer 1417", state: siege, hygiene: fair, factors: {hot: 1}, actions: [],
+     what: "The army of almost 11,000 lands at Touques (1 August); the siege of Caen from 18 August.",
+     sources: ["https://history.blog.gov.uk/2018/03/24/henry-vs-norman-conquest-on-record-600-years-on/", "https://thehundredyearswar.co.uk/caen-surrender-agreement"]}
+  - {id: 1417-autumn, name: "Autumn 1417", state: campaign, hygiene: fair, factors: {}, actions: [caen],
+     what: "Caen stormed (4 September), its castle yielded; Lower Normandy overrun.", sources: ["https://thehundredyearswar.co.uk/caen-surrender-agreement", *corrigan]}
+  - {id: 1417-winter, name: "Winter 1417-18", state: siege, hygiene: fair, factors: {cold_wet: 3}, actions: [],
+     what: "The winter siege of Falaise, until the castle yields (16 February 1418).", sources: [*corrigan]}
+  - {id: 1418-spring, name: "Spring 1418", state: siege, hygiene: fair, factors: {}, actions: [],
+     what: "Sieges of the Norman towns: Louviers in June; Cherbourg from April for some five months.", sources: [*seward14]}
+  - {id: 1418-summer, name: "Summer 1418", state: siege, hygiene: fair, factors: {hot: 1}, actions: [],
+     what: "Over the Seine at Pont-de-l'Arche (14 July); the siege of Rouen from 29 July.", sources: [*seward14, "https://www.wikiwand.com/en/articles/Siege_of_Rouen_(1418-1419)"]}
+  - {id: 1418-autumn, name: "Autumn 1418", state: siege, hygiene: fair, factors: {cold_wet: 1}, actions: [],
+     what: "The siege of Rouen: its sallies, some a thousand strong.", sources: [*seward14, *mon5]}
+  - {id: 1418-winter, name: "Winter 1418-19", state: siege, hygiene: fair, factors: {cold_wet: 3}, actions: [],
+     what: "Rouen starved out: the poor driven into the ditch, the town yields (19 January 1419).", sources: ["https://www.wikiwand.com/en/articles/Siege_of_Rouen_(1418-1419)", *mon5]}
+  - {id: 1419-spring, name: "Spring 1419", state: garrison, hygiene: good, factors: {}, actions: [],
+     what: "Garrisons in Normandy and truce talks; raids and ambushes on the roads.", sources: [*mon5]}
+  - {id: 1419-summer, name: "Summer 1419", state: campaign, hygiene: fair, factors: {hot: 1}, actions: [],
+     what: "Pontoise taken by escalade (31 July); Clarence's raid toward Paris.", sources: [*mon5, *seward16]}
+  - {id: 1419-autumn, name: "Autumn 1419", state: siege, hygiene: fair, factors: {}, actions: [],
+     what: "Gisors (23 September) and the siege of Château-Gaillard into December.", sources: [*seward16]}
+  - {id: 1419-winter, name: "Winter 1419-20", state: garrison, hygiene: good, factors: {cold_wet: 1}, actions: [],
+     what: "Garrisons, and the pursuit after Roye.", sources: [*mon5]}
+  - {id: 1420-spring, name: "Spring 1420", state: garrison, hygiene: good, factors: {}, actions: [],
+     what: "The treaty of Troyes (May 1420).", sources: [*mon5]}
+  - {id: 1420-summer, name: "Summer 1420", state: siege, hygiene: fair, factors: {hot: 1}, actions: [],
+     what: "Montereau, then the siege of Melun from July: mines and countermines.", sources: [*mon5]}
+  - {id: 1420-autumn, name: "Autumn 1420", state: siege, hygiene: fair, factors: {cold_wet: 4}, actions: [],
+     what: "Melun holds until November: \"a severe epidemical distemper ... very great mortality\" (Monstrelet, no number).", sources: [*mon5]}
+  - {id: 1420-winter, name: "Winter 1420-21", state: garrison, hygiene: good, factors: {cold_wet: 1}, actions: [],
+     what: "Garrisons in Normandy and about Paris; the king in England from February.", sources: ["https://medievalhistorybuff1066.blogspot.com/2024/12/henry-v-in-france-1420-1422.html"]}
+  - {id: 1421-spring, name: "Spring 1421", state: campaign, hygiene: fair, factors: {}, actions: [bauge],
+     what: "Clarence's raid into Anjou and his death at Baugé (22 March).", sources: ["https://britishbattles.com/one-hundred-years-war/battle-of-bauge"]}
+  - {id: 1421-summer, name: "Summer 1421", state: campaign, hygiene: fair, factors: {hot: 1}, actions: [],
+     what: "The king back at Calais with some 4,000 (11 June); Dreux and Beaugency.", sources: ["https://aristocraticfury.substack.com/p/the-bastard-of-vaurus", *mon5]}
+  - {id: 1421-autumn, name: "Autumn 1421", state: siege, hygiene: fair, factors: {cold_wet: 2}, actions: [],
+     what: "The siege of Meaux from 6 October, its ditches cleared at night by the defenders.", sources: ["https://aristocraticfury.substack.com/p/the-bastard-of-vaurus", *mon5]}
+  - {id: 1421-winter, name: "Winter 1421-22", state: siege, hygiene: fair, factors: {cold_wet: 6}, actions: [],
+     what: "The winter siege of Meaux, with dysentery and smallpox: about a sixth of the army lost by Christmas, dead or deserted (Sumption, from the pay records); the town falls in March.",
+     sources: ["https://aristocraticfury.substack.com/p/the-bastard-of-vaurus", *corrigan]}
+  - {id: 1422-spring, name: "Spring 1422", state: siege, hygiene: fair, factors: {}, actions: [],
+     what: "The Market of Meaux yields (10 May).", sources: [*corrigan, *mon5]}
+  - {id: 1422-summer, name: "Summer 1422", state: campaign, hygiene: fair, factors: {hot: 1}, actions: [],
+     what: "The king, sick since Meaux, dies at Vincennes (31 August).", sources: [*mon5]}
+
+actions:
+  agincourt:
+    name: "Agincourt"
+    date: 1415-10-25
+    field: agincourt-1415
+    share: 4
+    engaged: "about 8,700-9,000 (Curry, from the records); about 6,000 (Barker, Sumption, Rogers, from the Gesta and Le Fèvre)"
+    lost: "112 named dead in the records; double figures in the English chroniclers, 600 in Monstrelet, 1,600 in Wavrin"
+    sources: ["https://www.doc.surf/wiki/battle-of-agincourt", "https://www.historyofwar.org/articles/battles_agincourt.html"]
+    note: "The share is ours: the records' 112 dead are about 1.3% of the army, and no count of the wounded was found; three wounded for each dead (ours)."
+  valmont:
+    name: "Valmont"
+    date: 1416-03-09
+    share: 16
+    engaged: "about 1,000 of Dorset's Harfleur garrison"
+    lost: "about 160 on the first day; no split into killed and wounded"
+    sources: ["https://wikiwand.com/EN/Battle_of_Valmont"]
+    note: "The share counts all lost on the first day."
+    single: true
+  caen:
+    name: "The storm of Caen"
+    date: 1417-09-04
+    share: null
+    engaged: "the army of about 10,000-11,000"
+    lost: "not found (Sir Edward Sprenghose burned on the wall)"
+    sources: ["https://thehundredyearswar.co.uk/caen-surrender-agreement"]
+    note: "No English loss was found: the GM sets the share, or plays it as the small fight Storming a breach."
+  bauge:
+    name: "Baugé"
+    date: 1421-03-22
+    main: false
+    share: 42
+    engaged: "about 2,500 engaged of a field army of about 4,000 (britishbattles); or about 1,500 men-at-arms without the archers (historyofwar)"
+    lost: "1,054 counted dead (britishbattles); 1,617 (the Scotichronicon); about 1,500 dead or taken (French sources); Clarence killed"
+    sources: ["https://britishbattles.com/one-hundred-years-war/battle-of-bauge", "https://www.historyofwar.org/articles/battles_bauge.html"]
+    note: "Clarence's mounted force, not the whole army; the share is the counted dead of those engaged, with no count of the wounded."
+
+small_fights:
+  - id: raid
+    name: "A raiding party caught by French horse"
+    what: "A garrison's raiding party, burning villages, is caught by a larger French force; the French horse break the line but stop to loot the baggage, and the English hold a hedged garden until dark (Valmont, 9-11 March 1416)."
+    states: [garrison, campaign]
+    weight: 2
+    where: "a hedged garden by a village"
+    time: "in the afternoon"
+    ground: village
+    side: {name: "The raiding party", men: [100, 1100]}
+    foes: [{name: "French men-at-arms", men: [200, 4000], kit: full_plate, weapon: spear}]
+    aims: {team: "Hold together until dark and get away.", foes: "Break them and take prisoners for ransom."}
+    ends: "The English win if they hold for 8 rounds (nightfall); the French draw off once a third of those here are down; the English are beaten if they are broken."
+    sources: ["https://kids.kiddle.co/Battle_of_Valmont", "https://wikiwand.com/EN/Battle_of_Valmont"]
+    note: "About 1,000-1,100 against about 4,000; about 160 English killed the first day (Wikipedia, through mirrors)."
+  - id: sally
+    name: "A sally from the gate"
+    what: "The garrison comes out at a gate on the besiegers' lines; at Rouen the Bastard d'Arly came out with about 30 on foot and killed an English knight in single combat (Monstrelet, ch. X), and sallies came out a thousand strong."
+    states: [siege]
+    weight: 4
+    where: "the siege lines before a gate"
+    time: "by day"
+    ground: open
+    side: {name: "The guard on the lines", men: [20, 100]}
+    foes: [{name: "The sally", men: [30, 1000], kit: full_plate, weapon: poleaxe}]
+    surprise: {text: "The gate opens on men at their work", chance: 30}
+    aims: {team: "Hold the lines and drive them back in.", foes: "Burn the siege works, take prisoners, and go back in."}
+    ends: "The sally goes back in after 6 rounds or once a third of those here are down; the guard is beaten if it is driven off the works."
+    sources: [*mon5, *seward14]
+  - id: ambush
+    name: "An ambush on the road"
+    what: "French captains lay two ambushes and take a village to draw an English force out; the English rout them (near Rouen, December 1418: Harcourt's about 2,000 against Cornwall's 600, the French losing 240 men-at-arms killed or taken, the English very few)."
+    states: [siege, garrison, campaign]
+    weight: 3
+    where: "a road through a wood by a village"
+    time: "in the morning"
+    ground: forest
+    side: {name: "The English column", men: [100, 600]}
+    foes: [{name: "The ambush", men: [200, 2000], kit: full_plate, weapon: spear}]
+    surprise: {text: "The ambush breaks out of the trees", chance: 40}
+    aims: {team: "Break the ambush and go on.", foes: "Cut the column up and take prisoners."}
+    ends: "The ambush breaks once a third of those here are down; the English are beaten if they are broken."
+    sources: [*mon5]
+    note: "Monstrelet, ch. XV."
+  - id: escort
+    name: "An escort attacked"
+    what: "French men-at-arms fall on the escort of travellers on the road and take horses and baggage, but are beaten off and leave forty and more dead (near Chammes, early 1419)."
+    states: [garrison, campaign]
+    weight: 2
+    where: "a road in open country"
+    time: "by day"
+    ground: road
+    side: {name: "The escort", men: [20, 100]}
+    foes: [{name: "Dauphinist men-at-arms", men: [40, 200], kit: full_plate, weapon: spear}]
+    surprise: {text: "The riders come on the escort on the road", chance: 40}
+    aims: {team: "Keep the travellers and the baggage.", foes: "Take the baggage and the horses."}
+    ends: "The attackers ride off once a third of those here are down or after 6 rounds; the escort is beaten if it is broken."
+    sources: [*mon5]
+    note: "Monstrelet, ch. XVIII: the envoys' escort against Tanneguy du Châtel. The sizes are ours."
+  - id: breach
+    name: "Storming a breach"
+    what: "After several breaches, assault follows assault until one division gets onto the walls and takes the defenders from behind (Caen, 4 September 1417); at Meaux an assault of seven or eight hours was thrown back."
+    states: [siege]
+    weight: 2
+    where: "a breach in a town wall"
+    time: "by day"
+    ground: town
+    team_attacks: true
+    side: {name: "The storming party", men: [100, 500]}
+    foes: [{name: "The defenders of the breach", men: [50, 300], kit: brigandine_sallet, weapon: poleaxe}]
+    aims: {team: "Carry the breach.", foes: "Hold it."}
+    ends: "The stormers win when they hold the breach with the defenders down or gone; they fall back once a third of those here are down."
+    sources: ["https://thehundredyearswar.co.uk/caen-surrender-agreement", *mon5]
+    note: "No numbers in the accounts: the sizes are ours."
+  - id: ford
+    name: "Over the river at a ford"
+    what: "Archers wade a ford waist-deep over broken causeways; the French attack the bridgehead and men-at-arms come over to drive them off (the Somme at Béthencourt, 19 October 1415); at Pont-de-l'Arche (14 July 1418) sixty went over first in eight boats under the archers' cover."
+    states: [march, campaign]
+    weight: 2
+    where: "a ford on a broad river"
+    time: "in the morning"
+    ground: ford
+    side: {name: "The archers over the ford", men: [60, 200]}
+    foes: [{name: "French men-at-arms", men: [100, 800], kit: full_plate, weapon: spear}]
+    aims: {team: "Hold the far bank until the men-at-arms come over.", foes: "Throw them back into the river."}
+    ends: "The men-at-arms come over after 6 rounds; the French fall back once a third of those here are down; the archers are beaten if they are driven into the river."
+    sources: ["https://erenow.org/biographies/henry-v-as-warlord/11.php", *seward14, *mon5]
+    note: "Béthencourt: 200 archers, then Umfraville and Cornwall with 500 men-at-arms. Pont-de-l'Arche: the French 800 men-at-arms and 12,000 commoners are Monstrelet's figure."
+  - id: mine
+    name: "A fight in the mine"
+    what: "A French countermine breaks into an English mine under the walls, and the two sides fight at a barrier in the dark gallery with lances (Melun, 1420: the king and the Duke of Burgundy fought two Dauphinists there, Monstrelet ch. XLII)."
+    states: [siege]
+    weight: 1
+    where: "a mine gallery under the walls"
+    time: "underground, by torchlight"
+    ground: open
+    side: {name: "The miners and their guard", men: [4, 12]}
+    foes: [{name: "The countermine", men: [4, 12], kit: brigandine_sallet, weapon: spear}]
+    aims: {team: "Hold the gallery.", foes: "Drive them out and break the mine."}
+    ends: "Either side gives up the gallery once half of those here are down; a deed of arms may end it by agreement."
+    sources: [*mon5, "https://www.medievalists.net/2022/12/fighting-mine-deed-of-arms/"]
+    note: "The roller has no tunnel ground: lay a narrow strip of open ground between walls of works. At Harfleur the English had 6 master miners and 114 miners (TNA)."
+  - id: quarters
+    name: "Quarters taken by surprise at night"
+    what: "Burgundians from Gisors find Irish and English in a village disarmed, asleep and without a guard; the survivors barricade the houses, which are burned (Ferrifontaine, early 1419: about 400 killed and 100 taken of 800 Irish and 200 English)."
+    states: [garrison, campaign]
+    weight: 1
+    where: "a village where men are quartered"
+    time: "at night"
+    ground: village
+    side: {name: "The quartered men", men: [50, 1000]}
+    foes: [{name: "Men-at-arms from a French garrison", men: [100, 500], kit: full_plate, weapon: spear}]
+    surprise: {text: "The men are asleep without a guard", chance: 70}
+    aims: {team: "Stand to, hold the houses, and get away.", foes: "Kill or take them and burn the village."}
+    ends: "The attackers go off after 8 rounds or once a third of those here are down; the quartered men are beaten if they are broken."
+    sources: [*mon5]
+    note: "Monstrelet, ch. XIX. The attackers' numbers are not given: ours."
+  - id: escalade
+    name: "An escalade at dawn"
+    what: "A force waits in the vineyards by the ditch, climbs the walls with ladders between daybreak and sunrise without alarming the guard, and opens the gate (Pontoise, 31 July 1419)."
+    states: [campaign, garrison]
+    weight: 1
+    where: "a town wall by the vineyards"
+    time: "between daybreak and sunrise"
+    ground: town
+    team_attacks: true
+    side: {name: "The escalade party", men: [40, 300]}
+    foes: [{name: "The guard on the wall", men: [10, 60], kit: brigandine_sallet, weapon: crossbow}]
+    surprise: {text: "The guard sees nothing until the ladders are up", chance: 60}
+    aims: {team: "Get onto the wall and open the gate.", foes: "Raise the alarm and throw the ladders down."}
+    ends: "The party wins if it holds the gate for 4 rounds; it fails if a third of those here are down first."
+    sources: [*mon5, *seward16]
+    note: "The Captal de Buch's about 3,000 at Pontoise; no losses given. Here the first party up the ladders."

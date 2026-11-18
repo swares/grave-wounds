@@ -217,7 +217,9 @@ def calibrate(d: Data, wid: str, n: int, seed: int, position: str = "line", ever
             if res["dead"]:
                 dead += 1
                 break
-    T = W["totals"]
+    T = W.get("totals")
+    if not T:                                       # a war with no army-wide totals in the records
+        return {"seasons": len(W["seasons"]), "disease": 100 * dead / lives, "hits": 100 * hits / lives, "totals": None}
     seasons = T.get("seasons", len(W["seasons"]))   # the seasons a man of `strength` served, where the records count men by term
     return {"seasons": seasons, "disease": 100 * dead / lives, "hits": 100 * hits / lives,
             "totals": {"disease": 100 * T["disease"] / T["strength"] / seasons,
