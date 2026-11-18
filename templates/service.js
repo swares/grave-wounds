@@ -1,6 +1,6 @@
 /* A season of service: the same rules as gravewounds/service.py, taking the dice in the same order.
    makeService(SV, RULES) -> the rules by name. SV is the team builder's service bundle: {wars (data/service),
-   mix: {table id: [[weapon, pct], ...]} (each war's table's weapon_mix entries that name a weapon),
+   mix: {war id: [[weapon, pct], ...]} (the war's own weapon_mix, else its table's: entries that name a weapon),
    steps, unfit_from (disease.yaml)}. RULES is makeTravelRules (templates/travelrules.js) over the
    disease data: the camp-disease track a sick man runs. rng(): a d100. build.py puts this file into
    the team builder at its SERVICE_JS marker; in Node it is a module (tools/service/test.js). */
@@ -48,7 +48,7 @@ function makeService(SV, RULES){
     return { care: st.care, marched: st.marched, wet_cold: factors(W, s, wk).includes("cold_wet"), filth: s.hygiene === "poor" };
   }
   function weaponFor(W, roll){                   // d100 on the war's table's weapon_mix
-    const mix = SV.mix[W.table], total = mix.reduce((t, [, p]) => t + p, 0);
+    const mix = SV.mix[W.id], total = mix.reduce((t, [, p]) => t + p, 0);
     let cum = 0;
     for (const [w, p] of mix){
       cum += p;

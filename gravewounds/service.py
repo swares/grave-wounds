@@ -93,10 +93,14 @@ def day_ctx(W: dict, s: dict, wk: int) -> dict:
             "filth": s["hygiene"] == "poor"}
 
 
+def mix_of(d: Data, W: dict) -> list:
+    """[(weapon, pct)]: the war's own weapon_mix, else its table's (entries that name a weapon)."""
+    return [(m["weapon"], float(m["pct"])) for m in W.get("weapon_mix") or d.tables[W["table"]].get("weapon_mix") or [] if m.get("weapon")]
+
+
 def weapon_for(d: Data, W: dict, roll: int) -> str:
-    """The weapon a hit came from: d100 on the war's table's weapon_mix (its entries that name a
-    weapon, scaled to 100)."""
-    mix = [(m["weapon"], float(m["pct"])) for m in d.tables[W["table"]].get("weapon_mix") or [] if m.get("weapon")]
+    """The weapon a hit came from: d100 on the war's weapon mix (mix_of), scaled to 100."""
+    mix = mix_of(d, W)
     total, cum = sum(p for _, p in mix), 0.0
     for w, p in mix:
         cum += p
@@ -213,8 +217,8 @@ def calibrate(d: Data, wid: str, n: int, seed: int, position: str = "line", ever
             if res["dead"]:
                 dead += 1
                 break
-    seasons = len(W["seasons"])
     T = W["totals"]
+    seasons = T.get("seasons", len(W["seasons"]))   # the seasons a man of `strength` served, where the records count men by term
     return {"seasons": seasons, "disease": 100 * dead / lives, "hits": 100 * hits / lives,
             "totals": {"disease": 100 * T["disease"] / T["strength"] / seasons,
                        "hits": 100 * (T["killed"] + T["wounded"]) / T["strength"] / seasons}}

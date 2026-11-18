@@ -116,6 +116,17 @@ def run(p):
     check(sides["fw"] == ["musket_smoothbore"], f"the French carry the fight's weapon ({sides['fw']})")
     check("Hold the bridge" in sides["notes"] and "It ends" in sides["notes"] and "Cope" in sides["notes"], "the aims, the end and the source are in the fight's notes")
     check(pg.evaluate("() => S.weather.cond") == "rain", "in the rain, as the fight says")
+    # the second war: a Union company in the East
+    pg.goto(BASE + "team.html")
+    pg.select_option("#sel-era", "civil_war")
+    pg.select_option("#sel-region", "union")
+    pg.click("#btn-roll")
+    pg.wait_for_selector("#h-service")
+    k = pg.evaluate("() => SVC.war('acw_union_east').seasons.findIndex(s => s.id === '1863-summer')")
+    pg.select_option("#sv-season", str(k))
+    check("Summer 1863" in pg.inner_text("#sv-season option:checked") and "Gettysburg" in pg.inner_text("#service"), "a Union team serves the war in the East: summer 1863 has Gettysburg")
+    check("1st Minnesota (82%)" in pg.inner_text("select[data-svunit=gettysburg]"), "with the 1st Minnesota's own 82%")
+    check(pg.evaluate("() => SVC.weaponFor(SVC.war('acw_union_east'), 50)") == "rifle_musket", "and its hits come mostly from the rifle-musket")
     check(not errors, f"no page errors {errors[:3]}")
     br.close()
 

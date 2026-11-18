@@ -1,0 +1,449 @@
+# A season of service: a Union infantry regiment of the Army of the Potomac, 1861-1865 (format as
+# data/service/peninsula.yaml). The calendar follows the 2nd Vermont Infantry's record (Dyer's
+# Compendium), which served with the Army of the Potomac throughout but for the VI Corps in the
+# Valley in 1864. Losses from Fox, Regimental Losses (1889), and the American Battlefield Trust;
+# shares are our calculation (killed and wounded of those engaged). Each season's hygiene and sickly
+# weeks are ours, tuned toward the records: about 1.0% dead of disease a season against the whole
+# Union army's 0.72% (Fox, on a three-year basis), the most of it in summer 1862 on the Peninsula
+# and at Harrison's Landing (about 8%; Letterman gives a fifth sick, but no deaths). "In the thick
+# of it" is ×4 (ours): the army's share against the worst regiments' (Gettysburg 19% and the 1st
+# Minnesota 82%; Antietam 13% and the 12th Massachusetts 64%). Design and sources: project doc
+# "between-battles-design".
+id: acw_union_east
+name: "The Civil War in the East: a Union regiment (1861-1865)"
+era: civil_war
+regions: [union]
+table: acw-1861-all-hits
+season_days: 91
+
+# Wounds by cause treated in the field hospitals (Medical and Surgical History, vol. II pt. III,
+# p. 696, as quoted on CivilWarTalk): small arms 127,929, artillery 14,032, sabre and bayonet 922
+# (split evenly between them: ours); 103,829 of unknown missile left out.
+weapon_mix:
+  - {weapon: rifle_musket, pct: 89.53}
+  - {weapon: artillery_acw, pct: 9.82}
+  - {weapon: saber, pct: 0.32}
+  - {weapon: bayonet, pct: 0.33}
+
+states:
+  quarters: {name: "In camp or winter quarters", care: shelter, marched: false, staying: true}
+  campaign: {name: "On campaign", care: field, marched: true, staying: false}
+  march:    {name: "On the march", care: field, marched: true, staying: false}
+  siege:    {name: "In the siege lines", care: field, marched: false, staying: true}
+
+positions:
+  reserve: {name: "In reserve", mult: 0.25}
+  line:    {name: "In the line", mult: 1}
+  thick:   {name: "In the thick of it", mult: 4}
+cap: 90
+
+# Small fights: Fox counts 1,882 engagements, battles, skirmishes and affairs in which at least one
+# Union regiment was engaged, of which 112 were battles with over 500 killed and wounded on a side;
+# the 2nd Vermont's record lists about 40 named actions in four years, 9 of them major battles, and
+# leaves out the picket firing. The chances a season are ours.
+small_war:
+  chance: {quarters: 20, campaign: 40, march: 25, siege: 45}
+  hit: 10
+
+sides: {team: "Union", foes: "Confederate"}
+
+sources:
+  dyer: &dyer "https://generalstaff.org/WFA/Dyers/VT_Inf_US.htm"
+  fox61: &fox61 "https://wargame.ch/wc/acw/sub/vmi/AoA/Library/Fox/Chapter%20XIV%20-%201861.htm"
+  fox62: &fox62 "https://wargame.ch/wc/acw/sub/vmi/AoA/Library/Fox/Chapter%20XIV%20-%201862.htm"
+  fox63: &fox63 "https://wargame.ch/wc/acw/sub/vmi/AoA/Library/Fox/Chapter%20XIV%20-%201863.htm"
+  fox64: &fox64 "https://wargame.ch/wc/acw/sub/vmi/AoA/Library/Fox/Chapter%20XIV%20-%201864.htm"
+  fox65: &fox65 "https://wargame.ch/wc/acw/sub/vmi/AoA/Library/Fox/Chapter%20XIV%20-%201865.htm"
+  fox3: &fox3 "https://wargame.ch/wc/acw/sub/vmi/AoA/Library/Fox/Chapter%20III.htm"
+  fox5: &fox5 "https://wargame.ch/wc/acw/sub/vmi/AoA/Library/Fox/Chapter%20V.htm"
+  tripler61: &tripler61 "https://rebellionrecord61-65.blogspot.com/2012/01/january-4-1862-friday-health-of-army-of.html"
+  letterman: &letterman "https://www.historyofwar.org/sources/acw/officialrecords/vol011chap023part1/00011_01.html"
+
+seasons:
+  - {id: 1861-summer, name: "Summer 1861", state: campaign, hygiene: good, factors: {hot: 1}, actions: [bull_run],
+     what: "The advance on Manassas and Bull Run (21 July), then the defences of Washington.", sources: [*dyer]}
+  - {id: 1861-autumn, name: "Autumn 1861", state: quarters, hygiene: fair, factors: {}, actions: [balls_bluff],
+     what: "Camps about Washington, with picket duty and reconnaissances: typhoid and remittent fevers and measles; about 6% sick at each month's end, some 290 dead a month of 117,000-143,000 (Tripler).",
+     sources: [*dyer, *tripler61]}
+  - {id: 1861-winter, name: "Winter 1861-62", state: quarters, hygiene: good, factors: {cold_wet: 2}, actions: [],
+     what: "Winter quarters in the defences of Washington.", sources: [*dyer, "https://battlefields.org/learn/articles/winter-encampments"]}
+  - {id: 1862-spring, name: "Spring 1862", state: siege, hygiene: good, factors: {}, actions: [williamsburg, seven_pines],
+     what: "By sea to the Peninsula: the siege of Yorktown (5 April-4 May; 2,000 sick there on 19 May), Williamsburg, up the Chickahominy, Seven Pines.",
+     sources: [*dyer, "https://www.historyofwar.org/sources/acw/officialrecords/vol011chap023part1/00010_10.html"]}
+  - {id: 1862-summer, name: "Summer 1862", state: campaign, hygiene: fair, factors: {hot: 1, warm: 13, marsh: 3}, actions: [seven_days, second_bull_run],
+     what: "The Seven Days, then Harrison's Landing on the James to mid-August, where at least a fifth were sick with malaria and scurvy (Letterman); Second Bull Run.",
+     sources: [*dyer, *letterman]}
+  - {id: 1862-autumn, name: "Autumn 1862", state: campaign, hygiene: good, factors: {}, actions: [south_mountain, antietam],
+     what: "South Mountain and Antietam; camp at Hagerstown; the march to Falmouth.", sources: [*dyer]}
+  - {id: 1862-winter, name: "Winter 1862-63", state: quarters, hygiene: good, factors: {cold_wet: 3}, actions: [fredericksburg],
+     what: "Fredericksburg (13 December), then the camps about Falmouth; the Mud March (20-24 January) and scurvy in the camps.",
+     sources: [*dyer, "https://nps.gov/articles/000/mudmarch.htm", "https://discoverstafford.org/artifact/civil-war-reconstruction-2/civil-war/civil-war-overview/"]}
+  - {id: 1863-spring, name: "Spring 1863", state: quarters, hygiene: good, factors: {}, actions: [chancellorsville],
+     what: "The Falmouth camps (46 to 90 sick per 1,000 by corps at the end of March), then Chancellorsville.",
+     sources: [*dyer, "https://civilwar.com/official-record/912-chancellorsville-part-ii/186458-240-series-i-volume-xxv-ii-serial-40-chancellorsville-part-ii.html"]}
+  - {id: 1863-summer, name: "Summer 1863", state: campaign, hygiene: good, factors: {hot: 1}, actions: [gettysburg],
+     what: "The march north and Gettysburg; then camps on the Rappahannock.", sources: [*dyer]}
+  - {id: 1863-autumn, name: "Autumn 1863", state: campaign, hygiene: good, factors: {}, actions: [bristoe, mine_run],
+     what: "The Bristoe campaign and the fight at Auburn; Rappahannock Station; Mine Run.", sources: [*dyer]}
+  - {id: 1863-winter, name: "Winter 1863-64", state: quarters, hygiene: good, factors: {cold_wet: 2}, actions: [],
+     what: "Winter quarters about Brandy Station and Culpeper, with pickets on the Rapidan; Morton's Ford (6-7 February).",
+     sources: ["https://stonesentinels.com/less-known/brandy-station/historical-wayside-markers/army-potomac-brandy-station/"]}
+  - {id: 1864-spring, name: "Spring 1864", state: campaign, hygiene: good, factors: {}, actions: [wilderness, spotsylvania],
+     what: "The Overland campaign: the Wilderness, Spotsylvania, North Anna.", sources: [*dyer]}
+  - {id: 1864-summer, name: "Summer 1864", state: siege, hygiene: good, factors: {hot: 1}, actions: [cold_harbor, petersburg, crater],
+     what: "Cold Harbor, then the assaults on Petersburg and the siege lines, under 400 yards apart in places; the Crater (30 July).",
+     sources: [*dyer, "https://encyclopediavirginia.org/entries/petersburg-campaign/"]}
+  - {id: 1864-autumn, name: "Autumn 1864", state: siege, hygiene: good, factors: {}, actions: [],
+     what: "The Petersburg lines and the battles on the flank; the Coggins Point cattle raid (16 September).",
+     sources: ["https://npshistory.com/publications/civil_war_series/20/sec4.htm"]}
+  - {id: 1864-winter, name: "Winter 1864-65", state: siege, hygiene: good, factors: {cold_wet: 2}, actions: [],
+     what: "Winter camps in the Petersburg lines: the picket lines raided; Hatcher's Run (5-7 February).",
+     sources: ["https://encyclopediavirginia.org/entries/petersburg-campaign/"]}
+  - {id: 1865-spring, name: "Spring 1865", state: campaign, hygiene: good, factors: {}, actions: [fort_stedman, appomattox],
+     what: "Fort Stedman (25 March), the breakthrough at Petersburg (2 April), Sailor's Creek and Appomattox (9 April).",
+     sources: [*dyer, "https://home.nps.gov/pete/learn/historyculture/battle-of-fort-stedman.htm"]}
+
+actions:
+  bull_run:
+    name: "First Bull Run"
+    date: 1861-07-21
+    field: bull-run-1861
+    share: 5
+    alt: {share: 8, source: "Fry's 18,572 engaged, as quoted"}
+    engaged: "28,450 (American Battlefield Trust); 18,572 engaged (Fry)"
+    lost: "470 killed, 1,071 wounded, 1,793 missing (Fox)"
+    sources: [*fox61, "https://www.battlefields.org/learn/civil-war/battles/bull-run?tab=facts"]
+  balls_bluff:
+    name: "Ball's Bluff"
+    date: 1861-10-21
+    main: false
+    share: 12
+    engaged: "about 1,700"
+    lost: "49 killed, 158 wounded, 714 missing (Fox)"
+    sources: [*fox61, "https://www.historyofwar.org/articles/battles_balls_bluff.html"]
+    note: "Stone's division on the upper Potomac, not the whole army."
+    single: true
+  williamsburg:
+    name: "Williamsburg"
+    date: 1862-05-05
+    share: 5
+    engaged: "40,768"
+    lost: "456 killed, 1,410 wounded, 373 missing (Fox)"
+    sources: [*fox62, "https://www.battlefields.org/learn/civil-war/battles/williamsburg"]
+    single: true
+  seven_pines:
+    name: "Seven Pines (Fair Oaks)"
+    date: 1862-05-31
+    share: 13
+    engaged: "34,000"
+    lost: "790 killed, 3,594 wounded, 647 missing (Fox)"
+    sources: [*fox62, "https://www.battlefields.org/learn/civil-war/battles/seven-pines"]
+    single: true
+  seven_days:
+    name: "The Seven Days"
+    date: 1862-06-27
+    share: 10
+    engaged: "101,434 present for duty (Wikipedia mirror)"
+    lost: "1,734 killed, 8,062 wounded, 6,053 missing (Encyclopedia Virginia)"
+    sources: ["https://encyclopediavirginia.org/entries/seven-days-battles/", "https://origin-production.wikiwand.com/en/Seven_Days_Battle"]
+    units:
+      - name: "At Gaines' Mill (Porter's corps)"
+        share: 12
+        lost: "894 killed, 3,107 wounded of 34,212 (Fox; ABT)"
+        sources: [*fox62, "https://www.battlefields.org/learn/civil-war/battles/gaines-mill"]
+  second_bull_run:
+    name: "Second Bull Run"
+    date: 1862-08-29
+    share: 15
+    engaged: "70,000 (ABT); 75,696 (ACWS)"
+    lost: "1,747 killed, 8,452 wounded, 4,263 missing (Fox and ABT)"
+    sources: [*fox62, "https://www.battlefields.org/learn/civil-war/battles/second-manassas?tab=facts"]
+    units:
+      - name: "5th New York (Duryée's Zouaves)"
+        share: 51
+        lost: "79 killed, 170 wounded of 490 (Fox)"
+        sources: [*fox3]
+  south_mountain:
+    name: "South Mountain"
+    date: 1862-09-14
+    share: 8
+    alt: {share: 6, source: "Fox's 325 killed and 1,403 wounded"}
+    engaged: "28,000"
+    lost: "443 killed, 1,807 wounded, 75 missing (ABT); 325, 1,403, 85 (Fox)"
+    sources: ["https://www.battlefields.org/learn/civil-war/battles/south-mountain?tab=facts", *fox62]
+  antietam:
+    name: "Antietam"
+    date: 1862-09-17
+    share: 13
+    alt: {share: 15, source: "Livermore's 75,316 engaged"}
+    engaged: "87,000 (ABT); 75,316 (Livermore)"
+    lost: "2,108 killed, 9,549 wounded, 753 missing (Fox)"
+    sources: [*fox62, "https://www.battlefields.org/learn/civil-war/battles/antietam?tab=facts"]
+    units:
+      - name: "12th Massachusetts"
+        share: 64
+        lost: "49 killed, 165 wounded of 334 (Fox)"
+        sources: [*fox3]
+      - name: "15th Massachusetts"
+        share: 53
+        lost: "65 killed, 255 wounded of 606 (Fox)"
+        sources: [*fox3]
+  fredericksburg:
+    name: "Fredericksburg"
+    date: 1862-12-13
+    share: 9
+    engaged: "114,000-123,000"
+    lost: "1,284 killed, 9,600 wounded, 1,769 missing (Fox)"
+    sources: [*fox62, "https://battlefields.org/learn/civil-war/battles/fredericksburg"]
+    units:
+      - name: "20th Massachusetts"
+        share: 68
+        lost: "25 killed, 138 wounded of 238 (Fox)"
+        sources: [*fox3]
+      - name: "5th New Hampshire"
+        share: 57
+        lost: "20 killed, 154 wounded of 303 (Fox)"
+        sources: [*fox3]
+  chancellorsville:
+    name: "Chancellorsville"
+    date: 1863-05-02
+    share: 12
+    engaged: "97,382 engaged (ABT)"
+    lost: "1,606 killed, 9,762 wounded, 5,919 missing (Fox)"
+    sources: [*fox63, "https://www.battlefields.org/learn/civil-war/battles/chancellorsville?tab=facts"]
+  gettysburg:
+    name: "Gettysburg"
+    date: 1863-07-02
+    share: 19
+    engaged: "93,921 (ABT)"
+    lost: "3,155 killed, 14,529 wounded, 5,365 missing (ABT); 3,070, 14,497, 5,434 (Fox)"
+    sources: ["https://www.battlefields.org/learn/civil-war/battles/gettysburg?tab=facts", *fox63]
+    units:
+      - name: "1st Minnesota"
+        share: 82
+        lost: "47 killed, 168 wounded of 262 (Fox)"
+        sources: [*fox3]
+      - name: "24th Michigan (the Iron Brigade)"
+        share: 64
+        lost: "69 killed, 247 wounded of 496 (Fox)"
+        sources: [*fox3]
+      - name: "141st Pennsylvania"
+        share: 65
+        lost: "25 killed, 103 wounded, 21 missing of 198 (Fox)"
+        sources: [*fox3]
+  bristoe:
+    name: "Bristoe Station"
+    date: 1863-10-14
+    main: false
+    share: 5
+    engaged: "8,383 engaged"
+    lost: "50 killed, 335 wounded, 161 missing (Fox)"
+    sources: [*fox63, "https://www.battlefields.org/learn/civil-war/battles/bristoe-station"]
+    note: "Warren's II Corps only."
+    single: true
+  mine_run:
+    name: "Mine Run"
+    date: 1863-11-27
+    share: 2
+    engaged: "69,643"
+    lost: "173 killed, 1,099 wounded, 381 missing (Fox)"
+    sources: [*fox63, "https://www.battlefields.org/learn/civil-war/battles/mine-run"]
+    single: true
+  wilderness:
+    name: "The Wilderness"
+    date: 1864-05-05
+    share: 14
+    engaged: "101,895 (ABT)"
+    lost: "2,246 killed, 12,037 wounded, 3,383 missing (Fox)"
+    sources: [*fox64, "https://www.battlefields.org/battlefields/the-wilderness.html?tab=facts"]
+    units:
+      - name: "93rd New York"
+        share: 59
+        lost: "42 killed, 213 wounded of 433 (Fox)"
+        sources: [*fox3]
+  spotsylvania:
+    name: "Spotsylvania Court House"
+    date: 1864-05-12
+    share: 16
+    alt: {share: 19, source: "83,000 engaged (ACWS)"}
+    engaged: "100,000 (ABT); 83,000 (ACWS)"
+    lost: "2,725 killed, 13,416 wounded, 2,258 missing (Fox and ABT)"
+    sources: [*fox64, "https://www.battlefields.org/learn/civil-war/battles/spotsylvania-court-house?tab=facts"]
+    units:
+      - name: "15th New Jersey"
+        share: 54
+        lost: "75 killed, 159 wounded, 38 missing of 432 (Fox)"
+        sources: [*fox3]
+  cold_harbor:
+    name: "Cold Harbor"
+    date: 1864-06-03
+    share: 10
+    engaged: "108,000"
+    lost: "1,844 killed, 9,077 wounded, 1,816 missing (Fox and ABT); about 6,000 in the assault of 3 June alone"
+    sources: [*fox64, "https://battlefields.org/learn/civil-war/battles/cold-harbor"]
+    units:
+      - name: "25th Massachusetts"
+        share: 62
+        lost: "53 killed, 139 wounded, 28 missing of 310 (Fox)"
+        sources: [*fox3]
+  petersburg:
+    name: "The assaults on Petersburg"
+    date: 1864-06-18
+    share: 17
+    engaged: "62,000 (a Wikipedia mirror, no source given)"
+    lost: "1,688 killed, 8,513 wounded, 1,185 missing (Fox)"
+    sources: [*fox64]
+    single: true
+    units:
+      - name: "1st Maine Heavy Artillery (as infantry)"
+        share: 64
+        lost: "115 killed, 489 wounded of 950 (Fox)"
+        sources: [*fox3]
+  crater:
+    name: "The Crater"
+    date: 1864-07-30
+    main: false
+    share: 28
+    engaged: "8,500"
+    lost: "504 killed, 1,881 wounded, 1,413 missing (Fox and ABT)"
+    sources: [*fox64, "https://www.battlefields.org/learn/civil-war/battles/crater"]
+    note: "Burnside's IX Corps."
+    single: true
+  fort_stedman:
+    name: "Fort Stedman"
+    date: 1865-03-25
+    main: false
+    share: null
+    engaged: "not found"
+    lost: "72 killed, 450 wounded, 522 missing (Fox)"
+    sources: [*fox65, "https://home.nps.gov/pete/learn/historyculture/battle-of-fort-stedman.htm"]
+    note: "The IX Corps line east of Petersburg; the strength engaged was not found: the GM sets the share."
+  appomattox:
+    name: "The fall of Petersburg and the pursuit to Appomattox"
+    date: 1865-04-02
+    share: 9
+    engaged: "114,335 (a Wikipedia mirror)"
+    lost: "10,780 in the campaign, with missing; the split not found. Fall of Petersburg: 296 killed, 2,565 wounded, 500 missing (Fox)"
+    sources: [*fox65, "https://mobileapps.wikiwand.com/en/Appomattox_campaign"]
+    note: "The share counts the missing: no split of the campaign's losses was found."
+    single: true
+
+small_fights:
+  - id: picket
+    name: "The picket line rushed"
+    what: "Cavalry comes over the river in the snow, takes the vedettes and rolls up the picket line until the infantry pickets' fire and a counter-charge stop them (Hartwood Church, 25 February 1863)."
+    states: [quarters, siege]
+    weight: 3
+    where: "the picket line on the Rappahannock"
+    time: "in the morning"
+    ground: forest
+    weather: snow
+    side: {name: "The pickets", men: [20, 60]}
+    foes: [{name: "Virginia cavalry", men: [40, 400], weapon: saber}]
+    surprise: {text: "The vedettes are taken before they can fire", chance: 40}
+    aims: {team: "Hold the line until the reserve comes up.", foes: "Roll up the pickets and take prisoners."}
+    ends: "The reserve comes up after 6 rounds; the raiders go back over the river once a third of those here are down or after 8 rounds; the pickets are beaten if they are broken."
+    sources: ["https://civildiscourse-historyblog.com/blog/2015/8/3/a-challenge-issued-the-hartwood-church-raid"]
+    note: "Fitzhugh Lee's about 400 of the 1st, 2nd and 3rd Virginia Cavalry; the Union lost about 150 taken and 36 others, the Confederates 14 (a single account)."
+  - id: wagons
+    name: "Partisans on the wagon train"
+    what: "At dawn as the train starts out, partisans with two guns hit its front, centre and rear; the guard, a company to every 20 wagons, is overpowered at the rear but drives them from the town (Berryville, 13 August 1864)."
+    states: [campaign, march]
+    weight: 3
+    where: "the wagon train in a town street"
+    time: "about 4 in the morning"
+    ground: town
+    side: {name: "The train guard", men: [20, 80]}
+    foes: [{name: "Mosby's partisans", men: [30, 200], weapon: revolver}]
+    surprise: {text: "The partisans come in on the wagons as they start", chance: 50}
+    aims: {team: "Save the wagons and drive the raiders off.", foes: "Burn the wagons and take the mules and prisoners."}
+    ends: "The raiders ride off once a third of those here are down or after 6 rounds; the guard is beaten if it is broken."
+    sources: ["https://dan-masters-civil-war.blogspot.com/2020/07/lost-from-or-volume-i-berryville-wagon.html"]
+    note: "About 200 partisans against the 144th Ohio, about 280 engaged; the Union lost 5 killed, 6 wounded and 60 taken or missing (Miller's report)."
+  - id: foragers
+    name: "Foragers meet foragers"
+    what: "Both sides out foraging with their wagons meet on a road; the Union holds a hill and the Confederates attack through the pine woods, then draw off after two hours (Dranesville, 20 December 1861)."
+    states: [quarters, campaign]
+    weight: 2
+    where: "a hill by a crossroads"
+    time: "about noon"
+    ground: hills
+    side: {name: "The foraging party's guard", men: [40, 200]}
+    foes: [{name: "Confederate infantry", men: [40, 200], weapon: rifle_musket}]
+    aims: {team: "Hold the hill and get the wagons away.", foes: "Drive them off the road and cover their own wagons."}
+    ends: "The Confederates draw off once a third of those here are down or after 10 rounds; the guard is beaten if it is driven off the hill."
+    sources: ["https://warfarehistorynetwork.com/article/battle-of-dranesville/"]
+    note: "Ord's about 4,500 with 40 wagons against Stuart's about 2,500 covering 200; the Union lost 73, the Confederates 195. Here a company's part of it."
+  - id: reconnaissance
+    name: "A reconnaissance over the river"
+    what: "Troops cross a ford to see what holds the far bank, fight all day and come back after dark (Morton's Ford, 6-7 February 1864)."
+    states: [quarters]
+    weight: 2
+    where: "a ford on the Rapidan"
+    time: "by day"
+    ground: ford
+    team_attacks: true
+    side: {name: "The skirmishers", men: [40, 120]}
+    foes: [{name: "Confederate pickets", men: [20, 80], weapon: rifle_musket}]
+    aims: {team: "Get over, find what holds the bank, and come back.", foes: "Hold the bank."}
+    ends: "The skirmishers win if they reach the far edge and come back; they fall back once a third of those here are down."
+    sources: ["https://hd.housedivided.dickinson.edu/node/41731"]
+    note: "Elements of the II and III Corps; about 200 killed and wounded on the two sides together (a single account). The sizes are ours."
+  - id: rifle_pits
+    name: "The rifle pits raided before dawn"
+    what: "Picked sharpshooters creep on the picket rifle pits at 4 in the morning, carry part of the line and are gone by sunrise with blankets and food (Petersburg, 31 December 1864; Fort Stedman's pickets, 25 March 1865)."
+    states: [siege]
+    weight: 4
+    where: "the picket rifle pits before the works"
+    time: "about 4 in the morning"
+    ground: open
+    side: {name: "The picket detail", men: [20, 60]}
+    foes: [{name: "Confederate sharpshooters", men: [16, 60], weapon: rifle_musket}]
+    surprise: {text: "The raiders are among the pits before the alarm", chance: 40}
+    aims: {team: "Hold the pits and raise the alarm.", foes: "Take the pits, prisoners and supplies, and get back before light."}
+    ends: "The raiders go back after 6 rounds (sunrise) or once a third of those here are down; the pickets are beaten if they lose the pits."
+    sources: ["https://www.beyondthecrater.com/news-and-notes/siege-of-petersburg-sesquicentennial/150-years-ago-today/150-18641231-scales-mcgowan-ss-vs-6th-corps/", "https://www.battlefields.org/learn/articles/americas-civil-war-pre-dawn-assault-fort-stedman"]
+    note: "31 December: led by 16 picked men of Scales's and McGowan's sharpshooters; the Union lost 2 killed, 3 wounded and 37 missing, the raiders 1 wounded by his own gun. A deserter had warned the Union side."
+  - id: post
+    name: "Partisans on an outpost by night"
+    what: "Partisans slip through a gap in the pickets in the rain with a deserter for a guide and take a general, his officers, men and horses without a shot (Fairfax Court House, 8-9 March 1863)."
+    states: [quarters]
+    weight: 1
+    where: "a headquarters in a village behind the lines"
+    time: "about 2 in the morning"
+    ground: village
+    weather: rain
+    side: {name: "The headquarters guard", men: [10, 40]}
+    foes: [{name: "Mosby's partisans", men: [20, 40], weapon: revolver}]
+    surprise: {text: "The partisans are in the village before anyone stirs", chance: 70}
+    aims: {team: "Wake, stand and keep the general.", foes: "Take the general and the horses and get away unseen."}
+    ends: "The partisans ride off after 4 rounds or once a quarter of those here are down; the guard is beaten if the general is taken."
+    sources: ["https://ironbrigader.com/2010/07/22/john-s-mosby-captures-general-edwin-stoughton/"]
+    note: "Mosby's 29 men took General Stoughton, 2 officers, 30 men and 58 horses."
+  - id: rearguard
+    name: "The rear-guard at breakfast"
+    what: "A battery opens on the rear-guard at daybreak as it cooks breakfast; later its flank and rear are attacked and a regiment is briefly cut off, but it falls back in order, fighting (Auburn, 14 October 1863)."
+    states: [campaign, march]
+    weight: 2
+    where: "a hill on the line of retreat"
+    time: "at daybreak"
+    ground: hills
+    side: {name: "The rear-guard", men: [100, 300]}
+    foes: [{name: "Confederate infantry", men: [100, 400], weapon: rifle_musket}]
+    surprise: {text: "The guns open on men cooking breakfast", chance: 40}
+    aims: {team: "Fall back in order and keep the column covered.", foes: "Cut the rear-guard off."}
+    ends: "The rear-guard wins if it holds for 8 rounds and gets off its own edge in order; it is beaten if it is broken."
+    sources: ["https://www.oocities.org/plankmaker_1999/2ac1divbristoe.html"]
+    note: "Caldwell's division and Brooke's rear-guard; the 57th New York was briefly cut off; losses not given. The sizes are ours."
+
+# The war's totals for the calibration: Fox, Regimental Losses, ch. V, the whole Union army
+# (all theatres): 199,720 dead of disease, 67,058 killed and 275,175 wounded, against 2,326,168
+# enlistments on a three-year basis, so a man of `strength` served 12 seasons (ours: the basis).
+totals:
+  strength: 2326168
+  seasons: 12
+  killed: 67058
+  died_of_wounds: 43012
+  wounded: 275175
+  disease: 199720
+  source: *fox5

@@ -2098,8 +2098,12 @@ def _service_errors(d: Data, W: dict) -> list[str]:
     regions = {r["id"] for r in T["regions"]}
     errors += [f"{where}: unknown region {r}" for r in W.get("regions", []) if r not in regions]
     t = d.tables.get(W.get("table"))
-    if not t or not any(m.get("weapon") for m in t.get("weapon_mix") or []):
-        errors.append(f"{where}: table {W.get('table')} must exist and have a weapon_mix that names weapons")
+    own = W.get("weapon_mix") or []
+    if not t or not any(m.get("weapon") for m in own or t.get("weapon_mix") or []):
+        errors.append(f"{where}: table {W.get('table')} must exist, and the war or the table needs a weapon_mix that names weapons")
+    errors += [f"{where}: weapon_mix: unknown weapon {m.get('weapon')}" for m in own if m.get("weapon") and m["weapon"] not in d.weapons]
+    if own and abs(sum(float(m.get("pct", 0)) for m in own) - 100) > 0.5:
+        errors.append(f"{where}: weapon_mix must sum to 100")
     states, pos = W.get("states", {}), W.get("positions", {})
     for k, st in states.items():
         if st.get("care") not in d.disease["recovery"]["care"]:
