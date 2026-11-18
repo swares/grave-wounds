@@ -189,7 +189,7 @@ def run(p):
     pg.wait_for_function("() => typeof S === 'object' && Array.isArray(S.chars)", timeout=10000)
     pg.get_by_role("button", name="Add the team").first.click()
     pg.wait_for_function("() => S.chars.some(c => c.uid)", timeout=10000)
-    men = pg.evaluate("() => S.chars.filter(c => c.uid && c.team).length")
+    men = pg.evaluate("() => S.chars.filter(c => c.uid && c.team && !c.dead && !c.taken).length")   # not those lost in the picket played above
     pg.goto(BASE + "team.html")
     pg.wait_for_selector("#h-service")
     pg.evaluate("() => { const W = SVC.war('henry_v'); S.svcSmall = SVC.smallFight(W, 'campaign', svcD100, 'escalade'); render() }")
@@ -201,7 +201,7 @@ def run(p):
     esc = pg.evaluate("""() => { const e = S.chars.filter(c => sideOf(c) === 'English'), f = S.chars.filter(c => sideOf(c) === 'French');
       return { named: e.filter(c => c.uid).length, f: f.length, fw: [...new Set(f.map(c => c.weapon))], fk: [...new Set(f.map(c => c.kit))], msg: S.mapMsg } }""")
     check(esc["named"] == men and esc["fw"] == ["crossbow"] and esc["fk"] == ["brigandine_sallet"],
-          f"the escalade: the retinue's {men} named men go up the ladders against the guard with crossbows ({esc['fw']}, {esc['fk']})")
+          f"the escalade: the retinue's {men} named men go up the ladders against the guard with crossbows ({esc['named']}, {esc['fw']}, {esc['fk']})")
     check("Defending: The guard on the wall" in esc["msg"], "the French guard holds the wall; the English come in from the edge")
     # the sixth war: the same English team with Edward of March, 1459-71
     pg.goto(BASE + "team.html")
