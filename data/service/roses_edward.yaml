@@ -1,0 +1,335 @@
+# A season of service: the Wars of the Roses with Edward of March's men, 1459-1471 (format as
+# data/service/peninsula.yaml). The calendar follows a man of Edward's household from Ludford
+# Bridge to Tewkesbury: exile at Calais, Northampton, Mortimer's Cross, Ferrybridge and Towton, the
+# winter sieges in Northumberland, the long quiet years at home, the flight to Burgundy and the
+# return of 1471. Most seasons are quiet: armies were raised for weeks, not years.
+# Losses are mostly chroniclers' numbers or modern guesses at them, and give the dead only: a
+# battle's share is its dead times four (three wounded for each dead, ours, as for Henry V's war).
+# No army-wide totals were found, so the sickness is kept low at home and raised where the
+# accounts name hardship (the winter sieges of 1462, the plague years of 1464 and 1467).
+# Measured (python3 -m gravewounds service roses_edward): about 0.7% dead of disease a season over
+# the war, 0.1% in a season at home, 6.5% in the winter sieges of 1462 (the worst), about 1.6% on the
+# winter campaigns of Mortimer's Cross and Towton. The short campaigns are set to good hygiene (ours):
+# armies were raised for weeks and lodged in towns, and a whole season at the Peninsula's fair
+# camp hygiene gave 5-10% a season, which no account suggests.
+# Design and sources: project docs "between-battles-design" and "roses-seasons-research".
+id: roses_edward
+name: "The Wars of the Roses, with Edward of March (1459-1471)"
+era: medieval
+regions: [england]
+table: towton-1461-all-hits
+season_days: 91
+
+# What wounded men in these wars is not counted. Ours, from the Towton grave (Holst and Sutherland
+# 2014: of 180 wounds on bone, 131 by blades, 36 blunt, 13 penetrating), with arrows raised:
+# an arrow mostly wounds soft tissue and leaves no mark on bone, and both sides' archers shot.
+# Guns (Northampton, Barnet, the Burgundian handgunners of 1471) are not among the table's weapons.
+weapon_mix:
+  - {weapon: longbow, pct: 28}
+  - {weapon: bill, pct: 20}
+  - {weapon: sword, pct: 17}
+  - {weapon: poleaxe, pct: 15}
+  - {weapon: dagger, pct: 7}
+  - {weapon: axe, pct: 5}
+  - {weapon: spear, pct: 5}
+  - {weapon: crossbow, pct: 3}
+
+states:
+  household: {name: "At home in the household", care: shelter, marched: false, staying: true}
+  garrison:  {name: "In garrison at Calais", care: shelter, marched: false, staying: true}
+  exile:     {name: "In exile", care: shelter, marched: false, staying: true}
+  campaign:  {name: "On campaign", care: field, marched: true, staying: false}
+  march:     {name: "On the march", care: field, marched: true, staying: false}
+  siege:     {name: "At a siege", care: field, marched: false, staying: true}
+
+positions:
+  reserve: {name: "In the rearward", mult: 0.25}
+  line:    {name: "In the battle", mult: 1}
+  thick:   {name: "In the thick of it", mult: 3}
+cap: 90
+
+# No source counts the small fights. The Calais garrison fought Somerset's men from Guînes all
+# winter 1459-60; at home a lord's men could be caught up in his neighbours' feuds (the Paston
+# letters: Hellesdon 1465, Caister 1469). The chances a season are ours.
+small_war:
+  chance: {household: 5, garrison: 40, exile: 0, campaign: 40, march: 30, siege: 20}
+  hit: 10
+
+sides: {team: "Yorkists", foes: "Lancastrians"}
+
+sources:
+  calais: &calais "https://thewarsoftheroses.co.uk/calais"
+  santiuste5: &santiuste5 "https://erenow.org/postclassical/edwardivandthewarsoftheroses/5.php"
+  north: &north "https://erenow.org/postclassical/abriefhistoryofthewarsoftheroses/16.php"
+  plague: &plague "https://thewarsoftheroses.co.uk/plague"
+  paston: &paston "https://thisispaston.co.uk/warrosesbattleslist.html"
+  hwtowton: &hwtowton "https://www.historyofwar.org/articles/battles_towton.html"
+  hwferry: &hwferry "https://www.historyofwar.org/articles/battles_ferrybridge.html"
+  tbarnet: &tbarnet "https://www.tewkesbury.org.uk/news/april-14th-1471-the-battle-of-barnet"
+  tmarch: &tmarch "https://tewkesbury.org.uk/news/may-3rd-1471-a-forced-march-through-champion-country"
+
+seasons:
+  - {id: 1459-autumn, name: "Autumn 1459", state: march, hygiene: good, factors: {cold_wet: 1}, actions: [],
+     what: "The Yorkists face the king at Ludford Bridge (12 October); the Calais men go over to the king in the night and the army breaks up. Edward flees with Warwick and Salisbury by Devon and Guernsey to Calais (2 November).",
+     sources: [*calais, *santiuste5]}
+  - {id: 1459-winter, name: "Winter 1459-60", state: garrison, hygiene: good, factors: {cold_wet: 2}, actions: [],
+     what: "At Calais, held against Somerset, who has taken Guînes. Dinham's raid on Sandwich (15 January) takes Lord Rivers in his bed and the king's ships.",
+     sources: [*calais, "https://www.historyofwar.org/articles/raid_sandwich_1460.html"]}
+  - {id: 1460-spring, name: "Spring 1460", state: garrison, hygiene: good, factors: {}, actions: [],
+     what: "At Calais: Somerset beaten at Newnham Bridge (23 April); Audley's reinforcements driven ashore and taken.",
+     sources: [*calais, *santiuste5]}
+  - {id: 1460-summer, name: "Summer 1460", state: campaign, hygiene: good, factors: {hot: 1}, actions: [northampton],
+     what: "Over to Sandwich with 1,500 (26 June), London (2 July), and north to Northampton (10 July) in driving rain; the king taken. The Tower yields on 19 July.",
+     sources: [*santiuste5, "https://www.historyofwar.org/articles/battles_northampton.html"]}
+  - {id: 1460-autumn, name: "Autumn 1460", state: household, hygiene: good, factors: {}, actions: [],
+     what: "In London: York claims the crown (October) and is made heir.", sources: [*santiuste5]}
+  - {id: 1460-winter, name: "Winter 1460-61", state: campaign, hygiene: good, factors: {cold_wet: 2}, actions: [mortimers_cross],
+     what: "Raising men in the Welsh Marches over Christmas; York killed at Wakefield (30 December). Edward beats Pembroke and Wiltshire at Mortimer's Cross (2-3 February) in the depths of winter.",
+     sources: [*santiuste5, "https://britishbattles.com/wars-of-the-roses/battle-of-mortimers-cross"]}
+  - {id: 1461-spring, name: "Spring 1461", state: march, hygiene: good, factors: {cold_wet: 2}, actions: [ferrybridge, towton],
+     what: "London and the crown (4 March); north from 13 March. The bridge at Ferrybridge lost at dawn and won back (28 March); Towton in the snow (29 March, Palm Sunday).",
+     sources: [*hwferry, *hwtowton]}
+  - {id: 1461-summer, name: "Summer 1461", state: household, hygiene: good, factors: {}, actions: [],
+     what: "The coronation (28 June).", sources: [*santiuste5]}
+  - {id: 1461-autumn, name: "Autumn 1461", state: household, hygiene: good, factors: {}, actions: [], what: "At home.", sources: [*paston]}
+  - {id: 1461-winter, name: "Winter 1461-62", state: household, hygiene: good, factors: {cold_wet: 1}, actions: [], what: "At home.", sources: [*paston]}
+  - {id: 1462-spring, name: "Spring 1462", state: household, hygiene: good, factors: {}, actions: [], what: "At home.", sources: [*paston]}
+  - {id: 1462-summer, name: "Summer 1462", state: household, hygiene: good, factors: {}, actions: [],
+     what: "At home; Alnwick taken from the Lancastrians in July.", sources: ["https://www.historyofwar.org/articles/siege_alnwick_1462.html"]}
+  - {id: 1462-autumn, name: "Autumn 1462", state: march, hygiene: good, factors: {cold_wet: 1}, actions: [],
+     what: "Margaret lands in Northumberland (October); the king goes north with an army larger than at Towton, and falls sick of measles at Durham.",
+     sources: [*north]}
+  - {id: 1462-winter, name: "Winter 1462-63", state: siege, hygiene: fair, factors: {cold_wet: 4}, actions: [],
+     what: "The winter sieges of Alnwick, Bamburgh and Dunstanburgh, by hunger: the garrisons eat their horses; Bamburgh and Dunstanburgh yield (26-27 December), and the besiegers draw off from Alnwick when the Scots come (5 January).",
+     sources: [*north, "https://www.historyofwar.org/articles/siege_alnwick_1462-3.html"]}
+  - {id: 1463-spring, name: "Spring 1463", state: household, hygiene: good, factors: {}, actions: [], what: "At home; Grey turns Bamburgh back to the Lancastrians (March).", sources: ["https://www.historyofwar.org/articles/siege_alnwick_1462-3.html"]}
+  - {id: 1463-summer, name: "Summer 1463", state: household, hygiene: good, factors: {}, actions: [], what: "At home; Warwick relieves Norham.", sources: ["https://www.historyofwar.org/articles/siege_norham_1463.html"]}
+  - {id: 1463-autumn, name: "Autumn 1463", state: household, hygiene: good, factors: {}, actions: [], what: "At home.", sources: [*paston]}
+  - {id: 1463-winter, name: "Winter 1463-64", state: household, hygiene: good, factors: {cold_wet: 1}, actions: [], what: "At home.", sources: [*paston]}
+  - {id: 1464-spring, name: "Spring 1464", state: household, hygiene: good, factors: {}, actions: [],
+     what: "At home; Montagu beats the Lancastrians at Hedgeley Moor (25 April) and Hexham (15 May).", sources: [*north]}
+  - {id: 1464-summer, name: "Summer 1464", state: siege, hygiene: fair, factors: {hot: 1}, actions: [],
+     what: "The king's great guns, Newcastle, London and Dysyon, before Bamburgh (from 25 June); the castle yields in July. A great pestilence through the realm after the spring's drought.",
+     sources: ["https://www.historyofwar.org/articles/siege_bamburgh_1464.html", *plague]}
+  - {id: 1464-autumn, name: "Autumn 1464", state: household, hygiene: good, factors: {plague: 1}, actions: [],
+     what: "At home: plague in London (the Venetians leave on 26 September).", sources: [*plague]}
+  - {id: 1464-winter, name: "Winter 1464-65", state: household, hygiene: good, factors: {cold_wet: 1}, actions: [], what: "At home.", sources: [*paston]}
+  - {id: 1465-spring, name: "Spring 1465", state: household, hygiene: good, factors: {}, actions: [], what: "At home.", sources: [*paston]}
+  - {id: 1465-summer, name: "Summer 1465", state: household, hygiene: good, factors: {}, actions: [], what: "At home; Henry VI taken in Lancashire (July).", sources: [*paston]}
+  - {id: 1465-autumn, name: "Autumn 1465", state: household, hygiene: good, factors: {}, actions: [],
+     what: "At home; in Norfolk the Duke of Suffolk's men sack the Pastons' Hellesdon at midnight (15 October).", sources: ["https://thisispaston.co.uk/hellesdonhub.html"]}
+  - {id: 1465-winter, name: "Winter 1465-66", state: household, hygiene: good, factors: {cold_wet: 1}, actions: [], what: "At home.", sources: [*paston]}
+  - {id: 1466-spring, name: "Spring 1466", state: household, hygiene: good, factors: {}, actions: [], what: "At home.", sources: [*paston]}
+  - {id: 1466-summer, name: "Summer 1466", state: household, hygiene: good, factors: {}, actions: [], what: "At home.", sources: [*paston]}
+  - {id: 1466-autumn, name: "Autumn 1466", state: household, hygiene: good, factors: {}, actions: [], what: "At home.", sources: [*paston]}
+  - {id: 1466-winter, name: "Winter 1466-67", state: household, hygiene: good, factors: {cold_wet: 1}, actions: [], what: "At home.", sources: [*paston]}
+  - {id: 1467-spring, name: "Spring 1467", state: household, hygiene: good, factors: {}, actions: [], what: "At home.", sources: [*paston]}
+  - {id: 1467-summer, name: "Summer 1467", state: household, hygiene: good, factors: {plague: 1}, actions: [],
+     what: "At home: plague in London, Southwark and Hull; Parliament prorogued (1 July).", sources: [*plague]}
+  - {id: 1467-autumn, name: "Autumn 1467", state: household, hygiene: good, factors: {}, actions: [], what: "At home.", sources: [*paston]}
+  - {id: 1467-winter, name: "Winter 1467-68", state: household, hygiene: good, factors: {cold_wet: 1}, actions: [], what: "At home.", sources: [*paston]}
+  - {id: 1468-spring, name: "Spring 1468", state: household, hygiene: good, factors: {}, actions: [], what: "At home.", sources: [*paston]}
+  - {id: 1468-summer, name: "Summer 1468", state: household, hygiene: good, factors: {}, actions: [], what: "At home; Harlech, the last Lancastrian castle, yields to Herbert (August).", sources: [*paston]}
+  - {id: 1468-autumn, name: "Autumn 1468", state: household, hygiene: good, factors: {}, actions: [], what: "At home.", sources: [*paston]}
+  - {id: 1468-winter, name: "Winter 1468-69", state: household, hygiene: good, factors: {cold_wet: 1}, actions: [], what: "At home.", sources: [*paston]}
+  - {id: 1469-spring, name: "Spring 1469", state: household, hygiene: good, factors: {}, actions: [], what: "At home; Robin of Redesdale's rising in the north.", sources: [*paston]}
+  - {id: 1469-summer, name: "Summer 1469", state: march, hygiene: good, factors: {hot: 1}, actions: [],
+     what: "North against the rebels; Pembroke's army destroyed at Edgecote (26 July) before the king can join it; his household melts away and he is taken. In Norfolk, the Duke of Norfolk besieges Caister (from 21 August).",
+     sources: [*paston, "https://thisispaston.co.uk/caistersiege.html"]}
+  - {id: 1469-autumn, name: "Autumn 1469", state: household, hygiene: good, factors: {}, actions: [], what: "The king free again in September; Caister yields.", sources: ["https://thisispaston.co.uk/caistersiege.html"]}
+  - {id: 1469-winter, name: "Winter 1469-70", state: household, hygiene: good, factors: {cold_wet: 1}, actions: [], what: "At home.", sources: [*paston]}
+  - {id: 1470-spring, name: "Spring 1470", state: campaign, hygiene: good, factors: {}, actions: [],
+     what: "The Lincolnshire rising: the rebels flee at Empingham, Losecoat Field (12 March); Warwick and Clarence chased to the sea.", sources: [*paston]}
+  - {id: 1470-summer, name: "Summer 1470", state: household, hygiene: good, factors: {}, actions: [], what: "At home; north again in August against Fitzhugh's rising.", sources: [*paston]}
+  - {id: 1470-autumn, name: "Autumn 1470", state: march, hygiene: good, factors: {cold_wet: 1}, actions: [],
+     what: "Warwick lands in the West Country (September); Montagu turns, and the king flees from Doncaster to King's Lynn and over the sea to Holland (2 October) with a few hundred men.",
+     sources: [*paston]}
+  - {id: 1470-winter, name: "Winter 1470-71", state: exile, hygiene: good, factors: {cold_wet: 1}, actions: [],
+     what: "In exile in the Burgundian Low Countries, waiting on the duke's money and ships.", sources: [*paston]}
+  - {id: 1471-spring, name: "Spring 1471", state: campaign, hygiene: good, factors: {hot: 1}, actions: [barnet, tewkesbury],
+     what: "Landed at Ravenspur (14 March); Barnet in the mist (Easter Day, 14 April), after Warwick's guns fire over them all night; then the race to the Severn, thirty miles and more on a right hot day with little water, and Tewkesbury (4 May).",
+     sources: [*tbarnet, *tmarch]}
+
+actions:
+  northampton:
+    name: "Northampton"
+    date: 1460-07-10
+    share: 2
+    engaged: "between 20,000 and 40,000 by eyewitnesses, figures not to be taken seriously (historyofwar)"
+    lost: "perhaps as few as 300 casualties on both sides; the Yorkists' losses slight"
+    sources: ["https://www.historyofwar.org/articles/battles_northampton.html", *santiuste5]
+    note: "The share is ours: barely half an hour, the king's guns drowned by the rain, and Grey's men letting the Yorkists over the rampart."
+  mortimers_cross:
+    name: "Mortimer's Cross"
+    date: 1461-02-03
+    share: 4
+    engaged: "some 5,000 Yorkists against some 6,000 (britishbattles)"
+    lost: "Yorkist losses light, no figure; about 2,000 Lancastrians (britishbattles), 4,000 Lancastrian dead (the English Chronicle)"
+    sources: ["https://britishbattles.com/wars-of-the-roses/battle-of-mortimers-cross", *santiuste5]
+    note: "No Yorkist figure: the share is ours, for losses called light."
+  ferrybridge:
+    name: "Ferrybridge"
+    date: 1461-03-28
+    main: false
+    share: null
+    engaged: "FitzWalter's men holding the bridge, then Edward's reinforcements; about 500 Lancastrians under Clifford (Wikipedia, through wikiwand)"
+    lost: "not counted: FitzWalter and the Bastard of Salisbury killed"
+    sources: [*hwferry, "https://wikiwand.com/en/articles/Battle_of_Towton"]
+    note: "No count of the Yorkist losses: the GM sets the share, or plays it as the small fight The bridge at dawn (or the playtest packet's Ferrybridge)."
+  towton:
+    name: "Towton"
+    date: 1461-03-29
+    field: towton-1461
+    share: 48
+    engaged: "50,000-60,000 in both armies (modern estimates, via Wikipedia); the Lancastrians the larger, so about 25,000 Yorkists (ours)"
+    lost: "Yorkist dead 3,000-4,500 (Wikipedia's infobox); 8,000 (Milanese letters); 800 (Bishops Coppini and O'Flanagan); 28,000 dead in all counted by the heralds"
+    alt: {share: 13, source: "Coppini's 800 Yorkist dead"}
+    sources: [*hwtowton, "https://wikiwand.com/en/articles/Battle_of_Towton"]
+    note: "The share is ours: the infobox's lowest Yorkist dead, 3,000, times four, of about 25,000. The sources run from 800 to 8,000 dead."
+  barnet:
+    name: "Barnet"
+    date: 1471-04-14
+    share: 20
+    engaged: "around 10,000 Yorkists (historic-uk); 7,000-15,000 (Wikipedia)"
+    lost: "around 500 Yorkists (historic-uk); 1,000 (Wikipedia)"
+    alt: {share: 40, source: "Wikipedia's 1,000 Yorkist casualties of about 10,000"}
+    sources: ["https://www.historic-uk.com/HistoryMagazine/DestinationsUK/The-Battle-of-Barnet", "https://mobileapps.wikiwand.com/en/Battle_of_Barnet", *tbarnet]
+    note: "Dead only: the share is the dead times four (ours). In the mist the lines overlapped and Oxford's men were taken for the enemy."
+  tewkesbury:
+    name: "Tewkesbury"
+    date: 1471-05-04
+    share: 40
+    engaged: "some 5,000 Yorkists against some 6,000 (britishbattles); 5,000-6,000 (Wikipedia)"
+    lost: "probably around 500 Yorkists killed (britishbattles); unknown (Wikipedia); about 2,000 Lancastrians"
+    sources: ["https://britishbattles.com/wars-of-the-roses/battle-of-tewkesbury", "https://wikiwand.com/EN/Battle_of_Tewkesbury"]
+    single: true
+    note: "One estimate of the Yorkist dead, times four (ours)."
+
+small_fights:
+  - id: sandwich
+    name: "A raid on a port at dawn"
+    what: "Calais men cross the Channel by night and fall on Sandwich early in the morning: Lord Rivers is taken in his bed, with his son and his wife, and the king's new fleet is taken or burned (15 January 1460; Dinham with 800 men, the Paston letters)."
+    states: [garrison]
+    weight: 2
+    where: "a port town's streets and quays"
+    time: "early in the morning"
+    light: dusk
+    ground: town
+    team_attacks: true
+    side: {name: "The raiding party", men: [50, 800]}
+    foes: [{name: "The garrison of the town", men: [30, 300], kit: jack_sallet, weapon: bill}]
+    surprise: {text: "The garrison is abed", chance: 60}
+    aims: {team: "Take the lords and the ships and get back to the boats.", foes: "Stand to and hold the town."}
+    ends: "The raiders win once they hold the quay for 6 rounds; the townsmen give up once a third of those here are down; the raiders fail if a third of theirs are down first."
+    sources: ["https://www.historyofwar.org/articles/raid_sandwich_1460.html", *calais]
+    note: "The garrison's size is not given: ours."
+  - id: newnham
+    name: "Holding the bridge in the Pale"
+    what: "Somerset's men from Guînes come against Newnham Bridge, on the way into Calais, and are beaten off by the Calais garrison (23 April 1460, St George's Day)."
+    states: [garrison]
+    weight: 3
+    where: "a bridge over the dykes of the Calais marshes"
+    time: "by day"
+    ground: bridge
+    side: {name: "The guard at the bridge", men: [20, 200]}
+    foes: [{name: "Somerset's men from Guînes", men: [50, 400], kit: jack_sallet, weapon: bill}]
+    aims: {team: "Hold the bridge.", foes: "Force the bridge and the way to Calais."}
+    ends: "Somerset's men fall back once a third of those here are down or after 8 rounds; the guard is beaten if it is driven off the bridge."
+    sources: [*calais, *santiuste5]
+    note: "No numbers in the accounts: the sizes are ours."
+  - id: bridge
+    name: "The bridge at dawn"
+    what: "Lord Clifford's horsemen, about 500, fall on the Yorkists who took the broken bridge the night before and slept by it; FitzWalter is killed coming out of his lodging, and the Lancastrians hold the narrow way against the reinforcements (Ferrybridge, 28 March 1461, as Hall tells it)."
+    states: [march, campaign]
+    weight: 2
+    where: "a broken bridge over a river and its north bank"
+    time: "at dawn"
+    light: dusk
+    ground: bridge
+    weather: snow
+    side: {name: "The men at the bridge", men: [100, 500]}
+    foes: [{name: "Clifford's horsemen", men: [200, 500], kit: jack_sallet, weapon: spear}]
+    surprise: {text: "The men at the bridge are asleep", chance: 60}
+    aims: {team: "Hold the bridge until the army comes up.", foes: "Drive them off and hold the crossing."}
+    ends: "The army's reinforcements come up after 8 rounds; Clifford's men fall back once a third of those here are down; the men at the bridge are beaten if they are driven over it."
+    sources: [*hwferry, "https://wikiwand.com/en/articles/Battle_of_Towton"]
+    note: "Accounts differ (Waurin has a fight between scouts south of the bridge). The Yorkist numbers are ours; the playtest packet (templates/playtest/packet.md) has a fuller Ferrybridge."
+  - id: dale
+    name: "Catching the rear-guard in a dale"
+    what: "Fauconberg's men, over the Aire by the ford upstream, catch Clifford's men falling back north and kill them in Dinting Dale, Clifford by an arrow in the throat (28 March 1461)."
+    states: [march, campaign]
+    weight: 1
+    where: "a small dale on the road north"
+    time: "in the afternoon"
+    ground: heath
+    weather: snow
+    team_attacks: true
+    side: {name: "Fauconberg's men", men: [100, 500]}
+    foes: [{name: "Clifford's rear-guard", men: [50, 300], kit: jack_sallet, weapon: spear}]
+    aims: {team: "Catch them before they reach their army.", foes: "Get away north to the main army."}
+    ends: "The rear-guard escapes if it holds together for 6 rounds; it is cut down once half of those here are down."
+    sources: [*hwferry, "https://wikiwand.com/en/articles/Battle_of_Towton"]
+    note: "Numbers are not given: ours."
+  - id: scurriers
+    name: "Scurriers in the town"
+    what: "The king's fore-riders find the enemy's scurriers in a town at nightfall and chase them out of it, and the army lodges close before the enemy in the dark (Barnet, 13 April 1471, the Arrivall)."
+    states: [march, campaign]
+    weight: 3
+    where: "a town's street at nightfall"
+    time: "at nightfall"
+    light: dusk
+    ground: town
+    team_attacks: true
+    side: {name: "The fore-riders", men: [20, 100]}
+    foes: [{name: "The enemy's scurriers", men: [20, 100], kit: jack_sallet, weapon: spear}]
+    aims: {team: "Clear the town for the army.", foes: "See what is coming and get back."}
+    ends: "The scurriers ride off once a third of those here are down or after 4 rounds; the fore-riders fall back if half of theirs are down."
+    sources: [*tbarnet]
+    note: "No numbers given: ours."
+  - id: house
+    name: "Holding the house"
+    what: "A lord's men lay siege to a household's castle in a quarrel over land: about thirty men and four hired soldiers hold Caister for a month against the Duke of Norfolk's men (three hundred, or three thousand by William Worcester), with guns and crossbows on both sides; John Daubeney is killed by a bolt and two of the duke's men by gunshot, and the garrison yields for want of powder (21 August-September 1469)."
+    states: [household]
+    weight: 2
+    where: "a house's walls and gatehouse"
+    time: "by day"
+    ground: town
+    side: {name: "The garrison", men: [10, 34]}
+    foes: [{name: "The duke's men", men: [100, 300], kit: jack_sallet, weapon: crossbow}]
+    aims: {team: "Hold the house.", foes: "Take the house."}
+    ends: "The attackers give up for the day after 8 rounds; the garrison yields once a third of those here are down."
+    sources: ["https://thisispaston.co.uk/caistersiege.html"]
+    note: "The roller has no castle ground: lay walls on town ground. The foes here are a Yorkist duke's men: the sides' names are the roller's, not the quarrel's."
+  - id: raid
+    name: "A night raid on a manor"
+    what: "A neighbour's men come at midnight to sack a manor while its lord is away, pull down the house and lodge, and rob the church (Hellesdon, 15 October 1465: the Duke of Suffolk's men, against Margaret Paston's household)."
+    states: [household]
+    weight: 1
+    where: "a manor house and its lodge"
+    time: "at midnight"
+    light: night
+    ground: village
+    side: {name: "The household", men: [5, 30]}
+    foes: [{name: "The raiders", men: [30, 300], kit: jack_sallet, weapon: bill}]
+    surprise: {text: "The household is asleep", chance: 50}
+    aims: {team: "Keep the house, or get away with the household.", foes: "Sack the house."}
+    ends: "The raiders take the house if the household is broken; they go off once a third of those here are down."
+    sources: ["https://thisispaston.co.uk/hellesdonhub.html"]
+    note: "The raiders' 300 is the duke's force sent to Drayton the same night; the household's size is not given: ours."
+  - id: foray
+    name: "A foray from the castle"
+    what: "A starving garrison comes out of its castle to bring in food and fodder, or to break out, against the besiegers' guard (the Northumbrian castles, winter 1462: Dunstanburgh's 120, eating their horses)."
+    states: [siege]
+    weight: 1
+    where: "the besiegers' lines before a castle gate"
+    time: "before dawn"
+    light: dusk
+    ground: open
+    weather: snow
+    side: {name: "The guard on the lines", men: [20, 100]}
+    foes: [{name: "The garrison", men: [20, 120], kit: brigandine_sallet, weapon: poleaxe}]
+    surprise: {text: "The gate opens on the guard by the fires", chance: 30}
+    aims: {team: "Drive them back in.", foes: "Bring in what they can and get back inside."}
+    ends: "The garrison goes back in after 6 rounds or once a third of those here are down; the guard is beaten if it is driven off."
+    sources: [*north, "https://www.historyofwar.org/articles/siege_dunstanburgh_1462.html"]
+    note: "No sally is described in these accounts: the fight is ours, sized from Dunstanburgh's garrison of 120 (21 December 1462)."

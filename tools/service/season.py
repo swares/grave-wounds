@@ -183,6 +183,18 @@ def run(p):
     check(esc["named"] == men and esc["fw"] == ["crossbow"] and esc["fk"] == ["brigandine_sallet"],
           f"the escalade: the retinue's {men} named men go up the ladders against the guard with crossbows ({esc['fw']}, {esc['fk']})")
     check("Defending: The guard on the wall" in esc["msg"], "the French guard holds the wall; the English come in from the edge")
+    # the sixth war: the same English team with Edward of March, 1459-71
+    pg.goto(BASE + "team.html")
+    pg.wait_for_selector("#h-service")
+    pg.select_option("#sv-war", "roses_edward")
+    k = pg.evaluate("() => SVC.war('roses_edward').seasons.findIndex(s => s.id === '1461-spring')")
+    pg.select_option("#sv-season", str(k))
+    rs = pg.inner_text("#service")
+    check("Towton" in rs and "Ferrybridge" in rs and "play it on the field map" in rs.lower(),
+          "an English team can serve with Edward of March instead: spring 1461 has Ferrybridge and Towton, which can be played on its field")
+    check(pg.evaluate("() => SVC.weaponFor(SVC.war('roses_edward'), 10)") == "longbow", "and its hits come first from the longbow")
+    pg.evaluate("() => { const W = SVC.war('roses_edward'); S.svcSmall = SVC.smallFight(W, 'march', svcD100, 'bridge'); render() }")
+    check("Clifford's horsemen" in pg.inner_text("#service"), "the bridge at dawn comes up as Ferrybridge's small fight")
     # the fifth war: a British section in Italy
     pg.goto(BASE + "team.html")
     pg.select_option("#sel-era", "wwii")

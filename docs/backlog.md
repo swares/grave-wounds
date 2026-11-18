@@ -97,8 +97,11 @@ not this repository.
     British battalion is in; for it, Mellor's British wound causes, the official medical history's
     unreadable tables (Salerno, Sicily's 50th Division, XIII Corps in the Liri) and an average
     strength were not reached. Its `medicine` (20) is ours, and the earlier wars have none: the
-    Western Front might take some (anti-tetanus serum, the Carrel-Dakin wound treatment). Still to
-    come: the
+    Western Front might take some (anti-tetanus serum, the Carrel-Dakin wound treatment). The Wars
+    of the Roses with Edward of March is in; for it, no Yorkist loss better than chroniclers' and
+    modern guesses was found (Goodman's The Wars of the Roses, Boardman's Towton, Gravett's Osprey
+    titles and the Arrivall itself were not reached), so most shares are ours (the dead times four).
+    A Lancastrian or Neville calendar could follow. Still to come: the
     Confederates (their counts are thinner), the West (Shiloh to Atlanta, sicker), and the World
     Wars; each needs a calendar, its actions' shares and its small fights from the sources. For
     the Civil War, Livermore's tables, the Official Records returns and the Medical and Surgical

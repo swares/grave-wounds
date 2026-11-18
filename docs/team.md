@@ -671,7 +671,7 @@ once. The Python rules and the page give the same result from the same dice.
 the project doc "between-battles-design"). Between the modelled battles, a team of the war's army
 serves a season (91 days) with a line battalion in one step. The war's calendar gives each season
 what the battalion did (in quarters, on campaign, on the march, at a siege), its hygiene, the weeks
-of the season its weather and ground made sickness worse, and its named actions. Five wars so far:
+of the season its weather and ground made sickness worse, and its named actions. Six wars so far:
 
 - **The Peninsula** (`peninsula.yaml`, 1808-1814, the British in the Peninsula): 24 seasons from
   Roliça to Toulouse, 18 actions, 8 small fights.
@@ -700,6 +700,24 @@ of the season its weather and ground made sickness worse, and its named actions.
   sickness is set to the seasons the accounts describe (about 6% dead of disease at Harfleur, 12%
   in the winter at Meaux, 6% at Melun), about 2.5% a season over the war. The weapon mix is ours,
   from the Visby graves' cutting wounds against arrows and bolts (about 78% to 22%).
+- **The Wars of the Roses with Edward of March** (`roses_edward.yaml`, 1459-1471, a man of
+  Edward's household; England's second war on the panel): 47 seasons from Ludford Bridge to
+  Tewkesbury, most of them quiet at home. Exile at Calais, Northampton, Mortimer's Cross, Ferrybridge
+  (no count: the GM sets it, or plays it as a small fight), Towton (its battlefield), the winter
+  sieges in Northumberland, the flight to Burgundy, Barnet and Tewkesbury. The losses give the dead
+  only, mostly chroniclers' figures or modern guesses: a battle's share is its dead times four (three
+  wounded for each dead, ours, as for Agincourt). Towton is 48% (the 3,000 Yorkist dead at the low
+  end of the modern range, of about 25,000; Coppini's 800 give 13%), Barnet 20% (40% on Wikipedia's
+  1,000), Tewkesbury 40% (one estimate). Eight small fights: a raid on a port at dawn (Sandwich,
+  1460), holding the bridge in the Pale (Newnham Bridge), the bridge at dawn (Ferrybridge), catching
+  the rear-guard in a dale (Dinting Dale), scurriers in the town (Barnet), holding the house
+  (Caister, 1469) and a night raid on a manor (Hellesdon, 1465), from the Paston letters, for the
+  years at home, and a foray from the castle (ours, sized from Dunstanburgh's garrison). The weapon
+  mix is ours, from the Towton grave's 180 wounds on bone (73% blades, 20% blunt, 7% penetrating)
+  with arrows raised to 28%, since an arrow mostly leaves no mark on bone. No army-wide totals were
+  found: disease comes to about 0.7% dead a season (6.5% in the winter sieges of 1462, 0.1% at
+  home, plague in 1464 and 1467), with the short campaigns at good hygiene (ours); hits to about
+  2.3% a season at every main action in the line, over a war of long peace.
 - **The Western Front** (`western_front.yaml`, 1914-1918, a British Regular battalion): 18
   seasons from Mons to the Armistice, following the 2nd Royal Welch Fusiliers (the Long, Long
   Trail, the 33rd Division's history, Graves); 17 actions. The battles are counted by divisions,
