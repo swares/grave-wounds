@@ -2466,7 +2466,7 @@ function renderAfterFight(){
   box.innerHTML = `<details class="after" ${S.afterOpen || auto || S.wonBy ? "open" : ""}><summary><b>After the fight</b> <span class="muted">deeds and loot for the team builder's men</span></summary>
     ${fightEndBar()}<div class="toolbar"><label>Won by ${sel}</label>${dropButtons()}</div>${packsLostText()}${(strainAtEnd(), "")}${travelButton()}
     <ul class="xp">${rows}</ul>
-    <div class="toolbar"><button class="small" id="btn-deeds" title="The ticked men did a deed: +20 to their next promotion roll on the team builder, and the wait waived">Mark deeds</button></div>
+    <div class="toolbar"><button class="small" id="btn-deeds" title="The ticked men did a deed: +20 to their next promotion roll on the team builder, and the wait waived">Mark deeds</button>${followersButton()}</div>
     ${men.length && kinds.length ? `<div class="toolbar"><select id="sel-loot" aria-label="What to loot">${kinds.map(k => `<option value="${k}"${k === K.kind ? " selected" : ""}>${LOOT_NAMES[k]}</option>`).join("")}</select>${whoSel}<button class="small" id="btn-loot" title="Each of the winners who is still up rolls, by his era's rules; winnings go into his purse">Loot (${men.filter(c => !isDown(c)).length} able)</button></div>` : `<p class="muted" style="margin:0">${wonBy() ? "None of the team builder's men are on the winning side." : "Loot once a side has won."}</p>`}
     ${log ? `<ol class="roundlog">${log}</ol>` : ""}</details>`;
 }
@@ -2483,6 +2483,39 @@ function fighterFate(c, won){                       // "taken", "killed", "died"
   if (d) return d;
   if (!won && isDown(c)) return "left";
   return campable(c).length ? "wounded" : null;
+}
+/* The team's followers back to the team builder (gravewounds-followers-back): each sent once, by his
+   id: killed or died, dead; taken, or left on the field down by a beaten side, taken; alive with a
+   serious or critical wound, invalided home; a light wound or none, he stays. */
+const FOLLOWERS_BACK = "gravewounds-followers-back";
+function followerFate(c){
+  const fate = fighterFate(c, sideOf(c) === wonBy());
+  if (fate === "killed" || fate === "died") return "dead";
+  if (fate === "taken" || fate === "left") return "taken";
+  if (fate === "wounded" && ["serious", "critical"].includes(worstWound(c).sev)) return "invalided";
+  return null;
+}
+const followersToSend = () => S.chars.filter(c => c.follower?.fid && !c.followerSent);
+function followersBack(){
+  const men = followersToSend(), fates = [];
+  for (const c of men){
+    c.followerSent = true;
+    const fate = followerFate(c);
+    if (fate) fates.push({ fid: c.follower.fid, name: c.name, fate });
+  }
+  try {
+    const all = JSON.parse(localStorage.getItem(FOLLOWERS_BACK) || "[]") || [];
+    all.push({ from: "roller", fates });
+    localStorage.setItem(FOLLOWERS_BACK, JSON.stringify(all));
+  } catch { S.mapMsg = "Could not send the followers back (storage is off)."; return renderChars() }
+  const words = { dead: "dead", taken: "taken", invalided: "invalided home" };
+  const said = fates.length ? fates.map(o => `${o.name} ${words[o.fate]}`).join(", ") : "none lost";
+  S.afterLog = [`Followers back to the team builder: ${said}; ${men.length - fates.length} stay.`, ...(S.afterLog || [])];
+  renderChars();
+}
+function followersButton(){
+  const n = followersToSend().length;
+  return n ? `<button class="small" id="btn-followers-back" title="Send the followers' fates to the team builder once the fight is settled: the dead, taken or left behind, and those with a serious or critical wound (invalided home), come off its followers">Followers back to the team builder (${n})</button>` : "";
 }
 function rollerResult(){                            // the travel map's battle result, from this fight: {battle, mapId, place, start, minutes, kind, forces, beaten}
   const T = S.travelFrom, w = wonBy(), out = {};
@@ -4808,7 +4841,7 @@ function addTeam(){                             // the team from the team builde
   for (const f of t.followers || []){             // followers: a line each, no sheet
     const c = newChar(f.name, f.kit, f.weapon, f.look, t.side);
     c.nerve = f.nerve; c.rating = f.quality in RATINGS ? f.quality : "custom";
-    c.follower = { career: f.careerName || f.career, quality: f.quality, attack: f.attack, defence: f.defence };
+    c.follower = { career: f.careerName || f.career, quality: f.quality, attack: f.attack, defence: f.defence, fid: f.fid };
     c.team = team;
     S.chars.push(c);
   }
@@ -6241,6 +6274,7 @@ $("#after-fight").addEventListener("click", e => {
   const tk = e.target.closest("button[data-takenman]");
   if (tk){ const c = S.chars.find(x => x.id === +tk.dataset.takenman); if (c){ takenBy(c, `${c.name} is taken prisoner`); S.afterOpen = true; renderChars() } return }
   if (e.target.closest("#btn-to-travel")){ S.afterOpen = true; sendToTravel(); return }
+  if (e.target.closest("#btn-followers-back")){ S.afterOpen = true; followersBack(); return }
   if (e.target.closest("#btn-deeds")){ S.afterOpen = true; markDeeds() }
   else if (e.target.closest("#btn-loot")){ S.afterOpen = true; rollAfterLoot() }
 });

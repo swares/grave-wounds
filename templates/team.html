@@ -382,7 +382,44 @@ function followersDrift(lines){                   // End of season: half the men
   }
   if (gone.length) lines.push(`${cap.lead.name}'s Presence keeps ${cap.cap} followers; ${gone.length} of the ${S.crew.length + gone.length} drift away: ${gone.join("; ")}.`);
 }
-const rollCrew = () => { S.crew = makeFollowers(S.region, S.fcounts.filter(([, n]) => n > 0), tplQuality(S.template), realDice, S.women) };
+const rollCrew = () => { S.crew = makeFollowers(S.region, S.fcounts.filter(([, n]) => n > 0), tplQuality(S.template), realDice, S.women); crewIds() };
+function crewIds(){                                 // each follower's own id: the roller sends back his fate by it
+  for (const f of S.crew || []) f.fid = f.fid || Array.from(crypto.getRandomValues(new Uint32Array(2)), x => x.toString(36)).join("");
+}
+/* Followers lost in a fight (gravewounds-followers-back): the roller sends each follower's fate by his
+   id, the field map its follower units' losses by career (picked at random among them). Dead, taken
+   (or left on the field by a beaten side) and invalided home (a serious or critical wound) come off;
+   their careers go to the drafts. */
+const FOLLOWERS_BACK = "gravewounds-followers-back";
+const FATE_WORDS = { dead: "killed", taken: "taken prisoner", invalided: "invalided home" };
+function fbFates(x){                                // [follower, fate] pairs from one sending
+  if (x.fates) return x.fates.map(o => [S.crew.find(f => f.fid === o.fid), o.fate]);
+  const out = [];
+  for (const o of x.counts || []){
+    const pool = S.crew.filter(f => f.career === o.career);
+    for (const fate of Object.keys(FATE_WORDS)) for (let k = 0; k < (o[fate] || 0) && pool.length; k++) out.push([pool.splice(realDice.randint(0, pool.length - 1), 1)[0], fate]);
+  }
+  return out;
+}
+function pullFollowersBack(){                       // -> true if followers came off
+  let all = [];
+  try { all = JSON.parse(localStorage.getItem(FOLLOWERS_BACK) || "[]") || []; localStorage.removeItem(FOLLOWERS_BACK) } catch { return false }
+  const said = [];
+  for (const x of all){
+    const bits = [];
+    for (const [f, fate] of fbFates(x)){
+      if (!f || !S.crew.includes(f)) continue;
+      svcCrewLose(f, FATE_WORDS[fate]);
+      bits.push(`${f.name} ${FATE_WORDS[fate]}`);
+    }
+    if (bits.length) said.push(`From the ${x.from === "field" ? "field map" : "roller"}: ${bits.join(", ")}.`);
+  }
+  if (!said.length) return false;
+  S.msg = `${said.join(" ")} ${S.crew.length} followers remain.`;
+  S.svclog = [...(S.svclog || []), ...said];
+  save();
+  return true;
+}
 function termOpts(n){                             // 1 to 3 terms
   return [1, 2, 3].map(k => '<option value="' + k + '"' + (k === n ? " selected" : "") + ">" + k + (k > 1 ? " terms" : " term") + "</option>").join("");
 }
@@ -1505,6 +1542,7 @@ function svcDrafts(W, s, lines){                    // recruits for the follower
   const careers = S.flost.splice(0, n), counts = [...new Set(careers)].map(cid => [cid, careers.filter(x => x === cid).length]);
   const fresh = makeFollowers(S.region, counts, TD.followers.draft_quality, realDice, S.women);
   S.crew.push(...fresh);
+  crewIds();
   for (const [cid, k] of counts){
     const row = S.fcounts.find(([x]) => x === cid);
     if (row) row[1] += k; else S.fcounts.push([cid, k]);
@@ -2072,6 +2110,7 @@ function quickStart(dest = "roller.html#quickstart"){   // the Rules' example re
 function sendToRoller(dest = "roller.html"){       // the roller picks the team up and offers to add it
   try {
     const team = S.team.map(c => ({ name: c.name, kit: c.kit, weapon: c.weapon, look: c.look, nerve: c.nerve, leader: !!c.leader, sheet: rollerSheet(c) }));
+    crewIds();
     const followers = S.crew.map(f => ({ ...f, careerName: byId(T.careers, f.career).name }));
     localStorage.setItem(HANDOFF, JSON.stringify({ side: S.side.trim() || "Side A", era: T.id, table: byId(T.regions, S.region).table, team, followers }));
     location.href = dest;
@@ -2125,13 +2164,18 @@ function init(){
   S.era = T.id;
   if (!T.regions.some(r => r.id === S.region) || (S.template !== "own" && !T.templates.some(t => t.id === S.template))) startEra();
   if (!S.fcounts) S.fcounts = tplFollowers(S.template);
+  crewIds();
   pullPurses();
-  window.addEventListener("focus", () => { if (pullPurses()) render() });
+  pullFollowersBack();
+  window.addEventListener("focus", () => {          // both pulled, either may change
+    const purses = pullPurses(), followers = pullFollowersBack();
+    if (purses || followers) render();
+  });
   window.addEventListener("storage", e => {
     let now = null;
     try { now = localStorage.getItem(KEY) } catch { return }
     if (now !== SAVED_AS) return location.reload();   // the whole game changed under it (a campaign switched, a save loaded): start from that, never save the old team over it
-    if ((e.key === PURSES_KEY && pullPurses()) || e.key === XP_KEY) render();
+    if ((e.key === PURSES_KEY && pullPurses()) || e.key === XP_KEY || (e.key === FOLLOWERS_BACK && pullFollowersBack())) render();
   });
   fill();
   $("#sel-era").onchange = e => { setEra(e.target.value); S.era = T.id; startEra(); fill(); render() };

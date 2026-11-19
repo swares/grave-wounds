@@ -263,6 +263,7 @@ legend{padding:0}
         <div class="toolbar">
           <button id="btn-back" hidden title="Take the dead off the forces and the wounded to their camps">Back to the travel map</button>
           <button id="btn-heroes-back" hidden title="Put the heroes' wounds on their records in the wound roller">Heroes' wounds to the roller</button>
+          <button id="btn-followers-back" hidden title="The team's follower units' losses to the team builder: the killed and died, the taken and left on the field, and the carried wounded with a serious wound or worse (invalided home) come off that career's followers">Followers' losses to the team builder</button>
         </div>
       </div>
       <div id="forces-box" hidden>
@@ -2001,6 +2002,7 @@ function renderAfter(){
   $("#after").innerHTML = [0, 1].map(k => `<li>${esc(sideAfter(k))}</li>`).join("");
   $("#btn-back").hidden = !S.from || !!S.from.sent;
   $("#btn-heroes-back").hidden = !allHeroes().length || !!S.heroesSent;
+  $("#btn-followers-back").hidden = !S.units.some(u => u.team_career) || !!S.followersSent;
   const hs = allHeroes().map(h => {
     const fate = heroFate(h), hurt = h.wounds.length ? ", " + nWounds(h.wounds.length) : ", unhurt";
     return `<li>${esc(h.name)}: ${fate}${hurt}.</li>`;
@@ -2490,6 +2492,24 @@ function captivesToTeam(){                        // the enemy's men the team's 
   const pu = S.pursuit, enemy = 1 - k, taken = surrenderedOf(enemy) + (pu && pu.side === enemy ? pu.taken : 0);
   if (!taken) return;
   try{ localStorage.setItem("gravewounds-field-captives", JSON.stringify({ place: S.from?.place || "", side: S.sides[k], enemy: S.sides[enemy], taken })) }catch(e){ /* storage off: the GM takes them by hand */ }
+}
+function followersBack(){                         // each follower unit's losses, by career, to the team builder (gravewounds-followers-back)
+  const serious = trStep(TR.wounds.start.serious), counts = [];
+  afterUnits().forEach((u, i) => {
+    if (!u.team_career) return;
+    const a = S.after[i];
+    counts.push({ career: u.team_career, dead: a.killed + a.died, taken: (a.taken || 0) + a.left, invalided: a.cases.filter(c => c.step >= serious).length });
+  });
+  try {
+    const all = JSON.parse(localStorage.getItem("gravewounds-followers-back") || "[]") || [];
+    all.push({ from: "field", counts });
+    localStorage.setItem("gravewounds-followers-back", JSON.stringify(all));
+  } catch { S.msg = "Could not send the followers' losses (storage is off)."; return render() }
+  S.followersSent = true;
+  const n = counts.reduce((t, x) => t + x.dead + x.taken + x.invalided, 0);
+  S.msg = `The followers' losses went to the team builder: ${n} off its followers.`;
+  save();
+  render();
 }
 function heroesToRoller(){                        // their wounds onto their records in the wound roller
   const lost = [0, 1].filter(k => !standing(k)), held = lost.length === 1 ? S.sides[1 - lost[0]] : null;   // the side that holds the field, if one does
@@ -3650,6 +3670,7 @@ function followerUnit(o, side, k){                // one career's followers as a
   const weapon = ok.includes(o.weapon) ? o.weapon : ok.find(w => ranged(w) === ranged(o.weapon) && !isGun(w)) || ok[0], shoots = ranged(weapon);
   const u = newUnit({ name: o.name, side, men: o.men, quality: o.quality, weapon, kit: FD.kits[o.kit] ? o.kit : "none",
     formation: shoots ? "open" : "close", mounted: o.mounted, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0, medics: o.medics, medic_quality: o.medic_quality });
+  if (o.career) u.team_career = o.career;           // the team builder's followers: their losses go back by career
   u.facing = EDGE_FACING[entryEdge(T(), k)];
   const spot = startSpots(k).find(pos => fits([...S.units, { ...u, pos }], S.units.length, { ...u, pos }, SIZE, S.field));
   if (!spot) return null;
@@ -3829,6 +3850,7 @@ function init(){
     else if (w) walkHero(+w.dataset.walk);
   });
   $("#btn-heroes-back").onclick = heroesToRoller;
+  $("#btn-followers-back").onclick = followersBack;
   $("#sel-table").onchange = e => { S.table = e.target.value; const ok = FD.tables[S.table].weapons; S.units.forEach(u => { if (!ok.includes(u.weapon)) u.weapon = ok[0] }); fillChoices(); render() };
   ["#in-side0", "#in-side1"].forEach((id, k) => { $(id).onchange = e => { const old = S.sides[k], v = e.target.value.trim() || old; S.units.forEach(u => { if (u.side === old) u.side = v }); (S.field.posts || []).forEach(p => { if (p.side === old) p.side = v }); [...(S.field.helos || []), ...(S.field.dumps || [])].forEach(x => { if (x.side === old) x.side = v }); S.sides[k] = v; render() } });
   [0, 1].forEach(k => { $("#chk-ev" + k).onchange = e => setMedevac(k, e.target.checked) });
