@@ -3594,11 +3594,16 @@ function svcStillHtml(c){                          // '(still serious from last 
   if (!sick && !hurt) return "";
   return ` <span class="muted">(still ${esc([sick, hurt && `wounded, ${hurt}`].filter(Boolean).join("; "))} from last season)</span>`;
 }
+function svcOverHtml(W){                            // the war over: its last season's small fight can still be played or rolled, and its log read
+  const last = (S.svclog || []).map(l => "<li>" + esc(l) + "</li>").join("");
+  const log = last ? '<h4>Last season served</h4><ul class="log">' + last + "</ul>" : "";
+  return `<section class="crew work" aria-labelledby="h-service"><h3 id="h-service">A season with the battalion</h3><p>${esc(W.name)} is over: its last season has been served.</p>${S.svcSmall ? svcFightHtml(W) : ""}${log}</section>`;
+}
 function renderService(){
   const box = $("#service"), V = svcState();
   if (!V || !S.team.length){ box.innerHTML = ""; return }
   const W = SVC.war(V.war), s = W.seasons[V.i];
-  if (!s){ box.innerHTML = `<section class="crew work" aria-labelledby="h-service"><h3 id="h-service">A season with the battalion</h3><p>${esc(W.name)} is over: its last season has been served.</p></section>`; return }
+  if (!s){ box.innerHTML = svcOverHtml(W); return }
   const st = W.states[s.state], fx = Object.entries(s.factors || {}).map(([k, n]) => `${k.replace("_", " ")} ${n} week${n > 1 ? "s" : ""}`).join(", ");
   const men = S.team.map((c, k) => `<li><label><input type="checkbox" data-svwith="${k}" ${V.with[c.pid] !== false ? "checked" : ""}> ${esc(c.name)}</label>${svcStillHtml(c)}
       <select data-svpos="${k}" style="width:auto" aria-label="${esc(c.name)}: where he stands">${Object.entries(W.positions).map(([id, p]) => `<option value="${id}" ${(V.pos[c.pid] || "line") === id ? "selected" : ""}>${esc(p.name)}${p.mult !== 1 ? ` (×${p.mult})` : ""}</option>`).join("")}</select></li>`).join("");
@@ -3638,7 +3643,10 @@ function svcFightHandoff(W, s){                     // the small fight as a setu
   const foes = f.foes.map((o, k) => ({ id: "foe" + k, name: o.name, side: W.sides.foes, men: F.foes[k], type: "foot", kit: o.kit || null, weapon: o.weapon || null }));
   const [force, allies, against] = f.team_attacks ? [foes[0], foes.slice(1), [party]] : [party, [], foes];
   const sp = f.surprise ? { text: f.surprise.text, roll: F.surprise_roll, surprised: F.surprised } : null;
-  return { from: "service", title: f.name, team: "team", force, allies, foes: against, place: f.where || f.name, day: s.name, time: f.time,
+  crewIds();
+  const followers = S.crew.map(x => ({ ...x, careerName: byId(T.careers, x.career).name }));   // the followers as they are now: the roller brings its own up to date
+  const pids = S.team.filter(c => (svcState().with || {})[c.pid] !== false).map(c => c.pid);   // the named men serving now: not those lost since they came to the roller
+  return { from: "service", title: f.name, team: "team", pids, followers, force, allies, foes: against, place: f.where || f.name, day: s.name, time: f.time,
     ground: f.ground, groundSeed: `${f.id}:${s.id}`, camp: null, surprise: sp, light: f.light || "day",
     weather: f.weather ? { cond: f.weather, wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } } : null,
     end: svcFightEnd(f.end, side, W.sides.foes),
