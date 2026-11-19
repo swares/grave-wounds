@@ -31,6 +31,7 @@ FIND = """() => {                                       // a seed whose season g
   return null;
 }"""
 SERVICE = "#service"
+ADDTEAM = "button[data-map=addteam]"
 NO_HANDOFF = "() => !S.handoff"
 AT_ROLLER = "() => location.pathname.endsWith('roller.html')"
 TEAM_N = "() => S.team.length"
@@ -98,8 +99,8 @@ def sidearms(pg):
     pg.select_option("#sel-template", "retinue")
     pg.click("#btn-roll")
     pg.click(SEND)
-    pg.wait_for_selector("button[data-map=addteam]")
-    pg.click("button[data-map=addteam]")
+    pg.wait_for_selector(ADDTEAM)
+    pg.click(ADDTEAM)
     w = pg.evaluate("""() => { const a = S.chars.find(c => c.follower && c.weapon === 'longbow'), d = S.chars.find(c => c !== a);
       a.pos = [5, 5]; d.pos = [6, 5]; const near = strikeWeapon(a, d); d.pos = [12, 5]; const far = strikeWeapon(a, d);
       return [a.sidearm, near, far] }""")
@@ -188,8 +189,8 @@ def lost_in_fights(pg):
     ids = pg.evaluate("() => S.crew.map(f => f.fid)")
     check(len(ids) == 16 and len(set(ids)) == 16 and all(ids), "each follower has his own id")
     pg.click(SEND)
-    pg.wait_for_selector("button[data-map=addteam]")
-    pg.click("button[data-map=addteam]")
+    pg.wait_for_selector(ADDTEAM)
+    pg.click(ADDTEAM)
     sent = pg.evaluate("""() => {
       const F = S.chars.filter(c => c.follower), fate = {}, sev = {};
       fate[F[0].id] = "killed"; fate[F[1].id] = "taken"; fate[F[2].id] = "left"; fate[F[3].id] = "wounded"; fate[F[4].id] = "wounded"; fate[F[5].id] = "died";
