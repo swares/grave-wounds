@@ -2654,10 +2654,11 @@ function rollCrew(){
   S.crew = uniqueNames(makeFollowers(S.region, S.fcounts.filter(([, n]) => n > 0), tplQuality(S.template), realDice, S.women));
   crewIds();
 }
-function uniqueNames(fresh){                        // new followers: a name already in the team (its named men, followers, or another new one) rolled again
-  const reg = byId(T.regions, S.region), taken = new Set([...S.team, ...S.crew].map(x => x.name));
+function uniqueNames(fresh, others = [...S.team, ...S.crew]){   // new men (followers, or named men): a name already in the team, or another new one's, rolled again
+  const taken = new Set(others.filter(x => !fresh.includes(x)).map(x => x.name));
   for (const f of fresh){
-    for (let k = 0; k < 20 && taken.has(f.name); k++) f.name = nameFor(reg, disguisedAs(reg, f.career) ? "m" : f.sex, realDice);
+    const reg = byId(T.regions, f.region || S.region);
+    for (let k = 0; k < 20 && taken.has(f.name); k++) f.name = nameFor(reg, disguisedAs(reg, f.career) ? "m" : f.sex || "m", realDice);
     taken.add(f.name);
   }
   return fresh;
@@ -4329,6 +4330,7 @@ function replaceLoss(k){
   }
   const n = makeCharacter(c.region, career, terms, S.mode, realDice, "m");
   n.pid = newPid();
+  uniqueNames([n]);                                 // not a name already in the team
   if (o.kind === "hire"){
     if (cost){ payer.ledger = payer.ledger || []; payer.ledger.push({ days: -cost, what: `Hired ${n.name} (${o.name})${haggled}` }) }
     n.joined = { how: `hired, ${o.name.replace(/^./, x => x.toLowerCase())}`, wait: 0 };
@@ -4354,7 +4356,7 @@ function oldWoundLine(w){
   return `<li class="wound">Old wound: ${esc(where)}, from ${/^[aeiou]/.test(from) ? "an" : "a"} ${esc(from)}: ${what}</li>`;
 }
 function rollTeam(){
-  S.team = makeTeam(S.region, slotsNow(), S.mode, realDice);
+  S.team = uniqueNames(makeTeam(S.region, slotsNow(), S.mode, realDice), []);
   S.lootlog = []; S.chklog = []; S.xplog = []; S.vacancies = {}; S.prisoners = []; S.prlog = [];   // a new team starts with clean logs
   S.team.forEach(c => { c.pid = newPid() });
   rollCrew(); S.worklog = []; S.losses = [];
@@ -4365,6 +4367,7 @@ function reroll(i){
   const c = S.team[i], n = makeCharacter(S.region, c.career, c.terms, S.mode, realDice, c.sex || "m");
   if (c.leader) n.leader = true;
   n.pid = newPid();
+  uniqueNames([n], [...S.team.filter(x => x !== c), ...S.crew]);
   S.team[i] = n; S.swap = null; render();
 }
 function clickStat(i, id){                       // fixed array: click two characteristics to swap them

@@ -910,8 +910,9 @@ for each man whether he serves and where he stands. **Serve the season** then ro
   instruction from 16 April 1862 (the first Conscription Act); the Union's veterans back from
   furlough from 25 June 1863 (General Orders 191) and its recruits and drafted men from camps of
   distribution from July 1863 (the first draft; ours, as the camp's own date was not found).
-  A follower is never given a name already in the team: rolled followers and recruits whose name
-  a named man or another follower has are named again. The End of season drift by Presence still follows.
+  No two men of the team share a name: a named man rolled with the team, rerolled or taken on as
+  a replacement, and a follower rolled or drafted, whose name another man of the team has is
+  named again. The End of season drift by Presence still follows.
 
   The Peninsula's eight, each from dated instances in the accounts (Cope's history of the Rifle
   Brigade, Kincaid, Costello, Rickard's historyofwar.org, Urban): a picket attacked at night (Barba
