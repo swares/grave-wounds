@@ -135,6 +135,14 @@ check("a reckless man leaves the wounded to the others", () => {
   const v = { ...board({ here: "2,2", enemies: [foe(2, "12,10")], stance: "reckless" }), friends: [pal(3, "3,2", { bleed: 0.06, down: true })] };
   assert.equal(F.chooseTurn(v).aid, undefined);
 });
+check("a shooter with a target keeps shooting; with none, he tends a comrade who is down", () => {
+  const friends = [pal(3, "3,2", { bleed: 0.06, down: true })];
+  const shoot = { ...board({ here: "2,2", enemies: [foe(2, "10,2")], range: 12 }), friends };
+  const t = F.chooseTurn(shoot);
+  assert.equal(t.aid, undefined); assert.equal(t.target, 2);
+  const none = { ...board({ here: "2,2", enemies: [foe(2, "15,11")], range: 3 }), friends };
+  assert.equal(F.chooseTurn(none).aid, 3);
+});
 check("no one gives first aid within an enemy's reach", () => {
   const v = { ...board({ here: "5,5", enemies: [foe(2, "6,5")], stance: "cautious" }), friends: [pal(3, "4,5", { bleed: 0.06, down: true })] };
   assert.equal(F.chooseTurn(v).aid, undefined);
