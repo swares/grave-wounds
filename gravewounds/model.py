@@ -1867,6 +1867,8 @@ def _replacement_errors(d: Data, R: dict) -> list[str]:
                     errors.append(f"{at}: cost (and per_term) must be Days")
             if r.get("places") and not set(r["places"]) <= JOB_PLACES:
                 errors.append(f"{at}: unknown place in {r['places']}")
+            if "from" in r and not re.fullmatch(r"\d{4}-\d{2}-\d{2}", str(r["from"])):
+                errors.append(f"{at}: from must be YYYY-MM-DD")
             if not r.get("approx") and not r.get("source"):
                 errors.append(f"{at}: needs a source, or approx: true")
     E = R.get("effects") or {}
