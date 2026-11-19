@@ -34,6 +34,10 @@ for (const [k, want] of Object.entries(fixed.weeks)){
   const [wid, sid, aid] = k.split("/");
   check(`week ${k}`, () => assert.equal(S.actionWeek(S.war(wid), sid, aid), want));
 }
+for (const [k, want] of Object.entries(fixed.desert)){
+  const [wid, sid] = k.split("/");
+  check(`desertion ${k}`, () => assert.equal(S.desertPct(S.war(wid), sid), want));
+}
 for (const [wid, want] of Object.entries(fixed.weapons)){
   check(`weapons ${wid}`, () => assert.deepEqual(want.map((_, i) => S.weaponFor(S.war(wid), i + 1)), want));
 }

@@ -1266,6 +1266,10 @@ def _followers_errors(d: Data) -> list[str]:
         errors.append("followers.yaml: deserted must be 0 to 100")
     if not F.get("approx") and not F.get("source"):
         errors.append("followers.yaml: needs a source, or approx: true")
+    hits = F.get("season_hit") or []
+    if hits and ([h.get("to") for h in hits] != sorted({h.get("to") for h in hits if isinstance(h.get("to"), int)}) or hits[-1]["to"] != 100
+                 or any(h.get("fate") not in ("stays", "invalided", "dead") for h in hits)):
+        errors.append("followers.yaml: season_hit needs whole `to` values rising to 100, each a fate of stays, invalided or dead")
     return errors
 
 
@@ -2118,6 +2122,7 @@ def _service_errors(d: Data, W: dict) -> list[str]:
     for x in d.disease["diseases"].values():
         known |= set(x.get("mods", {})) | set(x.get("needs", []))
     errors += _small_fight_errors(d, W, where, states)
+    errors += _desertion_errors(W, where, states)
     if not isinstance(W.get("medicine", 0), int) or not 0 <= W.get("medicine", 0) <= 50:
         errors.append(f"{where}: medicine must be a whole number 0-50")
     wa = W.get("wastage") or {}
@@ -2168,6 +2173,24 @@ def _service_errors(d: Data, W: dict) -> list[str]:
             errors.append(f"{aw}: needs sources")
         if not any(aid in s.get("actions", []) for s in W.get("seasons", [])):
             errors.append(f"{aw}: in no season")
+    return errors
+
+
+def _desertion_errors(W: dict, where: str, states: dict) -> list[str]:
+    """A war's followers' desertion (a share a season 0-100, its basis and sources, ours or not;
+    alt: another source's share), a season's own share, and the states in which drafts come."""
+    D, errors = W.get("desertion"), []
+    pct = lambda v: isinstance(v, (int, float)) and not isinstance(v, bool) and 0 <= v <= 100
+    if D is None:
+        return []
+    if not pct(D.get("share")) or not D.get("basis") or not D.get("sources"):
+        errors.append(f"{where}: desertion needs a share 0-100, a basis and sources")
+    if "alt" in D and not pct(D["alt"]):
+        errors.append(f"{where}: desertion alt must be 0-100")
+    for s in W.get("seasons", []):
+        if "desertion" in s and (not pct(s["desertion"]) or not s.get("desertion_note")):
+            errors.append(f"{where}: season {s.get('id')}: desertion must be 0-100, with a desertion_note")
+    errors += [f"{where}: drafts: unknown state {k}" for k in W.get("drafts", []) if k not in states]
     return errors
 
 

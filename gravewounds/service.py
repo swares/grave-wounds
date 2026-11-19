@@ -85,6 +85,13 @@ def taken_pct(W: dict, aid: str, position: str = "line", unit: int | None = None
     return min(W["cap"], round(t * W["positions"][position]["mult"]))
 
 
+def desert_pct(W: dict, sid: str) -> float:
+    """A follower's % chance of deserting in the season: the season's own share, else the war's
+    (0: none given)."""
+    s = season(W, sid)
+    return s["desertion"] if "desertion" in s else (W.get("desertion") or {}).get("share", 0)
+
+
 def in_week(n: int, wk: int, of: int) -> bool:
     """Whether a factor that holds `n` weeks of `of` holds in week wk: spread evenly through the season."""
     return (wk + 1) * n // of > wk * n // of

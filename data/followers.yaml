@@ -19,3 +19,17 @@ bands:                       # Presence up to `to`: the share of the template's 
   - {to: 999, share: 1.5}
 leave: 0.5                   # of the men over the cap, the share that leave each End of season
 deserted: 50                 # d100 at or under: he deserts; over: he goes home at his time's end
+
+# A season with the battalion (team builder): each follower is rolled as a named man is. One hit
+# rolls d100 on `season_hit` (wounds.yaml's severity tiers, the light 1-55, serious 56-85, critical
+# 86-100): a light wound stays with the team, a serious one is invalided home, a critical one dies
+# of it (ours; the critical 15% is near the killed share of the hit, 17% in the Peninsula). Dead of
+# disease and taken, he is gone too; then he rolls the war's desertion (data/service). In a season
+# of the war's `drafts` states, recruits rolled on `draft_quality` come up to replace the followers
+# lost, the careers of the lost, up to what the leader's Presence keeps and no more than the
+# template mustered (ours).
+season_hit:
+  - {to: 55, severity: light, fate: stays}
+  - {to: 85, severity: serious, fate: invalided}
+  - {to: 100, severity: critical, fate: dead}
+draft_quality: raw

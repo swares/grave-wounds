@@ -47,6 +47,16 @@ small_war:
 
 sides: {team: "Union", foes: "Confederate"}
 
+# Followers through a season (team builder): each of the team's followers is rolled as a named man
+# is (hit, sickness, taken), and then, if still with the team, d10000 against `desertion.share` x 100
+# (the season's own `desertion` where it gives one). drafts - the states in which recruits come up to
+# fill the followers lost (data/followers.yaml `drafts`). Project doc "follower-drift-research".
+desertion:
+  share: 1.8
+  basis: "Lerwill reckons the army lost about 0.6% a month to desertion in mid-1863, 7-8% a year (Lonn: about 5,500 a month, 1863-65); Fry put the real deserters at about 201,000 of 278,644 reported. A season: three months of it (ours)."
+  sources: ["https://armyheritage.org/wp-content/uploads/ref-bibs/subjects/Military%20Service/Desertion/Desertion%20Statistics.pdf"]
+drafts: [quarters]
+
 sources:
   dyer: &dyer "https://generalstaff.org/WFA/Dyers/VT_Inf_US.htm"
   fox61: &fox61 "https://wargame.ch/wc/acw/sub/vmi/AoA/Library/Fox/Chapter%20XIV%20-%201861.htm"

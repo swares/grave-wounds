@@ -136,7 +136,11 @@ not this repository.
     broken scripted side took every man down or next to a foe (Edward's six all at Newnham Bridge);
     now only the down beside an enemy are taken, the held break away on their Agility or Dodge
     (ours), the down with no enemy by are left, and the rest run. Still left: a company template musters more followers than an
-    officer of middling Presence keeps (they drift each season).
+    officer of middling Presence keeps (they drift each season). Followers now serve the season too
+    (hit, sick, taken, a hit's severity for his fate), desert at each war's rate and are replaced by
+    drafts in winter quarters (project doc "follower-drift-research"); still left: a follower killed
+    or taken on the roller or the field map does not come off the team builder's followers, a light
+    wound leaves no mark on him, and the medieval desertion rates are ours.
 
 - **Camp roles, first cut** (`data/council.yaml`; docs/campaign.md, *The council*). Roles and the
   evening council are on the campaign page. Still left out: the travel map played on its own has no

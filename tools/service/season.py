@@ -33,6 +33,49 @@ FIND = """() => {                                       // a seed whose season g
 QUEUE = "() => JSON.parse(localStorage.getItem('gravewounds-service-hits') || '[]')"
 
 
+def followers(pg):
+    """The followers through a season: rolled as the named men are, a hit's severity for his fate,
+    the war's desertion (or the GM's), and recruits in winter quarters for the lost."""
+    pg.goto(BASE + "team.html")
+    pg.evaluate("() => localStorage.clear()")
+    pg.reload()
+    pg.select_option("#sel-era", "horse_musket")
+    pg.select_option("#sel-region", "british_pen")
+    pg.select_option("#sel-template", "company")
+    pg.click("#btn-roll")
+    pg.wait_for_selector("#h-service")
+    n0 = pg.evaluate("() => S.crew.length")
+    sv = pg.inner_text("#service")
+    check(n0 == 16 and "The followers (16)" in sv and "Desertion 0.3% a season" in sv, f"the company's 16 followers serve too, deserting at 0.3% a season ({n0})")
+    k = pg.evaluate("() => SVC.war('peninsula').seasons.findIndex(s => s.id === '1811-summer')")
+    pg.select_option("#sv-season", str(k))
+    pg.fill("#sv-desert", "100")
+    pg.evaluate(SEEDED, 11)
+    pg.click("#btn-serve")
+    log = pg.inner_text("#service")
+    left = pg.evaluate("() => [S.crew.length, (S.flost || []).length, S.fcounts.reduce((t, [, n]) => t + n, 0)]")
+    check("The followers (16, desertion 100%)" in log and "deserted" in log and left == [0, 16, 0],
+          f"at the GM's 100% every follower is gone, deserted unless sickness or a wound took him first ({left})")
+    q = pg.evaluate("() => SVC.war('peninsula').seasons.findIndex((s, i) => i > S.service.i && s.state === 'quarters')")
+    pg.select_option("#sv-season", str(q))
+    pg.fill("#sv-desert", "0")
+    pg.click("#btn-serve")
+    log = pg.inner_text("#service")
+    got = pg.evaluate("() => { const c = followerCap(); return [S.crew.length, c ? c.cap : null, (S.flost || []).length, S.fcounts.reduce((t, [, n]) => t + n, 0)] }")
+    want = min(got[1] or 16, 16)
+    check("Drafts:" in log and "(a draft from the depot or second battalion)" in log, f"in winter quarters recruits come up: {log[log.find('Drafts:'):][:120]!r}")
+    check(got[0] == want and got[2] == 16 - want and got[3] == got[0],
+          f"as many as the leader's Presence keeps, no more than were mustered, and the counts follow ({got})")
+    fate = pg.evaluate("""() => { const was = realDice.randint, f = S.crew[0], out = [];
+      for (const r of [40, 70, 95]){ realDice.randint = () => r; out.push(svcCrewHit(f, 'Albuera').gone) }
+      realDice.randint = was; return out }""")
+    check(fate == [None, "invalided home", "died of wounds"], f"a hit follower: light stays, serious invalided home, critical dies of it ({fate})")
+    pcts = pg.evaluate("() => { const W = SVC.war('acw_confederate_east'); return [SVC.desertPct(W, '1864-winter'), SVC.desertPct(W, '1863-summer'), SVC.desertPct(SVC.war('western_front'), '1916-summer')] }")
+    check(pcts == [8, 1.1, 0.03], f"the 4th Virginia's followers desert at 8% in the Petersburg winter, 1.1% otherwise; the Western Front's 0.03% ({pcts})")
+    tiny = pg.evaluate("() => { const was = realDice.randint; let n = 0; realDice.randint = (a, b) => 1; n += svcDeserts(0.03) ? 1 : 0; realDice.randint = (a, b) => 100; n += svcDeserts(0.03) ? 10 : 0; realDice.randint = was; return n }")
+    check(tiny == 1, f"a share under 1% is rolled on d10000 ({tiny})")
+
+
 def run(p):
     br = p.chromium.launch()
     pg = br.new_page(viewport={"width": 1400, "height": 1100})
@@ -369,6 +412,7 @@ def run(p):
     pg.click("#btn-serve")
     log = pg.inner_text("#service")
     check(log.count("Shelled or sniped in the line: 10%") >= 1, "the season's log gives each man's wastage roll")
+    followers(pg)
     check(not errors, f"no page errors {errors[:3]}")
     br.close()
 

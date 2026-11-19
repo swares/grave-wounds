@@ -60,6 +60,17 @@ small_war:
 
 sides: {team: "British", foes: "German"}
 
+# Followers through a season (team builder): each of the team's followers is rolled as a named man
+# is (hit, sickness, taken), and then, if still with the team, d10000 against `desertion.share` x 100
+# (the season's own `desertion` where it gives one). drafts - the states in which recruits come up to
+# fill the followers lost (data/followers.yaml `drafts`). Project doc "follower-drift-research".
+desertion:
+  share: 0.02
+  basis: "The official history: about 0.1% of the forces in Italy deserted (Jackson, vol. VI, p. 376), over some seven seasons (ours: a season's share). Another source's, single: the 78th Division counted 927 desertions in October-December 1944 and the 1st Division 626 (Bielecki's thesis, as quoted), about 5% of a division in a season (ours); the GM may use it for the mountain winter."
+  alt: 5
+  sources: ["https://mediterraneanwar.blogspot.com/2008/05/morale-in-italy.html"]
+drafts: [rest]
+
 sources:
   ams: &ams "https://www.generalstaff.org/WW2/Hist_UK/ArmyMedicalServicesCampVol3.pdf"
   inn43: &inn43 "https://www.irishbrigade.co.uk/original-war-diaries-1942-to-1945/war-diaries-of-6-royal-inniskilling-fusiliers/war-diaries-6-royal-inniskilling-fusiliers-194243/6-innisks-august-1943/"

@@ -33,6 +33,10 @@ function makeService(SV, RULES){
     if (!a.taken) return 0;
     return Math.min(W.cap, pyRound(a.taken * W.positions[position].mult));
   }
+  function desertPct(W, sid){                    // a follower's % chance of deserting in the season (as service.desert_pct)
+    const s = season(W, sid);
+    return "desertion" in s ? s.desertion : (W.desertion?.share ?? 0);
+  }
   function pyRound(x){                           // Python's round(): halves to even
     const f = Math.floor(x), r = x - f;
     if (Math.abs(r - 0.5) > 1e-9) return Math.round(x);
@@ -153,7 +157,7 @@ function makeService(SV, RULES){
     const t = takenPct(W, aid, pos, m.unit?.[aid] ?? null);
     if (t){ const tr = rng(); if (tr <= t) r.taken = { action: aid, pct: t, roll: tr } }   // came through unhit: taken?
   }
-  return { war, warsFor, season, seasonStart, weeks, actionWeek, hitPct, takenPct, inWeek, factors, dayCtx, weaponFor, worstStep, woundStep, serve, between, smallFight };
+  return { war, warsFor, season, seasonStart, weeks, actionWeek, hitPct, takenPct, desertPct, inWeek, factors, dayCtx, weaponFor, worstStep, woundStep, serve, between, smallFight };
 }
 
 if (typeof module !== "undefined") module.exports = makeService;   // Node (the tests); the page has no `module`
