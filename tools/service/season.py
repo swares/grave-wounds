@@ -112,6 +112,8 @@ def culps_hill(pg):
     check(h and len(h["only"]) == 1 and (h["end"].get("away") or {}).get("side") and h["force"]["side"] == "Union" and h["foes"][0]["side"] == "Confederate",
           f"the rocks go to the roller with only Terry's men, attacking up at the Union works, and won by getting back down ({(h or {}).get('end')})")
     pg.wait_for_function(AT_ROLLER)
+    tb = pg.evaluate("t => [DATA.tables[t] ? t : null, !!DATA.tables[t] && DATA.tables[t].weapons.includes('rifle_musket'), document.querySelector('#sel-table') ? 1 : 0]", (h or {}).get("table"))
+    check(tb[:2] == ["acw-1861-all-hits", True], f"a season's small fight goes to the roller with its war's own wound table and weapons, not the roller's first ({tb})")
     pg.goto(BASE + "team.html")
     pg.wait_for_selector("#h-service")
     pg.select_option("#sv-season", str(k))
@@ -192,6 +194,8 @@ def lost_in_fights(pg):
     pg.wait_for_selector(HANDOFF)
     pg.click(HANDOFF)
     pg.wait_for_function(NO_HANDOFF)
+    tbl = pg.evaluate("() => S.table")
+    check(tbl == "peninsular-1808-14-officers", f"the roller fights it on the war's table ({tbl})")
     fol = pg.evaluate("() => S.chars.filter(c => c.follower).map(c => [c.follower.fid, !!c.followerSent])")
     check(sorted(f for f, _ in fol) == sorted(t[0]) and not any(x for _, x in fol),
           f"the next small fight brings the followers as the team builder has them now (the lost gone), each to be sent back again ({len(fol)})")
@@ -341,8 +345,9 @@ def run(p):
           f"called by its end: 6 rounds, a third of the French down, or a side broken ({called}, French down {end['frac']:.2f})")
     check(end["won"] == called.get("won") and end["bar"] == "btn-fight-on", "the winner is marked, and the GM may fight on")
     pg.click("#btn-fight-on")
-    on = pg.evaluate("() => ({ won: S.wonBy, r: gmStep(), on: S.fightEnd.on })")
-    check(on["on"] and on["r"] != "over" or "still stand" in pg.evaluate("() => S.gmMsg"), f"Fight on sets the call aside and the script plays on ({on})")
+    on = pg.evaluate("""() => ({ won: S.wonBy, r: gmStep(), on: S.fightEnd.on, msg: S.gmMsg,
+      able: new Set(S.chars.filter(c => !isOut(c) && !c.taken && !c.fled && !c.away).map(sideOf)).size })""")
+    check(on["on"] and (on["r"] != "over" or on["able"] < 2), f"Fight on sets the call aside and the script plays on, unless one side has no one left able ({on})")
     # held ground: the position lost at a round's end, and men getting away by their own edge
     held = pg.evaluate("""() => {
       const snap = JSON.stringify({ chars: S.chars, end: S.fightEnd, won: S.wonBy, broken: S.broken }), E = S.fightEnd, { cols, rows } = mapSize();
