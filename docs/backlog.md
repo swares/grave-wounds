@@ -144,8 +144,7 @@ not this repository.
     lost no longer fight, recruits join), and the last season's small fight can still be played;
     drafts by the army's way of the time (a way's `from` date) and
     followers' names never repeated in a team are done; still left: a
-    light wound leaves no mark on a follower, followers serving as a unit's medics are not counted
-    lost, and the medieval desertion rates are ours.
+    light wound leaves no mark on a follower, and the medieval desertion rates are ours.
 
 - **Camp roles, first cut** (`data/council.yaml`; docs/campaign.md, *The council*). Roles and the
   evening council are on the campaign page. Still left out: the travel map played on its own has no

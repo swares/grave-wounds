@@ -374,7 +374,9 @@ the cap beside the followers.
   and the left on the field, and the carried wounded whose case starts at serious or worse
   (invalided home); the team builder takes that many of the career off at random. The lost
   men's careers go to the drafts (see *A season with the battalion*). Followers who went as a
-  unit's medics are not counted.
+  unit's medics (not among its men, so never hit) are lost at its loss rate: each rolls d100
+  against the share of the unit's men killed, died, left on the field or taken, and if lost is
+  dead or taken in the proportion its men were (ours).
 
 ## On the page and in the roller
 

@@ -170,6 +170,13 @@ def lost_in_fights(pg):
     pg.goto(BASE + "team.html")
     pg.wait_for_function("() => S.crew.length === 5")
     check("From the field map:" in pg.evaluate("() => S.msg"), "and the team builder takes six of the line off at random")
+    units = pg.evaluate("() => { S.fcounts.push(['surgeon', 2]); S.crew.push(...makeFollowers(S.region, [['surgeon', 2]], 'default', realDice)); return fieldUnits() }")
+    check(units[0].get("medic_careers") == ["surgeon", "surgeon"], f"followers of a healing career go with the biggest unit as its medics, by career ({units})")
+    pg.goto(BASE + "field.html")
+    med = pg.evaluate("""() => { const u = { team_medics: ['surgeon', 'surgeon', 'surgeon'], start: 10 };
+      const all = medicsLost(u, { killed: 6, died: 0, left: 0, taken: 4, cases: [] }), none = medicsLost(u, { killed: 0, died: 0, left: 0, taken: 0, cases: [] });
+      return [all.length, all.every(x => x.career === 'surgeon' && x.dead + x.taken === 1), none.length] }""")
+    check(med == [3, True, 0], f"the medics are lost at the unit's loss rate: all of a unit that lost every man, none of one that lost none ({med})")
 
 
 def run(p):

@@ -4420,7 +4420,7 @@ function fieldUnits(){                            // one unit a career; follower
   }
   if (medics.length && units.length){
     const big = units.reduce((a, u) => (u.men > a.men ? u : a), units[0]), count = q => medics.filter(f => f.quality === q).length;
-    Object.assign(big, { medics: medics.length, medic_quality: order.reduce((a, q) => (count(q) >= count(a) ? q : a), "green") });
+    Object.assign(big, { medics: medics.length, medic_careers: medics.map(f => f.career), medic_quality: order.reduce((a, q) => (count(q) >= count(a) ? q : a), "green") });
   }
   return units;
 }
