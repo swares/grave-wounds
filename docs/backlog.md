@@ -1073,3 +1073,11 @@ not this repository.
   Sevastopol, 17 dead) are not yet a career; their term events are written from the research, not
   rolled from records; and the Viet Cong's and the North's women have no reliable share, so they
   are chosen, never rolled.
+
+- **Henry V's small fights are lost by the English** (play test 7, project doc "solo-playtest-7"):
+  10 of 14 in the war, and 11 of 12 in a test of four fights even at 1 to 1 on the roller. A
+  traced escort fight: the English took 62 wounds to the French 23, and only the French
+  men-at-arms in melee were hit. Not yet known why: the longbow against plate, the archers in
+  close combat (a longbow is their only weapon), or the followers' attack and defence against a
+  comrade's. The French split (a third men-at-arms in plate) and the odds cap (3 to 2 for Henry V)
+  are in, but did not change the outcome.
