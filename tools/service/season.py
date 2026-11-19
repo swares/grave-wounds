@@ -345,8 +345,9 @@ def run(p):
           f"called by its end: 6 rounds, a third of the French down, or a side broken ({called}, French down {end['frac']:.2f})")
     check(end["won"] == called.get("won") and end["bar"] == "btn-fight-on", "the winner is marked, and the GM may fight on")
     pg.click("#btn-fight-on")
-    on = pg.evaluate("() => ({ won: S.wonBy, r: gmStep(), on: S.fightEnd.on })")
-    check(on["on"] and on["r"] != "over" or "still stand" in pg.evaluate("() => S.gmMsg"), f"Fight on sets the call aside and the script plays on ({on})")
+    on = pg.evaluate("""() => ({ won: S.wonBy, r: gmStep(), on: S.fightEnd.on, msg: S.gmMsg,
+      able: new Set(S.chars.filter(c => !isOut(c) && !c.taken && !c.fled && !c.away).map(sideOf)).size })""")
+    check(on["on"] and (on["r"] != "over" or on["able"] < 2), f"Fight on sets the call aside and the script plays on, unless one side has no one left able ({on})")
     # held ground: the position lost at a round's end, and men getting away by their own edge
     held = pg.evaluate("""() => {
       const snap = JSON.stringify({ chars: S.chars, end: S.fightEnd, won: S.wonBy, broken: S.broken }), E = S.fightEnd, { cols, rows } = mapSize();
