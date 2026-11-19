@@ -4822,6 +4822,21 @@ function sideOfForce(team){                     // men the campaign already has 
   const tf = teamForce(team), side = tf && forceSide(`${tf.map}:${tf.id}`);
   if (side) S.chars.filter(c => c.team === team).forEach(c => { c.side = side });
 }
+function newFollower(f, side, team){               // one of the team builder's followers as a fighter
+  const c = newChar(f.name, f.kit, f.weapon, f.look, side);
+  c.nerve = f.nerve; c.rating = f.quality in RATINGS ? f.quality : "custom";
+  c.follower = { career: f.careerName || f.career, quality: f.quality, attack: f.attack, defence: f.defence, fid: f.fid };
+  c.team = team;
+  return c;
+}
+function syncFollowers(list){                       // a season's small fight: the team's followers as the team builder has them now
+  const lead = S.chars.find(c => c.team && c.uid);
+  if (!list || !lead) return;
+  const team = lead.team, now = new Set(list.map(f => f.fid));
+  S.chars = S.chars.filter(c => !(c.team === team && c.follower && !now.has(c.follower.fid)));   // the dead, taken, invalided and deserted leave
+  for (const f of list) if (!S.chars.some(c => c.follower?.fid === f.fid)) S.chars.push(newFollower(f, sideOf(lead), team));   // recruits join
+  for (const c of S.chars) if (c.team === team && c.follower) c.followerSent = false;   // a new fight: each may be sent back again
+}
 function addTeam(){                             // the team from the team builder joins the fighters
   const t = S.teamIn; if (!t) return;
   dropExamples();
@@ -4838,13 +4853,7 @@ function addTeam(){                             // the team from the team builde
     S.chars.push(c);
     if (m.sheet) attachNamed(c, forceValue(known?.[1]));   // a named man from the start: the campaign can give him to a player
   }
-  for (const f of t.followers || []){             // followers: a line each, no sheet
-    const c = newChar(f.name, f.kit, f.weapon, f.look, t.side);
-    c.nerve = f.nerve; c.rating = f.quality in RATINGS ? f.quality : "custom";
-    c.follower = { career: f.careerName || f.career, quality: f.quality, attack: f.attack, defence: f.defence, fid: f.fid };
-    c.team = team;
-    S.chars.push(c);
-  }
+  for (const f of t.followers || []) S.chars.push(newFollower(f, t.side, team));   // followers: a line each, no sheet
   sideOfForce(team);
   placeUnplaced();
   S.teamIn = null;
@@ -5767,11 +5776,13 @@ function applyFromMap(){                    // the Strike panel's Apply, with it
 // with the force but not on the roller is missing: he has no fighter here to bring.
 function teamComes(h, c){                           // a season's small fight: the team's named men and followers, or an edge's scene's own men only
   if (!c.team || c.dead || c.taken || !(c.uid || c.follower)) return false;
+  if (c.uid && h.pids && !h.pids.includes(c.sheet?.pid)) return false;   // a named man the team builder no longer has serving (taken or dead in the season roll, or left out)
   return !h.only || h.only.includes(c.sheet?.pid);
 }
 function handoffNamed(h, forces){
   const by = new Map(), missing = [];
   if (h.team){                                    // a season's small fight: the team's named men and followers here go with its party
+    syncFollowers(h.followers);
     for (const c of S.chars) if (teamComes(h, c)) addTo(by, h.team, c);
     if (!by.size) missing.push("the team (send it to the roller from the team builder, then set the fight up again)");
     return { by, missing };

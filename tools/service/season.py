@@ -114,6 +114,19 @@ def lost_in_fights(pg):
     gone = [n for k, n in enumerate(sent["fids"]) if k != 4]
     check(not any(n in t[0] for n in gone) and sent["fids"][4] in t[0] and t[1] == 5 and t[2] == 11,
           f"the team builder takes them off its followers, their careers to the drafts ({t[3]!r})")
+    out = pg.evaluate("() => { const c = S.team[1]; svcState().with[c.pid] = false; return c.pid }")   # as if taken in the season roll: no longer serving
+    pg.evaluate("() => { const W = SVC.war('peninsula'); S.svcSmall = SVC.smallFight(W, 'campaign', svcD100, 'picket'); svcPlayFight() }")
+    pg.wait_for_function("() => location.pathname.endsWith('roller.html')")
+    pg.wait_for_selector("button[data-map=handoff]")
+    pg.click("button[data-map=handoff]")
+    pg.wait_for_function("() => !S.handoff")
+    fol = pg.evaluate("() => S.chars.filter(c => c.follower).map(c => [c.follower.fid, !!c.followerSent])")
+    check(sorted(f for f, _ in fol) == sorted(t[0]) and not any(x for _, x in fol),
+          f"the next small fight brings the followers as the team builder has them now (the lost gone), each to be sent back again ({len(fol)})")
+    here = pg.evaluate("() => S.chars.filter(c => c.uid && c.forceId != null).map(c => c.sheet.pid)")
+    check(out not in here and len(here) >= 1, f"and only the named men serving now: the man no longer with the battalion stays out ({out}, {here})")
+    pg.goto(BASE + "team.html")
+    pg.wait_for_selector("#h-service")
     pg.click("#btn-field")
     pg.wait_for_selector("#btn-teamin")
     pg.click("#btn-teamin")
@@ -404,9 +417,9 @@ def run(p):
     pg.wait_for_function("() => typeof S === 'object' && Array.isArray(S.chars)", timeout=10000)
     pg.get_by_role("button", name="Add the team").first.click()
     pg.wait_for_function("() => S.chars.some(c => c.uid)", timeout=10000)
-    men = pg.evaluate("() => S.chars.filter(c => c.uid && c.team && !c.dead && !c.taken).length")   # not those lost in the picket played above
     pg.goto(BASE + "team.html")
     pg.wait_for_selector("#h-service")
+    men = pg.evaluate("() => S.team.length")   # the retinue's own, not the company's men still on the roller from before
     pg.evaluate("() => { const W = SVC.war('henry_v'); S.svcSmall = SVC.smallFight(W, 'campaign', svcD100, 'escalade'); render() }")
     pg.click("#btn-svplay")
     pg.wait_for_function("() => location.pathname.endsWith('roller.html')", timeout=15000)
