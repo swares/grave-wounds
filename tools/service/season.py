@@ -137,10 +137,9 @@ def drafts_and_names(pg):
     pg.select_option("#sel-template", "recruits")
     pg.click("#btn-roll")
     dup = pg.evaluate("""() => { let worst = 0;
-      for (let k = 0; k < 10; k++){ rollCrew(); const named = new Set(S.team.map(x => x.name)), fol = S.crew.map(x => x.name);   // the named men's own names are the team roll's
-        worst = Math.max(worst, fol.length - new Set(fol).size + fol.filter(n => named.has(n)).length) }
+      for (let k = 0; k < 10; k++){ rollTeam(); const all = [...S.team, ...S.crew].map(x => x.name); worst = Math.max(worst, all.length - new Set(all).size) }
       return worst }""")
-    check(dup == 0, f"ten rolls of 16 recruits: no follower shares a name with another man of the team ({dup})")
+    check(dup == 0, f"ten rolls of a team and its 16 recruits: no two men of the team share a name, named or follower ({dup})")
     ways = pg.evaluate("""() => { const out = {};
       for (const [reg, sid] of [['union', '1862-winter'], ['union', '1863-winter'], ['confederacy', '1861-autumn'], ['confederacy', '1862-winter']]){
         S.region = reg; out[reg + ' ' + sid] = svcDraftWay({ id: sid }).id }
