@@ -2720,12 +2720,12 @@ function keptTable(){                               // the wound table chosen on
   try{
     const t = localStorage.getItem("gravewounds-roller-table");
     return t && DATA.tables[t] ? t : null;
-  }catch(e){ return null }                          // storage off (a private window): the page's first table
+  } catch { /* storage off (a private window): the page's first table */ return null }
 }
 function switchTable(tid){
   S.table = tid; $("#sel-table").value = tid;
   try{ localStorage.setItem("gravewounds-roller-table", tid) }   // kept for the next visit: a team's or a war's table, not the page's first
-  catch(e){ /* storage off (a private window): the table is chosen again next visit */ }
+  catch { /* storage off (a private window): the table is chosen again next visit */ }
   fillWeapons(); applyAttackerWeapon(); syncArmor(); renderHistory(); renderChars();
 }
 function crossEraWarnings(){
