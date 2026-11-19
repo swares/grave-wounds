@@ -1825,7 +1825,7 @@ function gmStrike(c){                              // the script's strike on the
   if (!o || isOut(o) || isOut(c) || cannotAttack(penalties(c)) || S.tm?.ran || S.tm?.covered) return;
   const keep = { aim: S.aim, gap: S.gap, blow: S.blow };
   S.attacker = S.chars.indexOf(c); applyAttackerWeapon();
-  S.active = S.chars.indexOf(o); syncDefenderArmour(); fillFromSheets();
+  S.active = S.chars.indexOf(o); syncDefenderArmour(); applyAttackerWeapon();   // with the defender known: a bowman next to him takes his sidearm
   if (rangeCheck().blocked) return;
   S.aim = ""; S.gap = !!plan.gap; S.blow = plan.blow || "";
   ["#in-atk-roll", "#in-def-roll", "#in-loc", "#in-mech", "#in-sev"].forEach(id => { $(id).value = "" });   // the script's dice are rolled, never a player's typed ones
@@ -2593,7 +2593,7 @@ function selectChar(i){            // make this casualty the defender
   const c = S.chars[i];
   readyToPlace(c);
   if (c && c.kit){ S.armor = c.kit; $("#sel-armor").value = c.kit }
-  fillFromSheets();
+  if (S.attacker >= 0) applyAttackerWeapon(); else fillFromSheets();   // a shooter next to his man takes his sidearm
   renderChars();
 }
 function setAttacker(i){
@@ -2611,9 +2611,13 @@ function penLine(p){
   const flags = p.flags.map(f => `<span class="flag ${f === "incapacitated" || f === "cannot_wield" || f === "out" ? "bad" : ""}">${FLAG_TEXT[f] || f}</span>`).join("");
   return `<div class="pen" title="${p.notes.join("; ") || "no penalties"}"><span>Attack <b>−${p.attack}%</b></span><span>Defence <b>−${p.defence}%</b></span>${flags}</div>`;
 }
+function strikeWeapon(c, dd){                       // the weapon he strikes with: his own, or a shooter's sidearm when the man he strikes is next to him
+  if (c.sidearm && c.weapon && DATA.weapons[c.weapon] && isShot(c.weapon) && c.pos && dd?.pos && hexDistance(c.pos, dd.pos) <= 1) return c.sidearm;
+  return c.weapon;
+}
 function applyAttackerWeapon(){
-  const c = attackerChar();
-  if (c && c.weapon && DATA.tables[S.table].weapons.includes(c.weapon)){ S.weapon = c.weapon; fillWeapons() }
+  const c = attackerChar(), w = c && strikeWeapon(c, defenderChar());
+  if (w && DATA.tables[S.table].weapons.includes(w)){ S.weapon = w; fillWeapons() }
   fillFromSheets();
 }
 // Characters from the team builder carry a sheet: their attack % with each weapon and their
@@ -2652,6 +2656,7 @@ function sideOfForce(team){                     // men the campaign already has 
 }
 function newFollower(f, side, team){               // one of the team builder's followers as a fighter
   const c = newChar(f.name, f.kit, f.weapon, f.look, side);
+  c.sidearm = f.sidearm || null;                  // a bowman's sword in close combat
   c.nerve = f.nerve; c.rating = f.quality in RATINGS ? f.quality : "custom";
   c.follower = { career: f.careerName || f.career, quality: f.quality, attack: f.attack, defence: f.defence, fid: f.fid };
   c.team = team;
@@ -2672,7 +2677,7 @@ function addTeam(){                             // the team from the team builde
   const team = "team" + S.seq;                     // the team's mark on its men and followers: they go with its force together
   for (const m of t.team){
     const c = newChar(m.name, m.kit, m.weapon, m.look, t.side);
-    c.team = team;
+    c.team = team; c.sidearm = m.sidearm || null;
     c.nerve = m.nerve; c.rating = Object.keys(RATINGS).find(r => RATINGS[r] === m.nerve) || "custom"; c.leader = !!m.leader;
     c.sheet = m.sheet;
     c.blood = poolOf(c);                           // his Endurance sets his Blood

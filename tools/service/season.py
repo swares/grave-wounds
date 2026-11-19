@@ -31,6 +31,7 @@ FIND = """() => {                                       // a seed whose season g
   return null;
 }"""
 SERVICE = "#service"
+ADDTEAM = "button[data-map=addteam]"
 NO_HANDOFF = "() => !S.handoff"
 AT_ROLLER = "() => location.pathname.endsWith('roller.html')"
 TEAM_N = "() => S.team.length"
@@ -84,6 +85,26 @@ def followers(pg):
     lost_in_fights(pg)
     drafts_and_names(pg)
     culps_hill(pg)
+    sidearms(pg)
+
+
+def sidearms(pg):
+    """A bowman's sidearm: an archer strikes with his sword when the man he strikes is next to him,
+    with his longbow when he is not."""
+    pg.goto(BASE + "team.html")
+    pg.evaluate(CLEAR)
+    pg.reload()
+    pg.select_option("#sel-era", "medieval")
+    pg.select_option("#sel-region", "england")
+    pg.select_option("#sel-template", "retinue")
+    pg.click("#btn-roll")
+    pg.click(SEND)
+    pg.wait_for_selector(ADDTEAM)
+    pg.click(ADDTEAM)
+    w = pg.evaluate("""() => { const a = S.chars.find(c => c.follower && c.weapon === 'longbow'), d = S.chars.find(c => c !== a);
+      a.pos = [5, 5]; d.pos = [6, 5]; const near = strikeWeapon(a, d); d.pos = [12, 5]; const far = strikeWeapon(a, d);
+      return [a.sidearm, near, far] }""")
+    check(w == ["sword", "sword", "longbow"], f"an archer follower comes with his sword: next to his man he strikes with it, at a distance with his longbow ({w})")
 
 
 def culps_hill(pg):
@@ -168,8 +189,8 @@ def lost_in_fights(pg):
     ids = pg.evaluate("() => S.crew.map(f => f.fid)")
     check(len(ids) == 16 and len(set(ids)) == 16 and all(ids), "each follower has his own id")
     pg.click(SEND)
-    pg.wait_for_selector("button[data-map=addteam]")
-    pg.click("button[data-map=addteam]")
+    pg.wait_for_selector(ADDTEAM)
+    pg.click(ADDTEAM)
     sent = pg.evaluate("""() => {
       const F = S.chars.filter(c => c.follower), fate = {}, sev = {};
       fate[F[0].id] = "killed"; fate[F[1].id] = "taken"; fate[F[2].id] = "left"; fate[F[3].id] = "wounded"; fate[F[4].id] = "wounded"; fate[F[5].id] = "died";
@@ -573,6 +594,10 @@ def run(p):
     pg.click("#btn-serve")
     log = pg.inner_text(SERVICE)
     check(log.count("Shelled or sniped in the line: 10%") >= 1, "the season's log gives each man's wastage roll")
+    stale = pg.evaluate("""() => { S.flost = ['line', 'archer']; const W = SVC.war('western_front'), lines = [];
+      try { svcDrafts(W, W.seasons.find(x => x.state === 'trenches'), lines) } catch (e) { return e.message }
+      return S.flost.length }""")
+    check(stale == 0, f"a loss kept from another era's muster owes no draft and breaks nothing ({stale})")
     followers(pg)
     check(not errors, f"no page errors {errors[:3]}")
     br.close()

@@ -384,6 +384,7 @@ function followersDrift(lines){                   // End of season: half the men
 }
 function rollCrew(){
   S.crew = [];                                      // a new roll: the old followers' names are free again
+  S.flost = []; S.fgone = [];                       // and no drafts owed for an old muster's losses (another era's careers, perhaps)
   S.crew = uniqueNames(makeFollowers(S.region, S.fcounts.filter(([, n]) => n > 0), tplQuality(S.template), realDice, S.women));
   crewIds();
 }
@@ -1395,7 +1396,7 @@ function svcFightHandoff(W, s){                     // the small fight as a setu
   const [force, allies, against] = f.team_attacks ? [foes[0], foes.slice(1), [party]] : [party, [], foes];
   const sp = f.surprise ? { text: f.surprise.text, roll: F.surprise_roll, surprised: F.surprised } : null;
   crewIds();
-  const followers = S.crew.map(x => ({ ...x, careerName: byId(T.careers, x.career).name }));   // the followers as they are now: the roller brings its own up to date
+  const followers = S.crew.map(x => ({ ...x, careerName: byId(T.careers, x.career).name, sidearm: sidearmOf(x.career, S.region) }));   // the followers as they are now: the roller brings its own up to date
   const pids = S.team.filter(c => (svcState().with || {})[c.pid] !== false).map(c => c.pid);   // the named men serving now: not those lost since they came to the roller
   return { from: "service", title: f.name, team: "team", table: W.table, max_odds: W.small_war.max_odds ?? null, pids, followers, force, allies, foes: against, place: f.where || f.name, day: s.name, time: f.time,
     ground: f.ground, groundSeed: `${f.id}:${s.id}`, camp: null, surprise: sp, light: f.light || "day",
@@ -1561,7 +1562,8 @@ function svcDraftWay(s){                            // the army's way of filling
   return ways.reduce((best, a) => (best && (best.from || "") >= (a.from || "") ? best : a), null);
 }
 function svcDrafts(W, s, lines){                    // recruits for the followers lost, in a draft season, up to what the leader keeps
-  if (!(W.drafts || []).includes(s.state) || !(S.flost || []).length || S.template === "own") return;
+  S.flost = (S.flost || []).filter(cid => byId(T.careers, cid));   // only careers of this era: a loss kept from another is dropped
+  if (!(W.drafts || []).includes(s.state) || !S.flost.length || S.template === "own") return;
   const cap = followerCap(), mustered = tplFollowers(S.template).reduce((t, [, n]) => t + n, 0);
   const room = Math.min(cap ? cap.cap : mustered, mustered) - S.crew.length, n = Math.min(room, S.flost.length);
   if (n <= 0) return;
@@ -2136,11 +2138,15 @@ function quickStart(dest = "roller.html#quickstart"){   // the Rules' example re
   save();
   sendToRoller(dest);
 }
+function sidearmOf(cid, region){                  // a career's close-combat weapon, for a man whose weapon shoots (data/teams: sidearm), or null
+  const s = byId(T.careers, cid)?.sidearm;
+  return s ? s[region] ?? s.default ?? null : null;
+}
 function sendToRoller(dest = "roller.html"){       // the roller picks the team up and offers to add it
   try {
-    const team = S.team.map(c => ({ name: c.name, kit: c.kit, weapon: c.weapon, look: c.look, nerve: c.nerve, leader: !!c.leader, sheet: rollerSheet(c) }));
+    const team = S.team.map(c => ({ name: c.name, kit: c.kit, weapon: c.weapon, sidearm: sidearmOf(c.career, c.region), look: c.look, nerve: c.nerve, leader: !!c.leader, sheet: rollerSheet(c) }));
     crewIds();
-    const followers = S.crew.map(f => ({ ...f, careerName: byId(T.careers, f.career).name }));
+    const followers = S.crew.map(f => ({ ...f, careerName: byId(T.careers, f.career).name, sidearm: sidearmOf(f.career, S.region) }));
     localStorage.setItem(HANDOFF, JSON.stringify({ side: S.side.trim() || "Side A", era: T.id, table: byId(T.regions, S.region).table, team, followers }));
     location.href = dest;
   } catch (e) {                                  // storage is off or full: say so rather than lose the team
