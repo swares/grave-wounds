@@ -364,6 +364,17 @@ the cap beside the followers.
   sent this way are not the roller's fighters, so their wounds stay on the field map: to
   carry wounds back to the roller, send the team to the roller and add its men as heroes
   from there.
+- **Followers lost in a fight** come off the followers when the GM sends them back, once the
+  fight is settled (so a man retaken when his side wins is not lost). On the roller, **Followers
+  back to the team builder** under *After the fight* sends each follower's fate by his own id,
+  each only once: killed or died of his wounds, dead; taken, or down on the field when his side
+  was beaten (left behind), taken; alive with a serious or critical wound, invalided home; a light
+  wound or none, he stays. On the field map, **Followers' losses to the team builder** under
+  *After the battle* sends each follower unit's losses by career: the killed and died, the taken
+  and the left on the field, and the carried wounded whose case starts at serious or worse
+  (invalided home); the team builder takes that many of the career off at random. The lost
+  men's careers go to the drafts (see *A season with the battalion*). Followers who went as a
+  unit's medics are not counted.
 
 ## On the page and in the roller
 

@@ -75,6 +75,57 @@ def followers(pg):
     check(pcts == [8, 1.1, 0.03], f"the 4th Virginia's followers desert at 8% in the Petersburg winter, 1.1% otherwise; the Western Front's 0.03% ({pcts})")
     tiny = pg.evaluate("() => { const was = realDice.randint; let n = 0; realDice.randint = (a, b) => 1; n += svcDeserts(0.03) ? 1 : 0; realDice.randint = (a, b) => 100; n += svcDeserts(0.03) ? 10 : 0; realDice.randint = was; return n }")
     check(tiny == 1, f"a share under 1% is rolled on d10000 ({tiny})")
+    lost_in_fights(pg)
+
+
+def lost_in_fights(pg):
+    """Followers lost in a fight come off the team builder: the roller sends each follower's fate by
+    his id (dead, taken or left behind, a serious wound invalided; a light one stays), once; the field
+    map its follower units' losses by career."""
+    pg.goto(BASE + "team.html")
+    pg.evaluate("() => localStorage.clear()")
+    pg.reload()
+    pg.select_option("#sel-era", "horse_musket")
+    pg.select_option("#sel-region", "british_pen")
+    pg.select_option("#sel-template", "company")
+    pg.click("#btn-roll")
+    ids = pg.evaluate("() => S.crew.map(f => f.fid)")
+    check(len(ids) == 16 and len(set(ids)) == 16 and all(ids), "each follower has his own id")
+    pg.click("#btn-send")
+    pg.wait_for_selector("button[data-map=addteam]")
+    pg.click("button[data-map=addteam]")
+    sent = pg.evaluate("""() => {
+      const F = S.chars.filter(c => c.follower), fate = {}, sev = {};
+      fate[F[0].id] = "killed"; fate[F[1].id] = "taken"; fate[F[2].id] = "left"; fate[F[3].id] = "wounded"; fate[F[4].id] = "wounded"; fate[F[5].id] = "died";
+      sev[F[3].id] = "serious"; sev[F[4].id] = "light";
+      fighterFate = c => fate[c.id] || null;
+      worstWound = c => ({ sev: sev[c.id] });
+      followersBack();
+      const again = followersToSend().length;
+      return { names: F.slice(0, 6).map(c => c.name), back: JSON.parse(localStorage.getItem('gravewounds-followers-back')), again, log: S.afterLog[0] } }""")
+    fates = [o["fate"] for o in sent["back"][0]["fates"]]
+    check(fates == ["dead", "taken", "taken", "invalided", "dead"] and sent["again"] == 0,
+          f"the roller sends the dead, the taken and left behind, the seriously wounded; the lightly wounded stays; each once ({fates}, {sent['log']!r})")
+    pg.goto(BASE + "team.html")
+    pg.wait_for_function("() => S.crew.length === 11")
+    t = pg.evaluate("() => [S.crew.map(f => f.name), S.flost.length, S.fcounts.reduce((a, [, n]) => a + n, 0), S.msg]")
+    gone = [n for k, n in enumerate(sent["names"]) if k != 4]
+    check(not any(n in t[0] for n in gone) and sent["names"][4] in t[0] and t[1] == 5 and t[2] == 11,
+          f"the team builder takes them off its followers, their careers to the drafts ({t[3]!r})")
+    pg.click("#btn-field")
+    pg.wait_for_selector("#btn-teamin")
+    pg.click("#btn-teamin")
+    got = pg.evaluate("""() => {
+      S.after = afterUnits().map(() => ({ killed: 0, died: 0, left: 0, taken: 0, cases: [] }));
+      const i = S.units.findIndex(u => u.team_career === 'line');
+      S.after[i] = { killed: 2, died: 1, left: 1, taken: 1, cases: [{ step: trStep(TR.wounds.start.serious) }, { step: trStep(TR.wounds.start.light) }] };
+      followersBack();
+      return [i, JSON.parse(localStorage.getItem('gravewounds-followers-back'))] }""")
+    check(got[0] >= 0 and got[1][0]["counts"] == [{"career": "line", "dead": 3, "taken": 2, "invalided": 1}],
+          f"the field map sends its follower unit's losses by career ({got})")
+    pg.goto(BASE + "team.html")
+    pg.wait_for_function("() => S.crew.length === 5")
+    check("From the field map:" in pg.evaluate("() => S.msg"), "and the team builder takes six of the line off at random")
 
 
 def run(p):
