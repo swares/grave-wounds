@@ -346,13 +346,13 @@ def run(p):
       const lines = gmYield('British');
       DICE.randint = ri;
       const out = { down0: [isDown(br[0]), br[0].taken], down1: br[1].taken || br[1].fled, held: [br[2].fled, br[3].taken], clear: br[4].fled, lines,
-        named: [nm[0].taken, nm[0].fled, nm[1].taken, nm[1].fled, nm.length], askedNamed: nm.some(c => asked.includes(c.name)) };
+        named: [nm[0].taken, nm[0].fled, nm[1].taken, nm[1].fled || isDown(nm[1]), nm.length], askedNamed: nm.some(c => asked.includes(c.name)) };
       const was = JSON.parse(snap); S.chars = was.chars; S.gm = was.gm; S.broken = was.broken;
       return out }""")
     check(yl["down0"] == [True, True] and not yl["down1"] and yl["held"] == [True, True] and yl["clear"],
           f"a broken scripted side: the down beside an enemy taken, the down alone left, the held break away or are taken, the rest run ({yl['lines']})")
     check(yl["named"] == [False, False, False, True, 2] and not yl["askedNamed"],
-          f"but the script never surrenders the team's named men: down, he is left where he lies; held, he breaks away; none asks for quarter ({yl['named']})")
+          f"but the script never surrenders the team's named men: down, he is left where he lies; held, he breaks away (or, down from what he carried in from the season, lies); none asks for quarter ({yl['named']}, {yl['lines']})")
     # the picket was played only to see its end: its losses do not go on to the team builder
     pg.evaluate("() => { const all = readPurses(); for (const k in all) delete all[k].lost; writePurses(all); for (const c of S.chars) c.taken = false; save() }")
     # a case carried from the last season: the panel shows it, and the next season begins from it
