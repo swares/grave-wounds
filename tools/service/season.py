@@ -82,6 +82,31 @@ def followers(pg):
     tiny = pg.evaluate("() => { const was = realDice.randint; let n = 0; realDice.randint = (a, b) => 1; n += svcDeserts(0.03) ? 1 : 0; realDice.randint = (a, b) => 100; n += svcDeserts(0.03) ? 10 : 0; realDice.randint = was; return n }")
     check(tiny == 1, f"a share under 1% is rolled on d10000 ({tiny})")
     lost_in_fights(pg)
+    drafts_and_names(pg)
+
+
+def drafts_and_names(pg):
+    """Followers' names are not repeated in a team, and a season's drafts come by the army's way of
+    the time: volunteers before conscription, conscripts from April 1862, the Union's camps of
+    distribution from July 1863."""
+    pg.goto(BASE + "team.html")
+    pg.evaluate(CLEAR)
+    pg.reload()
+    pg.select_option("#sel-era", "civil_war")
+    pg.select_option("#sel-region", "union")
+    pg.select_option("#sel-template", "recruits")
+    pg.click("#btn-roll")
+    dup = pg.evaluate("""() => { let worst = 0;
+      for (let k = 0; k < 10; k++){ rollCrew(); const all = [...S.team, ...S.crew].map(x => x.name); worst = Math.max(worst, all.length - new Set(all).size) }
+      return worst }""")
+    check(dup == 0, f"ten rolls of 16 recruits: no follower shares a name with another man of the team ({dup})")
+    ways = pg.evaluate("""() => { const out = {};
+      for (const [reg, sid] of [['union', '1862-winter'], ['union', '1863-winter'], ['confederacy', '1861-autumn'], ['confederacy', '1862-winter']]){
+        S.region = reg; out[reg + ' ' + sid] = svcDraftWay({ id: sid }).id }
+      S.region = 'union'; return out }""")
+    check(ways == {"union 1862-winter": "regimental_recruiting", "union 1863-winter": "distribution_camp",
+                   "confederacy 1861-autumn": "regimental_recruiting", "confederacy 1862-winter": "camp_of_instruction"},
+          f"drafts by the army's way of the time ({ways})")
 
 
 def lost_in_fights(pg):

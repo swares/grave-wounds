@@ -382,7 +382,19 @@ function followersDrift(lines){                   // End of season: half the men
   }
   if (gone.length) lines.push(`${cap.lead.name}'s Presence keeps ${cap.cap} followers; ${gone.length} of the ${S.crew.length + gone.length} drift away: ${gone.join("; ")}.`);
 }
-const rollCrew = () => { S.crew = makeFollowers(S.region, S.fcounts.filter(([, n]) => n > 0), tplQuality(S.template), realDice, S.women); crewIds() };
+function rollCrew(){
+  S.crew = [];                                      // a new roll: the old followers' names are free again
+  S.crew = uniqueNames(makeFollowers(S.region, S.fcounts.filter(([, n]) => n > 0), tplQuality(S.template), realDice, S.women));
+  crewIds();
+}
+function uniqueNames(fresh){                        // new followers: a name already in the team (its named men, followers, or another new one) rolled again
+  const reg = byId(T.regions, S.region), taken = new Set([...S.team, ...S.crew].map(x => x.name));
+  for (const f of fresh){
+    for (let k = 0; k < 20 && taken.has(f.name); k++) f.name = nameFor(reg, disguisedAs(reg, f.career) ? "m" : f.sex, realDice);
+    taken.add(f.name);
+  }
+  return fresh;
+}
 function crewIds(){                                 // each follower's own id: the roller sends back his fate by it
   for (const f of S.crew || []) f.fid = f.fid || Array.from(crypto.getRandomValues(new Uint32Array(2)), x => x.toString(36)).join("");
 }
@@ -1542,20 +1554,25 @@ function svcCrewSeason(W, s, res, lines){           // the followers' season: th
   }
   svcDrafts(W, s, lines);
 }
+function svcDraftWay(s){                            // the army's way of filling gaps by the season: of those begun (from), the latest begun
+  const day = new Date(SVC.seasonStart(s.id) * 86400000).toISOString().slice(0, 10);
+  const ways = (TD.repl?.assigned || []).filter(a => (!a.regions || a.regions.includes(S.region)) && (!a.from || a.from <= day));
+  return ways.reduce((best, a) => (best && (best.from || "") >= (a.from || "") ? best : a), null);
+}
 function svcDrafts(W, s, lines){                    // recruits for the followers lost, in a draft season, up to what the leader keeps
   if (!(W.drafts || []).includes(s.state) || !(S.flost || []).length || S.template === "own") return;
   const cap = followerCap(), mustered = tplFollowers(S.template).reduce((t, [, n]) => t + n, 0);
   const room = Math.min(cap ? cap.cap : mustered, mustered) - S.crew.length, n = Math.min(room, S.flost.length);
   if (n <= 0) return;
   const careers = S.flost.splice(0, n), counts = [...new Set(careers)].map(cid => [cid, careers.filter(x => x === cid).length]);
-  const fresh = makeFollowers(S.region, counts, TD.followers.draft_quality, realDice, S.women);
+  const fresh = uniqueNames(makeFollowers(S.region, counts, TD.followers.draft_quality, realDice, S.women));
   S.crew.push(...fresh);
   crewIds();
   for (const [cid, k] of counts){
     const row = S.fcounts.find(([x]) => x === cid);
     if (row) row[1] += k; else S.fcounts.push([cid, k]);
   }
-  const way = (TD.repl?.assigned || []).find(a => !a.regions || a.regions.includes(S.region));
+  const way = svcDraftWay(s);
   const from = way ? ` (${way.name.toLowerCase()})` : "";
   const names = fresh.map(f => f.name + ", " + svcCareer(f.career)).join("; ");
   lines.push(`Drafts: ${n} recruit${n > 1 ? "s" : ""}${from} join the followers, ${TD.followers.draft_quality}: ${names}.`);

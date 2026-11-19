@@ -1,5 +1,6 @@
 # Replacing losses for civil_war (gravewounds/replace.py). Union Days: 1 Day = 43¢.
 # assigned - the army's own way of filling a gap: regions (armies), careers (any, or a list),
+#            from (optional: the date it began, YYYY-MM-DD; a season's drafts take the latest begun),
 #            terms (the experience he usually came with, or [low, high]), wait ([low, high] days
 #            from the loss to his arrival), places (none: anywhere), what, source or approx.
 # hire     - a man the team can engage: as above, with cost (Days, paid from a purse, for the
@@ -8,6 +9,24 @@
 #            home) or lost (given away or gone with him); default, and an army's own under regions.
 id: civil_war
 assigned:
+- id: regimental_recruiting
+  name: A volunteer brought in by the regiment's recruiting party
+  regions:
+  - union
+  - confederacy
+  careers:
+  - infantry
+  - trooper
+  - gunner
+  terms: 1
+  wait:
+  - 30
+  - 90
+  what: Before conscription, regiments filled their gaps with volunteers raised at home by their own recruiting details; the South had more volunteers than it could arm in 1861.
+  approx: true
+  source:
+    url: https://encyclopedia.com/history/encyclopedias-almanacs-transcripts-and-maps/confederate-army
+    note: volunteers mustered in 1861 (100,000 twelve-month men in March, up to 400,000 three-year men in May); the recruiting parties are ours
 - id: distribution_camp
   name: A recruit from a camp of distribution
   regions:
@@ -17,13 +36,14 @@ assigned:
   - trooper
   - gunner
   terms: 1
+  from: "1863-07-01"
   wait:
   - 30
   - 120
   what: 'Draftees and recruits went to the old regiments through camps of distribution, often under guard, with little training: the veterans would teach them.'
   source:
     url: https://civilwartalk.com/threads/replacements.155755/
-    note: camps of distribution at Alexandria and Cairo
+    note: 'camps of distribution at Alexandria and Cairo; from the first draft of the Enrollment Act, July 1863 (ours: the camp at Alexandria took drafted men and recruits as well as convalescents, and was reorganized as the Rendezvous of Distribution on 14 January 1864, civilwardc.org)'
 - id: veteran_furlough
   name: A man back from veteran furlough
   regions:
@@ -34,13 +54,14 @@ assigned:
   - gunner
   - sergeant
   terms: 2
+  from: "1863-06-25"
   wait:
   - 30
   - 45
   what: Regiments that re-enlisted went home on furlough and came back with their men and new recruits.
   source:
     url: https://civilwartalk.com/threads/replacements.155755/
-    note: 30-day furloughs for re-enlisting regiments
+    note: 30-day furloughs for re-enlisting regiments (veteran volunteers, General Orders 191, 25 June 1863)
 - id: camp_of_instruction
   name: A conscript from a camp of instruction
   regions:
@@ -50,6 +71,7 @@ assigned:
   - trooper
   - gunner
   terms: 1
+  from: "1862-04-16"
   wait:
   - 30
   - 90

@@ -892,7 +892,14 @@ for each man whether he serves and where he stands. **Serve the season** then ro
   recruits come up for the followers lost: of the lost men's careers, rolled raw
   (`draft_quality`), up to what the leader's Presence keeps and never more than the template
   mustered (ours); the log names them and the army's way (a draft from the depot or second
-  battalion, from `data/replacements`). The End of season drift by Presence still follows.
+  battalion, from `data/replacements`): of the ways begun by the season (a way's `from` date), the
+  latest begun. In the Civil War, volunteers raised by the regiment's recruiting party come before
+  conscription (ours, from the 1861 volunteering); the Confederacy's conscripts from camps of
+  instruction from 16 April 1862 (the first Conscription Act); the Union's veterans back from
+  furlough from 25 June 1863 (General Orders 191) and its recruits and drafted men from camps of
+  distribution from July 1863 (the first draft; ours, as the camp's own date was not found).
+  A follower is never given a name already in the team: rolled followers and recruits whose name
+  a named man or another follower has are named again. The End of season drift by Presence still follows.
 
   The Peninsula's eight, each from dated instances in the accounts (Cope's history of the Rifle
   Brigade, Kincaid, Costello, Rickard's historyofwar.org, Urban): a picket attacked at night (Barba

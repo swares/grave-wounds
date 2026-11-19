@@ -142,8 +142,8 @@ not this repository.
     and the field map now come off too (sent back by the GM once the fight is settled); from the fifth (the ACW, both sides): a
     season's small fight now brings the followers and named men the team builder has serving (the
     lost no longer fight, recruits join), and the last season's small fight can still be played;
-    still left from it: drafts come before the army's way existed (conscripts in 1861), followers
-    can share a name; still left: a
+    drafts by the army's way of the time (a way's `from` date) and
+    followers' names never repeated in a team are done; still left: a
     light wound leaves no mark on a follower, followers serving as a unit's medics are not counted
     lost, and the medieval desertion rates are ours.
 
