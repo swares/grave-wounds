@@ -31,6 +31,10 @@ FIND = """() => {                                       // a seed whose season g
   return null;
 }"""
 SERVICE = "#service"
+NO_HANDOFF = "() => !S.handoff"
+AT_ROLLER = "() => location.pathname.endsWith('roller.html')"
+TEAM_N = "() => S.team.length"
+HANDOFF = "button[data-map=handoff]"
 SEND = "#btn-send"
 CLEAR = "() => localStorage.clear()"
 QUEUE = "() => JSON.parse(localStorage.getItem('gravewounds-service-hits') || '[]')"
@@ -116,10 +120,10 @@ def lost_in_fights(pg):
           f"the team builder takes them off its followers, their careers to the drafts ({t[3]!r})")
     out = pg.evaluate("() => { const c = S.team[1]; svcState().with[c.pid] = false; return c.pid }")   # as if taken in the season roll: no longer serving
     pg.evaluate("() => { const W = SVC.war('peninsula'); S.svcSmall = SVC.smallFight(W, 'campaign', svcD100, 'picket'); svcPlayFight() }")
-    pg.wait_for_function("() => location.pathname.endsWith('roller.html')")
-    pg.wait_for_selector("button[data-map=handoff]")
-    pg.click("button[data-map=handoff]")
-    pg.wait_for_function("() => !S.handoff")
+    pg.wait_for_function(AT_ROLLER)
+    pg.wait_for_selector(HANDOFF)
+    pg.click(HANDOFF)
+    pg.wait_for_function(NO_HANDOFF)
     fol = pg.evaluate("() => S.chars.filter(c => c.follower).map(c => [c.follower.fid, !!c.followerSent])")
     check(sorted(f for f, _ in fol) == sorted(t[0]) and not any(x for _, x in fol),
           f"the next small fight brings the followers as the team builder has them now (the lost gone), each to be sent back again ({len(fol)})")
@@ -168,7 +172,7 @@ def run(p):
     seed = pg.evaluate(FIND)
     check(seed is not None, f"a season with a hit found (seed {seed})")
     pg.evaluate(SEEDED, seed)
-    n = pg.evaluate("() => S.team.length")
+    n = pg.evaluate(TEAM_N)
     pg.click("#btn-serve")
     log = pg.inner_text(SERVICE)
     check("hit at Albuera" in log and "66%" in log, "the log gives the hit at Albuera at the 1/57th's 66%")
@@ -190,7 +194,7 @@ def run(p):
     check(lived[0][:2] == [1, 1] and lived[1] == [1, 0, 0], f"a term of rolled seasons gives no lifepath wound chance ({lived})")
 
     pg.click(SEND)
-    pg.wait_for_function("() => location.pathname.endsWith('roller.html')", timeout=15000)
+    pg.wait_for_function(AT_ROLLER, timeout=15000)
     pg.wait_for_function("() => typeof S === 'object' && Array.isArray(S.chars)", timeout=10000)
     pg.get_by_role("button", name="Add the team").first.click()
     pg.wait_for_function("() => S.chars.some(c => c.uid)", timeout=10000)
@@ -220,11 +224,11 @@ def run(p):
     check("French foragers caught at dawn" in pg.inner_text(SERVICE), "picking another rolls its sizes")
     pg.select_option("#sv-fight", "picket")
     pg.click("#btn-svplay")
-    pg.wait_for_function("() => location.pathname.endsWith('roller.html')", timeout=15000)
-    pg.wait_for_selector("button[data-map=handoff]", timeout=10000)
+    pg.wait_for_function(AT_ROLLER, timeout=15000)
+    pg.wait_for_selector(HANDOFF, timeout=10000)
     check("From a season with the battalion" in pg.inner_text("#map-actions"), "the roller offers the small fight")
-    pg.click("button[data-map=handoff]")
-    pg.wait_for_function("() => !S.handoff", timeout=8000)
+    pg.click(HANDOFF)
+    pg.wait_for_function(NO_HANDOFF, timeout=8000)
     sides = pg.evaluate("""() => { const b = S.chars.filter(c => sideOf(c) === 'British'), f = S.chars.filter(c => sideOf(c) === 'French');
       return { b: b.length, named: b.filter(c => c.uid).length, f: f.length, fw: [...new Set(f.map(c => c.weapon))], notes: S.pending.join(' | ') } }""")
     check(sides["named"] == named and sides["b"] >= named and sides["f"] >= 1,
@@ -359,7 +363,7 @@ def run(p):
     pg.evaluate("""() => { const V = svcState(), W = SVC.war('acw_confederate_east'); V.war = W.id; V.i = W.seasons.findIndex(s => s.id === '1864-spring');
       V.unit = { spotsylvania: 0 }; V.at = { wilderness: false, spotsylvania: true }; window.__q = [99, 99, 10];
       realDice.randint = (a, b) => (window.__q.length ? window.__q.shift() : b); render() }""")
-    n0 = pg.evaluate("() => S.team.length")
+    n0 = pg.evaluate(TEAM_N)
     pg.click("#btn-serve")
     took = pg.evaluate("() => ({ log: S.svclog.join(' '), team: S.team.length, prisoners: (S.prisoners || []).length })")
     check("taken prisoner at Spotsylvania" in took["log"] and took["team"] < n0 and took["prisoners"] >= 1,
@@ -400,7 +404,7 @@ def run(p):
       try{ svcEdgePlay('badajoz:ditch') }catch(e){}
       localStorage.setItem = set; return got }""")
     check(h and h["only"] == [first] and h["light"] == "night" and h["title"] == "Into the ditch", f"the ditch goes to the roller with only the volunteer, at night ({(h or {}).get('only')}, {(h or {}).get('light')})")
-    pg.wait_for_function("() => location.pathname.endsWith('roller.html')")
+    pg.wait_for_function(AT_ROLLER)
     # the third war: an English retinue in Henry V's war, and an escalade played (the team attacking)
     pg.goto(BASE + "team.html")
     pg.select_option("#sel-era", "medieval")
@@ -413,19 +417,19 @@ def run(p):
     check("Agincourt" in pg.inner_text(SERVICE) and "play it on the field map" in pg.inner_text(SERVICE).lower(),
           "an English retinue's autumn 1415 has Agincourt, which can be played on its battlefield")
     pg.click(SEND)
-    pg.wait_for_function("() => location.pathname.endsWith('roller.html')", timeout=15000)
+    pg.wait_for_function(AT_ROLLER, timeout=15000)
     pg.wait_for_function("() => typeof S === 'object' && Array.isArray(S.chars)", timeout=10000)
     pg.get_by_role("button", name="Add the team").first.click()
     pg.wait_for_function("() => S.chars.some(c => c.uid)", timeout=10000)
     pg.goto(BASE + "team.html")
     pg.wait_for_selector("#h-service")
-    men = pg.evaluate("() => S.team.length")   # the retinue's own, not the company's men still on the roller from before
+    men = pg.evaluate(TEAM_N)   # the retinue's own, not the company's men still on the roller from before
     pg.evaluate("() => { const W = SVC.war('henry_v'); S.svcSmall = SVC.smallFight(W, 'campaign', svcD100, 'escalade'); render() }")
     pg.click("#btn-svplay")
-    pg.wait_for_function("() => location.pathname.endsWith('roller.html')", timeout=15000)
-    pg.wait_for_selector("button[data-map=handoff]", timeout=10000)
-    pg.click("button[data-map=handoff]")
-    pg.wait_for_function("() => !S.handoff", timeout=8000)
+    pg.wait_for_function(AT_ROLLER, timeout=15000)
+    pg.wait_for_selector(HANDOFF, timeout=10000)
+    pg.click(HANDOFF)
+    pg.wait_for_function(NO_HANDOFF, timeout=8000)
     esc = pg.evaluate("""() => { const e = S.chars.filter(c => sideOf(c) === 'English'), f = S.chars.filter(c => sideOf(c) === 'French');
       return { named: e.filter(c => c.uid).length, f: f.length, fw: [...new Set(f.map(c => c.weapon))], fk: [...new Set(f.map(c => c.kit))], msg: S.mapMsg } }""")
     check(esc["named"] == men and esc["fw"] == ["crossbow"] and esc["fk"] == ["brigandine_sallet"],
