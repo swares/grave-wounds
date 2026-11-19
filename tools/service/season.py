@@ -170,6 +170,13 @@ def lost_in_fights(pg):
     pg.goto(BASE + "team.html")
     pg.wait_for_function("() => S.crew.length === 5")
     check("From the field map:" in pg.evaluate("() => S.msg"), "and the team builder takes six of the line off at random")
+    units = pg.evaluate("() => { S.fcounts.push(['surgeon', 2]); S.crew.push(...makeFollowers(S.region, [['surgeon', 2]], 'default', realDice)); return fieldUnits() }")
+    check(units[0].get("medic_careers") == ["surgeon", "surgeon"], f"followers of a healing career go with the biggest unit as its medics, by career ({units})")
+    pg.goto(BASE + "field.html")
+    med = pg.evaluate("""() => { const u = { team_medics: ['surgeon', 'surgeon', 'surgeon'], start: 10 };
+      const all = medicsLost(u, { killed: 6, died: 0, left: 0, taken: 4, cases: [] }), none = medicsLost(u, { killed: 0, died: 0, left: 0, taken: 0, cases: [] });
+      return [all.length, all.every(x => x.career === 'surgeon' && x.dead + x.taken === 1), none.length] }""")
+    check(med == [3, True, 0], f"the medics are lost at the unit's loss rate: all of a unit that lost every man, none of one that lost none ({med})")
 
 
 def run(p):
@@ -339,13 +346,13 @@ def run(p):
       const lines = gmYield('British');
       DICE.randint = ri;
       const out = { down0: [isDown(br[0]), br[0].taken], down1: br[1].taken || br[1].fled, held: [br[2].fled, br[3].taken], clear: br[4].fled, lines,
-        named: [nm[0].taken, nm[0].fled, nm[1].taken, nm[1].fled, nm.length], askedNamed: nm.some(c => asked.includes(c.name)) };
+        named: [nm[0].taken, nm[0].fled, nm[1].taken, nm[1].fled || isDown(nm[1]), nm.length], askedNamed: nm.some(c => asked.includes(c.name)) };
       const was = JSON.parse(snap); S.chars = was.chars; S.gm = was.gm; S.broken = was.broken;
       return out }""")
     check(yl["down0"] == [True, True] and not yl["down1"] and yl["held"] == [True, True] and yl["clear"],
           f"a broken scripted side: the down beside an enemy taken, the down alone left, the held break away or are taken, the rest run ({yl['lines']})")
     check(yl["named"] == [False, False, False, True, 2] and not yl["askedNamed"],
-          f"but the script never surrenders the team's named men: down, he is left where he lies; held, he breaks away; none asks for quarter ({yl['named']})")
+          f"but the script never surrenders the team's named men: down, he is left where he lies; held, he breaks away (or, down from what he carried in from the season, lies); none asks for quarter ({yl['named']}, {yl['lines']})")
     # the picket was played only to see its end: its losses do not go on to the team builder
     pg.evaluate("() => { const all = readPurses(); for (const k in all) delete all[k].lost; writePurses(all); for (const c of S.chars) c.taken = false; save() }")
     # a case carried from the last season: the panel shows it, and the next season begins from it

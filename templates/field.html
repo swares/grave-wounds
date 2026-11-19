@@ -2493,12 +2493,23 @@ function captivesToTeam(){                        // the enemy's men the team's 
   if (!taken) return;
   try{ localStorage.setItem("gravewounds-field-captives", JSON.stringify({ place: S.from?.place || "", side: S.sides[k], enemy: S.sides[enemy], taken })) }catch(e){ /* storage off: the GM takes them by hand */ }
 }
+function medicsLost(u, a){                         // the team's medics with a unit: each lost at the unit's loss rate, dead or taken as its men were (ours)
+  const dead = a.killed + a.died, taken = (a.taken || 0) + a.left, lost = dead + taken, start = u.start || 0;
+  if (!u.team_medics?.length || !lost || !start) return [];
+  const out = [];
+  for (const career of u.team_medics){
+    if (dice.randint(1, 100) > Math.round(100 * Math.min(1, lost / start))) continue;
+    const fate = dice.randint(1, lost) <= dead ? "dead" : "taken";
+    out.push({ career, dead: fate === "dead" ? 1 : 0, taken: fate === "taken" ? 1 : 0, invalided: 0 });
+  }
+  return out;
+}
 function followersBack(){                         // each follower unit's losses, by career, to the team builder (gravewounds-followers-back)
   const serious = trStep(TR.wounds.start.serious), counts = [];
   afterUnits().forEach((u, i) => {
     if (!u.team_career) return;
     const a = S.after[i];
-    counts.push({ career: u.team_career, dead: a.killed + a.died, taken: (a.taken || 0) + a.left, invalided: a.cases.filter(c => c.step >= serious).length });
+    counts.push({ career: u.team_career, dead: a.killed + a.died, taken: (a.taken || 0) + a.left, invalided: a.cases.filter(c => c.step >= serious).length }, ...medicsLost(u, a));
   });
   try {
     const all = JSON.parse(localStorage.getItem("gravewounds-followers-back") || "[]") || [];
@@ -3671,6 +3682,7 @@ function followerUnit(o, side, k){                // one career's followers as a
   const u = newUnit({ name: o.name, side, men: o.men, quality: o.quality, weapon, kit: FD.kits[o.kit] ? o.kit : "none",
     formation: shoots ? "open" : "close", mounted: o.mounted, pos: [k ? SIZE[0] - 8 : 7, 2], facing: k ? 3 : 0, medics: o.medics, medic_quality: o.medic_quality });
   if (o.career) u.team_career = o.career;           // the team builder's followers: their losses go back by career
+  if (o.medic_careers) u.team_medics = o.medic_careers;   // and its followers serving as the unit's medics
   u.facing = EDGE_FACING[entryEdge(T(), k)];
   const spot = startSpots(k).find(pos => fits([...S.units, { ...u, pos }], S.units.length, { ...u, pos }, SIZE, S.field));
   if (!spot) return null;
