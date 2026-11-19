@@ -1080,4 +1080,9 @@ not this repository.
   men-at-arms in melee were hit. Not yet known why: the longbow against plate, the archers in
   close combat (a longbow is their only weapon), or the followers' attack and defence against a
   comrade's. The French split (a third men-at-arms in plate) and the odds cap (3 to 2 for Henry V)
-  are in, but did not change the outcome.
+  are in, but did not change the outcome. Found since: every season's small fight was fought on
+  the roller's first wound table (Sidon's mass graves), not its war's, so no longbows, bills or
+  muskets: fixed (the handoff carries the war's table; the roller keeps its table between
+  visits). With the right weapons the English still lose 11 of 12: the French crossbowmen loose
+  about six shots to each English longbow shot (568 to 98 over nine fights), at the same 14% to
+  wound. Still to find why the English shoot so little.
