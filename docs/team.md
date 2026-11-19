@@ -859,7 +859,9 @@ for each man whether he serves and where he stands. **Serve the season** then ro
   fight in the party (a picket, a working party, a rear-guard; never fewer than
   the team and its followers who come) with comrades up to 8, against the
   enemy in the same proportion to the rolled sizes (the team's men here times the foes' rolled
-  number over the party's, at least 1 and at most 40: the odds the dice gave, not 8 against the
+  number over the party's, at least 1 and at most 40 in all, and at most 3 to 1 against the team's
+  side (a war's own `small_war.max_odds`: Henry V's 1.5, ours; the notes then give the rolled
+  numbers): the odds the dice gave, not 8 against the
   whole team), with the fight's weapon, on the fight's ground and in its weather, with the defenders
   caught unawares on the surprise roll; the aims, the end and the source are in the fight's notes.
   A fight's `at` is the season of the instance it is sourced to; rolled in another season, its

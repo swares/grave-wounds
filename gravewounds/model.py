@@ -2125,6 +2125,9 @@ def _service_errors(d: Data, W: dict) -> list[str]:
         errors.append(f"{where}: positions need a line")
     if set(W.get("small_war", {}).get("chance", {})) != set(states):
         errors.append(f"{where}: small_war chance must give every state")
+    mo = W.get("small_war", {}).get("max_odds")
+    if mo is not None and not (isinstance(mo, (int, float)) and not isinstance(mo, bool) and mo >= 1):
+        errors.append(f"{where}: small_war max_odds must be a number, 1 or more")
     known = set()
     for x in d.disease["diseases"].values():
         known |= set(x.get("mods", {})) | set(x.get("needs", []))

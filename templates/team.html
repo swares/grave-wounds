@@ -428,7 +428,7 @@ function pullFollowersBack(){                       // -> true if followers came
     if (bits.length) said.push(`From the ${x.from === "field" ? "field map" : "roller"}: ${bits.join(", ")}.`);
   }
   if (!said.length) return false;
-  S.msg = `${said.join(" ")} ${S.crew.length} followers remain.`;
+  S.msg = `${said.join(" ")} ${S.crew.length} follower${S.crew.length === 1 ? "" : "s"} remain${S.crew.length === 1 ? "s" : ""}.`;
   S.svclog = [...(S.svclog || []), ...said];
   save();
   return true;
@@ -1397,7 +1397,7 @@ function svcFightHandoff(W, s){                     // the small fight as a setu
   crewIds();
   const followers = S.crew.map(x => ({ ...x, careerName: byId(T.careers, x.career).name }));   // the followers as they are now: the roller brings its own up to date
   const pids = S.team.filter(c => (svcState().with || {})[c.pid] !== false).map(c => c.pid);   // the named men serving now: not those lost since they came to the roller
-  return { from: "service", title: f.name, team: "team", pids, followers, force, allies, foes: against, place: f.where || f.name, day: s.name, time: f.time,
+  return { from: "service", title: f.name, team: "team", max_odds: W.small_war.max_odds ?? null, pids, followers, force, allies, foes: against, place: f.where || f.name, day: s.name, time: f.time,
     ground: f.ground, groundSeed: `${f.id}:${s.id}`, camp: null, surprise: sp, light: f.light || "day",
     weather: f.weather ? { cond: f.weather, wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } } : null,
     end: svcFightEnd(f.end, side, W.sides.foes),

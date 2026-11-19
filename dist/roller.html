@@ -5841,12 +5841,21 @@ function teamForce(team){                           // {map, id} of the force a 
 const forceCount = (o, named) => Math.max(o.here ?? Math.min(o.men, 8), (named?.by.get(o.id) || []).length);   // its fighters here: up to 8 (or as set), its named men and their team's followers always
 // A season's small fight keeps its odds: the team brings all its named men and followers, so each
 // other force comes in the same proportion to the rolled numbers (at least 1, at most 40).
-function keepOdds(h, named){
-  if (h.from !== "service") return;
+const MAX_ODDS = 3;                                 // a season's small fight on the roller: at most 3 of the enemy to 1 of the team's side here (ours), or the war's own (small_war.max_odds)
+function keepOdds(h, named){                        // -> a note when the rolled odds were capped, else null
+  if (h.from !== "service") return null;
   const all = [h.force, ...(h.allies || []), ...(h.foes || [])], team = all.find(o => o.id === "team");
-  if (!team) return;
+  if (!team) return null;
   const here = forceCount(team, named);
   for (const o of all) if (o !== team) o.here = Math.max(1, Math.min(40, Math.round(here * o.men / team.men)));
+  const foes = all.filter(o => o.side !== team.side), ours = all.filter(o => o.side === team.side);
+  const them = foes.reduce((t, o) => t + o.here, 0), us = ours.reduce((t, o) => t + (o === team ? here : o.here), 0);
+  const odds = h.max_odds || MAX_ODDS, most = Math.min(40, Math.floor(odds * us));   // 40 the enemy in all, however many forces they come in
+  if (them <= most) return null;
+  const f = most / them;
+  for (const o of foes) o.here = Math.max(1, Math.floor(o.here * f));
+  const rolledThem = foes.reduce((t, o) => t + o.men, 0), rolledUs = ours.reduce((t, o) => t + o.men, 0);
+  return `The rolled odds (${rolledThem.toLocaleString("en-US")} against ${rolledUs.toLocaleString("en-US")}) are capped here: at most ${odds} to 1 and 40 in all (ours)`;
 }
 function forceChars(o, positions, named = null){  // up to 8 of a travel-map force's men, its named men first, at these hexes if given
   const out = [];
@@ -5928,7 +5937,7 @@ function setupHandoff(){                     // a camp or position sent from the
   // do not fit go to their side's edge. The enemy forces wait at the far edge (side 2's edge).
   const spots = campSpots(L, cols, rows, gate), defenders = [h.force, ...(h.allies || [])], foes = h.foes || [], foe = foes[0];
   const named = handoffNamed(h, [...defenders, ...foes]);   // the named men with these forces come as themselves
-  keepOdds(h, named);
+  const capped = keepOdds(h, named);
   const overflow = defenders.reduce((t, o) => t + forceCount(o, named), 0) > spots.length;
   S.chars = [];
   for (const o of defenders) S.chars.push(...forceChars(o, spots.splice(0, forceCount(o, named)), named));
@@ -5948,6 +5957,7 @@ function setupHandoff(){                     // a camp or position sent from the
   const campName = h.camp ? WK.camps[h.camp].name.toLowerCase() + unfinished : "no camp";
   S.pending = [`Set up from ${h.from === "service" ? "a season with the battalion" : "the travel map"}: ${h.force.name} at ${h.place} (${campName}), ${h.day}, ${h.time}${h.weather ? " \u00b7 " + WXD.conditions[h.weather.cond].name.toLowerCase() : ""}`];
   for (const line of h.notes || []) S.pending.push(line);   // a small fight's aims, its end and its source
+  if (capped) S.pending.push(capped);
   const facingCut = at ? "facing the river and the crossing" : "facing the attackers";
   const where = h.camp ? campName : "position", cut = L.fits ? "" : ` (too big for the map: only the stretch with the gate, ${facingCut}, is shown, at full size)`;
   const facing = lay ? "facing the way in" : "facing them";
