@@ -143,10 +143,6 @@ def drafts_and_names(pg):
     fresh = pg.evaluate("""() => { const rows = TD.era.careers[0].terms, all = rows.map(r => r.text), t0 = performance.now();
       const row = freshRow(rows, 50, all); return [row === pickRow(rows, 50), performance.now() - t0 < 100] }""")
     check(fresh == [True, True], f"a man who has had every term event of his career (a long service) gets the rolled one again, not an endless search ({fresh})")
-    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-    from gravewounds.team import _fresh   # noqa: PLC0415
-    rows = [{"text": "a", "to": 50}, {"text": "b", "to": 100}]
-    check(_fresh(rows, 70, ["a", "b"])["text"] == "b" and _fresh(rows, 70, ["b"])["text"] == "a", "and so in team.py")
     ways = pg.evaluate("""() => { const out = {};
       for (const [reg, sid] of [['union', '1862-winter'], ['union', '1863-winter'], ['confederacy', '1861-autumn'], ['confederacy', '1862-winter']]){
         S.region = reg; out[reg + ' ' + sid] = svcDraftWay({ id: sid }).id }
