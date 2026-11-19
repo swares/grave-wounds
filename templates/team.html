@@ -384,6 +384,7 @@ function followersDrift(lines){                   // End of season: half the men
 }
 function rollCrew(){
   S.crew = [];                                      // a new roll: the old followers' names are free again
+  S.flost = []; S.fgone = [];                       // and no drafts owed for an old muster's losses (another era's careers, perhaps)
   S.crew = uniqueNames(makeFollowers(S.region, S.fcounts.filter(([, n]) => n > 0), tplQuality(S.template), realDice, S.women));
   crewIds();
 }
@@ -1561,7 +1562,8 @@ function svcDraftWay(s){                            // the army's way of filling
   return ways.reduce((best, a) => (best && (best.from || "") >= (a.from || "") ? best : a), null);
 }
 function svcDrafts(W, s, lines){                    // recruits for the followers lost, in a draft season, up to what the leader keeps
-  if (!(W.drafts || []).includes(s.state) || !(S.flost || []).length || S.template === "own") return;
+  S.flost = (S.flost || []).filter(cid => byId(T.careers, cid));   // only careers of this era: a loss kept from another is dropped
+  if (!(W.drafts || []).includes(s.state) || !S.flost.length || S.template === "own") return;
   const cap = followerCap(), mustered = tplFollowers(S.template).reduce((t, [, n]) => t + n, 0);
   const room = Math.min(cap ? cap.cap : mustered, mustered) - S.crew.length, n = Math.min(room, S.flost.length);
   if (n <= 0) return;

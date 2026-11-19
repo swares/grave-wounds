@@ -594,6 +594,10 @@ def run(p):
     pg.click("#btn-serve")
     log = pg.inner_text(SERVICE)
     check(log.count("Shelled or sniped in the line: 10%") >= 1, "the season's log gives each man's wastage roll")
+    stale = pg.evaluate("""() => { S.flost = ['line', 'archer']; const W = SVC.war('western_front'), lines = [];
+      try { svcDrafts(W, W.seasons.find(x => x.state === 'trenches'), lines) } catch (e) { return e.message }
+      return S.flost.length }""")
+    check(stale == 0, f"a loss kept from another era's muster owes no draft and breaks nothing ({stale})")
     followers(pg)
     check(not errors, f"no page errors {errors[:3]}")
     br.close()
