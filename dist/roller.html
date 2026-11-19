@@ -5024,7 +5024,9 @@ function moraleChecks(){
    quarter): a scripted man down, conscious, with an enemy next to him asks for quarter and is taken; when a
    scripted side breaks, a man down with an enemy beside him is taken, a man down with none is left where he
    lies, a man on his feet beside an enemy breaks away on a d100 at or under his Agility (or his Dodge, the
-   better; ours) or is taken, and the rest run. */
+   better; ours) or is taken, and the rest run. A player's named man (the team builder's or the campaign's)
+   is never surrendered by the script: down, he is left where he lies; held, he breaks away and runs; taking
+   him prisoner is the GM's Taken prisoner. */
 const nextToFoe = c => !!c.pos && S.chars.some(o => o.pos && sideOf(o) !== sideOf(c) && !isOut(o) && hexDistance(c.pos, o.pos) <= 1);
 function takenBy(c, text){
   c.taken = true;
@@ -5032,15 +5034,22 @@ function takenBy(c, text){
   logEvent(S.events, { round: evRound(), type: "quarter", vis: [], data: { text }, pub: { text } });
   return text;
 }
+const namedMan = c => !!(c.uid || c.sheet?.pid);   // a player's man (the team builder's or the campaign's): the script never surrenders him; Taken prisoner is the GM's
 function gmQuarter(){                              // the end of the round: scripted men down beside an enemy ask for quarter
   if (!gmOn()) return [];
-  return S.chars.filter(c => scripted(c) && !c.taken && !(S.broken || {})[sideOf(c)] && isDown(c) && !charStats(c).th?.incapacitated && nextToFoe(c))
+  return S.chars.filter(c => scripted(c) && !namedMan(c) && !c.taken && !(S.broken || {})[sideOf(c)] && isDown(c) && !charStats(c).th?.incapacitated && nextToFoe(c))
     .map(c => takenBy(c, `${c.name} is down and asks for quarter: taken prisoner`));
+}
+function namedYield(c, held){                       // a player's man when his side breaks: never surrendered by the script
+  if (isDown(c)) return `${c.name} is left where he lies (a player's man: taking him is the GM's call)`;
+  c.fled = true;
+  return held ? `${c.name} breaks away and runs (a player's man)` : `${c.name} runs`;
 }
 function gmYield(side){                            // a scripted side has broken: the down beside an enemy are taken, the held may break away, the rest run
   if (!gmOn() || gmSide(side).ctl !== "script") return [];
   return S.chars.filter(c => sideOf(c) === side && !c.taken && !c.fled && !c.away).map(c => {
     const held = nextToFoe(c);
+    if (namedMan(c)) return namedYield(c, held);
     if (isDown(c)) return held ? takenBy(c, `${c.name} is down with an enemy over him: taken prisoner`) : `${c.name} is left where he lies`;
     if (held){
       const target = Math.max(statOf(c, "agi"), skillAt(c, "dodge")), roll = d100();

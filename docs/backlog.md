@@ -186,7 +186,9 @@ not this repository.
   GM's script (`templates/fighter.js`), with Step, Play to my turn and Undo. Its men give first
   aid out of contact (themselves when bleeding badly; comrades by the side's stance) and surrender
   (a man down beside an enemy asks for quarter; a broken side's down beside an enemy are taken,
-  its men held in close combat break away on their Agility or are taken, the rest run). Still left out: the script does not aim at a zone, use works, drop packs, swim or
+  its men held in close combat break away on their Agility or are taken, the rest run; a player's
+  named man is never surrendered by the script: down he is left, held he breaks away, and taking
+  him is the GM's call). Still left out: the script does not aim at a zone, use works, drop packs, swim or
   climb, and its priorities are guesses with nothing to calibrate them against; men with no
   sheet take their side's quality, with no per-man setting; a side's Screen hides the enemy's
   state on the cards, roll form, result, messages and logs, but it is a filter anyone at the

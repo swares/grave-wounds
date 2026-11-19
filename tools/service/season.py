@@ -325,21 +325,27 @@ def run(p):
     yl = pg.evaluate("""() => {
       const snap = JSON.stringify({ chars: S.chars, gm: S.gm, broken: S.broken }), ri = DICE.randint, { cols, rows } = mapSize();
       S.gm = { on: true, auto: false, sides: { British: { ...gmSide('British'), ctl: 'script' }, French: { ...gmSide('French'), ctl: 'script' } } };
-      const br = S.chars.filter(c => sideOf(c) === 'British').slice(0, 5), fr = S.chars.find(c => sideOf(c) === 'French');
+      const br = S.chars.filter(c => sideOf(c) === 'British' && !namedMan(c)).slice(0, 5), fr = S.chars.find(c => sideOf(c) === 'French');
+      const nm = S.chars.filter(c => sideOf(c) === 'British' && c.sheet?.pid).slice(0, 2);
       for (const c of S.chars){ c.pos = null; c.taken = false; c.fled = false; c.away = false; c.blood = 100; c.wounds = []; c.state = null }
       S.broken = {};
       fr.pos = [10, 8]; br[0].pos = [11, 8]; br[0].state = { id: 'out' };          // down, an enemy beside him
       br[1].pos = [2, 2]; br[1].state = { id: 'out' };                            // down, no one near
       br[2].pos = [9, 8]; br[3].pos = [10, 9]; br[4].pos = [cols - 2, rows - 2];  // two held, one clear
+      nm[0].pos = [11, 7]; nm[0].state = { id: 'out' }; nm[1].pos = [9, 9];        // the team's named men: one down beside the enemy, one held
+      const asked = gmQuarter().join(' ');
       const rolls = [1, 100]; DICE.randint = (a, b) => (rolls.length ? rolls.shift() : ri(a, b));
       S.broken.British = true;
       const lines = gmYield('British');
       DICE.randint = ri;
-      const out = { down0: [isDown(br[0]), br[0].taken], down1: br[1].taken || br[1].fled, held: [br[2].fled, br[3].taken], clear: br[4].fled, lines };
+      const out = { down0: [isDown(br[0]), br[0].taken], down1: br[1].taken || br[1].fled, held: [br[2].fled, br[3].taken], clear: br[4].fled, lines,
+        named: [nm[0].taken, nm[0].fled, nm[1].taken, nm[1].fled, nm.length], askedNamed: nm.some(c => asked.includes(c.name)) };
       const was = JSON.parse(snap); S.chars = was.chars; S.gm = was.gm; S.broken = was.broken;
       return out }""")
     check(yl["down0"] == [True, True] and not yl["down1"] and yl["held"] == [True, True] and yl["clear"],
           f"a broken scripted side: the down beside an enemy taken, the down alone left, the held break away or are taken, the rest run ({yl['lines']})")
+    check(yl["named"] == [False, False, False, True, 2] and not yl["askedNamed"],
+          f"but the script never surrenders the team's named men: down, he is left where he lies; held, he breaks away; none asks for quarter ({yl['named']})")
     # the picket was played only to see its end: its losses do not go on to the team builder
     pg.evaluate("() => { const all = readPurses(); for (const k in all) delete all[k].lost; writePurses(all); for (const c of S.chars) c.taken = false; save() }")
     # a case carried from the last season: the panel shows it, and the next season begins from it
