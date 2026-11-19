@@ -74,7 +74,7 @@ desertion:
   ours: true
   basis: "38,630 desertions in the war, 7,361 of them in the field, and 266 men shot for it; most deserters were away from the front. No mean strength in France was found: ours, on about a million men there for 17 seasons."
   sources: ["https://exq.pages.dev/British_Army_during_World_War_I"]
-drafts: [rest]
+drafts: [trenches, rest]
 
 sources:
   llt: &llt "https://www.longlongtrail.co.uk/army/regiments-and-corps/the-british-infantry-regiments-of-1914-1918/royal-welsh-fusiliers/"

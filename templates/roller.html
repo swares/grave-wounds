@@ -2852,7 +2852,7 @@ function moraleChecks(){
    quarter): a scripted man down, conscious, with an enemy next to him asks for quarter and is taken; when a
    scripted side breaks, a man down with an enemy beside him is taken, a man down with none is left where he
    lies, a man on his feet beside an enemy breaks away on a d100 at or under his Agility (or his Dodge, the
-   better; ours) or is taken, and the rest run. A player's named man (the team builder's or the campaign's)
+   better; a man without a sheet, a follower or comrade, on his quality: green 35, regular 50, veteran 65; ours) or is taken, and the rest run. A player's named man (the team builder's or the campaign's)
    is never surrendered by the script: down, he is left where he lies; held, he breaks away and runs; taking
    him prisoner is the GM's Taken prisoner. */
 const nextToFoe = c => !!c.pos && S.chars.some(o => o.pos && sideOf(o) !== sideOf(c) && !isOut(o) && hexDistance(c.pos, o.pos) <= 1);
@@ -2873,6 +2873,9 @@ function namedYield(c, held){                       // a player's man when his s
   c.fled = true;
   return held ? `${c.name} breaks away and runs (a player's man)` : `${c.name} runs`;
 }
+function breakAwayAt(c){                           // a man with a sheet: his Agility or his Dodge, the better; one without (a follower, a comrade): his quality, green 35, regular 50, veteran 65 (the stop check's ratings; ours)
+  return c.sheet?.stats ? Math.max(statOf(c, "agi"), skillAt(c, "dodge")) : (RATINGS[c.rating] ?? RATINGS[DEFAULT_RATING]);
+}
 function gmYield(side){                            // a scripted side has broken: the down beside an enemy are taken, the held may break away, the rest run
   if (!gmOn() || gmSide(side).ctl !== "script") return [];
   return S.chars.filter(c => sideOf(c) === side && !c.taken && !c.fled && !c.away).map(c => {
@@ -2880,7 +2883,7 @@ function gmYield(side){                            // a scripted side has broken
     if (namedMan(c)) return namedYield(c, held);
     if (isDown(c)) return held ? takenBy(c, `${c.name} is down with an enemy over him: taken prisoner`) : `${c.name} is left where he lies`;
     if (held){
-      const target = Math.max(statOf(c, "agi"), skillAt(c, "dodge")), roll = d100();
+      const target = breakAwayAt(c), roll = d100();
       if (roll > target) return takenBy(c, `${c.name} cannot break away (d100 ${d2(roll)} vs ${target}): taken prisoner`);
       c.fled = true;
       return `${c.name} breaks away (d100 ${d2(roll)} vs ${target}) and runs`;

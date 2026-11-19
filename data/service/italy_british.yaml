@@ -69,7 +69,7 @@ desertion:
   basis: "The official history: about 0.1% of the forces in Italy deserted (Jackson, vol. VI, p. 376), over some seven seasons (ours: a season's share). Another source's, single: the 78th Division counted 927 desertions in October-December 1944 and the 1st Division 626 (Bielecki's thesis, as quoted), about 5% of a division in a season (ours); the GM may use it for the mountain winter."
   alt: 5
   sources: ["https://mediterraneanwar.blogspot.com/2008/05/morale-in-italy.html"]
-drafts: [rest]
+drafts: [line, rest]
 
 sources:
   ams: &ams "https://www.generalstaff.org/WW2/Hist_UK/ArmyMedicalServicesCampVol3.pdf"

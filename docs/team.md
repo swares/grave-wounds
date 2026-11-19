@@ -900,7 +900,9 @@ for each man whether he serves and where he stands. **Serve the season** then ro
 
   The log gives a line for the followers: who was hit and his fate, who died, was taken or
   deserted, how many were sick, and how many remain. In a season of the war's `drafts` states
-  (winter quarters; a garrison or a lord's household in the medieval wars; rest out of the line),
+  (winter quarters; a garrison or a lord's household in the medieval wars; on the Western Front
+  in the trenches or at rest, and in Italy holding the line or at rest, as the base depots fed
+  battalions every few weeks; not in a battle or on the march),
   recruits come up for the followers lost: of the lost men's careers, rolled raw
   (`draft_quality`), up to what the leader's Presence keeps and never more than the template
   mustered (ours); the log names them and the army's way (a draft from the depot or second
