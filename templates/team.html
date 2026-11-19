@@ -2167,7 +2167,10 @@ function init(){
   crewIds();
   pullPurses();
   pullFollowersBack();
-  window.addEventListener("focus", () => { if (pullPurses() | pullFollowersBack()) render() });   // both pulled, either may change
+  window.addEventListener("focus", () => {          // both pulled, either may change
+    const purses = pullPurses(), followers = pullFollowersBack();
+    if (purses || followers) render();
+  });
   window.addEventListener("storage", e => {
     let now = null;
     try { now = localStorage.getItem(KEY) } catch { return }

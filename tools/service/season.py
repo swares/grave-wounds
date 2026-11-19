@@ -31,6 +31,8 @@ FIND = """() => {                                       // a seed whose season g
   return null;
 }"""
 SERVICE = "#service"
+SEND = "#btn-send"
+CLEAR = "() => localStorage.clear()"
 QUEUE = "() => JSON.parse(localStorage.getItem('gravewounds-service-hits') || '[]')"
 
 
@@ -38,7 +40,7 @@ def followers(pg):
     """The followers through a season: rolled as the named men are, a hit's severity for his fate,
     the war's desertion (or the GM's), and recruits in winter quarters for the lost."""
     pg.goto(BASE + "team.html")
-    pg.evaluate("() => localStorage.clear()")
+    pg.evaluate(CLEAR)
     pg.reload()
     pg.select_option("#sel-era", "horse_musket")
     pg.select_option("#sel-region", "british_pen")
@@ -83,7 +85,7 @@ def lost_in_fights(pg):
     his id (dead, taken or left behind, a serious wound invalided; a light one stays), once; the field
     map its follower units' losses by career."""
     pg.goto(BASE + "team.html")
-    pg.evaluate("() => localStorage.clear()")
+    pg.evaluate(CLEAR)
     pg.reload()
     pg.select_option("#sel-era", "horse_musket")
     pg.select_option("#sel-region", "british_pen")
@@ -91,7 +93,7 @@ def lost_in_fights(pg):
     pg.click("#btn-roll")
     ids = pg.evaluate("() => S.crew.map(f => f.fid)")
     check(len(ids) == 16 and len(set(ids)) == 16 and all(ids), "each follower has his own id")
-    pg.click("#btn-send")
+    pg.click(SEND)
     pg.wait_for_selector("button[data-map=addteam]")
     pg.click("button[data-map=addteam]")
     sent = pg.evaluate("""() => {
@@ -135,7 +137,7 @@ def run(p):
     pg.on("pageerror", lambda e: errors.append(str(e)))
     pg.on("dialog", lambda d: d.accept())
     pg.goto(BASE + "team.html")
-    pg.evaluate("() => localStorage.clear()")
+    pg.evaluate(CLEAR)
     pg.reload()
     pg.select_option("#sel-era", "horse_musket")
     pg.select_option("#sel-region", "british_pen")
@@ -174,7 +176,7 @@ def run(p):
       return out }""")
     check(lived[0][:2] == [1, 1] and lived[1] == [1, 0, 0], f"a term of rolled seasons gives no lifepath wound chance ({lived})")
 
-    pg.click("#btn-send")
+    pg.click(SEND)
     pg.wait_for_function("() => location.pathname.endsWith('roller.html')", timeout=15000)
     pg.wait_for_function("() => typeof S === 'object' && Array.isArray(S.chars)", timeout=10000)
     pg.get_by_role("button", name="Add the team").first.click()
@@ -397,7 +399,7 @@ def run(p):
     pg.select_option("#sv-season", str(k))
     check("Agincourt" in pg.inner_text(SERVICE) and "play it on the field map" in pg.inner_text(SERVICE).lower(),
           "an English retinue's autumn 1415 has Agincourt, which can be played on its battlefield")
-    pg.click("#btn-send")
+    pg.click(SEND)
     pg.wait_for_function("() => location.pathname.endsWith('roller.html')", timeout=15000)
     pg.wait_for_function("() => typeof S === 'object' && Array.isArray(S.chars)", timeout=10000)
     pg.get_by_role("button", name="Add the team").first.click()
