@@ -1089,4 +1089,8 @@ not this repository.
   men who are down, and the English went down out of reach, to crossbow fire); now a shooter with
   a target keeps shooting, and the archers shoot about twice as often. The English still lose
   10 of 12: the French spears in close combat (261 strikes, 25% to wound) against the English
-  archers in jacks with no close-combat weapon of their own.
+  archers in jacks with no close-combat weapon of their own. Since: medieval archers and
+  crossbowmen carry a sidearm (a sword) and strike with it next to their man; it is used, but
+  their swords are stopped by plate or miss, and the English still lose 10 of 12. What is left
+  is the plate itself and the crossbows' volume (about two French crossbowmen to each English
+  archer).

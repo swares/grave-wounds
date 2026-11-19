@@ -2441,6 +2441,9 @@ def _career_errors(d: Data, era: dict, where: str, c: dict, chars: set, skills: 
         kit, wpn = c["kit"].get(r["id"], c["kit"]["default"]), c["weapon"].get(r["id"], c["weapon"]["default"])
         if kit not in d.armor["kits"] or wpn not in available_weapons(d, r["table"]) or c["wound_weapon"] not in available_weapons(d, r["table"]):
             errors.append(f"{where}: career {c['id']} in {r['id']}: kit {kit}, weapon {wpn} or wound weapon {c['wound_weapon']} not usable there")
+        side = (c.get("sidearm") or {}).get(r["id"], (c.get("sidearm") or {}).get("default"))
+        if side is not None and (side not in available_weapons(d, r["table"]) or d.weapons[side].get("range")):
+            errors.append(f"{where}: career {c['id']} in {r['id']}: sidearm {side} must be a close-combat weapon usable there")
     return errors
 
 

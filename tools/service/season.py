@@ -84,6 +84,26 @@ def followers(pg):
     lost_in_fights(pg)
     drafts_and_names(pg)
     culps_hill(pg)
+    sidearms(pg)
+
+
+def sidearms(pg):
+    """A bowman's sidearm: an archer strikes with his sword when the man he strikes is next to him,
+    with his longbow when he is not."""
+    pg.goto(BASE + "team.html")
+    pg.evaluate(CLEAR)
+    pg.reload()
+    pg.select_option("#sel-era", "medieval")
+    pg.select_option("#sel-region", "england")
+    pg.select_option("#sel-template", "retinue")
+    pg.click("#btn-roll")
+    pg.click(SEND)
+    pg.wait_for_selector("button[data-map=addteam]")
+    pg.click("button[data-map=addteam]")
+    w = pg.evaluate("""() => { const a = S.chars.find(c => c.follower && c.weapon === 'longbow'), d = S.chars.find(c => c !== a);
+      a.pos = [5, 5]; d.pos = [6, 5]; const near = strikeWeapon(a, d); d.pos = [12, 5]; const far = strikeWeapon(a, d);
+      return [a.sidearm, near, far] }""")
+    check(w == ["sword", "sword", "longbow"], f"an archer follower comes with his sword: next to his man he strikes with it, at a distance with his longbow ({w})")
 
 
 def culps_hill(pg):

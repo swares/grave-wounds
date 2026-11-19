@@ -239,6 +239,7 @@ careers:
     wound_weapon: sword
     kit: {default: gambeson, baltic: gotland_levy, england: jack_sallet, france: jack_sallet}
     weapon: {default: bow, england: longbow, france: longbow, portugal: longbow, swiss: handgun, landsknecht: handgun}
+    sidearm: {default: sword}   # in close combat, when the man he strikes is next to him: the archers 'joined in the fray' with mallets and short swords, and 'tooke in hand billes' (National Archives, Agincourt); a crossbowman's sword, ours
     terms:
       - {to: 20, skill: watch, text: "Stood sentry on a border tower."}
       - {to: 40, skill: stealth, text: "Scouted ahead of the army."}
@@ -255,6 +256,7 @@ careers:
     wound_weapon: crossbow
     kit: {default: gambeson, latin_east: leather, baltic: gotland_armoured}
     weapon: {default: crossbow}
+    sidearm: {default: sword}   # in close combat, when the man he strikes is next to him: the archers 'joined in the fray' with mallets and short swords, and 'tooke in hand billes' (National Archives, Agincourt); a crossbowman's sword, ours
     terms:
       - {to: 20, skill: craft, text: "Kept the windlasses and bolts of a garrison."}
       - {to: 40, skill: watch, text: "Shot from the walls through a siege."}
