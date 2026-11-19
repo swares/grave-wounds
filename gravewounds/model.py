@@ -1266,7 +1266,12 @@ def _followers_errors(d: Data) -> list[str]:
         errors.append("followers.yaml: deserted must be 0 to 100")
     if not F.get("approx") and not F.get("source"):
         errors.append("followers.yaml: needs a source, or approx: true")
-    hits = F.get("season_hit") or []
+    return errors + _season_hit_errors(F.get("season_hit") or [])
+
+
+def _season_hit_errors(hits: list) -> list[str]:
+    """followers.yaml season_hit: d100 bands rising to 100, each a follower's fate."""
+    errors = []
     if hits and ([h.get("to") for h in hits] != sorted({h.get("to") for h in hits if isinstance(h.get("to"), int)}) or hits[-1]["to"] != 100
                  or any(h.get("fate") not in ("stays", "invalided", "dead") for h in hits)):
         errors.append("followers.yaml: season_hit needs whole `to` values rising to 100, each a fate of stays, invalided or dead")

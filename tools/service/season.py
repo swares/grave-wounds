@@ -30,6 +30,7 @@ FIND = """() => {                                       // a seed whose season g
   }
   return null;
 }"""
+SERVICE = "#service"
 QUEUE = "() => JSON.parse(localStorage.getItem('gravewounds-service-hits') || '[]')"
 
 
@@ -45,14 +46,14 @@ def followers(pg):
     pg.click("#btn-roll")
     pg.wait_for_selector("#h-service")
     n0 = pg.evaluate("() => S.crew.length")
-    sv = pg.inner_text("#service")
+    sv = pg.inner_text(SERVICE)
     check(n0 == 16 and "The followers (16)" in sv and "Desertion 0.3% a season" in sv, f"the company's 16 followers serve too, deserting at 0.3% a season ({n0})")
     k = pg.evaluate("() => SVC.war('peninsula').seasons.findIndex(s => s.id === '1811-summer')")
     pg.select_option("#sv-season", str(k))
     pg.fill("#sv-desert", "100")
     pg.evaluate(SEEDED, 11)
     pg.click("#btn-serve")
-    log = pg.inner_text("#service")
+    log = pg.inner_text(SERVICE)
     left = pg.evaluate("() => [S.crew.length, (S.flost || []).length, S.fcounts.reduce((t, [, n]) => t + n, 0)]")
     check("The followers (16, desertion 100%)" in log and "deserted" in log and left == [0, 16, 0],
           f"at the GM's 100% every follower is gone, deserted unless sickness or a wound took him first ({left})")
@@ -60,7 +61,7 @@ def followers(pg):
     pg.select_option("#sv-season", str(q))
     pg.fill("#sv-desert", "0")
     pg.click("#btn-serve")
-    log = pg.inner_text("#service")
+    log = pg.inner_text(SERVICE)
     got = pg.evaluate("() => { const c = followerCap(); return [S.crew.length, c ? c.cap : null, (S.flost || []).length, S.fcounts.reduce((t, [, n]) => t + n, 0)] }")
     want = min(got[1] or 16, 16)
     check("Drafts:" in log and "(a draft from the depot or second battalion)" in log, f"in winter quarters recruits come up: {log[log.find('Drafts:'):][:120]!r}")
@@ -90,10 +91,10 @@ def run(p):
     pg.select_option("#sel-template", "company")
     pg.click("#btn-roll")
     pg.wait_for_selector("#h-service")
-    check("Summer 1808" in pg.inner_text("#service"), "the battalion's war starts in summer 1808")
+    check("Summer 1808" in pg.inner_text(SERVICE), "the battalion's war starts in summer 1808")
     k = pg.evaluate("() => SVC.war('peninsula').seasons.findIndex(s => s.id === '1811-spring')")
     pg.select_option("#sv-season", str(k))
-    check("Albuera" in pg.inner_text("#service") and "Fuentes" in pg.inner_text("#service"), "spring 1811 lists Fuentes de Oñoro and Albuera")
+    check("Albuera" in pg.inner_text(SERVICE) and "Fuentes" in pg.inner_text(SERVICE), "spring 1811 lists Fuentes de Oñoro and Albuera")
     check(not pg.is_checked("input[data-svat=albuera]") and pg.is_checked("input[data-svat=fuentes]"),
           "Albuera (Beresford's corps) is not ticked by default; Fuentes (the main army) is")
     pg.check("input[data-svat=albuera]")
@@ -103,7 +104,7 @@ def run(p):
     pg.evaluate(SEEDED, seed)
     n = pg.evaluate("() => S.team.length")
     pg.click("#btn-serve")
-    log = pg.inner_text("#service")
+    log = pg.inner_text(SERVICE)
     check("hit at Albuera" in log and "66%" in log, "the log gives the hit at Albuera at the 1/57th's 66%")
     q = pg.evaluate(QUEUE)
     check(len(q) >= 1 and all(h["table"] == "peninsular-1808-14-all-hits" and h["weapon"] for h in q),
@@ -146,11 +147,11 @@ def run(p):
     pg.goto(BASE + "team.html")
     pg.wait_for_selector("#h-service")
     pg.evaluate("() => { const W = SVC.war('peninsula'); S.svcSmall = SVC.smallFight(W, 'quarters', svcD100, 'picket'); render() }")
-    box = pg.inner_text("#service")
+    box = pg.inner_text(SERVICE)
     check("A picket attacked at night" in box and "Hold the bridge" in box and "Barba del Puerco" in box, "the small fight is shown: what the accounts say, the sizes and the aims")
     check(pg.locator("#sv-fight option").count() == 8, "the GM can pick any of the war's 8 small fights")
     pg.select_option("#sv-fight", "foragers")
-    check("French foragers caught at dawn" in pg.inner_text("#service"), "picking another rolls its sizes")
+    check("French foragers caught at dawn" in pg.inner_text(SERVICE), "picking another rolls its sizes")
     pg.select_option("#sv-fight", "picket")
     pg.click("#btn-svplay")
     pg.wait_for_function("() => location.pathname.endsWith('roller.html')", timeout=15000)
@@ -254,12 +255,12 @@ def run(p):
     check(asat[0] == "" and "a fight of this kind, as in spring 1810" in asat[1], f"a fight from another season says so in its notes ({asat})")
     pg.evaluate("""hurt => { const c = S.team.find(x => x.name !== hurt) || S.team[0], H = { cases: [{ d: 'flux', inc: 0, step: 2, peak: 2, shown: 9, chronic: true }], immune: {}, had: {}, dead: 0 };
       c.svcHealth = H; const all = namedStore(), n = namedOf(all, c); if (n){ n.health = H; localStorage.setItem(NAMED_STORE, JSON.stringify(all)) } render() }""", wounded)   # not the man wounded last season: his wound stays on his track
-    check("still serious from last season" in pg.inner_text("#service"), "a man still sick at the season's end shows so on the panel")
+    check("still serious from last season" in pg.inner_text(SERVICE), "a man still sick at the season's end shows so on the panel")
     pg.evaluate(SEEDED, 11)
     pg.click("#btn-serve")
     first = pg.evaluate("() => S.svclog.join(' ')")
-    check("began the season serious" in pg.inner_text("#service"), f"and his next season begins from it ({first[:120]})")
-    check(f"{wounded}: began the season" in pg.inner_text("#service") and "(his wounds)" in pg.inner_text("#service"),
+    check("began the season serious" in pg.inner_text(SERVICE), f"and his next season begins from it ({first[:120]})")
+    check(f"{wounded}: began the season" in pg.inner_text(SERVICE) and "(his wounds)" in pg.inner_text(SERVICE),
           f"the man hit last season begins this one with his wounds on the track ({wounded}: {pg.evaluate("n => S.svclog.find(l => l.startsWith(n)) || S.svclog.join(' ')", wounded)[:300]!r})")
 
     # the second war: a Union company in the East
@@ -270,7 +271,7 @@ def run(p):
     pg.wait_for_selector("#h-service")
     k = pg.evaluate("() => SVC.war('acw_union_east').seasons.findIndex(s => s.id === '1863-summer')")
     pg.select_option("#sv-season", str(k))
-    check("Summer 1863" in pg.inner_text("#sv-season option:checked") and "Gettysburg" in pg.inner_text("#service"), "a Union team serves the war in the East: summer 1863 has Gettysburg")
+    check("Summer 1863" in pg.inner_text("#sv-season option:checked") and "Gettysburg" in pg.inner_text(SERVICE), "a Union team serves the war in the East: summer 1863 has Gettysburg")
     check("1st Minnesota (82%)" in pg.inner_text("select[data-svunit=gettysburg]"), "with the 1st Minnesota's own 82%")
     check(pg.evaluate("() => SVC.weaponFor(SVC.war('acw_union_east'), 50)") == "rifle_musket", "and its hits come mostly from the rifle-musket")
     # and the other side: a Confederate team with the 4th Virginia
@@ -281,7 +282,7 @@ def run(p):
     pg.wait_for_selector("#h-service")
     k = pg.evaluate("() => SVC.war('acw_confederate_east').seasons.findIndex(s => s.id === '1863-spring')")
     pg.select_option("#sv-season", str(k))
-    cs = pg.inner_text("#service")
+    cs = pg.inner_text(SERVICE)
     check("Chancellorsville" in cs and "4th Virginia (48%)" in pg.inner_text("select[data-svunit=chancellorsville]"),
           "a Confederate team serves with the Stonewall Brigade: spring 1863 has Chancellorsville, with the 4th Virginia's own 48%")
     check(pg.evaluate("() => SVC.warsFor('civil_war', 'confederacy').map(W => W.id).join()") == "acw_confederate_east", "and only the Confederate war is offered to it")
@@ -306,7 +307,7 @@ def run(p):
     pg.wait_for_selector("#h-service")
     k = pg.evaluate("() => SVC.war('peninsula').seasons.findIndex(s => s.id === '1812-spring')")
     pg.select_option("#sv-season", str(k))
-    ed = pg.inner_text("#service")
+    ed = pg.inner_text(SERVICE)
     check(all(x in ed for x in ("The edge of Badajoz", "The sortie on the parallels", "Volunteers for the forlorn hope", "Into the ditch", "Two hours at the breaches")),
           "spring 1812: Badajoz has its edge, four scenes before the storm")
     check(pg.locator("button[data-svedgeplay='badajoz:ditch']").count() == 0, "the ditch waits for volunteers")
@@ -343,7 +344,7 @@ def run(p):
     pg.wait_for_selector("#h-service")
     k = pg.evaluate("() => SVC.war('henry_v').seasons.findIndex(s => s.id === '1415-autumn')")
     pg.select_option("#sv-season", str(k))
-    check("Agincourt" in pg.inner_text("#service") and "play it on the field map" in pg.inner_text("#service").lower(),
+    check("Agincourt" in pg.inner_text(SERVICE) and "play it on the field map" in pg.inner_text(SERVICE).lower(),
           "an English retinue's autumn 1415 has Agincourt, which can be played on its battlefield")
     pg.click("#btn-send")
     pg.wait_for_function("() => location.pathname.endsWith('roller.html')", timeout=15000)
@@ -370,20 +371,20 @@ def run(p):
     pg.select_option("#sv-war", "roses_edward")
     k = pg.evaluate("() => SVC.war('roses_edward').seasons.findIndex(s => s.id === '1461-spring')")
     pg.select_option("#sv-season", str(k))
-    rs = pg.inner_text("#service")
+    rs = pg.inner_text(SERVICE)
     check("Towton" in rs and "Ferrybridge" in rs and "play it on the field map" in rs.lower(),
           "an English team can serve with Edward of March instead: spring 1461 has Ferrybridge and Towton, which can be played on its field")
     check(pg.evaluate("() => SVC.weaponFor(SVC.war('roses_edward'), 10)") == "longbow", "and its hits come first from the longbow")
     pg.evaluate("() => { const W = SVC.war('roses_edward'); S.svcSmall = SVC.smallFight(W, 'march', svcD100, 'bridge'); render() }")
-    check("Clifford's horsemen" in pg.inner_text("#service"), "the bridge at dawn comes up as Ferrybridge's small fight")
+    check("Clifford's horsemen" in pg.inner_text(SERVICE), "the bridge at dawn comes up as Ferrybridge's small fight")
     # the seventh: the same English team on the other side, with the northern Lancastrians
     pg.select_option("#sv-war", "roses_lancaster")
     k = pg.evaluate("() => SVC.war('roses_lancaster').seasons.findIndex(s => s.id === '1461-spring')")
     pg.select_option("#sv-season", str(k))
-    rs = pg.inner_text("#service")
+    rs = pg.inner_text(SERVICE)
     check("Towton" in rs and "Ferrybridge" in rs and "40%" in rs, f"or with the northern Lancastrians: Towton lost at 40% (the dead times two) ({rs[:200]!r})")
     pg.evaluate("() => { const W = SVC.war('roses_lancaster'); S.svcSmall = SVC.smallFight(W, 'march', svcD100, 'bridge'); render() }")
-    check("Clifford's horsemen" in pg.inner_text("#service") and pg.evaluate("() => SVC.war('roses_lancaster').small_fights[0].team_attacks"),
+    check("Clifford's horsemen" in pg.inner_text(SERVICE) and pg.evaluate("() => SVC.war('roses_lancaster').small_fights[0].team_attacks"),
           "and the bridge at dawn from Clifford's side, attacking")
     # the fifth war: a British section in Italy
     pg.goto(BASE + "team.html")
@@ -393,7 +394,7 @@ def run(p):
     pg.wait_for_selector("#h-service")
     k = pg.evaluate("() => SVC.war('italy_british').seasons.findIndex(s => s.id === '1943-winter')")
     pg.select_option("#sv-season", str(k))
-    it = pg.inner_text("#service")
+    it = pg.inner_text(SERVICE)
     check("Capracotta" in it and "1st Royal Sussex on Snakeshead" in pg.inner_text("select[data-svunit=cassino_feb]"),
           "a British section in Italy: the mountain winter of 1943-44, and Snakeshead with the Royal Sussex's own figure")
     check(pg.evaluate("() => SVC.war('italy_british').medicine") == 20, "with the era's medicine on the sick")
@@ -407,10 +408,10 @@ def run(p):
     pg.wait_for_selector("#h-service")
     k = pg.evaluate("() => SVC.war('western_front').seasons.findIndex(s => s.id === '1916-spring')")
     pg.select_option("#sv-season", str(k))
-    check("shelled or sniped in the line: 10% a man" in pg.inner_text("#service"), "holding the line, each man risks the wastage in the line")
+    check("shelled or sniped in the line: 10% a man" in pg.inner_text(SERVICE), "holding the line, each man risks the wastage in the line")
     pg.evaluate(SEEDED, 3)
     pg.click("#btn-serve")
-    log = pg.inner_text("#service")
+    log = pg.inner_text(SERVICE)
     check(log.count("Shelled or sniped in the line: 10%") >= 1, "the season's log gives each man's wastage roll")
     followers(pg)
     check(not errors, f"no page errors {errors[:3]}")

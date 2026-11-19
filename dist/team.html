@@ -3773,14 +3773,17 @@ function svcDrafts(W, s, lines){                    // recruits for the follower
   }
   const way = (TD.repl?.assigned || []).find(a => !a.regions || a.regions.includes(S.region));
   const from = way ? ` (${way.name.toLowerCase()})` : "";
-  lines.push(`Drafts: ${n} recruit${n > 1 ? "s" : ""}${from} join the followers, ${TD.followers.draft_quality}: ${fresh.map(f => `${f.name}, ${svcCareer(f.career)}`).join("; ")}.`);
+  const names = fresh.map(f => f.name + ", " + svcCareer(f.career)).join("; ");
+  lines.push(`Drafts: ${n} recruit${n > 1 ? "s" : ""}${from} join the followers, ${TD.followers.draft_quality}: ${names}.`);
 }
 function svcCrewHtml(W, V, s){                      // the followers' line on the season panel: where they stand, desertion, drafts
   if (!S.crew.length && !(S.flost || []).length) return "";
-  const D = W.desertion || {}, pct = SVC.desertPct(W, s.id), own = "desertion" in s ? ` (this season: ${s.desertion_note})` : "";
+  const D = W.desertion || {}, pct = SVC.desertPct(W, s.id), own = "desertion" in s ? " (this season: " + esc(s.desertion_note) + ")" : "";
   const alt = D.alt == null ? "" : `; another source's ${D.alt}%`;
   const drafts = (W.drafts || []).map(k => W.states[k].name.toLowerCase()).join(" or ");
-  return `<p><b>The followers (${S.crew.length})</b> stand where the leader does. Desertion ${pct}% a season${D.ours ? " (ours)" : ""}${alt}${own}: <label>GM's share <input id="sv-desert" type="number" min="0" max="100" step="0.01" style="width:6em" value="${esc(V.desert ?? "")}" placeholder="${pct}" aria-label="Followers' desertion, % a season"></label> <span class="muted">${esc(D.basis || "")}</span>${drafts ? ` Recruits come up for the lost ${esc(drafts)}.` : ""}</p>`;
+  const come = drafts ? " Recruits come up for the lost " + esc(drafts) + "." : "";
+  const input = `<label>GM's share <input id="sv-desert" type="number" min="0" max="100" step="0.01" style="width:6em" value="${esc(V.desert ?? "")}" placeholder="${pct}" aria-label="Followers' desertion, % a season"></label>`;
+  return `<p><b>The followers (${S.crew.length})</b> stand where the leader does. Desertion ${pct}% a season${D.ours ? " (ours)" : ""}${alt}${own}: ${input} <span class="muted">${esc(D.basis || "")}</span>${come}</p>`;
 }
 function svcSmallFight(){                           // the small fight rolled, not played: each man with the battalion
   const V = svcState(), W = SVC.war(V.war), hits = [], bits = [];
@@ -3793,7 +3796,7 @@ function svcSmallFight(){                           // the small fight rolled, n
     } else bits.push(`${c.name} unhurt (${roll})`);
   }
   const lost = [];
-  for (const f of [...S.crew]){
+  for (const f of S.crew){                          // the lost come off after the loop
     const roll = svcD100();
     if (roll > W.small_war.hit) continue;
     const H = svcCrewHit(f, "the small fight");
