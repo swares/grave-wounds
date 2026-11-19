@@ -139,7 +139,7 @@ def _unfit(d: Data, health: dict) -> bool:
 
 
 def serve(d: Data, wid: str, sid: str, men: list[dict], rolled: list[str], rng) -> dict:
-    """A season for the team. men: [{name, endurance, position, unit: {aid: index}, share: {aid: %},
+    """A season for the team. men: [{name, endurance, position, pos_at: {aid: position}, unit: {aid: index}, share: {aid: %},
     health (his case carried from the last season, or none)}];
     rolled: the actions the team was at and does not play; rng: d100.
     -> {small (bool), small_roll, men: [{name, dead (disease id) and dead_week, sick_days, worst
@@ -168,7 +168,8 @@ def small_fight(W: dict, state: str, rng, fid: str | None = None) -> dict:
     `fid`, with no roll), then a d100 for the size of the team's party, one for each enemy force,
     and one for surprise where the fight has a chance of it.
     -> {id, roll, side (men), foes ([men]), surprise_roll, surprised}"""
-    fits = [f for f in W["small_fights"] if state in f["states"]] or W["small_fights"]
+    rolled = [f for f in W["small_fights"] if not f.get("edge_only")]   # an edge's own fights come only with their battle
+    fits = [f for f in rolled if state in f["states"]] or rolled
     roll = None
     if fid is None:
         roll, total, cum = rng(), sum(f["weight"] for f in fits), 0
@@ -247,7 +248,8 @@ def _action(d: Data, W: dict, aid: str, m: dict, h: dict, r: dict, rng) -> None:
     if _unfit(d, h):
         r["missed"].append({"action": aid, "why": "sick"})
         return
-    pct = hit_pct(W, aid, m.get("position", "line"), (m.get("unit") or {}).get(aid), (m.get("share") or {}).get(aid))
+    pos = (m.get("pos_at") or {}).get(aid) or m.get("position", "line")   # where he stands at this action (an edge's choice), else for the season
+    pct = hit_pct(W, aid, pos, (m.get("unit") or {}).get(aid), (m.get("share") or {}).get(aid))
     if pct is None:
         r["missed"].append({"action": aid, "why": "no share"})
         return
@@ -256,7 +258,7 @@ def _action(d: Data, W: dict, aid: str, m: dict, h: dict, r: dict, rng) -> None:
     if roll <= pct:
         r["hits"].append({"action": aid, "pct": pct, "roll": roll, "weapon": weapon_for(d, W, rng())})
         return
-    t = taken_pct(W, aid, m.get("position", "line"), (m.get("unit") or {}).get(aid))
+    t = taken_pct(W, aid, pos, (m.get("unit") or {}).get(aid))
     if t:                                           # came through unhit: taken in the rout or the surrender?
         roll = rng()
         if roll <= t:

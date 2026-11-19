@@ -165,6 +165,25 @@ small_fights:
     end: {rounds: 6, wins: team, down: {foes: 0.33}, hold: team}
     sources: ["https://www.historyofwar.org/articles/siege_badajoz_3rd.html", "https://www.historyofwar.org/articles/siege_burgos_1812.html", "Kincaid, ch. IX: https://m.gutenberg.org/files/28981/28981.txt"]
     note: "Burgos, 5 October: 142 Allied casualties and 200 picks and shovels lost; 8-9 October: 184 against 33 French (Rickard). Trench duty was six hours by day and the same by night (Kincaid)."
+  - id: ditch
+    name: "Into the ditch"
+    what: "The forlorn hope goes down into the ditch at ten at night with grass bags and ladders; part of it has been secretly flooded and men drown in it; the French throw fireballs to see by and fire down from the breach, each with three muskets, and the top of the breach is a fringe of sword blades (Badajoz, 6 April 1812)."
+    states: [siege]
+    weight: 1
+    edge_only: true
+    at: 1812-spring
+    where: "the ditch and the foot of the breach"
+    time: "at ten at night"
+    light: night
+    ground: open
+    team_attacks: true
+    side: {name: "The forlorn hope", men: [20, 60]}
+    foes: [{name: "The French on the breach", men: [40, 150], weapon: musket_smoothbore}]
+    aims: {team: "Get up the breach to the sword blades and hold there for the column.", foes: "Hold the top of the breach."}
+    ends: "The column comes up behind after 6 rounds; the forlorn hope falls back once a third of theirs are down; it wins if it holds the top of the breach."
+    end: {rounds: 6, wins: none, down: {team: 0.33}, hold: foes}
+    sources: ["https://www.historyofwar.org/articles/siege_badajoz_3rd.html", "https://mobileapps.wikiwand.com/en/Siege_of_Badajoz_(1812)"]
+    note: "The forlorn hopes went first to fill the ditch with grass bags (historyofwar); the fireballs, the three muskets a man and the sword blades are Napier's, as retold. The sizes are ours. On the roller: lay water across the ditch and the sword blades (chevaux de frise) on the breach top with Paint ground; the fireballs make it a lit night."
   - id: rearguard
     name: "The rear-guard at a bridge"
     what: "The rear-guard holds a bridge and its defile while the column gets clear; French cavalry come at it four abreast and are broken by fire from both sides (Cacabelos, 3 January 1809)."
@@ -359,6 +378,37 @@ actions:
     lost: "4,760-4,924 killed and wounded in the siege; about 2,000 at the breaches in two hours"
     sources: ["https://www.historyofwar.org/articles/siege_badajoz_3rd.html", "https://mobileapps.wikiwand.com/en/Siege_of_Badajoz_(1812)"]
     single: true
+    # The edge of the battle (layer 3): the scenes the team plays or rolls before the storm is
+    # rolled or played, in order. A fight is one of the war's small fights (an edge's own marked
+    # edge_only, rolled only here); a choice and a check set where a man stands at the storm.
+    edge:
+      name: "The edge of Badajoz"
+      what: "Three weeks in the trenches before the walls, then the storm of the breaches at ten at night on 6 April: the forlorn hopes first with grass bags and ladders, the divisions behind them, about 40 attacks on the breaches in two hours and all of them failed, while the castle and San Vicente were taken by escalade."
+      sources: ["https://www.historyofwar.org/articles/siege_badajoz_3rd.html", "https://mobileapps.wikiwand.com/en/Siege_of_Badajoz_(1812)"]
+      scenes:
+        - id: sortie
+          kind: fight
+          fight: sortie
+          name: "The sortie on the parallels"
+          what: "19 March: the garrison comes out on the working parties in the trenches, 1,500 infantry and 40 cavalry, and carries off their picks and shovels."
+        - id: hope
+          kind: choice
+          name: "Volunteers for the forlorn hope"
+          what: "The forlorn hope goes first, to fill the ditch and get up the breach ahead of the column. Who volunteers? They go into the ditch, and stand in the thick of it at the storm."
+          label: "volunteers"
+          position: thick
+        - id: ditch
+          kind: fight
+          fight: ditch
+          only: hope
+          name: "Into the ditch"
+          what: "Ten at night: the forlorn hope goes down into the ditch, part of it flooded, under fireballs, at a breach topped with sword blades."
+        - id: breaches
+          kind: check
+          name: "Two hours at the breaches"
+          what: "Attack after attack at the breaches for two hours, until 2,000 had fallen. A man who fails his Nerve will not go up again: kept back at the storm."
+          stat: nerve
+          fail_position: reserve
   salamanca:
     name: "Salamanca"
     date: 1812-07-22

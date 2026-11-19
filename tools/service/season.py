@@ -254,6 +254,43 @@ def run(p):
     took = pg.evaluate("() => ({ log: S.svclog.join(' '), team: S.team.length, prisoners: (S.prisoners || []).length })")
     check("taken prisoner at Spotsylvania" in took["log"] and took["team"] < n0 and took["prisoners"] >= 1,
           f"served, a man taken goes to the Prisoners ({n0} -> {took['team']}, {took['prisoners']} prisoners: {took['log'][:300]!r})")
+    # layer 3: the edge of Badajoz, a British company in spring 1812
+    pg.goto(BASE + "team.html")
+    pg.select_option("#sel-era", "horse_musket")
+    pg.select_option("#sel-region", "british_pen")
+    pg.select_option("#sel-template", "company")
+    pg.click("#btn-roll")
+    pg.wait_for_selector("#h-service")
+    k = pg.evaluate("() => SVC.war('peninsula').seasons.findIndex(s => s.id === '1812-spring')")
+    pg.select_option("#sv-season", str(k))
+    ed = pg.inner_text("#service")
+    check(all(x in ed for x in ("The edge of Badajoz", "The sortie on the parallels", "Volunteers for the forlorn hope", "Into the ditch", "Two hours at the breaches")),
+          "spring 1812: Badajoz has its edge, four scenes before the storm")
+    check(pg.locator("button[data-svedgeplay='badajoz:ditch']").count() == 0, "the ditch waits for volunteers")
+    vol = pg.evaluate("() => S.team[0].name")
+    pg.locator("input[data-svedgechoice^='badajoz:hope:']").first.check()
+    check(pg.locator("button[data-svedgeplay='badajoz:ditch']").count() == 1, f"a volunteer ({vol}): the ditch can be played or rolled")
+    pg.evaluate("() => { window.__q = [99, 1, 1, 1, 1, 1, 1, 1]; realDice.randint = (a, b) => (window.__q.length ? window.__q.shift() : b) }")   # the first man fails his Nerve, the rest hold
+    pg.click("button[data-svedgecheck='badajoz:breaches']")
+    chk = pg.evaluate("() => S.svclog.at(-1)")
+    check("fails (99" in chk and "kept back" not in chk, f"two hours at the breaches: each man's Nerve rolled ({chk[:160]})")
+    at = pg.evaluate("() => { const V = svcState(), W = SVC.war(V.war); return svcEdgeAt(W, V, 'badajoz') }")
+    first = pg.evaluate("() => S.team[0].pid")
+    check(at.get(first) == "reserve", f"the man who failed his Nerve stands in reserve at the storm, the check after the choice ({at})")
+    pg.evaluate("() => { const V = svcState(); const st = svcEdge(V, 'badajoz'); delete st.failed[S.team[0].pid]; render() }")
+    at = pg.evaluate("() => { const V = svcState(), W = SVC.war(V.war); return svcEdgeAt(W, V, 'badajoz') }")
+    check(at.get(first) == "thick", f"a volunteer who holds stands in the thick of it ({at})")
+    pg.evaluate("() => { realDice.randint = (a, b) => b }")
+    pg.click("#btn-serve")
+    served = pg.evaluate("() => S.svclog.join(' ')")
+    check("in the thick of it at badajoz, as its edge set" in served.lower(), f"served: the storm rolled with the volunteer in the thick of it ({served[:240]!r})")
+    h = pg.evaluate("""() => { const V = svcState(); V.i -= 1; V.edge = { badajoz: { done: {}, chosen: { hope: { [S.team[0].pid]: true } }, failed: {} } }; render();
+      let got = null;
+      const set = localStorage.setItem.bind(localStorage); localStorage.setItem = (k, v) => { if (k === 'gravewounds-handoff') got = JSON.parse(v); else set(k, v) };
+      try{ svcEdgePlay('badajoz:ditch') }catch(e){}
+      localStorage.setItem = set; return got }""")
+    check(h and h["only"] == [first] and h["light"] == "night" and h["title"] == "Into the ditch", f"the ditch goes to the roller with only the volunteer, at night ({(h or {}).get('only')}, {(h or {}).get('light')})")
+    pg.wait_for_function("() => location.pathname.endsWith('roller.html')")
     # the third war: an English retinue in Henry V's war, and an escalade played (the team attacking)
     pg.goto(BASE + "team.html")
     pg.select_option("#sel-era", "medieval")

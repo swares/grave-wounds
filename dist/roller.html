@@ -5732,10 +5732,14 @@ function applyFromMap(){                    // the Strike panel's Apply, with it
 // The named men with the forces in a fight from the travel map (as the roller's own fighters, with
 // their sheets, kit and wounds), by force: {by: Map(force id -> chars), missing: names}. A named man
 // with the force but not on the roller is missing: he has no fighter here to bring.
+function teamComes(h, c){                           // a season's small fight: the team's named men and followers, or an edge's scene's own men only
+  if (!c.team || c.dead || c.taken || !(c.uid || c.follower)) return false;
+  return !h.only || h.only.includes(c.sheet?.pid);
+}
 function handoffNamed(h, forces){
   const by = new Map(), missing = [];
   if (h.team){                                    // a season's small fight: the team's named men and followers here go with its party
-    for (const c of S.chars) if (c.team && !c.dead && !c.taken && (c.uid || c.follower)) addTo(by, h.team, c);
+    for (const c of S.chars) if (teamComes(h, c)) addTo(by, h.team, c);
     if (!by.size) missing.push("the team (send it to the roller from the team builder, then set the fight up again)");
     return { by, missing };
   }
