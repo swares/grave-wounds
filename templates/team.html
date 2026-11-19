@@ -1233,11 +1233,13 @@ function svcEdgeHtml(W, V, aid){
 function svcEdgeAt(W, V, aid){                       // {pid: position} the edge's choices and failed checks set at the action
   const out = {}, a = W.actions[aid], st = (V.edge || {})[aid];
   if (!a.edge || !st) return out;
-  for (const sc of a.edge.scenes){
-    if (sc.kind === "choice") for (const pid of Object.keys(st.chosen[sc.id] || {}).filter(p => st.chosen[sc.id][p])) out[pid] = sc.position;
-    if (sc.kind === "check") for (const [pid, sid] of Object.entries(st.failed)) if (sid === sc.id) out[pid] = sc.fail_position;
-  }
+  for (const sc of a.edge.scenes) for (const pid of svcEdgeSet(sc, st)) out[pid] = sc.kind === "choice" ? sc.position : sc.fail_position;
   return out;
+}
+function svcEdgeSet(sc, st){                         // the men a scene puts somewhere: a choice's ticked, a check's failed
+  if (sc.kind === "choice") return Object.keys(st.chosen[sc.id] || {}).filter(p => st.chosen[sc.id][p]);
+  if (sc.kind === "check") return Object.entries(st.failed).filter(([, sid]) => sid === sc.id).map(([pid]) => pid);
+  return [];
 }
 function svcEdgeFind(key){                           // "aid:sceneId" -> [W, V, a, scene, its state]
   const V = svcState(), W = SVC.war(V.war), [aid, sid] = key.split(":"), a = W.actions[aid];
@@ -1311,6 +1313,7 @@ function renderService(){
       <b>${esc(st.name)}</b>: ${esc(s.what)} <span class="muted">Hygiene ${esc(s.hygiene)}${fx ? "; " + esc(fx) : ""}; a small fight ${W.small_war.chance[s.state]}%${(W.wastage || {})[s.state] ? `; ${esc(W.wastage_name.toLowerCase())}: ${W.wastage[s.state]}% a man` : ""}.</span></p>
     ${acts}
     <h4>Who serves it</h4><ul class="xp">${men}</ul>
+    ${svcCrewHtml(W, V, s)}
     <div class="row"><button id="btn-serve" title="Roll the season for each man with the battalion">Serve the season</button></div>
     ${S.svcSmall ? svcFightHtml(W) : ""}
     ${waiting ? `<p class="muted">${waiting} hit${waiting > 1 ? "s" : ""} waiting on the roller: <a href="roller.html">roll the wound${waiting > 1 ? "s" : ""} there</a>.</p>` : ""}
@@ -1379,7 +1382,8 @@ function serveSeason(){
     unit: Object.fromEntries(Object.entries(V.unit).filter(([, k]) => k !== "" && k != null).map(([a, k]) => [a, +k])),
     share: Object.fromEntries(Object.entries(V.share).filter(([, v]) => v !== "" && v != null).map(([a, v]) => [a, +v])) }));
   const rolled = s.actions.filter(a => (V.at[a] ?? W.actions[a].main !== false) && !V.played[a]);
-  const r = SVC.serve(V.war, s.id, men, rolled, svcD100), lines = [`${s.name}: ${W.states[s.state].name.toLowerCase()}.`], hits = [];
+  const crew = S.crew.map(f => ({ name: f.name, position: svcCrewPos(V), health: f.svcHealth || null, pos_at: {}, unit: men[0]?.unit || {}, share: men[0]?.share || {} }));   // the followers stand with the leader
+  const r = SVC.serve(V.war, s.id, men.concat(crew), rolled, svcD100), lines = [`${s.name}: ${W.states[s.state].name.toLowerCase()}.`], hits = [];
   const played = s.actions.filter(a => (V.at[a] ?? W.actions[a].main !== false) && V.played[a]);
   if (played.length) lines.push(`To play on the field map: ${played.map(a => W.actions[a].name).join(", ")}.`);
   serving.forEach((c, k) => {
@@ -1420,6 +1424,7 @@ function serveSeason(){
   try{ localStorage.setItem(NAMED_STORE, JSON.stringify(named)) }catch(e){ /* storage off: the roller keeps his old record */ }
   for (const c of serving.filter(x => x.svcDied)){ const why = c.svcDied; delete c.svcDied; loseMember(S.team.indexOf(c), why) }
   for (const c of serving.filter(x => x.svcTaken)){ delete c.svcTaken; loseMember(S.team.indexOf(c), "taken prisoner") }   // to the Prisoners, his fate rolled there
+  svcCrewSeason(W, s, r.men.slice(serving.length), lines);
   if (hits.length) svcQueue(hits);
   S.svcSmall = r.small ? (r.fight || true) : false;
   lines.push(r.small ? `A small fight comes the team's way (rolled ${r.small_roll} against ${r.chance}).` : `No small fight (rolled ${r.small_roll} against ${r.chance}).`);
@@ -1427,6 +1432,96 @@ function serveSeason(){
   V.i += 1; V.at = {}; V.played = {}; V.unit = {}; V.share = {}; V.edge = {};
   S.msg = `${s.name} served. ${hits.length ? "Roll the hits on the roller, then" : "Now"} press End of season.`;
   render();
+}
+/* Followers through a season (data/followers.yaml season_hit and draft_quality; the war's desertion
+   and drafts): each is rolled as a named man is, a hit's severity rolled for his fate, then the
+   season's desertion; in a draft season recruits come up for the lost. */
+function svcCrewPos(V){                             // the followers stand where the leader does
+  const lead = S.team.find(m => m.leader);
+  return (lead && V.pos[lead.pid]) || "line";
+}
+const svcCareer = cid => byId(T.careers, cid).name.toLowerCase();
+function svcCrewHit(f, where){                      // {text, gone}: a follower hit, his wound's severity rolled for his fate
+  const roll = svcD100(), row = TD.followers.season_hit.find(x => roll <= x.to);
+  const fate = { stays: "stays with the team", invalided: "invalided home", dead: "died of it" }[row.fate];
+  const gone = { invalided: "invalided home", dead: "died of wounds" }[row.fate] || null;
+  return { text: `${f.name}, ${svcCareer(f.career)}, hit at ${where}: a ${row.severity} wound (rolled ${roll}), ${fate}`, gone };
+}
+function svcCrewLose(f, why){                       // off the followers, his career remembered for the drafts
+  const k = S.crew.indexOf(f);
+  if (k < 0) return;
+  S.crew.splice(k, 1);
+  const row = S.fcounts.find(([cid]) => cid === f.career);
+  if (row) row[1] = Math.max(0, row[1] - 1);
+  S.flost = S.flost || [];
+  S.flost.push(f.career);
+  S.fgone = S.fgone || [];
+  S.fgone.push({ name: f.name, career: f.career, why });
+}
+const svcDeserts = pct => (svcD100() - 1) * 100 + svcD100() <= Math.round(pct * 100);   // d10000: shares under 1% a season
+function svcCrewFate(W, m, f, pct){                 // [text or null, why gone or null]: one follower's season
+  const actName = a => (a === "wastage" ? W.wastage_name : W.actions[a].name);
+  if (m.dead){
+    const dz = (TD.service.rules.disease.diseases[m.dead] || TD.service.rules.disease.wounds[m.dead] || { name: m.dead }).name.toLowerCase();
+    return [`${f.name}, ${svcCareer(f.career)}, died of ${dz} in week ${m.dead_week + 1}`, m.dead === "wound" || m.dead === "fever" ? "died of wounds" : "died of disease"];
+  }
+  if (m.taken) return [`${f.name}, ${svcCareer(f.career)}, taken prisoner at ${actName(m.taken.action)}`, "taken prisoner"];
+  if (m.hits.length){
+    const H = svcCrewHit(f, actName(m.hits[0].action));
+    if (H.gone) return [H.text, H.gone];
+    if (svcDeserts(pct)) return [H.text + "; then deserted", "deserted"];
+    return [H.text, null];
+  }
+  if (svcDeserts(pct)) return [`${f.name}, ${svcCareer(f.career)}, deserted`, "deserted"];
+  return [null, null];
+}
+function svcKeepHealth(H){                          // a case still running, or what he is immune to: carried on
+  return H && (H.cases.length || Object.keys(H.immune).length || Object.keys(H.had).length) ? H : null;
+}
+function svcCrewSeason(W, s, res, lines){           // the followers' season: the log line, the lost off, the drafts
+  if (!S.crew.length && !(S.flost || []).length) return;
+  const V = svcState(), pct = V.desert === "" || V.desert == null ? SVC.desertPct(W, s.id) : +V.desert, was = S.crew.length, bits = [], lost = [];
+  let sick = 0;
+  S.crew.forEach((f, k) => {
+    const m = res[k];
+    f.svcHealth = svcKeepHealth(m.health);
+    if (m.sick_days && !m.dead) sick++;
+    const [text, gone] = svcCrewFate(W, m, f, pct);
+    if (text) bits.push(text);
+    if (gone) lost.push([f, gone]);
+  });
+  for (const [f, why] of lost) svcCrewLose(f, why);
+  if (was){
+    const ill = sick ? `; ${sick} sick for a time` : "";
+    lines.push(`The followers (${was}, desertion ${pct}%): ${bits.length ? bits.join("; ") : "a quiet season"}${ill}. ${S.crew.length} remain.`);
+  }
+  svcDrafts(W, s, lines);
+}
+function svcDrafts(W, s, lines){                    // recruits for the followers lost, in a draft season, up to what the leader keeps
+  if (!(W.drafts || []).includes(s.state) || !(S.flost || []).length || S.template === "own") return;
+  const cap = followerCap(), mustered = tplFollowers(S.template).reduce((t, [, n]) => t + n, 0);
+  const room = Math.min(cap ? cap.cap : mustered, mustered) - S.crew.length, n = Math.min(room, S.flost.length);
+  if (n <= 0) return;
+  const careers = S.flost.splice(0, n), counts = [...new Set(careers)].map(cid => [cid, careers.filter(x => x === cid).length]);
+  const fresh = makeFollowers(S.region, counts, TD.followers.draft_quality, realDice, S.women);
+  S.crew.push(...fresh);
+  for (const [cid, k] of counts){
+    const row = S.fcounts.find(([x]) => x === cid);
+    if (row) row[1] += k; else S.fcounts.push([cid, k]);
+  }
+  const way = (TD.repl?.assigned || []).find(a => !a.regions || a.regions.includes(S.region));
+  const from = way ? ` (${way.name.toLowerCase()})` : "";
+  const names = fresh.map(f => f.name + ", " + svcCareer(f.career)).join("; ");
+  lines.push(`Drafts: ${n} recruit${n > 1 ? "s" : ""}${from} join the followers, ${TD.followers.draft_quality}: ${names}.`);
+}
+function svcCrewHtml(W, V, s){                      // the followers' line on the season panel: where they stand, desertion, drafts
+  if (!S.crew.length && !(S.flost || []).length) return "";
+  const D = W.desertion || {}, pct = SVC.desertPct(W, s.id), own = "desertion" in s ? " (this season: " + esc(s.desertion_note) + ")" : "";
+  const alt = D.alt == null ? "" : `; another source's ${D.alt}%`;
+  const drafts = (W.drafts || []).map(k => W.states[k].name.toLowerCase()).join(" or ");
+  const come = drafts ? " Recruits come up for the lost " + esc(drafts) + "." : "";
+  const input = `<label>GM's share <input id="sv-desert" type="number" min="0" max="100" step="0.01" style="width:6em" value="${esc(V.desert ?? "")}" placeholder="${pct}" aria-label="Followers' desertion, % a season"></label>`;
+  return `<p><b>The followers (${S.crew.length})</b> stand where the leader does. Desertion ${pct}% a season${D.ours ? " (ours)" : ""}${alt}${own}: ${input} <span class="muted">${esc(D.basis || "")}</span>${come}</p>`;
 }
 function svcSmallFight(){                           // the small fight rolled, not played: each man with the battalion
   const V = svcState(), W = SVC.war(V.war), hits = [], bits = [];
@@ -1438,9 +1533,19 @@ function svcSmallFight(){                           // the small fight rolled, n
       bits.push(`${c.name} hit (rolled ${roll}) by ${TD.service.weapons[weapon].toLowerCase()}`);
     } else bits.push(`${c.name} unhurt (${roll})`);
   }
+  const lost = [];
+  for (const f of S.crew){                          // the lost come off after the loop
+    const roll = svcD100();
+    if (roll > W.small_war.hit) continue;
+    const H = svcCrewHit(f, "the small fight");
+    bits.push(H.text);
+    if (H.gone) lost.push([f, H.gone]);
+  }
+  for (const [f, why] of lost) svcCrewLose(f, why);
   if (hits.length) svcQueue(hits);
   S.svcSmall = false;
-  (S.svclog ||= []).push(`The small fight, rolled: ${bits.join("; ")}.`);
+  S.svclog = S.svclog || [];
+  S.svclog.push(`The small fight, rolled: ${bits.join("; ")}.`);
   render();
 }
 /* Experience (xp.js, xpSeason in team.js): what each man has ticked since the last End of season,
@@ -2083,9 +2188,13 @@ function init(){
       return svcEdgeCheck(ds.svedgecheck);
     }
   });
+  $("#service").addEventListener("input", e => {   // the GM's desertion share: kept as typed, no redraw under his hands
+    const V = svcState();
+    if (V && e.target.id === "sv-desert"){ V.desert = e.target.value; save() }
+  });
   $("#service").addEventListener("change", e => {
     const V = svcState(), t = e.target, ds = t.dataset;
-    if (!V) return;
+    if (!V || t.id === "sv-desert") return;
     if (t.id === "sv-war"){ V.war = t.value; V.i = 0 }
     else if (t.id === "sv-fight"){ const W = SVC.war(V.war), s = W.seasons[Math.max(0, V.i - 1)]; S.svcSmall = SVC.smallFight(W, s.state, svcD100, t.value) }
     else if (t.id === "sv-season") V.i = +t.value;

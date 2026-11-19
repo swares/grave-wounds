@@ -51,6 +51,17 @@ small_war:
 
 sides: {team: "English", foes: "French"}
 
+# Followers through a season (team builder): each of the team's followers is rolled as a named man
+# is (hit, sickness, taken), and then, if still with the team, d10000 against `desertion.share` x 100
+# (the season's own `desertion` where it gives one). drafts - the states in which recruits come up to
+# fill the followers lost (data/followers.yaml `drafts`). Project doc "follower-drift-research".
+desertion:
+  share: 2
+  ours: true
+  basis: "No count of deserters from Henry V's armies was found; the musters show men gone but not why. Ours. The winter at Meaux, where a sixth of the army was lost dead or deserted (Sumption), has its own share."
+  sources: ["https://medievalsoldier.org/help/research-guides/did-you-ancestor-serve-in-the-garrisons-of-normandy-1415-1450"]
+drafts: [garrison]
+
 sources:
   tna: &tna "https://blog.nationalarchives.gov.uk/baptism-fire-steel-stone-henry-vs-army-siege-harfleur/"
   ms: &ms "https://medievalsoldier.org/about/agincourt/the-english-army-in-1415/"
@@ -116,7 +127,8 @@ seasons:
      what: "The king back at Calais with some 4,000 (11 June); Dreux and Beaugency.", sources: ["https://aristocraticfury.substack.com/p/the-bastard-of-vaurus", *mon5]}
   - {id: 1421-autumn, name: "Autumn 1421", state: siege, hygiene: fair, factors: {cold_wet: 2}, actions: [],
      what: "The siege of Meaux from 6 October, its ditches cleared at night by the defenders.", sources: ["https://aristocraticfury.substack.com/p/the-bastard-of-vaurus", *mon5]}
-  - {id: 1421-winter, name: "Winter 1421-22", state: siege, hygiene: fair, factors: {cold_wet: 9}, actions: [],
+  - {id: 1421-winter, name: "Winter 1421-22", state: siege, hygiene: fair, factors: {cold_wet: 9}, desertion: 8, desertion_note: "A sixth of the army lost by Christmas, dead or deserted (Sumption); ours: half of it deserted.",
+     actions: [],
      what: "The winter siege of Meaux, with dysentery and smallpox: about a sixth of the army lost by Christmas, dead or deserted (Sumption, from the pay records); the town falls in March.",
      sources: ["https://aristocraticfury.substack.com/p/the-bastard-of-vaurus", *corrigan]}
   - {id: 1422-spring, name: "Spring 1422", state: siege, hygiene: fair, factors: {}, actions: [],

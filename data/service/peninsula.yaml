@@ -59,6 +59,16 @@ small_war:
 # and the enemy's.
 sides: {team: "British", foes: "French"}
 
+# Followers through a season (team builder): each of the team's followers is rolled as a named man
+# is (hit, sickness, taken), and then, if still with the team, d10000 against `desertion.share` x 100
+# (the season's own `desertion` where it gives one). drafts - the states in which recruits come up to
+# fill the followers lost (data/followers.yaml `drafts`). Project doc "follower-drift-research".
+desertion:
+  share: 0.3
+  basis: "British units overseas lost 0.9% of their strength to desertion in 1811 and 1.4% in 1812 (Linch, from the returns); about four-fifths of the army's desertions were at home. A season: about a quarter of the year's (ours)."
+  sources: ["https://eprints.whiterose.ac.uk/93692/23/Desertion_form_the_British_Army_during_the_Napoleonic_Wars_%28final%29.pdf"]
+drafts: [quarters]
+
 # small_fights - ready-made fights for the roller when a season's small fight comes (rolled by weight
 #   among those whose states include the season's; the GM may pick another): name, what (the accounts,
 #   one line), states, weight (ours), at (the season of the instance it is sourced to), where, time, ground (the roller's ground: open, road, farmland,

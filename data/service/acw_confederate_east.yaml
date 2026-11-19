@@ -50,6 +50,16 @@ small_war:
 
 sides: {team: "Confederate", foes: "Union"}
 
+# Followers through a season (team builder): each of the team's followers is rolled as a named man
+# is (hit, sickness, taken), and then, if still with the team, d10000 against `desertion.share` x 100
+# (the season's own `desertion` where it gives one). drafts - the states in which recruits come up to
+# fill the followers lost (data/followers.yaml `drafts`). Project doc "follower-drift-research".
+desertion:
+  share: 1.1
+  basis: "Lonn: about 103,400 enlisted men deserted (Livermore: 82,922). On the mean strength of 420,162 over 16 seasons that is 1.54% a season (ours); the winter of 1864-65 is set apart (its own share) and the rest tuned to keep the mean (ours)."
+  sources: ["https://www.georgiaencyclopedia.org/articles/history-archaeology/desertion-during-the-civil-war/", "https://armyheritage.org/wp-content/uploads/ref-bibs/subjects/Military%20Service/Desertion/Desertion%20Statistics.pdf"]
+drafts: [quarters]
+
 sources:
   wp4va: &wp4va "https://en.wikipedia.org/wiki/4th_Virginia_Infantry_Regiment"
   livermore: &livermore "https://github.com/jrnold/acw_battle_data/blob/master/rawdata/livermore1900/livermore.csv"
@@ -89,7 +99,8 @@ seasons:
      what: "With Early to Lynchburg and down the Valley into Maryland: Monocacy (9 July) and the skirmish before Washington.", sources: [*wp4va, "https://www.battlefields.org/learn/civil-war/battles/monocacy"]}
   - {id: 1864-autumn, name: "Autumn 1864", state: campaign, hygiene: good, factors: {}, actions: [opequon, fishers_hill, cedar_creek],
      what: "Sheridan's Valley campaign: Third Winchester (19 September), Fisher's Hill, Cedar Creek (19 October).", sources: [*wp4va]}
-  - {id: 1864-winter, name: "Winter 1864-65", state: siege, hygiene: fair, factors: {cold_wet: 3}, actions: [],
+  - {id: 1864-winter, name: "Winter 1864-65", state: siege, hygiene: fair, factors: {cold_wet: 3}, desertion: 8, desertion_note: "Lee: 1,094 deserted between 15 and 25 February 1865, 72 of them from Gordon's division; 'hundreds of men are deserting nightly' (OR I/46/2, pp. 1258, 1265). A season: ours.",
+     actions: [],
      what: "Back to Lee at Petersburg: the trench lines in winter, on short rations.", sources: [*wp4va]}
   - {id: 1865-spring, name: "Spring 1865", state: campaign, hygiene: fair, factors: {}, actions: [fort_stedman, appomattox],
      what: "Fort Stedman (25 March), the fall of Petersburg and the retreat; Appomattox (9 April): 5 lieutenants and 38 men, 17 of them armed.", sources: [*wp4va]}

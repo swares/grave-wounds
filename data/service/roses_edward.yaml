@@ -57,6 +57,17 @@ small_war:
 
 sides: {team: "Yorkists", foes: "Lancastrians"}
 
+# Followers through a season (team builder): each of the team's followers is rolled as a named man
+# is (hit, sickness, taken), and then, if still with the team, d10000 against `desertion.share` x 100
+# (the season's own `desertion` where it gives one). drafts - the states in which recruits come up to
+# fill the followers lost (data/followers.yaml `drafts`). Project doc "follower-drift-research".
+desertion:
+  share: 2
+  ours: true
+  basis: "No count of men leaving a retinue in the Wars of the Roses was found. Ours, as for Henry V's armies."
+  sources: ["https://medievalsoldier.org/help/research-guides/did-you-ancestor-serve-in-the-garrisons-of-normandy-1415-1450"]
+drafts: [household, garrison]
+
 sources:
   calais: &calais "https://thewarsoftheroses.co.uk/calais"
   santiuste5: &santiuste5 "https://erenow.org/postclassical/edwardivandthewarsoftheroses/5.php"

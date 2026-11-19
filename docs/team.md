@@ -854,7 +854,34 @@ for each man whether he serves and where he stands. **Serve the season** then ro
   of the fight and not counted lost: the patrol home with word, the rear-guard escaped). What none
   of these counts (a general taken, a deed of arms, getting in and back out) stays the GM's call;
   the words say it. Or **Roll it**: each man with the battalion is hit on
-  10% (ours).
+  10% (ours), and each follower too (his fate as below).
+- **The followers.** Each of the team's followers serves the season as a named man does, standing
+  where the leader stands: his sickness (his own record, kept on the team builder), each action's
+  hit roll and its taken share. Dead of disease or taken, he is gone. A follower hit rolls d100 on
+  `data/followers.yaml` `season_hit` (the severity tiers of `wounds.yaml`): light (01-55), he
+  stays; serious (56-85), he is invalided home; critical (86-100), he dies of it (ours; the
+  critical 15% is near the share of the hit who were killed, 17% in the Peninsula). One still with
+  the team then rolls the war's **desertion** a season (`desertion` in `data/service/<war>.yaml`;
+  a season's own share where one is given; d10000, as some shares are under 1%), or the GM's share
+  typed on the panel:
+
+  | War | Desertion a season | Basis |
+  | --- | --- | --- |
+  | The Peninsula | 0.3% | British units overseas, 0.9% (1811) and 1.4% (1812) a year (Linch) |
+  | The Union, the East | 1.8% | about 0.6% a month in mid-1863 (Lerwill); Fry's 201,000 real deserters |
+  | The 4th Virginia | 1.1%; 8% in the winter of 1864-65 | Lonn's 103,400 on the mean strength; Lee's 1,094 in ten days of February 1865 (ours, a season) |
+  | Henry V | 2%; 8% at Meaux | ours: no count found (a sixth lost dead or deserted at Meaux, Sumption) |
+  | The Roses, both sides | 2% | ours: no count found |
+  | The Western Front | 0.03% | 7,361 desertions in the field; ours, no mean strength in France found |
+  | Italy | 0.02% (alt 5%) | the official history's 0.1% over the campaign (Jackson); the 78th Division's 927 in October-December 1944 (Bielecki, single) |
+
+  The log gives a line for the followers: who was hit and his fate, who died, was taken or
+  deserted, how many were sick, and how many remain. In a season of the war's `drafts` states
+  (winter quarters; a garrison or a lord's household in the medieval wars; rest out of the line),
+  recruits come up for the followers lost: of the lost men's careers, rolled raw
+  (`draft_quality`), up to what the leader's Presence keeps and never more than the template
+  mustered (ours); the log names them and the army's way (a draft from the depot or second
+  battalion, from `data/replacements`). The End of season drift by Presence still follows.
 
   The Peninsula's eight, each from dated instances in the accounts (Cope's history of the Rifle
   Brigade, Kincaid, Costello, Rickard's historyofwar.org, Urban): a picket attacked at night (Barba
