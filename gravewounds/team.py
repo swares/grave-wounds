@@ -34,9 +34,11 @@ def _pick(rows: list, roll: int) -> dict:
 
 def _fresh(rows: list, roll: int, had: list) -> dict:
     """The term row for a d100 roll; one whose event he has already had moves to the next row
-    down (round to the top)."""
+    down (round to the top). Had them all (a long service), the rolled row comes again."""
     i = rows.index(_pick(rows, roll))
-    while rows[i]["text"] in had:
+    for _ in rows:
+        if rows[i]["text"] not in had:
+            return rows[i]
         i = (i + 1) % len(rows)
     return rows[i]
 

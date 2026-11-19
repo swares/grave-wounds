@@ -82,7 +82,19 @@ def fixed(d) -> dict:
     return {"pct": pct, "weapons": weapons, "weeks": weeks, "fights": fights, "desert": desert}
 
 
+def fresh_ok() -> bool:
+    """team.py's term-event row for a man who has had them all: the rolled one again, not an
+    endless search (End of season after a long service; as team.js freshRow, checked in season.py)."""
+    from gravewounds.team import _fresh   # noqa: PLC0415
+    rows = [{"text": "a", "to": 50}, {"text": "b", "to": 100}]
+    ok = _fresh(rows, 70, ["a", "b"])["text"] == "b" and _fresh(rows, 70, ["b"])["text"] == "a"
+    print(("ok   " if ok else "FAIL ") + "team.py: a man who has had every term event gets the rolled one again")
+    return ok
+
+
 def main() -> int:
+    if not fresh_ok():
+        return 1
     n = int(sys.argv[1]) if len(sys.argv) > 1 else 200
     seed = int(sys.argv[2]) if len(sys.argv) > 2 else 1
     d = load(ROOT / "data")

@@ -58,9 +58,9 @@ function applyMod(mod, statMods, gains){          // a trait or drawback: charac
     target[k] = (target[k] || 0) + v;
   }
 }
-function freshRow(rows, roll, had){               // a row whose event he has had moves to the next one down
+function freshRow(rows, roll, had){               // a row whose event he has had moves to the next one down; had them all (a long service), the rolled row comes again (as team.py _fresh)
   let i = rows.indexOf(pickRow(rows, roll));
-  while (had.includes(rows[i].text)) i = (i + 1) % rows.length;
+  for (let k = 0; k < rows.length && had.includes(rows[i].text); k++) i = (i + 1) % rows.length;
   return rows[i];
 }
 const atRange = (ranges, roll) => ranges.find(([, hi]) => roll <= hi)[0];

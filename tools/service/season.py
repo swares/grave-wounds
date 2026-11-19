@@ -140,6 +140,9 @@ def drafts_and_names(pg):
       for (let k = 0; k < 10; k++){ rollTeam(); const all = [...S.team, ...S.crew].map(x => x.name); worst = Math.max(worst, all.length - new Set(all).size) }
       return worst }""")
     check(dup == 0, f"ten rolls of a team and its 16 recruits: no two men of the team share a name, named or follower ({dup})")
+    fresh = pg.evaluate("""() => { const rows = TD.era.careers[0].terms, all = rows.map(r => r.text), t0 = performance.now();
+      const row = freshRow(rows, 50, all); return [row === pickRow(rows, 50), performance.now() - t0 < 100] }""")
+    check(fresh == [True, True], f"a man who has had every term event of his career (a long service) gets the rolled one again, not an endless search ({fresh})")
     ways = pg.evaluate("""() => { const out = {};
       for (const [reg, sid] of [['union', '1862-winter'], ['union', '1863-winter'], ['confederacy', '1861-autumn'], ['confederacy', '1862-winter']]){
         S.region = reg; out[reg + ' ' + sid] = svcDraftWay({ id: sid }).id }
@@ -391,6 +394,10 @@ def run(p):
       return out }""")
     check(yl["down0"] == [True, True] and not yl["down1"] and yl["held"] == [True, True] and yl["clear"],
           f"a broken scripted side: the down beside an enemy taken, the down alone left, the held break away or are taken, the rest run ({yl['lines']})")
+    ba = pg.evaluate("""() => { const f = S.chars.find(c => !c.sheet?.stats), m = S.chars.find(c => c.sheet?.stats), was = f.rating, out = [];
+      for (const q of ['green', 'regular', 'veteran']){ f.rating = q; out.push(breakAwayAt(f)) }
+      f.rating = was; out.push(breakAwayAt(m) === Math.max(statOf(m, 'agi'), skillAt(m, 'dodge'))); return out }""")
+    check(ba == [35, 50, 65, True], f"a held man breaks away on his Agility or Dodge, or without a sheet on his quality: green 35, regular 50, veteran 65 ({ba})")
     check(yl["named"] == [False, False, False, True, 2] and not yl["askedNamed"],
           f"but the script never surrenders the team's named men: down, he is left where he lies; held, he breaks away (or, down from what he carried in from the season, lies); none asks for quarter ({yl['named']}, {yl['lines']})")
     # the picket was played only to see its end: its losses do not go on to the team builder

@@ -1576,7 +1576,8 @@ function svcDrafts(W, s, lines){                    // recruits for the follower
   const way = svcDraftWay(s);
   const from = way ? ` (${way.name.toLowerCase()})` : "";
   const names = fresh.map(f => f.name + ", " + svcCareer(f.career)).join("; ");
-  lines.push(`Drafts: ${n} recruit${n > 1 ? "s" : ""}${from} join the followers, ${TD.followers.draft_quality}: ${names}.`);
+  const join = n > 1 ? `${n} recruits${from} join` : `1 recruit${from} joins`;
+  lines.push(`Drafts: ${join} the followers, ${TD.followers.draft_quality}: ${names}.`);
 }
 function svcCrewHtml(W, V, s){                      // the followers' line on the season panel: where they stand, desertion, drafts
   if (!S.crew.length && !(S.flost || []).length) return "";
