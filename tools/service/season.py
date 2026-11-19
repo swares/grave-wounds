@@ -83,6 +83,35 @@ def followers(pg):
     check(tiny == 1, f"a share under 1% is rolled on d10000 ({tiny})")
     lost_in_fights(pg)
     drafts_and_names(pg)
+    culps_hill(pg)
+
+
+def culps_hill(pg):
+    """The second edge: the 4th Virginia's Gettysburg, Brinkerhoff's Ridge to the rocks below Greene's works."""
+    pg.goto(BASE + "team.html")
+    pg.evaluate(CLEAR)
+    pg.reload()
+    pg.select_option("#sel-era", "civil_war")
+    pg.select_option("#sel-region", "confederacy")
+    pg.select_option("#sel-template", "squad")
+    pg.click("#btn-roll")
+    pg.wait_for_selector("#h-service")
+    k = pg.evaluate("() => SVC.war('acw_confederate_east').seasons.findIndex(s => s.id === '1863-summer')")
+    pg.select_option("#sv-season", str(k))
+    ed = pg.inner_text(SERVICE)
+    check(all(x in ed for x in ("The edge of Gettysburg: Culp's Hill", "Brinkerhoff's Ridge", "The night march to the hill", "Up the hill with Major Terry", "Pinned below the works")),
+          "summer 1863: Gettysburg has its edge, from Brinkerhoff's Ridge to the rocks below the works")
+    check("The Stonewall Brigade at Culp's Hill" in pg.inner_text("select[data-svunit=gettysburg]"), "and the brigade's own figure to choose")
+    check(pg.locator("button[data-svedgeplay='gettysburg:pinned']").count() == 0, "the rocks wait for the men who go up with Terry")
+    pg.locator("input[data-svedgechoice^='gettysburg:terry:']").first.check()
+    check(pg.locator("button[data-svedgeplay='gettysburg:pinned']").count() == 1, "a man with Terry: the rocks can be played or rolled")
+    h = pg.evaluate("""() => { let got = null;
+      const set = localStorage.setItem.bind(localStorage); localStorage.setItem = (k, v) => { if (k === 'gravewounds-handoff') got = JSON.parse(v); else set(k, v) };
+      try{ svcEdgePlay('gettysburg:pinned') }catch(e){}
+      localStorage.setItem = set; return got }""")
+    check(h and len(h["only"]) == 1 and (h["end"].get("away") or {}).get("side") and h["force"]["side"] == "Union" and h["foes"][0]["side"] == "Confederate",
+          f"the rocks go to the roller with only Terry's men, attacking up at the Union works, and won by getting back down ({(h or {}).get('end')})")
+    pg.wait_for_function(AT_ROLLER)
 
 
 def drafts_and_names(pg):

@@ -825,7 +825,15 @@ for each man whether he serves and where he stands. **Serve the season** then ro
   says so ("in the thick of it at Badajoz, as its edge set"); or the GM plays the storm on its field.
   Badajoz: the sortie on the parallels (19 March), volunteers for the forlorn hope, into the ditch
   (the volunteers at night: the flooded ditch, the fireballs, three muskets a man and the sword
-  blades, its sizes ours) and two hours at the breaches.
+  blades, its sizes ours) and two hours at the breaches. Gettysburg, for the 4th Virginia (summer
+  1863): Brinkerhoff's Ridge (2 July, skirmishing with Gregg's dismounted cavalry behind a stone
+  wall until dark), the night march to the foot of Culp's Hill (Endurance; a man who fails
+  straggles in, in reserve), up the hill with Major Terry (the men chosen stand in the thick of
+  it) and pinned below the works (Terry's men only, among the rocks below Greene's breastworks:
+  they win by getting half of them back down off their own edge; the down beside the enemy ask
+  for quarter). Its sizes are ours. Choosing the Stonewall Brigade's own figure at Culp's Hill
+  (17% hit, 6% taken, the brigade's tablet) rolls every man on it, setting the edge's positions
+  aside.
 - **Each action not played**, in its week: d100 against his hit chance, the army's share lost
   (killed and wounded of those engaged, from the sources) times his position (in reserve ×0.25,
   in the line ×1, in the thick of it ×3, at most 90%; ours, set from Albuera, where the
