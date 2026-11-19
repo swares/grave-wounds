@@ -2457,16 +2457,21 @@ function makeService(SV, RULES){
     r.rolls.push({ action: "wastage", pct, roll });
     if (roll <= pct) r.hits.push({ action: "wastage", pct, roll, weapon: weaponFor(W, rng()) });
   }
+  function edgeScaled(W, pct, unit, edge){       // a unit's own figure, scaled by where an edge put him within it (as service._edge_scaled)
+    if (pct === null || unit === null || !edge) return pct;
+    return Math.min(W.cap, pyRound(pct * W.positions[edge].mult));
+  }
   function action(W, aid, m, h, r, rng){         // one unplayed action: missed, or his hit roll
     if (r.hits.length){ r.missed.push({ action: aid, why: "wounded" }); return }
     if (unfit(h)){ r.missed.push({ action: aid, why: "sick" }); return }
-    const pos = m.pos_at?.[aid] || m.position || "line";   // where he stands at this action (an edge's choice), else for the season
-    const pct = hitPct(W, aid, pos, m.unit?.[aid] ?? null, m.share?.[aid] ?? null);
+    const edge = m.pos_at?.[aid] || null, pos = edge || m.position || "line";   // where he stands at this action (an edge's choice), else for the season
+    const unit = m.unit?.[aid] ?? null;
+    const pct = edgeScaled(W, hitPct(W, aid, pos, unit, m.share?.[aid] ?? null), unit, edge);
     if (pct === null){ r.missed.push({ action: aid, why: "no share" }); return }
     const roll = rng();
     r.rolls.push({ action: aid, pct, roll });
     if (roll <= pct){ r.hits.push({ action: aid, pct, roll, weapon: weaponFor(W, rng()) }); return }
-    const t = takenPct(W, aid, pos, m.unit?.[aid] ?? null);
+    const t = edgeScaled(W, takenPct(W, aid, pos, unit), unit, edge);
     if (t){ const tr = rng(); if (tr <= t) r.taken = { action: aid, pct: t, roll: tr } }   // came through unhit: taken?
   }
   return { war, warsFor, season, seasonStart, weeks, actionWeek, hitPct, takenPct, desertPct, inWeek, factors, dayCtx, weaponFor, worstStep, woundStep, serve, between, smallFight };

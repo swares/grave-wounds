@@ -247,6 +247,15 @@ def _wastage(d: Data, W: dict, s: dict, h: dict, r: dict, rng) -> None:
         r["hits"].append({"action": WASTAGE, "pct": pct, "roll": roll, "weapon": weapon_for(d, W, rng())})
 
 
+def _edge_scaled(W: dict, pct: int | None, unit: int | None, edge: str | None) -> int | None:
+    """A unit's own figure is its men's average: where an edge put him within it (its choice or a
+    failed check) scales it by that position's multiplier, at most the cap. The season's own
+    position does not."""
+    if pct is None or unit is None or not edge:
+        return pct
+    return min(W["cap"], round(pct * W["positions"][edge]["mult"]))
+
+
 def _action(d: Data, W: dict, aid: str, m: dict, h: dict, r: dict, rng) -> None:
     """One unplayed action for one man: missed (already hit, or too sick), or his hit roll."""
     if r["hits"]:
@@ -255,8 +264,10 @@ def _action(d: Data, W: dict, aid: str, m: dict, h: dict, r: dict, rng) -> None:
     if _unfit(d, h):
         r["missed"].append({"action": aid, "why": "sick"})
         return
-    pos = (m.get("pos_at") or {}).get(aid) or m.get("position", "line")   # where he stands at this action (an edge's choice), else for the season
-    pct = hit_pct(W, aid, pos, (m.get("unit") or {}).get(aid), (m.get("share") or {}).get(aid))
+    edge = (m.get("pos_at") or {}).get(aid)
+    pos = edge or m.get("position", "line")   # where he stands at this action (an edge's choice), else for the season
+    unit = (m.get("unit") or {}).get(aid)
+    pct = _edge_scaled(W, hit_pct(W, aid, pos, unit, (m.get("share") or {}).get(aid)), unit, edge)
     if pct is None:
         r["missed"].append({"action": aid, "why": "no share"})
         return
@@ -265,7 +276,7 @@ def _action(d: Data, W: dict, aid: str, m: dict, h: dict, r: dict, rng) -> None:
     if roll <= pct:
         r["hits"].append({"action": aid, "pct": pct, "roll": roll, "weapon": weapon_for(d, W, rng())})
         return
-    t = taken_pct(W, aid, pos, (m.get("unit") or {}).get(aid))
+    t = _edge_scaled(W, taken_pct(W, aid, pos, unit), unit, edge)
     if t:                                           # came through unhit: taken in the rout or the surrender?
         roll = rng()
         if roll <= t:
