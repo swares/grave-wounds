@@ -112,6 +112,17 @@ def culps_hill(pg):
     check(h and len(h["only"]) == 1 and (h["end"].get("away") or {}).get("side") and h["force"]["side"] == "Union" and h["foes"][0]["side"] == "Confederate",
           f"the rocks go to the roller with only Terry's men, attacking up at the Union works, and won by getting back down ({(h or {}).get('end')})")
     pg.wait_for_function(AT_ROLLER)
+    pg.goto(BASE + "team.html")
+    pg.wait_for_selector("#h-service")
+    pg.select_option("#sv-season", str(k))
+    pg.evaluate("() => { const V = svcState(); V.edge = { gettysburg: { done: {}, chosen: { terry: { [S.team[0].pid]: true } }, failed: {} } }; V.unit.gettysburg = '0'; render() }")
+    pg.evaluate("() => { realDice.randint = (a, b) => b }")   # no one hit or taken: the chances only
+    pg.click("#btn-serve")
+    log = pg.evaluate("() => S.svclog")
+    first = next((x for x in log if "as its edge set" in x), "")
+    rest = [x for x in log if "Gettysburg: " in x and "as its edge set" not in x]
+    check("Gettysburg: 68%" in first and rest and all("Gettysburg: 17%" in x for x in rest),
+          f"with the brigade's own figure, the man with Terry is hit at 17% x 4 = 68%, the rest at the brigade's 17% ({first[:160]!r})")
 
 
 def drafts_and_names(pg):
@@ -126,7 +137,8 @@ def drafts_and_names(pg):
     pg.select_option("#sel-template", "recruits")
     pg.click("#btn-roll")
     dup = pg.evaluate("""() => { let worst = 0;
-      for (let k = 0; k < 10; k++){ rollCrew(); const all = [...S.team, ...S.crew].map(x => x.name); worst = Math.max(worst, all.length - new Set(all).size) }
+      for (let k = 0; k < 10; k++){ rollCrew(); const named = new Set(S.team.map(x => x.name)), fol = S.crew.map(x => x.name);   // the named men's own names are the team roll's
+        worst = Math.max(worst, fol.length - new Set(fol).size + fol.filter(n => named.has(n)).length) }
       return worst }""")
     check(dup == 0, f"ten rolls of 16 recruits: no follower shares a name with another man of the team ({dup})")
     ways = pg.evaluate("""() => { const out = {};

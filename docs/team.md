@@ -832,8 +832,10 @@ for each man whether he serves and where he stands. **Serve the season** then ro
   it) and pinned below the works (Terry's men only, among the rocks below Greene's breastworks:
   they win by getting half of them back down off their own edge; the down beside the enemy ask
   for quarter). Its sizes are ours. Choosing the Stonewall Brigade's own figure at Culp's Hill
-  (17% hit, 6% taken, the brigade's tablet) rolls every man on it, setting the edge's positions
-  aside.
+  (17% hit, 6% taken, the brigade's tablet) rolls every man on it, and a man an edge put
+  somewhere scales it by that position (Terry's men 17% × 4 = 68% hit and 24% taken; a straggler
+  ×0.25), at most the cap: a unit's figure is its men's average, and the edge says where he stood
+  within it. The season's own position menu does not scale a unit's figure.
 - **Each action not played**, in its week: d100 against his hit chance, the army's share lost
   (killed and wounded of those engaged, from the sources) times his position (in reserve ×0.25,
   in the line ×1, in the thick of it ×3, at most 90%; ours, set from Albuera, where the
