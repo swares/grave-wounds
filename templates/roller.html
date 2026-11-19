@@ -2716,9 +2716,16 @@ function rollServiceHit(){
   S.mapMsg = `${h.name}, hit at ${h.action}: the wound is rolled below.`;
   renderChars();
 }
+function keptTable(){                               // the wound table chosen on the last visit, if storage keeps one the data still has
+  try{
+    const t = localStorage.getItem("gravewounds-roller-table");
+    return t && DATA.tables[t] ? t : null;
+  }catch(e){ return null }                          // storage off (a private window): the page's first table
+}
 function switchTable(tid){
   S.table = tid; $("#sel-table").value = tid;
-  try{ localStorage.setItem("gravewounds-roller-table", tid) }catch(e){}   // kept for the next visit: a team's or a war's table, not the page's first
+  try{ localStorage.setItem("gravewounds-roller-table", tid) }   // kept for the next visit: a team's or a war's table, not the page's first
+  catch(e){ /* storage off (a private window): the table is chosen again next visit */ }
   fillWeapons(); applyAttackerWeapon(); syncArmor(); renderHistory(); renderChars();
 }
 function crossEraWarnings(){
@@ -4493,7 +4500,8 @@ function init(){
     .map(id => `<option value="${id}" ${id === S.table ? "selected" : ""}>${DATA.tables[id].label}</option>`).join("")}</optgroup>`).join("");
   S.weapon = "sword"; fillWeapons();
   if (!S.table.startsWith("visby")) S.table = ids[0];
-  try{ const kept = localStorage.getItem("gravewounds-roller-table"); if (kept && DATA.tables[kept]){ S.table = kept; $("#sel-table").value = kept; fillWeapons() } }catch(e){}
+  const kept = keptTable();                         // the table chosen last visit, if storage keeps it
+  if (kept){ S.table = kept; $("#sel-table").value = kept; fillWeapons() }
   $("#trk-rule").textContent = `Bleed drains Blood: B1 ${V.bleed[1].split(";")[1].trim()}, B2 1 per round, B3 3 per round. Tourniquet works on limbs only.`;
   drawFigure(); renderMods(); fillArmor(); syncArmor();
   $("#sel-table").onchange = e => switchTable(e.target.value);
