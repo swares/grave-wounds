@@ -2509,8 +2509,7 @@ function followersBack(){                         // each follower unit's losses
   afterUnits().forEach((u, i) => {
     if (!u.team_career) return;
     const a = S.after[i];
-    counts.push({ career: u.team_career, dead: a.killed + a.died, taken: (a.taken || 0) + a.left, invalided: a.cases.filter(c => c.step >= serious).length });
-    counts.push(...medicsLost(u, a));
+    counts.push({ career: u.team_career, dead: a.killed + a.died, taken: (a.taken || 0) + a.left, invalided: a.cases.filter(c => c.step >= serious).length }, ...medicsLost(u, a));
   });
   try {
     const all = JSON.parse(localStorage.getItem("gravewounds-followers-back") || "[]") || [];
