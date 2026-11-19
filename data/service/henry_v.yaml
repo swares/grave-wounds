@@ -58,8 +58,8 @@ sides: {team: "English", foes: "French"}
 desertion:
   share: 2
   ours: true
-  basis: "No count of deserters from Henry V's armies was found; the musters show men gone but not why. Ours. The winter at Meaux, where a sixth of the army was lost dead or deserted (Sumption), has its own share."
-  sources: ["https://medievalsoldier.org/help/research-guides/did-you-ancestor-serve-in-the-garrisons-of-normandy-1415-1450"]
+  basis: "No count of deserters from Henry V's armies was found; the musters show men gone but not why. A bound: in 1415, beyond the sick lists, Clarence's retinue lost 123 of 865 and Gloucester's 43 of 517 unexplained between Harfleur and the shipping home (14% and 8%, dead at the siege or gone home; Warner, from E101 and E358/6). Desertion was a worry for the crown: men returning on stale leave certificates were to be arrested (1419, 1424), and the 1439 statute made leaving without the king's leave a felony. Ours: 2% a season, within that bound. The winter at Meaux, where a sixth of the army was lost dead or deserted (Sumption), has its own share."
+  sources: ["https://medievalsoldier.org/help/research-guides/did-you-ancestor-serve-in-the-garrisons-of-normandy-1415-1450", "https://eprints.soton.ac.uk/436548/1/LIBRARY_COPY_Michael_Warner_Full_Electronic_Thesis.pdf", "https://erenow.org/ww/aspects-of-war-in-the-late-middle-ages/9.php"]
 drafts: [garrison]
 
 sources:

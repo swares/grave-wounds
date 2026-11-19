@@ -64,8 +64,8 @@ sides: {team: "Yorkists", foes: "Lancastrians"}
 desertion:
   share: 2
   ours: true
-  basis: "No count of men leaving a retinue in the Wars of the Roses was found. Ours, as for Henry V's armies."
-  sources: ["https://medievalsoldier.org/help/research-guides/did-you-ancestor-serve-in-the-garrisons-of-normandy-1415-1450"]
+  basis: "No count of men leaving a retinue in the Wars of the Roses was found: the armies were raised for weeks, not paid by muster, and left few rolls. Ours, as for Henry V's armies (within the 8-14% of a 1415 retinue lost unexplained in a campaign, Warner). The crown still counted it a felony (the 1439 statute)."
+  sources: ["https://medievalsoldier.org/help/research-guides/did-you-ancestor-serve-in-the-garrisons-of-normandy-1415-1450", "https://eprints.soton.ac.uk/436548/1/LIBRARY_COPY_Michael_Warner_Full_Electronic_Thesis.pdf", "https://erenow.org/ww/aspects-of-war-in-the-late-middle-ages/9.php"]
 drafts: [household, garrison]
 
 sources:
