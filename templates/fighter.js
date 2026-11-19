@@ -92,6 +92,7 @@ const FIGHTER = (() => {                          // one name in the page: its h
   function firstAid(view, st){                      // a turn of first aid, or null
     if ((view.me.bleed || 0) >= SELF_BLEED && safe(view, view.here)) return aiding(null, view.me.id, "binds his own wound");
     if (st.aid === "none" || !safe(view, view.here)) return null;   // a man in contact fights on
+    if (view.me.ranged && view.me.able && view.targetsFrom(view.here).length) return null;   // a shooter with a target keeps shooting; he tends others when he has no one to shoot at (ours)
     const hurt = (view.friends || []).filter(f => f.bleed > 0 && (st.aid === "any" || f.down) && safe(view, f.hex)).sort((a, b) => (b.bleed - a.bleed) || (a.id - b.id));
     for (const f of hurt){
       if (view.dist(view.here, f.hex) <= 1 && safe(view, view.here)) return aiding(null, f.id, "gives first aid");

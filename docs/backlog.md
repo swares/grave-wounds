@@ -1085,4 +1085,8 @@ not this repository.
   muskets: fixed (the handoff carries the war's table; the roller keeps its table between
   visits). With the right weapons the English still lose 11 of 12: the French crossbowmen loose
   about six shots to each English longbow shot (568 to 98 over nine fights), at the same 14% to
-  wound. Still to find why the English shoot so little.
+  wound. Found: the English archers spent half their turns on first aid (a steady side tends its
+  men who are down, and the English went down out of reach, to crossbow fire); now a shooter with
+  a target keeps shooting, and the archers shoot about twice as often. The English still lose
+  10 of 12: the French spears in close combat (261 strikes, 25% to wound) against the English
+  archers in jacks with no close-combat weapon of their own.
