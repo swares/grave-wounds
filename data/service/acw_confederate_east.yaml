@@ -217,6 +217,40 @@ actions:
     lost: "3,903 killed, 18,735 wounded, 5,425 missing (Livermore); 2,592, 12,706, 5,150 (Fox); the 4th Virginia 18 killed, 50 wounded, 69 taken"
     sources: [*livermore, *foxcs, *wp4va]
     note: "The sources differ by half: Livermore's is the larger."
+    units:
+      - name: "The Stonewall Brigade at Culp's Hill"
+        share: 17
+        taken: 6
+        lost: "35 killed, 208 wounded, 87 missing of about 1,450 (the brigade's tablet); the 4th Virginia 12 killed, 65 wounded, 61 missing (Terry's report), or 18, 50 and 69 taken (Wikipedia)"
+        sources: ["https://gettysburg.stonesentinels.com/confederate-headquarters/walkers-brigade/", "https://www.nps.gov/gett/learn/historyculture/official-report-of-major-william-terry.htm"]
+    edge:
+      name: "The edge of Gettysburg: Culp's Hill"
+      what: "The Stonewall Brigade's Gettysburg: held back on 2 July to guard the flank against Gregg's cavalry on Brinkerhoff's Ridge, a night of moving until it reached the foot of Culp's Hill at two or three in the morning, then the assaults on Greene's breastworks from daybreak until near noon, the 4th Virginia on the exposed right; in the last, Major Terry led it almost to the works, and when the regiments beside it gave way the men in front were pinned among the rocks and taken."
+      sources: ["https://gettysburg.stonesentinels.com/confederate-headquarters/walkers-brigade/", "https://stonewallbrigade.net/stonewall-brigade-at-gettysburg-part-two/", "https://stonewallbrigade.net/stonewall-brigade-at-gettysburg-part-three", "https://historynet.com/escape-was-hopeless-a-stonewall-brigade-at-gettysburg/", "https://www.nps.gov/gett/learn/historyculture/official-report-of-major-william-terry.htm"]
+      scenes:
+        - id: ridge
+          kind: fight
+          fight: brinkerhoff
+          name: "Brinkerhoff's Ridge"
+          what: "2 July, from about 3 in the afternoon: the brigade skirmishes with Gregg's dismounted cavalry behind a stone wall until dark."
+        - id: night
+          kind: check
+          name: "The night march to the hill"
+          what: "After dark the brigade moves several times and reaches the foot of Culp's Hill at two or three in the morning, the bombardment opening at dawn. A man who fails his Endurance straggles in late: in reserve at the assaults."
+          stat: end
+          fail_position: reserve
+        - id: terry
+          kind: choice
+          name: "Up the hill with Major Terry"
+          what: "About ten in the morning the brigade shifts to the right and goes up the steep slope at Greene's works again; Terry leads the 4th Virginia almost to the breastworks. Who goes up with him? They stand in the thick of it at Gettysburg, and are among the rocks below the works."
+          label: "men with Terry"
+          position: thick
+        - id: pinned
+          kind: fight
+          fight: rocks
+          only: terry
+          name: "Pinned below the works"
+          what: "The regiments on either side give way; the men below the works are pinned behind the boulders under fire from the front and the flank. Get back down, or be taken."
   mine_run:
     name: "Mine Run"
     date: 1863-11-27
@@ -299,6 +333,42 @@ actions:
     note: "No taken share: the missing are mostly the surrender, paroled and sent home, not prisoners."
 
 small_fights:
+  - id: brinkerhoff
+    name: "Brinkerhoff's Ridge"
+    what: "Held out of the division's evening assault to guard its flank, the brigade skirmishes all afternoon with Gregg's cavalry on the ridge across the Hanover Road: dismounted troopers behind a stone wall, two guns, and a last attack after dark thrown back (2 July 1863, about 3 p.m. to dusk)."
+    states: [campaign]
+    weight: 1
+    edge_only: true
+    at: 1863-summer
+    where: "Brinkerhoff's Ridge by the Hanover Road"
+    time: "from about 3 in the afternoon to dusk"
+    ground: farmland
+    team_attacks: true
+    side: {name: "The brigade's skirmishers", men: [30, 120]}
+    foes: [{name: "Gregg's dismounted cavalry", men: [30, 120], weapon: breechloader}]
+    aims: {team: "Drive the cavalry off the ridge and keep them off the division's flank.", foes: "Hold the stone wall and keep the infantry busy."}
+    ends: "Dusk comes after 10 rounds; the attackers fall back once a third of theirs are down; the troopers give up the wall once a third of theirs are down."
+    end: {rounds: 10, wins: none, down: {team: 0.33, foes: 0.33}, hold: foes}
+    sources: ["https://stonewallbrigade.net/stonewall-brigade-at-gettysburg-part-two/", "https://gettysburg.stonesentinels.com/confederate-headquarters/walkers-brigade/"]
+    note: "The 2nd Virginia (about 333) did most of the fighting, against the dismounted 3rd Pennsylvania (just over 200) and the 10th New York; the Confederates reported 3 wounded, the Union about 20 lost; a tactical draw. The sizes here are ours, a company's part of it."
+  - id: rocks
+    name: "Pinned below the works"
+    what: "The second assault, about ten in the morning: up the steep slope almost to Greene's breastworks, 30 to 40 feet above, under fire from the front and from Kane's men across the saddle; when the regiments on either side give way, the men in front are pinned behind the boulders, and many surrender (Culp's Hill, 3 July 1863)."
+    states: [campaign]
+    weight: 1
+    edge_only: true
+    at: 1863-summer
+    where: "the rocks below Greene's breastworks on Culp's Hill"
+    time: "about ten in the morning"
+    ground: hills
+    team_attacks: true
+    side: {name: "The men with Major Terry", men: [20, 80]}
+    foes: [{name: "Greene's New Yorkers behind the breastworks", men: [40, 150], weapon: rifle_musket}]
+    aims: {team: "Get back down the hill to the foot of it.", foes: "Hold the works and take the men below them."}
+    ends: "The men below the works win if half of them get back off their own edge; they are beaten once half of them are down."
+    end: {down: {team: 0.5}, away: {side: team, share: 0.5}}
+    sources: ["https://stonewallbrigade.net/stonewall-brigade-at-gettysburg-part-three", "https://historynet.com/escape-was-hopeless-a-stonewall-brigade-at-gettysburg/", "https://www.nps.gov/gett/learn/historyculture/official-report-of-major-william-terry.htm"]
+    note: "Terry: retreat was 'impracticable to effect'; Geary: men of the Stonewall Brigade came in under white flags. On the roller: paint rocks below the defenders' hexes and a climb of a level or two up to them, and place the team close below; a man down beside the enemy asks for quarter (the GM's call for a player's man). The sizes are ours."
   - id: picket_raid
     name: "Raiding the picket line"
     what: "Cavalry crosses the river in the snow, takes the vedettes and rolls up the picket line until the infantry pickets' fire and a counter-charge stop them (Hartwood Church, 25 February 1863: Fitzhugh Lee's about 400)."
