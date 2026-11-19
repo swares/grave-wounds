@@ -893,8 +893,8 @@ for each man whether he serves and where he stands. **Serve the season** then ro
   | The Peninsula | 0.3% | British units overseas, 0.9% (1811) and 1.4% (1812) a year (Linch) |
   | The Union, the East | 1.8% | about 0.6% a month in mid-1863 (Lerwill); Fry's 201,000 real deserters |
   | The 4th Virginia | 1.1%; 8% in the winter of 1864-65 | Lonn's 103,400 on the mean strength; Lee's 1,094 in ten days of February 1865 (ours, a season) |
-  | Henry V | 2%; 8% at Meaux | ours: no count found (a sixth lost dead or deserted at Meaux, Sumption) |
-  | The Roses, both sides | 2% | ours: no count found |
+  | Henry V | 2%; 8% at Meaux | ours: no count found; within the 8-14% of a 1415 retinue lost unexplained between Harfleur and home (Warner); a sixth lost dead or deserted at Meaux (Sumption) |
+  | The Roses, both sides | 2% | ours: no count found (armies raised for weeks, few rolls) |
   | The Western Front | 0.03% | 7,361 desertions in the field; ours, no mean strength in France found |
   | Italy | 0.02% (alt 5%) | the official history's 0.1% over the campaign (Jackson); the 78th Division's 927 in October-December 1944 (Bielecki, single) |
 
