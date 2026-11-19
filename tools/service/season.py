@@ -104,15 +104,15 @@ def lost_in_fights(pg):
       worstWound = c => ({ sev: sev[c.id] });
       followersBack();
       const again = followersToSend().length;
-      return { names: F.slice(0, 6).map(c => c.name), back: JSON.parse(localStorage.getItem('gravewounds-followers-back')), again, log: S.afterLog[0] } }""")
+      return { fids: F.slice(0, 6).map(c => c.follower.fid), back: JSON.parse(localStorage.getItem('gravewounds-followers-back')), again, log: S.afterLog[0] } }""")
     fates = [o["fate"] for o in sent["back"][0]["fates"]]
     check(fates == ["dead", "taken", "taken", "invalided", "dead"] and sent["again"] == 0,
           f"the roller sends the dead, the taken and left behind, the seriously wounded; the lightly wounded stays; each once ({fates}, {sent['log']!r})")
     pg.goto(BASE + "team.html")
     pg.wait_for_function("() => S.crew.length === 11")
-    t = pg.evaluate("() => [S.crew.map(f => f.name), S.flost.length, S.fcounts.reduce((a, [, n]) => a + n, 0), S.msg]")
-    gone = [n for k, n in enumerate(sent["names"]) if k != 4]
-    check(not any(n in t[0] for n in gone) and sent["names"][4] in t[0] and t[1] == 5 and t[2] == 11,
+    t = pg.evaluate("() => [S.crew.map(f => f.fid), S.flost.length, S.fcounts.reduce((a, [, n]) => a + n, 0), S.msg]")
+    gone = [n for k, n in enumerate(sent["fids"]) if k != 4]
+    check(not any(n in t[0] for n in gone) and sent["fids"][4] in t[0] and t[1] == 5 and t[2] == 11,
           f"the team builder takes them off its followers, their careers to the drafts ({t[3]!r})")
     pg.click("#btn-field")
     pg.wait_for_selector("#btn-teamin")
