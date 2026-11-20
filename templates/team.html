@@ -2096,8 +2096,11 @@ function rollTeam(){
   S.team = uniqueNames(makeTeam(S.region, slotsNow(), S.mode, realDice), []);
   S.lootlog = []; S.chklog = []; S.xplog = []; S.vacancies = {}; S.prisoners = []; S.prlog = [];   // a new team starts with clean logs
   S.team.forEach(c => { c.pid = newPid() });
+  const cap = followerCap(), before = S.fcounts.reduce((t, [, n]) => t + n, 0);
+  if (cap) S.fcounts = fwCapCounts(S.fcounts, cap.cap);   // a new muster: no more than the leader keeps (more can be added by hand)
   rollCrew(); S.worklog = []; S.losses = [];
-  S.swap = null; S.msg = "";
+  S.swap = null;
+  S.msg = cap && before > cap.cap ? `${cap.lead.name}'s Presence ${cap.lead.stats.pres} keeps ${cap.cap} followers, so the muster is ${cap.cap}, not ${before}. More can be added by hand.` : "";
   render();
 }
 function reroll(i){

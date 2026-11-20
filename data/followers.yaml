@@ -6,8 +6,9 @@
 #   - The cap is the team template's followers (`followers` in data/teams/<era>.yaml, a medieval
 #     retinue's 14, say) times the share for the leader's Presence band, to the nearest man, at
 #     least one. A template with no followers (Your own team) has no cap.
-#   - The team builder shows the cap beside the followers, and warns when there are more; more
-#     can still be added.
+#   - A new muster (Roll the team) is cut to the cap, one at a time off the largest career (ours,
+#     as the user chose, 20 November 2026), so no one is over it at the start. The team builder
+#     shows the cap beside the followers, and warns when there are more; more can still be added.
 #   - At each End of season, `leave` of the men over the cap (rounded up) drift away, each one
 #     d100 against `deserted` (deserted) or else gone home, picked at random among the followers.
 approx: true

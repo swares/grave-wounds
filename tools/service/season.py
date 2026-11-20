@@ -52,9 +52,10 @@ def followers(pg):
     pg.select_option("#sel-template", "company")
     pg.click("#btn-roll")
     pg.wait_for_selector("#h-service")
-    n0 = pg.evaluate("() => S.crew.length")
+    n0, cap0 = pg.evaluate("() => [S.crew.length, followerCap().cap]")
     sv = pg.inner_text(SERVICE)
-    check(n0 == 16 and "The followers (16)" in sv and "Desertion 0.3% a season" in sv, f"the company's 16 followers serve too, deserting at 0.3% a season ({n0})")
+    check(n0 == min(16, cap0) and f"The followers ({n0})" in sv and "Desertion 0.3% a season" in sv,
+          f"the company's 16 followers, or what its leader keeps if fewer, serve too, deserting at 0.3% a season ({n0}, cap {cap0})")
     k = pg.evaluate("() => SVC.war('peninsula').seasons.findIndex(s => s.id === '1811-summer')")
     pg.select_option("#sv-season", str(k))
     pg.fill("#sv-desert", "100")
@@ -62,7 +63,7 @@ def followers(pg):
     pg.click("#btn-serve")
     log = pg.inner_text(SERVICE)
     left = pg.evaluate("() => [S.crew.length, (S.flost || []).length, S.fcounts.reduce((t, [, n]) => t + n, 0)]")
-    check("The followers (16, desertion 100%)" in log and "deserted" in log and left == [0, 16, 0],
+    check(f"The followers ({n0}, desertion 100%)" in log and "deserted" in log and left == [0, n0, 0],
           f"at the GM's 100% every follower is gone, deserted unless sickness or a wound took him first ({left})")
     q = pg.evaluate("() => SVC.war('peninsula').seasons.findIndex((s, i) => i > S.service.i && s.state === 'quarters')")
     pg.select_option("#sv-season", str(q))
@@ -72,7 +73,8 @@ def followers(pg):
     got = pg.evaluate("() => { const c = followerCap(); return [S.crew.length, c ? c.cap : null, (S.flost || []).length, S.fcounts.reduce((t, [, n]) => t + n, 0)] }")
     want = min(got[1] or 16, 16)
     check("Drafts:" in log and "(a draft from the depot or second battalion)" in log, f"in winter quarters recruits come up: {log[log.find('Drafts:'):][:120]!r}")
-    check(got[0] == want and got[2] == 16 - want and got[3] == got[0],
+    want = min(want, n0)
+    check(got[0] == want and got[2] == n0 - want and got[3] == got[0],
           f"as many as the leader's Presence keeps, no more than were mustered, and the counts follow ({got})")
     fate = pg.evaluate("""() => { const was = realDice.randint, f = S.crew[0], out = [];
       for (const r of [40, 70, 95]){ realDice.randint = () => r; out.push(svcCrewHit(f, 'Albuera').gone) }
@@ -89,6 +91,7 @@ def followers(pg):
     reloads(pg)
     hedged_garden(pg)
     foes_mixed(pg)
+    muster_cap(pg)
 
 
 def sidearms(pg):
@@ -171,6 +174,23 @@ def hedged_garden(pg):
       const c = S.fightEnd.position.centre, r = S.fightEnd.position.radius, team = S.chars.filter(x => x.team && x.pos);
       return [r, team.filter(x => hexDistance(x.pos, c) === r).length, team.length, S.chars.filter(x => !x.team && x.pos).every(x => hexDistance(x.pos, c) > r)] }""")
     check(ring[1] == ring[2] and ring[2] > 0 and ring[3], f"the party lines the hedge, every man on the ring just inside it, the French outside ({ring})")
+
+
+def muster_cap(pg):
+    """A new muster: no more followers than the leader's Presence keeps (as team.py cap_counts)."""
+    pg.goto(BASE + "team.html")
+    pg.evaluate(CLEAR)
+    pg.reload()
+    pg.select_option("#sel-era", "horse_musket")
+    pg.select_option("#sel-region", "british_pen")
+    pg.select_option("#sel-template", "company")
+    r = pg.evaluate("""() => { const cases = [[[["archer", 10], ["spearman", 4]], 11], [[["a", 3], ["b", 3]], 4], [[["a", 5], ["b", 1]], 5], [[["a", 2]], null]];
+      const cut = cases.map(([c, k]) => fwCapCounts(c, k));
+      const got = []; for (let i = 0; i < 40; i++){ S.fcounts = tplFollowers(S.template); rollTeam(); const cap = followerCap(); got.push([S.crew.length, cap.cap, tplFollowers(S.template).reduce((t, [, n]) => t + n, 0)]) }
+      return { cut, got } }""")
+    check(r["cut"] == [[["archer", 7], ["spearman", 4]], [["a", 2], ["b", 2]], [["a", 4], ["b", 1]], [["a", 2]]], f"team.js cuts a muster as team.py does, off the largest career ({r['cut']})")
+    check(all(n == min(cap, full) for n, cap, full in r["got"]) and any(cap < full for _, cap, full in r["got"]),
+          f"40 new companies: each musters its template's followers, or what its leader's Presence keeps if fewer ({r['got'][:6]}...)")
 
 
 def foes_mixed(pg):
@@ -279,7 +299,7 @@ def lost_in_fights(pg):
     pg.select_option("#sel-template", "company")
     pg.click("#btn-roll")
     ids = pg.evaluate("() => S.crew.map(f => f.fid)")
-    check(len(ids) == 16 and len(set(ids)) == 16 and all(ids), "each follower has his own id")
+    check(len(ids) >= 12 and len(set(ids)) == len(ids) and all(ids), f"each follower has his own id ({len(ids)} mustered)")
     pg.click(SEND)
     pg.wait_for_selector(ADDTEAM)
     pg.click(ADDTEAM)

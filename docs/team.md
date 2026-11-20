@@ -345,12 +345,15 @@ share, to the nearest man, at least one:
 | --- | --- | --- | --- | --- | --- |
 | Share kept | ½ | ¾ | 1 | 1¼ | 1½ |
 
-So a retinue's leader keeps 7 of its 14 at Presence 25, 14 at 50 and 21 at 80. The followers'
-line names him and the cap, and warns when there are more; more can still be added. At each
+So a retinue's leader keeps 7 of its 14 at Presence 25, 14 at 50 and 21 at 80. A new muster
+(**Roll the team**) is cut to the cap, one at a time off the largest career, and the page says so;
+about a third of rolled leaders have Presence under 45 and muster three-quarters of the
+template. The followers' line names him and the cap, and warns when there are more; more can
+still be added by hand. At each
 **End of season** half the men over the cap, rounded up, drift away, picked at random, each
 deserting (d100 01-50) or going home; the season's log names them and the counts drop with
-them. Your own team has no template followers, so no cap. On the command line, `team` prints
-the cap beside the followers.
+them. Your own team has no template followers, so no cap. On the command line, `team` musters to
+the cap too and prints it beside the followers.
 
 - **Send to the roller** brings the followers too, each as a fighter on the team's side.
   His card says "Follower" with his career and quality. His quality's attack and defence
