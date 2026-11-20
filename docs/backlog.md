@@ -1146,3 +1146,8 @@ not this repository.
   archers in jacks with longbows and swords (Spencer, TRHS 2025: 1:9 in 1450, 1:8 in 1475; the
   archers all bowmen is ours). A small fight's foes can carry a `sidearm`. Paired: the foray 1 to
   3 of 3 won, the breach 0 to 1; Edward's side 12 to 14 of 24, Lancaster's 18 to 19 of 27.
+
+- **Skill growth the same a year in every era** (play test 6's "skills climb fast on the Western
+  Front"): a term in play is now 4 years served in every era (`play_term_years`); the 1-year terms
+  from 1914 count only at making a character. Before, a 20th-century man gained +10 a year from his
+  terms alone, four times the older eras' rate. The Worn Out check takes a term's 4 years too.

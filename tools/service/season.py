@@ -186,11 +186,11 @@ def muster_cap(pg):
     pg.select_option("#sel-template", "company")
     r = pg.evaluate("""() => { const cases = [[[["archer", 10], ["spearman", 4]], 11], [[["a", 3], ["b", 3]], 4], [[["a", 5], ["b", 1]], 5], [[["a", 2]], null]];
       const cut = cases.map(([c, k]) => fwCapCounts(c, k));
-      const got = []; for (let i = 0; i < 40; i++){ S.fcounts = tplFollowers(S.template); rollTeam(); const cap = followerCap(); got.push([S.crew.length, cap.cap, tplFollowers(S.template).reduce((t, [, n]) => t + n, 0)]) }
+      const got = []; for (let i = 0; i < 40; i++){ rollTeam(); const cap = followerCap(); got.push([S.crew.length, cap.cap, tplFollowers(S.template).reduce((t, [, n]) => t + n, 0)]) }
       return { cut, got } }""")
     check(r["cut"] == [[["archer", 7], ["spearman", 4]], [["a", 2], ["b", 2]], [["a", 4], ["b", 1]], [["a", 2]]], f"team.js cuts a muster as team.py does, off the largest career ({r['cut']})")
     check(all(n == min(cap, full) for n, cap, full in r["got"]) and any(cap < full for _, cap, full in r["got"]),
-          f"40 new companies: each musters its template's followers, or what its leader's Presence keeps if fewer ({r['got'][:6]}...)")
+          f"40 new companies rolled one after another: each musters its template's followers, or what its leader's Presence keeps if fewer, not the last one's cut ({r['got'][:6]}...)")
 
 
 def foes_mixed(pg):
@@ -298,8 +298,10 @@ def lost_in_fights(pg):
     pg.select_option("#sel-region", "british_pen")
     pg.select_option("#sel-template", "company")
     pg.click("#btn-roll")
+    pg.evaluate("() => { S.fcounts = tplFollowers(S.template); rollCrew(); render() }")   # the full 16, as a GM adds them by hand over a weak leader's cap
     ids = pg.evaluate("() => S.crew.map(f => f.fid)")
-    check(len(ids) >= 12 and len(set(ids)) == len(ids) and all(ids), f"each follower has his own id ({len(ids)} mustered)")
+    check(len(ids) == 16 and len(set(ids)) == 16 and all(ids), f"each follower has his own id ({len(ids)})")
+    left = len(ids) - 5
     pg.click(SEND)
     pg.wait_for_selector(ADDTEAM)
     pg.click(ADDTEAM)
@@ -319,10 +321,10 @@ def lost_in_fights(pg):
     check(fates == ["dead", "taken", "taken", "invalided", "dead"] and sent["again"] == 0,
           f"the roller sends the dead, the taken and left behind, the seriously wounded; the lightly wounded stays; each once ({fates}, {sent['log']!r})")
     pg.goto(BASE + "team.html")
-    pg.wait_for_function("() => S.crew.length === 11")
+    pg.wait_for_function("n => S.crew.length === n", arg=left)
     t = pg.evaluate("() => [S.crew.map(f => f.fid), S.flost.length, S.fcounts.reduce((a, [, n]) => a + n, 0), S.msg]")
     gone = [n for k, n in enumerate(sent["fids"]) if k != 4]
-    check(not any(n in t[0] for n in gone) and sent["fids"][4] in t[0] and t[1] == 5 and t[2] == 11,
+    check(not any(n in t[0] for n in gone) and sent["fids"][4] in t[0] and t[1] == 5 and t[2] == left,
           f"the team builder takes them off its followers, their careers to the drafts ({t[3]!r})")
     out = pg.evaluate("() => { const c = S.team[1]; svcState().with[c.pid] = false; return c.pid }")   # as if taken in the season roll: no longer serving
     pg.evaluate("() => { const W = SVC.war('peninsula'); S.svcSmall = SVC.smallFight(W, 'campaign', svcD100, 'picket'); svcPlayFight() }")

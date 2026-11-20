@@ -5,8 +5,8 @@ Watch on the travel map, first aid in the roller); the pages keep the ticks and 
 
 - each ticked skill, in the era's skill order, rolls d100; over the skill, it rises by the
   `gain` die (1d3), never past the era's skill_max;
-- the days served are added to his count, and each full term of days (the era's age per_term
-  years) gives him a later term's gains (term_main to his career's main skill, term_second to its
+- the days served are added to his count, and each full term of days (term_years: play_term_years,
+  4, or the era's age per_term if longer) gives him a later term's gains (term_main to his career's main skill, term_second to its
   second) and its years of age.
 
 The team builder page (templates/team.js) repeats season exactly, taking the dice in the same
@@ -17,9 +17,15 @@ from .model import Data
 from .team import era, finish
 
 
+def term_years(d: Data, eid: str) -> int:
+    """A term in play, in years: experience.yaml play_term_years, or the era's age per_term if longer,
+    so term gains come at the same rate a year in every era."""
+    return max(era(d, eid)["age"]["per_term"], d.experience.get("play_term_years", 0))
+
+
 def term_days(d: Data, eid: str) -> int:
-    """How many days served make a term in play: the era's years of age a term, in days."""
-    return era(d, eid)["age"]["per_term"] * d.experience.get("days_a_year", 365)
+    """How many days served make a term in play."""
+    return term_years(d, eid) * d.experience.get("days_a_year", 365)
 
 
 def _career(T: dict, cid: str) -> dict:
@@ -52,7 +58,7 @@ def season(d: Data, c: dict, ticks, served: int, rng) -> dict:
         car = _career(T, c["career"])
         c["gains"][car["main"]] = c["gains"].get(car["main"], 0) + T["term_main"]
         c["gains"][car["second"]] = c["gains"].get(car["second"], 0) + T["term_second"]
-        c["age"] = c.get("age", 0) + T["age"]["per_term"]
+        c["age"] = c.get("age", 0) + term_years(d, c["era"])
         c["xp_terms"] = c.get("xp_terms", 0) + 1
         done += 1
         rolled = min(c.get("rolled_days", 0), per)    # days of it served as seasons rolled with his battalion (data/service)
