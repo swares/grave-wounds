@@ -132,11 +132,14 @@ def reloads(pg):
       const at = a.loadedAt, near = strikeWeapon(a, d), blocked = rangeCheck().blocked || '';
       d.pos = [12, 5]; const far = strikeWeapon(a, d);
       S.round = at; const ready = [reloading(a), rangeCheck().blocked || ''];
-      return { rounds, at, near, far, blocked, ready } }""")
+      S.weapon = 'revolver'; delete a.loadedAt; delete a.cylinder; const cyl = [];
+      for (let i = 0; i < 7; i++){ S.round = 10 + i; const free = !reloading(a); if (free) startReload(a); cyl.push(free ? (a.loadedAt || 0) : 'loading') }
+      return { rounds, at, near, far, blocked, ready, cyl } }""")
     check(r["rounds"] == [2, 4, 6, 2, 0, 0, 1, 1, 1, 4], f"rounds to reload: musket 2 (three a minute), flintlock rifle 4, matchlock 6, crossbow 2; longbow and breechloader none; RPG, bazooka and recoilless rifle 1; ATGM 4 ({r['rounds']})")
     check(r["at"] == 6 and r["near"] == "bayonet" and r["far"] == "musket_smoothbore" and "is reloading his" in r["blocked"],
           f"a musket fired in round 3 shoots again in round 6; meanwhile he cannot shoot, and the man next to him gets the bayonet ({r})")
     check(r["ready"] == [False, ""], f"loaded again in round 6 ({r['ready']})")
+    check(r["cyl"] == [0, 0, 0, 0, 0, 31, "loading"], f"a revolver shoots six rounds running, then reloads its cylinder for 15 rounds (90 seconds): shoots again in round 31 ({r['cyl']})")
 
 
 def hedged_garden(pg):

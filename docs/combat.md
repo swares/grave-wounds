@@ -113,8 +113,9 @@ attack. Stepping back 1 hex is a careful withdrawal and draws no free attack.
   (two) every fifth, a matchlock (about one and a half) every seventh. The launchers reload
   too: an RPG (five a minute), a bazooka (six) or a recoilless rifle (five, the M40's rate for
   short periods) shoots every second round, an anti-tank guided missile (two: the TOW's three
-  in 90 seconds) every fifth. Bows, breechloaders and later rifles and machine guns shoot
-  every round. While he reloads, an enemy next to him is struck with his
+  in 90 seconds) every fifth. A revolver shoots every round until its six chambers are empty,
+  then reloads its cylinder for 15 rounds (a minute and a half: percussion chambers loaded one
+  by one). Bows, breechloaders and later rifles and machine guns shoot every round. While he reloads, an enemy next to him is struck with his
   sidearm, else his weapon's `close` weapon (a bayonet, the musket's butt, a crossbowman's
   dagger), the first the wound table has; a loaded man may still fire point-blank. The GM's
   script keeps a man who is reloading where he is. The map shows him as reloading, with the

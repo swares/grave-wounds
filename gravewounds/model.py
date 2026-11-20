@@ -2198,9 +2198,14 @@ def _rate_errors(d) -> list[str]:
         errors.append("wounds.yaml: combat.move.round_s must be the seconds a round, above 0")
     for wid, w in d.weapons.items():
         n = w.get("shots_a_minute")
+        if "magazine" in w:
+            m, t = w["magazine"], w.get("reload_s")
+            if n is not None or "range" not in w or not (isinstance(m, int) and m >= 2) or not (isinstance(t, (int, float)) and t > 0) or not w.get("rate_note"):
+                errors.append(f"weapons.yaml: {wid} magazine (shots, 2 or more) needs reload_s and a rate_note, on a weapon with a range, without shots_a_minute")
+            continue
         if n is None:
-            if "close" in w or "rate_note" in w:
-                errors.append(f"weapons.yaml: {wid} close and rate_note go with shots_a_minute")
+            if "close" in w or "rate_note" in w or "reload_s" in w:
+                errors.append(f"weapons.yaml: {wid} close, rate_note and reload_s go with shots_a_minute or magazine")
             continue
         if "range" not in w or not (isinstance(n, (int, float)) and n > 0) or not w.get("rate_note"):
             errors.append(f"weapons.yaml: {wid} shots_a_minute must be above 0, on a weapon with a range, with a rate_note")

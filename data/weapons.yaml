@@ -31,6 +31,8 @@
 # close        - while he reloads: what he strikes an enemy next to him with, when he has no
 #                sidearm of his own (the first of the list the wound table has; none, he only
 #                defends). A loaded man may still fire point-blank.
+# magazine     - a weapon that shoots every round until it is empty (a revolver's cylinder): its shots,
+#                then reload_s seconds of reloading, ceil(reload_s / round_s) rounds (rate_note: its source)
 # off_map      - true for weapons no fighter aims on the map (artillery, mines, stakes,
 #                stray fragments): the GM decides who they hit.
 # melee_table  - for a close-combat weapon: the table it rolls on whenever the current table
@@ -572,6 +574,9 @@ weapons:
     ignition: percussion
     era: "1850s-"
     threat: pistol
+    magazine: 6
+    reload_s: 90
+    rate_note: "Six shots, then the cylinder: a percussion revolver's chambers took five steps each to load, and with paper cartridges could still easily take a minute and a half to two minutes or more (California Law Review, The Myth of Continuity in American Gun Culture); a minute and a half is ours. Spare cylinders were not issued in the Civil War: men carried more revolvers (GUNSweek, after Executive Document 99, 1867). Only the percussion-era tables (the ACW, the Crimea) have the revolver."
     mechanisms: {ballistic: 100}
     zone_bias: {}
     confidence: extrapolated

@@ -714,7 +714,7 @@ function strainAtEnd(){                           // once a side has won: the fi
   }
 }
 function newFightMarks(){                         // a new fight: no downs, coups, winner or marks carried over
-  for (const c of S.chars){ delete c.downs; delete c.downedLeader; delete c.coups; delete c.fieldWon; delete c.loadedAt }
+  for (const c of S.chars){ delete c.downs; delete c.downedLeader; delete c.coups; delete c.fieldWon; delete c.loadedAt; delete c.cylinder }
   S.wonBy = null; S.fightEnd = null; S.deedsDone = []; S.afterLog = []; S.afterOpen = false; S.packsDropped = {}; S.packsLost = []; S.strainDone = false; S.travelFrom = null; S.quick = false;
   for (const c of S.chars) delete c.loadOrder;
 }
@@ -2634,9 +2634,18 @@ function closeWeapon(c){                           // while he reloads: the firs
   return (DATA.weapons[c.weapon]?.close || []).find(w => tw.includes(w)) || null;
 }
 function startReload(a){                           // he has shot: reloading till round loadedAt
+  const w = DATA.weapons[S.weapon];
+  if (w?.magazine){                                 // a cylinder: every round till it is empty, then reloaded
+    a.cylinder = (a.cylinder ?? w.magazine) - 1;
+    if (a.cylinder > 0) return;
+    a.cylinder = w.magazine;
+    a.loadedAt = S.round + magazineRounds(S.weapon) + 1;
+    return;
+  }
   const n = reloadRounds(S.weapon);
   if (n) a.loadedAt = S.round + n + 1;
 }
+const magazineRounds = wid => Math.ceil((DATA.weapons[wid]?.reload_s || 0) / MOVE.round_s);   // rounds to reload an empty one
 function applyAttackerWeapon(){
   const c = attackerChar(), w = c && strikeWeapon(c, defenderChar());
   if (w && DATA.tables[S.table].weapons.includes(w)){ S.weapon = w; fillWeapons() }
