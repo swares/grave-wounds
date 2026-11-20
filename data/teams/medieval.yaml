@@ -221,7 +221,7 @@ careers:
     prefers: [str, agi, nerve, end, pres, wits]
     wound: 25
     wound_weapon: sword
-    kit: {default: hauberk, latin_east: hauberk, baltic: danish_maa, england: brigandine_sallet, france: full_plate, portugal: transitional, castile: transitional, swiss: brigandine_sallet, landsknecht: full_plate}
+    kit: {default: hauberk, latin_east: hauberk, baltic: danish_maa, england: full_plate, france: full_plate, portugal: transitional, castile: transitional, swiss: brigandine_sallet, landsknecht: full_plate}   # England as France: the same harness on both sides at Agincourt (DeVries 2015, after Blair and Richardson), and the plate harness of the Roses
     weapon: {default: sword, swiss: halberd}
     terms:
       - {to: 20, skill: ride, text: "Rode in a lord's household for a season."}

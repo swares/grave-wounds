@@ -16,7 +16,7 @@ for Crécy is built from the c.1415 armies):
 | Latin East (c.1250) | Sidon 1253 | mail hauberks, gambesons, crossbows |
 | Ayyubids (c.1180) | Sidon 1253 | mail hauberks, gambesons, bows; mounted archers |
 | Gotland and the Baltic (c.1360) | Visby 1361 | Gotland levy and better kits, Danish men-at-arms |
-| England (c.1415-1460) | Towton 1461 | jacks and sallets, brigandines, longbows, bills |
+| England (c.1415-1460) | Towton 1461 | full plate (men-at-arms), jacks and sallets, brigandines, longbows, bills |
 | France (c.1415) | Towton 1461 (the nearest records) | full plate, brigandines, jacks |
 | Portugal (c.1385) | Towton 1461 (the nearest records) | mail and plates, padded jacks, crossbows; its archers the English with it (longbows) |
 | Castile (c.1385) | Towton 1461 (the nearest records) | mail and plates, padded jacks, crossbows |

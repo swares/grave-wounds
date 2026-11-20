@@ -1120,3 +1120,10 @@ not this repository.
   crossbow's three a minute rests on popular sources (h2g2 after Payne-Gallwey, History Hit);
   the wheellock and flintlock pistols' rates are ours; the launchers (RPG, bazooka, recoilless
   rifle, ATGM) and a revolver's cylinder have none yet; and the field map's units fire as before.
+
+- **English men-at-arms in full plate** (from the Henry V exchange): the English region's
+  men-at-arms wore brigandines and the French full plate, with no source for the difference;
+  DeVries (2015, after Blair and Richardson) finds the two sides at Agincourt armoured alike. Now
+  full plate for both (and so for the Roses). A paired test (the same team and fight sizes)
+  shows it changes little: Henry V 17 of 27 won before, 16 after; Edward's 14 of 24 both; Lancaster's 17 of 27
+  both. The English wounds fall mostly on the followers in jacks, not the three named men-at-arms.
