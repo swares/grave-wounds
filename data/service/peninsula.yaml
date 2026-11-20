@@ -155,8 +155,8 @@ small_fights:
     aims: {team: "Save the baggage and the mules.", foes: "Plunder the baggage and get away with it."}
     ends: "The dragoons ride off once a third of those here are down, or with what they hold after 6 rounds; the guard is beaten if it is broken."
     end: {rounds: 6, wins: none, down: {foes: 0.33}}
-    sources: ["Urban, Rifles, ch. 18: https://erenow.org/ww/rifles-six-years-with-wellingtons-legendary-sharpshooters/18.php"]
-    note: "No numbers in the account: the sizes are ours. The rain of the retreat from Burgos is ours too."
+    sources: ["Urban, Rifles, ch. 18: https://erenow.org/ww/rifles-six-years-with-wellingtons-legendary-sharpshooters/18.php", "https://www.historyofwar.org/articles/combat_san_munoz.html"]
+    note: "No numbers in the account: the sizes are ours. The rain: at San Muñoz that day 'the wet weather and soft ground' blunted Soult's shells (History of War, Combat of San Munoz)."
   - id: sortie
     name: "A sortie on the trenches"
     what: "The garrison bursts out on the working parties in the trenches, drives them off and carries away their picks and shovels (Badajoz, 19 March 1812: 1,500 infantry and 40 cavalry; Burgos, 5 and 8 October 1812)."
