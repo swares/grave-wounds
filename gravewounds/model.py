@@ -795,9 +795,9 @@ def validate(d: Data) -> None:
         for t in c.get("terrain", []):
             if t not in TT:
                 errors.append(f"works.yaml: camp {cid} names unknown terrain {t}")
-        if c.get("layout") not in (None, "stakes", "fortified"):
-            errors.append(f"works.yaml: camp {cid} layout must be stakes or fortified")
-        laid = {None: set(), "stakes": {"stakes"}, "fortified": {"ditch", "bank", "palisade", "gate"}}.get(c.get("layout"))
+        if c.get("layout") not in (None, "stakes", "fortified", "hedged"):
+            errors.append(f"works.yaml: camp {cid} layout must be stakes, fortified or hedged")
+        laid = {None: set(), "stakes": {"stakes"}, "fortified": {"ditch", "bank", "palisade", "gate"}, "hedged": {"hedge"}}.get(c.get("layout"))
         if laid is not None and set(c.get("works", [])) != laid:
             errors.append(f"works.yaml: camp {cid} works must be what its layout builds: {sorted(laid) or 'none'}")
     for wid, w in EW.items():
@@ -2315,6 +2315,8 @@ def _small_fight_errors(d: Data, W: dict, where: str, states: dict) -> list[str]
                 errors.append(f"{fw}: {o.get('name')}: unknown weapon {o['weapon']}")
         if f.get("ground") not in grounds:
             errors.append(f"{fw}: ground must be one of {sorted(grounds)}")
+        if "camp" in f and not (d.works.get("camps", {}).get(f["camp"]) or {}).get("found"):
+            errors.append(f"{fw}: camp must be a found camp in works.yaml (already there, as a hedged garden)")
         if f.get("weather") and f["weather"] not in conds:
             errors.append(f"{fw}: unknown weather {f['weather']}")
         if f.get("light") and f["light"] not in ((d.weather or {}).get("light") or {}).get("levels", {}):

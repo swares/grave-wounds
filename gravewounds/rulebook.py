@@ -502,7 +502,7 @@ def _travel_tables(d: Data) -> dict:
     T, W, DZ = d.terrain, d.works, d.disease
     sp = [[f["name"], f"{f['kmh'] / 1.609:.1f} mph ({f['kmh']:g} km/h)", f"{f['kmh'] * T['hours_per_day'] / 1.609:.0f} miles ({f['kmh'] * T['hours_per_day']:g} km)"] for f in T["forces"].values()]
     ter = [[t["name"], f"×{t['cost']:g}" if t.get("cost") else "cannot enter"] for t in T["terrain"].values()]
-    camps = [[c["name"], c["desc"], _needs(c), _sign(c["surprise"]), c["rest"]] for c in W["camps"].values()]
+    camps = [[c["name"], c["desc"], _needs(c), _sign(c["surprise"]), c["rest"]] for c in W["camps"].values() if not c.get("found")]
     dis = [[x["name"], x["caught"], f"{x['incubation'][0]}–{x['incubation'][1]} days", f"{x['deaths']:g}%"] for x in DZ["diseases"].values()]
     works = [[w["name"], _off(w.get("cover")), _cross(w.get("cross"), w), "yes" if w.get("blocks_melee") else "—"] for w in W["edge_works"].values()]
     works += [[w["name"], _off(w.get("cover_here") or w.get("cover_behind")), _cross(w.get("enter"), w), "—"] for w in W["hex_works"].values()]

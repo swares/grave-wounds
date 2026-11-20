@@ -87,6 +87,7 @@ def followers(pg):
     culps_hill(pg)
     sidearms(pg)
     reloads(pg)
+    hedged_garden(pg)
 
 
 def sidearms(pg):
@@ -136,6 +137,30 @@ def reloads(pg):
     check(r["at"] == 6 and r["near"] == "bayonet" and r["far"] == "musket_smoothbore" and "is reloading his" in r["blocked"],
           f"a musket fired in round 3 shoots again in round 6; meanwhile he cannot shoot, and the man next to him gets the bayonet ({r})")
     check(r["ready"] == [False, ""], f"loaded again in round 6 ({r['ready']})")
+
+
+def hedged_garden(pg):
+    """Valmont's hedged garden: a found camp, laid on the map round the party, not built."""
+    pg.goto(BASE + "team.html")
+    pg.evaluate(CLEAR)
+    pg.reload()
+    pg.select_option("#sel-era", "medieval")
+    pg.select_option("#sel-region", "england")
+    pg.select_option("#sel-template", "retinue")
+    pg.click("#btn-roll")
+    pg.click(SEND)
+    pg.wait_for_selector(ADDTEAM)
+    pg.click(ADDTEAM)
+    pg.goto(BASE + "team.html")
+    pg.wait_for_selector("#h-service")
+    pg.evaluate("""() => { const W = SVC.war('henry_v'); svcState(); Object.assign(S.service, { war: 'henry_v', i: 0, with: {}, pos: {}, at: {}, played: {}, unit: {}, share: {} });
+      S.svcSmall = SVC.smallFight(W, 'garrison', () => 1, 'raid'); svcPlayFight() }""")
+    pg.wait_for_selector(HANDOFF)
+    pg.click(HANDOFF)
+    pg.wait_for_function("() => !S.handoff")
+    r = pg.evaluate("""() => { const kinds = Object.values(S.works.edges).flat().map(x => x.type);
+      return [kinds.length, [...new Set(kinds)], Object.keys(S.works.hexes).length] }""")
+    check(r[0] > 20 and r[1] == ["hedge"] and r[2] == 0, f"the raid at Valmont comes with its hedged garden round the party, all hedge, nothing to build ({r})")
 
 
 def culps_hill(pg):
