@@ -92,8 +92,22 @@ def fresh_ok() -> bool:
     return ok
 
 
+CAP_CASES = [([["archer", 10], ["spearman", 4]], 11, [["archer", 7], ["spearman", 4]]),
+             ([["a", 3], ["b", 3]], 4, [["a", 2], ["b", 2]]),
+             ([["a", 5], ["b", 1]], 5, [["a", 4], ["b", 1]]),
+             ([["a", 2]], None, [["a", 2]])]   # as season.py checks team.js fwCapCounts
+
+
+def cap_ok() -> bool:
+    """team.py cap_counts: a muster cut to what the leader keeps, off the largest career."""
+    from gravewounds.team import cap_counts   # noqa: PLC0415
+    ok = all(cap_counts(c, k) == want for c, k, want in CAP_CASES)
+    print(("ok   " if ok else "FAIL ") + "team.py: the muster cut to the cap, off the largest career")
+    return ok
+
+
 def main() -> int:
-    if not fresh_ok():
+    if not fresh_ok() or not cap_ok():
         return 1
     n = int(sys.argv[1]) if len(sys.argv) > 1 else 200
     seed = int(sys.argv[2]) if len(sys.argv) > 2 else 1

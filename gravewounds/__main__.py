@@ -117,7 +117,7 @@ def _main(argv=None) -> int:
                 print("\n".join(points_text(r)))
         return 0
     if a.cmd == "team":
-        from .team import era, follower_cap, follower_line, make_followers, make_team, sheet
+        from .team import cap_counts, era, follower_cap, follower_line, make_followers, make_team, sheet
         from .units import SeededDice
         rng = SeededDice(a.seed) if a.seed is not None else random.Random()
         E = era(d, a.era)
@@ -129,10 +129,10 @@ def _main(argv=None) -> int:
         for c in team:
             print("\n".join(sheet(d, c, a.lethality)) + "\n")
         tpl = next(t for t in era(d, a.era)["templates"] if t["id"] == a.template)
-        crew = make_followers(d, a.era, a.region, tpl.get("followers", []), tpl.get("follower_quality", "default"), rng, a.women)
+        lead = next((c for c in team if c.get("leader")), team[0])
+        cap = follower_cap(d, tpl.get("followers", []), lead["stats"]["pres"])
+        crew = make_followers(d, a.era, a.region, cap_counts(tpl.get("followers", []), cap), tpl.get("follower_quality", "default"), rng, a.women)   # mustered up to what he keeps
         if crew:
-            lead = next((c for c in team if c.get("leader")), team[0])
-            cap = follower_cap(d, tpl.get("followers", []), lead["stats"]["pres"])
             keeps = f"; {lead['name']}'s Presence {lead['stats']['pres']} keeps {cap}" if cap is not None else ""
             over = f", {len(crew) - cap} over: half of them, rounded up, drift away each End of season" if cap is not None and len(crew) > cap else ""
             print(f"Followers ({len(crew)}{keeps}{over}):")

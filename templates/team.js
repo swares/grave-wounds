@@ -254,6 +254,16 @@ function fwCap(counts, pres){                     // as team.py follower_cap: ho
   if (!F || !F.bands || !total) return null;
   return Math.max(1, Math.floor(total * F.bands.find(b => pres <= b.to).share + 0.5));
 }
+function fwCapCounts(counts, cap){                 // as team.py cap_counts: the template's followers cut to what he keeps, off the largest career
+  const out = counts.map(([c, n]) => [c, n]);
+  if (cap === null || cap === undefined) return out;
+  while (out.reduce((t, [, n]) => t + n, 0) > cap){
+    let i = 0;
+    out.forEach(([, n], k) => { if (n >= out[i][1]) i = k });
+    out[i][1] -= 1;
+  }
+  return out.filter(([, n]) => n > 0);
+}
 const fwLeaving = (have, cap) => (cap === null || have <= cap ? 0 : Math.ceil((have - cap) * TD.followers.leave));   // how many drift away this End of season
 function followerLine(f){                         // as team.py follower_line
   const career = byId(TD.era.careers, f.career).name.toLowerCase(), kit = TD.kits[f.kit].name.split(" (")[0].toLowerCase();

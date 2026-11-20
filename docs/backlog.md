@@ -135,8 +135,9 @@ not this repository.
     and fights from another season marked "as in" are done. Found when the odds were kept, and done: a
     broken scripted side took every man down or next to a foe (Edward's six all at Newnham Bridge);
     now only the down beside an enemy are taken, the held break away on their Agility or Dodge
-    (ours), the down with no enemy by are left, and the rest run. Still left: a company template musters more followers than an
-    officer of middling Presence keeps (they drift each season). Followers now serve the season too
+    (ours), the down with no enemy by are left, and the rest run. Done since: a new muster is cut to what its leader's Presence keeps (a
+    third of rolled leaders, under 45, keep three-quarters; not only the company), so no one drifts
+    at the start. Followers now serve the season too
     (hit, sick, taken, a hit's severity for his fate), desert at each war's rate and are replaced by
     drafts in winter quarters (project doc "follower-drift-research"); followers lost on the roller
     and the field map now come off too (sent back by the GM once the fight is settled); from the fifth (the ACW, both sides): a

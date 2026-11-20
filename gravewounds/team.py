@@ -224,6 +224,19 @@ def follower_cap(d: Data, counts: list, pres: int):
     return max(1, int(total * share + 0.5))
 
 
+def cap_counts(counts: list, cap) -> list:
+    """The template's followers ([[career, n], ...]) cut to what the leader keeps: one at a time off
+    the largest career (the later of equals), so the mix holds (ours). Unchanged with no cap or
+    within it."""
+    out = [[c, n] for c, n in counts]
+    if cap is None:
+        return out
+    while sum(n for _, n in out) > cap:
+        i = max(range(len(out)), key=lambda k: (out[k][1], k))
+        out[i][1] -= 1
+    return [x for x in out if x[1] > 0]
+
+
 def follower_line(d: Data, f: dict, eid: str = "medieval") -> str:
     """A follower in one line: "John Archer, archer, regular: bow 50%, defence 35%, Nerve 50; jack and sallet"."""
     career = _by_id(era(d, eid)["careers"], f["career"])
