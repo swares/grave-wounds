@@ -1099,7 +1099,14 @@ not this repository.
   men started wounded. With a fresh team each fight the English win 17 of 27 (18 of 27 before the
   table fix). The exchange is still against them: 0.44 French down to each English man down, the
   worst of the eight wars. The 3 to 2 cap and the French split were chosen against the broken
-  test; kept, as the user chose, with this noted.
+  test; kept, as the user chose, with this noted. Since: the French split is sourced, two
+  men-at-arms to each of the gens de trait (Curry; the 1415 musters of Vendôme and Berry), which
+  takes the English to 18 of 27 and the exchange to 0.34. What drives it: English blows mostly
+  stop on French plate (longbow and bill each wound about 8% of the time) while French blows
+  wound English in jacks and brigandines (crossbow 18%, spear 26%). Next, as the user chose: a
+  rate of shot for missile weapons (the roller has none: a crossbow looses every 6-second round,
+  as a longbow does) and what English men-at-arms wore (brigandine here, full plate for the
+  French).
 
 - **A season's small fight brought the team's men as the roller last left them** (play test 8):
   a follower's wounds, blood and state (out of the fight, defend only) stayed with him into the
