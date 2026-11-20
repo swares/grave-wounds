@@ -1124,6 +1124,18 @@ def _wall_pieces(out: dict, centre, r: int, gate=0) -> None:
             out["palisade"].append(("edge", (h, n), {"type": "palisade", "progress": 0}))
 
 
+def _hedge_pieces(centre, r: int, gate=0) -> dict:
+    """A hedge round the ring, with a gap at each gate (a found camp: a hedged garden)."""
+    gates = _gate_list(gate)
+    pairs = [(ring_walk(centre, r, g)[0], ring_walk(centre, r + 1, g)[0]) for g in gates]
+    out = {"hedge": []}
+    for h in ring_walk(centre, r, gates[0]):
+        for n in (x for x in _around(h) if hex_distance(centre, x) == r + 1):
+            if not any(h == gi and n == go for gi, go in pairs):
+                out["hedge"].append(("edge", (h, n), {"type": "hedge", "progress": 0}))
+    return out
+
+
 def _ditch_pieces(out: dict, centre, r: int, gate=0) -> None:
     """The ditch one ring out, leaving the way to each gate."""
     gates = _gate_list(gate)
@@ -1139,6 +1151,8 @@ def _camp_pieces(layout: str, centre, r: int, gate=0) -> dict:
     or a list of sides with the main gate first."""
     if layout == "stakes":
         return _stake_pieces(centre, r, gate)
+    if layout == "hedged":
+        return _hedge_pieces(centre, r, gate)
     out = {"ditch": [], "bank": [], "palisade": [], "gate": []}
     _wall_pieces(out, centre, r, gate)
     _ditch_pieces(out, centre, r, gate)

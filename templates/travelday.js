@@ -1549,7 +1549,7 @@ function makeTravelDay(DATA, RULES, env = {}){
     const places = (baseMap().places || []).filter(p => p.hex && !sameHex(p.hex, L.pos) && go(p.hex)).map(p => [key(p.hex), p.name])
       .sort((a, b) => a[1].localeCompare(b[1]));
     const foes = forcesHere().filter(o => o.side !== L.side && Array.isArray(o.pos)).map(o => [key(o.pos), `${o.name} (${o.side}), at ${where(o.pos)}`]);
-    const camps = Object.keys(WK.camps).map(k => [k, WK.camps[k].name, campText(L, k), !campCost(L, k).error]);
+    const camps = Object.keys(WK.camps).filter(k => !WK.camps[k].found).map(k => [k, WK.camps[k].name, campText(L, k), !campCost(L, k).error]);
     return { id: f.id, name: f.name, led: L === f ? null : L.name, order: L.order || "halt", routed: !!(L.path && L.index < L.path.length - 1),
       route: (L.waypoints || []).map(where), places, foes, camps };
   }

@@ -190,7 +190,7 @@ cold:
 # A night's rest starts from the camp's rest (works.yaml; poor without a camp) and drops
 # one step for every point of hardship beyond the camp's shelter. Cold adds hardship.
 rest_levels: [bad, poor, fair, good]
-shelter: {none: 0, bivouac: 0, watched: 1, staked: 1, fortified: 1, quartered: 3}
+shelter: {none: 0, bivouac: 0, watched: 1, staked: 1, fortified: 1, hedged: 0, quartered: 3}
 cold_hardship: [{low_at_or_below: 0, add: 1}, {low_at_or_below: -10, add: 2}]
 
 fatigue:

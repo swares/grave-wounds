@@ -16,6 +16,13 @@ axes) or doesn't. Select a force, pick the kind of camp and press **Make camp**.
 | Fortified camp | Ditch, bank and palisade all round, with a gate. | tools |
 | Quartered | Billeted in the houses of a village or town. Half an hour. | a village or town |
 
+A **found camp** is already there and is not made on the march: a war's small fight names it
+(`camp` in `data/service/<war>.yaml`) and the battle map lays it round the party. The one so
+far is the **hedged garden**: a hedge round the ring with a gap where the gate would be (cross
++1, cover 10 as scrub, 4 man-rounds to break through; ours). It is Valmont's (9-11 March 1416),
+where the Earl of Dorset's men held "a small hedged garden" till nightfall (Burne, *The
+Agincourt War*, pp. 100-2).
+
 **How long it takes.**
 
 1. Lay the camp out as the battle map would. Its ring of 2-yard (2 m) hexes is big enough for the

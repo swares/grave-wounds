@@ -51,7 +51,7 @@ litters:
 #                  the cadavers" (Imad, via Barber). Its mods (flux, typhoid) are design estimates.
 # A disease with `needs` has no outbreak chance at all unless every factor listed applies.
 hygiene: [poor, fair, good]
-camp_hygiene: {none: fair, bivouac: poor, watched: fair, staked: fair, fortified: fair, quartered: good}
+camp_hygiene: {none: fair, bivouac: poor, watched: fair, staked: fair, fortified: fair, hedged: fair, quartered: good}
 staying_days: 28
 terrain_factors:
   marsh: [marsh]
@@ -71,7 +71,7 @@ dead_days: 14
 # it shows): d100 against Endurance + care + activity + conditions - virulence.
 #   Success by `big` or more: two steps better; success: one better; failure: no change;
 #   failure by `big` or more: one step worse (from Deadly: dead). At Deadly any failure kills.
-camp_care: {none: none, bivouac: field, watched: field, staked: field, fortified: field, quartered: shelter}
+camp_care: {none: none, bivouac: field, watched: field, staked: field, fortified: field, hedged: field, quartered: shelter}
 recovery:
   big: 30
   care: {none: -20, field: 0, shelter: 10}      # no camp; a camp; quarters in houses

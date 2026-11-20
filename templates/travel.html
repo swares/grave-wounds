@@ -524,7 +524,7 @@ function renderSide(){
   $("#load-box").hidden = !loadEraOf(f);
   if (loadEraOf(f)) $("#sel-load").innerHTML = loadOptions(f);
   $("#sel-with").innerHTML = withOptions(f);
-  const kinds = Object.keys(WK.camps), cur = S.campKind && kinds.includes(S.campKind) ? S.campKind : "watched";
+  const kinds = Object.keys(WK.camps).filter(k => !WK.camps[k].found), cur = S.campKind && kinds.includes(S.campKind) ? S.campKind : "watched";
   $("#sel-camp").innerHTML = kinds.map(k => campOption(f, k, cur)).join("");
   $("#camp-est").textContent = campText(f, cur);
   $("#btn-camp").disabled = !!campCost(f, cur).error;

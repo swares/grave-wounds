@@ -29,7 +29,9 @@ camp_area_min: 100         # even a handful of men needs a camp this big
 #   terrain    - only on these terrains (quartering needs buildings)
 #   surprise   - shift to the odds of being caught unawares (below; − is better)
 #   rest       - poor | fair | good: how well the men sleep (for later rules)
-#   layout     - what the battle map draws for it (a ring of stakes, or ditch, bank, palisade
+#   found      - true: the works are already there (a hedged garden), not built: not offered as a
+#                camp to make on the march
+#   layout     - what the battle map draws for it (a ring of stakes, a ring of hedge, or ditch, bank, palisade
 #                and gate); none for the others
 # Surprise: when a fight is set up from the travel map, one d100 against `base` + the camp's
 # `surprise` (no camp: `none`) + `dark` if the fight starts between sunset and sunrise + `fog`
@@ -54,6 +56,8 @@ camps:
               desc: "A watched camp ringed with sharpened stakes, like archers' stakes set against horse."}
   fortified: {name: "Fortified camp", hours: 1,   tools: true, works: [ditch, bank, palisade, gate], surprise: -20, rest: good, layout: fortified,
               desc: "Ditch, bank and palisade all round, with a gate."}
+  hedged:    {name: "Hedged garden",  hours: 0, found: true, works: [hedge], surprise: 0, rest: fair, layout: hedged,
+              desc: "A garden or close already hedged round, held as it stands; nothing is built (Valmont, 1416: Dorset's men held a small hedged garden till nightfall)."}
   quartered: {name: "Quartered",      hours: 0.5, terrain: [village, town], surprise: 0, rest: good,
               desc: "Billeted in the houses of a village or town."}
 
@@ -93,6 +97,8 @@ edge_works:
   palisade: {name: "Palisade",      per_metre: 1.5,  haul: 1.0,   cross: null, cover: 40, cover_side: both, blocks_melee: true, breach: 12}
   chevaux:  {name: "Chevaux de frise", per_metre: 2.0, haul: 1.0, cross: null, cover: 10, cover_side: both, blocks_melee: true, breach: 24, no_ladders: true,
              note: "A beam set with sword blades or spikes, chained across a breach (Badajoz 1812). Ladders get no one over it; axes clear it slowly (breach: ours, twice a palisade)."}
+  hedge:    {name: "Hedge",         per_metre: 0,    cross: 1,    cover: 10, cover_side: both, breach: 4,
+             note: "A garden or field hedge, already there (a found camp's): slows a man pushing through and screens him a little. Cover 10 as scrub (units.yaml), cross 1 and breach 4: ours."}
   gate:     {name: "Gate",          each: 6,         cross: 0,    cover: 40, cover_side: both, blocks_melee: true, breach: 20, gate: true}
   wall:     {name: "Stone wall",    per_metre: null, cross: null, cover: 50, cover_side: both, height: 20, blocks_melee: true, breach: null, charge: 6, shelled: true, tall: true,
              note: "Town and castle walls: already there, not built in the field. No axe opens them: demolition charges or heavy shells do, and before those only ladders get men over."}

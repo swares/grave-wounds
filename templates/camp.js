@@ -69,8 +69,18 @@ function ditchPieces(out, centre, r, gate = 0){   // the ditch one ring out, lea
     }
   }
 }
+function hedgePieces(centre, r, gate = 0){   // a hedge round the ring, with a gap at each gate
+  const gates = gateList(gate), pairs = gates.map(g => [ringWalk(centre, r, g)[0], ringWalk(centre, r + 1, g)[0]]), out = { hedge: [] };
+  for (const h of ringWalk(centre, r, gates[0])){
+    for (const n of around(h).filter(x => hexDistance(centre, x) === r + 1)){
+      if (!pairs.some(([gi, go]) => sameH(h, gi) && sameH(n, go))) out.hedge.push(["edge", [h, n], { type: "hedge", progress: 0 }]);
+    }
+  }
+  return out;
+}
 function campPieces(layout, centre, r, gate = 0){   // every piece by type, in building order round the ring from the gate, on the map or not
   if (layout === "stakes") return stakePieces(centre, r, gate);
+  if (layout === "hedged") return hedgePieces(centre, r, gate);
   const out = { ditch: [], bank: [], palisade: [], gate: [] };
   wallPieces(out, centre, r, gate);
   ditchPieces(out, centre, r, gate);

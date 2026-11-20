@@ -188,6 +188,7 @@ small_fights:
     weight: 2
     at: 1416-spring
     where: "a hedged garden by a village"
+    camp: hedged             # Dorset's men held "a small hedged garden" till nightfall (Burne, The Agincourt War, pp. 100-2)
     time: "in the afternoon"
     ground: village
     side: {name: "The raiding party", men: [100, 1100]}
