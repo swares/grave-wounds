@@ -320,11 +320,13 @@ small_fights:
     time: "by day"
     ground: town
     side: {name: "The garrison", men: [20, 100]}
-    foes: [{name: "The storming party", men: [50, 300], kit: brigandine_sallet, weapon: poleaxe}]
+    # one man-at-arms in nine, the rest archers (Spencer, TRHS 2025: men-at-arms to archers 1:9 in 1450, 1:8 in 1475; men-at-arms in plate and mail, footmen mostly in jacks)
+    foes: [{name: "The storming party: men-at-arms", men: [6, 33], kit: full_plate, weapon: poleaxe},
+           {name: "The storming party: archers", men: [44, 267], kit: jack_sallet, weapon: longbow, sidearm: sword}]
     aims: {team: "Hold the breach.", foes: "Win the breach."}
     ends: "The storm is called off after 8 rounds; the breach is lost once a third of the garrison are down; the storming party falls back once a third of theirs are down."
     end: {rounds: 8, wins: team, down: {team: 0.33, foes: 0.33}, hold: team}
-    sources: [*bamburgh]
+    sources: [*bamburgh, "https://www.cambridge.org/core/journals/transactions-of-the-royal-historical-society/article/change-and-continuity-in-english-armies-14531513/A38EDD1F97BFBDFF2D3CBEE5E5450CB6"]
     note: "The accounts tell of the bombardment and the yielding, not of a storm: the fight is ours. The roller has no castle ground: lay walls on town ground."
   - id: norham
     name: "The relief comes on"

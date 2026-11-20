@@ -2322,6 +2322,8 @@ def _small_fight_errors(d: Data, W: dict, where: str, states: dict) -> list[str]
                 errors.append(f"{fw}: {o.get('name')}: unknown kit {o['kit']}")
             if o.get("weapon") and o["weapon"] not in d.weapons:
                 errors.append(f"{fw}: {o.get('name')}: unknown weapon {o['weapon']}")
+            if o.get("sidearm") and "reach" not in d.weapons.get(o["sidearm"], {}):
+                errors.append(f"{fw}: {o.get('name')}: sidearm must be a close-combat weapon")
         if f.get("ground") not in grounds:
             errors.append(f"{fw}: ground must be one of {sorted(grounds)}")
         if "camp" in f and not (d.works.get("camps", {}).get(f["camp"]) or {}).get("found"):

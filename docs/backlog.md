@@ -1138,3 +1138,10 @@ not this repository.
   (27-30% to wound) against English archers and billmen in jacks (their bills 5%). Not tried:
   stakes or a first volley; checking the longbow's wounding against the period (project doc
   "henry-v-exchange-research").
+
+- **Roses foes in brigandines, mixed as a retinue** (play test 9): Edward's foray (Dunstanburgh's
+  garrison) and Lancaster's breach (the Bamburgh storming party) had every foe in brigandine
+  with a poleaxe, unsourced. Now one man-at-arms in nine in full plate with a poleaxe and the rest
+  archers in jacks with longbows and swords (Spencer, TRHS 2025: 1:9 in 1450, 1:8 in 1475; the
+  archers all bowmen is ours). A small fight's foes can carry a `sidearm`. Paired: the foray 1 to
+  3 of 3 won, the breach 0 to 1; Edward's side 12 to 14 of 24, Lancaster's 18 to 19 of 27.

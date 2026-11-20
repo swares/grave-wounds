@@ -88,6 +88,7 @@ def followers(pg):
     sidearms(pg)
     reloads(pg)
     hedged_garden(pg)
+    foes_mixed(pg)
 
 
 def sidearms(pg):
@@ -170,6 +171,32 @@ def hedged_garden(pg):
       const c = S.fightEnd.position.centre, r = S.fightEnd.position.radius, team = S.chars.filter(x => x.team && x.pos);
       return [r, team.filter(x => hexDistance(x.pos, c) === r).length, team.length, S.chars.filter(x => !x.team && x.pos).every(x => hexDistance(x.pos, c) > r)] }""")
     check(ring[1] == ring[2] and ring[2] > 0 and ring[3], f"the party lines the hedge, every man on the ring just inside it, the French outside ({ring})")
+
+
+def foes_mixed(pg):
+    """A Roses garrison: one man-at-arms in nine in plate, the rest archers with swords for close combat."""
+    pg.goto(BASE + "team.html")
+    pg.evaluate(CLEAR)
+    pg.reload()
+    pg.select_option("#sel-era", "medieval")
+    pg.select_option("#sel-region", "england")
+    pg.select_option("#sel-template", "retinue")
+    pg.click("#btn-roll")
+    pg.click(SEND)
+    pg.wait_for_selector(ADDTEAM)
+    pg.click(ADDTEAM)
+    pg.goto(BASE + "team.html")
+    pg.wait_for_selector("#h-service")
+    pg.evaluate("""() => { const W = SVC.war('roses_edward'); svcState(); Object.assign(S.service, { war: 'roses_edward', i: 0, with: {}, pos: {}, at: {}, played: {}, unit: {}, share: {} });
+      S.svcSmall = SVC.smallFight(W, 'siege', () => 1, 'foray'); svcPlayFight() }""")
+    pg.wait_for_selector(HANDOFF)
+    pg.click(HANDOFF)
+    pg.wait_for_function("() => !S.handoff")
+    r = pg.evaluate("""() => { const f = S.chars.filter(c => !c.team); const kinds = {};
+      for (const c of f) { const k = `${c.kit}/${c.weapon}/${c.sidearm || ''}`; kinds[k] = (kinds[k] || 0) + 1 } return kinds }""")
+    ks = sorted(r)
+    check(ks == ["full_plate/poleaxe/", "jack_sallet/longbow/sword"] and r["jack_sallet/longbow/sword"] > r["full_plate/poleaxe/"],
+          f"the foray's garrison: a few men-at-arms in plate with poleaxes, the rest archers in jacks with swords for close combat ({r})")
 
 
 def culps_hill(pg):

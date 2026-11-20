@@ -1392,7 +1392,7 @@ function svcFightHandoff(W, s){                     // the small fight as a setu
   const F = S.svcSmall, f = W.small_fights.find(x => x.id === F.id), own = (S.side || "").trim(), side = own && own !== "Side A" ? own : W.sides.team;   // the team's side as set, else the war's
   const coming = S.team.filter(c => (svcState().with || {})[c.pid] !== false).length + (S.crew || []).length;   // the team and its followers come too
   const party = { id: "team", name: f.side.name, side, men: Math.max(F.side, coming), type: "foot" };
-  const foes = f.foes.map((o, k) => ({ id: "foe" + k, name: o.name, side: W.sides.foes, men: F.foes[k], type: "foot", kit: o.kit || null, weapon: o.weapon || null }));
+  const foes = f.foes.map((o, k) => ({ id: "foe" + k, name: o.name, side: W.sides.foes, men: F.foes[k], type: "foot", kit: o.kit || null, weapon: o.weapon || null, sidearm: o.sidearm || null }));
   const [force, allies, against] = f.team_attacks ? [foes[0], foes.slice(1), [party]] : [party, [], foes];
   const sp = f.surprise ? { text: f.surprise.text, roll: F.surprise_roll, surprised: F.surprised } : null;
   crewIds();
