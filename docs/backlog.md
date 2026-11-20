@@ -1127,3 +1127,9 @@ not this repository.
   full plate for both (and so for the Roses). A paired test (the same team and fight sizes)
   shows it changes little: Henry V 17 of 27 won before, 16 after; Edward's 14 of 24 both; Lancaster's 17 of 27
   both. The English wounds fall mostly on the followers in jacks, not the three named men-at-arms.
+  With the rate of shot (#562), paired: Henry V 21 of 27 won (0.45 French down to each English
+  man down), 20 of 27 with the plate (0.49); the French crossbows wound 55 times, not 145. What
+  drives the exchange now is close combat: French men-at-arms in plate with spears and poleaxes
+  (27-30% to wound) against English archers and billmen in jacks (their bills 5%). Not tried:
+  stakes or a first volley; checking the longbow's wounding against the period (project doc
+  "henry-v-exchange-research").
