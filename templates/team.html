@@ -1633,7 +1633,7 @@ function renderXp(){
   }).join("");
   const log = (S.xplog || []).map(l => `<li>${esc(l)}</li>`).join("");
   box.innerHTML = `<section class="crew work" aria-labelledby="h-xp"><h3 id="h-xp">Experience</h3>
-    <p class="muted note">Used well since the last season: a job check that succeeds, a hit or a parry or dodge in the roller, Fieldcraft that finds food, a week nursing, Stealth that surprises and Watch that stops it. At End of season each rolls d100: over the skill, it rises ${TD.xp.gain[0]}-${TD.xp.gain[1]}. Days at skilled work (not fumbled) and nights with a force count toward a term (${TD.era.age.per_term} year${TD.era.age.per_term > 1 ? "s" : ""}): his career's main skill +${T.term_main} and second +${T.term_second}. A season is about ${TD.xp.season_days} days.</p>
+    <p class="muted note">Used well since the last season: a job check that succeeds, a hit or a parry or dodge in the roller, Fieldcraft that finds food, a week nursing, Stealth that surprises and Watch that stops it. At End of season each rolls d100: over the skill, it rises ${TD.xp.gain[0]}-${TD.xp.gain[1]}. Days at skilled work (not fumbled) and nights with a force count toward a term (${xpTermYears()} year${xpTermYears() > 1 ? "s" : ""}): his career's main skill +${T.term_main} and second +${T.term_second}. A season is about ${TD.xp.season_days} days.</p>
     <ul class="xp">${rows}</ul>
     ${trainHtml()}
     <div class="row"><button id="btn-season" title="Roll each ticked skill, count the days served, and clear the ticks">End of season</button></div>
@@ -1771,7 +1771,7 @@ function endSeason(){
       if (hard) bits.push(`a hard season (${x.hard || 0} hard nights${c.hardSeason ? ", and the GM's word" : ""}): Wear ${c.wear}`);
       for (const a of aged){ const ch = Object.entries(a.changes).map(([k, v]) => `${statName(k)} ${v > 0 ? "+" : "−"}${Math.abs(v)}`); if (ch.length) bits.push(`by ${a.age}: ${ch.join(", ")}`) }
       for (let k = 0; k < r.terms; k++){
-        const w = agWornOut(c, T.age.per_term, realDice.randint(1, 100));
+        const w = agWornOut(c, xpTermYears(), realDice.randint(1, 100));   // a term in play: its years (experience.yaml play_term_years)
         if (w.checked) bits.push(wornText(w));
         if (w.worn){ c.wornOut = w.why; break }
       }
@@ -2096,8 +2096,9 @@ function rollTeam(){
   S.team = uniqueNames(makeTeam(S.region, slotsNow(), S.mode, realDice), []);
   S.lootlog = []; S.chklog = []; S.xplog = []; S.vacancies = {}; S.prisoners = []; S.prlog = [];   // a new team starts with clean logs
   S.team.forEach(c => { c.pid = newPid() });
-  const cap = followerCap(), before = S.fcounts.reduce((t, [, n]) => t + n, 0);
-  if (cap) S.fcounts = fwCapCounts(S.fcounts, cap.cap);   // a new muster: no more than the leader keeps (more can be added by hand)
+  const want = S.fmuster || S.fcounts, cap = followerCap(), before = want.reduce((t, [, n]) => t + n, 0);
+  S.fmuster = want.map(([c, n]) => [c, n]);           // the muster asked for: the next roll cuts from it, not from this one's cut
+  S.fcounts = cap ? fwCapCounts(want, cap.cap) : want.map(([c, n]) => [c, n]);   // a new muster: no more than the leader keeps (more can be added by hand)
   rollCrew(); S.worklog = []; S.losses = [];
   S.swap = null;
   S.msg = cap && before > cap.cap ? `${cap.lead.name}'s Presence ${cap.lead.stats.pres} keeps ${cap.cap} followers, so the muster is ${cap.cap}, not ${before}. More can be added by hand.` : "";
@@ -2135,7 +2136,7 @@ function quickStart(dest = "roller.html#quickstart"){   // the Rules' example re
   setEra("medieval"); S.era = T.id; startEra();
   Object.assign(S, { region: "england", template: "retinue", mode: "roll", side: "The retinue", crew: [] });
   S.slots = byId(T.templates, "retinue").slots.map(s => [...s]);
-  S.fcounts = [];
+  S.fcounts = []; S.fmuster = null;
   S.team = makeTeam(S.region, S.slots, S.mode, new SeededDice(3));
   S.team.forEach(c => { c.pid = newPid() });
   S.lootlog = []; S.chklog = []; S.xplog = []; S.vacancies = {}; S.prisoners = []; S.prlog = []; S.worklog = []; S.losses = [];
@@ -2193,7 +2194,7 @@ function sendToField(){
 }
 function startEra(){                             // a new era (or an old save from another): its first region and team, nothing rolled
   S.region = T.regions[0].id; S.template = T.templates[0].id;
-  S.slots = T.templates[0].slots.map(s => [...s]); S.fcounts = tplFollowers(S.template);
+  S.slots = T.templates[0].slots.map(s => [...s]); S.fcounts = tplFollowers(S.template); S.fmuster = null;
   S.team = []; S.crew = []; S.swap = null; S.worklog = []; S.losses = [];
   S.patrons = []; S.ptlog = [];                    // another era's lords and colonels stay behind
 }
@@ -2223,9 +2224,10 @@ function init(){
     const i = +(b.dataset.fless ?? b.dataset.fmore), row = S.fcounts[i];
     row[1] = Math.max(0, Math.min(60, row[1] + (b.dataset.fmore === undefined ? -1 : 1)));
     if (!row[1]) S.fcounts.splice(i, 1);
+    S.fmuster = null;                                 // the GM's own counts: the next roll cuts from these
     render();
   });
-  $("#btn-fadd").onclick = () => { const v = $("#sel-fadd").value; if (v){ S.fcounts.push([v, 1]); render() } };
+  $("#btn-fadd").onclick = () => { const v = $("#sel-fadd").value; if (v){ S.fcounts.push([v, 1]); S.fmuster = null; render() } };
   $("#crew").addEventListener("click", e => { if (e.target.closest("#btn-reroll-crew")){ rollCrew(); render() } });
   $("#losses").addEventListener("change", e => {
     const el = e.target, k = +(el.dataset.practice ?? el.dataset.ropt ?? el.dataset.rcareer ?? el.dataset.rterms ?? el.dataset.rpayer ?? el.dataset.rhaggle), c = S.losses[k]; if (!c) return;
@@ -2416,7 +2418,7 @@ function init(){
   $("#sel-template").onchange = e => {
     S.template = e.target.value;
     if (S.template !== "own") S.slots = byId(T.templates, S.template).slots.map(s => [...s]);
-    S.fcounts = tplFollowers(S.template);
+    S.fcounts = tplFollowers(S.template); S.fmuster = null;
     render();
   };
   document.querySelectorAll('input[name="mode"]').forEach(r => { r.onchange = e => { S.mode = e.target.value; render() } });

@@ -187,7 +187,8 @@ function finishChar(c){                           // stats, skills, attack, defe
 }
 /* Experience in play (as gravewounds/experience.py, data TD.xp): End of season rolls each ticked
    skill (d100 over it rises by the gain die) and counts the days served toward a term. */
-const xpTermDays = () => TD.era.age.per_term * ((TD.xp || {}).days_a_year || 365);
+const xpTermYears = () => Math.max(TD.era.age.per_term, (TD.xp || {}).play_term_years || 0);   // as experience.py term_years
+const xpTermDays = () => xpTermYears() * ((TD.xp || {}).days_a_year || 365);
 function xpSeason(c, ticks, served, rng){         // {rolls: [{skill, roll, was, gain}], terms, served}: c changed in place
   const T = TD.era, [lo, hi] = (TD.xp || {}).gain || [1, 3], want = new Set(ticks), rolls = [];
   for (const s of T.skills.map(x => x.id).filter(id => want.has(id))){
@@ -206,7 +207,7 @@ function xpSeason(c, ticks, served, rng){         // {rolls: [{skill, roll, was,
     const car = byId(T.careers, c.career);
     c.gains[car.main] = (c.gains[car.main] || 0) + T.term_main;
     c.gains[car.second] = (c.gains[car.second] || 0) + T.term_second;
-    c.age = (c.age || 0) + T.age.per_term;
+    c.age = (c.age || 0) + xpTermYears();
     c.xp_terms = (c.xp_terms || 0) + 1;
     done++;
     const rolled = Math.min(c.rolled_days || 0, per);   // days of it served as seasons rolled with his battalion (service.js)

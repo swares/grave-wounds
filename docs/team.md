@@ -676,9 +676,12 @@ estimates.
 The team builder's **Experience** panel lists each member's ticks and days toward a term.
 **End of season** (the GM calls it; about 91 days) rolls d100 for each ticked skill in the
 era's skill order: over the skill, it rises 1d3 (to the cap). The days served are then added to
-his count, and each term of days (the era's `age.per_term` years of 365 days: 1,460 in the six
-eras before 1914, 365 from 1914 on) gives `term_main` to his career's main skill, `term_second` to its second,
-and the years of age; the sheet shows "(+1 served)". His `terms`, and so his starting purse,
+his count, and each term of days (4 years of 365 days, 1,460, in every era: `play_term_years` in
+`data/experience.yaml`) gives `term_main` to his career's main skill, `term_second` to its second,
+and the 4 years of age. From 1914 a term at making a character is 1 year, but in play it is 4 like
+the older eras', so a man's skills rise at the same rate a year in every era (ours, as the user
+chose, 20 November 2026; before, a 1914 rifleman gained +10 a year and reached the cap of 90 by
+1917); the sheet shows "(+1 served)". His `terms`, and so his starting purse,
 stay as rolled. The new sheet goes into the store with a stamp, and the roller swaps it in when
 it next looks (focus, or the store changing); the travel map's copy of his skills is updated at
 once. The Python rules and the page give the same result from the same dice.
