@@ -322,6 +322,9 @@ def run(p):
     check(pg.locator("#sv-fight option").count() == 8, "the GM can pick any of the war's 8 small fights")
     pg.select_option("#sv-fight", "foragers")
     check("French foragers caught at dawn" in pg.inner_text(SERVICE), "picking another rolls its sizes")
+    fault = pg.evaluate("""() => { const was = S.svcSmall; S.svcSmall = { ...was, id: 'no-such-fight' }; S.msg = '';
+      let r; try { svcPlayFight(); r = S.msg } catch { /* the fault itself, as wanted */ r = 'thrown' } S.svcSmall = was; return r }""")
+    check(fault == "thrown", f"a fault in building the fight shows as itself, not as the browser refusing to keep it ({fault!r})")
     pg.select_option("#sv-fight", "picket")
     pg.click("#btn-svplay")
     pg.wait_for_function(AT_ROLLER, timeout=15000)

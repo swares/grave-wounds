@@ -3683,7 +3683,8 @@ function svcFightEnd(e, team, foes){                 // the fight's countable en
 }
 function svcPlayFight(){
   const V = svcState(), W = SVC.war(V.war), s = W.seasons[Math.max(0, V.i - 1)];
-  try{ localStorage.setItem("gravewounds-handoff", JSON.stringify(svcFightHandoff(W, s))) }catch(e){ S.msg = "The browser would not keep the fight, so it cannot go to the roller."; return render() }
+  const h = JSON.stringify(svcFightHandoff(W, s));   // built outside the catch: a fault in the fight shows as itself, not as the browser's storage
+  try{ localStorage.setItem("gravewounds-handoff", h) }catch(e){ S.msg = "The browser would not keep the fight, so it cannot go to the roller."; return render() }
   S.svcSmall = false; save();
   location.href = "roller.html";
 }
