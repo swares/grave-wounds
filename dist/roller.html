@@ -5933,6 +5933,7 @@ function forceChars(o, positions, named = null){  // up to 8 of a travel-map for
   for (let i = out.length; i < forceCount(o, named); i++){
     const c = newChar(`${o.name} ${i + 1 - (named?.by.get(o.id) || []).length}`, o.kit || "none", o.weapon || null, {}, o.side);   // a small fight's force says its kit and weapon
     c.fatigue = o.fatigue || 0;
+    c.sidearm = o.sidearm || null;                  // a small fight's bowmen: their sword in close combat
     out.push(c);
   }
   out.forEach((c, i) => { c.forceId = o.id; if (positions && positions[i]) c.pos = positions[i] });

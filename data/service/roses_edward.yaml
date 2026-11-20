@@ -353,10 +353,12 @@ small_fights:
     ground: open
     weather: snow
     side: {name: "The guard on the lines", men: [20, 100]}
-    foes: [{name: "The garrison", men: [20, 120], kit: brigandine_sallet, weapon: poleaxe}]
+    # one man-at-arms in nine, the rest archers (Spencer, TRHS 2025: men-at-arms to archers 1:9 in 1450, 1:8 in 1475; men-at-arms in plate and mail, footmen mostly in jacks)
+    foes: [{name: "The garrison: men-at-arms", men: [2, 13], kit: full_plate, weapon: poleaxe},
+           {name: "The garrison: archers", men: [18, 107], kit: jack_sallet, weapon: longbow, sidearm: sword}]
     surprise: {text: "The gate opens on the guard by the fires", chance: 30}
     aims: {team: "Drive them back in.", foes: "Bring in what they can and get back inside."}
     ends: "The garrison goes back in after 6 rounds or once a third of those here are down; the guard is beaten if it is driven off."
     end: {rounds: 6, wins: team, down: {foes: 0.33}, hold: team}
-    sources: [*north, "https://www.historyofwar.org/articles/siege_dunstanburgh_1462.html"]
+    sources: [*north, "https://www.historyofwar.org/articles/siege_dunstanburgh_1462.html", "https://www.cambridge.org/core/journals/transactions-of-the-royal-historical-society/article/change-and-continuity-in-english-armies-14531513/A38EDD1F97BFBDFF2D3CBEE5E5450CB6"]
     note: "No sally is described in these accounts: the fight is ours, sized from Dunstanburgh's garrison of 120 (21 December 1462)."
