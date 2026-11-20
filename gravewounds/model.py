@@ -907,6 +907,8 @@ def validate(d: Data) -> None:
         if w.get("mechanisms", {}).get("ballistic") and not w.get("threat"):
             errors.append(f"weapons.yaml: {wid} has a ballistic mechanism but no threat level")
     for wid, w in d.weapons.items():
+        if "defeat_only" in w and (not w.get("armor_defeat") or any(m not in d.armor["materials"] for m in w["defeat_only"])):
+            errors.append(f"weapons.yaml: {wid} defeat_only must list armour materials, with an armor_defeat")
         for mech in (w.get("armor_defeat") or {}):
             if mech not in MECHANISMS:
                 errors.append(f"weapons.yaml: {wid} armor_defeat unknown mechanism {mech}")
