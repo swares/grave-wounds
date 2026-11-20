@@ -124,7 +124,7 @@ def reloads(pg):
     pg.wait_for_selector(ADDTEAM)
     pg.click(ADDTEAM)
     r = pg.evaluate("""() => {
-      const rounds = ['musket_smoothbore', 'rifle_flintlock', 'matchlock_musket', 'crossbow', 'longbow', 'breechloader'].map(reloadRounds);
+      const rounds = ['musket_smoothbore', 'rifle_flintlock', 'matchlock_musket', 'crossbow', 'longbow', 'breechloader', 'rpg', 'bazooka', 'recoilless', 'atgm'].map(reloadRounds);
       const a = S.chars.find(c => c.follower && c.weapon === 'musket_smoothbore'), d = S.chars.find(c => c !== a);
       d.side = 'The French'; a.pos = [5, 5]; d.pos = [6, 5]; S.round = 3; S.turn = a.id;
       S.attacker = S.chars.indexOf(a); S.active = S.chars.indexOf(d); S.weapon = 'musket_smoothbore';
@@ -133,7 +133,7 @@ def reloads(pg):
       d.pos = [12, 5]; const far = strikeWeapon(a, d);
       S.round = at; const ready = [reloading(a), rangeCheck().blocked || ''];
       return { rounds, at, near, far, blocked, ready } }""")
-    check(r["rounds"] == [2, 4, 6, 2, 0, 0], f"rounds to reload: musket 2 (three a minute), flintlock rifle 4, matchlock 6, crossbow 2; longbow and breechloader none ({r['rounds']})")
+    check(r["rounds"] == [2, 4, 6, 2, 0, 0, 1, 1, 1, 4], f"rounds to reload: musket 2 (three a minute), flintlock rifle 4, matchlock 6, crossbow 2; longbow and breechloader none; RPG, bazooka and recoilless rifle 1; ATGM 4 ({r['rounds']})")
     check(r["at"] == 6 and r["near"] == "bayonet" and r["far"] == "musket_smoothbore" and "is reloading his" in r["blocked"],
           f"a musket fired in round 3 shoots again in round 6; meanwhile he cannot shoot, and the man next to him gets the bayonet ({r})")
     check(r["ready"] == [False, ""], f"loaded again in round 6 ({r['ready']})")
