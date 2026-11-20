@@ -6,7 +6,8 @@
 
    FIGHTER.chooseTurn(view) -> {move, cover, target, gap, blow, aid, why}
      view.me        {id, ranged, frac (Blood left, 0-1), named, blows (a cut-and-thrust weapon's
-                    blows, else []), attack (his attack % after wounds), able (can attack at all)}
+                    blows, else []), attack (his attack % after wounds), able (can attack at all),
+                    reloading (rounds before his slow weapon shoots again, 0 when loaded)}
      view.here      his hex, "col,row"
      view.reach     [{hex, cost, run}]: the hexes he can reach this turn (run: no attack after)
      view.enemies   [{id, hex, frac, armoured (partly covered: a gap to aim for), plated (armour
@@ -92,6 +93,7 @@ const FIGHTER = (() => {                          // one name in the page: its h
   function firstAid(view, st){                      // a turn of first aid, or null
     if ((view.me.bleed || 0) >= SELF_BLEED && safe(view, view.here)) return aiding(null, view.me.id, "binds his own wound");
     if (st.aid === "none" || !safe(view, view.here)) return null;   // a man in contact fights on
+    if (view.me.reloading) return null;            // reloading: his hands are full (ours)
     if (view.me.ranged && view.me.able && view.targetsFrom(view.here).length) return null;   // a shooter with a target keeps shooting; he tends others when he has no one to shoot at (ours)
     const hurt = (view.friends || []).filter(f => f.bleed > 0 && (st.aid === "any" || f.down) && safe(view, f.hex)).sort((a, b) => (b.bleed - a.bleed) || (a.id - b.id));
     for (const f of hurt){
@@ -110,6 +112,10 @@ const FIGHTER = (() => {                          // one name in the page: its h
     if (aid) return aid;
     const hurt = view.me.frac <= (view.losing ? st.fallBackLosing : st.fallBack);
     if (hurt && st.fallBack > 0) return fallBack(view, st);
+    if (view.me.reloading){                        // reloading: he stays where he is; a man next to him he strikes with his sidearm or the butt (ours)
+      if (view.me.able && view.targetsFrom(view.here).length) return strikeFrom(view, st, null, "strikes the man next to him while he reloads");
+      return { move: null, cover: false, target: null, gap: false, blow: "", why: "reloads" };
+    }
     if (view.me.able && view.targetsFrom(view.here).length) return strikeFrom(view, st, null, "strikes from where he stands");
     if (view.me.able){                             // a hex he can advance to and still strike from: the nearest, a shooter's with the best shot
       const from = view.reach.filter(r => !r.run).map(r => ({ ...r, t: pickTarget(view.targetsFrom(r.hex), view.enemies) })).filter(r => r.t);

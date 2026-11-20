@@ -359,6 +359,7 @@ combat:
   # (if that enemy is up and able to attack).
   move:
     hex_m: 2
+    round_s: 6                 # seconds a round (a slow missile weapon's reload: weapons.yaml shots_a_minute)
     advance: 4
     run: 12
     halved_by: [leg, move]

@@ -86,6 +86,7 @@ def followers(pg):
     drafts_and_names(pg)
     culps_hill(pg)
     sidearms(pg)
+    reloads(pg)
 
 
 def sidearms(pg):
@@ -105,6 +106,36 @@ def sidearms(pg):
       a.pos = [5, 5]; d.pos = [6, 5]; const near = strikeWeapon(a, d); d.pos = [12, 5]; const far = strikeWeapon(a, d);
       return [a.sidearm, near, far] }""")
     check(w == ["sword", "sword", "longbow"], f"an archer follower comes with his sword: next to his man he strikes with it, at a distance with his longbow ({w})")
+
+
+def reloads(pg):
+    """The rate of shot: a slow missile weapon reloads for round(60 / (6 x shots)) - 1 rounds after
+    a shot; while he reloads he cannot shoot, and strikes a man next to him with his weapon's close
+    one (the bayonet)."""
+    pg.goto(BASE + "team.html")
+    pg.evaluate(CLEAR)
+    pg.reload()
+    pg.select_option("#sel-era", "horse_musket")
+    pg.select_option("#sel-region", "british_pen")
+    pg.select_option("#sel-template", "company")
+    pg.click("#btn-roll")
+    pg.click(SEND)
+    pg.wait_for_selector(ADDTEAM)
+    pg.click(ADDTEAM)
+    r = pg.evaluate("""() => {
+      const rounds = ['musket_smoothbore', 'rifle_flintlock', 'matchlock_musket', 'crossbow', 'longbow', 'breechloader'].map(reloadRounds);
+      const a = S.chars.find(c => c.follower && c.weapon === 'musket_smoothbore'), d = S.chars.find(c => c !== a);
+      d.side = 'The French'; a.pos = [5, 5]; d.pos = [6, 5]; S.round = 3; S.turn = a.id;
+      S.attacker = S.chars.indexOf(a); S.active = S.chars.indexOf(d); S.weapon = 'musket_smoothbore';
+      startReload(a);
+      const at = a.loadedAt, near = strikeWeapon(a, d), blocked = rangeCheck().blocked || '';
+      d.pos = [12, 5]; const far = strikeWeapon(a, d);
+      S.round = at; const ready = [reloading(a), rangeCheck().blocked || ''];
+      return { rounds, at, near, far, blocked, ready } }""")
+    check(r["rounds"] == [2, 4, 6, 2, 0, 0], f"rounds to reload: musket 2 (three a minute), flintlock rifle 4, matchlock 6, crossbow 2; longbow and breechloader none ({r['rounds']})")
+    check(r["at"] == 6 and r["near"] == "bayonet" and r["far"] == "musket_smoothbore" and "is reloading his" in r["blocked"],
+          f"a musket fired in round 3 shoots again in round 6; meanwhile he cannot shoot, and the man next to him gets the bayonet ({r})")
+    check(r["ready"] == [False, ""], f"loaded again in round 6 ({r['ready']})")
 
 
 def culps_hill(pg):

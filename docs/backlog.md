@@ -1106,3 +1106,10 @@ not this repository.
   next season's fight, three months on. Done: as the user chose, the followers the team builder
   still has come to the next season's fight healed, rested and on their feet. A named man's
   wounds still heal only through the camp, as before.
+
+- **Rate of shot, first cut** (docs/combat.md, *Reach and range*): muskets, rifles, matchlocks,
+  pistols and crossbows reload on the battle map by their shots a minute; while reloading a man
+  strikes the man next to him with his sidearm or his weapon's close weapon. Still left: the
+  crossbow's three a minute rests on popular sources (h2g2 after Payne-Gallwey, History Hit);
+  the wheellock and flintlock pistols' rates are ours; the launchers (RPG, bazooka, recoilless
+  rifle, ATGM) and a revolver's cylinder have none yet; and the field map's units fire as before.
