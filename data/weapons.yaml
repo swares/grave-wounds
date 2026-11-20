@@ -677,6 +677,8 @@ weapons:
     two_handed: true
     icon: launcher
     range: [50, 100, 150]
+    shots_a_minute: 5
+    rate_note: "Four to six rounds a minute (Military.com, How an RPG works, 2019); five is ours."
     era: "1960s-"
     threat: fragment
     mechanisms: {ballistic: 70, crush: 30}
@@ -690,6 +692,8 @@ weapons:
     two_handed: true
     icon: launcher
     range: [30, 60, 100]
+    shots_a_minute: 6
+    rate_note: "Six rounds a minute can be achieved with the M9 (weaponsystems.net); single report: ten a minute for the M9A1 (Korean War Online)."
     era: "1942-1953"
     threat: fragment
     mechanisms: {ballistic: 70, crush: 30}
@@ -728,6 +732,8 @@ weapons:
     two_handed: true
     icon: launcher
     range: [100, 200, 400]
+    shots_a_minute: 5
+    rate_note: "The M40: one round a minute sustained, five for short periods (weaponsystems.net, after the US manuals); a small fight is a short period, so five (ours)."
     era: "1945-"
     threat: fragment
     mechanisms: {ballistic: 75, crush: 25}
@@ -741,6 +747,8 @@ weapons:
     two_handed: true
     icon: launcher
     range: [250, 1000, 2000]
+    shots_a_minute: 2
+    rate_note: "The TOW can launch three missiles in 90 seconds (FAS); its time of flight to 3,750 m, about 20 seconds, is not modelled."
     era: "1970s-"
     threat: fragment
     mechanisms: {ballistic: 70, crush: 30}

@@ -110,8 +110,11 @@ attack. Stepping back 1 hex is a careful withdrawal and draws no free attack.
   `weapons.yaml` (`shots_a_minute`, with its source in `rate_note`). After a shot he reloads
   for round(60 ÷ (6 × shots)) − 1 rounds and cannot shoot until then: a musket or rifle-musket
   (three a minute) or a crossbow (three, ours) shoots every third round, a flintlock rifle
-  (two) every fifth, a matchlock (about one and a half) every seventh. Bows, breechloaders and
-  later arms shoot every round. While he reloads, an enemy next to him is struck with his
+  (two) every fifth, a matchlock (about one and a half) every seventh. The launchers reload
+  too: an RPG (five a minute), a bazooka (six) or a recoilless rifle (five, the M40's rate for
+  short periods) shoots every second round, an anti-tank guided missile (two: the TOW's three
+  in 90 seconds) every fifth. Bows, breechloaders and later rifles and machine guns shoot
+  every round. While he reloads, an enemy next to him is struck with his
   sidearm, else his weapon's `close` weapon (a bayonet, the musket's butt, a crossbowman's
   dagger), the first the wound table has; a loaded man may still fire point-blank. The GM's
   script keeps a man who is reloading where he is. The map shows him as reloading, with the
