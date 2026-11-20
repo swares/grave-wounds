@@ -1099,11 +1099,10 @@ not this repository.
   men started wounded. With a fresh team each fight the English win 17 of 27 (18 of 27 before the
   table fix). The exchange is still against them: 0.44 French down to each English man down, the
   worst of the eight wars. The 3 to 2 cap and the French split were chosen against the broken
-  test and may be looked at again.
+  test; kept, as the user chose, with this noted.
 
-- **A season's small fight brings the team's men as the roller last left them** (play test 8):
-  a follower's wounds, blood and state (out of the fight, defend only) stay with him into the
-  next season's fight, three months on, since a follower has no health record to heal on; a
-  named man's heal only if the GM sent them to camp. Light-wounded followers who stay with the
-  team come to the next fight still wounded, some still down. Proposed: the GM's call, to be
-  decided.
+- **A season's small fight brought the team's men as the roller last left them** (play test 8):
+  a follower's wounds, blood and state (out of the fight, defend only) stayed with him into the
+  next season's fight, three months on. Done: as the user chose, the followers the team builder
+  still has come to the next season's fight healed, rested and on their feet. A named man's
+  wounds still heal only through the camp, as before.
