@@ -714,7 +714,7 @@ function strainAtEnd(){                           // once a side has won: the fi
   }
 }
 function newFightMarks(){                         // a new fight: no downs, coups, winner or marks carried over
-  for (const c of S.chars){ delete c.downs; delete c.downedLeader; delete c.coups; delete c.fieldWon }
+  for (const c of S.chars){ delete c.downs; delete c.downedLeader; delete c.coups; delete c.fieldWon; delete c.loadedAt }
   S.wonBy = null; S.fightEnd = null; S.deedsDone = []; S.afterLog = []; S.afterOpen = false; S.packsDropped = {}; S.packsLost = []; S.strainDone = false; S.travelFrom = null; S.quick = false;
   for (const c of S.chars) delete c.loadOrder;
 }
@@ -1524,6 +1524,7 @@ function rollHit(stray = false, log = true){      // stray: a missed shot gone i
   const r = STRIKE.resolveStrike(ctx, cmd, DICE);
   strikeEffects(r.effects, a, dd);
   S.hit = { ...r.hit, def: dd ? dd.id : null, att: a ? a.id : null };     // whom it struck, for the screens
+  if (log && !stray && a && S.turn && isShot(S.weapon) && !r.hit.blocked) startReload(a);   // a slow weapon: he reloads
   if (log) logStrike(a, dd, cmd, r);
   showStrike(r.hit);
   const h = r.hit;
@@ -1778,14 +1779,15 @@ function brainView(c){                             // what the script sees of th
   const foes = S.chars.filter(o => o.pos && sideOf(o) !== sideOf(c) && !isOut(o));
   const targetsFrom = hex => {                     // whom he could strike from that hex (he is put there for a moment to look)
     const pos = c.pos; c.pos = parseHex(hex);
-    const out = foes.filter(o => canTarget(c, o)).map(o => { const dist = hexDistance(c.pos, o.pos); return { id: o.id, dist, penalty: weaponReach(S.weapon, dist)?.penalty || 0 } });
+    let out = foes.filter(o => canTarget(c, o)).map(o => { const dist = hexDistance(c.pos, o.pos); return { id: o.id, dist, penalty: weaponReach(S.weapon, dist)?.penalty || 0 } });
+    if (reloading(c) && isShot(c.weapon)) out = c.sidearm || closeWeapon(c) ? out.filter(t => t.dist <= 1) : [];   // reloading: only a man next to him, with his sidearm or the butt
     c.pos = pos;
     return out;
   };
   const team = brainSide(c), down = team.filter(isDown).length, bleedOf = o => charStats(o).bleed / poolOf(o);
   return {
     friends: team.filter(o => o !== c && o.pos && !o.taken).map(o => ({ id: o.id, hex: hkey(o.pos), down: isDown(o), bleed: bleedOf(o) })),
-    me: { id: c.id, ranged: isShot(S.weapon), frac: c.blood / poolOf(c), named: !!c.sheet, bleed: bleedOf(c), attack: (+$("#in-atk").value || qualityOf(c).attack) - pen.attack,
+    me: { id: c.id, ranged: isShot(S.weapon), reloading: reloading(c) ? c.loadedAt - S.round : 0, frac: c.blood / poolOf(c), named: !!c.sheet, bleed: bleedOf(c), attack: (+$("#in-atk").value || qualityOf(c).attack) - pen.attack,
       blows: w.choose ? Object.keys(w.mechanisms).filter(m => w.mechanisms[m]) : [],
       able: !cannotAttack(pen) && !(pen.flags.includes("one_arm") && w.two_handed) && !(pen.flags.includes("cannot_wield") && w.melee !== "unarmed") },
     here, reach, targetsFrom, stance: gmSide(sideOf(c)).stance, losing: down * 4 >= team.length,
@@ -2612,8 +2614,28 @@ function penLine(p){
   return `<div class="pen" title="${p.notes.join("; ") || "no penalties"}"><span>Attack <b>−${p.attack}%</b></span><span>Defence <b>−${p.defence}%</b></span>${flags}</div>`;
 }
 function strikeWeapon(c, dd){                       // the weapon he strikes with: his own, or a shooter's sidearm when the man he strikes is next to him
-  if (c.sidearm && c.weapon && DATA.weapons[c.weapon] && isShot(c.weapon) && c.pos && dd?.pos && hexDistance(c.pos, dd.pos) <= 1) return c.sidearm;
+  const next = c.weapon && DATA.weapons[c.weapon] && isShot(c.weapon) && c.pos && dd?.pos && hexDistance(c.pos, dd.pos) <= 1;
+  if (next && c.sidearm) return c.sidearm;
+  if (next && reloading(c)) return closeWeapon(c) || c.weapon;   // reloading, his weapon's close one (a bayonet, the butt)
   return c.weapon;
+}
+/* Rate of shot (weapons.yaml shots_a_minute): a slow missile weapon shoots, then reloads for
+   round(60 / (round_s x shots)) - 1 rounds; he shoots again in round loadedAt. While he reloads,
+   an enemy next to him is struck with his sidearm or his weapon's `close` one (the first the table
+   has), and the script keeps him where he is. */
+function reloadRounds(wid){
+  const n = DATA.weapons[wid]?.shots_a_minute;
+  return n ? Math.max(0, Math.round(60 / (MOVE.round_s * n)) - 1) : 0;
+}
+const reloading = c => (c.loadedAt || 0) > S.round;
+const reloadNote = c => (reloading(c) ? ` · reloading (shoots again in round ${c.loadedAt})` : "");
+function closeWeapon(c){                           // while he reloads: the first of his weapon's close weapons this table has
+  const tw = DATA.tables[S.table]?.weapons || [];
+  return (DATA.weapons[c.weapon]?.close || []).find(w => tw.includes(w)) || null;
+}
+function startReload(a){                           // he has shot: reloading till round loadedAt
+  const n = reloadRounds(S.weapon);
+  if (n) a.loadedAt = S.round + n + 1;
 }
 function applyAttackerWeapon(){
   const c = attackerChar(), w = c && strikeWeapon(c, defenderChar());
@@ -3033,6 +3055,7 @@ function rangeCheck(){
     if (a) return { blocked: `It is ${act.name}'s turn: only he attacks now.` };
   }
   if (!S.turn || !a || !dd || a === dd || !a.pos || !dd.pos) return { range: null };   // the map's rules apply once turns start
+  if (isShot(S.weapon) && reloading(a)) return { blocked: `${a.name} is reloading his ${shortName(S.weapon).toLowerCase()}: he can shoot again in round ${a.loadedAt}.` };
   if (f && f.att === a.id && f.def === dd.id) return { range: { dist: 1, band: "free attack", penalty: 0 } };
   if (S.tm && S.tm.id === a.id && S.tm.ran) return { blocked: `${a.name} ran this turn and cannot attack.` };
   if (S.tm && S.tm.id === a.id && S.tm.worked) return { blocked: `${a.name} spent this turn on the works and cannot attack.` };
@@ -3884,7 +3907,7 @@ function renderMap(){
       i === S.active && c !== acting ? "def" : "", target ? "target" : "", S.placing === c.id ? "placing" : "", c.cover ? "cover" : ""].join(" ");
     const dist = acting && c !== acting && acting.pos ? `, ${hexes(hexDistance(acting.pos, c.pos))} from ${acting.name}` : "";
     return `<g class="tok ${cls}" data-id="${c.id}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})" tabindex="0" role="button" aria-label="${attr(c.name)}, ${attr(sideOf(c))}${dist}${target ? ", in reach" : ""}">`
-      + `<title>${attr(c.name)} · ${attr(sideOf(c))}${dist}${isDown(c) ? " · down" : ""}${c.cover ? " · in cover" : ""}</title><circle class="ring" r="${HEX_R - 1}"/><circle class="body" r="${HEX_R * 0.7}"/><text dy="0.36em">${attr(initials(c.name))}</text></g>`;
+      + `<title>${attr(c.name)} · ${attr(sideOf(c))}${dist}${isDown(c) ? " · down" : ""}${c.cover ? " · in cover" : ""}${reloadNote(c)}</title><circle class="ring" r="${HEX_R - 1}"/><circle class="body" r="${HEX_R * 0.7}"/><text dy="0.36em">${attr(initials(c.name))}</text></g>`;
   }).join("");
   const W = HEX_W * (cols + 0.5), H = 1.5 * HEX_R * (rows - 1) + 2 * HEX_R;
   $("#map").innerHTML = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}" style="max-width:${Math.round(W * 1.6)}px">${hx}<g class="works">${worksSvg()}</g>${toks}</svg>`;
@@ -3950,7 +3973,7 @@ function renderMap(){
   const lab = worksLabour(S.works, !!S.hauled), whole = S.wholeLabour ? ` The whole camp, most of it off the map: about ${Math.round(S.wholeLabour)}.` : "";
   $("#work-labour").textContent = (lab ? `Works on this map: about ${Math.round(lab)} man-hours to build.` : "No works on this map.") + whole;
   $("#chk-haul").checked = !!S.hauled;
-  $("#map-scale").textContent = `1 hex = ${fmtM(MOVE.hex_m, 1)} · a round is 6 seconds · ${cols} × ${rows} hexes`;
+  $("#map-scale").textContent = `1 hex = ${fmtM(MOVE.hex_m, 1)} · a round is ${MOVE.round_s} seconds · ${cols} × ${rows} hexes`;
   $("#in-cols").value = cols; $("#in-rows").value = rows;
   $("#btn-freeplace").setAttribute("aria-pressed", !!S.freePlace);
   $("#btn-works").setAttribute("aria-pressed", !!S.workMode);

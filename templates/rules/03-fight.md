@@ -16,6 +16,9 @@ hexes about {{hex_yd}} yards ({{hex_m}} m) across.
 2. **Move or stay.** He may stay, **advance** up to {{advance}} hexes and still attack, or
    **run** up to {{run}} hexes and not attack. He may pass through friends but not stop on
    them. Leaving an enemy's side by more than one step gives that enemy a free attack.
+   A man with a slow missile weapon who has shot spends the next rounds reloading: a musket,
+   rifle-musket or crossbow shoots every third round, a flintlock rifle every fifth, a
+   matchlock every seventh. Meanwhile he fights a man next to him with his sidearm or bayonet.
 3. **Attack.** He may first declare an **aim**: at a zone, at a gap in the armour, or both
    ([Aiming](#aim)). Then roll d100 against his attack, less his wound penalties and any
    range penalty. Equal or under hits, and the **margin** is how far under. A roll at or

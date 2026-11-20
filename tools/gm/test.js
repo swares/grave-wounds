@@ -148,5 +148,17 @@ check("no one gives first aid within an enemy's reach", () => {
   assert.equal(F.chooseTurn(v).aid, undefined);
 });
 
+check("a man reloading stays where he is: he neither closes nor tends a comrade", () => {
+  const friends = [pal(3, "3,2", { bleed: 0.06, down: true })];
+  const v = { ...board({ here: "2,2", enemies: [foe(2, "12,2")], range: 0, me: { reloading: 2, ranged: true } }), friends };
+  v.targetsFrom = () => [];                          // reloading: no one to shoot
+  const t = F.chooseTurn(v);
+  assert.equal(t.move, null); assert.equal(t.target, null); assert.equal(t.aid, undefined); assert.equal(t.why, "reloads");
+});
+check("a man reloading strikes the enemy next to him (his sidearm or the butt)", () => {
+  const t = F.chooseTurn(board({ here: "5,5", enemies: [foe(2, "6,5")], me: { reloading: 1, ranged: true } }));
+  assert.equal(t.move, null); assert.equal(t.target, 2);
+});
+
 console.log(`${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

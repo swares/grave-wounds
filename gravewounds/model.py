@@ -477,6 +477,7 @@ def validate(d: Data) -> None:
             if not (isinstance(r, list) and len(r) == len(bands) and all(isinstance(x, int) and x >= 1 for x in r)
                     and r == sorted(set(r))):
                 errors.append(f"weapons.yaml: {wid} range must be {len(bands)} increasing hex counts, one per band in wounds.yaml combat.range")
+    errors += _rate_errors(d)
     for wid in CB.get("line_of_fire", {}).get("arcing", []):
         if "range" not in d.weapons.get(wid, {}):
             errors.append(f"wounds.yaml: combat.line_of_fire.arcing names {wid}, which is not a weapon with a range")
@@ -2183,6 +2184,27 @@ def _service_errors(d: Data, W: dict) -> list[str]:
             errors.append(f"{aw}: needs sources")
         if not any(aid in s.get("actions", []) for s in W.get("seasons", [])):
             errors.append(f"{aw}: in no season")
+    return errors
+
+
+def _rate_errors(d) -> list[str]:
+    """A slow missile weapon's rate of shot (shots_a_minute, rate_note) and what it strikes with
+    while he reloads (close: close-combat weapons); combat.move.round_s, the seconds a round."""
+    errors = []
+    rs = d.wounds["combat"]["move"].get("round_s")
+    if not (isinstance(rs, (int, float)) and rs > 0):
+        errors.append("wounds.yaml: combat.move.round_s must be the seconds a round, above 0")
+    for wid, w in d.weapons.items():
+        n = w.get("shots_a_minute")
+        if n is None:
+            if "close" in w or "rate_note" in w:
+                errors.append(f"weapons.yaml: {wid} close and rate_note go with shots_a_minute")
+            continue
+        if "range" not in w or not (isinstance(n, (int, float)) and n > 0) or not w.get("rate_note"):
+            errors.append(f"weapons.yaml: {wid} shots_a_minute must be above 0, on a weapon with a range, with a rate_note")
+        close = w.get("close", [])
+        if not isinstance(close, list) or any(c not in d.weapons or "reach" not in d.weapons[c] for c in close):
+            errors.append(f"weapons.yaml: {wid} close must list close-combat weapons (with a reach)")
     return errors
 
 

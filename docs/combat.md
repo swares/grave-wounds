@@ -106,6 +106,16 @@ attack. Stepping back 1 hex is a careful withdrawal and draws no free attack.
   the first man in the way at 50%: the Strike panel and the map's bar offer **Roll the hit on**
   him, which rolls his hit with no attack roll and the severity table. Bows and crossbows
   loose high over the men in the way: they take the penalty but never strike them.
+- **Reloading.** A missile weapon slow to load has its aimed shots a minute in
+  `weapons.yaml` (`shots_a_minute`, with its source in `rate_note`). After a shot he reloads
+  for round(60 ÷ (6 × shots)) − 1 rounds and cannot shoot until then: a musket or rifle-musket
+  (three a minute) or a crossbow (three, ours) shoots every third round, a flintlock rifle
+  (two) every fifth, a matchlock (about one and a half) every seventh. Bows, breechloaders and
+  later arms shoot every round. While he reloads, an enemy next to him is struck with his
+  sidearm, else his weapon's `close` weapon (a bayonet, the musket's butt, a crossbowman's
+  dagger), the first the wound table has; a loaded man may still fire point-blank. The GM's
+  script keeps a man who is reloading where he is. The map shows him as reloading, with the
+  round he shoots again.
 - Artillery, mines and stakes are not aimed on the map; the GM decides whom they hit.
 - The printed tables list every weapon. The ranges are design estimates from each
   weapon's effective range in its period.

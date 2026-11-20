@@ -23,6 +23,13 @@
 # ignition     - firearms: match | wheel | flint | percussion | cartridge (weather.yaml:
 #                how often it misfires in the wet)
 # string       - true for bows and crossbows: wet strings lose power (weather.yaml)
+# shots_a_minute - a missile weapon slow to load: aimed shots a minute in a fight. On the battle
+#                map (a round is combat.move.round_s, 6 seconds) he shoots, then reloads for
+#                round(60 / (6 x shots)) - 1 rounds and cannot shoot again until then. Left out
+#                (bows, breechloaders and later), he may shoot every round. rate_note: its source.
+# close        - while he reloads: what he strikes an enemy next to him with, when he has no
+#                sidearm of his own (the first of the list the wound table has; none, he only
+#                defends). A loaded man may still fire point-blank.
 # off_map      - true for weapons no fighter aims on the map (artillery, mines, stakes,
 #                stray fragments): the GM decides who they hit.
 # melee_table  - for a close-combat weapon: the table it rolls on whenever the current table
@@ -225,6 +232,9 @@ weapons:
     two_handed: true
     icon: crossbow
     range: [15, 50, 100]
+    shots_a_minute: 3
+    rate_note: "About three a minute spanned with a goat's-foot lever, two or three with a cranequin, one with a windlass (h2g2, after Payne-Gallwey); three or four (History Hit). Popular sources only: three is ours."
+    close: [dagger]
     string: true
     era: "medieval"
     mechanisms: {pierce: 100}
@@ -384,6 +394,9 @@ weapons:
     two_handed: true
     icon: long_gun
     range: [20, 40, 75]
+    shots_a_minute: 1.5
+    rate_note: "The matchlock arquebus took 30-60 seconds to reload properly (Barwick, A Breefe Discourse, 1594); 45 seconds is ours."
+    close: [musket_butt, dagger]
     ignition: match
     era: "1500s-1690s"
     threat: rifle
@@ -398,6 +411,9 @@ weapons:
     two_handed: true
     icon: long_gun
     range: [12, 25, 50]
+    shots_a_minute: 1
+    rate_note: "Reloading in the sixteenth century took 20 seconds to a minute (Andrade, The Gunpowder Age, p. 144); the early handgun at the slow end is ours."
+    close: [musket_butt, dagger]
     ignition: match
     era: "1450s-1520s"
     threat: rifle
@@ -417,6 +433,9 @@ weapons:
     short: "Pistol/carbine"
     icon: pistol
     range: [3, 8, 15]
+    shots_a_minute: 1
+    rate_note: "Ours: no figure found; loaded as a matchlock, about a minute."
+    close: [musket_butt]
     ignition: wheel
     era: "1530s-1690s"
     threat: pistol
@@ -432,6 +451,9 @@ weapons:
     two_handed: true
     icon: long_gun
     range: [25, 50, 100]
+    shots_a_minute: 3
+    rate_note: "Three rounds a minute, dependent on the soldier (American Battlefield Trust, Brown Bess and Charleville)."
+    close: [bayonet, musket_butt]
     ignition: flint
     era: "1700s-1850s"
     threat: rifle
@@ -446,6 +468,9 @@ weapons:
     two_handed: true
     icon: long_gun
     range: [50, 100, 150]
+    shots_a_minute: 2
+    rate_note: "Two rounds a minute, dependent on the soldier (American Battlefield Trust, the American long rifle); the Baker's the same is ours."
+    close: [bayonet, musket_butt]
     ignition: flint
     era: "1700s-1840s"
     threat: rifle
@@ -459,6 +484,9 @@ weapons:
     short: "Pistol"
     icon: pistol
     range: [3, 8, 15]
+    shots_a_minute: 2
+    rate_note: "Ours: loaded as a flintlock rifle, about two a minute."
+    close: [musket_butt]
     ignition: flint
     era: "1700s-1840s"
     threat: pistol
@@ -486,6 +514,9 @@ weapons:
     two_handed: true
     icon: long_gun
     range: [50, 150, 250]
+    shots_a_minute: 3
+    rate_note: "Three rounds a minute, dependent on the soldier (American Battlefield Trust, Springfield and Enfield)."
+    close: [bayonet, musket_butt]
     ignition: percussion
     era: "1850s-1860s"
     threat: rifle
