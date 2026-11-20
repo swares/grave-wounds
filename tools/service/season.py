@@ -198,6 +198,9 @@ def lost_in_fights(pg):
       fighterFate = c => fate[c.id] || null;
       worstWound = c => ({ sev: sev[c.id] });
       followersBack();
+      const fx = Object.entries(DATA.wounds).find(([k]) => k.endsWith('|light'));
+      F[4].wounds = [{ loc: 'face', mech: fx[0].split('|')[1], sev: 'light', graze: false, fx: structuredClone(fx[1]), treated: '' }];
+      F[4].state = { id: 'out' }; F[4].blood = 3; F[4].fatigue = 4; save();   // the light one stays, as the fight left him
       const again = followersToSend().length;
       return { fids: F.slice(0, 6).map(c => c.follower.fid), back: JSON.parse(localStorage.getItem('gravewounds-followers-back')), again, log: S.afterLog[0] } }""")
     fates = [o["fate"] for o in sent["back"][0]["fates"]]
@@ -220,6 +223,8 @@ def lost_in_fights(pg):
     fol = pg.evaluate("() => S.chars.filter(c => c.follower).map(c => [c.follower.fid, !!c.followerSent])")
     check(sorted(f for f, _ in fol) == sorted(t[0]) and not any(x for _, x in fol),
           f"the next small fight brings the followers as the team builder has them now (the lost gone), each to be sent back again ({len(fol)})")
+    stayed = pg.evaluate(f"() => {{ const c = S.chars.find(x => x.follower && x.follower.fid === {json.dumps(sent['fids'][4])}); return c ? [c.wounds.length, c.state?.id !== 'out', c.blood === poolOf(c), c.fatigue] : null }}")
+    check(stayed == [0, True, True, 0], f"a season on, the follower who stayed with a light wound comes healed, rested and on his feet ({stayed})")
     here = pg.evaluate("() => S.chars.filter(c => c.uid && c.forceId != null).map(c => c.sheet.pid)")
     check(out not in here and len(here) >= 1, f"and only the named men serving now: the man no longer with the battalion stays out ({out}, {here})")
     pg.goto(BASE + "team.html")

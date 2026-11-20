@@ -2665,10 +2665,11 @@ function newFollower(f, side, team){               // one of the team builder's 
 function syncFollowers(list){                       // a season's small fight: the team's followers as the team builder has them now
   const lead = S.chars.find(c => c.team && c.uid);
   if (!list || !lead) return;
-  const team = lead.team, now = new Set(list.map(f => f.fid));
-  S.chars = S.chars.filter(c => !(c.team === team && c.follower && !now.has(c.follower.fid)));   // the dead, taken, invalided and deserted leave
-  for (const f of list) if (!S.chars.some(c => c.follower?.fid === f.fid)) S.chars.push(newFollower(f, sideOf(lead), team));   // recruits join
-  for (const c of S.chars) if (c.team === team && c.follower) c.followerSent = false;   // a new fight: each may be sent back again
+  const team = lead.team;
+  // A season has passed since the last fight: those the team builder still has (light wounds stay,
+  // the rest went back) come healed, rested and on their feet; the lost leave; recruits join (ours).
+  S.chars = S.chars.filter(c => !(c.team === team && c.follower));
+  for (const f of list) S.chars.push(newFollower(f, sideOf(lead), team));
 }
 function addTeam(){                             // the team from the team builder joins the fighters
   const t = S.teamIn; if (!t) return;

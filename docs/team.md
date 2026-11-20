@@ -369,7 +369,9 @@ the cap beside the followers.
   back to the team builder** under *After the fight* sends each follower's fate by his own id,
   each only once: killed or died of his wounds, dead; taken, or down on the field when his side
   was beaten (left behind), taken; alive with a serious or critical wound, invalided home; a light
-  wound or none, he stays. On the field map, **Followers' losses to the team builder** under
+  wound or none, he stays. A season on, the next season's small fight brings those who stayed
+  healed, rested and on their feet (a follower has no health record of his own to heal on; ours).
+  On the field map, **Followers' losses to the team builder** under
   *After the battle* sends each follower unit's losses by career: the killed and died, the taken
   and the left on the field, and the carried wounded whose case starts at serious or worse
   (invalided home); the team builder takes that many of the career off at random. The lost
