@@ -163,5 +163,13 @@ check("seats: the GM first, then each side once", () => {
   assert.deepEqual(G.seatsIn(["A", "B", "A"]), ["gm", "side:A", "side:B"]);
 });
 
+check("an arrow beats bare mail and cloth, not plate, a coat of plates or mail over padding", () => {
+  for (const w of ["longbow", "crossbow"]){
+    assert.equal(S.armorSteps("mail", "pierce", w), 0); assert.equal(S.armorSteps("jack", "pierce", w), 0);
+    assert.equal(S.armorSteps("plate", "pierce", w), 2); assert.equal(S.armorSteps("plates", "pierce", w), 2); assert.equal(S.armorSteps("mail_padded", "pierce", w), 1);
+  }
+  assert.equal(S.armorSteps("plate", "pierce", "halberd"), 1);   // a halberd's spike still beats plate a step
+});
+
 console.log(`${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

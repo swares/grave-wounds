@@ -1037,7 +1037,8 @@ function marginSeverity(margin, critical, wid, zone){
 function armorSteps(material, mech, wid){
   const mat = FD.materials[material], w = FD.weapons[wid] || {};
   const steps = mech === "ballistic" && w.threat && mat.threats?.[w.threat] !== undefined ? mat.threats[w.threat] : mat[mech];
-  return Math.max(0, steps - (w.armor_defeat?.[mech] || 0));
+  const defeat = w.defeat_only && !w.defeat_only.includes(material) ? 0 : w.armor_defeat?.[mech] || 0;   // an arrow beats mail and cloth, not plate
+  return Math.max(0, steps - defeat);
 }
 const reduceSeverity = (sev, steps) => SEV_LADDER[Math.max(0, SEV_LADDER.indexOf(sev) - steps)];
 const isGraze = (margin, critical) => !critical && margin <= FD.combat.graze_margin;

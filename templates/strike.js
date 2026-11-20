@@ -79,7 +79,7 @@ function makeStrike(DATA){
   function armorSteps(mat, mech, wid){
     const w = DATA.weapons[wid], m = MATS[mat], th = m.threats || {};
     const steps = mech === "ballistic" && w.threat && w.threat in th ? th[w.threat] : m[mech];
-    const defeat = w.armor_defeat?.[mech] || 0;
+    const defeat = w.defeat_only && !w.defeat_only.includes(mat) ? 0 : w.armor_defeat?.[mech] || 0;   // an arrow beats mail and cloth, not plate
     return Math.max(0, steps - defeat);
   }
   function sevTiers(mech, zone, wid){

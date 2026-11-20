@@ -286,6 +286,8 @@ def armor_steps(d: Data, material: str, mechanism: str, weapon_id: str | None) -
     else:
         steps = mat[mechanism]
     defeat = (w.get("armor_defeat") or {}).get(mechanism, 0)
+    if w.get("defeat_only") and material not in w["defeat_only"]:
+        defeat = 0                       # an arrow beats mail and cloth, not plate
     return max(0, steps - defeat)
 
 

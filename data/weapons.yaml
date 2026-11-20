@@ -11,6 +11,7 @@
 # zone_bias    - multipliers on a table's weights by body zone (default 1.0)
 # loc_bias     - optional per-location multipliers, applied after zone_bias
 # armor_defeat - armour protection steps this weapon ignores, by mechanism
+# defeat_only  - the armour materials armor_defeat works on; others get their full steps (left out: all)
 # icon         - how the combatant figures draw it (templates/figure.js): sword, sabre,
 #                dagger, axe, club, spear, bill, poleaxe, lance, bow, crossbow, sling, long_gun,
 #                bayonet_gun, musket_butt, modern_rifle, machine_gun, smg, pistol, launcher,
@@ -219,12 +220,17 @@ weapons:
     mechanisms: {pierce: 95, cut: 5}
     zone_bias: {}
     armor_defeat: {pierce: 1}
+    defeat_only: [mail, padded, leather, jack]   # bare mail and cloth: Jones 2020 (through mail at almost every shot); not plate (Williams: 'the plate protected the wearer') nor mail over padding (Jones: 'greatly reduce')
     confidence: extrapolated
     notes: >
       Heavy war bow of the Hundred Years' War and the Wars of the Roses. Arrows mostly left
       soft-tissue wounds, so bone evidence under-counts them; at Towton a few head wounds are
-      arrowheads. Heavy arrows punch through mail and jacks (ignores 1 step vs pierce): design
-      estimate; against good plate they mostly glanced.
+      arrowheads. Heavy arrows punch through bare mail and jacks (ignores 1 step vs pierce,
+      there only): mail alone let arrows through to a lethal depth at almost every shot (Jones,
+      J. Medieval Military History XVIII, 2020). Plate, a coat of plates and mail over padding get
+      their full steps: a longbow arrow carries about 70-83 J (McEwen) and 100 J sinks only 9 mm
+      into medium-carbon steel, so "the plate protected the wearer" (Williams, Wallace
+      Collection); mail over a gambeson "greatly reduce[s], but not eliminate[s]" the risk (Jones).
 
   - id: crossbow
     name: "Crossbow (bolts)"
@@ -241,11 +247,14 @@ weapons:
     zone_bias: {}
     loc_bias: {skull_l: 1.15, skull_r: 1.15, face: 1.15}
     armor_defeat: {pierce: 1}
+    defeat_only: [mail, padded, leather, jack]   # bare mail and cloth: Jones 2020 (through mail at almost every shot); not plate (Williams: 'the plate protected the wearer') nor mail over padding (Jones: 'greatly reduce')
     confidence: extrapolated
     notes: >
       Visby's arrow and bolt wounds are counted together (126), mostly on the lower body; the
       Visby weights are used with a small head bias for aimed shots at the face and helmet.
-      Heavy bolts punch through mail (ignores 1 step vs pierce): design estimate.
+      Heavy bolts punch through bare mail and cloth (ignores 1 step vs pierce, there only): as
+      the longbow (Jones 2020). Not plate: quality armour was sold as "proof against the
+      crossbow", and a 90 lb crossbow's bolt carries about 192 J (Williams, after McEwen).
 
   - id: sling
     name: "Sling (stones, lead bullets)"

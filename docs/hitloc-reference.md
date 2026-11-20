@@ -319,9 +319,10 @@ Firearms and explosives (any weapon with a `threat`) roll severity on the firear
   body, so the Visby weights are used unchanged) and on the random-hit baseline.
 - **Longbow** - Towton tables. On the evidence table it uses all the recorded wounds
   together (bone evidence under-counts arrows, which mostly wounded soft tissue); ignores 1
-  armour step against pierce (design estimate).
-- **Crossbow** - Visby tables and baseline; small head bias and ignores 1 armour step
-  against pierce (design estimates). Visby does not count bolts apart from arrows.
+  armour step against pierce on bare mail, padding, leather and jacks only, not plate, a coat
+  of plates or mail over padding (Jones 2020; Williams).
+- **Crossbow** - Visby tables and baseline; small head bias (design estimate) and ignores 1
+  armour step against pierce as the longbow. Visby does not count bolts apart from arrows.
 - **Sling** - Visby gameplay-adjusted table and baseline; crush wounds, head bias (design
   estimate). No battlefield tally separates sling wounds.
 - Arrows and bolts are pierce wounds, not gunfire: they roll severity on the default tiers.
