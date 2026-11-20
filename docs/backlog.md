@@ -1094,3 +1094,16 @@ not this repository.
   their swords are stopped by plate or miss, and the English still lose 10 of 12. What is left
   is the plate itself and the crossbows' volume (about two French crossbowmen to each English
   archer).
+  **Corrected (play test 8, project doc "solo-playtest-8"):** those tests ran fight after fight
+  with no time between, so each fight's wounds came into the next; by the last fights most of the
+  men started wounded. With a fresh team each fight the English win 17 of 27 (18 of 27 before the
+  table fix). The exchange is still against them: 0.44 French down to each English man down, the
+  worst of the eight wars. The 3 to 2 cap and the French split were chosen against the broken
+  test and may be looked at again.
+
+- **A season's small fight brings the team's men as the roller last left them** (play test 8):
+  a follower's wounds, blood and state (out of the fight, defend only) stay with him into the
+  next season's fight, three months on, since a follower has no health record to heal on; a
+  named man's heal only if the GM sent them to camp. Light-wounded followers who stay with the
+  team come to the next fight still wounded, some still down. Proposed: the GM's call, to be
+  decided.
