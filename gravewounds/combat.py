@@ -386,6 +386,8 @@ def weapon_reach(d: Data, wid: str, dist: int) -> dict | None:
         return None
     if "reach" in w:
         return {"band": "reach", "penalty": 0} if dist <= w["reach"] else None
+    if w.get("min_range") and dist < w["min_range"]:
+        return None                      # too close: the warhead does not arm, the missile does not gather
     for edge, b in zip(w["range"], d.wounds["combat"]["range"]):
         if dist <= edge:
             return {"band": b["band"], "penalty": b["penalty"]}

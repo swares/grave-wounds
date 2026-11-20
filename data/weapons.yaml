@@ -31,6 +31,8 @@
 # close        - while he reloads: what he strikes an enemy next to him with, when he has no
 #                sidearm of his own (the first of the list the wound table has; none, he only
 #                defends). A loaded man may still fire point-blank.
+# min_range    - hexes: closer than this it cannot strike (a warhead that has not armed, a missile not yet
+#                gathered to its sight line)
 # magazine     - a weapon that shoots every round until it is empty (a revolver's cylinder): its shots,
 #                then reload_s seconds of reloading, ceil(reload_s / round_s) rounds (rate_note: its source)
 # off_map      - true for weapons no fighter aims on the map (artillery, mines, stakes,
@@ -682,6 +684,7 @@ weapons:
     two_handed: true
     icon: launcher
     range: [50, 100, 150]
+    min_range: 3           # arms at 5 m (Military.com, How an RPG works): 3 hexes
     shots_a_minute: 5
     rate_note: "Four to six rounds a minute (Military.com, How an RPG works, 2019); five is ours."
     era: "1960s-"
@@ -752,6 +755,7 @@ weapons:
     two_handed: true
     icon: launcher
     range: [250, 1000, 2000]
+    min_range: 33           # the TOW's minimum range, 65 m (US Army correspondence course IN0543, ch. 4): 33 hexes
     shots_a_minute: 2
     rate_note: "The TOW can launch three missiles in 90 seconds (FAS); its time of flight to 3,750 m, about 20 seconds, is not modelled."
     era: "1970s-"
