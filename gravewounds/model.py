@@ -2198,6 +2198,8 @@ def _rate_errors(d) -> list[str]:
         errors.append("wounds.yaml: combat.move.round_s must be the seconds a round, above 0")
     for wid, w in d.weapons.items():
         n = w.get("shots_a_minute")
+        if "min_range" in w and ("range" not in w or not (isinstance(w["min_range"], int) and 1 <= w["min_range"] <= w["range"][0])):
+            errors.append(f"weapons.yaml: {wid} min_range must be whole hexes, 1 up to its short range, on a weapon with a range")
         if "magazine" in w:
             m, t = w["magazine"], w.get("reload_s")
             if n is not None or "range" not in w or not (isinstance(m, int) and m >= 2) or not (isinstance(t, (int, float)) and t > 0) or not w.get("rate_note"):

@@ -1327,6 +1327,7 @@ function weaponReach(wid, dist){
   if (w.off_map) return { band: "any", penalty: 0 };
   if (dist < 1) return null;
   if ("reach" in w) return dist <= w.reach ? { band: "reach", penalty: 0 } : null;
+  if (w.min_range && dist < w.min_range) return null;   // too close: the warhead does not arm, the missile does not gather
   const i = w.range.findIndex(edge => dist <= edge);
   return i < 0 ? null : { band: CMB.range[i].band, penalty: CMB.range[i].penalty };
 }
@@ -3074,6 +3075,8 @@ function rangeCheck(){
   const dist = hexDistance(a.pos, dd.pos), wx = darkOnAttack(weatherAttack(S.weather, S.weather ? S.weapon : null, dist, a.pos, dd.pos), dist, a);
   const ranged = isShot(S.weapon), ht = heightEffects(S.ground, a.pos, dd.pos, !ranged);
   const r = weaponReach(S.weapon, windDist(dist, { reach: (wx.reach || 0) + ht.reach }));
+  const wmin = DATA.weapons[S.weapon].min_range;
+  if (!r && wmin && dist < wmin) return { blocked: `${dd.name} is ${hexes(dist)} away, inside the ${shortName(S.weapon).toLowerCase()}'s minimum range of ${hexes(wmin)}: it would not arm.` };
   if (!r) return { blocked: `${dd.name} is ${hexes(dist)} away, out of reach of the ${shortName(S.weapon).toLowerCase()} (${reachText(S.weapon)}).` };
   if (ranged && !sightClear(S.ground, a.pos, dd.pos)) return { blocked: `${a.name} cannot see ${dd.name}: higher ground between them.` };
   const wk = { ...worksOnAttack(a, dd), ...groundOnAttack(a, dd, ranged, ht) };

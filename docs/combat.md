@@ -119,7 +119,14 @@ attack. Stepping back 1 hex is a careful withdrawal and draws no free attack.
   sidearm, else his weapon's `close` weapon (a bayonet, the musket's butt, a crossbowman's
   dagger), the first the wound table has; a loaded man may still fire point-blank. The GM's
   script keeps a man who is reloading where he is. The map shows him as reloading, with the
-  round he shoots again. The field map's units have their own, lower battle rates
+  round he shoots again.
+- **Minimum range.** An RPG cannot strike a man closer than 3 hexes (its grenade arms at 5 m)
+  and an anti-tank guided missile one closer than 33 (the TOW's 65 m): the warhead would not
+  arm, the missile not gather to its sight line (`weapons.yaml` `min_range`). The roller says
+  so, the GM's script does not try, and the field map holds the same. The missile's time of
+  flight (about 20 seconds to 3,750 m) is not modelled: the map is at most 160 m across, under
+  a second's flight. No minimum is set for the bazooka or the recoilless rifle (none found).
+  The field map's units have their own, lower battle rates
   (`units.yaml` `missile.rate`; see [units.md](units.md)).
 - Artillery, mines and stakes are not aimed on the map; the GM decides whom they hit.
 - The printed tables list every weapon. The ranges are design estimates from each
