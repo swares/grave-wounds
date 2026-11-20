@@ -33,7 +33,13 @@ the browser (`templates/units.js`, checked against the Python).
 2. **How many blows tell.** Most of a minute in a press is shoving, guarding and watching
    for an opening. Each exchange, a share of the striking men (`melee.tempo`, about one in
    eleven) makes a real attempt. Archers loose `rate` shots a minute, and a share of those
-   (`missile.tempo`) are aimed at a man rather than at the mass.
+   (`missile.tempo`) are aimed at a man rather than at the mass. These are battle rates, a
+   unit's practical fire with smoke, confusion and men not firing every shot they could, and
+   are below the drilled maxima the battle map uses for one man (`weapons.yaml`
+   `shots_a_minute`: the musket and rifle-musket 3 a minute against 2 here, the flintlock rifle
+   2 against 1, the matchlock 1.5 against 1, the crossbow 3 against 2; the bow has no reload
+   there). Kept apart as the user chose (20 November 2026): the field's rates are design
+   estimates, tuned with `burn` so the fields play as fought.
 3. **Each attempt is an individual attack.** d100 against the unit's attack %:
    - green 40%, regular 50%, veteran 60%;
    - plus situation: flank +20, rear +30, a mounted charge +20 (and twice the tempo) in

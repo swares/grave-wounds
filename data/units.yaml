@@ -272,7 +272,8 @@ missile:
   # the close volley its weight, with no multiplier.
   closing_volley: {weapons: [matchlock_musket, musket_smoothbore, rifle_musket]}
   tempo: 0.033
-  rate:                     # shots a minute, by weapon (design estimates)
+  rate:                     # shots a minute, by weapon (design estimates): a unit's battle rate, below the drilled
+                            # maxima the battle map uses for one man (weapons.yaml shots_a_minute; docs/units.md)
     aa_gun: 150
     longbow: 8
     bow: 8

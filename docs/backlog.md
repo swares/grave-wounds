@@ -1119,7 +1119,9 @@ not this repository.
   strikes the man next to him with his sidearm or his weapon's close weapon. Still left: the
   crossbow's three a minute rests on popular sources (h2g2 after Payne-Gallwey, History Hit);
   the wheellock and flintlock pistols' rates are ours; a revolver's cylinder: since, six shots
-  then 90 seconds (15 rounds) to reload (the percussion revolvers of the ACW and Crimea); and the field map's units fire as before. Since: the launchers
+  then 90 seconds (15 rounds) to reload (the percussion revolvers of the ACW and Crimea); and the field map's units keep their own
+  battle rates (units.yaml missile.rate, design estimates below the roller's sourced maxima; kept
+  apart, as the user chose, and noted in docs/units.md). Since: the launchers
   reload (RPG 5 a minute, bazooka 6, recoilless rifle 5, ATGM 2; the ATGM's flight time is not
   modelled).
 

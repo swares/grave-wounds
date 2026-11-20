@@ -119,7 +119,8 @@ attack. Stepping back 1 hex is a careful withdrawal and draws no free attack.
   sidearm, else his weapon's `close` weapon (a bayonet, the musket's butt, a crossbowman's
   dagger), the first the wound table has; a loaded man may still fire point-blank. The GM's
   script keeps a man who is reloading where he is. The map shows him as reloading, with the
-  round he shoots again.
+  round he shoots again. The field map's units have their own, lower battle rates
+  (`units.yaml` `missile.rate`; see [units.md](units.md)).
 - Artillery, mines and stakes are not aimed on the map; the GM decides whom they hit.
 - The printed tables list every weapon. The ranges are design estimates from each
   weapon's effective range in its period.
