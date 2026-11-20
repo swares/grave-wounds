@@ -161,6 +161,10 @@ def hedged_garden(pg):
     r = pg.evaluate("""() => { const kinds = Object.values(S.works.edges).flat().map(x => x.type);
       return [kinds.length, [...new Set(kinds)], Object.keys(S.works.hexes).length] }""")
     check(r[0] > 20 and r[1] == ["hedge"] and r[2] == 0, f"the raid at Valmont comes with its hedged garden round the party, all hedge, nothing to build ({r})")
+    ring = pg.evaluate("""() => { const keys = Object.keys(S.works.edges), hs = keys.flatMap(k => k.split('|').map(x => x.split(',').map(Number)));
+      const c = S.fightEnd.position.centre, r = S.fightEnd.position.radius, team = S.chars.filter(x => x.team && x.pos);
+      return [r, team.filter(x => hexDistance(x.pos, c) === r).length, team.length, S.chars.filter(x => !x.team && x.pos).every(x => hexDistance(x.pos, c) > r)] }""")
+    check(ring[1] == ring[2] and ring[2] > 0 and ring[3], f"the party lines the hedge, every man on the ring just inside it, the French outside ({ring})")
 
 
 def culps_hill(pg):

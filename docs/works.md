@@ -91,7 +91,10 @@ to send it there. Until then the fight button is off and says why.
   force has no camp, the fight is at a camp within reach: a friendly force's first (that
   force defends, with the selected one beside it), else an enemy's (the enemy defends).
 - up to 8 men from each defending force inside the camp (more if more of its named men are on
-  the roller), the camp's own force nearest the middle. Friendly forces within reach of the camp join the defence if they had
+  the roller), the camp's own force first. In a camp with works (stakes, a hedge, or a ditch,
+  bank and palisade) they man the works: the ring just inside them first, from the gate round,
+  since the gate faces the attackers, and then the middle out (ours). There the works' cover
+  and height count for them. In a camp without works, they fill it from the middle out. Friendly forces within reach of the camp join the defence if they had
   arrived by the time the fight starts; a force still on the road misses it, and the page
   says so. A force that made camp counts as there from when it began, since it was there
   while it dug.

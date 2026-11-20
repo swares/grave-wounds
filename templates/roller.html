@@ -3765,7 +3765,8 @@ function arrivalSpots(side, n){
   }
   return free.sort((a, b) => a[0] - b[0]).slice(0, n).map(([, h]) => h);
 }
-function campSpots(L, cols, rows, gate = 0){  // hexes inside the camp: nearest the middle, or the gate if the camp runs off the map
+function campSpots(L, cols, rows, gate = 0, lined = false){  // hexes inside the camp: nearest the middle, or the gate if the camp runs off the map
+  if (lined && L.fits) return linedSpots(L, cols, rows, gate);
   const spots = [], from = L.fits ? L.centre : ringWalk(L.centre, Math.max(0, L.radius - 1), gateList(gate)[0])[0];
   for (let y = 0; y < rows; y++){
     for (let x = 0; x < cols; x++){
@@ -3773,6 +3774,20 @@ function campSpots(L, cols, rows, gate = 0){  // hexes inside the camp: nearest 
     }
   }
   return spots.sort((p, q) => hexDistance(from, p) - hexDistance(from, q) || p[1] - q[1] || p[0] - q[0]);
+}
+// A camp with works: the defenders man them first, on the ring just inside the works (where their
+// cover counts), from the main gate round, which faces the attackers; the rest fill the middle out (ours).
+function linedSpots(L, cols, rows, gate = 0){
+  const on = ([x, y]) => x >= 0 && x < cols && y >= 0 && y < rows, g = ringWalk(L.centre, L.radius, gateList(gate)[0])[0];
+  const line = ringWalk(L.centre, L.radius, gateList(gate)[0]).filter(on).sort((p, q) => hexDistance(g, p) - hexDistance(g, q) || p[1] - q[1] || p[0] - q[0]);
+  const inner = [];
+  for (let y = 0; y < rows; y++){
+    for (let x = 0; x < cols; x++){
+      if (hexDistance(L.centre, [x, y]) < L.radius) inner.push([x, y]);
+    }
+  }
+  inner.sort((p, q) => hexDistance(L.centre, p) - hexDistance(L.centre, q) || p[1] - q[1] || p[0] - q[0]);
+  return [...line, ...inner];
 }
 function atCrossing(h){                       // a hand-off at a ford or bridge with a river through it
   const T = GRD.through.river;
@@ -3799,9 +3814,10 @@ function setupHandoff(){                     // a camp or position sent from the
   S.groundLike = { terrain: GRD.seed[h.ground] ? h.ground : "open", seed, n: 0, clear: lay ? [L.centre, L.radius, gate] : null, edges };
   S.ground = layGroundLike();
   S.wholeLabour = L.fits ? null : h.campLabour;                             // the whole camp's, when only part is on the map
-  // The defender and any friends who were there fill the camp from the middle out; any who
-  // do not fit go to their side's edge. The enemy forces wait at the far edge (side 2's edge).
-  const spots = campSpots(L, cols, rows, gate), defenders = [h.force, ...(h.allies || [])], foes = h.foes || [], foe = foes[0];
+  // The defender and any friends who were there fill the camp: a camp with works they man first,
+  // on the ring inside the works from the gate round, then the middle out; any who do not fit go
+  // to their side's edge. The enemy forces wait at the far edge (side 2's edge).
+  const lined = !!lay && L.fits, spots = campSpots(L, cols, rows, gate, lined), defenders = [h.force, ...(h.allies || [])], foes = h.foes || [], foe = foes[0];
   const named = handoffNamed(h, [...defenders, ...foes]);   // the named men with these forces come as themselves
   const capped = keepOdds(h, named);
   const overflow = defenders.reduce((t, o) => t + forceCount(o, named), 0) > spots.length;
@@ -3815,7 +3831,7 @@ function setupHandoff(){                     // a camp or position sent from the
   S.hauled = !!h.hauled;
   S.round = 1; S.log = []; S.turn = null; S.tm = null; S.free = []; S.broken = {}; S.attacker = -1; S.active = 0; S.hit = null; newFightMarks();
   S.fightEnd = h.end ? { rounds: h.end.rounds || null, wins: h.end.wins || null, down: h.end.down || {}, hold: h.end.hold || null, away: h.end.away || null,
-    place: h.place, position: { centre: L.centre, radius: Math.max(1, L.radius - 1) },   // the hexes the defenders start in
+    place: h.place, position: { centre: L.centre, radius: lined ? L.radius : Math.max(1, L.radius - 1) },   // the hexes the defenders start in (with the ring at the works, when they man them)
     edges: Object.fromEntries(sidesInOrder().map((sd, i) => [sd, i % 4])), called: null, on: false } : null;   // each side's own edge, as placeUnplaced puts them
   S.addSide = foe ? foe.side : "Attackers";                                // Add brings in the other side
   if (!foe && h.force.side === "Attackers") S.addSide = "Defenders";
