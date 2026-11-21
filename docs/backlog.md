@@ -1156,3 +1156,6 @@ not this repository.
   never met in script play, since the GM's script fought where it stood. Now a man of that side not
   held in contact makes for his own edge (`fighter.js` `makeAway`). Hellesdon's raid on the manor
   gets the end its aim names ("or get away with the household"); the house is still lost.
+  Since (play test 10): a side getting off its own edge won in two or three rounds, unhurt, since
+  each side started on its own edge. Now that side starts in the middle with the other 8 hexes
+  off, and wins by holding together for the fight's rounds (6 if none): a fighting withdrawal.

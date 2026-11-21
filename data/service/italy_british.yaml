@@ -251,7 +251,7 @@ small_fights:
     side: {name: "The patrol", men: [4, 12]}
     foes: [{name: "A German patrol", men: [4, 9], kit: ww2_rifleman, weapon: pistol_smg}]
     aims: {team: "Find the enemy, take a prisoner if it can, and get back.", foes: "The same."}
-    ends: "Either side breaks off once half of those here are down; the patrol wins if it gets back to its own edge, better with a prisoner."
+    ends: "Either side breaks off once half of those here are down; the patrol gets back if half of it holds together for 6 rounds, falling back to its own edge, better with a prisoner."
     end: {down: {team: 0.5, foes: 0.5}, away: {side: team, share: 0.5}}
     sources: [*apr44, *jan45]
   - id: raid

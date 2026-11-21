@@ -357,7 +357,7 @@ small_fights:
     side: {name: "The patrol", men: [4, 8]}
     foes: [{name: "A German covering party", men: [4, 12], weapon: rifle_service}]
     aims: {team: "See what the Germans are doing and get back.", foes: "Catch the patrol in the open."}
-    ends: "The patrol wins if it gets back to its own edge; either side breaks off once half of those here are down."
+    ends: "The patrol gets back if half of it holds together for 6 rounds, falling back to its own edge; either side breaks off once half of those here are down."
     end: {down: {team: 0.5, foes: 0.5}, away: {side: team, share: 0.5}}
     sources: ["https://tunstillsmen.blogspot.com/2016/01/thursday-13th-january-1916.html", *graves]
   - id: working_party
