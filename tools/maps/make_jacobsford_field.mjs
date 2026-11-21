@@ -63,9 +63,9 @@ for (let r = R0; r <= R1; r++) for (let c = C0; c <= C1; c++){
 const TP = { side: 0, facing: N }, AY = { side: 1, facing: S };
 const KNIGHTS = { quality: "veteran", weapon: "sword", kit: "hauberk", formation: "close", mounted: false };
 const SERGEANTS = { quality: "regular", weapon: "spear", kit: "hauberk", formation: "close", mounted: false };
-const CROSSBOWS = { quality: "regular", weapon: "crossbow", sidearm: "sword", kit: "gambeson", formation: "open", mounted: false };
+const CROSSBOWS = { quality: "regular", weapon: "crossbow", kit: "gambeson", formation: "open", mounted: false };
 const STORMERS = { quality: "veteran", weapon: "sword", kit: "hauberk", formation: "close", mounted: false };
-const ARCHERS = { quality: "veteran", weapon: "bow", sidearm: "sword", kit: "gambeson", formation: "open", mounted: false };
+const ARCHERS = { quality: "veteran", weapon: "bow", kit: "gambeson", formation: "open", mounted: false };
 const VOLUNTEERS = { quality: "green", weapon: "spear", kit: "gambeson", formation: "close", mounted: false };
 // The storming column and the second wave go in as parties queued on the breach, a breach's width
 // (3 hexes) each: units move as rigid blocks, and one column 9 ranks deep slid off the breach onto

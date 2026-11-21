@@ -30,7 +30,7 @@ const grid = groundGrid(COLS, ROWS, kind);
 
 // ---------- the armies (pos is the middle of the front row) ----------
 const YORK = { side: 0, facing: N }, LANC = { side: 1, facing: S };
-const ARCHERS = { quality: "regular", weapon: "longbow", sidearm: "sword", kit: "jack_sallet", formation: "open", mounted: false };
+const ARCHERS = { quality: "regular", weapon: "longbow", kit: "jack_sallet", formation: "open", mounted: false };
 const BILLS = { quality: "regular", weapon: "bill", kit: "jack_sallet", formation: "close", mounted: false };
 const FRONT_Y = 75, FRONT_L = 50;
 // Leaders from the accounts (heroes.field_leaders; Wikipedia, "Battle of Towton"): Fauconberg with the

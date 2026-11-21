@@ -42,11 +42,11 @@ for (let c = 0; c < COLS; c++){
 // ---------- the armies (pos is the middle of the front row; "north" on the page is east) ----------
 const FRANK = { side: 0, facing: N }, DAMASCUS = { side: 1, facing: S };
 const units = [
-  unit("Crossbowmen of the garrison", FRANK, 300, { quality: "regular", weapon: "crossbow", sidearm: "sword", kit: "hauberk", formation: "open", mounted: false }, [30, 26, 61]),
+  unit("Crossbowmen of the garrison", FRANK, 300, { quality: "regular", weapon: "crossbow", kit: "hauberk", formation: "open", mounted: false }, [30, 26, 61]),
   unit("Garrison sergeants", FRANK, 500, { quality: "regular", weapon: "spear", kit: "hauberk", formation: "close", mounted: false }, [25, 28, 64]),
   unit("Knights", FRANK, 100, { quality: "veteran", weapon: "sword", kit: "hauberk", formation: "close", mounted: true }, [5, 38, 67]),
   unit("Builders and townsmen", FRANK, 600, { quality: "green", weapon: "axe", kit: "none", formation: "close", mounted: false }, [30, 26, 70]),
-  unit("Horse archers", DAMASCUS, 1500, { quality: "veteran", weapon: "bow", sidearm: "sword", kit: "leather", formation: "open", mounted: true }, [40, 22, 30]),
+  unit("Horse archers", DAMASCUS, 1500, { quality: "veteran", weapon: "bow", kit: "leather", formation: "open", mounted: true }, [40, 22, 30]),
   unit("Heavy horse", DAMASCUS, 800, { quality: "veteran", weapon: "spear", kit: "hauberk", formation: "close", mounted: true }, [20, 32, 24]),
   unit("Foot", DAMASCUS, 1500, { quality: "regular", weapon: "sword", kit: "gambeson", formation: "close", mounted: false }, [40, 22, 20]),
 ];

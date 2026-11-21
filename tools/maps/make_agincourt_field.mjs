@@ -22,7 +22,7 @@ grid.paint(96, 99, 34, 42, "r");   // a clearing by Tramecourt, to the east behi
 
 // ---------- the armies (pos is the middle of the front row) ----------
 const EN = { side: 0, facing: N }, FR = { side: 1, facing: S };
-const ARCHERS = { quality: "veteran", weapon: "longbow", sidearm: "sword", kit: "gambeson", formation: "open", mounted: false };
+const ARCHERS = { quality: "veteran", weapon: "longbow", kit: "gambeson", formation: "open", mounted: false };
 const MEN_AT_ARMS = { quality: "veteran", weapon: "poleaxe", kit: "full_plate", formation: "close", mounted: false };
 const KNIGHTS = { ...MEN_AT_ARMS, quality: "regular" };
 const FR_MEN_AT_ARMS = { ...MEN_AT_ARMS, kit: "harness_1415" }, FR_KNIGHTS = { ...KNIGHTS, kit: "harness_1415" };   // the French: mail with plate pieces (DeVries 2015; armor.yaml harness_1415)
