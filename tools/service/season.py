@@ -92,6 +92,7 @@ def followers(pg):
     hedged_garden(pg)
     foes_mixed(pg)
     away_start(pg)
+    unfit_stay(pg)
     muster_cap(pg)
 
 
@@ -225,6 +226,33 @@ def away_start(pg):
           f"the French who win by getting away start in the middle, half the map from their edge, the light troops close by; they get away only by holding together for 6 rounds ({r})")
     check(r["field"] == {"theirs": True, "mine": False, "stillTaken": True},
           f"once the French get away, the light troops hold the field: their men down are picked up, and a Frenchman taken stays taken ({r['field']})")
+
+
+def unfit_stay(pg):
+    """A man serious or worse at the season's end stays in hospital, out of its small fight, as he
+    would for its battles; the fight's notes name him."""
+    pg.goto(BASE + "team.html")
+    pg.evaluate(CLEAR)
+    pg.reload()
+    pg.select_option("#sel-era", "wwi")
+    pg.select_option("#sel-region", "british")
+    pg.select_option("#sel-template", "section")
+    pg.click("#btn-roll")
+    pg.click(SEND)
+    pg.wait_for_selector(ADDTEAM)
+    pg.click(ADDTEAM)
+    pg.goto(BASE + "team.html")
+    pg.wait_for_selector("#h-service")
+    r = pg.evaluate("""() => { const W = SVC.war('western_front'); svcState(); Object.assign(S.service, { war: 'western_front', i: 1, with: {}, pos: {}, at: {}, played: {}, unit: {}, share: {} });
+      const bad = { cases: [{ d: 'wound', inc: 0, step: 3 }] }, mild = { cases: [{ d: 'wound', inc: 0, step: 1 }] };
+      const all = namedStore(), sick = S.team[1], man = namedOf(all, sick); man.health = bad; localStorage.setItem(NAMED_STORE, JSON.stringify(all));
+      S.crew[0].svcHealth = bad; S.crew[1].svcHealth = mild;
+      S.svcSmall = SVC.smallFight(W, 'trench', () => 50); const h = svcFightHandoff(W, W.seasons[0]);
+      return { pids: h.pids.length, team: S.team.length, out: !h.pids.includes(sick.pid), followers: h.followers.length, crew: S.crew.length,
+        crewOut: !h.followers.some(x => x.name === S.crew[0].name), mildIn: h.followers.some(x => x.name === S.crew[1].name),
+        note: h.notes.some(n => n.startsWith('Left in hospital') && n.includes(sick.name) && n.includes(S.crew[0].name)) } }""")
+    check(r["pids"] == r["team"] - 1 and r["out"] and r["followers"] == r["crew"] - 1 and r["crewOut"] and r["mildIn"] and r["note"],
+          f"a named man and a follower grave at the season's end stay in hospital, out of the small fight, and its notes name them; a man mending comes ({r})")
 
 
 def foes_mixed(pg):
