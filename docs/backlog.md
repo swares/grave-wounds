@@ -1125,7 +1125,9 @@ not this repository.
   apart, as the user chose, and noted in docs/units.md). Since: the launchers
   reload (RPG 5 a minute, bazooka 6, recoilless rifle 5, ATGM 2; the ATGM's flight time is not
   modelled: under a second across the battle map). Minimum ranges: the RPG 3 hexes (5 m to
-  arm) and the ATGM 33 (the TOW's 65 m); none found for the bazooka or recoilless rifle.
+  arm) and the ATGM 33 (the TOW's 65 m). Since: the bazooka 2 (the 3.5-inch rocket M28A2 arms at
+  10 ft, Army ammunition data sheets 1981; the rest of its family ours) and the recoilless rifle 8
+  (none found for its rounds; the Carl Gustaf's HEDP arms at 15-40 m, its 15 m ours as a stand-in).
 
 - **English men-at-arms in full plate** (from the Henry V exchange): the English region's
   men-at-arms wore brigandines and the French full plate, with no source for the difference;

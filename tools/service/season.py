@@ -140,13 +140,13 @@ def reloads(pg):
       S.round = at; const ready = [reloading(a), rangeCheck().blocked || ''];
       S.weapon = 'revolver'; delete a.loadedAt; delete a.cylinder; const cyl = [];
       for (let i = 0; i < 7; i++){ S.round = 10 + i; const free = !reloading(a); if (free) startReload(a); cyl.push(free ? (a.loadedAt || 0) : 'loading') }
-      const mins = [weaponReach('rpg', 2), weaponReach('rpg', 3), weaponReach('atgm', 32), weaponReach('atgm', 33)].map(x => !!x);
+      const mins = [weaponReach('rpg', 2), weaponReach('rpg', 3), weaponReach('atgm', 32), weaponReach('atgm', 33), weaponReach('bazooka', 1), weaponReach('bazooka', 2), weaponReach('recoilless', 7), weaponReach('recoilless', 8)].map(x => !!x);
       return { rounds, at, near, far, blocked, ready, cyl, mins } }""")
     check(r["rounds"] == [2, 4, 6, 2, 0, 0, 1, 1, 1, 4], f"rounds to reload: musket 2 (three a minute), flintlock rifle 4, matchlock 6, crossbow 2; longbow and breechloader none; RPG, bazooka and recoilless rifle 1; ATGM 4 ({r['rounds']})")
     check(r["at"] == 6 and r["near"] == "bayonet" and r["far"] == "musket_smoothbore" and "is reloading his" in r["blocked"],
           f"a musket fired in round 3 shoots again in round 6; meanwhile he cannot shoot, and the man next to him gets the bayonet ({r})")
     check(r["ready"] == [False, ""], f"loaded again in round 6 ({r['ready']})")
-    check(r["mins"] == [False, True, False, True], f"minimum ranges: an RPG cannot strike under 3 hexes (5 m to arm), an ATGM under 33 (the TOW's 65 m) ({r['mins']})")
+    check(r["mins"] == [False, True, False, True, False, True, False, True], f"minimum ranges: an RPG cannot strike under 3 hexes (5 m to arm), an ATGM under 33 (the TOW's 65 m), a bazooka under 2 (3 m), a recoilless rifle under 8 (15 m) ({r['mins']})")
     check(r["cyl"] == [0, 0, 0, 0, 0, 31, "loading"], f"a revolver shoots six rounds running, then reloads its cylinder for 15 rounds (90 seconds): shoots again in round 31 ({r['cyl']})")
 
 
