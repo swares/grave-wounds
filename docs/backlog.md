@@ -1139,6 +1139,10 @@ not this repository.
   (27-30% to wound) against English archers and billmen in jacks (their bills 5%). Not tried:
   stakes or a first volley; checking the longbow's wounding against the period (project doc
   "henry-v-exchange-research").
+  Since: the bill's top spike now takes a step off armour against its thrusts, as the
+  halberd's (the spike sourced: a bill of c.1471, the Mary Rose bills; the step ours). Paired:
+  Henry V's exchange 0.35 to 0.38, the English followers' bill wounds 36 to 48; Edward's side
+  0.51 to 0.74; Lancaster's 0.64 to 0.65. The bill's hook is not modelled.
 
 - **Roses foes in brigandines, mixed as a retinue** (play test 9): Edward's foray (Dunstanburgh's
   garrison) and Lancaster's breach (the Bamburgh storming party) had every foe in brigandine
