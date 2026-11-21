@@ -37,10 +37,10 @@ for (let c = 0; c < COLS; c++){
 const GOT = { side: 0, facing: S }, DAN = { side: 1, facing: N };
 const LEVY = { quality: "green", weapon: "spear", kit: "gotland_levy", formation: "close", mounted: false };
 const units = [
-  unit("Gotland bowmen", GOT, 400, { ...LEVY, weapon: "bow", formation: "open" }, [20, 30, 30]),
+  unit("Gotland bowmen", GOT, 400, { ...LEVY, weapon: "bow", sidearm: "sword", formation: "open" }, [20, 30, 30]),
   unit("Gotland levy", GOT, 1600, LEVY, [40, 20, 27]),
   unit("Gotland freeholders", GOT, 500, { ...LEVY, quality: "regular", weapon: "axe", kit: "gotland_armoured" }, [13, 34, 25]),
-  unit("Danish crossbowmen", DAN, 500, { quality: "regular", weapon: "crossbow", kit: "transitional", formation: "open", mounted: false }, [25, 28, 52]),
+  unit("Danish crossbowmen", DAN, 500, { quality: "regular", weapon: "crossbow", sidearm: "sword", kit: "transitional", formation: "open", mounted: false }, [25, 28, 52]),
   unit("Sergeants", DAN, 1000, { quality: "veteran", weapon: "spiked_club", kit: "transitional", formation: "close", mounted: false }, [25, 28, 55]),
   unit("Men-at-arms", DAN, 500, { quality: "veteran", weapon: "sword", kit: "danish_maa", formation: "close", mounted: false }, [13, 34, 57]),
 ];

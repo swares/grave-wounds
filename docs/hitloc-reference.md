@@ -357,7 +357,10 @@ Firearms and explosives (any weapon with a `threat`) roll severity on the firear
   re-weighted by stated corrections, as for Visby: trunk raised to 30%, head and neck
   lowered to 31%, legs raised to 18% (design estimates).
 - New weapons: bill, poleaxe, longbow. New kits: jack and sallet (archer or billman),
-  brigandine and sallet (retainer); the man-at-arms uses the full plate kit (c.1450). New
+  brigandine and sallet (retainer); the man-at-arms uses the full plate kit (c.1450). The
+  French at Agincourt on the field map wear the harness of c.1415: a visored helm, plate on the
+  body and limbs of half of them and mail over padding on the rest (mail was still the main
+  armour and full plate harnesses few: DeVries 2015; the halves ours). New
   material: jack (many layers of linen; design estimate). The figures draw the jack in the
   side's livery colour.
 

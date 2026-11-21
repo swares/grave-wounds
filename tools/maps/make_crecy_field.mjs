@@ -81,9 +81,9 @@ for (let a = 0; a < 360; a += 6){
 // ---------- the armies (pos is the middle of the front row; "south" here is east, down the slope) ----------
 const EN = { side: 0, facing: S }, FR = { side: 1, facing: N };
 const MAA = { quality: "veteran", weapon: "spear", kit: "transitional", formation: "close", mounted: false };
-const ARCHERS = { quality: "veteran", weapon: "longbow", kit: "gambeson", formation: "open", mounted: false };
+const ARCHERS = { quality: "veteran", weapon: "longbow", sidearm: "sword", kit: "gambeson", formation: "open", mounted: false };
 const WELSH = { quality: "regular", weapon: "spear", kit: "gambeson", formation: "close", mounted: false };
-const GENOESE = { quality: "veteran", weapon: "crossbow", kit: "gambeson", formation: "open", mounted: false };   // their pavises left with the baggage
+const GENOESE = { quality: "veteran", weapon: "crossbow", sidearm: "sword", kit: "gambeson", formation: "open", mounted: false };   // their pavises left with the baggage
 const LANCES = { quality: "veteran", weapon: "spear", kit: "transitional", formation: "close", mounted: true };
 const LEVY = { quality: "green", weapon: "spear", kit: "gambeson", formation: "close", mounted: false };
 // Leaders from the accounts (heroes.field_leaders; project doc "crecy-research"): the Prince with Warwick

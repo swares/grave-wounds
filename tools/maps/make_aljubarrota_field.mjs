@@ -59,8 +59,8 @@ for (let c = 42; c <= 58; c += 2) wagons.push([c, 8], [c, 16]);
 const PT = { side: 0, facing: S }, CA = { side: 1, facing: N };
 const MAA = { quality: "veteran", weapon: "spear", kit: "transitional", formation: "close", mounted: false };
 const FOOT = { quality: "regular", weapon: "spear", kit: "gambeson", formation: "close", mounted: false };
-const ARCHERS = { quality: "veteran", weapon: "longbow", kit: "gambeson", formation: "open", mounted: false };
-const CROSSBOWS = { quality: "regular", weapon: "crossbow", kit: "gambeson", formation: "open", mounted: false };
+const ARCHERS = { quality: "veteran", weapon: "longbow", sidearm: "sword", kit: "gambeson", formation: "open", mounted: false };
+const CROSSBOWS = { quality: "regular", weapon: "crossbow", sidearm: "sword", kit: "gambeson", formation: "open", mounted: false };
 const LANCES = { quality: "veteran", weapon: "spear", kit: "transitional", formation: "close", mounted: true };
 const GINETES = { quality: "veteran", weapon: "spear", kit: "hauberk", formation: "open", mounted: true };
 // Leaders from the accounts (heroes.field_leaders; project doc "aljubarrota-research", after Lopes and

@@ -181,12 +181,12 @@ units:
   - {name: "Vanguard foot", side: 0, men: 1200, quality: regular, weapon: spear, kit: gambeson, formation: close, width: 20, pos: [49, 44], facing: 4, size: regiment}
   - {name: "Right wing: the Ala dos Namorados", side: 0, men: 200, quality: veteran, weapon: spear, kit: transitional, formation: close, width: 6, pos: [36, 50], facing: 4, size: company}
   - {name: "Left wing: Antão Vasques and the foreigners", side: 0, men: 200, quality: veteran, weapon: spear, kit: transitional, formation: close, width: 6, pos: [62, 50], facing: 4, size: company}
-  - {name: "Crossbowmen, right wing", side: 0, men: 400, quality: regular, weapon: crossbow, kit: gambeson, formation: open, width: 6, pos: [30, 50], facing: 4, size: battalion}
-  - {name: "English archers, left wing", side: 0, men: 300, quality: veteran, weapon: longbow, kit: gambeson, formation: open, width: 6, pos: [68, 50], facing: 4, size: battalion}
-  - {name: "Crossbowmen, left wing", side: 0, men: 400, quality: regular, weapon: crossbow, kit: gambeson, formation: open, width: 4, pos: [73, 50], facing: 4, size: battalion}
+  - {name: "Crossbowmen, right wing", side: 0, men: 400, quality: regular, weapon: crossbow, sidearm: sword, kit: gambeson, formation: open, width: 6, pos: [30, 50], facing: 4, size: battalion}
+  - {name: "English archers, left wing", side: 0, men: 300, quality: veteran, weapon: longbow, sidearm: sword, kit: gambeson, formation: open, width: 6, pos: [68, 50], facing: 4, size: battalion}
+  - {name: "Crossbowmen, left wing", side: 0, men: 400, quality: regular, weapon: crossbow, sidearm: sword, kit: gambeson, formation: open, width: 4, pos: [73, 50], facing: 4, size: battalion}
   - {name: "Rearguard: João I's men-at-arms", side: 0, men: 700, quality: veteran, weapon: spear, kit: transitional, formation: close, width: 22, pos: [50, 32], facing: 4, size: battalion}
   - {name: "Rearguard foot", side: 0, men: 1500, quality: regular, weapon: spear, kit: gambeson, formation: close, width: 24, pos: [50, 25], facing: 4, size: regiment}
-  - {name: "Baggage guard", side: 0, men: 300, quality: regular, weapon: crossbow, kit: gambeson, formation: open, width: 14, pos: [50, 13], facing: 4, size: battalion}
+  - {name: "Baggage guard", side: 0, men: 300, quality: regular, weapon: crossbow, sidearm: sword, kit: gambeson, formation: open, width: 14, pos: [50, 13], facing: 4, size: battalion}
   - {name: "French vanguard (on foot)", side: 1, men: 1200, quality: veteran, weapon: spear, kit: transitional, formation: close, width: 30, pos: [44, 78], facing: 1, size: regiment}
   - {name: "Portuguese loyalists in the vanguard (João Afonso Telo)", side: 1, men: 400, quality: veteran, weapon: spear, kit: transitional, formation: close, width: 12, pos: [65, 78], facing: 1, size: battalion}
   - {name: "Left wing: the Master of Alcántara's ginetes", side: 1, men: 700, quality: veteran, weapon: spear, kit: hauberk, formation: open, width: 14, pos: [12, 84], facing: 1, mounted: true, via: [[8, 40], [20, 10], [40, 5]], size: battalion}

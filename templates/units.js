@@ -4407,7 +4407,8 @@ const isGun = w => (UD.artillery?.guns || []).includes(w);
 const isBattery = u => isGun(u.weapon);
 const isAtGun = u => (UD.anti_tank_guns?.weapons || []).includes(u.weapon);   // an anti-tank gun unit
 const atGuns = u => Math.ceil(Math.max(0, u.men) / UD.anti_tank_guns.crew);    // its guns served: one a crew, while a man of it is up
-function meleeWeapon(u){                           // hand to hand, a battery's or an anti-tank gun's crews have their own weapon
+function meleeWeapon(u){                           // hand to hand: a unit's sidearm (archers' swords), else a battery's or an anti-tank gun's crews have their own weapon
+  if (u.sidearm) return u.sidearm;
   if (isBattery(u)) return UD.artillery.crew_weapon;
   return isAtGun(u) ? UD.anti_tank_guns.crew_weapon : u.weapon;
 }
