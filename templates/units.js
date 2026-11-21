@@ -197,8 +197,8 @@ function quickBlows(att, dfd, n, atk, dfn, rng, aim){   // as blows, but the ran
 // ---------- heroes (as gravewounds/units.py) ----------
 /* How many of a group's n blows fall on each hero: each hero still up, in turn, takes each blow left
    at his chance, so his share is binomial over the blows left, drawn with one roll a hero (the same
-   odds as a roll a blow). A hero's blows are then rolled one by one; those left once he is down fall
-   on the rankers. Returns the blows that fall on the rankers. */
+   odds as a roll a blow). A hero's blows are then rolled one by one; those left once he is down go on
+   to the heroes after him, and what is left at the end falls on the rankers. Returns the rankers' blows. */
 function binomialDraw(n, p, u){                    // k of n at chance p, read off the cumulative curve at u (0-1)
   if (n <= 0 || p <= 0) return 0;
   if (p >= 1) return n;
@@ -226,7 +226,7 @@ function heroesFirst(att, n, atk, critAt, rng, aim, t){
     const k = binomialDraw(left, p, rng.random());
     left -= k;
     for (let i = 0; i < k; i++){
-      if (hero.state !== "up") break;              // down: the rest of his blows fall on the rankers
+      if (hero.state !== "up"){ left += k - i; break }   // down: the rest of his blows go on to the heroes after him, then the rankers
       heroBlow(att, hero, { r: rng.randint(1, 100), atk, critAt, shift: aim.shift }, rng, t);
       rankers--;
     }

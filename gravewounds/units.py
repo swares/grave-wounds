@@ -320,7 +320,8 @@ def _binomial_draw(n: int, p: float, u: float) -> int:
 def _heroes_first(d: Data, att: dict, n: int, atk: int, crit_at: int, shift: int, rng, exposed: tuple, t: dict) -> int:
     """How many of a group's n blows fall on each hero still up, in turn: his share is binomial over
     the blows left at his chance, drawn with one roll a hero (the same odds as a roll a blow). His blows
-    are rolled one by one; those left once he is down fall on the rankers. Returns the rankers' blows."""
+    are rolled one by one; those left once he is down go on to the heroes after him, and what is left at
+    the end falls on the rankers. Returns the rankers' blows."""
     left = rankers = n
     for hero, p in exposed:
         if left <= 0:
@@ -329,8 +330,9 @@ def _heroes_first(d: Data, att: dict, n: int, atk: int, crit_at: int, shift: int
             continue
         k = _binomial_draw(left, p, rng.random())
         left -= k
-        for _ in range(k):
-            if hero["state"] != "up":        # down: the rest of his blows fall on the rankers
+        for i in range(k):
+            if hero["state"] != "up":        # down: the rest of his blows go on to the heroes after him, then the rankers
+                left += k - i
                 break
             _hero_blow(d, att, hero, rng.randint(1, 100), atk, crit_at, shift, rng, t)
             rankers -= 1
