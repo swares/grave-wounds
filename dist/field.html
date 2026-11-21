@@ -5614,7 +5614,7 @@ function fieldLeaders(o, id){                       // a battlefield unit's lead
 function unitMarks(o){                             // a drawn unit's optional marks, copied as given
   return { ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.armour ? { armour: o.armour } : {}),
     ...(o.via?.length ? { via: o.via.map(h => [...h]) } : {}), ...unitOrders(o), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: o.ladders === "short" ? "short" : true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}),
-    ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}), ...(o.fights_on ? { fights_on: true } : {}), ...(o.throws ? { throws: true } : {}), ...(o.masks ? { masks: true } : {}), ...(o.holds_fire ? { holds_fire: true } : {}), ...(o.spare_muskets ? { spare_muskets: o.spare_muskets } : {}), ...(o.unfit != null ? { unfit: o.unfit } : {}), ...(o.he === false ? { he: false } : {}), ...(o.asFought ? { asFought: true } : {}) };
+    ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}), ...(o.fights_on ? { fights_on: true } : {}), ...(o.throws ? { throws: true } : {}), ...(o.masks ? { masks: true } : {}), ...(o.holds_fire ? { holds_fire: true } : {}), ...(o.spare_muskets ? { spare_muskets: o.spare_muskets } : {}), ...(o.sidearm ? { sidearm: o.sidearm } : {}), ...(o.unfit != null ? { unfit: o.unfit } : {}), ...(o.he === false ? { he: false } : {}), ...(o.asFought ? { asFought: true } : {}) };
 }
 const unitOrders = o => ({ ...(o.hold ? { hold: true } : {}), ...(o.withdraw ? { withdraw: { ...o.withdraw } } : {}) });   // its orders from the accounts
 function ensureTags(B){                            // each unit's number on its side, kept for the battle (B3 stays B3) (as battle.ensure_tags)
@@ -8433,6 +8433,7 @@ function groundInfo(u){                          // the selected unit's Ground l
     + (u.digging ? `<dt>Ground</dt><dd>Digging in: ${u.digging.n} of ${FD.units.dig_in.exchanges} exchanges; it does not fire, and stops if it moves or comes into contact</dd>` : "")
     + sapInfo(u)
     + (u.throws ? `<dt>From above</dt><dd>Throws shells, stones and beams down on each enemy hex next to it across a wall or chevaux de frise, once an exchange: ${FD.units.siege.thrown.struck}% of the men there struck</dd>` : "")
+    + (u.sidearm ? `<dt>Hand to hand</dt><dd>${FD.weapons[u.sidearm]?.name || u.sidearm}</dd>` : "")
     + (u.spare_muskets ? `<dt>Spare muskets</dt><dd>${u.spares_fired ? "Fired: at its rate now" : `${u.spare_muskets} loaded muskets a man: its first exchange of fire, ${u.spare_muskets - 1} more shots a man`}</dd>` : "")
     + (u.emplaced ? `<dt>Ground</dt><dd>Emplaced: dug in before the battle, shots at it −${FD.units.to_ground.cover}% while it stands; it cannot move, but may turn</dd>` : "");
 }

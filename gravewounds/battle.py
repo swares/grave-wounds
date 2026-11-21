@@ -68,7 +68,7 @@ def _unit_marks(o: dict) -> dict:
         out["spare_muskets"] = o["spare_muskets"]   # loaded spares beside each man: its first exchange of fire
     if o.get("ladders") == "short":
         out["ladders"] = "short"                      # short ladders: they do not reach the top of a wall
-    out.update({k: o[k] for k in ("vehicle", "type", "size", "armour") if o.get(k)})
+    out.update({k: o[k] for k in ("vehicle", "type", "size", "armour", "sidearm") if o.get(k)})
     if o.get("fixed"):
         out["fixed"] = list(o["fixed"])
     if o.get("via"):
