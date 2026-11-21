@@ -1159,3 +1159,6 @@ not this repository.
   Since (play test 10): a side getting off its own edge won in two or three rounds, unhurt, since
   each side started on its own edge. Now that side starts in the middle with the other 8 hexes
   off, and wins by holding together for the fight's rounds (6 if none): a fighting withdrawal.
+  Since (play test 12): Hellesdon's household broke every time under 6 rounds, though the letters
+  have it get away with four taken. Its `away` now has its own `rounds`, 3: a midnight scramble
+  (ours, as the user chose); paired, it gets away 3 of 3 with 4-5 of 20 down.

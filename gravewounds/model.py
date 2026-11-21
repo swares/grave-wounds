@@ -2276,7 +2276,7 @@ def _fight_end_errors(fw: str, e, holder: str) -> list[str]:
     """A small fight's end the roller can count: rounds (wins: who wins when they are up), down
     (a side with that share of its men down, or that many, loses), hold (the defending side, who
     lose once the position is empty of them and held by the other side) and away (a side that wins
-    once that share of its men have left by their own edge)."""
+    if that share of its men hold together for its rounds: the away's own, else the fight's, else 6)."""
     if not isinstance(e, dict) or not (e.get("rounds") or e.get("down") or e.get("hold") or e.get("away")):
         return [f"{fw}: needs an end: rounds (with wins), down, hold or away"]
     errors = []
@@ -2287,6 +2287,8 @@ def _fight_end_errors(fw: str, e, holder: str) -> list[str]:
     a = e.get("away")
     if a is not None and not (isinstance(a, dict) and a.get("side") in ("team", "foes") and isinstance(a.get("share"), float) and 0 < a["share"] <= 1):
         errors.append(f"{fw}: end: away needs a side (team or foes) and a share (0-1)")
+    elif a is not None and "rounds" in a and not (isinstance(a["rounds"], int) and a["rounds"] >= 1):
+        errors.append(f"{fw}: end: away rounds must be a whole number of 1 or more")
     for k, v in (e.get("down") or {}).items():
         if k not in ("team", "foes"):
             errors.append(f"{fw}: end: down is by team or foes, not {k}")

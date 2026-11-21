@@ -886,10 +886,11 @@ for each man whether he serves and where he stands. **Serve the season** then ro
   count ground: `hold` (the defending side: at a round's end, once none of its men stand in the
   position, the hexes it started in, and some of the other side's do, the other side wins: the
   bridge, the breach, the post or the trench taken) and `away` (a side that wins if that share of
-  its men hold together, not down, taken or broken, for the fight's rounds, or 6 if it has none:
+  its men hold together, not down, taken or broken, for its own `rounds`, else the fight's, else 6:
   the march to safety off the map, the patrol home with word, the rear-guard escaped, the
-  household out of the manor at Hellesdon). That side starts in the middle of the map, its own
-  edge behind it, and the other side 8 hexes off, toward its own edge: they fell on it. The GM's
+  household out of the manor at Hellesdon, in 3 rounds: a midnight scramble, the household got
+  away with four taken, as Margaret Paston wrote two days later; ours, as the user chose). That
+  side starts in the middle of the map, its own edge behind it, and the other side 8 hexes off, toward its own edge: they fell on it. The GM's
   script falls back: a man of that side not held in contact makes for his own edge, striking on
   the way if he can (all ours, as the user chose: the map is about 76 m across, too short for the
   long marches of the accounts, such as Barquilla's two miles). A side that wins so has left the
