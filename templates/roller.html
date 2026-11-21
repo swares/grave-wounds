@@ -4438,9 +4438,9 @@ function painChecks(){
   const out = [];
   for (const c of S.chars){
     if (penalties(c).flags.includes("out")) continue;
-    const nerve = stopNerve(c, CMB.stop_check.pain_round_as);
-    if (nerve === null) continue;
-    const r = painCheck(nerve, painOf(c), readDie("#in-stop") ?? d100(), c.blood / poolOf(c));
+    const nerve = stopNerve(c, CMB.stop_check.pain_round_as), pain = painOf(c);
+    if (nerve === null || pain <= TRK.pain_cap) continue;   // no pain past the cap: no check, and no die rolled
+    const r = painCheck(nerve, pain, readDie("#in-stop") ?? d100(), c.blood / poolOf(c));
     if (!r) continue;
     $("#in-stop").value = "";
     out.push(stopResult(c, r, " (pain)"));
