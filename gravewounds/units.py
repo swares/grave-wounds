@@ -329,13 +329,12 @@ def _heroes_first(d: Data, att: dict, n: int, atk: int, crit_at: int, shift: int
         if hero["state"] != "up":
             continue
         k = _binomial_draw(left, p, rng.random())
-        left -= k
-        for i in range(k):
-            if hero["state"] != "up":        # down: the rest of his blows go on to the heroes after him, then the rankers
-                left += k - i
-                break
+        done = 0
+        while done < k and hero["state"] == "up":   # his blows, until he is down
             _hero_blow(d, att, hero, rng.randint(1, 100), atk, crit_at, shift, rng, t)
-            rankers -= 1
+            done += 1
+        left -= done                         # those left once he is down go on to the heroes after him, then the rankers
+        rankers -= done
     return rankers
 
 

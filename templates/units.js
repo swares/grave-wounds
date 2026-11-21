@@ -224,12 +224,13 @@ function heroesFirst(att, n, atk, critAt, rng, aim, t){
     if (left <= 0) break;
     if (hero.state !== "up") continue;
     const k = binomialDraw(left, p, rng.random());
-    left -= k;
-    for (let i = 0; i < k; i++){
-      if (hero.state !== "up"){ left += k - i; break }   // down: the rest of his blows go on to the heroes after him, then the rankers
+    let done = 0;
+    while (done < k && hero.state === "up"){         // his blows, until he is down
       heroBlow(att, hero, { r: rng.randint(1, 100), atk, critAt, shift: aim.shift }, rng, t);
-      rankers--;
+      done++;
     }
+    left -= done;                                    // those left once he is down go on to the heroes after him, then the rankers
+    rankers -= done;
   }
   return rankers;
 }
