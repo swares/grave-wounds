@@ -301,10 +301,12 @@ def _quick_blows(d: Data, att: dict, dfd: dict, n: int, atk, dfn, rng, exposed: 
 
 def _binomial_draw(n: int, p: float, u: float) -> int:
     """k of n at chance p, read off the cumulative curve at u (0-1), as units.js binomialDraw."""
-    if n <= 0 or p <= 0:
+    if n <= 0:
         return 0
-    if p >= 1:
+    if p >= 1:                               # every blow
         return n
+    if p <= 0:                               # none
+        return 0
     pmf = (1 - p) ** n
     if pmf < 1e-300:                         # too many blows for the exact sum: the normal curve
         z = statistics.NormalDist().inv_cdf(min(max(u, 1e-12), 1 - 1e-12))
