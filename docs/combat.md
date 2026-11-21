@@ -125,7 +125,10 @@ attack. Stepping back 1 hex is a careful withdrawal and draws no free attack.
   arm, the missile not gather to its sight line (`weapons.yaml` `min_range`). The roller says
   so, the GM's script does not try, and the field map holds the same. The missile's time of
   flight (about 20 seconds to 3,750 m) is not modelled: the map is at most 160 m across, under
-  a second's flight. No minimum is set for the bazooka or the recoilless rifle (none found).
+  a second's flight. A bazooka cannot strike closer than 2 hexes (the 3.5-inch rocket arms at
+  10 ft, 3 m; for the 2.36-inch rocket and the German launchers, ours) and a recoilless rifle
+  closer than 8 (no figure found for its rounds: the Carl Gustaf's HEDP round arms at 15-40 m,
+  and its 15 m stands in, ours).
   The field map's units have their own, lower battle rates
   (`units.yaml` `missile.rate`; see [units.md](units.md)).
 - Artillery, mines and stakes are not aimed on the map; the GM decides whom they hit.

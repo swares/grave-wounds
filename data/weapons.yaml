@@ -705,6 +705,7 @@ weapons:
     two_handed: true
     icon: launcher
     range: [30, 60, 100]
+    min_range: 2           # the 3.5-inch HEAT rocket M28A2 arms at 10 ft, 3 m (Army ammunition data sheets for rockets, Dec 1981): 2 hexes; for the 2.36-inch rocket and the German launchers, ours
     shots_a_minute: 6
     rate_note: "Six rounds a minute can be achieved with the M9 (weaponsystems.net); single report: ten a minute for the M9A1 (Korean War Online)."
     era: "1942-1953"
@@ -745,6 +746,7 @@ weapons:
     two_handed: true
     icon: launcher
     range: [100, 200, 400]
+    min_range: 8           # no figure found for the 57-106 mm rounds or the B-10; the Carl Gustaf's HEDP round arms at 15-40 m (GlobalSecurity), and its 15 m stands in (ours): 8 hexes
     shots_a_minute: 5
     rate_note: "The M40: one round a minute sustained, five for short periods (weaponsystems.net, after the US manuals); a small fight is a short period, so five (ours)."
     era: "1945-"
