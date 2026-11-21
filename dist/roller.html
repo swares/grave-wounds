@@ -4070,21 +4070,15 @@ function edgeDistance(sd, h){                      // hexes from h to the map's 
   const { cols, rows } = mapSize(), k = (S.fightEnd?.edges || {})[sd] ?? 0;
   return [h[0], cols - 1 - h[0], h[1], rows - 1 - h[1]][k];
 }
-function onOwnEdge(sd, h){                         // h on the map's edge that side sd came in by
-  const { cols, rows } = mapSize(), k = (S.fightEnd.edges || {})[sd];
-  return !!h && [h[0] === 0, h[0] === cols - 1, h[1] === 0, h[1] === rows - 1][k ?? 0];
-}
 const inPosition = h => !!h && hexDistance(S.fightEnd.position.centre, h) <= S.fightEnd.position.radius;
-function goneAway(E){                              // the away side's men standing on their own edge leave the field
+const AWAY_ROUNDS = 6;                              // a getaway with no rounds of its own: the march to safety off the map takes these (ours)
+function goneAway(E){                              // a side that wins by getting away: it holds together till its rounds are up, and is off
   const A = E.away;
   if (!A) return null;
-  const men = S.chars.filter(c => sideOf(c) === A.side);
-  for (const c of men) if (!c.away && !isOut(c) && !c.taken && onOwnEdge(A.side, c.pos)){
-    c.away = true; c.pos = null;
-    S.pending.push(`${c.name} gets away off the ${A.side}' own edge`);
-  }
-  const n = men.filter(c => c.away).length;
-  return men.length && n >= A.share * men.length - 1e-9 ? { won: A.side, why: `${A.side} have got away` } : null;
+  const at = E.rounds || AWAY_ROUNDS;
+  if (S.round <= at || (S.broken || {})[A.side]) return null;
+  const men = S.chars.filter(c => sideOf(c) === A.side), up = men.filter(c => !isDown(c) && !c.taken && !c.fled).length;
+  return men.length && up >= A.share * men.length - 1e-9 ? { won: A.side, why: `${A.side} have held together ${at} rounds and got away` } : null;
 }
 function positionLost(E){                          // at a round's end: the position empty of its holders and held by the other side
   if (!E.hold || !E.position) return null;
@@ -5229,12 +5223,24 @@ function reachText(wid){
 }
 const initials = n => n.replace(/^Example:\s*/, "").split(/\s+/).filter(Boolean).map(x => x[0]).join("").slice(0, 2).toUpperCase() || "?";
 const deepAt = h => !!groundSpec(S.ground, h).deep;   // deep water: no one enters or stands in it
+// Where a side starts: by its edge; but in a fight a side wins by getting away, that side starts in
+// the middle, its own edge behind it, and the other within striking distance (AWAY_CLOSE hexes;
+// they fell on it), toward its own edge (ours).
+const AWAY_CLOSE = 8;
+function startAnchor(sd, sides, cols, rows){
+  const k = sides.indexOf(sd) % 4, A = S.fightEnd?.away, cx = cols >> 1, cy = rows >> 1;
+  if (A && sides.includes(A.side)){
+    if (sd === A.side) return [cx, cy];
+    return [[cx - AWAY_CLOSE, cy], [cx + AWAY_CLOSE, cy], [cx, cy - AWAY_CLOSE], [cx, cy + AWAY_CLOSE]][k];
+  }
+  return [[1, cy], [cols - 2, cy], [cx, 1], [cx, rows - 2]][k];
+}
 function placeUnplaced(){                    // new fighters go near their side's edge
   const { cols, rows } = mapSize(), sides = sidesInOrder();
   for (const c of S.chars){
     if (c.away || c.pos && c.pos[0] < cols && c.pos[1] < rows && !deepAt(c.pos) && S.chars.find(o => sameHex(o.pos, c.pos)) === c) continue;
     c.pos = null;
-    const anchor = [[1, rows >> 1], [cols - 2, rows >> 1], [cols >> 1, 1], [cols >> 1, rows - 2]][sides.indexOf(sideOf(c)) % 4];
+    const anchor = startAnchor(sideOf(c), sides, cols, rows);
     let best = null, bd = Infinity;
     for (let r = 0; r < rows; r++) for (let col = 0; col < cols; col++){
       if (occupant([col, r]) || deepAt([col, r])) continue;

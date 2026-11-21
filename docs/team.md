@@ -882,11 +882,14 @@ for each man whether he serves and where he stands. **Serve the season** then ro
   and the GM's script stops; **Fight on** sets the call aside for the rest of the fight. Two more
   count ground: `hold` (the defending side: at a round's end, once none of its men stand in the
   position, the hexes it started in, and some of the other side's do, the other side wins: the
-  bridge, the breach, the post or the trench taken) and `away` (a side that wins once that share of
-  its men have left by their own map edge; a man of that side who ends on it leaves the field, out
-  of the fight and not counted lost: the patrol home with word, the rear-guard escaped, the
-  household out of the manor at Hellesdon. The GM's script plays it: a man of that side not held
-  in contact makes for his own edge, striking on the way if he can (ours). What none
+  bridge, the breach, the post or the trench taken) and `away` (a side that wins if that share of
+  its men hold together, not down, taken or broken, for the fight's rounds, or 6 if it has none:
+  the march to safety off the map, the patrol home with word, the rear-guard escaped, the
+  household out of the manor at Hellesdon). That side starts in the middle of the map, its own
+  edge behind it, and the other side 8 hexes off, toward its own edge: they fell on it. The GM's
+  script falls back: a man of that side not held in contact makes for his own edge, striking on
+  the way if he can (all ours, as the user chose: the map is about 76 m across, too short for the
+  long marches of the accounts, such as Barquilla's two miles). What none
   of these counts (a general taken, a deed of arms, getting in and back out) stays the GM's call;
   the words say it. Or **Roll it**: each man with the battalion is hit on
   10% (ours), and each follower too (his fate as below).

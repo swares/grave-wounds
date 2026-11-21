@@ -91,6 +91,7 @@ def followers(pg):
     reloads(pg)
     hedged_garden(pg)
     foes_mixed(pg)
+    away_start(pg)
     muster_cap(pg)
 
 
@@ -191,6 +192,35 @@ def muster_cap(pg):
     check(r["cut"] == [[["archer", 7], ["spearman", 4]], [["a", 2], ["b", 2]], [["a", 4], ["b", 1]], [["a", 2]]], f"team.js cuts a muster as team.py does, off the largest career ({r['cut']})")
     check(all(n == min(cap, full) for n, cap, full in r["got"]) and any(cap < full for _, cap, full in r["got"]),
           f"40 new companies rolled one after another: each musters its template's followers, or what its leader's Presence keeps if fewer, not the last one's cut ({r['got'][:6]}...)")
+
+
+def away_start(pg):
+    """A side that wins by getting away starts in the middle, its own edge behind it: the French
+    foragers at Barquilla must cross half the map to get away."""
+    pg.goto(BASE + "team.html")
+    pg.evaluate(CLEAR)
+    pg.reload()
+    pg.select_option("#sel-era", "horse_musket")
+    pg.select_option("#sel-region", "british_pen")
+    pg.select_option("#sel-template", "company")
+    pg.click("#btn-roll")
+    pg.click(SEND)
+    pg.wait_for_selector(ADDTEAM)
+    pg.click(ADDTEAM)
+    pg.goto(BASE + "team.html")
+    pg.wait_for_selector("#h-service")
+    pg.evaluate("""() => { const W = SVC.war('peninsula'); svcState(); Object.assign(S.service, { war: 'peninsula', i: 0, with: {}, pos: {}, at: {}, played: {}, unit: {}, share: {} });
+      S.svcSmall = SVC.smallFight(W, 'campaign', () => 50, 'foragers'); svcPlayFight() }""")
+    pg.wait_for_selector(HANDOFF)
+    pg.click(HANDOFF)
+    pg.wait_for_function("() => !S.handoff")
+    r = pg.evaluate("""() => { const A = S.fightEnd.away.side, { cols, rows } = mapSize(), mid = [cols >> 1, rows >> 1];
+      const mine = S.chars.filter(c => sideOf(c) === A && c.pos), other = S.chars.filter(c => sideOf(c) !== A && c.pos);
+      const out = { cols, near: Math.min(...mine.map(c => edgeDistance(A, c.pos))), close: Math.max(...other.map(c => hexDistance(c.pos, mid))) };
+      out.early = fightEndCheck(true); delete S.fightEnd.called;
+      S.round = 7; out.late = fightEndCheck(true)?.won === A; return out }""")
+    check(r["near"] >= r["cols"] // 2 - 3 and r["close"] <= 14 and r["early"] is None and r["late"],
+          f"the French who win by getting away start in the middle, half the map from their edge, the light troops close by; they get away only by holding together for 6 rounds ({r})")
 
 
 def foes_mixed(pg):
@@ -502,18 +532,16 @@ def run(p):
       fr[0].pos = E.position.centre.slice();                                  // a Frenchman in it
       out.midRound = fightEndCheck(false);
       out.atEnd = fightEndCheck(true);
-      E.called = null; S.wonBy = null; E.hold = null; E.away = { side: 'French', share: 0.25 };
-      const k = E.edges.French, edge = [[0, null], [cols - 1, null], [null, 0], [null, rows - 1]][k];
-      fr.slice(0, Math.ceil(fr.length / 4)).forEach((c, i) => { c.pos = [edge[0] ?? i, edge[1] ?? i] });
-      out.away = fightEndCheck(false);
-      out.gone = fr.filter(c => c.away && !c.pos).length; out.need = Math.ceil(fr.length / 4);
-      out.isOut = fr.filter(c => c.away).every(isOut);
+      E.called = null; S.wonBy = null; E.hold = null; E.away = { side: 'French', share: 0.5 }; E.rounds = null; const r0 = S.round;
+      S.round = 3; out.early = fightEndCheck(false); E.called = null;
+      S.round = 7; out.away = fightEndCheck(false); E.called = null; S.wonBy = null;
+      fr.slice(0, Math.ceil(fr.length * 0.6)).forEach(c => { c.taken = true }); out.cut = fightEndCheck(false); S.round = r0;
       const was = JSON.parse(snap); S.chars = was.chars; S.fightEnd = was.end; S.wonBy = was.won; S.broken = was.broken;
       return out }""")
     check(held["hold"] == "British" and held["midRound"] is None and (held["atEnd"] or {}).get("won") == "French"
           and "hold" in held["atEnd"]["why"], f"the picket's bridge: lost at a round's end once the French stand in it and the picket does not ({held})")
-    check((held["away"] or {}).get("won") == "French" and held["gone"] >= held["need"] and held["isOut"],
-          f"and men on their own edge leave the field: once a share have got away, their side wins ({held['away']}, {held['gone']} gone, {held['need']} needed; any already on the edge go too)")
+    check(held["early"] is None and (held["away"] or {}).get("won") == "French" and not (held["cut"] or {}).get("won") == "French",
+          f"and a side that wins by getting away does so by holding together for 6 rounds, not before, nor once most are taken ({held['early']}, {held['away']}, {held['cut']})")
     # a man taken in a fight his side then wins is retaken
     rt = pg.evaluate("""() => { const c = S.chars.find(x => sideOf(x) === 'British' && x.sheet?.pid), was = S.wonBy;
       c.taken = true; markLost(c.sheet.pid, 'taken prisoner'); setWon('British');

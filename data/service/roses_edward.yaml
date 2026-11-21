@@ -337,7 +337,7 @@ small_fights:
     foes: [{name: "The raiders", men: [30, 300], kit: jack_sallet, weapon: bill}]
     surprise: {text: "The household is asleep", chance: 50}
     aims: {team: "Keep the house, or get away with the household.", foes: "Sack the house."}
-    ends: "The raiders take the house if the household is broken; they go off once a third of those here are down. The household gets away, and the house is lost, once half of it reaches its own edge."
+    ends: "The raiders take the house if the household is broken; they go off once a third of those here are down. The household gets away, and the house is lost, if half of it holds together for 6 rounds, making for its own edge."
     end: {down: {foes: 0.33}, hold: team, away: {side: team, share: 0.5}}   # getting away, as the team's aim says (ours, as the user chose)
     sources: ["https://thisispaston.co.uk/hellesdonhub.html"]
     note: "The raiders' 300 is the duke's force sent to Drayton the same night; the household's size is not given: ours. No fight at the house is described: the duke's men pulled down the lodge and the manor and robbed the church (This is Paston)."

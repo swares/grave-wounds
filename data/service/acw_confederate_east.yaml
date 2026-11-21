@@ -365,7 +365,7 @@ small_fights:
     side: {name: "The men with Major Terry", men: [20, 80]}
     foes: [{name: "Greene's New Yorkers behind the breastworks", men: [40, 150], weapon: rifle_musket}]
     aims: {team: "Get back down the hill to the foot of it.", foes: "Hold the works and take the men below them."}
-    ends: "The men below the works win if half of them get back off their own edge; they are beaten once half of them are down."
+    ends: "The men below the works get back if half of them hold together for 6 rounds, falling back to their own edge; they are beaten once half of them are down."
     end: {down: {team: 0.5}, away: {side: team, share: 0.5}}
     sources: ["https://stonewallbrigade.net/stonewall-brigade-at-gettysburg-part-three", "https://historynet.com/escape-was-hopeless-a-stonewall-brigade-at-gettysburg/", "https://www.nps.gov/gett/learn/historyculture/official-report-of-major-william-terry.htm"]
     note: "Terry: retreat was 'impracticable to effect'; Geary: men of the Stonewall Brigade came in under white flags. On the roller: paint rocks below the defenders' hexes and a climb of a level or two up to them, and place the team close below; a man down beside the enemy asks for quarter (the GM's call for a player's man). The sizes are ours."
@@ -528,7 +528,7 @@ small_fights:
     foes: [{name: "The Union rear-guard", men: [100, 300], weapon: rifle_musket}]
     surprise: {text: "The guns open on men cooking breakfast", chance: 40}
     aims: {team: "Cut the rear-guard off before it gets away.", foes: "Fall back in order and keep the column covered."}
-    ends: "The rear-guard wins if half of it gets off its own edge, or after 8 rounds; it is cut off once half of it is down."
+    ends: "The rear-guard gets away if half of it holds together for 8 rounds, falling back to its own edge; it is cut off once half of it is down."
     end: {rounds: 8, wins: foes, down: {foes: 0.5, team: 0.5}, away: {side: foes, share: 0.5}}
     sources: ["https://www.oocities.org/plankmaker_1999/2ac1divbristoe.html"]
     note: "The sizes are ours."
