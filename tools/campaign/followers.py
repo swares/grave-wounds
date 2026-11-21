@@ -31,6 +31,8 @@ with sync_playwright() as p:
           and pg.evaluate("() => fwCap([['archer', 14]], 50)") == 14, "the cap is 14 times the band's share: ½ at 20, 1 at 50, 1½ at 90")
     for pres, want in ((20, 7), (50, 14), (90, 21)):
         check(cap_for(pres) == want, f"the test's bands match at Presence {pres}")
+    # the full 14, as if mustered under a stronger leader (a new muster is cut to the rolled leader's Presence)
+    pg.evaluate("() => { S.fcounts = tplFollowers(S.template); rollCrew() }")
     pg.evaluate("() => { const c = S.team.find(m => m.leader); c.base.pres = 20 - c.stat_mods.pres; finishChar(c); render() }")   # a weak leader keeps 7 of 14
     lead = pg.evaluate("() => S.team.find(m => m.leader).name")
     check(f"{lead}'s Presence 20 keeps 7" in pg.text_content("#fqual"), "the followers' line names the leader, his Presence and the cap")

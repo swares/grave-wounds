@@ -218,9 +218,13 @@ def away_start(pg):
       const mine = S.chars.filter(c => sideOf(c) === A && c.pos), other = S.chars.filter(c => sideOf(c) !== A && c.pos);
       const out = { cols, near: Math.min(...mine.map(c => edgeDistance(A, c.pos))), close: Math.max(...other.map(c => hexDistance(c.pos, mid))) };
       out.early = fightEndCheck(true); delete S.fightEnd.called;
-      S.round = 7; out.late = fightEndCheck(true)?.won === A; return out }""")
+      const caught = mine.find(c => !c.taken); caught.taken = true;
+      S.round = 7; out.late = fightEndCheck(true)?.won === A;
+      out.field = { theirs: holdsField(other[0]), mine: holdsField(caught), stillTaken: !!caught.taken }; return out }""")
     check(r["near"] >= r["cols"] // 2 - 3 and r["close"] <= 14 and r["early"] is None and r["late"],
           f"the French who win by getting away start in the middle, half the map from their edge, the light troops close by; they get away only by holding together for 6 rounds ({r})")
+    check(r["field"] == {"theirs": True, "mine": False, "stillTaken": True},
+          f"once the French get away, the light troops hold the field: their men down are picked up, and a Frenchman taken stays taken ({r['field']})")
 
 
 def foes_mixed(pg):
