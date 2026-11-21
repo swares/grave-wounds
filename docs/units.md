@@ -27,7 +27,13 @@ the browser (`templates/units.js`, checked against the Python).
 1. **Who strikes.** In melee, the front rank of each hex touching the enemy: 10 men to a
    hex face, and one more rank for each hex of the weapon's reach past the first, up to the
    formation's ranks: spears and bills (reach 2) strike from two ranks, the pike (reach 3)
-   from three.
+   from three. A unit with a `sidearm` fights hand to hand with it, not its missile weapon.
+   Agincourt's archers carry swords: they "cast away their bowes" for bills, mallets, swords
+   and axes (the National Archives, DeVries 2015, Bennett; the sword ours). Elsewhere the
+   bowmen still fight hand to hand with their bows: swords on all seven medieval fields cost
+   Towton's Yorkists about 30 points of their wins over 24 seeds (the user chose Agincourt
+   only, 21 November 2026). A battery's and an anti-tank gun's crews fight with their own
+   crew weapon.
    With missiles, the men who have the target in range; the field map counts them (the
    front two ranks of a line).
 2. **How many blows tell.** Most of a minute in a press is shoving, guarding and watching

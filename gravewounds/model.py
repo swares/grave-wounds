@@ -2827,6 +2827,8 @@ def _unit_spec_errors(d: Data, f: dict, where: str, u: dict) -> list[str]:
         errors.append(f"{where}: unit {u.get('name')} has a weapon the {f['table']} tables do not offer, or an unknown kit")
     if u.get("quality") not in U["quality"] or u.get("formation") not in U["formations"]:
         errors.append(f"{where}: unit {u.get('name')} has an unknown quality or formation")
+    if "sidearm" in u and (u["sidearm"] not in available_weapons(d, f["table"]) or "reach" not in d.weapons.get(u["sidearm"], {})):
+        errors.append(f"{where}: unit {u.get('name')}: sidearm must be a close-combat weapon the {f['table']} tables offer")
     if u.get("guns", "smoothbore") not in ("smoothbore", "rifled", "howitzer"):
         errors.append(f"{where}: unit {u.get('name')} has guns other than smoothbore, rifled or howitzer")
     vk = (U.get("vehicles") or {}).get("kinds", {})
