@@ -1879,7 +1879,7 @@ const AWAY_ROUNDS = 6;                              // a getaway with no rounds 
 function goneAway(E){                              // a side that wins by getting away: it holds together till its rounds are up, and is off
   const A = E.away;
   if (!A) return null;
-  const at = E.rounds || AWAY_ROUNDS;
+  const at = A.rounds || E.rounds || AWAY_ROUNDS;   // its own rounds (Hellesdon's midnight scramble), else the fight's, else 6
   if (S.round <= at || (S.broken || {})[A.side]) return null;
   const men = S.chars.filter(c => sideOf(c) === A.side), up = men.filter(c => !isDown(c) && !c.taken && !c.fled).length;
   return men.length && up >= A.share * men.length - 1e-9 ? { won: A.side, away: true, why: `${A.side} have held together ${at} rounds and got away` } : null;

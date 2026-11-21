@@ -1417,7 +1417,7 @@ function svcFightEnd(e, team, foes){                 // the fight's countable en
   if (!e) return null;
   const names = { team, foes }, name = k => names[k] || null;
   return { rounds: e.rounds || null, wins: name(e.wins), down: Object.fromEntries(Object.entries(e.down || {}).map(([k, v]) => [name(k), v])),
-    hold: e.hold ? name(e.hold) : null, away: e.away ? { side: name(e.away.side), share: e.away.share } : null };
+    hold: e.hold ? name(e.hold) : null, away: e.away ? { side: name(e.away.side), share: e.away.share, rounds: e.away.rounds || null } : null };
 }
 function svcPlayFight(){
   const V = svcState(), W = SVC.war(V.war), s = W.seasons[Math.max(0, V.i - 1)];

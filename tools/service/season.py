@@ -219,11 +219,13 @@ def away_start(pg):
       const mine = S.chars.filter(c => sideOf(c) === A && c.pos), other = S.chars.filter(c => sideOf(c) !== A && c.pos);
       const out = { cols, near: Math.min(...mine.map(c => edgeDistance(A, c.pos))), close: Math.max(...other.map(c => hexDistance(c.pos, mid))) };
       out.early = fightEndCheck(true); delete S.fightEnd.called;
+      S.fightEnd.away.rounds = 3; S.round = 4; out.own = fightEndCheck(true)?.why || null; delete S.fightEnd.called; delete S.fightEnd.away.rounds; S.wonBy = null;
       const caught = mine.find(c => !c.taken); caught.taken = true;
       S.round = 7; out.late = fightEndCheck(true)?.won === A;
       out.field = { theirs: holdsField(other[0]), mine: holdsField(caught), stillTaken: !!caught.taken }; return out }""")
     check(r["near"] >= r["cols"] // 2 - 3 and r["close"] <= 14 and r["early"] is None and r["late"],
           f"the French who win by getting away start in the middle, half the map from their edge, the light troops close by; they get away only by holding together for 6 rounds ({r})")
+    check(r["own"] and "3 rounds" in r["own"], f"an away with its own rounds (Hellesdon's 3) gets away when they are up ({r['own']})")
     check(r["field"] == {"theirs": True, "mine": False, "stillTaken": True},
           f"once the French get away, the light troops hold the field: their men down are picked up, and a Frenchman taken stays taken ({r['field']})")
 
@@ -251,6 +253,8 @@ def unfit_stay(pg):
       return { pids: h.pids.length, team: S.team.length, out: !h.pids.includes(sick.pid), followers: h.followers.length, crew: S.crew.length,
         crewOut: !h.followers.some(x => x.name === S.crew[0].name), mildIn: h.followers.some(x => x.name === S.crew[1].name),
         note: h.notes.some(n => n.startsWith('Left in hospital') && n.includes(sick.name) && n.includes(S.crew[0].name)) } }""")
+    hr = pg.evaluate("() => svcFightEnd(SVC.war('roses_edward').small_fights.find(f => f.id === 'raid').end, 'Yorkists', 'Lancastrians').away")
+    check(hr == {"side": "Yorkists", "share": 0.5, "rounds": 3}, f"Hellesdon's household gets away in 3 rounds, a midnight scramble ({hr})")
     check(r["pids"] == r["team"] - 1 and r["out"] and r["followers"] == r["crew"] - 1 and r["crewOut"] and r["mildIn"] and r["note"],
           f"a named man and a follower grave at the season's end stay in hospital, out of the small fight, and its notes name them; a man mending comes ({r})")
 
@@ -507,6 +511,7 @@ def run(p):
       let r; try { svcPlayFight(); r = S.msg } catch { /* the fault itself, as wanted */ r = 'thrown' } S.svcSmall = was; return r }""")
     check(fault == "thrown", f"a fault in building the fight shows as itself, not as the browser refusing to keep it ({fault!r})")
     pg.select_option("#sv-fight", "picket")
+    hosp = pg.evaluate("() => S.team.filter(c => { const H = svcHealthOf(namedStore(), c); return H && SVC.unfit(H) }).length")   # left in hospital: serious or worse
     pg.click("#btn-svplay")
     pg.wait_for_function(AT_ROLLER, timeout=15000)
     pg.wait_for_selector(HANDOFF, timeout=10000)
@@ -515,8 +520,8 @@ def run(p):
     pg.wait_for_function(NO_HANDOFF, timeout=8000)
     sides = pg.evaluate("""() => { const b = S.chars.filter(c => sideOf(c) === 'British'), f = S.chars.filter(c => sideOf(c) === 'French');
       return { b: b.length, named: b.filter(c => c.uid).length, f: f.length, fw: [...new Set(f.map(c => c.weapon))], notes: S.pending.join(' | ') } }""")
-    check(sides["named"] == named and sides["b"] >= named and sides["f"] >= 1,
-          f"the team's {named} named men fight in the picket with its comrades, against the French ({sides['b']} and {sides['f']})")
+    check(sides["named"] == named - hosp and sides["b"] >= named - hosp and sides["f"] >= 1,
+          f"the team's {named} named men, but for {hosp} in hospital, fight in the picket with its comrades, against the French ({sides['named']}: {sides['b']} and {sides['f']})")
     check(sides["fw"] == ["musket_smoothbore"], f"the French carry the fight's weapon ({sides['fw']})")
     check("Hold the bridge" in sides["notes"] and "It ends" in sides["notes"] and "Cope" in sides["notes"], "the aims, the end and the source are in the fight's notes")
     check(pg.evaluate("() => S.weather.cond") == "rain", "in the rain, as the fight says")
