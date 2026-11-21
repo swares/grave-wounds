@@ -889,7 +889,9 @@ for each man whether he serves and where he stands. **Serve the season** then ro
   edge behind it, and the other side 8 hexes off, toward its own edge: they fell on it. The GM's
   script falls back: a man of that side not held in contact makes for his own edge, striking on
   the way if he can (all ours, as the user chose: the map is about 76 m across, too short for the
-  long marches of the accounts, such as Barquilla's two miles). What none
+  long marches of the accounts, such as Barquilla's two miles). A side that wins so has left the
+  field to the others: their men down are picked up, its own men left down are taken and its taken
+  men stay taken, where any other win gives the field to the winner (the user's choice). What none
   of these counts (a general taken, a deed of arms, getting in and back out) stays the GM's call;
   the words say it. Or **Roll it**: each man with the battalion is hit on
   10% (ours), and each follower too (his fate as below).

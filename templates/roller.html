@@ -740,6 +740,11 @@ function winningSide(){                            // the side still standing wh
   return up.length === 1 ? up[0] : null;
 }
 const wonBy = () => S.wonBy || winningSide();
+/* Who holds the field: the winner, unless it won by getting away; then the sides it got away from hold
+   it (ours). Their own men down are picked up; the men the getaway side left down are taken. */
+const gotAwayWin = w => !!(w && S.fightEnd?.called?.away && S.fightEnd.called.won === w);
+function holdsFieldSide(sd){ const w = wonBy(); return !!w && (gotAwayWin(w) ? sd !== w : sd === w) }
+const holdsField = c => holdsFieldSide(sideOf(c));
 function afterMen(){                               // the team builder's men on the winning side (from the field map: those whose side held the field)
   const w = wonBy();
   return S.chars.filter(c => c.sheet && c.sheet.pid && (c.fieldWon !== undefined ? c.fieldWon : w && sideOf(c) === w));
@@ -777,7 +782,7 @@ function renderAfterFight(){
   const rows = team.map(c => {
     const why = deedWhy(c), won = men.includes(c), marked = (S.deedsDone || []).includes(c.id);
     const take = c.taken ? " · taken prisoner (to the team builder's Prisoners)" : "";
-    const takeBtn = !won && !c.taken ? takenButton(c) : "", deedTxt = why ? " · a deed: " + attr(why) : "";
+    const takeBtn = !holdsField(c) && !c.taken ? takenButton(c) : "", deedTxt = why ? " · a deed: " + attr(why) : "";
     return `<li><label class="check"><input type="checkbox" data-deed="${c.id}"${why && !marked ? " checked" : ""}${marked ? " disabled" : ""}> <b>${attr(c.name)}</b></label> <span class="muted">${attr(sideOf(c))}${won ? ", won" : ""} · ${c.downs || 0} put down${deedTxt}${marked ? " · deed marked" : ""}${take}</span>${takeBtn}</li>`;
   }).join("");
   const log = (S.afterLog || []).map(l => `<li>${attr(l)}</li>`).join("");
@@ -789,25 +794,25 @@ function renderAfterFight(){
     ${log ? `<ol class="roundlog">${log}</ol>` : ""}</details>`;
 }
 /* A skirmish from the travel map, back on it (as the field map's Back to the travel map): each force loses
-   the men it lost here (killed outright, died before help came, left on the field by a beaten side,
+   the men it lost here (killed outright, died before help came, left down on a field it does not hold,
    taken prisoner), its wounded men without a record of their own join its sick, its named men's wounds
    go to camp (To camp), the beaten force falls back, and the team's captives go to the team builder. */
 const DIES = { instant: "killed", rounds: "died", minutes: "died" };
 function worstWound(c){ return campable(c).sort((a, b) => DZR.steps.indexOf(DZR.wounds.start[b.sev]) - DZR.steps.indexOf(DZR.wounds.start[a.sev]))[0] }
-function fighterFate(c, won){                       // "taken", "killed", "died", "left", "wounded" or null (came through, or ran)
+function fighterFate(c, held){                      // "taken", "killed", "died", "left", "wounded" or null (came through, or ran)
   if (c.taken) return "taken";
   if (c.fled || c.away) return null;
   const d = DIES[charStats(c).worst];
   if (d) return d;
-  if (!won && isDown(c)) return "left";
+  if (!held && isDown(c)) return "left";
   return campable(c).length ? "wounded" : null;
 }
 /* The team's followers back to the team builder (gravewounds-followers-back): each sent once, by his
-   id: killed or died, dead; taken, or left on the field down by a beaten side, taken; alive with a
+   id: killed or died, dead; taken, or left down on a field his side does not hold, taken; alive with a
    serious or critical wound, invalided home; a light wound or none, he stays. */
 const FOLLOWERS_BACK = "gravewounds-followers-back";
 function followerFate(c){
-  const fate = fighterFate(c, sideOf(c) === wonBy());
+  const fate = fighterFate(c, holdsField(c));
   if (fate === "killed" || fate === "died") return "dead";
   if (fate === "taken" || fate === "left") return "taken";
   if (fate === "wounded" && ["serious", "critical"].includes(worstWound(c).sev)) return "invalided";
@@ -840,7 +845,7 @@ function rollerResult(){                            // the travel map's battle r
   for (const c of S.chars){
     if (c.forceId === undefined || c.forceId === null) continue;
     const x = out[c.forceId] ??= { killed: 0, left: 0, died: 0, taken: 0, lost: 0, cases: [] };
-    const fate = fighterFate(c, sideOf(c) === w);
+    const fate = fighterFate(c, holdsField(c));
     if (fate === "wounded" && c.uid) toCamp(c);                   // his own record: his wounds go to camp with him
     else if (fate === "wounded") x.cases.push(woundCaseFor(worstWound(c)));
     else if (fate) x[fate] += 1;
@@ -872,7 +877,7 @@ function dropButtons(){                           // Drop packs, a side at a tim
 }
 function packsLostText(){                         // a side that dropped its packs and lost the field loses them (once): the travel map's next night
   const w = wonBy(); if (!w) return "";
-  const lost = Object.keys(S.packsDropped || {}).filter(sd => sd !== w);
+  const lost = Object.keys(S.packsDropped || {}).filter(sd => !holdsFieldSide(sd));
   for (const sd of lost){
     if ((S.packsLost || []).includes(sd)) continue;
     S.packsLost ||= [];
@@ -1853,10 +1858,11 @@ function gmFree(f){                                // a scripted man's free atta
    (a man ending on it leaves the field). The roller calls it once: it sets
    the winner and the GM's script stops; Fight on sets the call aside for the rest of the fight. */
 // The winner marked: by the GM under After the fight, or by a small fight's end. Men of the winning
-// side taken in this fight (down and asking quarter) are retaken: the field is theirs.
+// side taken in this fight (down and asking quarter) are retaken: the field is theirs. A side that won by
+// getting away has left the field: its taken men stay taken.
 function setWon(side){
   S.wonBy = side || null; S.afterOpen = true;
-  if (!side) return;
+  if (!side || gotAwayWin(side)) return;
   for (const c of S.chars) if (c.taken && sideOf(c) === side){
     c.taken = false;
     if (c.sheet?.pid) unmarkLost(c.sheet.pid, "taken prisoner");
@@ -1876,7 +1882,7 @@ function goneAway(E){                              // a side that wins by gettin
   const at = E.rounds || AWAY_ROUNDS;
   if (S.round <= at || (S.broken || {})[A.side]) return null;
   const men = S.chars.filter(c => sideOf(c) === A.side), up = men.filter(c => !isDown(c) && !c.taken && !c.fled).length;
-  return men.length && up >= A.share * men.length - 1e-9 ? { won: A.side, why: `${A.side} have held together ${at} rounds and got away` } : null;
+  return men.length && up >= A.share * men.length - 1e-9 ? { won: A.side, away: true, why: `${A.side} have held together ${at} rounds and got away` } : null;
 }
 function positionLost(E){                          // at a round's end: the position empty of its holders and held by the other side
   if (!E.hold || !E.position) return null;
