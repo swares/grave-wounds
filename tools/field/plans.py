@@ -18,7 +18,7 @@ from playwright.sync_api import sync_playwright
 ROOT = Path(__file__).resolve().parents[2]
 PAGE = (ROOT / "dist" / "field.html").as_uri()
 FIELD, RESET, PLANNER = "#sel-field", "#btn-reset", "#chk-planner"
-SEED = 202                                         # dice on which the horse live to go round (checked: on 101 and 303 they are destroyed first)
+SEED = 101                                         # dice on which the horse live to go round (checked since the hero checks went by group: 101, 303-606 do; 202 no longer)
 failures = []
 
 

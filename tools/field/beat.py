@@ -14,7 +14,9 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[2]
 PAGE = (ROOT / "dist" / "field.html").as_uri()
-BENCHED = len(json.loads((ROOT / "tools" / "selfplay" / "commander.json").read_text())["fields"])   # the battlefields with a benchmark
+CMD = json.loads((ROOT / "tools" / "selfplay" / "commander.json").read_text())
+BENCHED = len(CMD["fields"])   # the battlefields with a benchmark
+SNIPE_BRITISH = round(100 * CMD["fields"]["snipe-1942"]["sides"][0]["won"])   # the commander's odds as the British at Snipe, as benchmarked
 failures = []
 
 
@@ -36,7 +38,7 @@ with sync_playwright() as p:
     text = pg.inner_text("#beat")
     check(pg.is_visible("#beat"), "a battlefield with its armies as drawn up shows Beat history")
     check("As fought: British won" in text, "the panel gives the battle as fought")
-    check("British win 83%" in text and "To beat it:" in text, "the panel gives the commander's odds and the bar")
+    check(f"British win {SNIPE_BRITISH}%" in text and "To beat it:" in text, "the panel gives the commander's odds and the bar")
     check("older rules" not in text, "the benchmark was run under these rules")
 
     pg.select_option("#sel-ai1", index=1)
