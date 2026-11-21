@@ -1151,7 +1151,7 @@ def field_bundle(d) -> dict:
                        "weapons": ws, "ranges": {w: rng3(table_ranges(d, tid, w)) for w in ws},
                        **{k: t[k] for k in ("crew_table", "crew_burns") if k in t}}   # a knocked-out vehicle's crew: their table and burns
     used = sorted({w for t in tables.values() for w in t["weapons"]})
-    keep = ("name", "short", "reach", "range", "threat", "armor_defeat", "off_map", "string", "ignition", "two_handed")
+    keep = ("name", "short", "reach", "range", "threat", "armor_defeat", "defeat_only", "min_range", "off_map", "string", "ignition", "two_handed")   # every weapon key units.js reads
     mechs = sorted({m[0] for w in used for m in rng3(mechanism_ranges(d, w))})
     return {
         "generated": date.today().isoformat(),

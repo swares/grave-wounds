@@ -5386,7 +5386,10 @@ def at_guns(d: Data, u: dict) -> int:
 
 
 def melee_weapon(d: Data, u: dict) -> str:
-    """The weapon a unit fights hand to hand with: a battery's or an anti-tank gun's crews have their own."""
+    """The weapon a unit fights hand to hand with: its sidearm if it has one (archers' swords), else a
+    battery's or an anti-tank gun's crews have their own."""
+    if u.get("sidearm"):
+        return u["sidearm"]
     if is_battery(d, u):
         return d.units["artillery"]["crew_weapon"]
     return d.units["anti_tank_guns"]["crew_weapon"] if is_at_gun(d, u) else u["weapon"]

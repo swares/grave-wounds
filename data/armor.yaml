@@ -111,6 +111,19 @@ kits:
     slots: {helm: plate, gorget: mail, torso_upper: plates, torso_lower: plates, skirt: mail, pauldron: mail_padded,
             arm: mail_padded, gauntlet: plates, leg: mail_padded, greave: {material: plate, cover: 50}, sabaton: mail}
 
+  - id: harness_1415
+    name: "Men-at-arms' harness, mail and plate pieces (c.1415)"
+    group: generic
+    shield: false
+    # Mail was still the main armour at Agincourt; full plate harnesses were few, and plate was worn in
+    # pieces (DeVries, BJMH 2:1, 2015, pp. 5-6, 11). The halves are ours: a visored helm for all, plate
+    # on the body and limbs of half the men, mail over padding on the rest.
+    slots: {helm: plate, visor: plate, gorget: mail_padded,
+            torso_upper: [{material: plate, cover: 50}, {material: mail_padded}], torso_lower: [{material: plate, cover: 50}, {material: mail_padded}],
+            skirt: mail_padded, pauldron: [{material: plate, cover: 50}, {material: mail_padded}],
+            arm: [{material: plate, cover: 50}, {material: mail_padded}], gauntlet: plates,
+            leg: [{material: plate, cover: 50}, {material: mail_padded}], greave: [{material: plate, cover: 50}, {material: mail}], sabaton: mail}
+
   - id: full_plate
     name: "Full plate harness (c.1450)"
     group: generic

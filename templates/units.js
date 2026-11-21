@@ -4407,7 +4407,8 @@ const isGun = w => (UD.artillery?.guns || []).includes(w);
 const isBattery = u => isGun(u.weapon);
 const isAtGun = u => (UD.anti_tank_guns?.weapons || []).includes(u.weapon);   // an anti-tank gun unit
 const atGuns = u => Math.ceil(Math.max(0, u.men) / UD.anti_tank_guns.crew);    // its guns served: one a crew, while a man of it is up
-function meleeWeapon(u){                           // hand to hand, a battery's or an anti-tank gun's crews have their own weapon
+function meleeWeapon(u){                           // hand to hand: a unit's sidearm (archers' swords), else a battery's or an anti-tank gun's crews have their own weapon
+  if (u.sidearm) return u.sidearm;
   if (isBattery(u)) return UD.artillery.crew_weapon;
   return isAtGun(u) ? UD.anti_tank_guns.crew_weapon : u.weapon;
 }
@@ -4606,7 +4607,7 @@ function fieldLeaders(o, id){                       // a battlefield unit's lead
 function unitMarks(o){                             // a drawn unit's optional marks, copied as given
   return { ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.armour ? { armour: o.armour } : {}),
     ...(o.via?.length ? { via: o.via.map(h => [...h]) } : {}), ...unitOrders(o), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: o.ladders === "short" ? "short" : true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}),
-    ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}), ...(o.fights_on ? { fights_on: true } : {}), ...(o.throws ? { throws: true } : {}), ...(o.masks ? { masks: true } : {}), ...(o.holds_fire ? { holds_fire: true } : {}), ...(o.spare_muskets ? { spare_muskets: o.spare_muskets } : {}), ...(o.unfit != null ? { unfit: o.unfit } : {}), ...(o.he === false ? { he: false } : {}), ...(o.asFought ? { asFought: true } : {}) };
+    ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}), ...(o.fights_on ? { fights_on: true } : {}), ...(o.throws ? { throws: true } : {}), ...(o.masks ? { masks: true } : {}), ...(o.holds_fire ? { holds_fire: true } : {}), ...(o.spare_muskets ? { spare_muskets: o.spare_muskets } : {}), ...(o.sidearm ? { sidearm: o.sidearm } : {}), ...(o.unfit != null ? { unfit: o.unfit } : {}), ...(o.he === false ? { he: false } : {}), ...(o.asFought ? { asFought: true } : {}) };
 }
 const unitOrders = o => ({ ...(o.hold ? { hold: true } : {}), ...(o.withdraw ? { withdraw: { ...o.withdraw } } : {}) });   // its orders from the accounts
 function ensureTags(B){                            // each unit's number on its side, kept for the battle (B3 stays B3) (as battle.ensure_tags)
