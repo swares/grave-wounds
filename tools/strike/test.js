@@ -169,6 +169,8 @@ check("an arrow beats bare mail and cloth, not plate, a coat of plates or mail o
     assert.equal(S.armorSteps("plate", "pierce", w), 2); assert.equal(S.armorSteps("plates", "pierce", w), 2); assert.equal(S.armorSteps("mail_padded", "pierce", w), 1);
   }
   assert.equal(S.armorSteps("plate", "pierce", "halberd"), 1);   // a halberd's spike still beats plate a step
+  assert.equal(S.armorSteps("plate", "pierce", "bill"), 1);      // and the bill's top spike, as the halberd's
+  assert.equal(S.armorSteps("plate", "cut", "bill"), 3);        // its blade does not
 });
 
 console.log(`${passed} passed, ${failed} failed`);
