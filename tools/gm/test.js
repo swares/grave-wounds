@@ -160,5 +160,16 @@ check("a man reloading strikes the enemy next to him (his sidearm or the butt)",
   assert.equal(t.move, null); assert.equal(t.target, 2);
 });
 
+check("a side that wins by getting away makes for its own edge, unless held in contact", () => {
+  const v = board({ here: "5,5", enemies: [foe(2, "12,5")] });
+  v.away = true; v.edgeDist = h => +h.split(",")[0];   // its edge is x = 0
+  v.reach = [{ hex: "3,5", cost: 2, run: false }, { hex: "7,5", cost: 2, run: false }];
+  const t = F.chooseTurn(v);
+  assert.equal(t.move, "3,5"); assert.equal(t.why, "makes for his own edge");
+  const held = board({ here: "5,5", enemies: [foe(2, "6,5")] });
+  held.away = true; held.edgeDist = h => +h.split(",")[0];
+  assert.notEqual(F.chooseTurn(held).why, "makes for his own edge");
+});
+
 console.log(`${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

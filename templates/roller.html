@@ -1792,6 +1792,7 @@ function brainView(c){                             // what the script sees of th
       blows: w.choose ? Object.keys(w.mechanisms).filter(m => w.mechanisms[m]) : [],
       able: !cannotAttack(pen) && !(pen.flags.includes("one_arm") && w.two_handed) && !(pen.flags.includes("cannot_wield") && w.melee !== "unarmed") },
     here, reach, targetsFrom, stance: gmSide(sideOf(c)).stance, losing: down * 4 >= team.length,
+    away: S.fightEnd?.away?.side === sideOf(c), edgeDist: hex => edgeDistance(sideOf(c), parseHex(hex)),   // a side whose win is to get away: how far a hex is from its own edge
     enemies: foes.map(o => ({ id: o.id, hex: hkey(o.pos), frac: o.blood / poolOf(o), ...kitArmour(o.kit) })),
     dist: (a, b) => hexDistance(parseHex(a), parseHex(b)),
     coverAt: hex => groundCover(S.ground, parseHex(hex)).cover,
@@ -1862,6 +1863,10 @@ function setWon(side){
     S.pending = S.pending || [];
     S.pending.push(`${c.name} is retaken: ${side} hold the field`);
   }
+}
+function edgeDistance(sd, h){                      // hexes from h to the map's edge that side sd came in by
+  const { cols, rows } = mapSize(), k = (S.fightEnd?.edges || {})[sd] ?? 0;
+  return [h[0], cols - 1 - h[0], h[1], rows - 1 - h[1]][k];
 }
 function onOwnEdge(sd, h){                         // h on the map's edge that side sd came in by
   const { cols, rows } = mapSize(), k = (S.fightEnd.edges || {})[sd];
