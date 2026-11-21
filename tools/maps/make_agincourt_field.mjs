@@ -25,8 +25,8 @@ const EN = { side: 0, facing: N }, FR = { side: 1, facing: S };
 const ARCHERS = { quality: "veteran", weapon: "longbow", sidearm: "sword", kit: "gambeson", formation: "open", mounted: false };
 const MEN_AT_ARMS = { quality: "veteran", weapon: "poleaxe", kit: "full_plate", formation: "close", mounted: false };
 const KNIGHTS = { ...MEN_AT_ARMS, quality: "regular" };
-const FR_MEN_AT_ARMS = { ...MEN_AT_ARMS, kit: "harness_1415" }, FR_KNIGHTS = { ...KNIGHTS, kit: "harness_1415" };   // the French: mail with plate pieces (DeVries 2015; armor.yaml harness_1415)
-const MOUNTED = { quality: "veteran", weapon: "spear", kit: "harness_1415", formation: "close", mounted: true };
+const FR_MEN_AT_ARMS = MEN_AT_ARMS, FR_KNIGHTS = KNIGHTS;   // the French: mail with plate pieces (DeVries 2015; armor.yaml harness_1415)
+const MOUNTED = { quality: "veteran", weapon: "spear", kit: "full_plate", formation: "close", mounted: true };
 const MOUNTED_REAR = { ...MOUNTED, quality: "regular" };
 const FRONT_EN = 66, FRONT_FR = 42;
 // Leaders from the accounts (heroes.field_leaders; Wikipedia, "Battle of Agincourt"): York, the King and

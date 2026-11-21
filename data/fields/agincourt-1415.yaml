@@ -116,8 +116,8 @@ units:
   - {name: "Archers, right wedge", side: 0, men: 900, quality: veteran, weapon: longbow, sidearm: sword, kit: gambeson, formation: open, width: 9, pos: [57, 66], facing: 1, size: battalion}
   - {name: "Vaward (York)", side: 0, men: 320, quality: veteran, weapon: poleaxe, kit: full_plate, formation: close, width: 8, pos: [65, 66], facing: 1, size: battalion}
   - {name: "Archers, right wing", side: 0, men: 1600, quality: veteran, weapon: longbow, sidearm: sword, kit: gambeson, formation: open, width: 16, pos: [77, 66], facing: 1, size: regiment}
-  - {name: "Mounted wing, west", side: 1, men: 800, quality: veteran, weapon: spear, kit: harness_1415, formation: close, width: 10, pos: [14, 42], facing: 4, mounted: true, size: battalion}
-  - {name: "Vanguard", side: 1, men: 4800, quality: veteran, weapon: poleaxe, kit: harness_1415, formation: close, width: 60, pos: [50, 42], facing: 4, size: brigade}
-  - {name: "Mounted wing, east", side: 1, men: 800, quality: veteran, weapon: spear, kit: harness_1415, formation: close, width: 10, pos: [86, 42], facing: 4, mounted: true, size: battalion}
-  - {name: "Main battle", side: 1, men: 4800, quality: regular, weapon: poleaxe, kit: harness_1415, formation: close, width: 60, pos: [50, 30], facing: 4, size: brigade}
-  - {name: "Rearguard (mounted)", side: 1, men: 3000, quality: regular, weapon: spear, kit: harness_1415, formation: close, width: 75, pos: [49, 16], facing: 4, mounted: true, size: regiment}
+  - {name: "Mounted wing, west", side: 1, men: 800, quality: veteran, weapon: spear, kit: full_plate, formation: close, width: 10, pos: [14, 42], facing: 4, mounted: true, size: battalion}
+  - {name: "Vanguard", side: 1, men: 4800, quality: veteran, weapon: poleaxe, kit: full_plate, formation: close, width: 60, pos: [50, 42], facing: 4, size: brigade}
+  - {name: "Mounted wing, east", side: 1, men: 800, quality: veteran, weapon: spear, kit: full_plate, formation: close, width: 10, pos: [86, 42], facing: 4, mounted: true, size: battalion}
+  - {name: "Main battle", side: 1, men: 4800, quality: regular, weapon: poleaxe, kit: full_plate, formation: close, width: 60, pos: [50, 30], facing: 4, size: brigade}
+  - {name: "Rearguard (mounted)", side: 1, men: 3000, quality: regular, weapon: spear, kit: full_plate, formation: close, width: 75, pos: [49, 16], facing: 4, mounted: true, size: regiment}
