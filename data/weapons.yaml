@@ -149,10 +149,15 @@ weapons:
     mechanisms: {cut: 60, pierce: 30, crush: 10}
     choose: true
     zone_bias: {head: 1.2, legs: 1.1}
+    armor_defeat: {pierce: 1}
     confidence: extrapolated
     notes: >
       The common infantry polearm of the Wars of the Roses: a cleaving blade with a hook and
-      spike on a long haft. On the Towton evidence table it rolls on the blade wounds.
+      spike on a long haft. On the Towton evidence table it rolls on the blade wounds. Its top
+      spike thrusts as the halberd's does and ignores a step of armour against pierce (the step
+      a design estimate, as the halberd's): a bill of c.1471 has a 10.5-inch top spike and a
+      shorter back spike (Fordham, Medieval London objects), and the Mary Rose bills (1545) a
+      top spike (Mary Rose Trust). The hook, to pull a man down, is not modelled.
 
   - id: poleaxe
     name: "Poleaxe (axe, hammer and spike)"
