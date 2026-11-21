@@ -63,27 +63,27 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 0.87
+      "ratio": 0.85
      },
      "drew": 0.0,
      "lost_share": 0.151,
      "side": "Portuguese",
      "stance": "hold",
-     "won": 1.0
+     "won": 0.92
     },
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 1.18
+      "ratio": 1.53
      },
      "drew": 0.0,
-     "lost_share": 0.077,
+     "lost_share": 0.062,
      "side": "Castilians",
      "stance": "attack",
-     "won": 0.0
+     "won": 0.08
     }
    ],
-   "stamp": "b5f953f56012"
+   "stamp": "9be1e91d83e6"
   },
   "babuna-1915": {
    "runs": 12,
@@ -475,7 +475,7 @@
      "won": 0.0
     }
    ],
-   "stamp": "f0d184284250"
+   "stamp": "24dc9c370e4e"
   },
   "dakto-1967": {
    "runs": 12,
@@ -839,7 +839,7 @@
      "won": 0.83
     }
    ],
-   "stamp": "f0ae4906f7f3"
+   "stamp": "6d53270d48b8"
   },
   "kapyong-1951": {
    "runs": 12,
@@ -1183,10 +1183,10 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.06
+      "ratio": 0.08
      },
      "drew": 0.0,
-     "lost_share": 0.144,
+     "lost_share": 0.149,
      "side": "Franks",
      "stance": "hold",
      "won": 0.0
@@ -1194,7 +1194,7 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 16.25
+      "ratio": 13.25
      },
      "drew": 0.0,
      "lost_share": 0.004,
@@ -1203,7 +1203,7 @@
      "won": 1.0
     }
    ],
-   "stamp": "0c6af2711c4d"
+   "stamp": "9b48370bb483"
   },
   "snipe-1942": {
    "runs": 12,
@@ -1267,27 +1267,27 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 2.18
+      "ratio": 3.0
      },
      "drew": 0.0,
-     "lost_share": 0.112,
+     "lost_share": 0.065,
      "side": "Yorkists",
      "stance": "attack",
-     "won": 0.58
+     "won": 0.75
     },
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.86
+      "ratio": 0.36
      },
      "drew": 0.0,
-     "lost_share": 0.157,
+     "lost_share": 0.128,
      "side": "Lancastrians",
      "stance": "attack",
-     "won": 0.42
+     "won": 0.25
     }
    ],
-   "stamp": "2d126c58f994"
+   "stamp": "2cd576a4137d"
   },
   "tumbledown-1982": {
    "runs": 12,
@@ -1323,10 +1323,10 @@
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.04
+      "ratio": 0.05
      },
      "drew": 0.0,
-     "lost_share": 0.339,
+     "lost_share": 0.321,
      "side": "Gotlanders",
      "stance": "attack",
      "won": 0.0
@@ -1334,16 +1334,16 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 22.64
+      "ratio": 23.42
      },
      "drew": 0.0,
-     "lost_share": 0.021,
+     "lost_share": 0.017,
      "side": "Danes",
      "stance": "attack",
      "won": 1.0
     }
    ],
-   "stamp": "8f91ecb80741"
+   "stamp": "f4c255587bbd"
   },
   "wagon-box-1867": {
    "runs": 12,
