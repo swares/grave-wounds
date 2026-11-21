@@ -162,7 +162,7 @@ function makeService(SV, RULES){
     const t = edgeScaled(W, takenPct(W, aid, pos, unit), unit, edge);
     if (t){ const tr = rng(); if (tr <= t) r.taken = { action: aid, pct: t, roll: tr } }   // came through unhit: taken?
   }
-  return { war, warsFor, season, seasonStart, weeks, actionWeek, hitPct, takenPct, desertPct, inWeek, factors, dayCtx, weaponFor, worstStep, woundStep, serve, between, smallFight };
+  return { war, warsFor, season, seasonStart, weeks, actionWeek, hitPct, takenPct, desertPct, inWeek, factors, dayCtx, weaponFor, worstStep, woundStep, unfit, serve, between, smallFight };
 }
 
 if (typeof module !== "undefined") module.exports = makeService;   // Node (the tests); the page has no `module`

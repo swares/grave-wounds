@@ -370,8 +370,8 @@ the cap too and prints it beside the followers.
 - **Followers lost in a fight** come off the followers when the GM sends them back, once the
   fight is settled (so a man retaken when his side wins is not lost). On the roller, **Followers
   back to the team builder** under *After the fight* sends each follower's fate by his own id,
-  each only once: killed or died of his wounds, dead; taken, or down on the field when his side
-  was beaten (left behind), taken; alive with a serious or critical wound, invalided home; a light
+  each only once: killed or died of his wounds, dead; taken, or down on a field his side does not
+  hold (left behind), taken; alive with a serious or critical wound, invalided home; a light
   wound or none, he stays. A season on, the next season's small fight brings those who stayed
   healed, rested and on their feet (a follower has no health record of his own to heal on; ours).
   On the field map, **Followers' losses to the team builder** under
@@ -863,7 +863,7 @@ for each man whether he serves and where he stands. **Serve the season** then ro
   team's party, of each enemy force and, where the fight has one, for surprise; the GM may pick
   another (its sizes rolled anew). The panel gives what the accounts say, the sizes, each side's
   aim and what ends it. **Play it on the roller** sets it up as a fight from the travel map is
-  set up (`gravewounds-handoff`, `from: service`): the team's named men and followers on the roller
+  set up (`gravewounds-handoff`, `from: service`): the team's fit named men and followers on the roller
   fight in the party (a picket, a working party, a rear-guard; never fewer than
   the team and its followers who come) with comrades up to 8, against the
   enemy in the same proportion to the rolled sizes (the team's men here times the foes' rolled
@@ -872,9 +872,12 @@ for each man whether he serves and where he stands. **Serve the season** then ro
   numbers): the odds the dice gave, not 8 against the
   whole team), with the fight's weapon, on the fight's ground and in its weather, with the defenders
   caught unawares on the surprise roll; the aims, the end and the source are in the fight's notes.
+  A named man or follower serious or worse with sickness or wounds at the season's end stays in
+  hospital, as he would for the season's battles, and the notes name him (the user's choice).
   A fight's `at` is the season of the instance it is sourced to; rolled in another season, its
   notes call it "a fight of this kind, as in spring 1461". A man of the team taken in it (down
-  and asking quarter) is retaken if his side is then marked the winner: the field is theirs.
+  and asking quarter) is retaken if his side is then marked the winner and holds the field (not if it won by
+  getting away).
   Each fight's `end` gives what of it the roller can count: `rounds` (when they are up, `wins`
   says who wins: the team, the foes, or none, for the GM to mark) and `down` (a side loses once that share
   of its men, or that many, are down, taken or gone; a side that breaks on morale loses too). The

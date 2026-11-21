@@ -1390,19 +1390,24 @@ function svcFightHtml(W){                           // the season's small fight:
 }
 function svcFightHandoff(W, s){                     // the small fight as a setup for the roller (as the travel map's, with the team)
   const F = S.svcSmall, f = W.small_fights.find(x => x.id === F.id), own = (S.side || "").trim(), side = own && own !== "Side A" ? own : W.sides.team;   // the team's side as set, else the war's
-  const coming = S.team.filter(c => (svcState().with || {})[c.pid] !== false).length + (S.crew || []).length;   // the team and its followers come too
+  const named = namedStore(), serving = S.team.filter(c => (svcState().with || {})[c.pid] !== false);
+  const fit = H => !H || !SVC.unfit(H);               // too sick or too badly wounded to fight (serious or worse): left in hospital, as the season's battles leave him
+  const men = serving.filter(c => fit(svcHealthOf(named, c))), crew = (S.crew || []).filter(x => fit(x.svcHealth));
+  const left = [...serving.filter(c => !men.includes(c)), ...(S.crew || []).filter(x => !crew.includes(x))].map(c => c.name);
+  const coming = men.length + crew.length;            // the team and its followers come too
   const party = { id: "team", name: f.side.name, side, men: Math.max(F.side, coming), type: "foot" };
   const foes = f.foes.map((o, k) => ({ id: "foe" + k, name: o.name, side: W.sides.foes, men: F.foes[k], type: "foot", kit: o.kit || null, weapon: o.weapon || null, sidearm: o.sidearm || null }));
   const [force, allies, against] = f.team_attacks ? [foes[0], foes.slice(1), [party]] : [party, [], foes];
   const sp = f.surprise ? { text: f.surprise.text, roll: F.surprise_roll, surprised: F.surprised } : null;
   crewIds();
-  const followers = S.crew.map(x => ({ ...x, careerName: byId(T.careers, x.career).name, sidearm: sidearmOf(x.career, S.region) }));   // the followers as they are now: the roller brings its own up to date
-  const pids = S.team.filter(c => (svcState().with || {})[c.pid] !== false).map(c => c.pid);   // the named men serving now: not those lost since they came to the roller
+  const followers = crew.map(x => ({ ...x, careerName: byId(T.careers, x.career).name, sidearm: sidearmOf(x.career, S.region) }));   // the followers as they are now: the roller brings its own up to date
+  const pids = men.map(c => c.pid);                   // the named men serving now and fit: not those lost since they came to the roller
   return { from: "service", title: f.name, team: "team", table: W.table, max_odds: W.small_war.max_odds ?? null, pids, followers, force, allies, foes: against, place: f.where || f.name, day: s.name, time: f.time,
     ground: f.ground, groundSeed: `${f.id}:${s.id}`, camp: f.camp || null, surprise: sp, light: f.light || "day",
     weather: f.weather ? { cond: f.weather, wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } } : null,
     end: svcFightEnd(f.end, side, W.sides.foes),
-    notes: [`Aims: ${side}: ${f.aims.team} ${W.sides.foes}: ${f.aims.foes}`, `It ends: ${f.ends} The roller calls what it can count: the rounds, the men down, the position held (the hexes the defenders start in) and men got away off their own edge; the rest is the GM's call.`, `From the accounts${svcAsAt(W, f, s)}: ${f.what} (${f.sources.join("; ")})`] };
+    notes: [`Aims: ${side}: ${f.aims.team} ${W.sides.foes}: ${f.aims.foes}`, `It ends: ${f.ends} The roller calls what it can count: the rounds, the men down, the position held (the hexes the defenders start in) and men got away off their own edge; the rest is the GM's call.`, `From the accounts${svcAsAt(W, f, s)}: ${f.what} (${f.sources.join("; ")})`,
+    ...(left.length ? [`Left in hospital, too sick or badly wounded to fight: ${left.join(", ")}.`] : [])] };
 }
 function svcAsAt(W, f, s){                          // a fight sourced to another season: a fight of the kind, as there
   const at = f.at && f.at !== s.id ? W.seasons.find(x => x.id === f.at) : null;
