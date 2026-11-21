@@ -469,7 +469,7 @@ def run(p):
           f"the setup counts the team's men in the picket ({count}; {sides['b']} on the map)")
     odds = pg.evaluate("""() => { const m = S.mapMsg, b = m.match(/The picket \\(British\\), (?:(\\d+) of )?its (\\d+) men/), f = m.match(/\\(French\\), (?:(\\d+) of )?its (\\d+) men/);
       return { bHere: +(b[1] || b[2]), bAll: +b[2], fHere: +(f[1] || f[2]), fAll: +f[2] } }""")
-    want = max(1, min(40, round(odds["bHere"] * odds["fAll"] / odds["bAll"])))
+    want = max(1, min(40, 3 * odds["bHere"], round(odds["bHere"] * odds["fAll"] / odds["bAll"])))   # the roller's cap: 3 to 1 and 40 in all
     check(odds["fHere"] == min(want, odds["fAll"]), f"the French come in at the rolled odds, not capped at 8 against the whole team ({odds}, wanted {want})")
     # the picket's own end: the GM's script plays both sides and stops when the roller calls it
     end = pg.evaluate("""() => {

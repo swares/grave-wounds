@@ -884,7 +884,9 @@ for each man whether he serves and where he stands. **Serve the season** then ro
   position, the hexes it started in, and some of the other side's do, the other side wins: the
   bridge, the breach, the post or the trench taken) and `away` (a side that wins once that share of
   its men have left by their own map edge; a man of that side who ends on it leaves the field, out
-  of the fight and not counted lost: the patrol home with word, the rear-guard escaped). What none
+  of the fight and not counted lost: the patrol home with word, the rear-guard escaped, the
+  household out of the manor at Hellesdon. The GM's script plays it: a man of that side not held
+  in contact makes for his own edge, striking on the way if he can (ours). What none
   of these counts (a general taken, a deed of arms, getting in and back out) stays the GM's call;
   the words say it. Or **Roll it**: each man with the battalion is hit on
   10% (ours), and each follower too (his fate as below).

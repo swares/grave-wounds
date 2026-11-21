@@ -1151,3 +1151,8 @@ not this repository.
   Front"): a term in play is now 4 years served in every era (`play_term_years`); the 1-year terms
   from 1914 count only at making a character. Before, a 20th-century man gained +10 a year from his
   terms alone, four times the older eras' rate. The Worn Out check takes a term's 4 years too.
+
+- **Getting away** (play test 9): the `away` end (a side wins once half reach their own edge) was
+  never met in script play, since the GM's script fought where it stood. Now a man of that side not
+  held in contact makes for his own edge (`fighter.js` `makeAway`). Hellesdon's raid on the manor
+  gets the end its aim names ("or get away with the household"); the house is still lost.

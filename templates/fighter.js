@@ -8,6 +8,8 @@
      view.me        {id, ranged, frac (Blood left, 0-1), named, blows (a cut-and-thrust weapon's
                     blows, else []), attack (his attack % after wounds), able (can attack at all),
                     reloading (rounds before his slow weapon shoots again, 0 when loaded)}
+     view.away      true when his side wins by getting away off its own edge; view.edgeDist(hex)
+                    is how far a hex is from that edge
      view.here      his hex, "col,row"
      view.reach     [{hex, cost, run}]: the hexes he can reach this turn (run: no attack after)
      view.enemies   [{id, hex, frac, armoured (partly covered: a gap to aim for), plated (armour
@@ -89,6 +91,16 @@ const FIGHTER = (() => {                          // one name in the page: its h
   }
 
   const safe = (view, hex) => nearestEnemy(view, hex) > 1;   // no enemy next to that hex
+  function makeAway(view, st){                      // his side wins by getting away: the hex he can reach nearest his own edge (ours)
+    let best = { hex: null, d: view.edgeDist(view.here), cost: 0 };
+    for (const r of view.reach.slice().sort((a, b) => byKey(a.hex, b.hex))){
+      if (r.run && !st.runs) continue;
+      const d = view.edgeDist(r.hex);
+      if (d < best.d || (d === best.d && best.hex && r.cost < best.cost)) best = { hex: r.hex, d, cost: r.cost };
+    }
+    if (!best.hex) return strikeFrom(view, st, null, "cannot get nearer his edge: holds");
+    return strikeFrom(view, st, best.hex, "makes for his own edge");   // and strikes on the way if he can
+  }
   const aiding = (move, id, why) => ({ move, cover: false, target: null, gap: false, blow: "", aid: id, why });
   function firstAid(view, st){                      // a turn of first aid, or null
     if ((view.me.bleed || 0) >= SELF_BLEED && safe(view, view.here)) return aiding(null, view.me.id, "binds his own wound");
@@ -112,6 +124,7 @@ const FIGHTER = (() => {                          // one name in the page: its h
     if (aid) return aid;
     const hurt = view.me.frac <= (view.losing ? st.fallBackLosing : st.fallBack);
     if (hurt && st.fallBack > 0) return fallBack(view, st);
+    if (view.away && safe(view, view.here)) return makeAway(view, st);   // his side wins by getting away: he makes for his edge
     if (view.me.reloading){                        // reloading: he stays where he is; a man next to him he strikes with his sidearm or the butt (ours)
       if (view.me.able && view.targetsFrom(view.here).length) return strikeFrom(view, st, null, "strikes the man next to him while he reloads");
       return { move: null, cover: false, target: null, gap: false, blow: "", why: "reloads" };
