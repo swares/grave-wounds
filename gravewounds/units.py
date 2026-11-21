@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import heapq
 import math
+import statistics
 import re
 import random
 from contextlib import contextmanager
@@ -140,12 +141,9 @@ def _blows(d: Data, att: dict, dfd: dict, n: int, atk: int, dfn: int, rng: rando
     t["blows"] = n
     atk = max(0, atk)
     crit_at = math.floor(atk * d.wounds["combat"]["critical_fraction"])
-    for _ in range(n):
-        hero = _aimed_at(exposed, rng)
+    rankers = _heroes_first(d, att, n, atk, crit_at, shift, rng, exposed, t)   # the blows on heroes, one by one; the rest on the rankers
+    for _ in range(rankers):
         r = rng.randint(1, 100)
-        if hero is not None:
-            _hero_blow(d, att, hero, r, atk, crit_at, shift, rng, t)
-            continue
         if r > atk:
             t["missed"] += 1
             continue
@@ -269,13 +267,7 @@ def _quick_blows(d: Data, att: dict, dfd: dict, n: int, atk, dfn, rng, exposed: 
     t = _new_tally()
     crit_at = math.floor(atk * d.wounds["combat"]["critical_fraction"])
     t["blows"] = n
-    tries = n
-    if exposed:
-        for _ in range(n):
-            hero = _aimed_at(exposed, rng)
-            if hero is not None:
-                _hero_blow(d, att, hero, rng.randint(1, 100), atk, crit_at, shift, rng, t)
-                tries -= 1
+    tries = _heroes_first(d, att, n, atk, crit_at, shift, rng, exposed, t)
     if tries <= 0:                            # every blow fell on a hero, or none came
         return t
     R = _quick_rates(d, att, dfd, atk, dfn)
@@ -307,12 +299,42 @@ def _quick_blows(d: Data, att: dict, dfd: dict, n: int, atk, dfn, rng, exposed: 
 # skill each time his unit shoots, and is at risk from missiles and in contact. Behind:
 # only in a rout. His wounds use the full rules and go back to the roller.
 
-def _aimed_at(exposed: tuple, rng):
-    """The hero a blow falls on, or None: each hero still up, in turn, by his chance."""
+def _binomial_draw(n: int, p: float, u: float) -> int:
+    """k of n at chance p, read off the cumulative curve at u (0-1), as units.js binomialDraw."""
+    if n <= 0 or p <= 0:
+        return 0
+    if p >= 1:
+        return n
+    pmf = (1 - p) ** n
+    if pmf < 1e-300:                         # too many blows for the exact sum: the normal curve
+        z = statistics.NormalDist().inv_cdf(min(max(u, 1e-12), 1 - 1e-12))
+        return max(0, min(n, round(n * p + math.sqrt(n * p * (1 - p)) * z)))
+    cum, k = pmf, 0
+    while u > cum and k < n:
+        pmf *= (n - k) / (k + 1) * p / (1 - p)
+        k += 1
+        cum += pmf
+    return k
+
+
+def _heroes_first(d: Data, att: dict, n: int, atk: int, crit_at: int, shift: int, rng, exposed: tuple, t: dict) -> int:
+    """How many of a group's n blows fall on each hero still up, in turn: his share is binomial over
+    the blows left at his chance, drawn with one roll a hero (the same odds as a roll a blow). His blows
+    are rolled one by one; those left once he is down fall on the rankers. Returns the rankers' blows."""
+    left = rankers = n
     for hero, p in exposed:
-        if hero["state"] == "up" and rng.random() < p:
-            return hero
-    return None
+        if left <= 0:
+            break
+        if hero["state"] != "up":
+            continue
+        k = _binomial_draw(left, p, rng.random())
+        left -= k
+        for _ in range(k):
+            if hero["state"] != "up":        # down: the rest of his blows fall on the rankers
+                break
+            _hero_blow(d, att, hero, rng.randint(1, 100), atk, crit_at, shift, rng, t)
+            rankers -= 1
+    return rankers
 
 
 def _hero_blow(d: Data, att: dict, hero: dict, r: int, atk: int, crit_at: int, shift: int, rng, t: dict) -> None:
