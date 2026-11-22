@@ -852,7 +852,7 @@ modern_fire:
 # battle). The tables print a chart for each era from the same rates, and the field page a sheet for
 # the units on the field (docs/units.md, Quick-play blows). Measured in self-play: the share of blows
 # putting a man down matches the per-blow rules, and the runs matched are within the dice's own spread.
-quick: {blows: false, normal_from: 9}
+quick: {blows: true, normal_from: 9}
 
 # ---------- unit morale ----------
 # After each exchange a unit checks if it lost the exchange in contact (more of its men put
