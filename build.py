@@ -1360,6 +1360,24 @@ def quick_section() -> list:
          "| " + " | ".join(lo[0]) + " |", "|" + "---|" * len(lo[0])] + ["| " + " | ".join(r) + " |" for r in lo[1:]] + [""]
 
 
+RUNON_RULE = ("Out of reach, minutes can be played several at a time. A unit is in reach of an enemy when it is "
+              "in contact, or when it has an enemy it would shoot at now: in its weapon's range, in sight, in front "
+              "and with a line of fire. While no unit of either side is, "
+              "1) give each unit a march hex, or have it hold (a commander's side follows its orders and plan); "
+              "2) take the gap between the nearest two enemy units, less the longer reach of the two (a weapon's "
+              "longest range, or a charge: twice the move and a hex), divided by "
+              "their two moves added together: that many exchanges (at least 1) is the bound, in which no one can "
+              "come within reach; cut it short at the first exchange a phase, an arrival, a change of light or "
+              "weather or a plan's step falls due; "
+              "3) move each unit that many moves toward its march hex at once, and count that many exchanges on. "
+              "Whatever the rules roll out of contact (losing the way in the dark, breaking down on the move) is "
+              "rolled for each exchange of the bound, and ends it if it comes up. "
+              "Go back to one exchange at a time as soon as any unit is in reach of an enemy or sees one it had "
+              "not, anything is shot at or shelled or checks its morale, or a march hex is reached. Nothing else "
+              "changes: the bound only saves the moves where nothing happens. The field page's Run on does the "
+              "same, one exchange at a time, and stops for the player at the same points. The bound is ours.")
+
+
 COPYRIGHT = "© 2026 Scott Wares. All rights reserved."
 
 
@@ -1485,6 +1503,7 @@ def markdown(d) -> str:
         rates = d.units["missile"]["rate"]
         out += ["| Missile weapon | Shots a minute |", "|---|---|"] + [f"| {d.weapons[w]['name']} | {n} |" for w, n in rates.items()] + [""]
         out += quick_section()
+        out += ["### Running on through quiet exchanges", "", RUNON_RULE, ""]
     if d.teams:
         mdt = lambda rows: ["| " + " | ".join(rows[0]) + " |", "|" + "---|" * len(rows[0])] + ["| " + " | ".join(r) + " |" for r in rows[1:]] + [""]
         out += ["## Team generation", ""]
@@ -1908,6 +1927,7 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
             Spacer(1, 6), Paragraph("Quick-play blows and shellfire", H2), Paragraph(QUICK_RULE, B), Spacer(1, 4),
             KeepTogether([Paragraph("<b>Men down for an average (roll d100)</b>", S),
                           grid([[Paragraph(x, CH) for x in quick_spread()[0]]] + quick_spread()[1:], [0.8 * inch] + [(W - 0.8 * inch) / 10] * 10, font=7.5)])]
+        story += [Spacer(1, 6), Paragraph("Running on through quiet exchanges", H2), Paragraph(RUNON_RULE, B)]
     if d.teams:
         cell = lambda rows: [[Paragraph(x, CH) for x in rows[0]]] + [[Paragraph(str(c), C) for c in r] for r in rows[1:]]
         for k, eid in enumerate(team_eras(d)):
