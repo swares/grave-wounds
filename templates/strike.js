@@ -31,7 +31,7 @@ function strikeDice(cmd, dice){                     // the dice a strike takes: 
   const used = [], own = cmd.rolls || {};
   const take = (name, sides) => {
     const p = own[name], mine = Number.isInteger(p) && p >= 1 && p <= sides;
-    const v = mine ? p : dice.randint(1, sides);
+    const v = mine ? p : dice.randint(1, sides, name);   // the name: for quick-play's walk (quickChart); dice ignore it
     used.push({ name, v, sides, by: mine ? "player" : "dice" });
     return v;
   };
@@ -196,7 +196,68 @@ function makeStrike(DATA){
     return done(woundPhase(ctx, cmd, att, take));
   }
 
-  return { resolveStrike, attackRoll, defenceRoll, marginSeverity, armorAt, armorSteps, sevTiers, grazeFx, isGraze, cannotAttack };
+  /* ----- quick-play: the strike's outcome in one d1000 (the roller's Quick-play strikes; docs/combat.md, Quick-play strikes) -----
+     Every way the strike's dice could fall is walked, each die split only where its value changes what
+     follows (the attack roll by its value, the defence and the misfire by success, the location, the
+     blow and a rolled severity by their bands, a cover d10 by its value). The ways that give the same
+     outcome (a miss, with or without a stray shot; parried; stopped; or the wound's place, blow,
+     severity, graze and armour) are one line of a chart, with the sum of their chances. The lines run in
+     order of outcome (blocked, missed, parried, then stopped, light, serious and critical wounds, grazes
+     first, then by the kind of place and the blow, which give the wound's effects, then by place), so each
+     kind of outcome and of wound is one run of faces and its whole chance comes out on a d1000 within 1
+     in 1,000. One d1000 reads the chart, and the strike is then played on the most likely
+     dice of its line, so it shows and does exactly what a strike rolled die by die would have on those
+     dice. A single place's line is exact only to the d1000: under half of 1 in 1,000 it cannot come up. */
+  const SEV_TABLES = [DATA.severity, ...Object.values(DATA.severity_by_mechanism || {}).flatMap(m => m.tables.map(t => t.tiers))];
+  function quickClasses(name, ctx, cmd){         // [[value standing for the class, chance]] for one die
+    const cut = (sides, of) => {
+      const out = new Map();
+      for (let v = 1; v <= sides; v++){ const k = JSON.stringify(of(v)); const c = out.get(k); if (c) c[1] += 1 / sides; else out.set(k, [v, 1 / sides]) }
+      return [...out.values()];
+    };
+    const w = DATA.weapons[ctx.weapon], range = ctx.rc.range, D = ctx.defender?.pen;
+    if (name === "misfire") return cut(100, v => v <= (range ? range.misfire || 0 : 0));
+    if (name === "atk") return cut(100, v => v);
+    if (name === "def") return cut(100, v => cmd.def !== null && cmd.def !== undefined && defenceRoll(cmd.def, v, D ? D.defence : 0).defended);
+    if (name === "stray") return cut(100, v => !!range?.stray && v <= range.stray);
+    if (name === "loc") return cut(100, v => [strikeLook(ctx.ranges, v), ctx.aimRanges ? strikeLook(ctx.aimRanges, v) : ""]);
+    if (name === "mech") return cut(100, v => strikeLook(w.mech_ranges, v));
+    if (name === "sev") return cut(100, v => SEV_TABLES.map(t => t.find(x => v >= x.d100[0] && v <= x.d100[1])?.id));
+    return cut(10, v => v);                       // cover
+  }
+  const quickKey = h => (h.blocked ? "blocked" : h.miss ? `miss|${h.stray ? h.stray.hit : ""}` : h.defended ? "defended"
+    : JSON.stringify([h.loc, h.mech, h.sev, !!h.graze, h.armor ? h.armor.mat : null, h.armor ? h.armor.covered : null]));
+  function quickChart(ctx, cmd){                  // [{key, p, rolls}]: the strike's outcomes, each with its chance and its most likely dice
+    const lines = new Map(), probe = { randint(a, b, name){ throw Object.assign(new Error("a die to walk"), { need: name }) } };   // a die not yet chosen: walk its classes
+    const walk = (rolls, p) => {
+      let r;
+      try { r = resolveStrike(ctx, { ...cmd, rolls }, probe) }
+      catch (e){
+        if (!e?.need) throw e;
+        const name = e.need;
+        for (const [v, q] of quickClasses(name, ctx, cmd)) walk({ ...rolls, [name]: v }, p * q);
+        return;
+      }
+      const key = quickKey(r.hit), line = lines.get(key);
+      if (!line) lines.set(key, { key, p, rolls, best: p });
+      else { line.p += p; if (p > line.best){ line.best = p; line.rolls = rolls } }
+    };
+    walk({}, 1);
+    const rank = l => { const k = l.key; if (!k.startsWith("[")) return [k, ""]; const [loc, mech, sev, graze] = JSON.parse(k); return [`~${STRIKE_LADDER.indexOf(sev)}${graze ? 0 : 1}`, LOC[loc].class, mech, k] };
+    return [...lines.values()].sort((a, b) => { const x = rank(a).join("|"), y = rank(b).join("|"); return x < y ? -1 : x > y ? 1 : 0 });   // by outcome, severity (grazes first), the kind of place and the blow (which give the wound's effects), then place: each is one run of the d1000, so its whole chance comes out within 1 in 1,000
+  }
+  function quickStrike(ctx0, cmd, dice, chart){  // one d1000 on the strike's chart, then the strike on that line's dice: {hit, dice, effects}, hit.quick = {roll, p}
+    const ctx = { ...ctx0, rc: ctx0.rc || { range: null } };
+    const lines = chart || quickChart(ctx, cmd);
+    if (lines.length === 1){ const r = resolveStrike(ctx, { ...cmd, rolls: lines[0].rolls }, dice); return { ...r, dice: [], hit: { ...r.hit, quick: { roll: null, p: 1 } } } }
+    const v = dice.randint(1, 1000), at = (v - 0.5) / 1000;
+    let sum = 0, line = lines[lines.length - 1];
+    for (const l of lines){ sum += l.p; if (at < sum){ line = l; break } }
+    const r = resolveStrike(ctx, { ...cmd, rolls: line.rolls }, dice);
+    return { ...r, dice: [{ name: "quick", v, sides: 1000, by: "dice" }], hit: { ...r.hit, quick: { roll: v, p: line.p } } };
+  }
+
+  return { resolveStrike, quickChart, quickStrike, attackRoll, defenceRoll, marginSeverity, armorAt, armorSteps, sevTiers, grazeFx, isGraze, cannotAttack };
 }
 
 if (typeof module !== "undefined") module.exports = { makeStrike };   // Node (the tests); the page has no `module`
