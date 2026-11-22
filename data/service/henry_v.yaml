@@ -192,7 +192,7 @@ small_fights:
     time: "in the afternoon"
     ground: village
     side: {name: "The raiding party", men: [100, 1100]}
-    foes: [{name: "French men-at-arms", men: [133, 2667], kit: full_plate, weapon: spear},
+    foes: [{name: "French men-at-arms", men: [133, 2667], kit: harness_1415, weapon: spear},   # mail with plate pieces, as at Agincourt (DeVries 2015; armor.yaml harness_1415)
            {name: "The gens de trait and commons", men: [67, 1333], kit: jack_sallet, weapon: crossbow}]   # two men-at-arms to each of the gens de trait (Curry: companies were to raise half as many; the 1415 musters of Vendôme, 300 and 150, and Berry, 1,000 and 500); the trait all crossbowmen is ours
     aims: {team: "Hold together until dark and get away.", foes: "Break them and take prisoners for ransom."}
     ends: "The English win if they hold for 8 rounds (nightfall); the French draw off once a third of those here are down; the English are beaten if they are broken."
@@ -208,7 +208,7 @@ small_fights:
     time: "by day"
     ground: open
     side: {name: "The guard on the lines", men: [20, 100]}
-    foes: [{name: "The sally's men-at-arms", men: [20, 667], kit: full_plate, weapon: poleaxe},
+    foes: [{name: "The sally's men-at-arms", men: [20, 667], kit: harness_1415, weapon: poleaxe},   # mail with plate pieces, as at Agincourt (DeVries 2015; armor.yaml harness_1415)
            {name: "The sally: crossbowmen and commons", men: [10, 333], kit: jack_sallet, weapon: crossbow}]   # two men-at-arms to each of the gens de trait (Curry: companies were to raise half as many; the 1415 musters of Vendôme, 300 and 150, and Berry, 1,000 and 500); the trait all crossbowmen is ours
     surprise: {text: "The gate opens on men at their work", chance: 30}
     aims: {team: "Hold the lines and drive them back in.", foes: "Burn the siege works, take prisoners, and go back in."}
@@ -225,7 +225,7 @@ small_fights:
     time: "in the morning"
     ground: forest
     side: {name: "The English column", men: [100, 600]}
-    foes: [{name: "The ambush's men-at-arms", men: [133, 1333], kit: full_plate, weapon: spear},
+    foes: [{name: "The ambush's men-at-arms", men: [133, 1333], kit: harness_1415, weapon: spear},   # mail with plate pieces, as at Agincourt (DeVries 2015; armor.yaml harness_1415)
            {name: "The ambush: crossbowmen and commons", men: [67, 667], kit: jack_sallet, weapon: crossbow}]   # two men-at-arms to each of the gens de trait (Curry: companies were to raise half as many; the 1415 musters of Vendôme, 300 and 150, and Berry, 1,000 and 500); the trait all crossbowmen is ours
     surprise: {text: "The ambush breaks out of the trees", chance: 40}
     aims: {team: "Break the ambush and go on.", foes: "Cut the column up and take prisoners."}
@@ -243,7 +243,7 @@ small_fights:
     time: "by day"
     ground: road
     side: {name: "The escort", men: [20, 100]}
-    foes: [{name: "Dauphinist men-at-arms", men: [27, 133], kit: full_plate, weapon: spear},
+    foes: [{name: "Dauphinist men-at-arms", men: [27, 133], kit: harness_1415, weapon: spear},   # mail with plate pieces, as at Agincourt (DeVries 2015; armor.yaml harness_1415)
            {name: "Dauphinist crossbowmen and commons", men: [13, 67], kit: jack_sallet, weapon: crossbow}]   # two men-at-arms to each of the gens de trait (Curry: companies were to raise half as many; the 1415 musters of Vendôme, 300 and 150, and Berry, 1,000 and 500); the trait all crossbowmen is ours
     surprise: {text: "The riders come on the escort on the road", chance: 40}
     aims: {team: "Keep the travellers and the baggage.", foes: "Take the baggage and the horses."}
@@ -278,7 +278,7 @@ small_fights:
     time: "in the morning"
     ground: ford
     side: {name: "The archers over the ford", men: [60, 200]}
-    foes: [{name: "French men-at-arms", men: [67, 533], kit: full_plate, weapon: spear},
+    foes: [{name: "French men-at-arms", men: [67, 533], kit: harness_1415, weapon: spear},   # mail with plate pieces, as at Agincourt (DeVries 2015; armor.yaml harness_1415)
            {name: "The gens de trait and commons", men: [33, 267], kit: jack_sallet, weapon: crossbow}]   # two men-at-arms to each of the gens de trait (Curry: companies were to raise half as many; the 1415 musters of Vendôme, 300 and 150, and Berry, 1,000 and 500); the trait all crossbowmen is ours
     aims: {team: "Hold the far bank until the men-at-arms come over.", foes: "Throw them back into the river."}
     ends: "The men-at-arms come over after 6 rounds; the French fall back once a third of those here are down; the archers are beaten if they are driven into the river."
@@ -313,7 +313,7 @@ small_fights:
     light: night
     ground: village
     side: {name: "The quartered men", men: [50, 1000]}
-    foes: [{name: "Men-at-arms from a French garrison", men: [67, 333], kit: full_plate, weapon: spear},
+    foes: [{name: "Men-at-arms from a French garrison", men: [67, 333], kit: harness_1415, weapon: spear},   # mail with plate pieces, as at Agincourt (DeVries 2015; armor.yaml harness_1415)
            {name: "Crossbowmen and commons from the garrison", men: [33, 167], kit: jack_sallet, weapon: crossbow}]   # two men-at-arms to each of the gens de trait (Curry: companies were to raise half as many; the 1415 musters of Vendôme, 300 and 150, and Berry, 1,000 and 500); the trait all crossbowmen is ours
     surprise: {text: "The men are asleep without a guard", chance: 70}
     aims: {team: "Stand to, hold the houses, and get away.", foes: "Kill or take them and burn the village."}
