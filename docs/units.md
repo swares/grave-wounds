@@ -128,14 +128,17 @@ than rolling each man (below).
   on, are the averages rounded at random (bookkeeping, not a table roll).
 - **Heroes.** A blow that falls on a hero is still rolled on its own, as before; quick-play
   covers the rankers only.
-- **Shellfire.** Its own switch (`quick.shellfire`) rolls a battery's shellfire on a unit once: each man within a
-  burst's reach would be struck at the % for his distance (cut for going to ground and
-  cover), so the average is the sum of those chances over every burst of that fire, and the
-  men struck are one d1000 on the binomial curve, as for blows (`_shell_struck_unit`). Each man
+- **Shellfire.** Its own switch (`quick.shellfire`) rolls a battery's shellfire on a unit in a
+  few rolls: each man within a burst's reach would be struck at the % for his distance (cut for
+  going to ground and cover). The men are grouped by that %, over every burst of that fire, and
+  each group is one d1000 on its binomial curve, the highest % first (`_quick_struck`). Men at
+  one % are exactly binomial, so the sum is distributed as rolling each man. Each man
   struck still rolls his wound. In the modern battlefields 89% of the d100s were these
   per-man rolls; counted on one run of every battlefield, quick-play took the d100s an exchange
-  from 1914 on from 126 to 17 (blows alone: 120), and before 1914 from 296 to 52. The average is exact (the same per-man chances); the spread is a little wider than
-  rolling each man, since one curve stands for men at different distances from the bursts.
+  from 1914 on from 126 to 17 (blows alone: 120), and before 1914 from 296 to 52 (with one roll for
+  the whole fire). Until PR #590 it was one roll on one curve for the average of all the men: the
+  average was exact, but the spread wider than rolling each man, as one curve stood for men at
+  different distances; Mogadishu, Tumbledown and Grozny moved by 17-25 points with it (PR #589).
 - **On paper.** The tables carry a chart for each era: men down per 100 tries for its
   example weapons against its example armour at attacks 30, 45, 60 and 75, against regular
   men, with the green and veteran factors and the parry factor (×(1 − parry × 0.9)), and a
