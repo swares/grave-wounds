@@ -19,9 +19,9 @@ on:
         required: true
         default: main
       seeds:
-        description: "Runs of each battlefield"
+        description: "Runs of each battlefield (36 for the commander's benchmark, commander.json)"
         required: true
-        default: "24"
+        default: "36"
       first:
         description: "First seed"
         required: true
