@@ -19,7 +19,7 @@ from . import combat as C
 from .combat import weapon_reach
 from .disease import wound_case
 from .combat import graze
-from .engine import compose_wound, reduce_severity, roll_hit
+from .engine import compose_wound, mechanism_ranges, reduce_severity, roll_hit, table_ranges
 from .model import Data
 
 
@@ -158,8 +158,9 @@ def _blows(d: Data, att: dict, dfd: dict, n: int, atk: int, dfn: int, rng: rando
 # ---------- quick-play blows (units.yaml quick.blows): one roll for a striking group ----------
 # The share of tries that end each way (missed, parried, stopped, a light, serious or critical wound,
 # a man down or dead, and each kind of wound for the aftermath) is the per-blow rules' own, worked out
-# once for each pairing from quick.samples tries on dice of its own (the stand-in for the printed
-# table). A group's men down are then one d100 read on the binomial curve for its tries at that share
+# exactly once for each pairing: every attack roll, location band and mechanism band, each weighted by
+# its chance, and the stop check's chance (the stand-in for the printed table; it was sampled from
+# 4,000 tries, which left a rare outcome up to about 15% off). A group's men down are then one d100 read on the binomial curve for its tries at that share
 # (the per-blow dice's own spread); the dead and the lightly wounded among them are the averages,
 # rounded at random (bookkeeping, not a table roll). As the field page's quickBlows.
 _QUICK: dict = {}
@@ -171,28 +172,70 @@ def _num(x) -> str:
 
 
 def _quick_rates(d: Data, att: dict, dfd: dict, atk, dfn) -> dict:
-    """Per try: the share missed, parried, stopped, hit, light, serious, critical, down and dead, and
-    of each kind of wound (hurt), from quick.samples tries on the pairing's own dice."""
+    """Per try, exactly: the share missed, parried, stopped, hit, light, serious, critical, down and dead,
+    and of each kind of wound (hurt). Every attack roll, location band and mechanism band in turn, each
+    weighted by its chance, through roll_hit with those faces, and the stop check's chance (as the page's
+    quickRates)."""
     key = "|".join([att.get("table") or "", att.get("weapon") or "", dfd.get("kit") or "", dfd.get("quality") or "", _num(atk), _num(dfn)])
     if key in _QUICK:
         return _QUICK[key]
-    h = 7
-    for c in key:
-        h = (h * 31 + ord(c)) % 2147483646
-    own, S, t = SeededDice(1 + h), d.units["quick"]["samples"], _new_tally()
+    t = _new_tally()
+    for k in ("missed", "parried", "stopped", "hits", "light", "serious", "critical", "down", "dead"):
+        t[k] = 0.0
     crit_at = math.floor(atk * d.wounds["combat"]["critical_fraction"])
-    for _ in range(S):
-        r = own.randint(1, 100)
+    nerve = quality(d, dfd["quality"])["nerve"]
+    locs = table_ranges(d, att["table"], att["weapon"])
+    mechs = mechanism_ranges(d, att["weapon"])
+    modern = att["weapon"] in d.units["modern_fire"]["weapons"]
+    share = lambda r: (r["hi"] - r["lo"] + 1) / 100            # noqa: E731
+    over = lambda v: (100 - min(100, max(0, math.floor(v)))) / 100   # noqa: E731  a d100 over v
+
+    def hurt(sev, fx, down, w):
+        k = f"{sev}|{fx['lethal']}|{fx['infection']}|{1 if down else 0}"
+        t["hurt"][k] = t["hurt"].get(k, 0) + w
+
+    class Faces:                                              # the dice roll_hit asks for, as given
+        def __init__(self, faces):
+            self.faces = list(faces)
+
+        def randint(self, a, b):
+            return self.faces.pop(0)
+
+    for r in range(1, 101):
         if r > atk:
-            t["missed"] += 1
+            t["missed"] += 0.01
             continue
         critical = r <= crit_at
-        if not critical and dfn > 0 and own.randint(1, 100) <= dfn:
-            t["parried"] += 1
-            continue
-        _wound(d, att, dfd, atk - r, critical, own, t, r)
-    rates = {k: v / S for k, v in t.items() if k not in ("hurt", "blows")}
-    rates["hurt"] = {k: v / S for k, v in t["hurt"].items()}
+        parry = 1 - over(dfn) if not critical and dfn > 0 else 0
+        t["parried"] += 0.01 * parry
+        for lr in locs:
+            for mr in mechs:
+                w = 0.01 * (1 - parry) * share(lr) * share(mr)
+                if not w:
+                    continue
+                h = roll_hit(d, att["table"], att["weapon"], rng=Faces([lr["lo"], mr["lo"]]), kit=dfd.get("kit"), margin=atk - r,
+                             critical=critical, shield=dfd.get("shield"), attack_roll=r)
+                sev, fx = h["severity"], h["effects"]
+                if sev == "stopped":
+                    t["stopped"] += w
+                    continue
+                t["hits"] += w
+                t[sev] += w
+                if fx["lethal"] in d.units["dead_if"]:
+                    t["dead"] += w
+                    t["down"] += w
+                    continue
+                if h["graze"] or (sev == "light" and not modern):
+                    hurt("light", fx, False, w)
+                    continue
+                down = 1 if modern and sev != "light" else over(nerve - (10 if sev == "critical" else 0))
+                t["down"] += w * down
+                if down:
+                    hurt(sev, fx, True, w * down)
+                if down < 1:
+                    hurt(sev, fx, False, w * (1 - down))
+    rates = {k: v for k, v in t.items() if k not in ("hurt", "blows")}
+    rates["hurt"] = dict(t["hurt"])
     _QUICK[key] = rates
     return rates
 
@@ -227,11 +270,12 @@ def _normal_at(p: float) -> float:
 
 
 def _quick_down(d: Data, n: int, q: float, rng) -> int:
-    """The men down of n tries that each put a man down at chance q: one d100 read on the binomial
-    curve (its own percentiles for a small group, the normal curve's from quick.normal_from men's spread)."""
+    """The men down of n tries that each put a man down at chance q: one d1000 read on the binomial
+    curve (its own percentiles for a small group, the normal curve's from quick.normal_from men's spread).
+    A d1000, not a d100: a d100 cannot show a chance under 1%, so small groups at long odds always came out 0."""
     if n <= 0 or q <= 0:
         return 0
-    p = (rng.randint(1, 100) - 0.5) / 100
+    p = (rng.randint(1, 1000) - 0.5) / 1000
     mean = n * q
     v = mean * (1 - q)
     if v >= d.units["quick"]["normal_from"]:

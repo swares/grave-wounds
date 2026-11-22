@@ -841,16 +841,18 @@ modern_fire:
 
 # quick: quick-play for the table. With `blows` on, a striking group's blows on the rankers are
 # resolved in one roll instead of one at a time, and so is a battery's shellfire on a unit (the men
-# struck: one d100 on the binomial curve for the sum of each man's chance). Each try puts a man down at the share of tries that
-# do so under the per-blow rules (worked out once, `samples` tries for each pairing of weapon and
-# wound table against armour, quality, attack and parry), so the men down are one d100 read on the
+# struck: one d1000 on the binomial curve for the sum of each man's chance). Each try puts a man down at the share of tries that
+# do so under the per-blow rules (worked out exactly once for each pairing of weapon and wound table
+# against armour, quality, attack and parry: every attack roll, location band and mechanism band,
+# weighted by its chance; sampled from 4,000 tries until 21 November 2026, which left a rare outcome
+# up to about 15% off), so the men down are one d1000 read on the
 # binomial curve for that many tries: its own percentiles for a small group, the normal curve's once
 # the spread (variance) reaches `normal_from` men. Blows that fall on a hero are still rolled one at a
 # time. Off by default: a GM's choice (the field page's "quick-play blows" box turns it on for a
 # battle). The tables print a chart for each era from the same rates, and the field page a sheet for
 # the units on the field (docs/units.md, Quick-play blows). Measured in self-play: the share of blows
 # putting a man down matches the per-blow rules, and the runs matched are within the dice's own spread.
-quick: {blows: false, samples: 4000, normal_from: 9}
+quick: {blows: false, normal_from: 9}
 
 # ---------- unit morale ----------
 # After each exchange a unit checks if it lost the exchange in contact (more of its men put
