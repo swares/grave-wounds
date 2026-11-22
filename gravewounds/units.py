@@ -273,6 +273,7 @@ def _quick_down(d: Data, n: int, q: float, rng) -> int:
     """The men down of n tries that each put a man down at chance q: one d1000 read on the binomial
     curve (its own percentiles for a small group, the normal curve's from quick.normal_from men's spread).
     A d1000, not a d100: a d100 cannot show a chance under 1%, so small groups at long odds always came out 0."""
+    q = float(q)                                 # a chance, not a whole number (a caller may pass 0 or 1)
     if n <= 0 or q <= 0:
         return 0
     if q >= 1:
