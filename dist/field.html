@@ -176,6 +176,7 @@ fieldset{border:0;margin:0;padding:0;min-width:0}
 .support li[aria-current="true"]{border-color:var(--blood)}
 .support .meta{margin-left:auto;font:.78rem var(--mono);color:var(--muted)}
 .aim{font:700 9px var(--mono);fill:var(--blood);text-anchor:middle;dominant-baseline:central;pointer-events:none}
+.march{font:700 9px var(--mono);fill:var(--steel);text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .burst{font:700 7px var(--mono);fill:#c46a1a;text-anchor:middle;dominant-baseline:central;pointer-events:none}
 .smoke{fill:#9a9a9a;fill-opacity:.55;stroke:none;pointer-events:none}
 .gas{fill:#c9cf6a;fill-opacity:.5;stroke:none;pointer-events:none}
@@ -269,6 +270,7 @@ legend{padding:0}
       </div>
       <div class="toolbar">
         <button class="primary" id="btn-next">Start the battle</button>
+        <button class="small" id="btn-runon" hidden title="Out of reach of the enemy: play on, exchange by exchange, the units you move going toward their march hexes (March to…) and the rest holding, until something is in reach or seen, anything lands or is checked, or the battle's own events come (a phase, arrivals, the light, a plan's step, a march hex reached)">Run on</button>
         <button class="small" id="btn-end" title="Stop here: count the dead, and carry the wounded to camp">End the battle</button>
         <label class="check" id="lbl-river" title="The beaten side has a river or marsh at its back: the pursuit takes twice as many (Towton, Ball's Bluff, the Berezina)"><input type="checkbox" id="chk-river"> River behind the beaten</label>
         <button class="small" id="btn-reset" title="Back to set-up with the starting units">New battle</button>
@@ -348,6 +350,7 @@ legend{padding:0}
         <button class="small" id="btn-wider">Wider</button>
         <button class="small" id="btn-undo" title="Put it back where it started this phase">Undo move</button>
         <button class="small" id="btn-remove">Remove</button>
+        <button class="small" id="btn-march" title="A standing march order: on Run on, it moves toward the hex you click each exchange, as far as its move allows, and stops there">March to…</button>
         <button class="small" id="btn-breach" title="Its front rank hacks at the palisade, gate, stakes or wagons in front of it each exchange">Breach the works</button>
         <label class="sr" for="sel-assault">Storm the bunker</label><select class="small" id="sel-assault" hidden title="Ordered to storm: once an exchange it tries to knock out each enemy-held bunker across its front, with grenades, satchel charges or flamethrowers" style="width:auto"></select>
         <button class="small" id="btn-ground" title="The men lie down in the folds of the ground: harder to hit, but the unit cannot move until it gets up">Go to ground</button>
@@ -6366,6 +6369,7 @@ function tryMove(u, pos, facing){                 // a move from where it began 
   const r = moveUnit(base, i, pos, mod6(facing), SIZE, S.field);
   if (!r.ok){ S.msg = `${u.name} cannot go there: ${r.why}.`; return }
   S.units[i] = { ...S.start[i], pos, facing: mod6(facing), charged: r.charge };
+  if (u.march) S.units[i].march = u.march; else delete S.units[i].march;   // its march order as it is now (set or cleared this move)
   S.through = S.through || {};
   S.through[u.id] = (r.through || []).map(k => base[k].id);   // this move's friends charged through (a fresh move replaces its last)
   const hit = new Set(Object.values(S.through).flat());
@@ -6618,6 +6622,7 @@ function supportSvg(){                            // smoke, landing zones, aid p
     (F.flashes || []).map(glyph("flash", "\u2739")),
     (F.beams || []).map(glyph("beam", "\u2726")),
     supports().filter(b => b.mission?.hex).map(b => glyph("aim", "\u2316")(b.mission.hex)),
+    S.units.filter(u => u.march && !out_(u) && !aiOf(sideNo(u))).map(u => glyph("march", "\u2691")(u.march)),
     supports().filter(b => b.place).map(batterySvg),
     (S.bursts || []).map(glyph("burst", "\u2737")),
   ].flat().join("");
@@ -6888,7 +6893,7 @@ function caughtUnawares(){                        // a fight from the travel map
 function next(){
   if (S.phase === "over") return;
   if (S.phase === "setup"){
-    S.aiMemory = [null, null]; S.held = { side: null, n: 0 }; S.story = []; S.commits = [];
+    S.aiMemory = [null, null]; S.held = { side: null, n: 0 }; S.story = []; S.commits = []; LAST_EX = null;
     forceAmmo();
     const r = beginBattle(T(), dice);
     newMove();
@@ -6919,6 +6924,7 @@ function next(){
   tell(ex, turningPoints(S, S.pbase || pointsBase(S), r.stages, S.commits || []));
   S.pbase = pointsBase(S); S.commits = [];
   const stop = playStop(T(), S.held || (S.held = { side: null, n: 0 }), [aiOf(0), aiOf(1)]);
+  LAST_EX = { log: r.log, stages: r.stages, stop };
   if (RUN && stop) return runOver(stop);
   aiMove();
   render();
@@ -6985,6 +6991,7 @@ function aiMove(){                                // at the start of a side's mo
   const commits = commitsOf(S, orders);
   S.commits = [...(S.commits || []), ...commits];
   S.aiDone = { exchange: S.exchange, phase: S.phase, undo: before, mem, sup, start, commits };
+  if (RUNON && orders.some(o => o.act === "plan")) RUNON.planned = true;
   const lines = orders.map(o => ({ cls: o.act === "charge" ? "morale" : "", text: orderText(movedOf(o, orders, before)) }));
   S.log = [{ cls: "head", text: `The commander orders ${side} (${stanceWord(k)}): ${orders.length ? nOf(orders.length, "order") : "every unit stands"}${Object.keys(M.mem).length ? "" : " (it knows of no enemy: none is in its units' sight)"}.${onward}` }, ...lines, ...S.log].slice(0, 400);
 }
@@ -7170,6 +7177,9 @@ function renderAi(){
   const run = $("#btn-run");
   run.hidden = !bothAi() || S.phase === "over";
   run.textContent = RUN ? "Stop" : "Run";
+  const on = $("#btn-runon");
+  on.hidden = bothAi() || (S.phase !== 0 && S.phase !== 1);
+  on.textContent = RUNON ? "Stop" : "Run on";
 }
 /* ---------- the commander on both sides: Run plays on, a move at a time, until stopped or the battle ends ---------- */
 let RUN = null;                                   // the run's timer while it plays on (not saved)
@@ -7193,6 +7203,7 @@ function runTick(){
 function stopRun(show = false){
   if (RUN && RUN !== true) clearTimeout(RUN);
   RUN = null;
+  if (RUNON){ clearTimeout(RUNON.timer); RUNON = null }
   if (show) render();
 }
 const STOP_TEXT = {                               // why a run stopped (units.js: playStop)
@@ -7205,6 +7216,126 @@ function runOver(stop){                           // the run stops on its own: t
   endBattle(stop);
   S.msg = `The run stops: ${STOP_TEXT[stop.why](stop)}. The battle is over.`;
   render();
+}
+/* ---------- Run on: quiet exchanges played out unattended (docs/units.md, Running on) ----------
+   The sides you move: each unit with a march order goes toward its hex, as far as its move allows, and the rest hold;
+   a commander's side is ordered as ever. The rules are the same: only the pressing of Next is saved. It stops before
+   your move once anything needs you (runOnStops). */
+let RUNON = null;                                 // while running on: {timer, n (exchanges run), seen [side: Set of enemy units seen], sky, held, planned, reached, stuck} (not saved)
+let LAST_EX = null;                               // the last exchange's result: {log, stages, stop}
+const RUNON_MS = 250;                             // a move's pause, to follow it on the map
+const QUIET_KINDS = new Set(["objective", "dug", "resupplied", "laid", "lifted", "bearers", "displaced", "airhold", "flownout", "helisupply", "heroaid", "herobled", "fetched", "party", "drop"]);   // log lines that are not a blow, shot, shell or check
+const CHECK_KINDS = new Set(["morale", "reform", "pinned", "gassed"]);   // log lines that are a morale check
+const onMapUnit = u => !!u.pos && u.men > 0 && u.state !== "fled" && !u.passing;
+function runOnReach(){                           // why a unit has an enemy in reach: in contact, or one it would shoot at now (in range, in sight, in front, a line of fire: the rules' own target); or ""
+  const occ = occupancy(S.units);
+  for (const [i, a] of S.units.entries()){
+    if (!onMapUnit(a) || out_(a)) continue;
+    if (inContact(S.units, occ, i)) return `${unitName(a)} are in contact with the enemy`;
+    const t = target(S.units, i, S.field, occ);
+    if (t) return `${unitName(S.units[t[1]])} are within reach of ${unitName(a)} (${nOf(t[0], "hex", "hexes")})`;
+  }
+  return "";
+}
+function seenNow(){                               // [side: Set of the enemy units the sides you move see]
+  return [0, 1].map(k => new Set(aiOf(k) ? [] : S.units.map((e, j) => (e.side !== S.sides[k] && onMapUnit(e) && seenBy(S.units, S.sides[k], S.field, e) ? j : -1)).filter(j => j >= 0)));
+}
+const skyNow = () => JSON.stringify([lightOf(S.field), S.field.weather?.cond ?? null, S.field.weather?.wind ?? null]);
+const heldOf = log => (log || []).filter(l => l.kind === "objective").map(l => `${l.second ? 2 : 1}:${l.held}`).join(" ");
+function runOnToggle(){                           // Run on, or Stop
+  if (RUNON) return stopRunOn(["you stopped it"]);
+  if ((S.phase !== 0 && S.phase !== 1) || bothAi()) return;
+  if (LAST_EX?.stop){ S.msg = `Not running on: ${STOP_TEXT[LAST_EX.stop.why](LAST_EX.stop)}. End the battle, or play on exchange by exchange.`; return render() }
+  const near = runOnReach();
+  if (near){ S.msg = `Not out of reach: ${near}. Play on exchange by exchange.`; return render() }
+  RUNON = { timer: null, n: 0, seen: seenNow(), sky: skyNow(), held: heldOf(LAST_EX?.log) || null, planned: false, reached: [], stuck: [] };
+  S.msg = "Running on: the units with march orders go toward their hexes, the rest hold. Stop to step in.";
+  render();
+  runOnTick();
+}
+function runOnTick(){
+  RUNON.timer = setTimeout(() => {
+    if (!RUNON) return;
+    if (S.phase === "over") return stopRunOn(["the battle is over"]);
+    if (!aiOf(S.phase)){                          // your side's move: anything to stop for first, then the marches
+      const why = runOnStops();
+      if (why.length) return stopRunOn(why);
+      marchSide(S.phase);
+      const near = runOnReach();
+      if (near) return stopRunOn([`${near}, after their march (move them, or press Next)`]);
+    }
+    const ex = S.exchange;
+    next();
+    if (!RUNON) return;
+    if (S.exchange !== ex) RUNON.n += 1;
+    runOnTick();
+  }, RUNON_MS);
+}
+function runOnStops(){                            // before your move: why to stop (the last exchange's events, the reach, a sighting), or []
+  const why = [], L = LAST_EX, R = RUNON;
+  if (L && R.n){                                  // the exchange just fought (none yet: the run has only begun)
+    if (L.stop) why.push(STOP_TEXT[L.stop.why](L.stop));
+    const loud = (L.log || []).filter(l => !QUIET_KINDS.has(l.kind) && !(l.kind === "hero" && !l.blows));
+    const checks = loud.filter(l => CHECK_KINDS.has(l.kind)).length;
+    if (loud.length > checks) why.push("blows, shots or shells landed in the last exchange");
+    if (checks) why.push(`${checks === 1 ? "a morale check" : checks + " morale checks"} in the last exchange`);
+    const st = L.stages || {};
+    if (st.begun?.length) why.push(`phase ${st.begun.map(i => i + 1).join(", ")} begins`);
+    if (st.came?.length || st.flying?.length || st.onCall?.length) why.push("units come on");
+    const held = heldOf(L.log);
+    if (held && R.held !== null && held !== R.held) why.push("the objective changes hands");
+    R.held = held || R.held;
+  }
+  if (skyNow() !== R.sky) why.push("the light or the weather changes");
+  if (R.planned) why.push("a plan's step begins");
+  if (R.reached.length) why.push(`${R.reached.join(", ")} reached their march hex`);
+  if (R.stuck.length) why.push(`${R.stuck.join(", ")} can get no nearer their march hex`);
+  const near = runOnReach();
+  if (near) why.push(near);
+  const now = seenNow(), fresh = [0, 1].flatMap(k => [...now[k]].filter(j => !R.seen[k].has(j)));
+  if (fresh.length) why.push(`${[...new Set(fresh)].map(j => unitName(S.units[j])).join(", ")} seen`);
+  R.seen = now;
+  return why;
+}
+function marchSide(k){                            // your side's units on march orders move toward their hexes (not one you have moved by hand this move)
+  const side = S.sides[k];
+  S.units.forEach((u, i) => {
+    if (u.side !== side || !u.march || !onMapUnit(u) || out_(u) || u.arrived === S.exchange) return;
+    const st = S.start[i];
+    if (!st?.pos || st.pos[0] !== u.pos[0] || st.pos[1] !== u.pos[1] || st.facing !== u.facing || allowance(u) === 0) return;
+    if (hdist(u.pos, u.march) === 0){ delete u.march; return }
+    const o = toward(S.units, i, null, [SIZE, { ...S.field, objective: u.march, objective_radius: null }, null, {}, S.exchange], "march");
+    if (!o){ RUNON.stuck.push(unitName(u)); return }
+    tryMove(u, o.pos, o.facing);
+    const v = S.units[i];
+    if (hdist(v.pos, u.march) === 0){ delete v.march; RUNON.reached.push(unitName(v)) }
+  });
+}
+function stopRunOn(why){                          // the run stops before your move: why, in the message
+  if (!RUNON) return;
+  clearTimeout(RUNON.timer);
+  const n = RUNON.n;
+  RUNON = null;
+  S.msg = `Run on stops${n ? ` after ${nOf(n, "exchange")}` : ""}: ${why.join("; ")}.${S.phase === 0 || S.phase === 1 ? ` ${S.sides[S.phase]} to move.` : ""}`;
+  render();
+}
+function marchButton(){                           // March to… (then a hex), Click a hex… (cancel), or Stop marching
+  const u = selUnit(); if (!u) return;
+  if (u.march){ delete u.march; S.marching = null; S.msg = `${u.name} will no longer march.`; return render() }
+  S.marching = S.marching === u.id ? null : u.id;
+  S.msg = S.marching === null ? "" : `Click the hex ${u.name} should march to.`;
+  render();
+}
+function setMarch(h){                             // the clicked hex: the marching unit's order
+  const u = S.units.find(x => x.id === S.marching);
+  S.marching = null;
+  if (u){ u.march = [...h]; S.msg = `${u.name} will march to ${hexName(h)}: on Run on it moves toward it each exchange, as far as its move allows, and stops there.` }
+  render();
+}
+function renderMarch(u){
+  const b = $("#btn-march");
+  b.disabled = !u || S.phase === "over" || out_(u) || !!aiOf(sideNo(u));
+  b.textContent = u?.march ? "Stop marching" : S.marching === u?.id && u ? "Click a hex…" : "March to…";
 }
 
 /* ---------- the narrative: the battle's turning points (units.js: turningPoints), told plainly and, with a key, by a language model ---------- */
@@ -8341,7 +8472,7 @@ function renderMap(){
   const V = shows(); for (const k of ["reach", "edges", "refs", "oncall"]) $("#show-" + k).checked = V[k];
 }
 const gunsText = (n, what) => n + " " + what + (n === 1 ? "" : "s");   // "2 machine guns"
-const META_FLAGS = [["breach", "breaching"], ["assault", "storming"], ["prone", "to ground"], ["emplaced", "emplaced"], ["digging", "digging in"], ["pinned", "pinned"], ["lost", "lost in the dark"], ["fixed", "fixed line"], ["fac", "air controller"], ["masks", "gas masks"], ["gassed", "in gas"], ["reserve", "reserve"], ["sappers", "sappers"], ["shielded", "shielded"], ["ladders", "ladders"], ["jostled", "jostled"], ["mining", "laying mines"], ["clearing", "lifting mines"], ["throws", "throwing things down"]];
+const META_FLAGS = [["breach", "breaching"], ["assault", "storming"], ["prone", "to ground"], ["emplaced", "emplaced"], ["digging", "digging in"], ["pinned", "pinned"], ["lost", "lost in the dark"], ["fixed", "fixed line"], ["fac", "air controller"], ["masks", "gas masks"], ["gassed", "in gas"], ["reserve", "reserve"], ["sappers", "sappers"], ["shielded", "shielded"], ["ladders", "ladders"], ["jostled", "jostled"], ["mining", "laying mines"], ["clearing", "lifting mines"], ["throws", "throwing things down"], ["march", "marching"]];
 const fatigueMeta = u => (u.fatigue ? " · " + WXD.fatigue.levels[u.fatigue].name.toLowerCase() : "");   // " · weary"
 function unitMeta(u){
   if (u.state === "fled") return "fled";
@@ -8465,6 +8596,7 @@ function renderSel(){
   $("#btn-undo").disabled = !u || setup || u.side !== moving();
   $("#btn-breach").disabled = !u || S.phase === "over" || u.state === "broken" || u.state === "fled";
   $("#btn-breach").textContent = u?.breach ? "Stop breaching" : "Breach the works";
+  renderMarch(u);
   renderAssault(u);
   renderLimber(u, setup);
   renderRiders(u, setup);
@@ -8497,6 +8629,7 @@ function renderSel(){
     + teamInfo(u)
     + groundInfo(u)
     + (u.fixed ? `<dt>Fixed line</dt><dd>Laid on ${u.fixed[0] + 1},${u.fixed[1] + 1}: in the dark, with no target it can see, it fires blind at any enemy within ${nOf(FD.weather.light.fixed_line.width, "hex", "hexes")} of the line (−${FD.weather.light.fixed_line.aim}%)</dd>` : "")
+    + (u.march ? `<dt>March</dt><dd>To ${hexName(u.march)}: on Run on it moves toward it each exchange, and stops there</dd>` : "")
     + (u.lost ? `<dt>Lost</dt><dd>It lost its way in the dark: it cannot move next exchange, but may turn</dd>` : "")
     + (ammoFull(u) !== null ? `<dt>Ammunition</dt><dd>${ammoText(u)}${u.resupplying ? "; resupplying this exchange" : ""}</dd>` : "")
     + `<dt>Moves</dt><dd>${allowance(u)} hexes${(u.heroes || []).some(lamed) ? " (slowed by a wounded hero)" : ""}; turning costs ${turnCost(u)} a step</dd>`;
@@ -9068,6 +9201,7 @@ function consoleCommand(e){                         // a command from the consol
   if (d.cmd === "setup" && HANDOFF){ fromTravel(HANDOFF); HANDOFF = null; dropHandoff(); fillChoices(); render() }   // as Set up the battle
   else if (d.cmd === "next") $("#btn-next").click();  // as Start the battle / Next: the page's own button, so it does just what the button does
   else if (d.cmd === "run" && bothAi()) runToggle();
+  else if (d.cmd === "runon" && !bothAi()) runOnToggle();
   else if (d.cmd === "end") endBattle();
   else if (d.cmd === "ai" && (d.k === 0 || d.k === 1) && ["", "attack", "hold"].includes(d.v)) setAi(d.k, d.v);
   else if (d.cmd === "send") fieldSendResult();
@@ -9308,6 +9442,7 @@ function init(){
   $("#map").addEventListener("click", e => {
     const p = e.target.closest(".hx"); if (!p) return;
     const h = p.dataset.h.split(",").map(Number);
+    if (S.marching !== null && S.marching !== undefined) return setMarch(h);
     if (S.calling !== null && S.calling !== undefined) return callFire(S.calling, h);
     if (S.laying !== null && S.laying !== undefined) return layFixed(h);
     if (S.placing) return placeBattery(h);
@@ -9385,6 +9520,8 @@ function init(){
   $("#chk-plan1").onchange = e => setPlan(1, e.target.checked);
   $("#chk-planner").onchange = e => { if (S.phase === "setup"){ S.plannerOn = e.target.checked; S.msg = S.plannerOn ? "The commander will write its own plan for a side with no written plan." : "The commander will plan only where the battlefield gives a plan." } render() };
   $("#btn-run").onclick = runToggle;
+  $("#btn-runon").onclick = runOnToggle;
+  $("#btn-march").onclick = marchButton;
   $("#btn-ai-undo").onclick = aiUndo;
   $("#btn-ai-go").onclick = aiAgain;
   $("#btn-add-sup").onclick = addSupport;

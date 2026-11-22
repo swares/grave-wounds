@@ -148,6 +148,50 @@ the rates came from 4,000 sampled tries, so a rare outcome was off by up to abou
 call of its pairing (Agincourt's longbow volleys on the French harness, 38.9 men down against 44.6
 rolling every blow). Now a d1000 reads the curve and the rates are worked out exactly.
 
+### Running on through quiet exchanges
+
+Two-thirds of the field map's exchanges have nothing land in them (counted on one run of every
+battlefield: 9,581 of 14,470): the armies are still closing, or waiting. Each is still a turn of
+pressing Next. **Run on** (the field page, beside Next, during a battle with at least one side
+the GM moves) plays them out unattended. The rules are the same: it presses Next for the GM.
+
+- **March orders.** A unit's *March to…* button, then a hex on the map, gives it a standing
+  march order (a flag on the map). While running on, each such unit of a side the GM moves goes
+  toward its hex at the start of its side's move, as far as its move allows (the commander's own
+  way of advancing on a place, `toward`), and stops there; a unit moved by hand this move is left
+  as it is. Units with no order hold. A commander's side is ordered as ever.
+- **In reach.** A unit is in reach of an enemy when it is in contact, or when it has an enemy it
+  would shoot at now: in its weapon's range, in sight, in front, with a line of fire (the rules'
+  own `target`). Run on will not start while any unit of either side is. An enemy that could
+  charge from further off does not stop it beforehand; the charge landing does.
+- **Where it stops**, always before the GM's own move, so nothing is decided for the GM:
+  - any unit in reach of an enemy, or an enemy newly seen by a side the GM moves; checked again
+    straight after the march orders are carried out, so the GM can move the units back;
+  - anything in the last exchange that lands or checks: a blow, volley, shell or shot, or a morale
+    check (re-forming, pinning, tear gas included); quiet lines (digging in, resupply, the
+    objective's holder unchanged, aid and bearers) don't stop it;
+  - the battle's own events: a phase begins, units come on, the light or the weather changes, a
+    plan's step starts, the objective changes hands, a march hex is reached, or a marching unit can
+    get no nearer;
+  - a side with no unit standing, or the battle's exchange limit; or the GM presses **Stop**.
+- **At the table.** The rule book's *Running on through quiet exchanges* moves in bounds: the gap
+  between the nearest two enemy units, less the longer reach of the two, over their two moves
+  added together, is how many exchanges no one can come within reach in. Each unit moves that
+  many moves toward its march hex at once; what the rules roll out of contact (losing the way in
+  the dark, breaking down) is still rolled for each exchange. The bound is ours.
+- **Tested** (`tools/field/runon.py`, a browser test): on the page's own skirmish drawn up
+  440 m apart, the units run on two or three exchanges and stop with the enemy in reach before
+  anything lands; a march hex reached stops the run and drops the order.
+- **Measured on the battlefields** (21 November 2026; the GM's side holding, the commander as
+  fought on the other, one seed): the armies as drawn up are mostly in reach from the first
+  exchange. Over 60 exchanges something landed in every one at Albuera and Grozny; at Crécy 27
+  were quiet, 23 of them with a unit in reach. Pressed every move for 150 exchanges, Run on ran
+  0 exchanges at Albuera, 5 at Crécy and 27 at Grozny; at Kapyong 115 of 156, but 101 presses
+  for them, as blows and morale checks come every exchange or two. So it helps an approach march
+  (a battle from the travel map, or the GM's own set-up) far more than a drawn-up battlefield.
+  Why the two-thirds counted quiet in self-play don't carry over is not yet measured: that count
+  was of dice rolled, with the commander on both sides.
+
 ## Morale
 
 After each exchange a unit checks if any of these happened:
