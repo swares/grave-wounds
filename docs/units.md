@@ -109,10 +109,10 @@ gives a GM's alternative, **off by default** (`quick.blows: false`; the field pa
 - **The rates.** For each pairing (wound table, weapon, armour kit, the target's quality,
   attack %, parry %) the share of tries that end each way (missed, parried, stopped, a light,
   serious or critical wound, a man down, a man dead, and each kind of wound for the
-  aftermath) is the per-blow rules' own, worked out once from `quick.samples` (4,000) tries
-  on dice of the pairing's own (seeded from the pairing, so the same every time). This is the
-  page's stand-in for the printed chart.
-- **The roll.** A group's men down are one d100 read on the binomial curve for its tries
+  aftermath) is the per-blow rules' own, worked out exactly once: every attack roll, location
+  band and mechanism band in turn, each weighted by its chance, and the stop check's chance.
+  This is the page's stand-in for the printed chart.
+- **The roll.** A group's men down are one d1000 read on the binomial curve for its tries
   at that share: the per-blow dice's own spread, not just their average. A small group
   reads the curve's own percentiles; from a spread (variance) of `quick.normal_from` (9) it
   reads the normal curve's. The dead among the men down, and the lightly wounded who fight
@@ -122,7 +122,7 @@ gives a GM's alternative, **off by default** (`quick.blows: false`; the field pa
 - **Shellfire.** The same switch rolls a battery's shellfire on a unit once: each man within a
   burst's reach would be struck at the % for his distance (cut for going to ground and
   cover), so the average is the sum of those chances over every burst of that fire, and the
-  men struck are one d100 on the binomial curve, as for blows (`_shell_struck_unit`). Each man
+  men struck are one d1000 on the binomial curve, as for blows (`_shell_struck_unit`). Each man
   struck still rolls his wound. In the modern battlefields 89% of the d100s were these
   per-man rolls; counted on one run of every battlefield, quick-play took the d100s an exchange
   from 1914 on from 126 to 17 (blows alone: 120), and before 1914 from 296 to 52. The average is exact (the same per-man chances); the spread is a little wider than
@@ -130,7 +130,8 @@ gives a GM's alternative, **off by default** (`quick.blows: false`; the field pa
 - **On paper.** The tables carry a chart for each era: men down per 100 tries for its
   example weapons against its example armour at attacks 30, 45, 60 and 75, against regular
   men, with the green and veteran factors and the parry factor (×(1 − parry × 0.9)), and a
-  d100 spread chart (Poisson below an average of 9, the normal curve above). The field page's
+  d100 spread chart (Poisson below an average of 9, the normal curve above), with a long-odds
+  chart for an average under 0.25 read on a d1000 (three d10). The field page's
   *Quick-play sheet* prints the exact figures for the units on the field.
 
 Measured in self-play (12 runs a battlefield, quick-play on): the share of blows of each
@@ -139,6 +140,13 @@ try, against 0.235), and 285 of 444 runs matched the battle as fought, against 3
 per-blow dice. The same rules on seeds 13 to 24 gave 290 against 313 on seeds 1 to 12, so a
 12-run difference of this size is within the runs' own spread; it is a GM's choice, not a
 change to the rules. The Python mirror is `gravewounds/units.py` `_quick_blows`.
+
+**Two undercounts, fixed (21 November 2026, as the user chose).** Replaying each call both ways
+(project doc "dice-profile"): the curve was read with a d100, which cannot show a chance under 1%,
+so small groups at long odds always came out 0 (shellfire 2-4% short at Debecka and Snipe); and
+the rates came from 4,000 sampled tries, so a rare outcome was off by up to about 15% for every
+call of its pairing (Agincourt's longbow volleys on the French harness, 38.9 men down against 44.6
+rolling every blow). Now a d1000 reads the curve and the rates are worked out exactly.
 
 ## Morale
 

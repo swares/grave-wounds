@@ -524,6 +524,11 @@ function quickHandCell(hand, atk, dfn){
   return quickFig(hand) + " <small>" + note + "</small>";
 }
 const quickTd = x => "<td>" + x + "</td>";
+const QUICK_LONG_ODDS = [0.01, 0.02, 0.05, 0.1, 0.15, 0.2];   // as build.py's long-odds chart
+function quickLongOdds(){                           // for an average under 0.25: the d1000 at or under which one man, and two, go down (Poisson)
+  const pad = x => String(x).padStart(3, "0");
+  return QUICK_LONG_ODDS.map(avg => [avg, pad(Math.round(1000 * (1 - Math.exp(-avg)))), (x => (x ? pad(x) : "-"))(Math.round(1000 * (1 - Math.exp(-avg) * (1 + avg))))]);   // "-": under one in a thousand
+}
 function quickTenth(k){                             // a d100 band's heading: 01-10 ... 91-00
   const lo = String(10 * k + 1).padStart(2, "0"), hi = k === 9 ? "00" : String(10 * k + 10).padStart(2, "0");
   return "<th>" + lo + "-" + hi + "</th>";
@@ -541,7 +546,8 @@ function quickSheet(){                              // a printable window: this 
 <h1>Quick-play sheet: ${title}</h1>
 <p>Men down per 100 tries, for each weapon here against each armour and quality here: at an attack of 30, 45, 60 or 75 with no parry (fire), and hand to hand at the striker's own attack against the target's own parry. Read between the columns for other attacks. Average = tries x this / 100; roll d100 on the spread chart. Blows that fall on a hero are rolled one at a time.</p>
 <table><tr><th>Side</th><th>Weapon</th><th>Against</th>${heads}<th>Hand to hand</th></tr>${body}</table>
-<h2>Men down for an average (roll d100)</h2><table><tr><th>Average</th>${tenths}</tr>${spread}</table>`);
+<h2>Men down for an average (roll d100)</h2><table><tr><th>Average</th>${tenths}</tr>${spread}</table>
+<h2>Long odds: an average under 0.25 (roll d1000)</h2><p>A d100 cannot show a chance under 1%: roll three d10 as a d1000.</p><table><tr><th>Average</th><th>One man (d1000 at or under)</th><th>Two men (at or under)</th></tr>${quickLongOdds().map(r => "<tr>" + r.map(quickTd).join("") + "</tr>").join("")}</table>`);
   w.document.close();
 }
 const dice = {                                     // real dice for play

@@ -1323,6 +1323,20 @@ def quick_spread() -> list:
     return out
 
 
+QUICK_LONG_ODDS = (0.01, 0.02, 0.05, 0.1, 0.15, 0.2)   # averages under the spread chart's first row (as the field page's sheet)
+
+
+def quick_long_odds() -> list:
+    """The long-odds chart, header first: for an average under 0.25, the d1000 roll at or under which one
+    man, and two, go down (Poisson; as the field page's quickLongOdds)."""
+    import math
+    out = [["Average", "One man (d1000 at or under)", "Two men (at or under)"]]
+    for avg in QUICK_LONG_ODDS:
+        one, two = 1 - math.exp(-avg), 1 - math.exp(-avg) * (1 + avg)
+        out.append([f"{avg:g}", f"{round(1000 * one):03d}", f"{round(1000 * two):03d}" if round(1000 * two) else "-"])   # "-": under one in a thousand
+    return out
+
+
 QUICK_RULE = ("Resolve a striking group's blows on the rankers in one roll instead of one at a time. "
             "1) Count the tries as usual (strikers x tempo, or shooters x rate). 2) Find the men down per 100 "
             "tries in the conflict's chart for the weapon against the armour, at the attack % after all modifiers "
@@ -1331,15 +1345,19 @@ QUICK_RULE = ("Resolve a striking group's blows on the rankers in one roll inste
             "for the men down. Blows that fall on a hero are still rolled one "
             "at a time. Shellfire the same way: for one battery's fire on one unit in an exchange, add up the men within "
             "reach of each burst times their struck % (as for each man), which is the average; roll d100 on the chart "
-            "for the men struck. The field page rolls both so when quick-play is ticked, and prints the exact "
+            "for the men struck. For an average under 0.25, roll d1000 (three d10) on the long-odds chart instead: "
+            "a d100 cannot show a chance under 1%, and small groups at long odds would never put a man down. "
+            "The field page rolls both so when quick-play is ticked, reading its curve with a d1000, and prints the exact "
             "numbers for the battlefield in play (Quick-play sheet).")
 
 
 def quick_section() -> list:
     """Quick-play blows in markdown: the procedure and the spread chart."""
-    sp = quick_spread()
+    sp, lo = quick_spread(), quick_long_odds()
     return ["### Quick-play blows and shellfire", "", QUICK_RULE, "", "**Men down for an average (roll d100)**", "",
-            "| " + " | ".join(sp[0]) + " |", "|" + "---|" * len(sp[0])] + ["| " + " | ".join(r) + " |" for r in sp[1:]] + [""]
+            "| " + " | ".join(sp[0]) + " |", "|" + "---|" * len(sp[0])] + ["| " + " | ".join(r) + " |" for r in sp[1:]] + [""] + \
+        ["**Long odds: an average under 0.25 (roll d1000)**", "",
+         "| " + " | ".join(lo[0]) + " |", "|" + "---|" * len(lo[0])] + ["| " + " | ".join(r) + " |" for r in lo[1:]] + [""]
 
 
 COPYRIGHT = "© 2026 Scott Wares. All rights reserved."

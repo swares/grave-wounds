@@ -126,31 +126,45 @@ function volleyShots(att, men, hexes, rng, opts = {}){   // [aimed shots, attack
 // ---------- quick-play blows (units.yaml quick.blows): one roll for a striking group ----------
 // The share of tries that end each way (missed, parried, stopped, a light, serious or critical wound,
 // a man down or dead, and each kind of wound for the aftermath) is the per-blow rules' own, worked out
-// once for each pairing from quick.samples tries on dice of its own (the page's stand-in for the
-// printed table). A group's men down are then one d100 read on the binomial curve for its tries at
+// exactly once for each pairing: every attack roll, location band and mechanism band in turn, each
+// weighted by its chance, and the stop check's chance (the page's stand-in for the printed table).
+// It was sampled from 4,000 tries, which left a rare outcome up to about 15% off for every call. A group's men down are then one d100 read on the binomial curve for its tries at
 // that share (the per-blow dice's own spread); the dead and the lightly wounded among them are the
 // averages, rounded at random (bookkeeping, not a table roll).
 const QUICK = new Map();
 function quickRates(att, dfd, atk, dfn){         // per try: {missed, parried, stopped, hits, light, serious, critical, down, dead, hurt: {key: share}}
   const key = [att.table, att.weapon, dfd.kit, dfd.quality, atk, dfn].join("|");
   if (QUICK.has(key)) return QUICK.get(key);
-  const S = UD.quick.samples, own = new SeededDice(1 + [...key].reduce((h, c) => (h * 31 + c.codePointAt(0)) % 2147483646, 7)), t = newTally();
-  const critAt = Math.floor(atk * FD.combat.critical_fraction);
-  for (let i = 0; i < S; i++){
-    const r = own.randint(1, 100);
-    if (r > atk){ t.missed++; continue }
-    const critical = r <= critAt;
-    if (!critical && dfn > 0 && own.randint(1, 100) <= dfn){ t.parried++; continue }
-    landWound(att, dfd, atk - r, critical, own, t, r);
+  const t = newTally(), critAt = Math.floor(atk * FD.combat.critical_fraction), nerve = quality(dfd.quality).nerve;
+  const locs = FD.tables[att.table].ranges[att.weapon], mechs = FD.mechanisms[att.weapon], modern = UD.modern_fire.weapons.includes(att.weapon);
+  const share = (lo, hi) => (hi - lo + 1) / 100, over = v => (100 - Math.min(100, Math.max(0, Math.floor(v)))) / 100;   // a d100 over v
+  const hurt = (sev, h, down, w) => { const k = [sev, h.lethal, h.infection, down ? 1 : 0].join("|"); t.hurt[k] = (t.hurt[k] || 0) + w };
+  for (let r = 1; r <= 100; r++){
+    if (r > atk){ t.missed += 0.01; continue }
+    const critical = r <= critAt, parry = !critical && dfn > 0 ? 1 - over(dfn) : 0;
+    t.parried += 0.01 * parry;
+    for (const [, llo, lhi] of locs) for (const [, mlo, mhi] of mechs){
+      const w = 0.01 * (1 - parry) * share(llo, lhi) * share(mlo, mhi);
+      if (!w) continue;
+      const faces = [llo, mlo], h = rollWound(att.table, att.weapon, dfd.kit, atk - r, critical, { randint: () => faces.shift() }, r);
+      if (h.severity === "stopped"){ t.stopped += w; continue }
+      t.hits += w; t[h.severity] += w;
+      if (UD.dead_if.includes(h.lethal)){ t.dead += w; t.down += w; continue }
+      if (h.graze || (h.severity === "light" && !modern)){ hurt("light", h, false, w); continue }
+      const down = modern && h.severity !== "light" ? 1 : over(nerve - (h.severity === "critical" ? 10 : 0));
+      t.down += w * down;
+      if (down) hurt(h.severity, h, true, w * down);
+      if (down < 1) hurt(h.severity, h, false, w * (1 - down));
+    }
   }
-  const rates = Object.fromEntries(Object.entries(t).filter(([k]) => k !== "hurt" && k !== "blows").map(([k, v]) => [k, v / S]));
-  rates.hurt = Object.fromEntries(Object.entries(t.hurt).map(([k, v]) => [k, v / S]));
+  const rates = Object.fromEntries(Object.entries(t).filter(([k]) => k !== "hurt" && k !== "blows"));
+  rates.hurt = t.hurt;
   QUICK.set(key, rates);
   return rates;
 }
-function quickDown(n, q, rng){                   // the men down of n tries that each put a man down at chance q: one d100 read on the binomial curve (its own percentiles for a small group, the normal curve's from quick.normal_from men's spread)
+function quickDown(n, q, rng){                   // the men down of n tries that each put a man down at chance q: one d1000 read on the binomial curve (its own percentiles for a small group, the normal curve's from quick.normal_from men's spread); a d100 cannot show a chance under 1%
   if (n <= 0 || q <= 0) return 0;
-  const p = (rng.randint(1, 100) - 0.5) / 100, mean = n * q, v = mean * (1 - q);
+  const p = (rng.randint(1, 1000) - 0.5) / 1000, mean = n * q, v = mean * (1 - q);
   if (v >= UD.quick.normal_from) return Math.min(n, Math.max(0, Math.round(mean + normalAt(p) * Math.sqrt(v))));
   let k = 0, term = (1 - q) ** n, cum = term;
   while (cum < p && k < n){ term *= (n - k) / (k + 1) * q / (1 - q); k++; cum += term }
