@@ -1457,7 +1457,7 @@ const inRoom = (field, h) => (UD.indirect.room_ground || []).includes(field?.gro
 function shellStruckUnit(field, u, bursts, kind, rng){   // men of u struck by these bursts, or null if none came near
   if (u.men <= 0 || u.state === "fled") return null;
   const hexes = footprint(u).flat(), men = menByHex(u), cuts = hexes.map(h => shellCut(field, h, low(u))), rooms = hexes.map(h => inRoom(field, h));
-  const quick = !!UD.quick?.blows;
+  const quick = !!UD.quick?.shellfire;   // quick-play shellfire (units.yaml quick.shellfire): one roll for the men struck
   let near = false, struck = 0, tries = 0, mean = 0;
   for (const at of bursts){
     hexes.forEach((h, j) => {

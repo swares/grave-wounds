@@ -4369,7 +4369,7 @@ def _hull_shelled(d: Data, us: list, i: int, bursts: list, kind: dict, tr: tuple
 def _shell_struck_unit(d: Data, field: dict, u: dict, bursts: list, kind: dict, rng) -> int | None:
     """Men of unit u struck by these bursts: each man in a hex within a burst's radius at the %
     for his distance (gone to ground, less; ground cover, less). None if no burst came near.
-    Quick-play (quick.blows): the sum of those chances is the average, rolled once."""
+    Quick-play (quick.shellfire): the sum of those chances is the average, rolled once."""
     if u["men"] <= 0 or u["state"] == "fled":
         return None
     hexes = [h for row in footprint(d, u) for h in row]
@@ -4377,7 +4377,7 @@ def _shell_struck_unit(d: Data, field: dict, u: dict, bursts: list, kind: dict, 
     reached = [(n, p) for at in bursts for h, n, cut, room in zip(hexes, men, cuts, rooms) if (p := _burst_pct(kind, hdist(h, at), cut, room)) is not None]
     if not reached:
         return None
-    if (d.units.get("quick") or {}).get("blows"):
+    if (d.units.get("quick") or {}).get("shellfire"):
         return _quick_struck(d, reached, rng)
     return sum(1 for n, p in reached for _ in range(n) if rng.randint(1, 100) <= p)
 

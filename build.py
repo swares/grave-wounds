@@ -1337,17 +1337,18 @@ def quick_long_odds() -> list:
     return out
 
 
-QUICK_RULE = ("Resolve a striking group's blows on the rankers in one roll instead of one at a time. "
+QUICK_RULE = ("Resolve a striking group's blows on the rankers in one roll instead of one at a time (a GM's choice). "
             "1) Count the tries as usual (strikers x tempo, or shooters x rate). 2) Find the men down per 100 "
             "tries in the conflict's chart for the weapon against the armour, at the attack % after all modifiers "
             "(read between the columns), times the quality factor, times (1 - parry% x 0.9) if the target can parry. "
             "3) The average = tries x that / 100; roll d100 on the chart below, on the nearest average's row, "
             "for the men down. Blows that fall on a hero are still rolled one "
-            "at a time. Shellfire the same way: for one battery's fire on one unit in an exchange, add up the men within "
+            "at a time. Shellfire the same way, and this is the standard rule for it: for one battery's fire on one unit in an exchange, add up the men within "
             "reach of each burst times their struck % (as for each man), which is the average; roll d100 on the chart "
             "for the men struck. For an average under 0.25, roll d1000 (three d10) on the long-odds chart instead: "
             "a d100 cannot show a chance under 1%, and small groups at long odds would never put a man down. "
-            "The field page rolls both so when quick-play is ticked, reading its curve with a d1000, and prints the exact "
+            "The field page rolls shellfire so unless its quick-play shellfire box is unticked, and blows so when its "
+            "quick-play blows box is ticked, reading its curve with a d1000, and prints the exact "
             "numbers for the battlefield in play (Quick-play sheet).")
 
 

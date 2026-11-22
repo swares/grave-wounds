@@ -103,8 +103,17 @@ down in the rout. See the review for the morale trigger behind that.
 ### Quick-play blows and shellfire
 
 Rolling every blow (steps 3 and 4) is exact but slow at a table. `quick` in `data/units.yaml`
-gives a GM's alternative, **off by default** (`quick.blows: false`; the field page's
-*quick-play blows* box turns it on for the battle in hand):
+gives a GM's alternative for blows, **off by default** (`quick.blows: false`; the field page's
+*quick-play blows* box turns it on for the battle in hand). For shellfire it is the standard rule,
+**on by default** (`quick.shellfire: true`, since 21 November 2026, as the user chose; the
+*quick-play shellfire* box turns it off): from 1914 on, rolling each man near a burst was 75-92% of
+the field map's dice (project doc "dice-profile"). Measured on one seed each, the dice an exchange with it off and on: Mons 537 → 79,
+Cassino town 575 → 49, Hue 92 → 26, Fallujah 505 → 80. The benchmark, 24 seeds (1-12 and 13-24)
+against main on the same seeds: the median win change is 0 points (main against itself across the
+two seed sets: 8); Mogadishu (Americans win 100% → 79%) and Tumbledown (British 38% → 58%) moved
+the same way by 17 points or more in both sets, and Grozny moved 25 points pooled (63% → 38%). A
+likely part, not measured: one binomial curve for men at different distances gives a wider spread
+than rolling each man (below).
 
 - **The rates.** For each pairing (wound table, weapon, armour kit, the target's quality,
   attack %, parry %) the share of tries that end each way (missed, parried, stopped, a light,
@@ -119,7 +128,7 @@ gives a GM's alternative, **off by default** (`quick.blows: false`; the field pa
   on, are the averages rounded at random (bookkeeping, not a table roll).
 - **Heroes.** A blow that falls on a hero is still rolled on its own, as before; quick-play
   covers the rankers only.
-- **Shellfire.** The same switch rolls a battery's shellfire on a unit once: each man within a
+- **Shellfire.** Its own switch (`quick.shellfire`) rolls a battery's shellfire on a unit once: each man within a
   burst's reach would be struck at the % for his distance (cut for going to ground and
   cover), so the average is the sum of those chances over every burst of that fire, and the
   men struck are one d1000 on the binomial curve, as for blows (`_shell_struck_unit`). Each man
