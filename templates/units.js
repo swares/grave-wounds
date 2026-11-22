@@ -162,8 +162,14 @@ function quickRates(att, dfd, atk, dfn){         // per try: {missed, parried, s
   QUICK.set(key, rates);
   return rates;
 }
+function quickStruck(reached, rng){                // quick-play shellfire: the men struck of [men, struck %] for each hex each burst reached, grouped by their chance, one d1000 on each group's binomial curve, the highest chance first (men at one chance are exactly binomial, so the sum is as rolling each man) (as units._quick_struck)
+  const groups = new Map();
+  for (const [n, p] of reached){ const q = Math.min(100, Math.max(0, Math.floor(p))); groups.set(q, (groups.get(q) || 0) + n) }
+  return [...groups].sort((a, b) => b[0] - a[0]).reduce((s, [q, n]) => s + quickDown(n, q / 100, rng), 0);
+}
 function quickDown(n, q, rng){                   // the men down of n tries that each put a man down at chance q: one d1000 read on the binomial curve (its own percentiles for a small group, the normal curve's from quick.normal_from men's spread); a d100 cannot show a chance under 1%
   if (n <= 0 || q <= 0) return 0;
+  if (q >= 1) return n;
   const p = (rng.randint(1, 1000) - 0.5) / 1000, mean = n * q, v = mean * (1 - q);
   if (v >= UD.quick.normal_from) return Math.min(n, Math.max(0, Math.round(mean + normalAt(p) * Math.sqrt(v))));
   let k = 0, term = (1 - q) ** n, cum = term;
@@ -1458,18 +1464,19 @@ function shellStruckUnit(field, u, bursts, kind, rng){   // men of u struck by t
   if (u.men <= 0 || u.state === "fled") return null;
   const hexes = footprint(u).flat(), men = menByHex(u), cuts = hexes.map(h => shellCut(field, h, low(u))), rooms = hexes.map(h => inRoom(field, h));
   const quick = !!UD.quick?.shellfire;   // quick-play shellfire (units.yaml quick.shellfire): one roll for the men struck
-  let near = false, struck = 0, tries = 0, mean = 0;
+  let near = false, struck = 0;
+  const reached = [];                             // quick-play: [men, struck %] for each hex each burst reached
   for (const at of bursts){
     hexes.forEach((h, j) => {
       const dist = hdist(h, at);
       if (dist > kind.radius) return;
       near = true;
       const p = kind.room && dist === 0 && rooms[j] ? kind.room : kind.struck[dist] * cuts[j];   // direct-fire HE bursting inside a building: its `room` %, no cut for cover or lying down
-      if (quick){ tries += men[j]; mean += men[j] * Math.min(100, Math.max(0, Math.floor(p))) / 100; return }   // quick-play: the average, rolled once below
+      if (quick){ reached.push([men[j], p]); return }   // quick-play: rolled below
       for (let x = 0; x < men[j]; x++) if (rng.randint(1, 100) <= p) struck++;
     });
   }
-  if (quick && near) struck = quickDown(tries, tries > 0 ? mean / tries : 0, rng);   // one d100 on the curve for this fire on this unit (as units._shell_struck_unit)
+  if (quick && near) struck = quickStruck(reached, rng);
   return near ? struck : null;
 }
 function shelterAt(field, h){                     // shellfire's struck % times this for the works in hex h: a work's `shell` %, else a bunker's cover (as units._shelter_at)

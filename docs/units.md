@@ -111,9 +111,8 @@ the field map's dice (project doc "dice-profile"). Measured on one seed each, th
 Cassino town 575 → 49, Hue 92 → 26, Fallujah 505 → 80. The benchmark, 24 seeds (1-12 and 13-24)
 against main on the same seeds: the median win change is 0 points (main against itself across the
 two seed sets: 8); Mogadishu (Americans win 100% → 79%) and Tumbledown (British 38% → 58%) moved
-the same way by 17 points or more in both sets, and Grozny moved 25 points pooled (63% → 38%). A
-likely part, not measured: one binomial curve for men at different distances gives a wider spread
-than rolling each man (below).
+the same way by 17 points or more in both sets, and Grozny moved 25 points pooled (63% → 38%). Most of
+it is the benchmark's noise; one curve's wider spread, since made exact, was a small part (below).
 
 - **The rates.** For each pairing (wound table, weapon, armour kit, the target's quality,
   attack %, parry %) the share of tries that end each way (missed, parried, stopped, a light,
@@ -128,14 +127,22 @@ than rolling each man (below).
   on, are the averages rounded at random (bookkeeping, not a table roll).
 - **Heroes.** A blow that falls on a hero is still rolled on its own, as before; quick-play
   covers the rankers only.
-- **Shellfire.** Its own switch (`quick.shellfire`) rolls a battery's shellfire on a unit once: each man within a
-  burst's reach would be struck at the % for his distance (cut for going to ground and
-  cover), so the average is the sum of those chances over every burst of that fire, and the
-  men struck are one d1000 on the binomial curve, as for blows (`_shell_struck_unit`). Each man
+- **Shellfire.** Its own switch (`quick.shellfire`) rolls a battery's shellfire on a unit in a
+  few rolls: each man within a burst's reach would be struck at the % for his distance (cut for
+  going to ground and cover). The men are grouped by that %, over every burst of that fire, and
+  each group is one d1000 on its binomial curve, the highest % first (`_quick_struck`). Men at
+  one % are exactly binomial, so the sum is distributed as rolling each man. Each man
   struck still rolls his wound. In the modern battlefields 89% of the d100s were these
   per-man rolls; counted on one run of every battlefield, quick-play took the d100s an exchange
-  from 1914 on from 126 to 17 (blows alone: 120), and before 1914 from 296 to 52. The average is exact (the same per-man chances); the spread is a little wider than
-  rolling each man, since one curve stands for men at different distances from the bursts.
+  from 1914 on from 126 to 17 (blows alone: 120), and before 1914 from 296 to 52 (with one roll for
+  the whole fire). Until PR #590 it was one roll on one curve for the average of all the men: the
+  average was exact, but the spread wider than rolling each man, as one curve stood for men at
+  different distances; Mogadishu, Tumbledown and Grozny moved by 17-25 points with it (PR #589).
+  Measured on one seed's calls, that excess was small (Mogadishu 0%, Tumbledown 3%, Grozny 14%
+  of the variance), and with the exact spread the benchmark's moves fall elsewhere (Debecka,
+  Keating, Topolčani; Mogadishu and Tumbledown back): noise, against one per-man baseline. Grozny
+  on 40 more seeds (25-64, the Python engine): Chechens hold the city 15 → 6 times, the Russians
+  clear it 13 → 17, the other way from the benchmark's move.
 - **On paper.** The tables carry a chart for each era: men down per 100 tries for its
   example weapons against its example armour at attacks 30, 45, 60 and 75, against regular
   men, with the green and veteran factors and the parry factor (×(1 − parry × 0.9)), and a

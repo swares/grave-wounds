@@ -273,8 +273,11 @@ def _quick_down(d: Data, n: int, q: float, rng) -> int:
     """The men down of n tries that each put a man down at chance q: one d1000 read on the binomial
     curve (its own percentiles for a small group, the normal curve's from quick.normal_from men's spread).
     A d1000, not a d100: a d100 cannot show a chance under 1%, so small groups at long odds always came out 0."""
+    q = float(q)                                 # a chance, not a whole number (a caller may pass 0 or 1)
     if n <= 0 or q <= 0:
         return 0
+    if q >= 1:
+        return n
     p = (rng.randint(1, 1000) - 0.5) / 1000
     mean = n * q
     v = mean * (1 - q)
@@ -4369,7 +4372,7 @@ def _hull_shelled(d: Data, us: list, i: int, bursts: list, kind: dict, tr: tuple
 def _shell_struck_unit(d: Data, field: dict, u: dict, bursts: list, kind: dict, rng) -> int | None:
     """Men of unit u struck by these bursts: each man in a hex within a burst's radius at the %
     for his distance (gone to ground, less; ground cover, less). None if no burst came near.
-    Quick-play (quick.shellfire): the sum of those chances is the average, rolled once."""
+    Quick-play (quick.shellfire): one roll for the men at each chance (_quick_struck)."""
     if u["men"] <= 0 or u["state"] == "fled":
         return None
     hexes = [h for row in footprint(d, u) for h in row]
@@ -4383,12 +4386,15 @@ def _shell_struck_unit(d: Data, field: dict, u: dict, bursts: list, kind: dict, 
 
 
 def _quick_struck(d: Data, reached: list, rng) -> int:
-    """Quick-play shellfire: (men, struck %) for each hex each burst reached; one d100 on the curve."""
-    tries, mean = 0, 0.0
+    """Quick-play shellfire: (men, struck %) for each hex each burst reached. The men are grouped by
+    their chance, and each group is one d1000 on its binomial curve, the highest chance first. Men at
+    one chance are exactly binomial, so the sum is distributed as rolling each man; one curve for the
+    average of them all spread wider than that (Mogadishu, Tumbledown and Grozny moved, PR #589)."""
+    groups: dict[int, int] = {}
     for n, p in reached:
-        tries += n
-        mean += n * min(100, max(0, math.floor(p))) / 100
-    return _quick_down(d, tries, mean / tries if tries > 0 else 0, rng)
+        q = min(100, max(0, math.floor(p)))
+        groups[q] = groups.get(q, 0) + n
+    return sum(_quick_down(d, n, q / 100, rng) for q, n in sorted(groups.items(), key=lambda kv: -kv[0]))
 
 
 def _burst_pct(kind: dict, dist: int, cut: float, room: bool = False):
