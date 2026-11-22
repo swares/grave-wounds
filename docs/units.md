@@ -127,6 +127,12 @@ it is the benchmark's noise; one curve's wider spread, since made exact, was a s
   on, are the averages rounded at random (bookkeeping, not a table roll).
 - **Heroes.** A blow that falls on a hero is still rolled on its own, as before; quick-play
   covers the rankers only.
+- **Agincourt** (22 November 2026). On the benchmark's 24 seeds the English won 58% with every
+  blow rolled and 30% with quick-play blows, though each call replays the same. Played on 60
+  seeds (1-60, `tools/selfplay/play.js`): every blow rolled 22 English wins, quick-play 24. By seed
+  set, every blow 8, 6 and 8 (of 12, 12 and 36); quick-play 5, 2 and 17. No quick-play effect: one
+  set of 12 or 24 seeds swings widely on this battlefield.
+  Over 60 seeds the English win about 37%, not the 67% of the benchmark's 12.
 - **Shellfire.** Its own switch (`quick.shellfire`) rolls a battery's shellfire on a unit in a
   few rolls: each man within a burst's reach would be struck at the % for his distance (cut for
   going to ground and cover). The men are grouped by that %, over every burst of that fire, and
