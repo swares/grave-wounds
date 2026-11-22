@@ -173,5 +173,63 @@ check("an arrow beats bare mail and cloth, not plate, a coat of plates or mail o
   assert.equal(S.armorSteps("plate", "cut", "bill"), 3);        // its blade does not
 });
 
+/* ----- quick-play strikes: one d1000 on the strike's exact chart ----- */
+const quickBase = (() => {                          // a sword on a man in a padded jack, his whole body's spread of places, with a parry
+  const ids = DATA.locations.map(l => l.id), per = Math.floor(100 / ids.length);
+  const ranges = ids.map((id, i) => ({ id, pct: per, lo: i * per + 1, hi: i === ids.length - 1 ? 100 : (i + 1) * per }));
+  const kit = (DATA.armor.kits.find(k => k.id === "gambeson") || DATA.armor.kits[0]).id;
+  return { ...base, ranges, armor: kit, evidence: false };
+})();
+const quickKey = h => (h.blocked ? "blocked" : h.miss ? "miss" : h.defended ? "defended" : JSON.stringify([h.loc, h.mech, h.sev, !!h.graze]));
+check("quick-play: the chart's chances add up to 1, and each line's dice give that line", () => {
+  const cmd = { atk: 55, def: 30, aim: "", gap: false, blow: "", sev: "roll", rolls: {} };
+  const chart = S.quickChart(quickBase, cmd);
+  assert.ok(Math.abs(chart.reduce((t, l) => t + l.p, 0) - 1) < 1e-9, "the chances add up to 1");
+  assert.ok(chart.length > 20, `${chart.length} lines`);
+  for (const l of chart){
+    const r = S.resolveStrike(quickBase, { ...cmd, rolls: l.rolls }, scripted([]));
+    assert.equal(JSON.stringify([r.hit.blocked ? "blocked" : r.hit.miss ? `miss|${r.hit.stray ? r.hit.stray.hit : ""}` : r.hit.defended ? "defended"
+      : JSON.stringify([r.hit.loc, r.hit.mech, r.hit.sev, !!r.hit.graze, r.hit.armor ? r.hit.armor.mat : null, r.hit.armor ? r.hit.armor.covered : null])]), JSON.stringify([l.key]));
+  }
+});
+check("quick-play: the chart matches 40,000 strikes rolled die by die", () => {
+  const cmd = { atk: 55, def: 30, aim: "", gap: false, blow: "", sev: "roll", rolls: {} };
+  const chart = S.quickChart(quickBase, cmd), n = 40000, got = {}, dice = seeded(4242);
+  for (let i = 0; i < n; i++){ const k = quickKey(S.resolveStrike(quickBase, cmd, dice).hit); got[k] = (got[k] || 0) + 1 }
+  const want = {};
+  for (const l of chart){ const h = S.resolveStrike(quickBase, { ...cmd, rolls: l.rolls }, scripted([])).hit; const k = quickKey(h); want[k] = (want[k] || 0) + l.p }
+  for (const k of ["miss", "defended"]) assert.ok(Math.abs(want[k] - got[k] / n) < 4 * Math.sqrt(want[k] * (1 - want[k]) / n), `${k}: chart ${want[k].toFixed(4)}, rolled ${(got[k] / n).toFixed(4)}`);
+  for (const sev of ["stopped", "light", "serious", "critical"]){
+    const w = Object.entries(want).filter(([k]) => k.includes(`"${sev}"`)).reduce((t, [, p]) => t + p, 0);
+    const g = Object.entries(got).filter(([k]) => k.includes(`"${sev}"`)).reduce((t, [, c]) => t + c, 0) / n;
+    assert.ok(Math.abs(w - g) < 4 * Math.sqrt(Math.max(w, 1e-4) * (1 - w) / n), `${sev}: chart ${w.toFixed(4)}, rolled ${g.toFixed(4)}`);
+  }
+});
+check("quick-play: one d1000, then the strike on the line's dice", () => {
+  const cmd = { atk: 55, def: 30, aim: "", gap: false, blow: "", sev: "roll", rolls: {} };
+  const r = S.quickStrike(quickBase, cmd, scripted([1000]));
+  assert.deepEqual(r.dice, [{ name: "quick", v: 1000, sides: 1000, by: "dice" }]);
+  assert.equal(r.hit.quick.roll, 1000);
+  const chart = S.quickChart(quickBase, cmd);
+  let sum = 0, line = chart[chart.length - 1];
+  for (const l of chart){ sum += l.p; if (0.9995 < sum){ line = l; break } }
+  assert.equal(quickKey(r.hit), quickKey(S.resolveStrike(quickBase, { ...cmd, rolls: line.rolls }, scripted([])).hit));
+});
+check("quick-play: each kind of wound comes out on the d1000 within 1 in 1,000 of its chance", () => {
+  const cmd = { atk: 55, def: 30, aim: "", gap: false, blow: "", sev: "roll", rolls: {} };
+  const chart = S.quickChart(quickBase, cmd), LOCS = Object.fromEntries(DATA.locations.map(l => [l.id, l]));
+  const kind = l => (l.key.startsWith("[") ? (([loc, mech, sev, g]) => [LOCS[loc].class, mech, sev, g].join("|"))(JSON.parse(l.key)) : l.key);
+  const want = {}, got = {};
+  for (const l of chart) want[kind(l)] = (want[kind(l)] || 0) + l.p;
+  const chartKey = h => (h.blocked ? "blocked" : h.miss ? `miss|${h.stray ? h.stray.hit : ""}` : h.defended ? "defended" : [LOCS[h.loc].class, h.mech, h.sev, !!h.graze].join("|"));
+  for (let v = 1; v <= 1000; v++){ const k = chartKey(S.quickStrike(quickBase, cmd, scripted([v]), chart).hit); got[k] = (got[k] || 0) + 0.001 }
+  for (const k of Object.keys(want)) assert.ok(Math.abs(want[k] - (got[k] || 0)) <= 0.001 + 1e-9, `${k}: chance ${want[k].toFixed(4)}, on the d1000 ${(got[k] || 0).toFixed(3)}`);
+});
+check("quick-play: a strike with one outcome takes no die", () => {
+  const ctx = { ...base, attacker: { name: "Will", pen: { attack: 0, defence: 0, flags: ["incapacitated"] }, state: null } };
+  const r = S.quickStrike(ctx, { atk: 50, rolls: {} }, scripted([]));
+  assert.match(r.hit.blocked, /incapacitated/);
+  assert.deepEqual(r.dice, []);
+});
 console.log(`${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

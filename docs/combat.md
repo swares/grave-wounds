@@ -328,6 +328,37 @@ count goes on from there.
     it was before the script's last step.
   - The script stops when one side is left standing, or, in a small fight from a season with the
     battalion, at the fight's own end (below).
+- **Quick-play strikes** (beside Run the fight; a GM's switch, off by default, kept in the
+  browser for every fight). A strike on a man with no team-builder sheet (a follower, or any of
+  the foe's men) takes one d1000 instead of two to four dice. A named man struck still takes every
+  die, and so does a strike for which a die was typed in.
+  - **The chart.** The page works out every way the strike's dice could fall (misfire, attack,
+    defence, stray shot, location, blow, a rolled severity, the armour's cover digit), each die split
+    only where its value changes what follows. The ways that give the same outcome are one line, with
+    the sum of their chances: a miss (with or without a stray shot), parried or dodged, blocked, or a
+    wound's place, blow, severity, graze and armour (stopped included). One d1000 reads the chart.
+  - **The strike** is then played on that line's most likely dice, so it does and shows exactly what
+    rolling them die by die would have: the wound, its effects, the skill marked, the free attack
+    closed. The log names the d1000, the line's chance and the dice it was played on.
+  - **Exact to the d1000.** The lines run in order of outcome: blocked, missed, parried, then
+    stopped, light, serious and critical wounds (grazes first), each by the kind of place and the
+    blow (which give the wound's effects), then by place. So each outcome and each kind of wound
+    comes out within 1 in 1,000 of its chance. A single place's line may be off by up to 1 in 1,000
+    (one under 1 in 2,000 cannot come up). `tools/strike/test.js` checks a chart against 40,000
+    strikes rolled die by die, and every face of the d1000 against the chart. Sorted only by place,
+    the d1000 had made criticals with a sword on a padded jack 4.5% where they are 3.2%.
+  - **Why.** In play test 13's 14,950 strikes, named men struck 13%, followers 36% and the foe's
+    men 51%; strikes on men with no sheet are most of them, and a strike was most of the roller's
+    dice once pain checks were rolled only for men over the cap (PR #582).
+  - **Measured** (22 November 2026; every war's small fights, play test 13's team, fight sizes and
+    seeds, the GM's script on both sides; 195 fights each way): 26% fewer dice a fight (19-42% by
+    war; Union 371 → 243, Henry V 477 → 353). The team won 129 every die rolled, 133 with quick-play.
+    The team's men down rose 668 → 697 and the foes' fell 742 → 720; foes down per team man down fell
+    in seven wars of eight. That is within what a change of dice alone moves these fights (the pain
+    checks, PR #582, changed no rule and moved Lancaster's from 0.65 to 0.77), and each strike's
+    chart matches strikes rolled die by die; a second set of seeds would settle it.
+  - **At the table** there is no printed chart for every pairing: roll the strike as usual, or
+    use the field map's quick-play charts for a group of men.
   - In the event log the script's moves are public; why it chose them is for the GM.
 - **Screen** (in the Run the fight panel) shows the page as the GM sees it (everything) or as one
   side does. On a side's screen an enemy's card shows his name, side, kit, weapon, where he has
