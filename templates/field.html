@@ -275,7 +275,8 @@ legend{padding:0}
       </div>
       <div class="row">
         <div><label for="sel-table">Wound tables</label><select id="sel-table"></select></div>
-        <div style="flex:0 0 auto;align-self:end"><label class="check" title="A striking group's blows on the rankers, and a battery's shellfire on a unit, each in one roll, as the printed quick-play charts (tables, Quick-play blows and shellfire), instead of one roll for each blow or man"><input type="checkbox" id="chk-quick"> quick-play</label></div>
+        <div style="flex:0 0 auto;align-self:end"><label class="check" title="A striking group's blows on the rankers in one roll, as the printed quick-play charts (tables, Quick-play blows and shellfire), instead of one roll for each blow"><input type="checkbox" id="chk-quick"> quick-play blows</label></div>
+        <div style="flex:0 0 auto;align-self:end"><label class="check" title="On by default: a battery's shellfire on a unit in one roll for the men struck, as the printed quick-play charts, instead of one roll for each man near a burst (each man struck still rolls his wound)"><input type="checkbox" id="chk-quick-shell"> quick-play shellfire</label></div>
         <div style="flex:0 0 auto;align-self:end"><button id="btn-quick-sheet" type="button" title="Men down per 100 tries for the weapons and armour on this field, to print">Quick-play sheet</button></div>
       </div>
       <div class="row">
@@ -4012,6 +4013,8 @@ function init(){
   [0, 1].forEach(k => { $("#chk-ev" + k).onchange = e => setMedevac(k, e.target.checked) });
   $("#chk-quick").checked = !!UD.quick.blows;
   $("#chk-quick").onchange = e => { UD.quick.blows = e.target.checked };
+  $("#chk-quick-shell").checked = !!UD.quick.shellfire;
+  $("#chk-quick-shell").onchange = e => { UD.quick.shellfire = e.target.checked };
   $("#btn-quick-sheet").onclick = quickSheet;
   render();
 }

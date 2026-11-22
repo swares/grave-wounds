@@ -103,8 +103,11 @@ down in the rout. See the review for the morale trigger behind that.
 ### Quick-play blows and shellfire
 
 Rolling every blow (steps 3 and 4) is exact but slow at a table. `quick` in `data/units.yaml`
-gives a GM's alternative, **off by default** (`quick.blows: false`; the field page's
-*quick-play blows* box turns it on for the battle in hand):
+gives a GM's alternative for blows, **off by default** (`quick.blows: false`; the field page's
+*quick-play blows* box turns it on for the battle in hand). For shellfire it is the standard rule,
+**on by default** (`quick.shellfire: true`, since 21 November 2026, as the user chose; the
+*quick-play shellfire* box turns it off): from 1914 on, rolling each man near a burst was 75-92% of
+the field map's dice (project doc "dice-profile").
 
 - **The rates.** For each pairing (wound table, weapon, armour kit, the target's quality,
   attack %, parry %) the share of tries that end each way (missed, parried, stopped, a light,
@@ -119,7 +122,7 @@ gives a GM's alternative, **off by default** (`quick.blows: false`; the field pa
   on, are the averages rounded at random (bookkeeping, not a table roll).
 - **Heroes.** A blow that falls on a hero is still rolled on its own, as before; quick-play
   covers the rankers only.
-- **Shellfire.** The same switch rolls a battery's shellfire on a unit once: each man within a
+- **Shellfire.** Its own switch (`quick.shellfire`) rolls a battery's shellfire on a unit once: each man within a
   burst's reach would be struck at the % for his distance (cut for going to ground and
   cover), so the average is the sum of those chances over every burst of that fire, and the
   men struck are one d1000 on the binomial curve, as for blows (`_shell_struck_unit`). Each man
