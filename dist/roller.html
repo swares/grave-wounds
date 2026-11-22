@@ -3788,9 +3788,10 @@ function showStrike(h){                           // the result panel, figure an
   } else if (S.chars.length) renderChars();
   else { shadeFigure(); renderTable() }
 }
-/* Quick-play strikes (docs/combat.md): a GM's switch, kept on this browser for every fight. A strike on a man
-   with no character sheet (a follower, or the foe's men), with no die typed in, is one d1000 on the strike's
-   exact chart (strike.js quickStrike); a named man struck still takes every die. */
+/* Quick-play (docs/combat.md): a GM's switch, kept on this browser for every fight. A strike on a man with no
+   character sheet (a follower, or the foe's men), with no die typed in, is one d1000 on the strike's exact chart
+   (strike.js quickStrike); a named man struck still takes every die. Such a man's initiative is the d10's
+   average (initiativeAll), ties taking turns side by side (interleaveTies). */
 const QUICK_KEY = "gravewounds-quick-strikes";
 let QUICK_STRIKES = (() => { try { return localStorage.getItem(QUICK_KEY) === "1" } catch { return false } })();
 const QUICK_CHARTS = new Map();                   // the charts worked out, by the strike's situation (the same pairing comes back round after round)
@@ -3828,10 +3829,25 @@ function closeIn(){                               // a strike begins: rising fro
   if (!isShot(S.weapon)) [attackerChar(), defenderChar()].forEach(toil);
 }
 function initiativeAll(){                         // d10 + Agility / 10 for every fighter, then the order
-  for (const c of S.chars) c.init = rollInitiative(statOf(c, "agi"), DICE.randint(1, CHR.initiative.die));
+  const avg = (CHR.initiative.die + 1) / 2;        // quick-play: a man with no sheet takes the die's average, not a roll
+  for (const c of S.chars) c.init = rollInitiative(statOf(c, "agi"), QUICK_STRIKES && !c.sheet ? avg : DICE.randint(1, CHR.initiative.die));
   sortChars();
+  if (QUICK_STRIKES) interleaveTies();
   logEvent(S.events, { round: evRound(), type: "initiative", vis: "public", data: { order: S.chars.map(c => ({ who: evWho(c), init: c.init })) } });
   renderChars();
+}
+function interleaveTies(){                         // quick-play: men on the same initiative take turns side by side, the side to start rolled once (no side always first)
+  const sides = sidesInOrder(), groups = [];
+  if (sides.length < 2) return;
+  const first = DICE.randint(1, sides.length) - 1;
+  for (const c of S.chars){ const g = groups[groups.length - 1]; if (g && initOf(g[0]) === initOf(c)) g.push(c); else groups.push([c]) }
+  const arr = groups.flatMap(g => {
+    if (g.length < 2) return g;
+    const by = sides.map((_, k) => g.filter(c => sideOf(c) === sides[(first + k) % sides.length])), out = [];
+    for (let i = 0; out.length < g.length; i++) by.forEach(b => { if (b[i]) out.push(b[i]) });
+    return out;
+  });
+  if (arr.some((c, i) => c !== S.chars[i])) reorder(arr);
 }
 function riseToStrike(){                          // a man in cover rises to strike in close combat, which comes off his move
   const a = attackerChar();
@@ -4276,7 +4292,7 @@ function screenControl(){                          // whose screen this is: the 
 }
 function gmControls(){                             // the switches and the script's buttons
   const on = `<label class="check"><input type="checkbox" id="gm-on"${gmOn() ? " checked" : ""}> Run the fight</label>${screenControl()}`
-    + `<label class="check" title="A strike on a man with no character sheet (a follower, or the foe's men) is one d1000 on the strike's exact chart of outcomes, not two to four dice; named men struck still take every die. Kept on this browser for every fight."><input type="checkbox" id="gm-quick"${QUICK_STRIKES ? " checked" : ""}> Quick-play strikes</label>`;
+    + `<label class="check" title="For men with no character sheet (followers, and the foe's men): a strike on one is one d1000 on the strike's exact chart of outcomes, not two to four dice, and his initiative is the d10's average (5.5) plus his Agility, men on the same initiative taking turns side by side. Named men still roll every die. Kept on this browser for every fight."><input type="checkbox" id="gm-quick"${QUICK_STRIKES ? " checked" : ""}> Quick-play</label>`;
   if (!gmOn()) return `<div class="toolbar">${on}</div>`;
   const auto = `<label class="check" title="After your turn, the script plays its fighters by itself"><input type="checkbox" id="gm-auto"${S.gm.auto ? " checked" : ""}> Play the script by itself</label>`;
   const undo = GMQ.undo.length ? "" : " disabled";

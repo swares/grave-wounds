@@ -328,7 +328,7 @@ count goes on from there.
     it was before the script's last step.
   - The script stops when one side is left standing, or, in a small fight from a season with the
     battalion, at the fight's own end (below).
-- **Quick-play strikes** (beside Run the fight; a GM's switch, off by default, kept in the
+- **Quick-play** (beside Run the fight; a GM's switch, off by default, kept in the
   browser for every fight). A strike on a man with no team-builder sheet (a follower, or any of
   the foe's men) takes one d1000 instead of two to four dice. A named man struck still takes every
   die, and so does a strike for which a die was typed in.
@@ -357,6 +357,14 @@ count goes on from there.
     in seven wars of eight. That is within what a change of dice alone moves these fights (the pain
     checks, PR #582, changed no rule and moved Lancaster's from 0.65 to 0.77), and each strike's
     chart matches strikes rolled die by die; a second set of seeds would settle it.
+  - **Initiative.** A man with no sheet takes the d10's average, 5.5, plus his Agility ÷ 10, with
+    no roll; named men still roll their d10 (so they never tie with him). Men on the same initiative
+    take turns side by side, the side to start rolled once for the fight, so no side's rankers all
+    act first. In a small fight of about 39 men this takes initiative from about 39 dice to the
+    named men's few and one more, about a tenth of the roller's dice (PR #592). Measured the same
+    way as the strikes (195 fights): with strikes and initiative, 41% fewer dice a fight than every
+    die rolled (31-52% by war); the team won 126 (every die 129, strikes alone 133), and foes down
+    per team man down rose in three wars and fell in three, by as much as a change of dice moves them.
   - **At the table** there is no printed chart for every pairing: roll the strike as usual, or
     use the field map's quick-play charts for a group of men.
   - In the event log the script's moves are public; why it chose them is for the GM.
