@@ -1400,6 +1400,7 @@ function renderService(){
     ${acts}
     <p><label>The team's posture <select id="sv-posture" style="width:auto">${Object.entries(svcPostures()).map(([id, p]) => `<option value="${id}" ${svcPostureId(V) === id ? "selected" : ""}>${esc(p.name)}</option>`).join("")}</select></label>
       <span class="muted">${svcPostureNote(svcPostures()[svcPostureId(V)])}</span></p>
+    ${svcVacHtml(W, V, s)}
     <h4>Who serves it</h4><ul class="xp">${men}</ul>
     ${svcCrewHtml(W, V, s)}
     <div class="row"><button id="btn-serve" title="Roll the season for each man with the battalion">Serve the season</button></div>
@@ -1409,6 +1410,12 @@ function renderService(){
     ${svcJournalHtml(W, V)}</section>`;
 }
 const svcD100 = () => realDice.randint(1, 100);
+const svcAt = (W, V, s) => s.actions.filter(a => V.at[a] ?? W.actions[a].main !== false);   // the season's actions the team was at
+function svcVacHtml(W, V, s){                         // the switch for vacancies from the battalion's losses (data/ranks.yaml season_vacancies; ours)
+  if (!rkLadder().length || !TD.service.vacancies) return "";
+  return `<p><label class="check"><input type="checkbox" id="sv-vac" ${V.vacancies !== false ? "checked" : ""}> Vacancies from the battalion's losses</label>
+    <span class="muted">at End of season each rank above ${esc(rkLadder()[0].name.toLowerCase())} rolls d100 for one: ${SVC.vacancyPct(W, s.id, svcAt(W, V, s))}% this season (its hit share at the line, its ${esc((W.wastage_name || "wastage").toLowerCase())}, and ${TD.service.vacancies.background}% for sickness and discharge; ours). One the team does not win goes outside it.</span></p>`;
+}
 function svcPostureNote(p){                         // what a posture does, in a line (data/posture.yaml; ours)
   if (!p) return "";
   const x = (k, what) => (p[k] === 1 ? null : `${what} ×${p[k]}`), n = (k, what) => (p[k] ? `${what} ${p[k] > 0 ? "+" : "−"}${Math.abs(p[k])}` : null);
@@ -1536,6 +1543,7 @@ function serveSeason(){
   S.svclog = lines;
   svcJournal(lines, { sid: s.id, name: s.name, posture });
   V.seasonPosture = posture;                          // its ticks and promotion at End of season
+  if (V.vacancies !== false && TD.service.vacancies && rkLadder().length) V.seasonVac = SVC.vacancyPct(W, s.id, svcAt(W, V, s));   // the battalion's vacancies, rolled at End of season
   V.i += 1; V.at = {}; V.played = {}; V.unit = {}; V.share = {}; V.edge = {};
   S.msg = `${s.name} served. ${hits.length ? "Roll the hits on the roller, then" : "Now"} press End of season.`;
   render();
@@ -1854,7 +1862,17 @@ function endSeason(){
   }
   if (rkLadder().length){                          // the season's promotions, then everyone's new sheet
     for (const c of S.team) c.posture_mod = PP?.promotion || 0;   // the posture: on the season's promotion rolls
-    const rolls = rkPromote(S.team, (S.vacancies ||= {}), realDice);
+    const VC = S.vacancies ||= {}, opened = {};
+    if (V0?.seasonVac != null){                    // the battalion's losses: a vacancy a rank on d100 (data/ranks.yaml season_vacancies)
+      const vr = rkSeasonVacancies(V0.seasonVac, realDice), open = vr.filter(v => v.open);
+      for (const v of open){ opened[v.rank] = 1; VC[v.rank] = (VC[v.rank] || 0) + 1 }
+      lines.push(`The battalion's losses (${V0.seasonVac}% a rank): ${open.length ? open.map(v => `a vacancy for ${rkName(v.rank).toLowerCase()} (rolled ${v.roll})`).join(", ") : "no vacancy comes the team's way"}.`);
+      delete V0.seasonVac;
+    }
+    const rolls = rkPromote(S.team, VC, realDice);
+    const gone = Object.keys(opened).filter(rid => (VC[rid] || 0) > 0);
+    for (const rid of gone) VC[rid] -= 1;           // the battalion's vacancy no man of the team won: filled from outside it
+    if (gone.length) lines.push(`${gone.map(rid => rkName(rid)).join(", ")}: filled from outside the team.`);
     for (const c of S.team) delete c.posture_mod;
     for (const c of S.team) finishChar(c);         // his Presence may have risen with his rank
     for (const c of S.team) delete c.deedWhy;
@@ -2344,6 +2362,7 @@ function init(){
     else if (t.id === "sv-fight"){ const W = SVC.war(V.war), s = W.seasons[Math.max(0, V.i - 1)]; S.svcSmall = SVC.smallFight(W, s.state, svcD100, t.value) }
     else if (t.id === "sv-season") V.i = +t.value;
     else if (t.id === "sv-posture") V.posture = t.value;
+    else if (t.id === "sv-vac") V.vacancies = t.checked;
     else if (ds.svat) V.at[ds.svat] = t.checked;
     else if (ds.svplay) V.played[ds.svplay] = t.checked;
     else if (ds.svunit) V.unit[ds.svunit] = t.value;

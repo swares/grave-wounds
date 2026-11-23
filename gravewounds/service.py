@@ -70,6 +70,18 @@ def hit_pct(W: dict, aid: str, position: str = "line", unit: int | None = None, 
     return min(W["cap"], round(s * W["positions"][position]["mult"]))
 
 
+def vacancy_pct(d: Data, W: dict, sid: str, at: list[str]) -> int:
+    """The % chance a season gives each rank above the bottom a vacancy that comes the team's way
+    (data/ranks.yaml season_vacancies, ours): the hit share at the line of the actions the team was
+    at (at: their ids), plus the state's wastage, plus the background, at most the cap. 0 with no rule."""
+    R = (d.ranks or {}).get("season_vacancies")
+    if not R:
+        return 0
+    s = season(W, sid)
+    pct = sum(hit_pct(W, a) or 0 for a in at) + (W.get("wastage") or {}).get(s["state"], 0) + R.get("background", 0)
+    return min(int(R.get("cap", 90)), round(pct))
+
+
 def taken_pct(W: dict, aid: str, position: str = "line", unit: int | None = None) -> int:
     """His % chance of being taken prisoner in an unplayed action he came through unhit: a
     battalion's own `taken` (unit: its index), else the action's `taken` (the missing of those

@@ -27,6 +27,12 @@ function makeService(SV, RULES){
     if (s == null) return null;
     return Math.min(W.cap, pyRound(s * W.positions[position].mult));
   }
+  function vacancyPct(W, sid, at){                 // the % chance of a vacancy a rank this season (as service.vacancy_pct; data/ranks.yaml season_vacancies)
+    const R = SV.vacancies;
+    if (!R) return 0;
+    const s = season(W, sid), pct = at.reduce((t, a) => t + (hitPct(W, a) ?? 0), 0) + ((W.wastage || {})[s.state] || 0) + (R.background || 0);
+    return Math.min(Math.trunc(R.cap ?? 90), pyRound(pct));
+  }
   function takenPct(W, aid, position = "line", unit = null){   // his % chance of being taken, unhit (as service.taken_pct)
     const a = W.actions[aid];
     if (unit != null) return a.units[unit].taken != null ? Math.trunc(a.units[unit].taken) : 0;
@@ -167,7 +173,7 @@ function makeService(SV, RULES){
     const t = edgeScaled(W, takenPct(W, aid, pos, unit), unit, edge);
     if (t){ const tr = rng(); if (tr <= t) r.taken = { action: aid, pct: t, roll: tr } }   // came through unhit: taken?
   }
-  return { postureOf, war, warsFor, season, seasonStart, weeks, actionWeek, hitPct, takenPct, desertPct, inWeek, factors, dayCtx, weaponFor, worstStep, woundStep, unfit, serve, between, smallFight };
+  return { postureOf, war, warsFor, season, seasonStart, weeks, actionWeek, hitPct, vacancyPct, takenPct, desertPct, inWeek, factors, dayCtx, weaponFor, worstStep, woundStep, unfit, serve, between, smallFight };
 }
 
 if (typeof module !== "undefined") module.exports = makeService;   // Node (the tests); the page has no `module`
