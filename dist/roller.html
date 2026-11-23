@@ -5992,11 +5992,16 @@ function teamComes(h, c){                           // a season's small fight: t
   if (c.uid && h.pids && !h.pids.includes(c.sheet?.pid)) return false;   // a named man the team builder no longer has serving (taken or dead in the season roll, or left out)
   return !h.only || h.only.includes(c.sheet?.pid);
 }
+function warKit(h, c){                              // the war's kit for the team (data/service kit_swap): worn here, his own kept to go back to
+  const own = c.kitOwn || c.kit, worn = (h.kit_swap || {})[own];
+  if (worn){ c.kitOwn = own; c.kit = worn }
+  else if (c.kitOwn){ c.kit = c.kitOwn; delete c.kitOwn }
+}
 function handoffNamed(h, forces){
   const by = new Map(), missing = [];
   if (h.team){                                    // a season's small fight: the team's named men and followers here go with its party
     syncFollowers(h.followers);
-    for (const c of S.chars) if (teamComes(h, c)) addTo(by, h.team, c);
+    for (const c of S.chars) if (teamComes(h, c)){ warKit(h, c); addTo(by, h.team, c) }
     if (!by.size) missing.push("the team (send it to the roller from the team builder, then set the fight up again)");
     return { by, missing };
   }
