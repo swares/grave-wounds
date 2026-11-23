@@ -466,6 +466,7 @@ are in the project doc "promotion-loot-research"; `approx: true` marks estimates
   below, most days in rank first, roll Command (+20 and no wait for a deed) until one succeeds;
   his old rank then falls vacant. A lost man's rank falls vacant by itself; the GM opens others
   with + and −, sets any man's rank (a reduction resets his days in rank), and ticks deeds.
+  A season with the battalion opens its own (below: the battalion's losses), which do not carry over.
 - **Pay.** The travel map counts each night a named man's force is fed by its army (`army` in
   the experience store), or owed when its pay is in arrears. End of season pays days × pay ×
   `kept` into his purse and adds the arrears to his debt, paid when the GM presses Pay owed.
@@ -988,6 +989,19 @@ main already), one fewer takes back the season's last tick (the battalion's own,
 ticked). The ±10 goes on each man's promotion roll that
 End of season, as a deed or a patron's word does. Followers stand where the leader stands and
 share the hit chance; the posture gives them no ticks.
+
+**Vacancies from the battalion's losses** (`season_vacancies` in `data/ranks.yaml`, ours), on by
+default with a switch on the panel: a team serving with a battalion is not the battalion, and its
+sergeants and officers fall too. At End of season after a season served, each rank above the
+bottom rolls d100 for one vacancy that comes the team's way, against the season's hit share at the
+line (each action the team was at that has a share, at the line's ×1), plus the state's wastage,
+plus 2% for sickness, discharge and men sent home, at most 90%. The panel shows the chance. The
+team's eligible men roll Command for it as for any vacancy (the posture's ±10 included); one that
+none of them wins is filled from outside the team, and does not carry over as the GM's and a lost
+man's do. The chance a rank a season, on average over each war's seasons with every main action
+ticked: the Peninsula 7%, the Union 13%, the Confederacy 16%, the Western Front 23%, Italy 14%,
+the Roses 4-6%, Henry V 3% (medieval ranks need long years and hard rolls anyway). No source gives
+how often a battalion's vacancies fell to a given few men.
 
 **The journal.** Under the panel, a season by season record of the war for the team: each season
 served is an entry headed by its name and the team's posture, holding the season's log (sickness,

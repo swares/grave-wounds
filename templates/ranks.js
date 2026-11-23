@@ -62,6 +62,9 @@ function rkPresence(R, c){                         // a promotion's Presence, in
   const gain = Math.min(P.per_rank, P.cap - (c.pres_rank || 0));
   if (gain > 0){ c.stat_mods.pres = (c.stat_mods.pres || 0) + gain; c.pres_rank = (c.pres_rank || 0) + gain }
 }
+function rkSeasonVacancies(pct, rng){              // a season with the battalion's vacancies, as ranks.season_vacancies: [{rank, roll, open}], lowest first
+  return rkLadder().slice(1).map(r => { const roll = rng.randint(1, 100); return { rank: r.id, roll, open: roll <= pct } });
+}
 function rkPromote(team, vacancies, rng){          // every roll made: [{name, to, roll, target, success}]
   const L = rkLadder(), R = RK(), out = [];
   for (let idx = L.length - 1; idx > 0; idx--){

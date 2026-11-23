@@ -96,6 +96,12 @@ def _presence(rk: dict, c: dict) -> None:
         c["pres_rank"] = c.get("pres_rank", 0) + gain
 
 
+def season_vacancies(d: Data, eid: str, pct: int, rng) -> list[dict]:
+    """A season with the battalion's vacancies (ranks.yaml season_vacancies): each rank above the
+    bottom rolls d100 against pct (service.vacancy_pct). -> [{"rank", "roll", "open"}], lowest first."""
+    return [{"rank": r["id"], "roll": (roll := rng.randint(1, 100)), "open": roll <= pct} for r in ladder(d, eid)[1:]]
+
+
 def promote(d: Data, eid: str, team: list[dict], vacancies: dict, rng) -> list[dict]:
     """End of season's promotions (team and vacancies changed in place): from the top rank down,
     each vacancy is offered to the eligible men below, most senior first (rank_days, then their

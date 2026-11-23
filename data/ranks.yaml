@@ -19,7 +19,8 @@
 # kept - the share of his pay left after stoppages for rations and necessaries
 #
 # Promotion (at End of season, on the team builder): a vacancy at a rank (a lost man of that
-# rank, or one the GM opens for the wider unit's losses) is offered to the team's men one rank
+# rank, one the GM opens for the wider unit's losses, or one a season with the battalion opens:
+# season_vacancies) is offered to the team's men one rank
 # below, most senior first, who have served its `years` and can read where it asks; each rolls
 # Command at its difficulty (+`deed_bonus` and the years waived for a man who distinguished
 # himself) until one succeeds. His old rank is then vacant in turn.
@@ -28,6 +29,13 @@
 # a night his force's pay is in arrears it is owed instead. Paid at End of season.
 literate: 20        # Letters: reads and writes
 deed_bonus: 20
+# season_vacancies - after a season with the battalion (data/service, the team builder's panel), each
+#   rank above the bottom rolls d100 for a vacancy come the team's way from the battalion's losses:
+#   the season's hit share at the line (the actions the team was at that have a share, plus the
+#   state's wastage) + `background` (sickness, discharge, men sent home), at most `cap`. One a rank
+#   a season; one the team's men do not win goes to a man outside it, and does not carry over as
+#   the GM's do. All ours (23 November 2026): no source gives a battalion's vacancies a season.
+season_vacancies: {background: 2, cap: 90}
 presence: {per_rank: 2, cap: 6, approx: true}   # Presence a promotion adds, at most `cap` in all (a design estimate: no source found)
 days_a_year: 365
 
