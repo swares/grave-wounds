@@ -47,15 +47,8 @@ check("a shooter still takes the most hurt when the shots are near alike", () =>
   const v = shooter((h, id) => (id === 3 ? 12 : 5), { here: "2,5", enemies: [foe(2, "9,5"), foe(3, "9,7", { frac: 0.3 })] });
   assert.equal(F.chooseTurn(v).target, 3);
 });
-check("a shooter with only poor shots moves for a clearer one", () => {
-  const v = shooter(h => (h === "2,5" ? 30 : h === "2,7" ? 5 : 30), { here: "2,5", enemies: [foe(2, "9,5")] });
-  const t = F.chooseTurn(v);
-  assert.equal(t.move, "2,7");
-  assert.equal(t.target, 2);
-  assert.match(t.why, /clearer shot/);
-});
-check("a shooter with a fair shot stays where he is", () => {
-  const v = shooter(h => (h === "2,5" ? 15 : 0), { here: "2,5", enemies: [foe(2, "9,5")] });
+check("a shooter with a target stays where he is, even for a clearer shot nearby", () => {
+  const v = shooter(h => (h === "2,5" ? 35 : 0), { here: "2,5", enemies: [foe(2, "9,5")] });
   assert.equal(F.chooseTurn(v).move, null);
 });
 check("a man in reach strikes where he stands", () => {

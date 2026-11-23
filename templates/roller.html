@@ -1822,6 +1822,7 @@ function kitArmour(kit){                           // {armoured: a gap to aim fo
 }
 function shotPenalty(c, o){                         // a shot's whole penalty from c's hex at o (range, men in the way, cover, height, weather), as the strike will take it; false if refused; null hand to hand
   if (!isShot(S.weapon)) return null;
+  if (hexDistance(c.pos, o.pos) <= 1 && (c.sidearm || closeWeapon(c))) return 0;   // next to him he strikes with his sidearm or the bayonet, not a shot (applyAttackerWeapon)
   const keep = [S.attacker, S.active];
   S.attacker = S.chars.indexOf(c); S.active = S.chars.indexOf(o);
   const rc = rangeCheck();

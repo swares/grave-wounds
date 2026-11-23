@@ -29,7 +29,7 @@
    why      a few words for the log: why he did it
 
    The choices are design guesses, not calibrated: closest and most hurt first (a shooter: the clearest
-   shot first, moving for a clearer one when his best is worse than -20), close in when he
+   shot first), close in when he
    cannot reach anyone, fall back when badly hurt by his stance. First aid, out of an enemy's
    reach (no enemy next to him): he binds his own wound if it bleeds badly; by his stance, a
    cautious man treats the worst-bleeding comrade he can reach, a steady one only a comrade who
@@ -45,7 +45,7 @@ const FIGHTER = (() => {                          // one name in the page: its h
   const SELF_BLEED = 0.05;                          // he binds his own wound at a twentieth of his Blood a round or more (a design guess)
   const byKey = (a, b) => (a < b ? -1 : Number(a > b));
 
-  const SHOT_TIE = 10, SHOT_CLEAR = 20;             // a shooter's best shot: within 10 of the clearest counts as as good; worse than -20 he looks for a clearer hex (design guesses, ours)
+  const SHOT_TIE = 10;                              // a shooter's best shot: within 10 of the clearest counts as as good (a design guess, ours)
   function pickTarget(options, enemies, ranged = false){   // the most hurt first, then the easiest, then the nearest; a shooter the clearest shot first (the most hurt among those within SHOT_TIE of it)
     const frac = Object.fromEntries(enemies.map(e => [e.id, e.frac]));
     const best = ranged && options.length ? Math.min(...options.map(o => o.penalty)) : null;
@@ -133,16 +133,7 @@ const FIGHTER = (() => {                          // one name in the page: its h
       if (view.me.able && view.targetsFrom(view.here).length) return strikeFrom(view, st, null, "strikes the man next to him while he reloads");
       return { move: null, cover: false, target: null, gap: false, blow: "", why: "reloads" };
     }
-    if (view.me.able && view.targetsFrom(view.here).length){
-      const here = pickTarget(view.targetsFrom(view.here), view.enemies, view.me.ranged);
-      if (view.me.ranged && here.penalty > SHOT_CLEAR){   // a poor shot (men in the way, cover): a hex in reach with a clearer one, if any
-        const better = view.reach.filter(r => !r.run).map(r => ({ ...r, t: pickTarget(view.targetsFrom(r.hex), view.enemies, true) }))
-          .filter(r => r.t && r.t.penalty - view.coverAt(r.hex) < here.penalty - view.coverAt(view.here))
-          .sort((a, b) => (a.t.penalty - view.coverAt(a.hex)) - (b.t.penalty - view.coverAt(b.hex)) || a.cost - b.cost || byKey(a.hex, b.hex));
-        if (better.length) return strikeFrom(view, st, better[0].hex, "moves for a clearer shot");
-      }
-      return strikeFrom(view, st, null, "strikes from where he stands");
-    }
+    if (view.me.able && view.targetsFrom(view.here).length) return strikeFrom(view, st, null, "strikes from where he stands");   // a shooter with a target stays (moving for a clearer shot drew men out of trenches and lines: PR #596)
     if (view.me.able){                             // a hex he can advance to and still strike from: the nearest, a shooter's with the best shot
       const from = view.reach.filter(r => !r.run).map(r => ({ ...r, t: pickTarget(view.targetsFrom(r.hex), view.enemies, view.me.ranged) })).filter(r => r.t);
       if (from.length){
