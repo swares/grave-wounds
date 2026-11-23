@@ -78,7 +78,10 @@ def eligible(d: Data, eid: str, c: dict, idx: int) -> tuple[bool, str | None]:
         return False, "not the rank below"
     if r.get("deed_only") and not c.get("deed"):
         return False, "only for a deed"
-    years = r.get("years", 0) * ((R.get("known") or {}).get("years", 1) if c.get("known") else 1)   # known to his officers: fewer
+    years = r.get("years", 0)
+    if c.get("known"):                    # known to his officers: fewer, but not below the floor
+        K = R.get("known") or {}
+        years = max(years * K.get("years", 1), min(years, K.get("floor", 0)))
     if not c.get("deed") and c.get("rank_days", 0) < years * R.get("days_a_year", 365):
         return False, "too soon"
     if r.get("letters") and c["skills"].get("letters", 0) < R.get("literate", 20):

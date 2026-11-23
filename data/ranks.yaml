@@ -38,9 +38,10 @@ deed_bonus: 20
 season_vacancies: {background: 2, cap: 90}
 # known - a man known to his officers (a deed, or a season served volunteering: data/posture.yaml
 #   `known`): `bonus` to his next promotion roll (not on top of a deed's own) and `years` times the
-#   years in the rank below; spent on that roll, won or lost. Ours (23 November 2026): no source
+#   years in the rank below, but at least `floor` years (or the rank's own, if fewer: the 1914
+#   ladder's single years would otherwise fall to two seasons); spent on that roll, won or lost. Ours (23 November 2026): no source
 #   counts it, though the memoirs are full of men put forward by an officer who had seen them.
-known: {bonus: 20, years: 0.5}
+known: {bonus: 20, years: 0.5, floor: 1}
 presence: {per_rank: 2, cap: 6, approx: true}   # Presence a promotion adds, at most `cap` in all (a design estimate: no source found)
 days_a_year: 365
 
