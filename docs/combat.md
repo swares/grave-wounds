@@ -312,7 +312,11 @@ count goes on from there.
   - On a scripted fighter's turn the script moves him (or puts him to ground), picks whom to
     strike and strikes, rolling his dice for him. It strikes the most hurt enemy in reach, then
     the easiest, then the nearest; closes when no one is in reach; and a shooter keeps his
-    distance. A named man declares a thrust at an armoured enemy and a cut at an unarmoured one;
+    distance. A shooter weighs each shot by its whole penalty (range, men in the way, cover,
+    height, weather) and takes the clearest, the most hurt only among shots within 10 of it; when
+    his best shot from where he stands is worse than −20 he moves, if he can, to a hex with a
+    clearer one (both figures ours, 22 November 2026). Before, he saw only the range: archers
+    shooting past the melee in Henry V's small fights landed 8.5% of their arrows; now 14%. A named man declares a thrust at an armoured enemy and a cut at an unarmoured one;
     unnamed men strike their weapon's mix. He aims for a gap only in part-covered armour and with
     attack to spare.
   - **How boldly** the script plays each side: *cautious* men fall back when they have lost
