@@ -10,9 +10,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 failures = []
-# The tests' dice: Park-Miller from the seed, in place of the browser's crypto (never for anything secret).
-DICE = """(() => { let s = Math.max(1, %d * 7919 %% 2147483647);
-  crypto.getRandomValues = a => { for (let i = 0; i < a.length; i++){ s = (s * 16807) %% 2147483647; a[i] = s } return a } })();"""
+# The tests' dice, in place of the browser's crypto (never for anything secret).
+# A page load counts itself in sessionStorage (which the tests' localStorage.clear() leaves), so each load of a
+# page goes on with fresh dice rather than the same ones again, and a seed still gives the same run; mulberry32,
+# started from the seed and the load's number, mixes well from the first roll. Each new page (tab) counts afresh.
+DICE = """(() => { const seed = %d >>> 0; let n = 0;
+  try { n = +(sessionStorage.getItem("gw-test-dice-loads") || 0); sessionStorage.setItem("gw-test-dice-loads", String(n + 1)) } catch {}
+  let t = (Math.imul(seed + 1, 0x9E3779B1) ^ Math.imul(n + 1, 0x85EBCA77)) >>> 0;
+  crypto.getRandomValues = a => { for (let i = 0; i < a.length; i++){ t = (t + 0x6D2B79F5) >>> 0; let z = t;
+    z = Math.imul(z ^ (z >>> 15), z | 1); z ^= z + Math.imul(z ^ (z >>> 7), z | 61); a[i] = (z ^ (z >>> 14)) >>> 0 } return a } })();"""
 
 
 CI = bool(__import__("os").environ.get("GITHUB_ACTIONS"))

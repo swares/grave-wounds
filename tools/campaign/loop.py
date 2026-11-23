@@ -40,10 +40,9 @@ def page_in_frame(pg):
 
 
 SEED = int(sys.argv[1]) if len(sys.argv) > 1 else 1
-# The test's dice: Park-Miller from the seed, in place of the browser's crypto, never for anything secret
+# The test's dice: the harness's (tools/campaign/harness.py), never for anything secret
 # (the WebRTC keys of the online game are not made here: this test plays no online game).
-DICE = """(() => { let s = Math.max(1, %d * 7919 %% 2147483647);
-  crypto.getRandomValues = a => { for (let i = 0; i < a.length; i++){ s = (s * 16807) %% 2147483647; a[i] = s } return a } })();"""
+from harness import DICE  # noqa: E402
 PHASE = "() => REC.phase"
 NO_TEAM = "not made yet"
 RUN, SAID, NOTICE = "#c-run", "#c-march-said", "#c-notice"
