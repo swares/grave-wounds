@@ -1380,7 +1380,7 @@ function svcStillHtml(c){                          // '(still serious from last 
 function svcOverHtml(W){                            // the war over: its last season's small fight can still be played or rolled, and its log read
   const last = (S.svclog || []).map(l => "<li>" + esc(l) + "</li>").join("");
   const log = last ? '<h4>Last season served</h4><ul class="log">' + last + "</ul>" : "";
-  return `<section class="crew work" aria-labelledby="h-service"><h3 id="h-service">A season with the battalion</h3><p>${esc(W.name)} is over: its last season has been served.</p>${S.svcSmall ? svcFightHtml(W) : ""}${log}</section>`;
+  return `<section class="crew work" aria-labelledby="h-service"><h3 id="h-service">A season with the battalion</h3><p>${esc(W.name)} is over: its last season has been served.</p>${S.svcSmall ? svcFightHtml(W) : ""}${log}${svcJournalHtml(W, svcState())}</section>`;   // the journal too: the war's end is when it is wanted
 }
 function renderService(){
   const box = $("#service"), V = svcState();
@@ -1442,7 +1442,7 @@ function svcFightHandoff(W, s){                     // the small fight as a setu
   const men = serving.filter(c => fit(svcHealthOf(named, c))), crew = (S.crew || []).filter(x => fit(x.svcHealth));
   const left = [...serving.filter(c => !men.includes(c)), ...(S.crew || []).filter(x => !crew.includes(x))].map(c => c.name);
   const coming = men.length + crew.length;            // the team and its followers come too
-  const party = { id: "team", name: f.side.name, side, men: Math.max(F.side, coming), type: "foot" };
+  const party = { id: "team", name: f.side.name, side, men: Math.max(F.side, coming), type: "foot", ...svcComradeArms(f, crew, men) };
   const foes = f.foes.map((o, k) => ({ id: "foe" + k, name: o.name, side: W.sides.foes, men: F.foes[k], type: "foot", kit: o.kit || null, weapon: o.weapon || null, sidearm: o.sidearm || null }));
   const [force, allies, against] = f.team_attacks ? [foes[0], foes.slice(1), [party]] : [party, [], foes];
   const sp = f.surprise ? { text: f.surprise.text, roll: F.surprise_roll, surprised: F.surprised } : null;
@@ -1455,6 +1455,14 @@ function svcFightHandoff(W, s){                     // the small fight as a setu
     end: svcFightEnd(f.end, side, W.sides.foes),
     notes: [`Aims: ${side}: ${f.aims.team} ${W.sides.foes}: ${f.aims.foes}`, `It ends: ${f.ends} The roller calls what it can count: the rounds, the men down, the position held (the hexes the defenders start in) and men got away off their own edge; the rest is the GM's call.`, `From the accounts${svcAsAt(W, f, s)}: ${f.what} (${f.sources.join("; ")})`,
     ...(left.length ? [`Left in hospital, too sick or badly wounded to fight: ${left.join(", ")}.`] : [])] };
+}
+function svcComradeArms(f, crew, men){             // the party's comrades armed as the team's men: the fight's own (side.weapon) if it gives one, else its followers' most common career, else its named men's
+  if (f.side.weapon) return { kit: f.side.kit || null, weapon: f.side.weapon, sidearm: f.side.sidearm || null };
+  const tally = list => { const n = {}; for (const c of list) if (c.career) n[c.career] = (n[c.career] || 0) + 1; return Object.entries(n).sort((a, b) => b[1] - a[1])[0]?.[0] || null };
+  const cid = tally(crew) || tally(men), car = cid && byId(T.careers, cid);
+  if (!car) return {};
+  const [kit, weapon] = kitFor(T, car, S.region);
+  return { kit, weapon, sidearm: sidearmOf(cid, S.region) };
 }
 function svcAsAt(W, f, s){                          // a fight sourced to another season: a fight of the kind, as there
   const at = f.at && f.at !== s.id ? W.seasons.find(x => x.id === f.at) : null;
