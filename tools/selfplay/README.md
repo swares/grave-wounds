@@ -67,11 +67,16 @@ Download the artifact and compare two measurements with `report.py diff <before>
 
 ## The enemy commander's benchmark
 
-`commander.sh [seeds] [workers]` plays every battlefield with the commander on both sides (12 seeds by default, about
-3½ hours on 2 workers) and `commander.py` writes `commander.json`: for each battlefield and side, how often the
+`commander.sh [seeds] [workers]` plays every battlefield with the commander on both sides (36 seeds by default, about
+10 hours on 2 workers; the selfplay workflow on GitHub, with `seeds` 36, about 35 minutes) and `commander.py` writes `commander.json`: for each battlefield and side, how often the
 commander won, the median share of men it lost, and the **bar** a player beats. A player beats the enemy commander
 when his result is better than the commander's median run as the same side: first the outcome (win, draw, loss), then
 the loss ratio (the enemy's men lost for each of his own, both plus one).
+
+**Why 36 seeds** (22 November 2026). 12 can be far off on a swingy battlefield. Against 36 on the same rules, the
+median battlefield moved 2 points, but Hue moved 8% → 42%, Agincourt 67% → 44% (about 37% on 60) and Towton
+75% → 92%, and two bars changed outcome (Agincourt and Badajoz). Main against itself on two sets of 12 moved the
+median battlefield 8 points.
 
 Each battlefield's entry carries the stamp, from `dist/field-stamps.json`, of the rules and battlefield it was run
 under. `build.py` writes the stamps and warns when `commander.json` no longer matches them, so the figures are rerun
