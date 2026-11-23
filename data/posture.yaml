@@ -7,8 +7,9 @@
 #   ticks     - skill ticks at the end of the season for each man who served: one more (his career's
 #               main skill, else its second) or one fewer (his last ticked skill)
 #   promotion - added to his Command for the season's promotion rolls
+#   known     - each man who served the season is known to his officers (data/ranks.yaml known)
 postures:
   lie_low:   {name: "Keep their heads down", small: 0.5, hit: 0.75, ticks: -1, promotion: -10}
   duty:      {name: "Do their duty",         small: 1,   hit: 1,    ticks: 0,  promotion: 0}
-  volunteer: {name: "Volunteer",             small: 1.5, hit: 1.25, ticks: 1,  promotion: 10}
+  volunteer: {name: "Volunteer",             small: 1.5, hit: 1.25, ticks: 1,  promotion: 10, known: true}
 default: duty

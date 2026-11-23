@@ -363,7 +363,8 @@ function rkEligible(c, idx){                       // [ok, why not]
   if (c.course_rank === r.id && rkIndex(c.rank) < idx) return [true, null];   // an officer's course opens it
   if (rkIndex(c.rank) !== idx - 1) return [false, "not the rank below"];
   if (r.deed_only && !c.deed) return [false, "only for a deed"];
-  if (!c.deed && (c.rank_days || 0) < (r.years || 0) * (R.days_a_year || 365)) return [false, "too soon"];
+  const years = (r.years || 0) * (c.known ? R.known?.years ?? 1 : 1);   // known to his officers: fewer
+  if (!c.deed && (c.rank_days || 0) < years * (R.days_a_year || 365)) return [false, "too soon"];
   if (r.letters && (c.skills.letters || 0) < (R.literate ?? 20)) return [false, "cannot read and write"];
   return [true, null];
 }
@@ -383,12 +384,13 @@ function rkPromote(team, vacancies, rng){          // every roll made: [{name, t
       const cands = team.filter(c => rkEligible(c, idx)[0]).sort((a, b) => (b.rank_days || 0) - (a.rank_days || 0));
       let won = null;
       for (const c of cands){
-        let mod = c.deed ? (R.deed_bonus ?? 20) : 0;
+        let mod = c.deed ? (R.deed_bonus ?? 20) : c.known ? (R.known?.bonus ?? 20) : 0;
         if (c.patron_help) mod += TD.patrons?.promotion_bonus ?? 20;   // his patron's word (data/patrons.yaml)
         mod += c.posture_mod || 0;                    // the team's posture through the season (data/posture.yaml)
         if (r.unlettered && (c.skills.letters || 0) < (R.literate ?? 20)) mod += r.unlettered;
         const k = skillCheck((c.skills.command || 0) + mod, r.diff || "ordinary", rng.randint(1, 100));
         out.push({ name: c.name, to: r.id, roll: k.roll, target: k.target, success: k.success });
+        c.known = false;                              // known to his officers: spent on the roll
         if (k.success){ won = c; break }
       }
       if (!won) break;
