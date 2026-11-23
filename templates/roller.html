@@ -1820,6 +1820,15 @@ function kitArmour(kit){                           // {armoured: a gap to aim fo
   const lay = Object.values(KITS[kit || "none"]?.layers || {}).filter(ls => ls.length);
   return { armoured: lay.some(ls => !(ls.length === 1 && ls[0][1] === 1 && ls[0][2] === 100)), plated: lay.length > 0 };
 }
+function shotPenalty(c, o){                         // a shot's whole penalty from c's hex at o (range, men in the way, cover, height, weather), as the strike will take it; false if refused; null hand to hand
+  if (!isShot(S.weapon)) return null;
+  if (hexDistance(c.pos, o.pos) <= 1 && (c.sidearm || closeWeapon(c))) return 0;   // next to him he strikes with his sidearm or the bayonet, not a shot (applyAttackerWeapon)
+  const keep = [S.attacker, S.active];
+  S.attacker = S.chars.indexOf(c); S.active = S.chars.indexOf(o);
+  const rc = rangeCheck();
+  [S.attacker, S.active] = keep;
+  return rc.blocked ? false : rc.range ? rc.range.penalty : null;
+}
 function brainView(c){                             // what the script sees of the fight from c's place (fighter.js: view)
   const t = turnInfo(), w = DATA.weapons[S.weapon], pen = penalties(c), here = hkey(c.pos);
   const reach = t ? [...t.reach].filter(([, cost]) => cost <= Math.max(t.allow.advance, t.allow.run))
@@ -1827,7 +1836,8 @@ function brainView(c){                             // what the script sees of th
   const foes = S.chars.filter(o => o.pos && sideOf(o) !== sideOf(c) && !isOut(o));
   const targetsFrom = hex => {                     // whom he could strike from that hex (he is put there for a moment to look)
     const pos = c.pos; c.pos = parseHex(hex);
-    let out = foes.filter(o => canTarget(c, o)).map(o => { const dist = hexDistance(c.pos, o.pos); return { id: o.id, dist, penalty: weaponReach(S.weapon, dist)?.penalty || 0 } });
+    let out = foes.filter(o => canTarget(c, o)).map(o => { const dist = hexDistance(c.pos, o.pos); return { id: o.id, dist, penalty: shotPenalty(c, o) ?? weaponReach(S.weapon, dist)?.penalty ?? 0 } })
+      .filter(t => t.penalty !== false);           // a shot the rules would refuse (no sight, works in the way): not a target
     if (reloading(c) && isShot(c.weapon)) out = c.sidearm || closeWeapon(c) ? out.filter(t => t.dist <= 1) : [];   // reloading: only a man next to him, with his sidearm or the butt
     c.pos = pos;
     return out;

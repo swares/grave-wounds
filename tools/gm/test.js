@@ -33,6 +33,24 @@ function board(o){                                  // a view for the brain: me 
 }
 const foe = (id, hex, more = {}) => ({ id, hex, frac: 1, armoured: false, plated: false, ...more });
 
+/* ----- a shooter's best shot: penalties by hex and target, as the page measures them ----- */
+const shooter = (pen, o = {}) => {                  // pen(hex, id) -> the shot's whole penalty
+  const v = board({ range: 20, ...o });
+  v.targetsFrom = h => o.enemies.map(e => ({ id: e.id, dist: dist(h, e.hex), penalty: pen(h, e.id) }));
+  return v;
+};
+check("a shooter takes the clearer shot over the more hurt man behind the melee", () => {
+  const v = shooter((h, id) => (id === 3 ? 30 : 5), { here: "2,5", enemies: [foe(2, "9,5"), foe(3, "9,7", { frac: 0.3 })] });
+  assert.equal(F.chooseTurn(v).target, 2);
+});
+check("a shooter still takes the most hurt when the shots are near alike", () => {
+  const v = shooter((h, id) => (id === 3 ? 12 : 5), { here: "2,5", enemies: [foe(2, "9,5"), foe(3, "9,7", { frac: 0.3 })] });
+  assert.equal(F.chooseTurn(v).target, 3);
+});
+check("a shooter with a target stays where he is, even for a clearer shot nearby", () => {
+  const v = shooter(h => (h === "2,5" ? 35 : 0), { here: "2,5", enemies: [foe(2, "9,5")] });
+  assert.equal(F.chooseTurn(v).move, null);
+});
 check("a man in reach strikes where he stands", () => {
   const t = F.chooseTurn(board({ here: "5,5", enemies: [foe(2, "6,5")] }));
   assert.equal(t.move, null);

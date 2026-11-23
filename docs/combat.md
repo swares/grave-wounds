@@ -312,7 +312,13 @@ count goes on from there.
   - On a scripted fighter's turn the script moves him (or puts him to ground), picks whom to
     strike and strikes, rolling his dice for him. It strikes the most hurt enemy in reach, then
     the easiest, then the nearest; closes when no one is in reach; and a shooter keeps his
-    distance. A named man declares a thrust at an armoured enemy and a cut at an unarmoured one;
+    distance. A shooter weighs each shot by its whole penalty (range, men in the way, cover,
+    height, weather) and takes the clearest, the most hurt only among shots within 10 of it (ours,
+    22 November 2026); a man next to an enemy counts as striking hand to hand with his sidearm or
+    bayonet, with no shot's penalty. He does not move for a clearer shot: tried, it drew men out of
+    their trenches and lines (the Western Front's exchange 2.88 → 1.63, the Peninsula's bayonets 283
+    strikes → 63). Before, he saw only the range: Henry V's English archers, shooting past the
+    melee, landed 8% of their arrows; now 11%. A named man declares a thrust at an armoured enemy and a cut at an unarmoured one;
     unnamed men strike their weapon's mix. He aims for a gap only in part-covered armour and with
     attack to spare.
   - **How boldly** the script plays each side: *cautious* men fall back when they have lost
