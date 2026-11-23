@@ -1402,7 +1402,7 @@ function svcFightHandoff(W, s){                     // the small fight as a setu
   crewIds();
   const followers = crew.map(x => ({ ...x, careerName: byId(T.careers, x.career).name, sidearm: sidearmOf(x.career, S.region) }));   // the followers as they are now: the roller brings its own up to date
   const pids = men.map(c => c.pid);                   // the named men serving now and fit: not those lost since they came to the roller
-  return { from: "service", title: f.name, team: "team", table: W.table, max_odds: W.small_war.max_odds ?? null, pids, followers, force, allies, foes: against, place: f.where || f.name, day: s.name, time: f.time,
+  return { from: "service", title: f.name, team: "team", table: W.table, kit_swap: W.kit_swap || null, max_odds: W.small_war.max_odds ?? null, pids, followers, force, allies, foes: against, place: f.where || f.name, day: s.name, time: f.time,
     ground: f.ground, groundSeed: `${f.id}:${s.id}`, camp: f.camp || null, surprise: sp, light: f.light || "day",
     weather: f.weather ? { cond: f.weather, wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } } : null,
     end: svcFightEnd(f.end, side, W.sides.foes),

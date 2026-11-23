@@ -737,7 +737,13 @@ of the season its weather and ground made sickness worse, and its named actions.
   night (Ferrifontaine) and an escalade at dawn (Pontoise). No army-wide totals were found: the
   sickness is set to the seasons the accounts describe (about 6% dead of disease at Harfleur, 12%
   in the winter at Meaux, 6% at Melun), about 2.5% a season over the war. The weapon mix is ours,
-  from the Visby graves' cutting wounds against arrows and bolts (about 78% to 22%).
+  from the Visby graves' cutting wounds against arrows and bolts (about 78% to 22%). The war swaps the
+  team's kit in its small fights (`kit_swap`): a man-at-arms in England's full plate wears the
+  harness of c.1415 there (mail with plate pieces), as the French do, after DeVries (2015): mail
+  was still the main armour on both sides. His sheet keeps his own kit; the roller puts it back
+  for a fight of another war. Measured on 81 small fights (seeds 3-31), full plate → the harness:
+  the team won 48 → 50, its men down 372 → 387, the foes' 176 → 175. Henry V's exchange (about 0.45
+  foes down a team man down) is not the plate: its men-at-arms are few in the team.
 - **The Wars of the Roses with Edward of March** (`roses_edward.yaml`, 1459-1471, a man of
   Edward's household; England's second war on the panel): 47 seasons from Ludford Bridge to
   Tewkesbury, most of them quiet at home. Exile at Calais, Northampton, Mortimer's Cross, Ferrybridge

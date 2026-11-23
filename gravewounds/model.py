@@ -2109,6 +2109,9 @@ def _service_errors(d: Data, W: dict) -> list[str]:
     T = d.teams.get(W.get("era"))
     if not T:
         return [f"{where}: unknown era {W.get('era')}"]
+    for a, b in (W.get("kit_swap") or {}).items():   # the team's kit in this war's small fights: kit worn -> kit worn here
+        if a not in d.armor["kits"] or b not in d.armor["kits"]:
+            errors.append(f"{where}: kit_swap {a} -> {b}: unknown kit")
     regions = {r["id"] for r in T["regions"]}
     errors += [f"{where}: unknown region {r}" for r in W.get("regions", []) if r not in regions]
     t = d.tables.get(W.get("table"))

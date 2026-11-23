@@ -55,6 +55,11 @@ small_war:
   max_odds: 1.5
 
 sides: {team: "English", foes: "French"}
+# The team's kit in this war's small fights: a man-at-arms the team builder gives full plate (England's
+# harness, right for the Roses) wears the harness of c.1415 here, mail with plate pieces, as the French
+# do. "Mail was still the primary armour worn by both the French and English in the battle" (DeVries,
+# BJMH 2:1, 2015, p. 5); full plate harnesses were few (p. 6). The team sheet keeps its own kit.
+kit_swap: {full_plate: harness_1415}
 
 # Followers through a season (team builder): each of the team's followers is rolled as a named man
 # is (hit, sickness, taken), and then, if still with the team, d10000 against `desertion.share` x 100
