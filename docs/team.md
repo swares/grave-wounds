@@ -743,7 +743,13 @@ of the season its weather and ground made sickness worse, and its named actions.
   was still the main armour on both sides. His sheet keeps his own kit; the roller puts it back
   for a fight of another war. Measured on 81 small fights (seeds 3-31), full plate → the harness:
   the team won 48 → 50, its men down 372 → 387, the foes' 176 → 175. Henry V's exchange (about 0.45
-  foes down a team man down) is not the plate: its men-at-arms are few in the team.
+  foes down a team man down) is not the plate: its men-at-arms are few in the team. Nor is it the
+  rout (23 November 2026, 27 fights): the French broke in 6 and ran with 24 men, the English in 7
+  with 82, so a pursuit would cost the English more. Half the fights end with no one breaking (the
+  rounds, a share down, the position), and there French men-at-arms in mail and plate with spears
+  wear down archers and billmen in jacks: 45 English down against 30 French down or taken. Left
+  as it is: the kit is sourced, and the English win 17 of 27. Valmont (1416) went both ways: about
+  160 English killed in the first fight, and 200 French killed and 800 taken in the second.
 - **The Wars of the Roses with Edward of March** (`roses_edward.yaml`, 1459-1471, a man of
   Edward's household; England's second war on the panel): 47 seasons from Ludford Bridge to
   Tewkesbury, most of them quiet at home. Exile at Calais, Northampton, Mortimer's Cross, Ferrybridge
