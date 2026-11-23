@@ -3159,7 +3159,7 @@ function rangeCheck(){
   return { range: { dist, ...r, rangePen: r.penalty, ...wk, ...extra, wayPen: way.penalty, way: way.men, stray: way.stray,
     penalty: r.penalty + (wk.cover || 0) + (wk.height || 0) + wx.penalty + way.penalty } };
 }
-const isShot = wid => !!DATA.weapons[wid].range && !DATA.weapons[wid].off_map;
+const isShot = wid => !!DATA.weapons[wid]?.range && !DATA.weapons[wid]?.off_map;   // a man with no weapon (fists) shoots nothing
 /* The light (weather.yaml light, as the field map's): in the dark no one can be seen to aim a
    missile at beyond the light's sight (battle hexes of 2 m, as the roller's), and aimed fire is its
    aim % off; a man whose kit carries night vision sees and aims by his device where it is better.

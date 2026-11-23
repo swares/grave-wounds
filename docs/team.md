@@ -891,7 +891,8 @@ for each man whether he serves and where he stands, and the team's **posture** f
   aim and what ends it. **Play it on the roller** sets it up as a fight from the travel map is
   set up (`gravewounds-handoff`, `from: service`): the team's fit named men and followers on the roller
   fight in the party (a picket, a working party, a rear-guard; never fewer than
-  the team and its followers who come) with comrades up to 8, against the
+  the team and its followers who come) with comrades up to 8 (armed as the team's followers'
+  most common career, else its named men's, unless the fight's `side` gives a weapon), against the
   enemy in the same proportion to the rolled sizes (the team's men here times the foes' rolled
   number over the party's, at least 1 and at most 40 in all, and at most 3 to 1 against the team's
   side (a war's own `small_war.max_odds`: Henry V's 1.5, ours; the notes then give the rolled
