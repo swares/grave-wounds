@@ -374,6 +374,12 @@ the cap too and prints it beside the followers.
   hold (left behind), taken; alive with a serious or critical wound, invalided home; a light
   wound or none, he stays. A season on, the next season's small fight brings those who stayed
   healed, rested and on their feet (a follower has no health record of his own to heal on; ours).
+  The same button sends the named men's wounds onto their wound track (as **To camp** does), and
+  the next season's small fight brings each named man as the season left him: the wounds it healed
+  gone (scars), those still open kept but not bleeding, on his feet (last fight's stun, knock-out
+  or flight over), rested (Blood and fatigue back) and with no initiative yet. Before (23 November
+  2026, solo play test 14) named men carried every wound and state from fight to fight: an archer
+  knocked out in 1416 started every later fight still out, so his side began near breaking.
   On the field map, **Followers' losses to the team builder** under
   *After the battle* sends each follower unit's losses by career: the killed and died, the taken
   and the left on the field, and the carried wounded whose case starts at serious or worse
@@ -933,7 +939,7 @@ for each man whether he serves and where he stands. **Serve the season** then ro
 
   The log gives a line for the followers: who was hit and his fate, who died, was taken or
   deserted, how many were sick, and how many remain. In a season of the war's `drafts` states
-  (winter quarters; a garrison or a lord's household in the medieval wars; on the Western Front
+  (winter quarters; a garrison or a lord's household in the medieval wars, and in Henry V's war a siege too; on the Western Front
   in the trenches or at rest, and in Italy holding the line or at rest, as the base depots fed
   battalions every few weeks; not in a battle or on the march),
   recruits come up for the followers lost: of the lost men's careers, rolled raw
