@@ -469,7 +469,9 @@ are in the project doc "promotion-loot-research"; `approx: true` marks estimates
   A season with the battalion opens its own (below: the battalion's losses), which do not carry over.
   **Known to his officers** (`known` in `data/ranks.yaml`, ours): a man with a deed ticked at End
   of season, or who served a season volunteering, is known to his officers until his next
-  promotion roll: +20 on it (not on top of a deed's own +20) and half the years in the rank below.
+  promotion roll: +20 on it (not on top of a deed's own +20) and half the years in the rank below,
+  but at least a year (the 1914 ladder's single years stay a year: on the Western Front, at about
+  23% vacancies a rank a season, two seasons let a volunteering private reach captain in 3 of 8 wars).
   It is spent on that roll, won or lost; the GM can tick or clear it on the rank list.
 - **Pay.** The travel map counts each night a named man's force is fed by its army (`army` in
   the experience store), or owed when its pay is in arrears. End of season pays days × pay ×

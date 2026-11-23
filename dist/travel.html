@@ -516,7 +516,8 @@ function rkEligible(c, idx){                       // [ok, why not]
   if (c.course_rank === r.id && rkIndex(c.rank) < idx) return [true, null];   // an officer's course opens it
   if (rkIndex(c.rank) !== idx - 1) return [false, "not the rank below"];
   if (r.deed_only && !c.deed) return [false, "only for a deed"];
-  const years = (r.years || 0) * (c.known ? R.known?.years ?? 1 : 1);   // known to his officers: fewer
+  let years = r.years || 0;
+  if (c.known) years = Math.max(years * (R.known?.years ?? 1), Math.min(years, R.known?.floor ?? 0));   // known to his officers: fewer, but not below the floor
   if (!c.deed && (c.rank_days || 0) < years * (R.days_a_year || 365)) return [false, "too soon"];
   if (r.letters && (c.skills.letters || 0) < (R.literate ?? 20)) return [false, "cannot read and write"];
   return [true, null];
