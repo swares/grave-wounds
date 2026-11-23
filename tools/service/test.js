@@ -49,7 +49,7 @@ for (const [k, want] of Object.entries(fixed.fights)){
 }
 cases.forEach((c, i) => check(`season ${i} (${c.war} ${c.season})`, () => {
   const men = c.men.map(m => ({ ...m, endurance: m.endurance ?? undefined }));
-  assert.deepEqual(S.serve(c.war, c.season, men, c.rolled, seededD100(c.dice)), c.want);
+  assert.deepEqual(S.serve(c.war, c.season, men, c.rolled, seededD100(c.dice), c.posture), c.want);
 }));
 console.log(`${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

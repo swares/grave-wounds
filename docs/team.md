@@ -824,7 +824,8 @@ of the season its weather and ground made sickness worse, and its named actions.
 
 On the team builder's **A season with the battalion** panel the GM picks the season, ticks the
 actions the team was at (those of the main army are ticked; Albuera and San Sebastián are not), and
-for each man whether he serves and where he stands. **Serve the season** then rolls:
+for each man whether he serves and where he stands, and the team's **posture** for the season
+(`data/posture.yaml`; below). **Serve the season** then rolls:
 
 - **Sickness**, week by week on the camp-disease track (`data/disease.yaml`), for one man with his
   own Endurance: the season's state gives the care and marching, its hygiene and factors the
@@ -968,6 +969,31 @@ The season's days go toward each man's term (to his death, if he dies), and are 
 a term made half or more of rolled seasons gives no lifepath wound chance at End of season, since
 its hits were rolled (a career row that always wounds still does). A season with the battalion
 ticks his career's main skill. Then the GM presses End of season as usual.
+
+**The team's posture** (`data/posture.yaml`, all sizes ours), a choice for solo play: what the team
+does with the season when it is not ordered. It is chosen on the panel before Serve the season and
+holds for the season's End of season:
+
+| Posture | Small fight chance | Hit chance in actions | Skill ticks | Promotion rolls |
+| --- | --- | --- | --- | --- |
+| Keep their heads down | ×0.5 | ×0.75 | one fewer | −10 |
+| Do their duty (the default) | ×1 | ×1 | as ever | as ever |
+| Volunteer | ×1.5 | ×1.25 | one more | +10 |
+
+The small fight's chance is the state's, times the posture, at most 100%, and the panel shows it.
+A hit chance is scaled after the man's position, the thick of it and an edge, and held under the
+war's cap. A man who served the season gets the posture's tick at End of season: one more ticks
+a skill not yet ticked, his career's main skill or else its second (the season usually ticks the
+main already), one fewer takes back the season's last tick (the battalion's own, if nothing else
+ticked). The ±10 goes on each man's promotion roll that
+End of season, as a deed or a patron's word does. Followers stand where the leader stands and
+share the hit chance; the posture gives them no ticks.
+
+**The journal.** Under the panel, a season by season record of the war for the team: each season
+served is an entry headed by its name and the team's posture, holding the season's log (sickness,
+actions, hits, the edge, the small fight, the followers) and then End of season's lines. It is
+kept with the service (`S.service.journal`), latest first on the page, and **Save the journal**
+downloads it as a text file (`<war>-journal.txt`), oldest first.
 
 **Calibration** (`python3 -m gravewounds service`): men of Endurance 50 through the war's 24
 seasons, against Dumas and Vedel-Petersen's totals for the men of the British army in the

@@ -112,6 +112,7 @@ def promote(d: Data, eid: str, team: list[dict], vacancies: dict, rng) -> list[d
                 mod = (R.get("deed_bonus", 20) if c.get("deed") else 0)
                 if c.get("patron_help"):          # his patron's word (data/patrons.yaml)
                     mod += (d.patrons or {}).get("promotion_bonus", 20)
+                mod += c.get("posture_mod", 0)    # the team's posture through the season (data/posture.yaml)
                 if r.get("unlettered") and c["skills"].get("letters", 0) < R.get("literate", 20):
                     mod += r["unlettered"]
                 k = check(d, c["skills"].get("command", 0) + mod, r.get("diff", "ordinary"), rng.randint(1, 100))

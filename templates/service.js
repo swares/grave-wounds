@@ -78,13 +78,17 @@ function makeService(SV, RULES){
     const at = SV.steps.indexOf(SV.unfit_from);
     return h.cases.some(c => c.inc === 0 && c.step >= at);
   }
-  function serve(wid, sid, men, rolled, rng){    // a season for the team, as service.serve
-    const W = war(wid), s = season(W, sid), chance = W.small_war.chance[s.state], smallRoll = rng();
+  function postureOf(p){                          // the team's posture through the season (data/posture.yaml), as service.posture_of
+    const P = SV.posture || {};
+    return (P.postures || {})[p || P.default || "duty"] || { small: 1, hit: 1, ticks: 0, promotion: 0 };
+  }
+  function serve(wid, sid, men, rolled, rng, posture = null){   // a season for the team, as service.serve; posture: its small scales the small fight's chance, its hit each man's hit chance
+    const W = war(wid), s = season(W, sid), P = postureOf(posture), chance = Math.min(100, pyRound(W.small_war.chance[s.state] * P.small)), smallRoll = rng();
     const out = { small: smallRoll <= chance, small_roll: smallRoll, chance, men: [] };
     if (out.small && (W.small_fights || []).length) out.fight = smallFight(W, s.state, rng);
     const acts = s.actions.filter(a => rolled.includes(a))
       .sort((a, b) => actionWeek(W, sid, a) - actionWeek(W, sid, b) || s.actions.indexOf(a) - s.actions.indexOf(b));
-    for (const m of men) out.men.push(manSeason(W, s, m, acts, rng));
+    for (const m of men) out.men.push(manSeason(W, s, { ...m, hit_mult: P.hit }, acts, rng));
     return out;
   }
   const between = (lo, hi, roll) => lo + Math.floor((roll - 1) * (hi - lo + 1) / 100);
@@ -154,7 +158,8 @@ function makeService(SV, RULES){
     if (unfit(h)){ r.missed.push({ action: aid, why: "sick" }); return }
     const edge = m.pos_at?.[aid] || null, pos = edge || m.position || "line";   // where he stands at this action (an edge's choice), else for the season
     const unit = m.unit?.[aid] ?? null;
-    const pct = edgeScaled(W, hitPct(W, aid, pos, unit, m.share?.[aid] ?? null), unit, edge);
+    let pct = edgeScaled(W, hitPct(W, aid, pos, unit, m.share?.[aid] ?? null), unit, edge);
+    if (pct !== null && (m.hit_mult ?? 1) !== 1) pct = Math.min(W.cap, pyRound(pct * m.hit_mult));   // the team's posture
     if (pct === null){ r.missed.push({ action: aid, why: "no share" }); return }
     const roll = rng();
     r.rolls.push({ action: aid, pct, roll });
@@ -162,7 +167,7 @@ function makeService(SV, RULES){
     const t = edgeScaled(W, takenPct(W, aid, pos, unit), unit, edge);
     if (t){ const tr = rng(); if (tr <= t) r.taken = { action: aid, pct: t, roll: tr } }   // came through unhit: taken?
   }
-  return { war, warsFor, season, seasonStart, weeks, actionWeek, hitPct, takenPct, desertPct, inWeek, factors, dayCtx, weaponFor, worstStep, woundStep, unfit, serve, between, smallFight };
+  return { postureOf, war, warsFor, season, seasonStart, weeks, actionWeek, hitPct, takenPct, desertPct, inWeek, factors, dayCtx, weaponFor, worstStep, woundStep, unfit, serve, between, smallFight };
 }
 
 if (typeof module !== "undefined") module.exports = makeService;   // Node (the tests); the page has no `module`
