@@ -57,8 +57,9 @@ def cases(d, n: int, seed: int) -> list[dict]:
             men.append(m)
         rolled = [a for a in s["actions"] if t.random() < 0.8]   # NOSONAR: as above
         dice = seed * 7919 + k
-        out.append({"war": wid, "season": s["id"], "men": men, "rolled": rolled, "dice": dice,
-                    "want": sv.serve(d, wid, s["id"], men, rolled, seeded_d100(dice))})
+        posture = t.choice([None] + sorted((d.posture or {}).get("postures", {})))   # NOSONAR: as above (the team's posture)
+        out.append({"war": wid, "season": s["id"], "men": men, "rolled": rolled, "dice": dice, "posture": posture,
+                    "want": sv.serve(d, wid, s["id"], men, rolled, seeded_d100(dice), posture)})
     return out
 
 

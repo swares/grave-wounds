@@ -2203,7 +2203,8 @@ def service_bundle(d) -> dict | None:
     names = {w: d.weapons[w]["name"] for m in mix.values() for w, _ in m}
     return {"wars": d.service, "mix": mix, "weapons": names, "steps": d.disease["steps"], "unfit_from": d.disease["unfit_from"],
             "rules": {"terrain": d.terrain, "weather": d.weather, "works": d.works, "disease": d.disease},
-            "fields": {W_a["field"]: d.fields[W_a["field"]]["name"] for W in d.service.values() for W_a in W["actions"].values() if W_a.get("field")}}
+            "fields": {W_a["field"]: d.fields[W_a["field"]]["name"] for W in d.service.values() for W_a in W["actions"].values() if W_a.get("field")},
+            "posture": d.posture or None}
 
 
 def team_bundle(d) -> dict:

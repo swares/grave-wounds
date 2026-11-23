@@ -115,6 +115,7 @@ class Data:
     ageing: dict = field(default_factory=dict)      # decline, maturity, wear and worn out (data/ageing.yaml)
     loads: dict = field(default_factory=dict)       # carrying weight (data/loads.yaml)
     stress: dict = field(default_factory=dict)      # combat stress (data/stress.yaml)
+    posture: dict = field(default_factory=dict)     # the team's posture through a season of service (data/posture.yaml)
     prisoners: dict = field(default_factory=dict)   # capture and captivity (data/prisoners.yaml)
     hazards: dict = field(default_factory=dict)     # swimming, climbing, falls, chases (data/hazards.yaml)
     council: dict = field(default_factory=dict)     # camp roles and the rolls they make (data/council.yaml)
@@ -196,6 +197,7 @@ def load(root: str | Path = "data") -> Data:
     ageing = _optional(root / "ageing.yaml", {})
     loads = _optional(root / "loads.yaml", {})
     stress = _optional(root / "stress.yaml", {})
+    posture = _optional(root / "posture.yaml", {})
     prisoners = _optional(root / "prisoners.yaml", {})
     hazards = _optional(root / "hazards.yaml", {})
     council = _optional(root / "council.yaml", {})
@@ -243,7 +245,7 @@ def load(root: str | Path = "data") -> Data:
         training=training,
         ageing=ageing,
         loads=loads,
-        stress=stress,
+        stress=stress, posture=posture,
         prisoners=prisoners,
         hazards=hazards,
         council=council,
@@ -666,6 +668,14 @@ def validate(d: Data) -> None:
                 errors.append(f"loads.yaml: unknown era {eid}")
             if set(E.get("kg", {})) != set(LD.get("orders", {})) or E.get("fights_in") not in LD.get("orders", {}):
                 errors.append(f"loads.yaml: {eid} needs kg for every order and a fights_in order")
+    if d.posture:
+        P = d.posture.get("postures") or {}
+        if d.posture.get("default") not in P:
+            errors.append("posture.yaml: default must be one of the postures")
+        for k, p in P.items():
+            if not p.get("name") or not all(isinstance(p.get(f), (int, float)) and p[f] >= 0 for f in ("small", "hit")) \
+                    or not all(isinstance(p.get(f), int) for f in ("ticks", "promotion")):
+                errors.append(f"posture.yaml: {k} needs a name, small and hit (0 or more) and whole ticks and promotion")
     if d.stress:
         SX = d.stress
         if [r.get("id") for r in SX.get("results", [])] != ["shaken", "strained", "exhaustion", "severe"]:

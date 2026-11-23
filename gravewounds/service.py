@@ -145,23 +145,31 @@ def _unfit(d: Data, health: dict) -> bool:
     return any(c["inc"] == 0 and c["step"] >= at for c in health["cases"])
 
 
-def serve(d: Data, wid: str, sid: str, men: list[dict], rolled: list[str], rng) -> dict:
+def posture_of(d: Data, posture: str | None) -> dict:
+    """The team's posture through the season (data/posture.yaml): its small, hit, ticks and promotion; doing their duty if none."""
+    P = d.posture or {}
+    return (P.get("postures") or {}).get(posture or P.get("default", "duty"), {"small": 1, "hit": 1, "ticks": 0, "promotion": 0})
+
+
+def serve(d: Data, wid: str, sid: str, men: list[dict], rolled: list[str], rng, posture: str | None = None) -> dict:
     """A season for the team. men: [{name, endurance, position, pos_at: {aid: position}, unit: {aid: index}, share: {aid: %},
     health (his case carried from the last season, or none)}];
     rolled: the actions the team was at and does not play; rng: d100.
     -> {small (bool), small_roll, men: [{name, dead (disease id) and dead_week, sick_days, worst
        (his worst step at the season's end, or None), hits: [{action, pct, roll, weapon}],
        taken ({action, pct, roll, week}: taken prisoner, his season over, or None),
-       missed: [{action, why}], rolls: [{action, pct, roll}]}]}"""
+       missed: [{action, why}], rolls: [{action, pct, roll}]}]}
+    posture: the team's posture (data/posture.yaml): its `small` scales the chance of a small fight, its `hit` each man's hit chance."""
     W, s = war(d, wid), season(war(d, wid), sid)
-    chance = W["small_war"]["chance"][s["state"]]
+    P = posture_of(d, posture)
+    chance = min(100, round(W["small_war"]["chance"][s["state"]] * P["small"]))
     small_roll = rng()
     out = {"small": small_roll <= chance, "small_roll": small_roll, "chance": chance, "men": []}
     if out["small"] and W.get("small_fights"):
         out["fight"] = small_fight(W, s["state"], rng)
     acts = sorted([a for a in s["actions"] if a in rolled], key=lambda a: (action_week(W, sid, a), s["actions"].index(a)))
     for m in men:
-        out["men"].append(_man(d, W, s, m, acts, rng))
+        out["men"].append(_man(d, W, s, {**m, "hit_mult": P["hit"]}, acts, rng))
     return out
 
 
@@ -268,6 +276,8 @@ def _action(d: Data, W: dict, aid: str, m: dict, h: dict, r: dict, rng) -> None:
     pos = edge or m.get("position", "line")   # where he stands at this action (an edge's choice), else for the season
     unit = (m.get("unit") or {}).get(aid)
     pct = _edge_scaled(W, hit_pct(W, aid, pos, unit, (m.get("share") or {}).get(aid)), unit, edge)
+    if pct is not None and m.get("hit_mult", 1) != 1:   # the team's posture (data/posture.yaml)
+        pct = min(W["cap"], round(pct * m["hit_mult"]))
     if pct is None:
         r["missed"].append({"action": aid, "why": "no share"})
         return

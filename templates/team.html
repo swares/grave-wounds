@@ -431,6 +431,7 @@ function pullFollowersBack(){                       // -> true if followers came
   if (!said.length) return false;
   S.msg = `${said.join(" ")} ${S.crew.length} follower${S.crew.length === 1 ? "" : "s"} remain${S.crew.length === 1 ? "s" : ""}.`;
   S.svclog = [...(S.svclog || []), ...said];
+  svcJournal(said);
   save();
   return true;
 }
@@ -1230,6 +1231,33 @@ function svcState(){                                // S.service for the team's 
   if (!wars.some(W => W.id === V.war)) Object.assign(V, { war: wars[0].id, i: 0, with: {}, pos: {}, at: {}, played: {}, unit: {}, share: {} });
   return V;
 }
+const svcPostures = () => (TD.service.posture || {}).postures || {};
+const svcPostureId = V => (V.posture && svcPostures()[V.posture] ? V.posture : (TD.service.posture || {}).default || "duty");
+function svcJournal(lines, fresh = null){             // the journal (V.journal): a new season's entry (fresh: {sid, name, posture}), or more lines for the last
+  const V = svcState(); if (!V) return;
+  const J = (V.journal ||= []);
+  if (fresh) J.push({ ...fresh, lines: [] });
+  if (J.length) J[J.length - 1].lines.push(...lines);
+}
+function svcJournalText(W, V){                        // the journal as plain text, to save
+  const out = [`${W.name}: the team's journal`, ""];
+  for (const e of V.journal || []) out.push(e.name + (e.posture ? ` (${(svcPostures()[e.posture] || {}).name || e.posture})` : ""), ...e.lines.map(l => "  " + l), "");
+  return out.join("\n");
+}
+function download(name, text, type){                 // a file to save, from the page
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([text], { type }));
+  a.download = name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+function svcJournalHtml(W, V){
+  const J = V.journal || [];
+  if (!J.length) return "";
+  const entries = J.slice().reverse().map(e => `<h5>${esc(e.name)}${e.posture ? ` <span class="muted">(${esc(((svcPostures()[e.posture] || {}).name || e.posture).toLowerCase())})</span>` : ""}</h5><p>${e.lines.map(esc).join(" ")}</p>`).join("");
+  return `<details class="journal"><summary><b>Journal</b> <span class="muted">${J.length} season${J.length > 1 ? "s" : ""}, the latest first</span></summary>
+    <div class="row"><button class="small" id="btn-svjournal" title="Save the journal as a text file">Save the journal</button></div>${entries}</details>`;
+}
 function svcQueue(add){                             // the hits waiting on the roller; add: more to put on it
   let L = [];
   try{ L = JSON.parse(localStorage.getItem(SVC_HITS) || "[]") || [] }catch(e){ L = [] }
@@ -1322,6 +1350,7 @@ function svcEdgeRoll(key){                           // a scene's fight, rolled:
   st.done[sc.id] = "rolled";
   S.svclog = S.svclog || [];
   S.svclog.push(`${sc.name}, rolled: ${bits.join("; ")}.`);
+  svcJournal([`${sc.name}, rolled: ${bits.join("; ")}.`]);
   render();
 }
 function svcEdgeCheck(key){                          // a scene's check: each of its men's d100 against the characteristic
@@ -1334,6 +1363,7 @@ function svcEdgeCheck(key){                          // a scene's check: each of
   st.done[sc.id] = "rolled";
   S.svclog = S.svclog || [];
   S.svclog.push(`${sc.name}: ${bits.join("; ")}.`);
+  svcJournal([`${sc.name}: ${bits.join("; ")}.`]);
   render();
 }
 function svcSeasonOptions(W, V){                     // the next season first, then those after it; the earlier ones below
@@ -1366,16 +1396,25 @@ function renderService(){
     <details><summary class="muted">How it works: ${esc(W.name)}, as a battalion served it</summary><p class="muted note">A season (${W.season_days} days) passes in one step: each man's sickness on the camp-disease track, a hit roll at each action the team was at and does not play (the army's share lost times where he stands, at most ${W.cap}%; or a battalion's own figure), and the chance of a small fight. A hit goes to the roller, which rolls the wound. The days count toward his term; then press End of season. Where he stands and the small fights are ours; the shares are from the sources, and the project doc "between-battles-design" has them.</p></details>
     ${svcWars().length > 1 ? `<label>War <select id="sv-war">${svcWars().map(x => `<option value="${x.id}" ${x.id === V.war ? "selected" : ""}>${esc(x.name)}</option>`).join("")}</select></label>` : ""}
     <p><label>Season <select id="sv-season">${svcSeasonOptions(W, V)}</select></label>
-      <b>${esc(st.name)}</b>: ${esc(s.what)} <span class="muted">Hygiene ${esc(s.hygiene)}${fx ? "; " + esc(fx) : ""}; a small fight ${W.small_war.chance[s.state]}%${(W.wastage || {})[s.state] ? `; ${esc(W.wastage_name.toLowerCase())}: ${W.wastage[s.state]}% a man` : ""}.</span></p>
+      <b>${esc(st.name)}</b>: ${esc(s.what)} <span class="muted">Hygiene ${esc(s.hygiene)}${fx ? "; " + esc(fx) : ""}; a small fight ${Math.min(100, Math.round(W.small_war.chance[s.state] * (svcPostures()[svcPostureId(V)]?.small ?? 1)))}%${(W.wastage || {})[s.state] ? `; ${esc(W.wastage_name.toLowerCase())}: ${W.wastage[s.state]}% a man` : ""}.</span></p>
     ${acts}
+    <p><label>The team's posture <select id="sv-posture" style="width:auto">${Object.entries(svcPostures()).map(([id, p]) => `<option value="${id}" ${svcPostureId(V) === id ? "selected" : ""}>${esc(p.name)}</option>`).join("")}</select></label>
+      <span class="muted">${svcPostureNote(svcPostures()[svcPostureId(V)])}</span></p>
     <h4>Who serves it</h4><ul class="xp">${men}</ul>
     ${svcCrewHtml(W, V, s)}
     <div class="row"><button id="btn-serve" title="Roll the season for each man with the battalion">Serve the season</button></div>
     ${S.svcSmall ? svcFightHtml(W) : ""}
     ${waiting ? `<p class="muted">${waiting} hit${waiting > 1 ? "s" : ""} waiting on the roller: <a href="roller.html">roll the wound${waiting > 1 ? "s" : ""} there</a>.</p>` : ""}
-    ${log ? `<h4>Last season served</h4><ul class="log">${log}</ul>` : ""}</section>`;
+    ${log ? `<h4>Last season served</h4><ul class="log">${log}</ul>` : ""}
+    ${svcJournalHtml(W, V)}</section>`;
 }
 const svcD100 = () => realDice.randint(1, 100);
+function svcPostureNote(p){                         // what a posture does, in a line (data/posture.yaml; ours)
+  if (!p) return "";
+  const x = (k, what) => (p[k] === 1 ? null : `${what} ×${p[k]}`), n = (k, what) => (p[k] ? `${what} ${p[k] > 0 ? "+" : "−"}${Math.abs(p[k])}` : null);
+  const bits = [x("small", "small fight chance"), x("hit", "hit chance at actions"), n("ticks", "skill ticks"), n("promotion", "promotion rolls")].filter(Boolean);
+  return bits.length ? bits.join(", ") : "as the battalion's own";
+}
 function svcFightHtml(W){                           // the season's small fight: what it is, the sizes rolled, play or roll it
   const F = S.svcSmall, f = F && F.id ? W.small_fights.find(x => x.id === F.id) : null, roll = `<button class="small" id="btn-svsmall">Roll it</button> (each man with the battalion hit on ${W.small_war.hit}%)`;
   if (!f) return `<p><b>A small fight comes the team's way.</b> Play it on the roller, or ${roll}.</p>`;
@@ -1448,7 +1487,8 @@ function serveSeason(){
     share: Object.fromEntries(Object.entries(V.share).filter(([, v]) => v !== "" && v != null).map(([a, v]) => [a, +v])) }));
   const rolled = s.actions.filter(a => (V.at[a] ?? W.actions[a].main !== false) && !V.played[a]);
   const crew = S.crew.map(f => ({ name: f.name, position: svcCrewPos(V), health: f.svcHealth || null, pos_at: {}, unit: men[0]?.unit || {}, share: men[0]?.share || {} }));   // the followers stand with the leader
-  const r = SVC.serve(V.war, s.id, men.concat(crew), rolled, svcD100), lines = [`${s.name}: ${W.states[s.state].name.toLowerCase()}.`], hits = [];
+  const posture = svcPostureId(V);
+  const r = SVC.serve(V.war, s.id, men.concat(crew), rolled, svcD100, posture), lines = [`${s.name}: ${W.states[s.state].name.toLowerCase()}; the team: ${svcPostures()[posture]?.name.toLowerCase() || posture}.`], hits = [];
   const played = s.actions.filter(a => (V.at[a] ?? W.actions[a].main !== false) && V.played[a]);
   if (played.length) lines.push(`To play on the field map: ${played.map(a => W.actions[a].name).join(", ")}.`);
   serving.forEach((c, k) => {
@@ -1494,6 +1534,8 @@ function serveSeason(){
   S.svcSmall = r.small ? (r.fight || true) : false;
   lines.push(r.small ? `A small fight comes the team's way (rolled ${r.small_roll} against ${r.chance}).` : `No small fight (rolled ${r.small_roll} against ${r.chance}).`);
   S.svclog = lines;
+  svcJournal(lines, { sid: s.id, name: s.name, posture });
+  V.seasonPosture = posture;                          // its ticks and promotion at End of season
   V.i += 1; V.at = {}; V.played = {}; V.unit = {}; V.share = {}; V.edge = {};
   S.msg = `${s.name} served. ${hits.length ? "Roll the hits on the roller, then" : "Now"} press End of season.`;
   render();
@@ -1619,6 +1661,7 @@ function svcSmallFight(){                           // the small fight rolled, n
   S.svcSmall = false;
   S.svclog = S.svclog || [];
   S.svclog.push(`The small fight, rolled: ${bits.join("; ")}.`);
+  svcJournal([`The small fight, rolled: ${bits.join("; ")}.`]);
   render();
 }
 /* Experience (xp.js, xpSeason in team.js): what each man has ticked since the last End of season,
@@ -1763,10 +1806,17 @@ function lieSeason(c, found){                     // a man under or over age: fo
 }
 function endSeason(){
   const all = readXp(), lines = [], stamp = Date.now(), found = [];
+  const V0 = svcState(), PP = V0?.seasonPosture ? svcPostures()[V0.seasonPosture] : null;   // the team's posture through the season just served (data/posture.yaml)
   for (const c of S.team){
     const x = all[c.pid] || {};
     c.aged_to ??= c.age;                           // a man made before ageing: from now on
-    const r = xpSeason(c, Object.keys(x.ticks || {}), x.served || 0, realDice);
+    const ticks = Object.keys(x.ticks || {});
+    if (PP?.ticks && (x.served || 0) > 0){        // the posture: a skill tick more (his career's main skill, else its second) or one fewer
+      const car = byId(T.careers, c.career) || {};
+      if (PP.ticks > 0){ const k = [car.main, car.second].find(s => s && !ticks.includes(s)); if (k) ticks.push(k) }
+      else ticks.splice(Math.max(0, ticks.length + PP.ticks));
+    }
+    const r = xpSeason(c, ticks, x.served || 0, realDice);
     let line = seasonLine(c, r);
     if (TD.ageing){                                 // a hard season wears him; the years of any term served age him; each term, the Worn Out check
       const hard = c.hardSeason || (x.hard || 0) >= TD.ageing.wear.hard_nights;
@@ -1803,7 +1853,9 @@ function endSeason(){
     loseMember(S.team.indexOf(c), `sent home: ${why}`);
   }
   if (rkLadder().length){                          // the season's promotions, then everyone's new sheet
+    for (const c of S.team) c.posture_mod = PP?.promotion || 0;   // the posture: on the season's promotion rolls
     const rolls = rkPromote(S.team, (S.vacancies ||= {}), realDice);
+    for (const c of S.team) delete c.posture_mod;
     for (const c of S.team) finishChar(c);         // his Presence may have risen with his rank
     for (const c of S.team) delete c.deedWhy;
     for (const k of rolls) lines.push(`${k.name} for ${rkName(k.to).toLowerCase()}: Command rolled ${k.roll} against ${k.target}: ${k.success ? "promoted" : "passed over"}.`);
@@ -1825,6 +1877,8 @@ function endSeason(){
     try { localStorage.setItem("gravewounds-named", JSON.stringify(named)) } catch (e) { /* storage off */ }
   }
   S.xplog = lines;
+  if (V0?.journal?.length && !V0.journal.at(-1).ended){ svcJournal(lines); V0.journal.at(-1).ended = true }
+  if (V0) delete V0.seasonPosture;
   render();
 }
 const PLACE_NAMES = { town: "a town", city: "a city", village: "a village", camp: "a camp", road: "on the road", frontier: "the frontier", sea: "at sea" };
@@ -2268,6 +2322,7 @@ function init(){
   });
   $("#service").addEventListener("click", e => {
     if (e.target.closest("#btn-serve")) return serveSeason();
+    if (e.target.closest("#btn-svjournal")){ const V = svcState(); return download(`${V.war}-journal.txt`, svcJournalText(SVC.war(V.war), V), "text/plain") }
     if (e.target.closest("#btn-svsmall")) return svcSmallFight();
     if (e.target.closest("#btn-svplay")) return svcPlayFight();
     const ed = e.target.closest("button[data-svedgeplay], button[data-svedgeroll], button[data-svedgecheck]");
@@ -2288,6 +2343,7 @@ function init(){
     if (t.id === "sv-war"){ V.war = t.value; V.i = 0 }
     else if (t.id === "sv-fight"){ const W = SVC.war(V.war), s = W.seasons[Math.max(0, V.i - 1)]; S.svcSmall = SVC.smallFight(W, s.state, svcD100, t.value) }
     else if (t.id === "sv-season") V.i = +t.value;
+    else if (t.id === "sv-posture") V.posture = t.value;
     else if (ds.svat) V.at[ds.svat] = t.checked;
     else if (ds.svplay) V.played[ds.svplay] = t.checked;
     else if (ds.svunit) V.unit[ds.svunit] = t.value;
