@@ -549,6 +549,7 @@ function renderRank(){
       return `<li><b>${esc(c.name)}</b>: <select data-rank="${i}" aria-label="Rank of ${esc(c.name)}">${opts}</select> ${(c.rank_days || 0).toLocaleString("en-US")} days in rank · ${cash(rkPay(c.region, c.career, c.rank))} a day
         <span class="muted">${next ? `· for ${esc(next.name.toLowerCase())}: ${esc(why || "eligible")}` : ""}</span>
         <label class="check" title="He distinguished himself${c.deedWhy ? ` (${esc(c.deedWhy)})` : ""}: +${RK().deed_bonus} to his next promotion roll, and the time waived"><input type="checkbox" data-deed="${i}"${c.deed ? " checked" : ""}> A deed</label>
+        ${RK().known ? `<label class="check" title="His officers know him (a deed, or a season volunteering): +${RK().known.bonus} to his next promotion roll and ${RK().known.years === 0.5 ? "half" : "×" + RK().known.years} the years in rank, spent on that roll"><input type="checkbox" data-known="${i}"${c.known ? " checked" : ""}> Known to his officers</label>` : ""}
         ${c.owed ? "<button class=\"small\" data-payowed=\"" + i + "\" title=\"The arrears are paid\">Pay " + cash(c.owed) + " owed</button>" : ""}${commissionHtml(c, i)}</li>`;
     }).join("");
     vac = `<div class="row">${ladder.slice(1).map(r => `<span>${esc(r.name)}: <b>${(S.vacancies || {})[r.id] || 0}</b> <button class="small" data-vac="${r.id}" data-d="-1" aria-label="One fewer ${esc(r.name)} vacancy">−</button><button class="small" data-vac="${r.id}" data-d="1" aria-label="Open a ${esc(r.name)} vacancy">+</button></span>`).join(" ")}</div>`;
@@ -1419,7 +1420,7 @@ function svcVacHtml(W, V, s){                         // the switch for vacancie
 function svcPostureNote(p){                         // what a posture does, in a line (data/posture.yaml; ours)
   if (!p) return "";
   const x = (k, what) => (p[k] === 1 ? null : `${what} ×${p[k]}`), n = (k, what) => (p[k] ? `${what} ${p[k] > 0 ? "+" : "−"}${Math.abs(p[k])}` : null);
-  const bits = [x("small", "small fight chance"), x("hit", "hit chance at actions"), n("ticks", "skill ticks"), n("promotion", "promotion rolls")].filter(Boolean);
+  const bits = [x("small", "small fight chance"), x("hit", "hit chance at actions"), n("ticks", "skill ticks"), n("promotion", "promotion rolls"), p.known ? "known to his officers" : null].filter(Boolean);
   return bits.length ? bits.join(", ") : "as the battalion's own";
 }
 function svcFightHtml(W){                           // the season's small fight: what it is, the sizes rolled, play or roll it
@@ -1814,7 +1815,8 @@ function lieSeason(c, found){                     // a man under or over age: fo
 }
 function endSeason(){
   const all = readXp(), lines = [], stamp = Date.now(), found = [];
-  const V0 = svcState(), PP = V0?.seasonPosture ? svcPostures()[V0.seasonPosture] : null;   // the team's posture through the season just served (data/posture.yaml)
+  const V0 = svcState(), PP = V0?.seasonPosture ? svcPostures()[V0.seasonPosture] : null;
+  const servedNow = new Set(S.team.filter(c => (all[c.pid]?.served || 0) > 0).map(c => c.pid));   // who served this season (his record is cleared below)   // the team's posture through the season just served (data/posture.yaml)
   for (const c of S.team){
     const x = all[c.pid] || {};
     c.aged_to ??= c.age;                           // a man made before ageing: from now on
@@ -1862,6 +1864,9 @@ function endSeason(){
   }
   if (rkLadder().length){                          // the season's promotions, then everyone's new sheet
     for (const c of S.team) c.posture_mod = PP?.promotion || 0;   // the posture: on the season's promotion rolls
+    if (RK().known) for (const c of S.team){       // known to his officers (data/ranks.yaml known): a deed, or a season served volunteering
+      if (!c.known && (c.deed || (PP?.known && servedNow.has(c.pid)))){ c.known = true; lines.push(`${c.name} is known to his officers${c.deed ? " for his deed" : ", volunteering"}.`) }
+    }
     const VC = S.vacancies ||= {}, opened = {};
     if (V0?.seasonVac != null){                    // the battalion's losses: a vacancy a rank on d100 (data/ranks.yaml season_vacancies)
       const vr = rkSeasonVacancies(V0.seasonVac, realDice), open = vr.filter(v => v.open);
@@ -2394,6 +2399,7 @@ function init(){
     const el = e.target;
     if (el.dataset.rank !== undefined) setRank(S.team[+el.dataset.rank], el.value);
     else if (el.dataset.deed !== undefined) S.team[+el.dataset.deed].deed = el.checked;
+    else if (el.dataset.known !== undefined) S.team[+el.dataset.known].known = el.checked;
     else if (el.id === "loot-kind") S.lootK.kind = el.value;
     else if (el.id === "loot-who") S.lootK.who = el.value;
     else if (el.id === "loot-haggle") S.lootK.haggle = el.checked;

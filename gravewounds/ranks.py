@@ -78,7 +78,8 @@ def eligible(d: Data, eid: str, c: dict, idx: int) -> tuple[bool, str | None]:
         return False, "not the rank below"
     if r.get("deed_only") and not c.get("deed"):
         return False, "only for a deed"
-    if not c.get("deed") and c.get("rank_days", 0) < r.get("years", 0) * R.get("days_a_year", 365):
+    years = r.get("years", 0) * ((R.get("known") or {}).get("years", 1) if c.get("known") else 1)   # known to his officers: fewer
+    if not c.get("deed") and c.get("rank_days", 0) < years * R.get("days_a_year", 365):
         return False, "too soon"
     if r.get("letters") and c["skills"].get("letters", 0) < R.get("literate", 20):
         return False, "cannot read and write"
@@ -115,7 +116,7 @@ def promote(d: Data, eid: str, team: list[dict], vacancies: dict, rng) -> list[d
             cands.sort(key=lambda c: -c.get("rank_days", 0))
             won = None
             for c in cands:
-                mod = (R.get("deed_bonus", 20) if c.get("deed") else 0)
+                mod = (R.get("deed_bonus", 20) if c.get("deed") else (R.get("known") or {}).get("bonus", 20) if c.get("known") else 0)
                 if c.get("patron_help"):          # his patron's word (data/patrons.yaml)
                     mod += (d.patrons or {}).get("promotion_bonus", 20)
                 mod += c.get("posture_mod", 0)    # the team's posture through the season (data/posture.yaml)
@@ -123,6 +124,7 @@ def promote(d: Data, eid: str, team: list[dict], vacancies: dict, rng) -> list[d
                     mod += r["unlettered"]
                 k = check(d, c["skills"].get("command", 0) + mod, r.get("diff", "ordinary"), rng.randint(1, 100))
                 out.append({"name": c["name"], "to": r["id"], "roll": k["roll"], "target": k["target"], "success": k["success"]})
+                c["known"] = False                # known to his officers: spent on the roll
                 if k["success"]:
                     won = c
                     break
