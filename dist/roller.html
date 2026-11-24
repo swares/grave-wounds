@@ -365,7 +365,7 @@ fieldset.wxbar{border:0;margin:0;padding:0;min-width:0}
         <span class="turnno" id="turn-no" aria-live="polite"></span>
         <button id="btn-round" title="End this round: every casualty bleeds one round">Next round</button>
         <button id="btn-minute" title="Ten rounds pass for every casualty">+1 minute</button>
-        <input id="in-morale" type="number" min="1" max="100" placeholder="Morale d100" aria-label="Your d100 for the next morale check (blank rolls for you)" title="Team morale: at the end of a round, a side with a quarter of its fighters down rolls d100. Type your own die for the next check or leave blank." style="width:8.5em;flex:0 0 auto">
+        <input id="in-morale" type="number" min="1" max="100" placeholder="Morale d100" aria-label="Your d100 for the next morale check (blank rolls for you)" title="Team morale: at the end of a round, a side with a quarter of its fighters down, or whose leader went down that round, rolls d100. Type your own die for the next check or leave blank." style="width:8.5em;flex:0 0 auto">
         <span class="spacer"></span>
         <button id="btn-reset-rounds" class="small" title="Start the count again at round 1, clear the log and rally broken sides; wounds and stop-check results stay">Reset count</button>
       </div>
@@ -2201,7 +2201,7 @@ if (typeof module !== "undefined") module.exports = NET;   // Node (the tests); 
 const STRIKE = makeStrike(DATA);
 const { attackRoll, marginSeverity, armorAt, armorSteps, sevTiers, isGraze, cannotAttack } = STRIKE;   // defenceRoll and grazeFx need no data: strike.js defines them outright
 
-const S = { table: null, weapon: null, hit: null, events: [], chars: [], active: 0, attacker: -1, seq: 1, mods: new Set(), aim: "", gap: false, armor: "none", round: 1, log: [], turn: null, broken: {}, pending: [], works: { edges: {}, hexes: {} }, ground: { kinds: {}, levels: {} }, weather: { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } } };
+const S = { table: null, weapon: null, hit: null, events: [], chars: [], active: 0, attacker: -1, seq: 1, mods: new Set(), aim: "", gap: false, armor: "none", round: 1, log: [], turn: null, broken: {}, leadersFell: {}, pending: [], works: { edges: {}, hexes: {} }, ground: { kinds: {}, levels: {} }, weather: { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } } };
 const CMB = DATA.combat;
 const MODS = DATA.modifiers, KITS = Object.fromEntries(DATA.armor.kits.map(k => [k.id, k]));
 const MATS = DATA.armor.materials, LADDER = ["stopped", "light", "serious", "critical"];
@@ -2316,9 +2316,9 @@ function toilStep(fatigue, count, kit, strength){   // one more hand-to-hand exc
   if (fatigue >= CHR.toil.worst) return [fatigue, n - need];   // no worse from toil alone
   return [fatigue + 1, n - need];
 }
-function moraleCheck(fighters, roll){
+function moraleCheck(fighters, roll, leaderFell = false){   // leaderFell: its leader went down this round, which calls a check by itself
   const M = CMB.morale, n = fighters.length, down = fighters.filter(f => f.down).length, up = fighters.filter(f => !f.down);
-  if (!n || !up.length || down / n < M.trigger) return null;
+  if (!n || !up.length || (down / n < M.trigger && !leaderFell)) return null;
   const leadersUp = up.filter(f => f.leader);
   let target = Math.max(...(leadersUp.length ? leadersUp : up).map(f => f.nerve));
   if (leadersUp.length) target += M.leader_present + Math.floor((Math.max(...leadersUp.map(f => f.pres ?? 50)) - 50) / CHR.presence.per);
@@ -3755,7 +3755,7 @@ const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
 let SAVED_AS = null;                                 // the fight as this page last wrote or read it: another page changing it means a reload, not a save over it
-function save(){ try{ SAVED_AS = JSON.stringify({chars:S.chars,events:S.events,gm:S.gm,screen:S.screen,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,fightEnd:S.fightEnd,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone,travelFrom:S.travelFrom,quick:S.quick}); localStorage.setItem("gravewounds-chars", SAVED_AS) }catch(e){ /* storage off: the fight lasts while the page is open */ } }
+function save(){ try{ SAVED_AS = JSON.stringify({chars:S.chars,events:S.events,gm:S.gm,screen:S.screen,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,leadersFell:S.leadersFell,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,fightEnd:S.fightEnd,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone,travelFrom:S.travelFrom,quick:S.quick}); localStorage.setItem("gravewounds-chars", SAVED_AS) }catch(e){ /* storage off: the fight lasts while the page is open */ } }
 function restore(){
   try {
     SAVED_AS = localStorage.getItem("gravewounds-chars");
@@ -5266,17 +5266,20 @@ function advance(rounds){
   S.log = S.log.slice(0, 12);
   renderChars();
 }
-// Team morale at the end of a round: each side with a quarter of its fighters down checks.
+// Team morale at the end of a round: each side with a quarter of its fighters down checks, and a side whose leader went down this round.
 function moraleChecks(){
   const out = [], sides = [...new Set(S.chars.map(sideOf))], yields = [];
   S.broken = S.broken || {};
+  S.leadersFell = S.leadersFell || {};       // the leaders already counted as fallen: a leader's fall calls one check
   if (sides.length < 2) return out;          // morale needs two sides
   let own = readDie("#in-morale");
   for (const side of sides){
     if (S.broken[side]) continue;
     const team = S.chars.filter(c => sideOf(c) === side);
     const roll = own ?? d100();
-    const m = moraleCheck(team.map(c => ({ nerve: nerveOf(c), down: isDown(c), leader: !!c.leader, pres: statOf(c, "pres") })), roll);
+    const fell = team.filter(c => c.leader && isDown(c) && !S.leadersFell[c.id]);
+    fell.forEach(c => { S.leadersFell[c.id] = true });
+    const m = moraleCheck(team.map(c => ({ nerve: nerveOf(c), down: isDown(c), leader: !!c.leader, pres: statOf(c, "pres") })), roll, fell.length > 0);
     if (!m) continue;
     own = null; $("#in-morale").value = "";
     if (m.broken){ S.broken[side] = true; yields.push(side) }
@@ -6260,7 +6263,7 @@ function setupHandoff(){                     // a camp or position sent from the
   if (h.weather) S.weather = h.weather;
   if (h.light) S.weather = { ...(S.weather || { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } }), light: h.light === "day" ? undefined : h.light };   // a small fight's light
   S.hauled = !!h.hauled;
-  S.round = 1; S.log = []; S.turn = null; S.tm = null; S.free = []; S.broken = {}; S.attacker = -1; S.active = 0; S.hit = null; newFightMarks();
+  S.round = 1; S.log = []; S.turn = null; S.tm = null; S.free = []; S.broken = {}; S.leadersFell = {}; S.attacker = -1; S.active = 0; S.hit = null; newFightMarks();
   S.fightEnd = h.end ? { rounds: h.end.rounds || null, wins: h.end.wins || null, down: h.end.down || {}, hold: h.end.hold || null, away: h.end.away || null,
     place: h.place, position: { centre: L.centre, radius: lined ? L.radius : Math.max(1, L.radius - 1) },   // the hexes the defenders start in (with the ring at the works, when they man them)
     edges: Object.fromEntries(sidesInOrder().map((sd, i) => [sd, i % 4])), called: null, on: false } : null;   // each side's own edge, as placeUnplaced puts them
@@ -6882,7 +6885,7 @@ const QUICK = { foes: 3, side: "Lancastrians", kit: "jack_sallet", weapon: "bill
 function freshWithTeam(){                         // the quick starts: an empty fight on an empty map, and the team from the team builder added (false: no team came)
   history.replaceState(null, "", location.pathname);
   if (!S.teamIn) return false;
-  Object.assign(S, { chars: [], events: [], log: [], pending: [], round: 1, turn: null, tm: null, free: [], broken: {}, attacker: -1, active: 0, hit: null, handoff: null,
+  Object.assign(S, { chars: [], events: [], log: [], pending: [], round: 1, turn: null, tm: null, free: [], broken: {}, leadersFell: {}, attacker: -1, active: 0, hit: null, handoff: null,
     works: { edges: {}, hexes: {} }, ground: { kinds: {}, levels: {} }, map: { cols: MOVE.map.cols, rows: MOVE.map.rows }, gm: null });
   newFightMarks();
   addTeam();
@@ -7005,7 +7008,7 @@ function init(){
   $("#btn-next").onclick = () => { nextFighter(); gmKick() };
   $("#btn-round").onclick = () => { S.turn = null; S.tm = null; S.free = []; advance(1) };      // a new round: no one has acted yet
   $("#btn-minute").onclick = () => { S.turn = null; S.tm = null; S.free = []; advance(10) };
-  $("#btn-reset-rounds").onclick = () => { S.round = 1; S.log = []; S.pending = []; S.turn = null; S.broken = {}; S.tm = null; S.free = []; newFightMarks(); renderChars() };
+  $("#btn-reset-rounds").onclick = () => { S.round = 1; S.log = []; S.pending = []; S.turn = null; S.broken = {}; S.leadersFell = {}; S.tm = null; S.free = []; newFightMarks(); renderChars() };
   // battle map
   const mapKey = e => {
     const tok = e.target.closest(".tok"), hx = e.target.closest(".hex");

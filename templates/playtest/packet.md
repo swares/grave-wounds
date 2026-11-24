@@ -72,7 +72,7 @@ at or under a tenth of the number is a **critical**.
 
 {{table:stop}}
 
-**End of the round.** Everyone bleeds. Then a side with {{morale_trigger}} or more of its men down rolls d100 against
+**End of the round.** Everyone bleeds. Then a side with {{morale_trigger}} or more of its men down, or whose leader went down this round, rolls d100 against
 the best Nerve among those still up: +{{leader_present}} while a leader is up, −{{leader_down}} if he is down, −{{heavy_losses}} once
 {{morale_heavy}} of the side is down. Over the target, the side breaks: it runs or surrenders.
 
@@ -313,7 +313,7 @@ Score 1 (no) to 5 (yes), and add a comment if you can. Send it through the feedb
 
 **Range (longbow).** Short to {{pt_short}} hexes, medium to {{pt_medium}} (−20), long to {{pt_long}} (−40). Off the map: hexes to the north edge plus the box.
 
-**End of the round.** Everyone bleeds: {{pt_bleed_rates}}. A side with {{morale_trigger}} or more down rolls d100 against its best Nerve still up: +{{leader_present}} with a leader up, −{{leader_down}} if he's down, −{{heavy_losses}} once {{morale_heavy}} are down. Over: the side breaks.
+**End of the round.** Everyone bleeds: {{pt_bleed_rates}}. A side with {{morale_trigger}} or more down, or its leader just down, rolls d100 against its best Nerve still up: +{{leader_present}} with a leader up, −{{leader_down}} if he's down, −{{heavy_losses}} once {{morale_heavy}} are down. Over: the side breaks.
 
 **Pain.** −{{pain_step}}% a step, to {{pain_cap}} steps; above that, a stop check every round. **Impairments** cap at −{{cap}}%.
 
@@ -340,5 +340,5 @@ Score 1 (no) to 5 (yes), and add a comment if you can. Send it through the feedb
 
 {{pt:roster}}
 
-**When a man is down,** turn his counter over or put a *Down* marker on it. The side checks its nerve at the end of the round once {{morale_trigger}} of it is down.
+**When a man is down,** turn his counter over or put a *Down* marker on it. The side checks its nerve at the end of the round once {{morale_trigger}} of it is down, or when its leader goes down.
 

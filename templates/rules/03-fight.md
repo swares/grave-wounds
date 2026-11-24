@@ -109,7 +109,8 @@ margin. A **critical** pays nothing: it lands where he meant it.
 - **Results wear off.** Defend only and stunned count down a round.
 - **Pain.** A fighter whose pain is above the cap ({{pain_cap}} steps, −{{pain_cap_pct}}%)
   makes a stop check every round, as for a serious wound.
-- **Morale.** A side with {{morale_trigger}} or more of its fighters down rolls d100 against
+- **Morale.** A side with {{morale_trigger}} or more of its fighters down, or whose leader went
+  down this round, rolls d100 against
   the best Nerve among those still up (its leader's, if he is up): +{{leader_present}} while a
   leader is up, and (Presence − 50) ÷ {{presence_per}} more for him; −{{leader_down}} if a
   leader is down; −{{heavy_losses}} once {{morale_heavy}} of the side is down. Over the

@@ -40,6 +40,8 @@ jobs:
         run: python3 tools/net/playercoach.py
       - name: The GM's script against itself
         run: python3 tools/gm/selfplay.py
+      - name: A side whose leader falls checks morale, once
+        run: python3 tools/gm/leaderpage.py
       - name: The field page's End the battle and Beat history panel
         run: python3 tools/field/beat.py
       - name: The field page's Which account? box
