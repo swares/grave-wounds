@@ -170,7 +170,8 @@ careers:
     weapon: {default: rifle_service}
     terms:
       - {to: 20, skill: watch, text: "Stood guard in a foxhole through a cold night."}
-      - {to: 40, skill: fieldcraft, text: "Marched and dug in, and marched again."}
+      - {to: 30, skill: fieldcraft, text: "Marched and dug in, and marched again."}
+      - {to: 40, skill: bayonet, text: "Drilled with the bayonet on the assault course."}   # ours, the share; every army of the war drilled its riflemen with the bayonet (militaryhistorynow.com, "The Last of the Great Bayonet Charges"; CSMonitor, 28 Sept 2010)
       - {to: 55, skill: dodge, text: "Lay flat through a mortar stonk."}
       - {to: 70, skill: stealth, text: "Went out on a night patrol."}
       - {to: 85, skill: grenade, text: "Cleared houses in a village fight.", wound: true}

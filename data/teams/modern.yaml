@@ -222,7 +222,8 @@ careers:
     weapon: {default: rifle_assault}
     terms:
       - {to: 20, skill: watch, text: "Stood sentry on a wall through a long night."}
-      - {to: 40, skill: fieldcraft, text: "Patrolled on foot through villages and fields."}
+      - {to: 30, skill: fieldcraft, text: "Patrolled on foot through villages and fields."}
+      - {to: 40, skill: bayonet, text: "Fixed bayonets for an assault on an enemy position."}   # ours, the share; the Scots Guards took Mount Tumbledown with the bayonet in 1982, the Argylls charged at Danny Boy in Iraq in 2004 (militaryhistorynow.com, "The Last of the Great Bayonet Charges"; CSMonitor, 28 Sept 2010)
       - {to: 55, skill: dodge, text: "Went to ground as a burst cracked overhead."}
       - {to: 70, skill: stealth, text: "Moved into an overwatch position before dawn."}
       - {to: 85, skill: grenade, text: "Cleared rooms in a street fight.", wound: true}
