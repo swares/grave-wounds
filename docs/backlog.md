@@ -19,7 +19,7 @@ not this repository.
   | Way to play | Support | What works | The main gap |
   | --- | --- | --- | --- |
   | Online: commander against commander (simulation) | Not yet | Two people on one screen, each side under its own commander; the commander against itself to check a battlefield | The field and travel maps are not online, so two commanders cannot play from two computers |
-  | Online: you against the commander (solo) | Strong | The enemy commander on the field map (sees only what its units see, reserves, guns, objectives), Beat history and its scorecard, the GM's script on the roller, the rules' chapter on playing alone, the commander running the travel map's day | Runs in the browser with no connection needed; the commander does not yet notice some campaign events |
+  | Online: you against the commander (solo) | Strong | The enemy commander on the field map (sees only what its units see, reserves, guns, objectives), Beat history and its scorecard, the GM's script on the roller, the rules' chapter on playing alone, the commander running the travel map's day; a war played alone season by season (posture, journal, promotion, the season's fights; played through end to end in solo play tests 16 and 17) | Runs in the browser with no connection needed; the commander does not yet notice some campaign events |
   | Online: a GM and his party (VTT) | First cut | The GM hosts from the roller or the campaign console; players join by room code and see their men, the public news and their fights, propose orders, and see only what their side has seen | The field and travel maps are not shared online; no TURN relay for strict networks; no voice or chat (groups bring their own); tested only with scripted players |
   | At the table: an RPG with a GM | Good on paper, untested | The rule book and five period books, the team builder's sheets, the roller as the GM's aid, the council card, the tables | The 309-page tables PDF is a reference, not a table booklet; making a man by hand is not checked for pencil and dice; never played at a table |
   | At the table: print-and-play modules | One module | Ferrybridge (the playtest packet 0.2.4): characters, map, counters, roster and reference, laid out for printing on both sides | The only module, and not yet played; the plan for more is under *Print-and-play modules* |
@@ -87,7 +87,8 @@ not this repository.
 - **Between the battles: seasons of service, first cut** (`data/service/`; docs/team.md, *A season
   with the battalion*; project doc "between-battles-design"). The Peninsula is in: a line
   battalion's 24 seasons, its actions' shares lost, sickness on the disease track, hits sent to the
-  roller. Still to do:
+  roller. Done since for solo play (posture, journal, vacancies, known to his officers, deadly
+  season wounds): see *Playing alone*. Still to do:
   - **The edge of a battle (layer 3).** Badajoz has one: four scenes before the storm, the choices
     and checks setting where each man stands at it. Next could be Barnet in the mist, Agincourt's
     eve or Culp's Hill; the scenes have no rewards yet (the forlorn hope's promised promotion), and
@@ -220,8 +221,10 @@ not this repository.
   lethality): fate a season, Blood and the stop check, on every page. Fate now saves a man from
   drowning (the roller's **Spend fate: pulled out**; a ford on the travel map spends it at once) and
   lowers a fall's wound as a blow's (1 November 2026), and `python3 -m gravewounds team --lethality`
-  sets the CLI's sheets. Still left out: the roller offers fate only on the wound just applied (not
-  on old wounds or a later pain check). By design, not a gap: the field map's heroes, like every
+  sets the CLI's sheets. A named man's deadly season or skirmish wound spends fate to live, at once
+  (#606, #607). Still left out: the roller offers fate only on the wound just applied (not
+  on old wounds or a later pain check); fate comes back every season, so in a solo war a named man
+  almost never dies under Standard (see *Playing alone*). By design, not a gap: the field map's heroes, like every
   page that runs on its own, spend fate only to save a life, so never on a stop check (design.md);
   self-play has no player characters, so it needs no setting.
 - **The rule book, still left out.** `dist/rules.html` covers the whole game in
@@ -236,9 +239,37 @@ not this repository.
 - **Playing alone, first cut.** The Rules' *Playing alone* chapter (`templates/rules/15-alone.md`)
   says how one person runs a session with the pages, and adds **Ask the dice**, a yes-or-no table
   on the one roll with a d10 of complications for the GM's judgement calls. Still left out (the rules
-  audit of 26 October 2026): no solo campaign has been played through end to end, and the printed
-  tables do not carry Ask the dice. (Done since: the virtual GM's first aid and surrender, and Beat
-  history on the field map with its scorecard.)
+  audit of 26 October 2026): the printed tables do not carry Ask the dice. (Done since: the virtual
+  GM's first aid and surrender, and Beat history on the field map with its scorecard.)
+  - **A solo war, season by season** (23 November 2026; PRs #599-#607; docs/team.md, *A season with
+    the battalion*; project docs "solo-campaign-posture", "solo-playtest-16" and "solo-playtest-17").
+    Done: the season's **posture** (keep their heads down, do their duty, volunteer:
+    `data/posture.yaml`, ours) scales the small fight chance, the hit chance at actions, the skill
+    ticks and the promotion roll; the **journal** keeps each season's log and saves as a text file,
+    the war's end included; **vacancies from the battalion's losses** (`season_vacancies`, ours) so
+    a solo team can rise; **known to his officers** (`known`, ours: +20 and half the years in rank,
+    at least a year); the team's comrades in a season's fight are armed; a named man's deadly
+    wound (a season's hit, a season's fight, a travel skirmish) faces the hours after as a field
+    hero's does, and a named man down on a lost field in a travel skirmish is taken. Played through
+    end to end: a Peninsular war (play test 16) and the Western Front (17), no page errors.
+  - **Still left:**
+    - *Fate a season.* Under Standard, fate comes back at each End of season (design.md, October
+      2026), so a named man dies only of two deadly wounds in one season: 1 death in 48 test wars,
+      against about 1.1 a war (Peninsula) and 2.0 (Western Front) under Gritty. Fate a term instead
+      would change that decision: the user's call.
+    - *A posture per man*, rather than one for the team.
+    - *The medieval wars under each posture* (Henry V, the Roses): few vacancies (3-6% a rank a
+      season) and long, hard ranks; not yet tested.
+    - *A promotion roll against 0* (low Command, keeping his head down, no longer known) is still
+      rolled and shown, though he cannot win it.
+    - *Lying low and capture:* the posture scales the hit chance, not the chance of being taken
+      (left so by choice: capture came with being overrun).
+    - *The Western Front's deadly share* is 9% of hits (most are the line's wastage, which rolls
+      lighter), against the Peninsula's 15% (the sources' 1 killed outright in 6 hit).
+    - *Volunteering on the Western Front* still promotes fast (6.1 promotions a war for a section,
+      a private to captain in 1 of 8 wars), from the war's losses and its one-year ranks (ours).
+    - *The posture rule in the play tests* (lie low after any hit) kept the Western Front team down
+      12 seasons in 18: a player's choice, but a solo player may want a suggested rule.
 - **The enemy commander, beyond the second cut.** A scripted commander moves one side on
   the field map. It attacks or holds by its units' quality, knows only what its units see
   (remembering last sightings for a few exchanges), picks targets by threat and weakness,
@@ -749,7 +780,9 @@ not this repository.
   drifting away at each End of season (deserting or going home). Still left out: the field
   map and the roller do not apply it.
 - **Rank, pay and loot, first cut.** Ranks, promotion by vacancy, pay by rank, loot, prize money,
-  ransom and the Plains nations' honours are on the team builder. Still left out:
+  ransom and the Plains nations' honours are on the team builder. A season with the battalion opens
+  its own vacancies from its losses and marks a man known to his officers (#600, #602, #603; see
+  *Playing alone*). Still left out:
   - the field map now counts a hero's hits and downs (a deed at two) and a Plains hero's
     close-combat downs as coups, but not who struck first, nor a hero of the roller's own;
   - the deed suggestion (two downs, or the enemy's leader) is a design choice, and a down
