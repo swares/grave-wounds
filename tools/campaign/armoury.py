@@ -37,6 +37,8 @@ with sync_playwright() as p:
     check(pg.is_visible("section[data-era=horse_musket] tr.note"), "the notes show")
     pg.uncheck("#notes")
     check(not pg.is_visible("section[data-era=horse_musket] tr.note"), "Show notes off hides them")
+    pg.goto(PAGE + "#wwi")
+    check("Bayonet" in pg.inner_text("section[data-era=wwi]"), "the First World War lists the bayonet its riflemen train in")
     pg.select_option("#era", "")
     check(len(pg.evaluate(SHOWN)) == 11, "Every era shows all eleven")
     pg.select_option("#era", "medieval")
