@@ -2306,6 +2306,9 @@ def main() -> int:
     chtml = chtml.replace("/*__TRAVEL_DATA__*/null", json.dumps(tb, separators=(",", ":"))).replace("/*__NET_JS__*/", net_js)   # players online
     (DIST / "campaign.html").write_text(chtml.replace("/*__CAMPAIGN_DATA__*/null", json.dumps(campaign_bundle(d), separators=(",", ":"))), encoding="utf-8")
     (DIST / "council-card.html").write_text(council_card(d), encoding="utf-8")
+    from gravewounds.armoury import render as armoury
+    from gravewounds.books import load_books
+    (DIST / "armoury.html").write_text(armoury(d, load_books(d, ROOT), COPYRIGHT), encoding="utf-8")
     from gravewounds.playtest import render as playtest_packet
     packet, packet_path = playtest_packet(d, ROOT), DIST / "playtest-packet.html"
     changed = not packet_path.exists() or packet_path.read_text(encoding="utf-8") != packet
