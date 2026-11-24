@@ -78,6 +78,8 @@ button:disabled{opacity:.45;cursor:default}
 .uh.front{stroke:var(--ink);stroke-width:1.1}
 .unit.shaken .uh{opacity:.6}.unit.broken .uh{opacity:.32}
 .unit.sel .uh{stroke:var(--ink);stroke-width:1.8}
+.ghost .gh{fill:none;stroke:var(--ink);stroke-width:1;stroke-dasharray:2 1.5;opacity:.7;pointer-events:none}
+.ghost text{font-size:7px;fill:var(--ink);opacity:.7;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
 .arrow{fill:var(--ink);pointer-events:none}
 .pit{fill:none;stroke:var(--ink);stroke-width:2.2px;stroke-dasharray:2.5 1.5;pointer-events:none}
 .ulabel{font:700 8px var(--mono);fill:var(--ink);text-anchor:middle;paint-order:stroke;stroke:var(--panel);stroke-width:2.6px;pointer-events:none}
@@ -207,6 +209,7 @@ legend{padding:0}
       <output class="msg" id="msg"></output>
       <div class="mapbox" id="map" title="Click a hex to place or move the selected unit"></div>
       <div class="row marks-row">
+        <div style="flex:0 1 180px"><label for="sel-screen">View</label><select id="sel-screen" title="Everything, as the GM sees it; or the field as one side sees it: its own units, the enemy it sees now, and where it last saw the rest (as the commander remembers them). The log, the unit list, heroes and batteries show only what that side may know."></select></div>
         <div style="flex:0 1 180px"><label for="sel-labels">Unit labels</label><select id="sel-labels"><option value="names">Names</option><option value="ids">IDs (B3)</option><option value="both">IDs and names</option></select></div>
         <div style="flex:0 0 auto;align-self:end"><label class="check"><input type="checkbox" id="chk-strength"> strength</label></div>
         <div style="flex:0 0 auto;align-self:end"><label class="check" title="Zoomed in, after each exchange is fought the map scrolls to the units in contact nearest where you were looking"><input type="checkbox" id="chk-follow" checked> follow the fighting</label></div>
@@ -828,7 +831,7 @@ function renderSupport(){
   if (!ok) return;
   $("#sel-sup-side").innerHTML = S.sides.map(s => `<option>${esc(s)}</option>`).join("");
   supportChoices();
-  $("#support").innerHTML = supports().map(supportItem).join("") || `<li class="muted">None. Add a battery below.</li>`;
+  $("#support").innerHTML = supports().filter(b => !screenSide() || b.side === screenSide()).map(supportItem).join("") || `<li class="muted">None. Add a battery below.</li>`;
 }
 function fillOnce(sel, html){                     // a select's options, the first time only
   if (!$(sel).options.length) $(sel).innerHTML = html;
@@ -1048,7 +1051,8 @@ function objectiveSvg(h, radius, second = false){ // O (or 2, the second) in two
   return wide + `<circle class="objective" cx="${f1(x)}" cy="${f1(y)}" r="${f1(HW * 0.95)}"><title>${title}</title></circle><circle class="objective" cx="${f1(x)}" cy="${f1(y)}" r="${f1(HW * 0.55)}"/><text class="objective-t" x="${f1(x)}" y="${f1(y)}">${second ? "2" : "O"}</text>` }
 function postSvg(p){ const [x, y] = xy(p.at); return `<rect class="post${p.overrun ? " gone" : ""}" x="${f1(x - 5)}" y="${f1(y - 3.5)}" width="10" height="7" rx="1.5"><title>${esc(poss(p.side))} aid post${p.overrun ? " (overrun)" : ""}${p.moving ? " (moving: no first aid this exchange)" : ""}</title></rect><text class="post-t" x="${f1(x)}" y="${f1(y)}">AP</text>` }
 function supportSvg(){                            // smoke, landing zones, aid posts, heroes going back or lying out, flares, fixed lines, flashes, the hexes fire is called on, batteries, and where the last exchange's shells burst
-  const F = S.field, heroes = allHeroes();
+  const F = S.field, side = screenSide(), own = x => !side || x === side;   // a side's view: the enemy's orders, guns and heroes are its own
+  const heroes = allHeroes().filter(h => own(h.unit.side));
   return [
     Object.keys(F.smoke || {}).map(k => `<polygon class="smoke" points="${pts(xy(k.split(",").map(Number)))}"/>`),
     Object.keys(F.gas || {}).map(k => `<polygon class="gas" points="${pts(xy(k.split(",").map(Number)))}"><title>tear gas</title></polygon>`),
@@ -1061,19 +1065,19 @@ function supportSvg(){                            // smoke, landing zones, aid p
     heroes.filter(h => h.going).map(h => glyph("party", "\u21a9")(h.going.pos)),
     heroes.filter(h => h.left && h.at && h.state !== "dead" && h.state !== "prisoner").map(h => glyph("lying", "\u25bc")(h.at)),
     (F.lit || []).map(litSvg),
-    S.units.filter(u => u.fixed && !out_(u)).map(fixedSvg),
+    S.units.filter(u => u.fixed && !out_(u) && own(u.side)).map(fixedSvg),
     (F.flashes || []).map(glyph("flash", "\u2739")),
     (F.beams || []).map(glyph("beam", "\u2726")),
-    supports().filter(b => b.mission?.hex).map(b => glyph("aim", "\u2316")(b.mission.hex)),
-    S.units.filter(u => u.march && !out_(u) && !aiOf(sideNo(u))).map(u => glyph("march", "\u2691")(u.march)),
-    supports().filter(b => b.place).map(batterySvg),
+    supports().filter(b => b.mission?.hex && own(b.side)).map(b => glyph("aim", "\u2316")(b.mission.hex)),
+    S.units.filter(u => u.march && !out_(u) && !aiOf(sideNo(u)) && own(u.side)).map(u => glyph("march", "\u2691")(u.march)),
+    supports().filter(b => b.place && own(b.side)).map(batterySvg),
     (S.bursts || []).map(glyph("burst", "\u2737")),
   ].flat().join("");
 }
 function clickHex(h){
   const u = selUnit(); if (!u) return;
   const occ = occupancy(S.units), there = occ[hk(h)];
-  if (there !== undefined && S.units[there].id !== u.id){ S.sel = S.units[there].id; S.msg = ""; return render() }
+  if (there !== undefined && S.units[there].id !== u.id && shownTo(S.units[there])){ S.sel = S.units[there].id; S.msg = ""; return render() }
   if (S.phase === "setup") tryPlace(u, h, u.facing);
   else if (u.side === moving()) tryMove(u, h, u.facing);
   else S.msg = `Not that unit: ${moving()} are moving now.`;
@@ -1879,7 +1883,7 @@ function narrate(e){                              // one passage, in turn after 
   });
 }
 function renderStory(){
-  const list = S.story || [];
+  const list = forSide(S.story || []);
   $("#story-empty").hidden = list.length > 0;
   $("#story").innerHTML = list.map(e => {
     const head = `<b>${e.exchange ? "Exchange " + e.exchange : "The opening"}.</b> `;
@@ -2589,7 +2593,7 @@ function limbText(h){                             // " · lamed, slows unit" / "
 }
 function renderHeroes(){
   const setup = S.phase === "setup", place = { front: "front rank", ranged: "shooting", behind: "behind" };
-  $("#heroes").innerHTML = allHeroes().map(h => {
+  $("#heroes").innerHTML = allHeroes().filter(h => !screenSide() || h.unit.side === screenSide()).map(h => {
     const wounds = h.wounds.length ? " · " + nWounds(h.wounds.length) : "", [pa, pd] = heroPenalties(h), [blood, pool] = heroBlood(h);
     const hold = held(h) ? ` (${FD.combat.states[held(h)].name.toLowerCase()})` : "", body = ` · Blood ${blood}/${pool}${h.dying ? ", dying" : ""}`;
     return `<li><span><b>${esc(h.name)}</b> <span class="muted">${esc(unitName(h.unit))} · ${place[h.role]}${h.rank ? " · " + esc(h.rank.toLowerCase()) : ""}${h.leader ? " · leader" : ""}</span></span><span class="meta">${Math.max(0, h.attack - pa)}/${Math.max(0, h.defence - pd)}% · ${h.state}${hold}${sickText(h)}${limbText(h)}${wounds}${body}</span>${heroButton(h, setup)}</li>`;
@@ -2849,7 +2853,7 @@ function refsSvg(){                               // every tenth column and row 
 function onCallSvg(){                             // each side's batteries on call with no place on the map: a chip on the edge behind its army
   if (!shows().oncall) return "";
   const bySide = [[], []];
-  supports().filter(b => !b.place).forEach(b => bySide[S.sides.indexOf(b.side) === 1 ? 1 : 0].push(b));
+  supports().filter(b => !b.place && (!screenSide() || b.side === screenSide())).forEach(b => bySide[S.sides.indexOf(b.side) === 1 ? 1 : 0].push(b));
   let g = "";
   bySide.forEach((list, k) => {
     if (!list.length) return;
@@ -2893,6 +2897,50 @@ function worksSvg(){                              // edge works along hex sides,
   }
   return g;
 }
+/* ---------- a side's view (the View select; online, a seat's screen) ----------
+   S.screen: null (everything, the GM's) or a side's name. That side sees its own units, the enemy units
+   it sees now (seenBy, as the commander), and marks where it last saw the others, kept as the
+   commander keeps them (sightings: forgotten after commander.remember exchanges; S.views[side]). The
+   unit list, heroes, batteries, the log and the story show only what it may know: a line that names
+   an enemy unit or hero it does not see is left out (the log has no side tags yet). */
+const screenSide = () => (S.screen && S.sides.includes(S.screen) ? S.screen : null);
+function updateViews(){                            // each side's memory of the enemy, kept up whether or not it is shown
+  if (S.phase === "setup") return;
+  S.views ||= {};
+  for (const side of S.sides) sightings(S.units, side, S.field, S.exchange, (S.views[side] ||= {}));
+}
+function shownTo(u, side = screenSide()){          // may that side see this unit now
+  if (!side || u.side === side) return true;
+  return !!u.pos && u.men > 0 && seenBy(S.units, side, S.field, u);
+}
+function hiddenNames(side = screenSide()){         // names a line must not carry for that side: the enemy units and heroes it does not see
+  if (!side) return [];
+  const out = [], known = new Set(S.units.filter(u => shownTo(u, side)).map(u => u.name));   // a bare name the side sees on a unit of its own (both sides' Billmen) is not a secret
+  for (const u of S.units){
+    if (u.side === side) continue;
+    if (!shownTo(u, side)) out.push(unitName(u), ...(known.has(u.name) ? [] : [u.name]));
+    for (const h of u.heroes || []) out.push(h.name);
+  }
+  return [...new Set(out.filter(Boolean))].sort((a, b) => b.length - a.length);
+}
+function forSide(list, side = screenSide()){       // log or story entries that side may read
+  const names = hiddenNames(side);
+  return names.length ? list.filter(l => !names.some(n => String(l.text || "").includes(n) || String(l.prose || "").includes(n))) : list;
+}
+function ghostsSvg(){                              // where the side last saw enemy units it does not see now
+  const side = screenSide(); if (!side) return "";
+  return Object.entries((S.views || {})[side] || {}).map(([j, m]) => {
+    const u = S.units[+j];
+    if (!u || shownTo(u, side) || !m.pos) return "";
+    const [x, y] = xy(m.pos);
+    return `<g class="ghost"><polygon class="gh" points="${pts(xy(m.pos))}"/><text x="${F1(x)}" y="${F1(y)}">?</text><title>${esc(unitName(u))}: last seen here in exchange ${m.ex}</title></g>`;
+  }).join("");
+}
+function renderScreenSel(){
+  const el = $("#sel-screen"); if (!el) return;
+  el.innerHTML = [`<option value="">Everything (the GM)</option>`, ...S.sides.map(s => `<option value="${esc(s)}">${esc(s)}${s.endsWith("s") ? "'" : "'s"} view</option>`)].join("");
+  el.value = screenSide() || "";
+}
 function renderMap(){
   let hx = "";
   const G = S.field.ground || {};
@@ -2901,7 +2949,9 @@ function renderMap(){
     hx += `<polygon class="hx${cls}" data-h="${c},${r}" points="${pts(xy([c, r]))}"/>`;
   }
   ensureTags(S);
-  const units = S.units.map(unitSvg).join(""), W = HW * (SIZE[0] + 0.5), H = 1.5 * R * (SIZE[1] - 1) + 2 * R;
+  updateViews(); renderScreenSel();
+  if (selUnit() && !shownTo(selUnit())) S.sel = null;   // a side's view: not an enemy it does not see (its reach is not drawn either)
+  const units = S.units.filter(u => shownTo(u)).map(unitSvg).join("") + ghostsSvg(), W = HW * (SIZE[0] + 0.5), H = 1.5 * R * (SIZE[1] - 1) + 2 * R;
   $("#map").innerHTML = `<svg viewBox="0 0 ${W.toFixed(1)} ${H.toFixed(1)}" style="min-width:${SIZE[0] * 13}px">${hatchDefs()}${hx}${worksSvg()}${edgesSvg()}${reachSvg()}${units}${supportSvg()}${refsSvg()}${onCallSvg()}</svg>`;
   $("#map-scale").textContent = `${SIZE[0]} × ${SIZE[1]} hexes · ${fmtM(FD.units.hex_m)} a hex · an exchange is about a minute`;
   $("#hex-size").textContent = fmtM(FD.units.hex_m);
@@ -2969,7 +3019,7 @@ function renderUnits(){
   $("#lifts").hidden = !lifts.length;
   $("#lifts").textContent = lifts.length ? "Helicopter lifts: " + lifts.map(liftText).join("; ") + "." : "";
   renderHelos(lzs);
-  $("#units").innerHTML = S.units.map(u => `<li data-id="${u.id}" aria-current="${u.id === S.sel}" tabindex="0"><svg class="mkicon" viewBox="-14 -12 28 24" aria-hidden="true">${markSvg(unitType(u), sideNo(u), 0, 0)}</svg><span><b class="utag">${unitTag(u)}</b> <b>${esc(u.name)}</b> <span class="muted">${esc(banner(u))}</span></span><span class="meta">${unitMeta(u)}</span></li>`).join("") || `<li class="muted">No units. Add one below.</li>`;
+  $("#units").innerHTML = S.units.filter(u => shownTo(u)).map(u => `<li data-id="${u.id}" aria-current="${u.id === S.sel}" tabindex="0"><svg class="mkicon" viewBox="-14 -12 28 24" aria-hidden="true">${markSvg(unitType(u), sideNo(u), 0, 0)}</svg><span><b class="utag">${unitTag(u)}</b> <b>${esc(u.name)}</b> <span class="muted">${esc(banner(u))}</span></span><span class="meta">${unitMeta(u)}</span></li>`).join("") || `<li class="muted">No units. Add one below.</li>`;
 }
 function liftText(lf){                            // one lift waiting, for the list
   const at = `${lf.lz[0] + 1},${lf.lz[1] + 1}`;
@@ -3032,6 +3082,7 @@ function groundInfo(u){                          // the selected unit's Ground l
     + (u.emplaced ? `<dt>Ground</dt><dd>Emplaced: dug in before the battle, shots at it −${FD.units.to_ground.cover}% while it stands; it cannot move, but may turn</dd>` : "");
 }
 function renderSel(){
+  if (selUnit() && !shownTo(selUnit())) S.sel = null;   // a side's view: not an enemy it does not see
   const u = selUnit(), setup = S.phase === "setup";
   $("#sel-name").textContent = u ? "· " + u.name : "";
   ["#btn-left", "#btn-right"].forEach(b => $(b).disabled = !u || (!setup && u.side !== moving()));
@@ -3597,7 +3648,7 @@ function barWire(){
 function render(){
   renderMap(); renderUnits(); renderSel(); renderPhase(); renderBar(); renderAfter(); renderBeat(); renderAccounts(); renderForces(); renderHeroes(); renderSupport(); renderWeather(); renderAi();
   $("#msg").textContent = S.msg || "";
-  $("#log").innerHTML = S.log.map(l => `<li class="${l.cls}">${esc(l.text)}</li>`).join("");
+  $("#log").innerHTML = forSide(S.log).map(l => `<li class="${l.cls}">${esc(l.text)}</li>`).join("");
   $("#in-side0").value = S.sides[0]; $("#in-side1").value = S.sides[1];
   renderMedevac();
   renderStory();
@@ -3905,6 +3956,7 @@ function init(){
     renderMap();
   });
   $("#sel-tool").onchange = e => { S.tool = e.target.value; S.msg = ""; render() };
+  $("#sel-screen").onchange = e => { S.screen = e.target.value || null; S.msg = ""; render() };
   ["#sel-wx", "#sel-wind", "#sel-wdir", "#sel-light", "#sel-cold", "#in-mud", "#in-snow"].forEach(id => { $(id).onchange = setWeather });
   $("#sel-assault").onchange = e => { const u = selUnit(); if (u){ u.assault = e.target.value || null; S.msg = u.assault ? `${u.name} will storm any enemy-held bunker across its front each exchange.` : `${u.name} stops storming.`; render() } };
   $("#btn-breach").onclick = () => { const u = selUnit(); if (u){ u.breach = !u.breach; S.msg = u.breach ? `${u.name} will hack at the works in front of it each exchange.` : `${u.name} stops breaching.`; render() } };

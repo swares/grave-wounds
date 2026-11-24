@@ -466,6 +466,20 @@ can set its own with `markers: {labels, strength, size}`: both Redan battlefield
 because eleven or more units stand in a narrow space. The legend under the map shows the
 types on the field and each side's frame.
 
+**A side's view.** *View* under the map draws the field as the GM sees it (everything, the default)
+or as one side sees it, for a game where each side takes its turn at one screen (and, online, for
+each side's player). That side's view draws its own units and the enemy units it sees now (the
+commander's rule: an enemy is seen when its middle hex or either end of its front row is in sight
+of one of the side's units, by the light and the ground). Where it saw an enemy that it no longer
+sees, a dashed mark with a ? stays, titled with the exchange it was last seen in. It is kept as the
+commander keeps its memory: forgotten after `commander.remember` exchanges, or when the unit breaks
+or is gone (`S.views`, kept with the battle whether or not it is shown). The unit list, the heroes,
+the batteries (on the map and on call), march flags, fire missions and fixed lines show only that
+side's own. An enemy it does not see cannot be selected. The log and the story leave out any line
+that names an enemy unit it does not see or an enemy hero. The log has no side tags yet, so this
+filter is by name: a line that tells of an unseen enemy without naming it is shown. Tested by
+`tools/field/sideview.py`.
+
 **Arcs.** The two hexsides either side of the facing corner are the front; the next one on
 each side is the flank; the two behind are the rear.
 
