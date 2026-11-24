@@ -1346,7 +1346,7 @@ function next(){
   if (S.phase === "over") return;
   if (S.phase === "setup"){
     S.aiMemory = [null, null]; S.held = { side: null, n: 0 }; S.story = []; S.commits = []; LAST_EX = null;
-    forceAmmo(); forceState();
+    forceAmmo(); forceState(); decideOwn();
     const r = beginBattle(T(), dice);
     newMove();
     const staged = stagesNote(r.stages);
@@ -1590,9 +1590,47 @@ function aiAgain(){                               // the commander orders its si
   aiMove();
   render();
 }
-function setAi(k, v){                             // side k: "" (the GM moves it), "attack" or "hold"
+// The commander's own choice (S.aiOwn[k]): it picks attack or hold for side k when the battle begins, in
+// order: a battlefield laid out as fought, the stance as fought; a battle from the travel map, the
+// attacker attacks and the defender holds, but a worn attacker (exhausted or worse, hungry, or beaten
+// days before) or one outnumbered `outnumbered` times holds, and a fresh defender outnumbering the
+// attackers so attacks; otherwise the side with fewer men holds and the other attacks (evenly matched,
+// both attack, as self-play's battles with no objective do). Decided once.
+// outnumbered: terrain.yaml commander's (the travel map's figure), in FD.own (not in the stamps).
+function sideMen(k){ return S.units.filter(u => u.side === S.sides[k]).reduce((t, u) => t + (u.men || 0), 0) }
+function sideIsWorn(k){
+  return (S.forces || []).filter(f => forceSide(f) === S.sides[k]).map(forceWorn).some(w => w && (w.fatigue >= 3 || w.hungry || w.beaten));
+}
+function ownStance(k){                            // -> {stance, why}
+  const F = S.fieldId ? FD.fields[S.fieldId] : null, odds = FD.own?.outnumbered ?? 1.5;
+  if (F && (F.objective || F.stances)) return { stance: playStances(S.fieldId)[k], why: "as the battle was fought" };
+  const mine = sideMen(k), theirs = sideMen(1 - k), worn = sideIsWorn(k);
+  if (S.from){
+    if (k === 1){
+      if (worn) return { stance: "hold", why: "the attackers come to it worn" };
+      if (theirs >= odds * mine) return { stance: "hold", why: `the defenders outnumber it ${odds} times or more` };
+      return { stance: "attack", why: "it came to attack" };
+    }
+    if (!worn && mine >= odds * theirs) return { stance: "attack", why: `fresh, it outnumbers the attackers ${odds} times or more` };
+    return { stance: "hold", why: "it was attacked" };
+  }
+  const count = `${mine.toLocaleString("en-US")} men to ${theirs.toLocaleString("en-US")}`;
+  if (mine < theirs) return { stance: "hold", why: `the weaker, ${count}` };
+  return { stance: "attack", why: mine > theirs ? `the stronger, ${count}` : `evenly matched, ${count}` };
+}
+function decideOwn(){                             // the battle begins: each side left to the commander's own choice decides, and says why
+  for (const k of [0, 1]){
+    if (!(S.aiOwn || [])[k]) continue;
+    const o = ownStance(k);
+    S.ai[k] = o.stance;
+    S.log.unshift({ cls: "head", text: `The commander of ${S.sides[k]} ${o.stance === "attack" ? "attacks" : "holds"}: ${o.why}.` });
+  }
+}
+function setAi(k, v){                             // side k: "" (the GM moves it), "attack", "hold" or "own" (its own choice)
   if (!Array.isArray(S.ai)) S.ai = [null, null];
-  S.ai[k] = v || null;
+  if (!Array.isArray(S.aiOwn)) S.aiOwn = [false, false];
+  S.aiOwn[k] = v === "own";
+  S.ai[k] = v === "own" ? ownStance(k).stance : v || null;
   if (!bothAi()) stopRun();
   const who = S.sides[k];
   S.msg = S.ai[k] ? `The commander takes ${who}, ${stanceWord(k)}: it orders them at the start of each of their moves.` : `You move ${who}.`;
@@ -1610,11 +1648,12 @@ function setPlan(k, on){                          // set-up: side k follows the 
 function renderAi(){
   const fought = S.fieldId ? playStances(S.fieldId) : null, asFought = (k, st) => (fought && (FD.fields[S.fieldId]?.objective || FD.fields[S.fieldId]?.stances) && fought[k] === st ? " (as fought)" : "");
   [0, 1].forEach(k => {
-    const el = $("#sel-ai" + k), opts = [["", "You move them"], ["attack", "Commander, attacking" + asFought(k, "attack")], ["hold", "Commander, holding" + asFought(k, "hold")]];
+    const own = !!(S.aiOwn || [])[k], ownNow = own && aiOf(k) ? ` (${aiOf(k) === "attack" ? "attacking" : "holding"})` : "";
+    const el = $("#sel-ai" + k), opts = [["", "You move them"], ["attack", "Commander, attacking" + asFought(k, "attack")], ["hold", "Commander, holding" + asFought(k, "hold")], ["own", "Commander, its own choice" + ownNow]];
     const worn = sideWorn(k);
     $("#ai-label" + k).textContent = S.sides[k] + (worn ? ` (${worn})` : "");
     el.innerHTML = opts.map(([v, t]) => `<option value="${v}">${esc(t)}</option>`).join("");
-    el.value = aiOf(k) || "";
+    el.value = own ? "own" : aiOf(k) || "";
     el.disabled = S.phase === "over";
     const has = !!(S.drawnUp && FD.fields[S.drawnUp]?.plan?.sides?.[k]?.length);
     $("#lbl-plan" + k).hidden = !has;
