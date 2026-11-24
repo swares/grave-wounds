@@ -150,7 +150,13 @@ quarter decides.
 
 ## The enemy commander {#commander}
 
-The GM can hand one side to a scripted **enemy commander**, attacking or holding. At the start of
+The GM can hand one side to a scripted **enemy commander**, attacking or holding, or leave the
+stance to **its own choice**: when the battle begins it attacks or holds, and says why. A battlefield
+laid out as fought, it fights as fought. In a battle from the travel map, the attackers attack and
+the defenders hold, but attackers that come worn (exhausted or worse, hungry, or beaten days before) or
+outnumbered {{cmd_out}} times hold, and fresh defenders outnumbering the attackers so attack. In any
+other battle, the side with fewer men holds and the other attacks; evenly matched, both attack. It
+keeps the stance it chose for the battle. At the start of
 that side's move it orders each unit, and **Undo its orders** puts the move back for the GM to make
 by hand. It knows only the enemies its units can see, or saw a few exchanges ago. In short, it:
 

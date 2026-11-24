@@ -2,7 +2,7 @@
 # real pages round the whole loop (tools/campaign/loop.py, seeded dice), two roller pages playing a
 # fight online over WebRTC (tools/net/twopages.py), the campaign console with a player online
 # (tools/net/console.py) and by room codes (tools/net/rooms.py), and the GM's script fighting itself on the roller
-# (tools/gm/selfplay.py), the field page's End the battle and Beat history panel (tools/field/beat.py) its plans (tools/field/plans.py), its Run on (tools/field/runon.py), its side view (tools/field/sideview.py), a force's state from the march (tools/field/worn.py) and the field map online (tools/net/fieldtwo.py). A few minutes; runs on pull requests and on main when the pages change.
+# (tools/gm/selfplay.py), the field page's End the battle and Beat history panel (tools/field/beat.py) its plans (tools/field/plans.py), its Run on (tools/field/runon.py), its side view (tools/field/sideview.py), a force's state from the march (tools/field/worn.py), the commander's own choice of stance (tools/field/ownstance.py) and the field map online (tools/net/fieldtwo.py). A few minutes; runs on pull requests and on main when the pages change.
 # The pages are tested as built and committed in dist/.
 name: browser
 
@@ -54,6 +54,8 @@ jobs:
         run: python3 tools/field/sideview.py
       - name: A force's state from the march, carried into a field battle
         run: python3 tools/field/worn.py
+      - name: The commander's own choice of stance
+        run: python3 tools/field/ownstance.py
       - name: The field map online (a player's page for a side, by hand and by room code)
         run: python3 tools/net/fieldtwo.py
       - name: A team through a fight on the roller (its force, its followers, a prisoner)

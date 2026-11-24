@@ -1099,7 +1099,7 @@ def field_stamps(fb: dict, engine: str) -> dict:
     self-play lifts them, not the page around them; the shared data and that battlefield's own). The commander's benchmark (tools/selfplay/commander.json) carries
     the stamp it was run under, so a change to the rules or the battlefield shows its figures are out of date."""
     import hashlib
-    shared = {k: v for k, v in fb.items() if k not in ("fields", "generated", "period_order", "mapStarts", "beat")}
+    shared = {k: v for k, v in fb.items() if k not in ("fields", "generated", "period_order", "mapStarts", "beat", "own")}
     base = hashlib.sha256((engine + json.dumps(shared, sort_keys=True)).encode()).hexdigest()
     play = lambda f: {k: v for k, v in f.items() if k != "accounts"}   # the accounts change nothing until one is chosen
     return {fid: hashlib.sha256((base + json.dumps(play(f), sort_keys=True)).encode()).hexdigest()[:12]
@@ -2313,6 +2313,7 @@ def main() -> int:
     fb = field_bundle(d)
     stamps = field_stamps(fb, page_rules(ftpl.replace("/*__WORKS_JS__*/", works_js).replace("/*__LETHAL_JS__*/", lethal_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__UNITS_JS__*/", units_js)))
     fb["beat"] = beat_bundle(stamps)
+    fb["own"] = {"outnumbered": (d.terrain.get("commander") or {}).get("outnumbered", 1.5)}   # the commander's own choice of stance (the page's, not in the stamps)
     fhtml = ftpl.replace("/*__MAPCSS__*/", (ROOT / "templates" / "mapzoom.css").read_text(encoding="utf-8")).replace("/*__MAPZOOM_JS__*/", (ROOT / "templates" / "mapzoom.js").read_text(encoding="utf-8")).replace("/*__SIGNUP_JS__*/\"\"", json.dumps(signup()).replace("</", "<\\/")).replace("/*__WORKS_JS__*/", works_js).replace("/*__LETHAL_JS__*/", lethal_js).replace(CAMP_MARK, camp_js).replace(MEASURE_MARK, measure_js).replace("/*__UNITS_JS__*/", units_js).replace("/*__FIELD_DATA__*/null", json.dumps(fb, separators=(",", ":")))
     room_server = json.loads((ROOT / "worker" / "rooms.json").read_text(encoding="utf-8")).get("server") or ""
     fhtml = fhtml.replace("/*__NET_JS__*/", net_js).replace('/*__ROOM_SERVER__*/""', json.dumps(room_server))   # Play online: the page's own code, not its rules (the stamps stay)
