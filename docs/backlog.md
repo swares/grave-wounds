@@ -263,8 +263,13 @@ not this repository.
       against about 1.1 a war (Peninsula) and 2.0 (Western Front) under Gritty. Fate a term instead
       would change that decision: the user's call.
     - *A posture per man*, rather than one for the team.
-    - *The medieval wars under each posture* (Henry V, the Roses): few vacancies (3-6% a rank a
-      season) and long, hard ranks; not yet tested.
+    - *The medieval wars under each posture* (tested 24 November 2026, Henry V and the Roses with
+      Edward of March, 8 seeds a posture; project doc "solo-campaign-posture"): the posture works as
+      elsewhere (volunteering about half again duty's hits and skill, and the most promotions: 0.5
+      a war in Henry V, 1.8 in the Roses). But no one rose above man-at-arms in 48 wars, and *a
+      knight never comes in solo play*: knighthood is by a deed only (`deed_only`), and a deed is
+      the GM's to tick at End of season; nothing in a solo season ticks one. A deed for solo play
+      (from a season's fight won, or volunteering at a named action?) is the user's call.
     - *A promotion roll against 0* (low Command, keeping his head down, no longer known) is still
       rolled and shown, though he cannot win it.
     - *Lying low and capture:* the posture scales the hit chance, not the chance of being taken
