@@ -2088,6 +2088,10 @@ def _checks_errors(d: Data) -> list[str]:
     H = C.get("haggle") or {}
     if H and not (isinstance(H.get("seller"), int) and -1 < H.get("win", 0) < 0 and -1 < H.get("critical", 0) <= H.get("win", 0)):
         errors.append(f"{where}: haggle needs a seller skill and win/critical as falls in price (critical at least win)")
+    A = C.get("ask") or {}
+    if A and not (all(isinstance(o.get("chance"), int) and 0 < o["chance"] < 100 and o.get("name") for o in A.get("odds", []))
+                  and A.get("odds") and isinstance(A.get("within"), int) and len(A.get("complications", [])) == 10):
+        errors.append(f"{where}: ask needs odds (a name and a chance 1-99 each), a whole `within` and ten complications (a d10)")
     ids = set()
     for u in C.get("uses", []):
         at = f"{where}: use {u.get('id')}"

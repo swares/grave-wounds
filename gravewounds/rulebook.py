@@ -190,6 +190,7 @@ def values(d: Data) -> dict:
         "st_base": d.stress.get("base", 115), "st_every": d.stress.get("check_every", 10), "st_toll": round(d.stress.get("toll_share", 0.4) * 100), "st_fail_from": d.stress.get("fail_from", 99),
         "st_rest": d.stress.get("rest_day", 3.5),
         "chk_crit": round(d.checks.get("critical_fraction", 0.1) * 100), "chk_fumble": d.checks.get("fumble_from", 96),
+        **_ask_values(d),
         "haggle_seller": (d.checks.get("haggle") or {}).get("seller", 50), "haggle_win": round(-(d.checks.get("haggle") or {}).get("win", -0.1) * 100),
         "haggle_crit": round(-(d.checks.get("haggle") or {}).get("critical", -0.25) * 100),
         **_talk_values(d),
@@ -210,6 +211,21 @@ def values(d: Data) -> dict:
     v["ex"] = example(d)
     v.update(BOOKEX.values(d))   # the period books' worked examples (bx, wx, mx)
     return v
+
+
+def ask_tables(d: Data) -> tuple[list[list], list[list]]:
+    """Ask the dice (checks.yaml `ask`): the chances and the d10 complications, as rows."""
+    A = (d.checks or {}).get("ask") or {}
+    return ([[o["name"], o["chance"]] for o in A.get("odds", [])],
+            [[i + 1, c] for i, c in enumerate(A.get("complications", []))])
+
+
+def _ask_values(d: Data) -> dict:
+    """The rule book's Ask the dice tables, in Markdown, from the one data."""
+    odds, comp = ask_tables(d)
+    return {"ask_within": ((d.checks or {}).get("ask") or {}).get("within", 5),
+            "ask_odds": "\n".join(["| How likely | Roll at or under |", "| --- | --- |"] + [f"| {n} | {c} |" for n, c in odds]),
+            "ask_complications": "\n".join(["| d10 | Complication |", "| --- | --- |"] + [f"| {i} | {c} |" for i, c in comp])}
 
 
 def _yd(m: float) -> str:

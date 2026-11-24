@@ -32,6 +32,30 @@ haggle:
   sell: {win: 0.10, critical: 0.25, fumble: -0.25}   # selling loot: he wins a tenth more (a quarter on a critical); a fumble, a fence cheats him of a quarter
   # the seller wins (or both fail): the list price
 
+# Ask the dice (playing alone, or a GM with no rule to hand): a yes-or-no question at a chance,
+# rolled as a check. A critical is more than asked for, a fumble worse than feared; a roll within
+# `within` of the chance, either side, brings a complication from the d10 table. The chances and
+# the complications are ours (a design choice, as in most solo play aids), not from the records.
+ask:
+  odds:
+    - {name: "Almost certain", chance: 90}
+    - {name: "Likely", chance: 70}
+    - {name: "Even", chance: 50}
+    - {name: "Unlikely", chance: 30}
+    - {name: "Hardly possible", chance: 10}
+  within: 5
+  complications:
+    - "Someone saw: an enemy, a villager or a rival now knows where you are"
+    - "It costs time: half a day, or an exchange on the field"
+    - "It costs something: food, ammunition, a horse, a day's pay"
+    - "A man is hurt doing it: a fall, a kick, a cut (a light wound on the roller)"
+    - "Someone wants something in return"
+    - "The weather turns: roll the day's weather again, worse"
+    - "It splits the team: one man is somewhere else for a day"
+    - "An old trouble comes back: a debt, a grudge, a wound that opens"
+    - "A stranger joins you, not entirely welcome"
+    - "The enemy is nearer than you thought"
+
 # Uses: what a skill does out of a fight, its usual difficulty, who resists it, and what follows.
 # skill is a skill id, or a characteristic (str, agi, end, wits, nerve, pres). against: a skill or
 # characteristic of the other side, at `value` when the GM has no sheet for him. A use is offered

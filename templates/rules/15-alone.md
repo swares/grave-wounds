@@ -98,31 +98,14 @@ The postures:
 When a question has no rule and no page to answer it, put it as a yes-or-no question, decide how
 likely a yes is, and roll d100 as for any test:
 
-| How likely | Roll at or under |
-| --- | --- |
-| Almost certain | 90 |
-| Likely | 70 |
-| Even | 50 |
-| Unlikely | 30 |
-| Hardly possible | 10 |
+{{ask_odds}}
 
 - **At or under:** yes. A **critical** ({{chk_crit}}% of the chance or under) is yes, and more
   than you asked for.
 - **Over:** no. A **fumble** ({{chk_fumble}} or more) is no, and worse than you feared.
-- **Within 5 either side of the number:** the answer comes with a **complication**. Roll d10:
+- **Within {{ask_within}} either side of the number:** the answer comes with a **complication**. Roll d10:
 
-| d10 | Complication |
-| --- | --- |
-| 1 | Someone saw: an enemy, a villager or a rival now knows where you are |
-| 2 | It costs time: half a day, or an exchange on the field |
-| 3 | It costs something: food, ammunition, a horse, a day's pay |
-| 4 | A man is hurt doing it: a fall, a kick, a cut (a light wound on the roller) |
-| 5 | Someone wants something in return |
-| 6 | The weather turns: roll the day's weather again, worse |
-| 7 | It splits the team: one man is somewhere else for a day |
-| 8 | An old trouble comes back: a debt, a grudge, a wound that opens |
-| 9 | A stranger joins you, not entirely welcome |
-| 10 | The enemy is nearer than you thought |
+{{ask_complications}}
 
 Ask only what matters, and let the answer stand. Two questions about the same thing are one
 question asked twice.
