@@ -207,8 +207,7 @@ not this repository.
   page online for two commanders. The field page's own Play online (first cut, docs/units.md *Play
   online*): a seat a side, room codes or codes by hand, his side's view, his clicks made by the host
   on his side's move; the campaign console relays it to its players (a player plays the side of
-  his hero). Still left: set-up by the players, the log's side tags (its filter is by name), a
-  player's page with no map zoom, and a console player whose named man is not a hero there (a
+  his hero). Still left: set-up by the players, the log's side tags (its filter is by name), and a console player whose named man is not a hero there (a
   follower unit of his, say) has no seat.
 - **Fog of war on the travel map, third cut** (`docs/travel.md`, `docs/fog-of-war-research.md`).
   A side sees enemy forces within a distance in km (3 on foot, 8 mounted, 2 with wagons; cut by the
