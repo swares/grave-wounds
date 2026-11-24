@@ -84,6 +84,18 @@ try:
         gm.wait_for_timeout(600)
         check(gm.evaluate("() => S.units[1].pos.join(',')") == pos, "on the other side's move his clicks move nothing")
 
+        # Run on, on the GM's page, never moves or ends the side he plays
+        gm.evaluate("() => { S.units[0].march = [16, 20]; render() }")   # a march order on his billmen (as he might give)
+        mine = gm.evaluate("() => S.units[0].pos.join(',')")
+        gm.click("#btn-runon")
+        gm.wait_for_function("() => !RUNON", timeout=60000)
+        check(gm.evaluate("() => S.phase") == 0 and "player to move" in gm.evaluate("() => S.msg") and gm.evaluate("() => S.units[0].pos.join(',')") == mine,
+              f"the GM's Run on plays the Lancastrians' move and stops at his, his billmen not marched ({gm.evaluate('() => S.msg')[:90]})")
+        gm.click("#btn-runon")
+        check(gm.evaluate("() => !RUNON") and gm.evaluate("() => S.msg").startswith("Not running on: it is Yorkists' move"), "pressed on his move, Run on will not start")
+        pl.wait_for_function("() => !document.querySelector('#g-next').disabled", timeout=10000)
+        check(True, "and it is his move on his page")
+
         # 2. by room code: the GM's page invites him again through a room; his page answers by itself
         gm.evaluate(f"() => {{ localStorage.setItem('gw-room-server', {ROOMS!r}) }}")
         gm.click('button[data-netf="drop"]')
