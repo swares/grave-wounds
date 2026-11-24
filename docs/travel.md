@@ -129,7 +129,13 @@ day costs no marching time. Once an enemy force has marched to within 0.6 mile (
   rises and rocks in hills, marsh in marsh, rubble in a village or town. Where the map
   reaches past a side of that hex, the neighbouring hex's ground (or a lake or river) shows
   along that edge. A fight on a road, ford or bridge has the road and river through the
-  middle, and the attackers come in from the way they marched. See
+  middle, and the attackers come in from the way they marched. When it is won, **Back to the
+  travel map** sends each force's losses home. A named man first faces the hours after, as a
+  season's wound does ([team.md](team.md), A season with the battalion): his worst untreated
+  wound kills him if fatal outright or within rounds. Fatal within minutes, he lives on 10% (or
+  the war's medevac); within hours, on 40% (or the medevac's). Fate is spent if he has it. Dead,
+  the team builder takes him off the team. Alive but down on a field his side does not hold, he
+  is taken prisoner (to the team builder's Prisoners), as a follower would be. See
   [works.md](works.md) and [combat.md](combat.md).
 - **the field map**, in units: the forces arrive with their fit men, and the GM splits each
   into units there (billmen, archers, horse). Men left out of every unit stay in reserve, and their side can bring them on during the
