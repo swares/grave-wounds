@@ -257,10 +257,9 @@ not this repository.
     hero's does, and a named man down on a lost field in a travel skirmish is taken. Played through
     end to end: a Peninsular war (play test 16) and the Western Front (17), no page errors.
   - **Still left:**
-    - *Fate a season.* Under Standard, fate comes back at each End of season (design.md, October
-      2026), so a named man dies only of two deadly wounds in one season: 1 death in 48 test wars,
-      against about 1.1 a war (Peninsula) and 2.0 (Western Front) under Gritty. Fate a term instead
-      would change that decision: the user's call.
+    - *Fate a term* (done 24 November 2026, the user's choice: `fate_back: term` in `data/experience.yaml`).
+      Back each season, a named man died only of two deadly wounds in one season: 1 death in 48
+      test wars, against about 1.1 a war (Peninsula) and 2.0 (Western Front) under Gritty.
     - *A posture per man*, rather than one for the team.
     - *The medieval wars under each posture* (tested 24 November 2026, Henry V and the Roses with
       Edward of March, 8 seeds a posture; project doc "solo-campaign-posture"): the posture works as

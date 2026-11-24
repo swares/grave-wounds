@@ -21,4 +21,8 @@ play_term_years: 4   # a term in play is this many years served (and of age) in 
                      # at the same rate a year everywhere: the 20th-century eras' terms of 1 year (age per_term) count
                      # only at making a character (ours, as the user chose, 20 November 2026)
 season_days: 91      # a guide for the GM: about three months
+fate_back: term      # when a player character's spent fate points (wounds.yaml lethality) come back: "term", at the
+                     # End of season that completes a term (play_term_years: about 16 seasons), or "season", at every
+                     # End of season. Term, the user's choice (24 November 2026): back each season, a named man in a
+                     # solo war died only of two deadly wounds in one season, 1 death in about 100 test wars.
 days_a_year: 365

@@ -456,8 +456,8 @@ combat:
 # pages share it, like US | Metric). It touches only player characters (the team builder's
 # sheeted men, the field map's heroes): followers, enemies and bystanders stay as fragile as
 # real people. The wound data never changes.
-#   fate         - fate points each player character has; spent ones come back at End of
-#                  season. One spent lowers a wound a severity step, or rerolls a stop check, a
+#   fate         - fate points each player character has; spent ones come back when he
+#                  completes a term of service (experience.yaml fate_back). One spent lowers a wound a severity step, or rerolls a stop check, a
 #                  recovery check, a wound-fever roll or a capture or captivity roll. The roller
 #                  asks; pages that run on their own (travel nights, field-map heroes, captivity)
 #                  spend one only to save a life.
