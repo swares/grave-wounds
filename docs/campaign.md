@@ -150,6 +150,15 @@ online** still works for a fight run without the console. A fight set up from th
 brings the named men with its forces in as themselves (the fighters they are on the roller), so his
 fight comes to his page as soon as it is set up.
 
+A battle on the **field map** in the console's frame comes the same way. A player one of whose named
+men is a hero of a unit there (matched by the team builder's id) plays that unit's side, which is
+then no longer the commander's. The field page draws his side's view for him, with his own pick of a
+unit and his half-made orders, and the console passes it on; his page shows it under **Your fight**
+in a frame of the field map. There, on his side's move, he moves and turns his units, uses their
+controls, his batteries and his heroes, and ends the move; the field page checks every click is his
+to make (docs/units.md, *Play online*). The field page's own **Play online** still works for a
+battle run without the console.
+
 **His map.** Under **Your map** his page shows the travel map as his side knows it, drawn by the
 travel map's own page (in a frame, `travel.html#seat`, which keeps and saves nothing of its own):
 the terrain and places, his side's forces with their routes and camps, and of the enemy only the
@@ -274,7 +283,8 @@ is taken in once. `python3 tools/net/console.py` (in CI, with the other browser 
 console and a player's page in browser profiles of their own: his men, his force and the public
 news shown and nothing of the enemy's or the GM's notes, the march followed by changes only, the
 men he plays changed, his proposals accepted, declined, ignored when not his and turned off, his page and the console each reloaded and joined again, and his fight on the
-console's roller played from his page on the same link, and his map: his side's forces, the enemy
+console's roller played from his page on the same link, his battle on the console's field map
+likewise (seated on his hero's side, a unit moved and the move ended from his page), and his map: his side's forces, the enemy
 his side sees, nothing of the enemy it does not, and a faded mark where an enemy was last seen. `python3 tools/net/rooms.py` connects the
 console and two players through room codes (the room Worker's own code, run locally): one by his
 link, one by typing her code, a wrong code told, and a player's page and then the console reloaded,

@@ -499,6 +499,10 @@ computer. This page is the host, and the GM keeps everything:
   adding or removing units). Set-up is the GM's.
 - **The commander.** A side with a player is not the commander's: inviting him takes the side from
   the commander.
+- **Through the campaign console.** With the field page in the console's frame, the console's own
+  players come through their one link each: a player one of whose named men is a hero of a unit
+  here plays its side (docs/campaign.md, *His fights come through the same link*). His screen and
+  clicks go by the console, and the field page checks them as for its own players.
 
 Tested by `tools/net/fieldtwo.py`: by hand and by room code; his side's view only; his pick his own; a
 hex moves his unit; Turn right; an enemy he does not see, the GM's End the battle and a move on the
