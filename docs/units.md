@@ -491,7 +491,8 @@ computer. This page is the host, and the GM keeps everything:
 - **What he sees.** After every change, the host draws the field as his side's view shows it (above)
   and sends him its panels: the map, the phase, the unit list, the selected unit, his side's
   batteries and heroes, the log and the story. Nothing else leaves the host. His pick of a unit and
-  any order he has half made (March to…, a fire mission) are his own, not the GM's.
+  any order he has half made (March to…, a fire mission) are his own, not the GM's. His map zooms as
+  the GM's does (− + Fit, two-finger pinch), and the zoom holds as his screens come.
 - **What he does.** His page sends back his clicks: a hex, a unit, a control of his selected unit,
   his batteries or heroes, and End the move. The host makes each through the same handler its own
   click would reach, as his side's view: on his side's move only (picking a unit to look at, any

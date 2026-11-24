@@ -51,6 +51,10 @@ try:
         body = pl.inner_text("body")
         check("(Lancastrians)" not in body and "(Lancastrians)" not in pl.inner_html("body"), "and nothing on it names the Lancastrians' units (their side's name, in the legend, is no secret)")
         check(pl.inner_text("#g-next") == "The GM is setting up" and pl.is_disabled("#g-next"), "in set-up he waits for the GM")
+        w0 = pl.evaluate("() => document.querySelector('#map svg').getBoundingClientRect().width")
+        pl.click('.zoombar button[data-z="in"]')
+        w1 = pl.evaluate("() => document.querySelector('#map svg').getBoundingClientRect().width")
+        check(w1 > w0 * 1.5, f"his page zooms the map (+: {w0:.0f} to {w1:.0f} px wide)")
         check("Use a public STUN" in gm.inner_text("#net-box") and "1 player connected" in gm.inner_text("#net-box"), "the GM's Play online shows him connected")
 
         gm.click("#btn-next")                                    # the battle begins: the Yorkists move first
@@ -64,6 +68,7 @@ try:
         pl.click('#map .hx[data-h="10,20"]', force=True)
         gm.wait_for_function(f"() => S.units[0].pos.join(',') !== '{before}'", timeout=10000)
         check(gm.evaluate("() => S.units[0].pos.join(',')") == "10,20", "a hex he clicks moves his unit there on the GM's page")
+        check(abs(pl.evaluate("() => document.querySelector('#map svg').getBoundingClientRect().width") - w1) < 2, "and the zoom holds as his screens come")
 
         facing = gm.evaluate("() => S.units[0].facing")
         pl.click("#sel-box #btn-right")
