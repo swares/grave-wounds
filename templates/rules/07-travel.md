@@ -304,8 +304,9 @@ follow the roles a council has set.
 
 A team needs a reason to be on the road. A **frame** gives it one: who pays, what the team is after,
 what ends it, a first job and what is likely to go wrong. Frames add no rules; they use the patrons,
-pay, jobs and purses already here. The Medieval Wars has [four](book-medieval.html#frames); frames for
-the other books are still to come.
+pay, jobs and purses already here. Each period book has its own: [The Medieval Wars](book-medieval.html#frames),
+[The Black-Powder Wars](book-black-powder.html#frames), [The World Wars](book-world-wars.html#frames),
+[Korea and Vietnam](book-korea-vietnam.html#frames) and [The Late Wars](book-late-wars.html#frames).
 
 ## Finding work {#work}
 
