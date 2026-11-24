@@ -1874,11 +1874,12 @@ function makeTravelDay(DATA, RULES, env = {}){
   // What one player sees of the map: his named men (uids) and the forces they are with, nothing of
   // anyone else's. -> {map, day, date, time, men: [{uid, name, dead, force, health, purse}], forces:
   // [{id, name, side, order, where, fit, men, fatigue, route, log}]}, or null with no map yet.
-  function seatView(uids){
+  function seatView(uids, side = null){            // side: the side he commands (every force of it), else the forces his men are with
     restore();
     const all = readNamed(), purses = readPurses(), sum = marchSummary();
     const mine = uids.filter(u => all[u]).map(u => [u, all[u]]);
-    const here = new Set(mine.filter(([, n]) => !n.dead && n.map === S.mapId && n.force !== null && n.force !== undefined).map(([, n]) => n.force));
+    const here = new Set(side ? (sum?.forces || []).filter(f => f.side === side).map(f => f.id)
+      : mine.filter(([, n]) => !n.dead && n.map === S.mapId && n.force !== null && n.force !== undefined).map(([, n]) => n.force));
     const men = mine.map(([uid, n]) => {
       const f = n.map === S.mapId ? byId(n.force) : null, p = n.pid ? purses[n.pid] : null;
       const shown = (n.health ? n.health.cases : []).filter(c => c.inc === 0 && c.step > 0);
