@@ -18,16 +18,16 @@ not this repository.
 
   | Way to play | Support | What works | The main gap |
   | --- | --- | --- | --- |
-  | Online: commander against commander (simulation) | First cut | The field map's Play online (a seat a side, room codes; each player sees his side's view and moves on his side's move; the GM's page hosts); two people on one screen with the side's view; the commander against itself to check a battlefield | The travel map is not online for two commanders; no TURN relay; the log is filtered by name; set-up is the GM's |
+  | Online: commander against commander (simulation) | First cut | The field map's Play online (a seat a side, room codes; each player sees his side's view and moves on his side's move; the GM's page hosts); two people on one screen with the side's view; the commander against itself to check a battlefield | The travel map is not online for two commanders; the TURN relay is built but off until its key is added (worker/README.md, The relay); the log is filtered by name; set-up is the GM's |
   | Online: you against the commander (solo) | Strong | The enemy commander on the field map (sees only what its units see, reserves, guns, objectives), Beat history and its scorecard, the GM's script on the roller, the rules' chapter on playing alone, the commander running the travel map's day, and moving a side on it (Moved by); a war played alone season by season (posture, journal, promotion, the season's fights; played through end to end in solo play tests 16 and 17) | Runs in the browser with no connection needed; a force's fatigue, hunger and a recent beating now carry from the march into a field battle (#625), and the commander now moves a side on the travel map from what it has seen and sends its own fights when the stronger (#627, #629); on the field map it can choose its own stance (#632), and on the roller a side whose leader falls checks morale (#631). Never played by a person end to end |
-  | Online: a GM and his party (VTT) | First cut | The GM hosts from the roller or the campaign console; players join by room code and see their men, the public news and their fights (on the roller, and on the field map for a player whose man is a hero there), propose orders, and see only what their side has seen | The travel map is not shared online for moving forces; no TURN relay for strict networks; no voice or chat (groups bring their own); tested only with scripted players |
+  | Online: a GM and his party (VTT) | First cut | The GM hosts from the roller or the campaign console; players join by room code and see their men, the public news and their fights (on the roller, and on the field map for a player whose man is a hero there), propose orders, and see only what their side has seen | The travel map is not shared online for moving forces; the TURN relay for strict networks waits on its key; no voice or chat (groups bring their own); tested only with scripted players |
   | At the table: an RPG with a GM | Good on paper, untested | The rule book and five period books, the team builder's sheets, the roller as the GM's aid, the council card, the tables | The 309-page tables PDF is a reference; the armoury and making a man on paper print one era each, but are not yet tried with pencil and dice; never played at a table |
   | At the table: print-and-play modules | One module | Ferrybridge (the playtest packet 0.2.5): characters, map, counters, roster and reference, laid out for printing on both sides | The only module, and not yet played; the plan for more is under *Print-and-play modules* |
 
   What would widen the reach most, in order: the Ferrybridge playtest (it tests both table rows);
   the first solo playtest by a person (below: *A solo war, played by a person*);
   the field map online (first cut: the field page hosts, a seat a side, and the campaign console
-  relays it for a GM's party); a TURN relay before strangers are asked to play online. Solo is the
+  relays it for a GM's party); the TURN relay switched on (built: it needs its Cloudflare key) before strangers are asked to play online. Solo is the
   strongest today, which suits itch.io's Solo RPG category.
 - **A solo war, played by a person** (planned 24 November 2026: the user, first). Every solo war so
   far is scripted (solo play tests 16 and 17, about 150 whole-war test runs); whether the season
@@ -221,8 +221,9 @@ not this repository.
   checks, hazards, tongues, deeds, loot); the log is a record, not yet the save (the last 500 events); a strike's
   public part is fixed, not a GM setting; the field and travel pages have no log. Play online
   (first cut): the GM's page is the host over WebRTC; the campaign console's players can use
-  room codes through a small Cloudflare Worker (`worker/`, deployed), others pass codes by hand. Still left out: a
-  TURN relay for strict networks, room codes for the roller's own Play online,
+  room codes through a small Cloudflare Worker (`worker/`, deployed), others pass codes by hand. The TURN relay for
+  strict networks is built (the Worker's `GET /turn`, Cloudflare's TURN, used by the pages when the room
+  server has it) and waits on its key. Still left out: room codes for the roller's own Play online,
   rejoining without passing a new link and reply by hand (a lost player is invited again to the
   same seat, his page keeping his last screen; a blinked connection mends itself), sending changes of the whole picture (the panels that changed go as their changed tags, but a turn that lights every hex still sends them all), a player's
   works and the other panels from his page (first aid he gives, on his side's turn), and the travel

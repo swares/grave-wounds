@@ -88,5 +88,22 @@ await check("waiting in a room asks less often the longer it waits", async () =>
   };
   assert.equal(await NET.poll(flaky, { every: () => 1 }), "up", "the server failing is tried again");
 });
+await check("the relay: with none, STUN alone; with one, its TURN servers too; on one network, nothing", async () => {
+  const real = globalThis.fetch, seen = [];
+  try {
+    globalThis.fetch = async url => { seen.push(url); return new Response("{}", { status: 404 }) };
+    assert.equal(await NET.relay("https://rooms.none/"), null);
+    assert.deepEqual(NET.iceFor(true).map(s => s.urls), ["stun:stun.l.google.com:19302"], "no relay: STUN alone");
+    assert.equal(seen[0], "https://rooms.none/turn");
+    const TURN = { urls: ["turn:turn.cloudflare.com:3478?transport=udp"], username: "u", credential: "c" };
+    globalThis.fetch = async () => new Response(JSON.stringify({ iceServers: [TURN] }), { status: 200 });
+    await NET.relay("https://rooms.relay");
+    assert.deepEqual(NET.iceFor(true)[1], TURN, "with a relay, its servers after STUN");
+    assert.deepEqual(NET.iceFor(false), [], "STUN unticked (one network): no servers at all");
+    globalThis.fetch = async () => { throw new Error("offline") };
+    assert.equal(await NET.relay("https://rooms.down"), null, "a server that does not answer: no relay, and no error");
+    assert.equal(NET.iceFor(true).length, 1, "and another server's relay is not used for it");
+  } finally { globalThis.fetch = real }
+});
 console.log(`${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

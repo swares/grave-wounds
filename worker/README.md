@@ -51,10 +51,46 @@ request goes to the Worker and then to its Durable Object, so it counts against 
 the limit, requests fail until the next day (00:00 UTC). The pages then fall back to nothing: copy
 and paste works with the room server setting left blank.
 
+## The relay (TURN), for strict networks
+
+The pages connect to each other directly, with a public STUN server to find each other. A few strict
+networks (some workplaces, some mobile networks) block that, and then the pages cannot connect. A
+**relay** carries their traffic instead. The Worker can hand the pages Cloudflare's own TURN relay,
+and does nothing until it has its two secrets: without them, `GET /turn` answers 404 and the pages
+use STUN alone, as before.
+
+To turn it on:
+
+1. In the Cloudflare dashboard, open **Realtime**, then **TURN Server**, and create a TURN key. Note
+   its **Key ID** and its **API token** (the token is shown once).
+2. In this folder:
+
+   ```
+   npx wrangler secret put TURN_KEY_ID
+   npx wrangler secret put TURN_KEY_API_TOKEN
+   npx wrangler deploy
+   ```
+
+   Each `secret put` asks for the value. Secrets are kept by Cloudflare, not in this repository.
+3. Nothing to rebuild: the pages ask the room server for its relay (`GET /turn`) when they load, and
+   use it from then on. Pages with the room server switched off, or with STUN unticked (everyone on
+   one network), never ask.
+
+Each `GET /turn` mints credentials that last `RELAY_HOURS` (6, in `wrangler.toml`), and leaves out the
+port-53 address the response can carry, which browsers block. Only the site's pages may ask
+(`ALLOWED_ORIGINS`), but that is a check browsers make: anyone who copies the address can get
+credentials too. The relay is used only when a direct connection fails.
+
+**What it costs** (Cloudflare's Realtime pricing page, checked November 2026): the first 1,000 GB a
+month are free, shared with Cloudflare's other Realtime service, then $0.05 a GB. A game's traffic
+is small (each player's screen as changes, a few kilobytes a move), so the free allowance should be
+far more than a group of players uses. To turn it off, delete the two secrets
+(`npx wrangler secret delete TURN_KEY_ID`) and deploy again.
+
 ## Testing it
 
 `node tools/net/roomscheck.mjs` runs the Worker's own code with an in-memory stand-in for the Durable
-Object namespace (`tools/net/fakerooms.mjs`). `python3 tools/net/rooms.py` connects a console and two
+Object namespace (`tools/net/fakerooms.mjs`), and the relay with a stand-in for Cloudflare's TURN API. `python3 tools/net/rooms.py` connects a console and two
 players' pages through it in a headless browser. Both run in CI.
 
 To try it on Cloudflare's own local runtime, run `npx wrangler dev` here, then:
