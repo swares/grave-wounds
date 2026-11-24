@@ -104,7 +104,7 @@ check("in reach and the stronger, an attacking commander sends its own fight; ho
   ours.men = 5000; theirs.men = 500;
   D.noteSightings();
   const cf = D.commanderFight();
-  assert.ok(cf && cf.side === "York" && cf.k === 0 && cf.title.includes(theirs.name), JSON.stringify(cf));
+  assert.ok(cf?.side === "York" && cf.k === 0 && cf.title.includes(theirs.name), JSON.stringify(cf));
   D.sendFightTo(D.fightOptions(D.byId(cf.id))[0], cf.on);
   assert.equal(D.commanderFight(), null, "the fight it sent, its result not yet in, was sent again");
   D.S.fought.push(D.S.sent[D.S.mapId][0].battle);
@@ -118,7 +118,7 @@ check("in reach and the stronger, an attacking commander sends its own fight; ho
 check("the console's view: the sides on the map and who moves each", () => {
   const D = start(10, "towton-1461", "York", "hold");
   const v = D.commandView();
-  assert.deepEqual(v.map(x => [x.side, x.stance]).sort(), [["Lancaster", null], ["York", "hold"]]);
+  assert.deepEqual(v.map(x => [x.side, x.stance]).sort((a, b) => a[0].localeCompare(b[0])), [["Lancaster", null], ["York", "hold"]]);
 });
 
 console.log(`${tally.passed} passed, ${tally.failed} failed`);

@@ -3414,7 +3414,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   // (seeing nothing, it looks for them objective by objective); 5) holding: to its
   // nearest objective, or where it is, and a watched camp there. Baggage marches with the side's
   // biggest column. The order and the sizes are ours (asked and answered, 24 November 2026).
-  const CMD = { outnumbered: 1.5, near_hexes: 6, camp: "watched", rest_nights: 2, ...(TER.commander || {}) };   // terrain.yaml commander: rest_nights, an exhausted column rests at most so many mornings running, then goes on (one too spent to march rests till it can)
+  const CMD = { outnumbered: 1.5, near_hexes: 6, camp: "watched", rest_nights: 2, ...TER.commander };   // terrain.yaml commander: rest_nights, an exhausted column rests at most so many mornings running, then goes on (one too spent to march rests till it can)
   const stanceOf = side => S.cmd[S.mapId]?.[side] || null;
   function setCommander(side, stance){            // stance: "attack", "hold" or null (the player moves them)
     restore();
@@ -4490,9 +4490,10 @@ function barShow(){                                  // scroll the map so the se
   box.scrollTop += (r.top + r.height / 2) - (b.top + box.clientHeight / 2);
 }
 const MOVED_BY = [["", "You"], ["attack", "The commander, attacking"], ["hold", "The commander, holding"]];
+const movedByOptions = stance => MOVED_BY.map(([k, t]) => '<option value="' + k + '"' + ((stance || "") === k ? " selected" : "") + ">" + t + "</option>").join("");
 function renderMovedBy(){                       // who moves each side: you, or the commander (travelday.js command)
   const box = $("#moved-by"), sd = sides();
-  const html = sd.length ? `<span class="muted">Moved by:</span>` + sd.map(x => `<label class="inline muted">${esc(x)} <select data-movedby="${esc(x)}">${MOVED_BY.map(([k, t]) => `<option value="${k}"${(stanceOf(x) || "") === k ? " selected" : ""}>${t}</option>`).join("")}</select></label>`).join("") : "";
+  const html = sd.length ? `<span class="muted">Moved by:</span>` + sd.map(x => `<label class="inline muted">${esc(x)} <select data-movedby="${esc(x)}">${movedByOptions(stanceOf(x))}</select></label>`).join("") : "";
   if (box.dataset.html !== html){ box.innerHTML = html; box.dataset.html = html }
 }
 function commanderFights(){                     // after a press: a commander attacking, the stronger, sends its fight as Fight here does
@@ -4691,7 +4692,8 @@ function init(){
     const sel = e.target.closest("select[data-movedby]"); if (!sel) return;
     const m = (S.cmd[S.mapId] ||= {});
     if (sel.value) m[sel.dataset.movedby] = sel.value; else delete m[sel.dataset.movedby];
-    S.msg = sel.value ? `The commander moves ${sel.dataset.movedby}, ${sel.value === "attack" ? "attacking" : "holding"}: it gives its orders at each press of the clock.` : `${sel.dataset.movedby} are moved by hand.`;
+    const how = sel.value === "attack" ? "attacking" : "holding";
+    S.msg = sel.value ? `The commander moves ${sel.dataset.movedby}, ${how}: it gives its orders at each press of the clock.` : `${sel.dataset.movedby} are moved by hand.`;
     render();
   };
   tabsInit();

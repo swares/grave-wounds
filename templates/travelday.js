@@ -1385,7 +1385,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   // (seeing nothing, it looks for them objective by objective); 5) holding: to its
   // nearest objective, or where it is, and a watched camp there. Baggage marches with the side's
   // biggest column. The order and the sizes are ours (asked and answered, 24 November 2026).
-  const CMD = { outnumbered: 1.5, near_hexes: 6, camp: "watched", rest_nights: 2, ...(TER.commander || {}) };   // terrain.yaml commander: rest_nights, an exhausted column rests at most so many mornings running, then goes on (one too spent to march rests till it can)
+  const CMD = { outnumbered: 1.5, near_hexes: 6, camp: "watched", rest_nights: 2, ...TER.commander };   // terrain.yaml commander: rest_nights, an exhausted column rests at most so many mornings running, then goes on (one too spent to march rests till it can)
   const stanceOf = side => S.cmd[S.mapId]?.[side] || null;
   function setCommander(side, stance){            // stance: "attack", "hold" or null (the player moves them)
     restore();

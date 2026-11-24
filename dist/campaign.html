@@ -3255,7 +3255,7 @@ function makeTravelDay(DATA, RULES, env = {}){
   // (seeing nothing, it looks for them objective by objective); 5) holding: to its
   // nearest objective, or where it is, and a watched camp there. Baggage marches with the side's
   // biggest column. The order and the sizes are ours (asked and answered, 24 November 2026).
-  const CMD = { outnumbered: 1.5, near_hexes: 6, camp: "watched", rest_nights: 2, ...(TER.commander || {}) };   // terrain.yaml commander: rest_nights, an exhausted column rests at most so many mornings running, then goes on (one too spent to march rests till it can)
+  const CMD = { outnumbered: 1.5, near_hexes: 6, camp: "watched", rest_nights: 2, ...TER.commander };   // terrain.yaml commander: rest_nights, an exhausted column rests at most so many mornings running, then goes on (one too spent to march rests till it can)
   const stanceOf = side => S.cmd[S.mapId]?.[side] || null;
   function setCommander(side, stance){            // stance: "attack", "hold" or null (the player moves them)
     restore();
@@ -4800,11 +4800,12 @@ function sendFight(id, k){                             // the fight sent as the 
   show(page);
 }
 const MOVED_BY = [["", "You"], ["attack", "The commander, attacking"], ["hold", "The commander, holding"]];
+const movedByOptions = stance => MOVED_BY.map(([k, t]) => '<option value="' + k + '"' + ((stance || "") === k ? " selected" : "") + ">" + t + "</option>").join("");
 function movedByHtml(){                               // who moves each side on the march: the GM, or the commander (travelday.js command)
   let v = [];
   try { v = newDay().commandView() } catch { return "" }
   if (!v.length) return "";
-  const one = x => `<label class="muted" style="font-size:.88rem">${esc(x.side)}: <select data-movedby="${esc(x.side)}">${MOVED_BY.map(([k, t]) => `<option value="${k}"${(x.stance || "") === k ? " selected" : ""}>${t}</option>`).join("")}</select></label>`;
+  const one = x => `<label class="muted" style="font-size:.88rem">${esc(x.side)}: <select data-movedby="${esc(x.side)}">${movedByOptions(x.stance)}</select></label>`;
   return `<div class="toolbar" title="The commander orders a side's forces each press, from what that side has seen, and sends its own fights when it is the stronger"><span class="muted" style="font-size:.88rem">Moved by:</span>${v.map(one).join("")}</div>`;
 }
 function restButton(){ return ' <button type="button" id="c-rest" title="Every force stays where it is: on to nightfall, and the night passes (rest, food, the sick and the wounded in camp)">Rest until tomorrow</button>' }
