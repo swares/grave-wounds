@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>How to Play</title>
-<meta name="description" content="How to use the Grave Wounds pages: a fight at the table, a fight online, a battle, a campaign, a campaign with players online, and playing as a player.">
+<meta name="description" content="How to use the Grave Wounds pages, by the way you play: at one table, online, alone, and on paper.">
 <link rel="stylesheet" href="fonts/fonts.css">
 <style>
 /* How to play: the pages, mode by mode. Same field-ledger palette as the other pages. */
@@ -41,6 +41,15 @@ th,td{text-align:left;vertical-align:top;padding:6px 10px 6px 0;border-bottom:1p
 th{color:var(--muted);font-weight:500}
 .tablewrap{overflow-x:auto}
 .toc{columns:2 16em;margin:0;padding-left:1.2em}
+h2.group{font:700 1.6rem/1.2 var(--display);color:var(--ink);margin:14px 0 -10px;padding-bottom:4px;border-bottom:2px solid var(--line);scroll-margin-top:12px}
+.group-lede{margin:0;color:var(--muted)}
+section h3{font:700 1.3rem/1.2 var(--display);margin:0;letter-spacing:.03em;color:var(--steel)}
+h4{font:700 1.02rem/1.3 var(--display);margin:6px 0 0;letter-spacing:.03em}
+.types{display:grid;grid-template-columns:repeat(auto-fit,minmax(15em,1fr));gap:10px}
+.type{border:1px solid var(--line);border-radius:4px;padding:10px 12px;background:var(--bg)}
+.type p{margin:2px 0 4px;color:var(--muted);font-size:.92rem}
+.type ul{padding-left:1.1em;font-size:.95rem}
+a.type-name{font:700 1.15rem/1.2 var(--display);text-decoration:none}
 code{font:500 .88em var(--mono)}
 </style>
 </head>
@@ -48,35 +57,29 @@ code{font:500 .88em var(--mono)}
 <div class="wrap">
   <header>
     <div><h1>How to play</h1>
-      <p class="lede">The pages, mode by mode: which page to open, and what to press. The rules themselves are in <a href="rules.html">the Rules</a>, and each period's armies and battlefields in its book, such as <a href="book-medieval.html">The Medieval Wars</a>, <a href="book-black-powder.html">The Black-Powder Wars</a>, <a href="book-world-wars.html">The World Wars</a>, <a href="book-korea-vietnam.html">Korea and Vietnam</a> and <a href="book-late-wars.html">The Late Wars</a>.</p></div>
+      <p class="lede">The pages, by the way you play: which page to open, and what to press. The rules themselves are in <a href="rules.html">the Rules</a>, and each period's armies and battlefields in its book, such as <a href="book-medieval.html">The Medieval Wars</a>, <a href="book-black-powder.html">The Black-Powder Wars</a>, <a href="book-world-wars.html">The World Wars</a>, <a href="book-korea-vietnam.html">Korea and Vietnam</a> and <a href="book-late-wars.html">The Late Wars</a>.</p></div>
     <nav><a href="../index.html">Home</a><a href="campaign.html">Campaign</a><a href="roller.html">Wound roller</a><a href="travel.html">Travel map</a><a href="field.html">Field map</a><a href="team.html">Team builder</a><a href="rules.html">Rule book</a></nav>
   </header>
 
-  <section aria-labelledby="h-choose">
+  <section aria-labelledby="h-choose" class="choose">
     <h2 id="h-choose">Choose how to play</h2>
-    <div class="tablewrap"><table>
-      <thead><tr><th>You want</th><th>Open</th><th>See</th></tr></thead>
-      <tbody>
-        <tr><td>To try the game: one small fight, set up for you</td><td>Start page</td><td><b class="ui">Play in 15 minutes</b>: the Rules' example retinue against three billmen on the roller, the enemy played for you, a coach above the map saying what to press next (the Rules' <a href="rules.html#quick">Quick start</a>)</td></tr>
-        <tr><td>To run your first session as GM (an hour or more)</td><td>Campaign</td><td><a href="#gm-start">Your first session as GM</a>: a retinue on the road to Towton, 1461, one march, one fight, the aftermath</td></tr>
-        <tr><td>To join your first game as a player (about 5 minutes)</td><td>The link or room code the GM sends you</td><td><a href="#player-start">Your first game as a player</a></td></tr>
-        <tr><td>A fight, man by man, everyone at one table</td><td>Wound roller</td><td><a href="#fight">A fight at the table</a></td></tr>
-        <tr><td>The pages to play the enemy for you</td><td>Wound roller</td><td><a href="#script">The GM's script</a></td></tr>
-        <tr><td>A fight with players on their own computers</td><td>Wound roller</td><td><a href="#fight-online">A fight online</a></td></tr>
-        <tr><td>A battle with units, not men</td><td>Field map</td><td><a href="#battle">A battle</a></td></tr>
-        <tr><td>A whole campaign (muster, march, fight, aftermath, downtime)</td><td>Campaign</td><td><a href="#campaign">A campaign</a></td></tr>
-        <tr><td>A campaign with players on their own computers</td><td>Campaign</td><td><a href="#campaign-online">A campaign online</a></td></tr>
-        <tr><td>To join a game the GM runs</td><td>The link or room code the GM sends you</td><td><a href="#player">Playing as a player</a></td></tr>
-      </tbody>
-    </table></div>
+    <div class="types">
+      <div class="type"><a class="type-name" href="#table">At one table</a><p>A GM and his players in one room, the GM at the pages.</p><ul><li><a href="#gm-start">Your first session as GM (an hour or more)</a></li><li><a href="#fight">A fight at the table (the wound roller)</a></li><li><a href="#battle">A battle (the field map)</a></li><li><a href="#campaign">A campaign (the campaign page)</a></li></ul></div>
+      <div class="type"><a class="type-name" href="#online">Online</a><p>Players on their own computers, the GM's page hosting them.</p><ul><li><a href="#fight-online">A fight online (the roller's Play online)</a></li><li><a href="#battle-online">A battle online (the field map's Play online)</a></li><li><a href="#campaign-online">A campaign online (Players online)</a></li><li><a href="#player-start">Your first game as a player (about 5 minutes)</a></li><li><a href="#player">Playing as a player</a></li></ul></div>
+      <div class="type"><a class="type-name" href="#solo">Alone</a><p>One person against the pages: the script and the commander play the enemy.</p><ul><li><a href="#alone">Playing alone</a></li><li><a href="#script">The GM's script (the pages play a side)</a></li><li><a href="#war">A war, season by season (the team builder)</a></li></ul></div>
+      <div class="type"><a class="type-name" href="#print">On paper</a><p>Print-and-play: pencil, dice and printed sheets.</p><ul><li><a href="#paper">Playing on paper</a></li></ul></div>
+      <div class="type"><a class="type-name" href="#any">Any way you play</a><p>What every way of playing shares.</p><ul><li><a href="#team">Making the team (any mode)</a></li><li><a href="#saving">Saving, and campaigns side by side</a></li><li><a href="#trouble">When something looks wrong</a></li></ul></div>
+    </div>
     <p class="tip">Everything is kept in your browser, page by page, as you go. Nothing is sent anywhere unless you play online. To keep a game safe, or move it to another computer, use <b class="ui">Save the game to a file</b> on the campaign page (<a href="#saving">Saving</a>).</p>
   </section>
+  <h2 class="group" id="table">At one table</h2>
+  <p class="group-lede">A GM and his players in one room, the GM at the pages. <a href="#h-choose">Back to the list</a></p>
 
   <section id="gm-start" aria-labelledby="h-gm-start">
-    <h2 id="h-gm-start">Your first session as GM (an hour or more)</h2>
+    <h3 id="h-gm-start">Your first session as GM (an hour or more)</h3>
     <p>One evening's game from start to finish: a retinue joins the Yorkist army on the road to Towton in March 1461, marches, meets the Lancastrians, fights it out man by man with the pages playing the Lancastrians, and counts the cost. Players can join on their own computers, or sit at your table and tell you what their men do. The fight is the longest part, longer with several players. The <a href="campaign.html">campaign page</a> says what to do in each phase as you go; these are the presses, in order.</p>
     <p class="tip">Or let the pages set it up: <b class="ui">Run your first session as GM</b> on the start page makes the retinue, adds it, chooses the Towton map and puts the team with Edward's army, and a coach above the campaign's guide says what to press next, phase by phase, through to downtime. It starts a new campaign; one under way is kept beside it.</p>
-    <h3>Before the players come (10 minutes)</h3>
+    <h4>Before the players come (10 minutes)</h4>
     <ol>
       <li>Open the <a href="campaign.html">campaign page</a>. A new campaign starts at the <b class="ui">Muster</b>, with the team builder below.</li>
       <li>In the team builder: <b class="ui">Era</b> Medieval, <b class="ui">Where they come from</b> England, <b class="ui">Team</b> A lord's retinue. Press <b class="ui">Roll the team</b>. Reroll any man you do not like.</li>
@@ -85,20 +88,20 @@ code{font:500 .88em var(--mono)}
       <li>On the roller, above the cards, set (the team) goes with to Edward's army (York): the retinue marches with the king.</li>
       <li>Players on their own computers: under <b class="ui">Players online</b>, type a player's name, tick the man (or men) he plays, and press <b class="ui">Add a player</b>. Read him the room code, or send him the link (<a href="#player-start">his side of it</a>). Players at your table need nothing.</li>
     </ol>
-    <h3>The march (10 minutes)</h3>
+    <h4>The march (10 minutes)</h4>
     <ol start="7">
       <li>Press <b class="ui">Done</b> (on to march). The travel map opens below, and <b class="ui">Run the march</b> lists every force on the map.</li>
       <li>Press <b class="ui">Orders</b> on Edward's army, choose Towton as the place, and press <b class="ui">Set the route</b>. (Players online may propose orders instead: <b class="ui">Accept</b> or <b class="ui">Decline</b> them under Players online.)</li>
       <li>Press <b class="ui">Until something happens</b>, again as often as it asks. The clock runs, the weather and the road's incidents come, and before long the army meets a Lancastrian force on the road (often Clifford's horse, out from Sherburn-in-Elmet).</li>
     </ol>
-    <h3>The fight (30 minutes or more)</h3>
+    <h4>The fight (30 minutes or more)</h4>
     <ol start="10">
       <li>Under <b class="ui">Fights on offer</b>, set <b class="ui">Fight it on</b> to The wound roller (man by man), and press <b class="ui">Set up the fight</b>. The odds of surprise are shown on the button. The roller opens below and asks again: press <b class="ui">Set up the fight</b> there too.</li>
       <li>Under <b class="ui">The fight</b>, press <b class="ui">Run the fight</b>: the GM's script plays the Lancastrians. <b class="ui">Play to my turn</b> lets it play until one of the players' men acts.</li>
       <li>On a player's turn, he says what his man does (or does it himself, online). On the roller, click his token and then a hex to move him; click an enemy in reach, choose the weapon, and press <b class="ui">Roll the hit</b>; <b class="ui">Apply hit to defender</b> puts the wound on. Bleeding men can be bound from the wound on their card. Then press End (his name)'s turn under The fight.</li>
       <li>When one side stands, press Mark (that side) the winner under The fight. The campaign moves on to the aftermath.</li>
     </ol>
-    <h3>The aftermath and downtime (10 to 15 minutes)</h3>
+    <h4>The aftermath and downtime (10 to 15 minutes)</h4>
     <ol start="14">
       <li>On the roller: first aid for the wounded, then <b class="ui">After the fight</b> for deeds, loot and prisoners, and <b class="ui">To camp</b> on each named man.</li>
       <li><b class="ui">Send the result to the travel map</b> (under After the fight): the dead come off the force, the wounded go to camp, the beaten side falls back.</li>
@@ -108,31 +111,8 @@ code{font:500 .88em var(--mono)}
     <p class="tip">On the roller an army of thousands sends a handful of its men, the team's named men among them, not the whole host. To fight the armies as units instead, choose The field map at step 10 (<a href="#battle">A battle</a>).</p>
   </section>
 
-  <section id="player-start" aria-labelledby="h-player-start">
-    <h2 id="h-player-start">Your first game as a player (about 5 minutes)</h2>
-    <p>The GM runs the game; you play your man (or men). All you need is the room code or the link the GM sends you.</p>
-    <ol>
-      <li>Open the link, or press <b class="ui">Join a game as a player</b> on the start page, type the room code (like WOLF-OAK-42) and press <b class="ui">Join</b>. Your first times, a coach above the panels says what each is and what to press; <b class="ui">Got it</b> moves it on, <b class="ui">No more tips</b> puts it away.</li>
-      <li><b class="ui">Your men</b> shows how each of your named men is, the force he is with, and his purse. <b class="ui">Your force</b> shows its orders, where it is, how many are fit and how tired they are.</li>
-      <li><b class="ui">Your map</b> shows your side's forces, and of the enemy only what your side can see now (ringed red) or where it last saw them (faded). Hover a mark for more.</li>
-      <li>To suggest where your force goes: <b class="ui">Propose its orders</b> under your force, or click a hex on your map. The GM accepts or declines, and your force's panel says which.</li>
-      <li>When your man is in a fight, <b class="ui">Your fight</b> appears. On your turn: click a hex to move, click an enemy in reach to strike, choose your aim and roll (you may type your own dice), give first aid with <b class="ui">Bind</b> and the like, and press <b class="ui">Next fighter</b> when you are done.</li>
-    </ol>
-    <p class="tip">Lost the connection? Leave the page open: with a room code it reconnects by itself when the GM's page invites you again. More in <a href="#player">Playing as a player</a>.</p>
-  </section>
-
-  <section id="team" aria-labelledby="h-team">
-    <h2 id="h-team">Making the team (any mode)</h2>
-    <ol>
-      <li>Open the <a href="team.html">team builder</a>. Choose the <b class="ui">Era</b>, <b class="ui">Where they come from</b> and a <b class="ui">Team</b>, then press <b class="ui">Roll the team</b>. Reroll a man, or add one, as you like.</li>
-      <li>Kit them out and buy from their purses if you want to.</li>
-      <li>Press <b class="ui">Send to the roller</b> to fight man by man, or <b class="ui">Send to the field map</b> to fight with their followers as units.</li>
-    </ol>
-    <p>On the roller the team arrives as an offer: press <b class="ui">Add the team</b>. Each man added becomes a <i>named man</i> at once (a team added again is the same men, not new ones): the travel map, the roller and the field map all know them, and they keep their wounds, purses and experience from page to page.</p>
-  </section>
-
   <section id="fight" aria-labelledby="h-fight">
-    <h2 id="h-fight">A fight at the table (the wound roller)</h2>
+    <h3 id="h-fight">A fight at the table (the wound roller)</h3>
     <ol>
       <li>Open the <a href="roller.html">wound roller</a>. Add fighters under <b class="ui">Casualties</b> (a name, then <b class="ui">Add</b>), or bring in the team (above). Give each his side, kit and weapon on his card.</li>
       <li>Press <b class="ui">Roll initiative</b>. The fighter whose turn it is shows <i>Acting</i> on his card.</li>
@@ -144,31 +124,8 @@ code{font:500 .88em var(--mono)}
     </ol>
   </section>
 
-  <section id="script" aria-labelledby="h-script">
-    <h2 id="h-script">The GM's script (the pages play a side)</h2>
-    <ol>
-      <li>On the roller, open <b class="ui">Run the fight</b> and tick it.</li>
-      <li>For each side, choose who plays it: <b class="ui">Player</b> (a person, at the table or online), <b class="ui">GM by hand</b>, or <b class="ui">GM's script</b>. Choose how boldly the script fights, and the quality of men with no team-builder sheet.</li>
-      <li>Press <b class="ui">Step</b> for one move of the script, or <b class="ui">Play to my turn</b> to let it play until a person's turn. <b class="ui">Undo the script</b> takes back its last step.</li>
-    </ol>
-    <p>The script's men give first aid when no enemy is next to them: a man binds his own wound if it bleeds badly; a cautious side treats its worst-bleeding man it can reach, a steady side only its men who are down, a reckless side no one; a shooter with an enemy in range keeps shooting, and tends the others only when he has no one to shoot at. A medieval archer or crossbowman from the team builder carries a sword as well: when the man he strikes is next to him, he strikes with it (for the GM's own strikes too). A scripted man who is down with an enemy beside him asks for quarter and is taken prisoner; when a scripted side breaks, a man down with an enemy beside him is taken, a man down with none is left where he lies, a man on his feet beside an enemy breaks away on a d100 at or under his Agility (or Dodge, the better; a follower or comrade without a sheet, his quality: green 35, regular 50, veteran 65) or is taken, and the rest run. A player's named man is never surrendered by the script: down, he is left where he lies, and held, he breaks away and runs; taking him is the GM's call (<b>Taken prisoner</b> under <b>After the fight</b>). Their cards say <b>Taken</b> or <b>Ran</b>.</p>
-    <p>On the field map the same idea is the <b class="ui">Enemy commander</b>: choose a commander for each side that should move by itself.</p>
-  </section>
-
-  <section id="fight-online" aria-labelledby="h-fight-online">
-    <h2 id="h-fight-online">A fight online (the roller's Play online)</h2>
-    <p>For a single fight with players on their own computers. In a campaign, use <a href="#campaign-online">Players online</a> on the campaign page instead: one link for the whole session.</p>
-    <ol>
-      <li>Set up the fight on the roller, with at least two sides.</li>
-      <li>Open <b class="ui">Play online</b> and press <b class="ui">Invite a player for</b> his side. Send him the link (<b class="ui">Copy the link</b>).</li>
-      <li>He opens it; his page gives him a reply code to send back. Paste it under his side and press <b class="ui">Connect</b>.</li>
-      <li>He now sees his side's view of the fight and plays his side's fighters on their turns; you see everything. The script, or you, plays the other side.</li>
-      <li>If he drops out, press <b class="ui">Invite again</b> and send the new link; he pastes it into <b class="ui">Rejoin</b> on his page (or opens it).</li>
-    </ol>
-  </section>
-
   <section id="battle" aria-labelledby="h-battle">
-    <h2 id="h-battle">A battle (the field map)</h2>
+    <h3 id="h-battle">A battle (the field map)</h3>
     <ol>
       <li>Open the <a href="field.html">field map</a>. Add units under <b class="ui">Add a unit</b>, or send the team's followers from the team builder (<b class="ui">Add them</b>), or a battle from the travel map (<b class="ui">Set up the battle</b>).</li>
       <li>Place and order your units: select one under <b class="ui">Units</b>, then use the map and the <b class="ui">Selected unit</b> panel.</li>
@@ -180,7 +137,7 @@ code{font:500 .88em var(--mono)}
   </section>
 
   <section id="campaign" aria-labelledby="h-campaign">
-    <h2 id="h-campaign">A campaign (the campaign page)</h2>
+    <h3 id="h-campaign">A campaign (the campaign page)</h3>
     <p>The <a href="campaign.html">campaign page</a> is the GM's console over all the other pages. It shows the phase you are in, what to do in it, where things stand and the campaign's log, with the page for the step open in a frame below.</p>
     <ol>
       <li><b>Muster.</b> Make the team in the frame (<a href="#team">Making the team</a>) and send it to the roller.</li>
@@ -193,8 +150,37 @@ code{font:500 .88em var(--mono)}
     <p>The console notices most things by itself (a fight sent, a man felled, a death, an outbreak, the end of a day or a season), moves the phase on, and writes them in the log. Add notes of your own to the log; tick <b class="ui">GM only</b> for ones the players should not see.</p>
   </section>
 
+  <h2 class="group" id="online">Online</h2>
+  <p class="group-lede">Players on their own computers, the GM's page hosting them. <a href="#h-choose">Back to the list</a></p>
+
+  <section id="fight-online" aria-labelledby="h-fight-online">
+    <h3 id="h-fight-online">A fight online (the roller's Play online)</h3>
+    <p>For a single fight with players on their own computers. In a campaign, use <a href="#campaign-online">Players online</a> on the campaign page instead: one link for the whole session.</p>
+    <ol>
+      <li>Set up the fight on the roller, with at least two sides.</li>
+      <li>Open <b class="ui">Play online</b> and press <b class="ui">Invite a player for</b> his side. Send him the link (<b class="ui">Copy the link</b>).</li>
+      <li>He opens it; his page gives him a reply code to send back. Paste it under his side and press <b class="ui">Connect</b>.</li>
+      <li>He now sees his side's view of the fight and plays his side's fighters on their turns; you see everything. The script, or you, plays the other side.</li>
+      <li>If he drops out, press <b class="ui">Invite again</b> and send the new link; he pastes it into <b class="ui">Rejoin</b> on his page (or opens it).</li>
+    </ol>
+  </section>
+
+  <section id="battle-online" aria-labelledby="h-battle-online">
+    <h3 id="h-battle-online">A battle online (the field map's Play online)</h3>
+    <p>For a battle with a commander on his own computer for one side. You set up the battle and see everything; he sees only what his side's units see.</p>
+    <ol>
+      <li>Set up the battle on the <a href="field.html">field map</a> (<a href="#battle">A battle</a>).</li>
+      <li>Open <b class="ui">Play online</b> and press <b class="ui">Invite a player for</b> his side. Send him the link it gives.</li>
+      <li>With a room server the link is a room: he opens it and his page answers by itself. Without one, his page gives him a reply code: he sends it back, you paste it under his side and press <b class="ui">Connect</b>.</li>
+      <li>His page shows his side's view: his units, the enemy his side sees now, and marks where it last saw the rest. To check what he sees, choose his side's view from <b class="ui">View</b>.</li>
+      <li>On his side's move he picks a unit, clicks a hex to move it, and ends his side's move from his page. While you set up, his page waits. A side with a player is never the commander's, and <b class="ui">Run on</b> never moves it.</li>
+      <li>If he drops out, press <b class="ui">Invite again</b>; <b class="ui">Drop</b> lets his side go back to you.</li>
+    </ol>
+    <p class="tip">Across the internet keep <b class="ui">Use a public STUN server</b> ticked. A few strict networks will not connect at all.</p>
+  </section>
+
   <section id="campaign-online" aria-labelledby="h-campaign-online">
-    <h2 id="h-campaign-online">A campaign online (Players online)</h2>
+    <h3 id="h-campaign-online">A campaign online (Players online)</h3>
     <ol>
       <li>On the campaign page, under <b class="ui">Players online</b>, type the player's name, tick the named men he plays (one or more), and press <b class="ui">Add a player</b>. Only you decide which men are his: tick or untick them in his <b class="ui">Plays:</b> row at any time. (No men to tick? Send the team to the roller and press <b class="ui">Add the team</b> there.)</li>
       <li>His room appears with a code to say aloud (like <code>WOLF-OAK-42</code>) and a link. Send him either. He opens the link, or types the code on the campaign page; nothing comes back to you by hand. The log says when he joins.</li>
@@ -207,8 +193,21 @@ code{font:500 .88em var(--mono)}
     <p class="tip">No room server, or one that will not answer? Under <b class="ui">Room server</b>, press <b class="ui">Copy and paste instead</b>: you send him a link, and paste back the reply code his page gives him.</p>
   </section>
 
+  <section id="player-start" aria-labelledby="h-player-start">
+    <h3 id="h-player-start">Your first game as a player (about 5 minutes)</h3>
+    <p>The GM runs the game; you play your man (or men). All you need is the room code or the link the GM sends you.</p>
+    <ol>
+      <li>Open the link, or press <b class="ui">Join a game as a player</b> on the start page, type the room code (like WOLF-OAK-42) and press <b class="ui">Join</b>. Your first times, a coach above the panels says what each is and what to press; <b class="ui">Got it</b> moves it on, <b class="ui">No more tips</b> puts it away.</li>
+      <li><b class="ui">Your men</b> shows how each of your named men is, the force he is with, and his purse. <b class="ui">Your force</b> shows its orders, where it is, how many are fit and how tired they are.</li>
+      <li><b class="ui">Your map</b> shows your side's forces, and of the enemy only what your side can see now (ringed red) or where it last saw them (faded). Hover a mark for more.</li>
+      <li>To suggest where your force goes: <b class="ui">Propose its orders</b> under your force, or click a hex on your map. The GM accepts or declines, and your force's panel says which.</li>
+      <li>When your man is in a fight, <b class="ui">Your fight</b> appears. On your turn: click a hex to move, click an enemy in reach to strike, choose your aim and roll (you may type your own dice), give first aid with <b class="ui">Bind</b> and the like, and press <b class="ui">Next fighter</b> when you are done.</li>
+    </ol>
+    <p class="tip">Lost the connection? Leave the page open: with a room code it reconnects by itself when the GM's page invites you again. More in <a href="#player">Playing as a player</a>.</p>
+  </section>
+
   <section id="player" aria-labelledby="h-player">
-    <h2 id="h-player">Playing as a player</h2>
+    <h3 id="h-player">Playing as a player</h3>
     <ol>
       <li>Open the link the GM sends you, or open the <a href="campaign.html#room">campaign page with a room code</a> and type the code the GM gives you. (For a single fight the GM may send you a roller link instead: open it, and send him the reply code it shows.)</li>
       <li><b>Your men</b> shows how each of your named men is, the force he is with, and his purse. <b>Your force</b> shows its orders, where it is, how many are fit, its fatigue, its route and its log.</li>
@@ -219,8 +218,77 @@ code{font:500 .88em var(--mono)}
     <p class="tip">Lost the connection? Leave the page open: your last screen stays, and with a room code it reconnects by itself when the GM's page invites you again. With a pasted link, ask the GM to press <b class="ui">Invite again</b>, and paste his new link into <b class="ui">Rejoin</b>.</p>
   </section>
 
+  <h2 class="group" id="solo">Alone</h2>
+  <p class="group-lede">One person against the pages: the script and the commander play the enemy. <a href="#h-choose">Back to the list</a></p>
+
+  <section id="alone" aria-labelledby="h-alone">
+    <h3 id="h-alone">Playing alone</h3>
+    <p>You are the GM and the players at once, and the pages play the enemy. The Rules' <a href="rules.html#alone">Playing alone</a> has the whole of it, with how to ask the dice what no page says.</p>
+    <ul>
+      <li><b>To try it:</b> <b class="ui">Play in 15 minutes</b> on the start page: six men against three billmen, the enemy played for you, a coach saying what to press.</li>
+      <li><b>A fight:</b> on the roller, give the enemy's side to <a href="#script">the GM's script</a> and play your own men.</li>
+      <li><b>A battle:</b> on the field map, give the other side an <b class="ui">Enemy commander</b> and move your own units (<a href="#battle">A battle</a>). <b>Beat history</b> scores you against the battle as fought and against the commander.</li>
+      <li><b>A campaign:</b> the <a href="#campaign">campaign page</a>, as for a GM: march on the travel map, send each fight to the roller or the field map with the script or the commander on the other side, and rest the wounded.</li>
+      <li><b>A war, season by season:</b> <a href="#war">below</a>.</li>
+    </ul>
+  </section>
+
+  <section id="script" aria-labelledby="h-script">
+    <h3 id="h-script">The GM's script (the pages play a side)</h3>
+    <p>For a fight on the roller with a side no person plays: alone, or a GM who wants the enemy played for him at the table.</p>
+    <ol>
+      <li>On the roller, open <b class="ui">Run the fight</b> and tick it.</li>
+      <li>For each side, choose who plays it: <b class="ui">Player</b> (a person, at the table or online), <b class="ui">GM by hand</b>, or <b class="ui">GM's script</b>. Choose how boldly the script fights, and the quality of men with no team-builder sheet.</li>
+      <li>Press <b class="ui">Step</b> for one move of the script, or <b class="ui">Play to my turn</b> to let it play until a person's turn. <b class="ui">Undo the script</b> takes back its last step.</li>
+    </ol>
+    <p>The script's men give first aid when no enemy is next to them: a man binds his own wound if it bleeds badly; a cautious side treats its worst-bleeding man it can reach, a steady side only its men who are down, a reckless side no one; a shooter with an enemy in range keeps shooting, and tends the others only when he has no one to shoot at. A medieval archer or crossbowman from the team builder carries a sword as well: when the man he strikes is next to him, he strikes with it (for the GM's own strikes too). A scripted man who is down with an enemy beside him asks for quarter and is taken prisoner; when a scripted side breaks, a man down with an enemy beside him is taken, a man down with none is left where he lies, a man on his feet beside an enemy breaks away on a d100 at or under his Agility (or Dodge, the better; a follower or comrade without a sheet, his quality: green 35, regular 50, veteran 65) or is taken, and the rest run. A player's named man is never surrendered by the script: down, he is left where he lies, and held, he breaks away and runs; taking him is the GM's call (<b>Taken prisoner</b> under <b>After the fight</b>). Their cards say <b>Taken</b> or <b>Ran</b>.</p>
+    <p>On the field map the same idea is the <b class="ui">Enemy commander</b>: choose a commander for each side that should move by itself.</p>
+  </section>
+
+  <section id="war" aria-labelledby="h-war">
+    <h3 id="h-war">A war, season by season (the team builder)</h3>
+    <p>A soldier's war a season (three months) at a time: marching, sickness, small fights and the named battles, eight wars from Henry V's in France to Italy in 1943-45. The Rules' <a href="rules.html#alone-war">A war, season by season</a> has the whole of it.</p>
+    <ol>
+      <li>Set the <b>lethality</b> at the top of the page (Gritty for a war where your men can die). Make the team (<a href="#team">Making the team</a>), send it to the roller and press <b class="ui">Add the team</b> there.</li>
+      <li>In the team builder, under <b>A season with the battalion</b>, choose the <b class="ui">War</b> and its first <b class="ui">Season</b>.</li>
+      <li>Choose <b class="ui">The team's posture</b> for the season: Keep their heads down, Do their duty or Volunteer. Then press <b class="ui">Serve the season</b>; its log tells what happened.</li>
+      <li>A small fight: <b class="ui">Play it on the roller</b> (with <b class="ui">Run the fight</b> on) or <b class="ui">Roll it</b>. Wounds wait on the roller to be rolled and applied.</li>
+      <li>Press <b class="ui">End of season</b>: skills, age, pay, promotion. Then the next season.</li>
+      <li><b class="ui">Save the journal</b> downloads the war so far, season by season.</li>
+    </ol>
+  </section>
+
+  <h2 class="group" id="print">On paper</h2>
+  <p class="group-lede">Print-and-play: pencil, dice and printed sheets. <a href="#h-choose">Back to the list</a></p>
+
+  <section id="paper" aria-labelledby="h-paper">
+    <h3 id="h-paper">Playing on paper</h3>
+    <p>Pencil, dice and printed sheets, with no screen at the table. Each of these prints from your browser (or is a PDF).</p>
+    <ul>
+      <li><b>The playtest packet</b> (<a href="playtest-packet.html">page</a>, <a href="playtest-packet.pdf">PDF</a>): one fight at the Aire crossing and a week in camp, with its men, map, counters and a one-page quick reference.</li>
+      <li><b>The printed tables</b> (<a href="tables.pdf">PDF</a>): every hit-location and wound table, and Ask the dice for questions no rule answers.</li>
+      <li><b>The armoury</b> (<a href="armoury.html">page</a>): one era's common weapons and armour with the game's figures; pick the era and print it.</li>
+      <li><b>A man on paper</b> (<a href="makeaman.html">page</a>): the steps of making a man, one era's tables to roll on, and a blank sheet.</li>
+      <li><b>The council card</b> (<a href="council-card.html">page</a>): the camp roles and the evening council on one page.</li>
+    </ul>
+    <p>The rules are the same as the pages': the <a href="rules.html">Rules</a> and the period books say how each roll is made.</p>
+  </section>
+
+  <h2 class="group" id="any">Any way you play</h2>
+  <p class="group-lede">What every way of playing shares. <a href="#h-choose">Back to the list</a></p>
+
+  <section id="team" aria-labelledby="h-team">
+    <h3 id="h-team">Making the team (any mode)</h3>
+    <ol>
+      <li>Open the <a href="team.html">team builder</a>. Choose the <b class="ui">Era</b>, <b class="ui">Where they come from</b> and a <b class="ui">Team</b>, then press <b class="ui">Roll the team</b>. Reroll a man, or add one, as you like.</li>
+      <li>Kit them out and buy from their purses if you want to.</li>
+      <li>Press <b class="ui">Send to the roller</b> to fight man by man, or <b class="ui">Send to the field map</b> to fight with their followers as units.</li>
+    </ol>
+    <p>On the roller the team arrives as an offer: press <b class="ui">Add the team</b>. Each man added becomes a <i>named man</i> at once (a team added again is the same men, not new ones): the travel map, the roller and the field map all know them, and they keep their wounds, purses and experience from page to page.</p>
+  </section>
+
   <section id="saving" aria-labelledby="h-saving">
-    <h2 id="h-saving">Saving, and campaigns side by side</h2>
+    <h3 id="h-saving">Saving, and campaigns side by side</h3>
     <ul>
       <li><b class="ui">Save the game to a file</b> (campaign page) writes every page's state and the campaign's log as one file: to back up, or to move to another computer. <b class="ui">Load a saved game</b> brings it back.</li>
       <li><b>Taking turns as GM.</b> <b class="ui">Hand the game to the next GM</b> writes a save file for whoever runs the next session, with a note for them. Your GM-only notes go in it <b>sealed</b> with a passphrase the GMs share: send the file, and the passphrase another way. The next GM loads it as usual and types the passphrase to read the notes. Your copy is then marked handed over and stands still, so the game doesn't fork, until you load a newer file or press <b class="ui">Take it back</b>. The players' rooms go with the game: your console lets them go, and when the next GM loads the file the same evening, his console invites them back through the same rooms, with no new links. Rooms unused for 6 hours are forgotten: then <b class="ui">Every link at once</b> under Players online gives every new link in one go, for a group chat. One thing can't be sealed: <b>the next GM sees the whole map and every side</b>, including what you kept hidden.</li>
@@ -230,13 +298,14 @@ code{font:500 .88em var(--mono)}
   </section>
 
   <section id="trouble" aria-labelledby="h-trouble">
-    <h2 id="h-trouble">When something looks wrong</h2>
+    <h3 id="h-trouble">When something looks wrong</h3>
     <ul>
       <li><b>A page shows something old, or a new button is missing.</b> Reload it (Ctrl+F5, or Cmd+Shift+R on a Mac) to get the newest version of the site.</li>
       <li><b>A player cannot connect.</b> Untick <b class="ui">Public STUN server</b> only when everyone is on one network; across the internet it is needed. A few strict networks (some workplaces, some mobile networks) will not connect at all: there is no relay yet.</li>
       <li><b>Two tabs of the same page.</b> They follow each other, but it is easiest to keep one of each page open, or to run everything from the campaign page.</li>
     </ul>
   </section>
+
   <!--__SIGNUP__-->
 </div>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "34e0ca2720c9491aad85bbb9561bbdac"}'></script><!-- End Cloudflare Web Analytics -->
