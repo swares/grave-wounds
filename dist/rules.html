@@ -201,6 +201,7 @@ figure.pic .slot-box{border:1px dashed var(--line);background:var(--panel);paddi
 </li>
 <li><a href="#alone">Playing alone</a><ul>
 <li><a href="#alone-session">How a session runs</a></li>
+<li><a href="#alone-march">The commander on the march</a></li>
 <li><a href="#alone-war">A war, season by season</a></li>
 <li><a href="#ask">Ask the dice</a></li>
 </ul>
@@ -3841,8 +3842,10 @@ season</a>).</p>
    <a href="travel.html">travel map</a>.</li>
 <li><strong>Open the <a href="campaign.html">campaign page</a>.</strong> It follows the pages through muster, march, fight,
    aftermath and downtime, and keeps the game's log and save.</li>
-<li><strong>March</strong> on the travel map. Its clock stops when your force meets the enemy. Ask the dice
-   anything the map does not say: is the farm empty, will the villagers sell bread.</li>
+<li><strong>March</strong> on the travel map. Give the enemy's side to the commander (<strong>Moved by</strong>, on the
+   travel map or under Run the march: <a href="#alone-march">The commander on the march</a>). Its clock stops
+   when your force meets the enemy. Ask the dice anything the map does not say: is the farm
+   empty, will the villagers sell bread.</li>
 <li><strong>Fight.</strong> A skirmish goes to the roller: turn on <strong>Run the fight</strong>, play your own men, and let
    the GM's script play the other side; <strong>Play to my turn</strong> runs it until it is yours. A battle goes
    to the field map: give the other side to the <a href="#commander">enemy commander</a>, attacking or holding
@@ -3867,6 +3870,28 @@ season</a>).</p>
 at what the answer would cost you, and take the answer the dice give. Let the commander have
 the enemy's choices, not you.</p>
 </div>
+<h2 id="alone-march">The commander on the march</h2>
+<p>On the travel map, and under <strong>Run the march</strong> on the campaign page, <strong>Moved by</strong> gives a side to
+the commander, attacking or holding. At each press of the clock it orders each of that side's
+columns before the clock moves, from what the side has seen: where it saw each enemy force last,
+and how big it looked. It never knows where an enemy it has not seen is. For each column, the
+first of these that applies:</p>
+<ol>
+<li><strong>Its rations are gone:</strong> it marches back to its side's nearest depot.</li>
+<li><strong>Exhausted or spent:</strong> it makes a watched camp and rests until morning; exhausted, at most
+   2 mornings running, then it goes on; spent, until it can march.</li>
+<li><strong>Beaten</strong> and fallen back within 7 days, or <strong>outnumbered</strong>: what it sees within
+   6 hexes is 1.5 times its strength or more. It falls back to its nearest depot
+   or camp away from them.</li>
+<li><strong>Attacking:</strong> it marches on the nearest enemy force it has seen, if it is the stronger;
+   otherwise on the nearest objective it has not yet reached, looking for them.</li>
+<li><strong>Holding:</strong> it marches to its nearest objective, or stays where it is, and makes a
+   watched camp there.</li>
+</ol>
+<p>Its baggage marches with its biggest column. When its columns come within reach of an enemy force
+and are the stronger, an attacking commander sends the fight itself, as <strong>Fights on offer</strong> would:
+the page opens on it. Holding, or the weaker, it does not attack; a fight is still yours to set up
+against it. The sizes are ours.</p>
 <h2 id="alone-war">A war, season by season</h2>
 <p>A soldier's war was mostly marching, quarters, sickness and small fights, with a few named
 battles. The <a href="team.html">team builder</a>'s <strong>A season with the battalion</strong> plays it a season (three
@@ -5513,12 +5538,14 @@ back in marsh country.</p>
 <p class="ix"><b>Assigned</b>: <a href="#five-steps">The five steps</a></p>
 <p class="ix"><b>At or under</b>: <a href="#ask">Ask the dice</a></p>
 <p class="ix"><b>Attack</b>: <a href="#quick-men">The six men</a>, <a href="#characteristics">Characteristics and skills</a>, <a href="#turn">A fighter's turn</a></p>
+<p class="ix"><b>Attacking</b>: <a href="#alone-march">The commander on the march</a></p>
 <h3 class="ix-letter">B</h3>
 <p class="ix"><b>Baggage train</b>: <a href="#supplies">Supplies</a>, <a href="#supplies-full">Supplies in full</a></p>
 <p class="ix"><b>Bargaining</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Batteries</b>: <a href="#support">Fire support</a></p>
 <p class="ix"><b>Battery</b>: <a href="#guns">Guns of the black-powder wars</a>, <a href="#guns-full">Batteries in full</a></p>
 <p class="ix"><b>Beat history</b>: <a href="#alone-session">How a session runs</a></p>
+<p class="ix"><b>Beaten</b>: <a href="#alone-march">The commander on the march</a></p>
 <p class="ix"><b>Beaten zone</b>: <a href="#modern-infantry">Modern infantry</a></p>
 <p class="ix"><b>Billets</b>: <a href="#march-skills">Skills on the march</a></p>
 <p class="ix"><b>Bind</b>: <a href="#quick-aid">First aid</a>, <a href="#first-aid">First aid</a></p>
@@ -5608,6 +5635,7 @@ back in marsh country.</p>
 <p class="ix"><b>Exchange</b>: <a href="#field-map">The field map</a></p>
 <p class="ix"><b>Exchanged</b>: <a href="#prisoners">Prisoners</a></p>
 <p class="ix"><b>Exchanges of fire</b>: <a href="#ammunition-full">Ammunition in full</a></p>
+<p class="ix"><b>Exhausted or spent</b>: <a href="#alone-march">The commander on the march</a></p>
 <p class="ix"><b>Extended order</b>: <a href="#modern-infantry">Modern infantry</a></p>
 <h3 class="ix-letter">F</h3>
 <p class="ix"><b>Fall out</b>: <a href="#events">On the road</a></p>
@@ -5617,6 +5645,7 @@ back in marsh country.</p>
 <p class="ix"><b>Fatigue</b>: <a href="#exchange-full">An exchange in full</a></p>
 <p class="ix"><b>Field</b>: <a href="#after">After the battle</a></p>
 <p class="ix"><b>Fight</b>: <a href="#alone-session">How a session runs</a></p>
+<p class="ix"><b>Fights on offer</b>: <a href="#alone-march">The commander on the march</a></p>
 <p class="ix"><b>Find a billet</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Find the way</b>: <a href="#skills">Using skills</a></p>
 <p class="ix"><b>Finding the way</b>: <a href="#march-skills">Skills on the march</a></p>
@@ -5649,6 +5678,7 @@ back in marsh country.</p>
 <p class="ix"><b>Heroes</b>: <a href="#followers">Followers</a>, <a href="#battle">Battles of hundreds</a>, <a href="#heroes">Heroes</a></p>
 <p class="ix"><b>Hidden men</b>: <a href="#modern-infantry">Modern infantry</a></p>
 <p class="ix"><b>Hired</b>: <a href="#five-steps">The five steps</a></p>
+<p class="ix"><b>Holding</b>: <a href="#alone-march">The commander on the march</a></p>
 <p class="ix"><b>Honours</b>: <a href="#rank">Rank, pay and loot</a></p>
 <p class="ix"><b>Horse</b>: <a href="#events-full">On the road in full</a></p>
 <p class="ix"><b>Horses</b>: <a href="#events">On the road</a>, <a href="#events-full">On the road in full</a></p>
@@ -5674,6 +5704,7 @@ back in marsh country.</p>
 <p class="ix"><b>Interpreters</b>: <a href="#tongues-full">Tongues in full</a></p>
 <p class="ix"><b>Into</b>: <a href="#weather-fight">Weather in a fight</a></p>
 <p class="ix"><b>Its fire</b>: <a href="#guns-full">Batteries in full</a></p>
+<p class="ix"><b>Its rations are gone</b>: <a href="#alone-march">The commander on the march</a></p>
 <h3 class="ix-letter">J</h3>
 <p class="ix"><b>Journal</b>: <a href="#alone-war">A war, season by season</a></p>
 <h3 class="ix-letter">K</h3>
@@ -5728,6 +5759,7 @@ back in marsh country.</p>
 <p class="ix"><b>Morale</b>: <a href="#round-end">The end of the round</a>, <a href="#exchange-full">An exchange in full</a>, <a href="#knocking-out-full">Knocking out in full</a></p>
 <p class="ix"><b>Mount</b>: <a href="#riders">Riders</a></p>
 <p class="ix"><b>Move or stay</b>: <a href="#turn">A fighter's turn</a></p>
+<p class="ix"><b>Moved by</b>: <a href="#alone-session">How a session runs</a>, <a href="#alone-march">The commander on the march</a></p>
 <p class="ix"><b>Moves</b>: <a href="#quick-turn">A turn</a></p>
 <p class="ix"><b>Moving</b>: <a href="#vehicles">Armour and mines</a></p>
 <p class="ix"><b>Mud and snow</b>: <a href="#days-weather">The day's weather</a></p>
@@ -5759,6 +5791,7 @@ back in marsh country.</p>
 <p class="ix"><b>Orders from the accounts</b>: <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Origin</b>: <a href="#five-steps">The five steps</a></p>
 <p class="ix"><b>Out of the fight</b>: <a href="#turn">A fighter's turn</a></p>
+<p class="ix"><b>Outnumbered</b>: <a href="#alone-march">The commander on the march</a></p>
 <p class="ix"><b>Over</b>: <a href="#ask">Ask the dice</a></p>
 <p class="ix"><b>Overruns</b>: <a href="#support">Fire support</a></p>
 <h3 class="ix-letter">P</h3>
@@ -5815,6 +5848,7 @@ back in marsh country.</p>
 <p class="ix"><b>Routes</b>: <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Run</b>: <a href="#turn">A fighter's turn</a>, <a href="#commander">The enemy commander</a>, <a href="#commander-full">The enemy commander</a></p>
 <p class="ix"><b>Run the fight</b>: <a href="#alone-session">How a session runs</a>, <a href="#alone-war">A war, season by season</a></p>
+<p class="ix"><b>Run the march</b>: <a href="#alone-march">The commander on the march</a></p>
 <p class="ix"><b>Running low</b>: <a href="#ammunition-full">Ammunition in full</a></p>
 <h3 class="ix-letter">S</h3>
 <p class="ix"><b>Sandstorm</b>: <a href="#days-weather">The day's weather</a></p>

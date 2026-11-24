@@ -90,6 +90,13 @@ into the travel map** applies it from the console: the dead come off, the wounde
 ammunition is as the units left it, and the forces' clocks move on to the battle's end. The travel
 map still takes it itself if it is opened first; either way it is taken once.
 
+**Moved by**, under the forces, gives a side to the commander, attacking or holding
+(`travelday.js` command, the Rules' The commander on the march): at each press it orders that
+side's columns from what the side has seen, and after the press, if an attacking commander's
+columns are in reach of an enemy force and the stronger, the console sends that fight itself
+(attack now, on the offer's default page) and moves to the fight. The travel map has the same
+choice above its forces, and sends the fight as Fight here does.
+
 The console never keeps the day itself: each press starts from what the travel map last saved and
 saves the result, and the page in the frame is reloaded to show it. A travel map open in another
 tab follows too: when the day changes elsewhere it takes the new one and says so, rather than save

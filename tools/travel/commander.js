@@ -95,5 +95,26 @@ check("moved by hand again, a side is left alone", () => {
   assert.deepEqual(D.command(), []);
 });
 
+check("in reach and the stronger, an attacking commander sends its own fight; holding, or the weaker, it does not", () => {
+  const D = start(9, "towton-1461", "York", "attack"), fs = D.forcesHere();
+  const ours = fs.find(f => f.side === "York" && f.type !== "wagons"), theirs = fs.find(f => f.side === "Lancaster");
+  const m = D.curMap(), far = [m.rows[0].length - 1, m.rows.length - 1];
+  for (const f of fs) if (f !== ours && f !== theirs) f.pos = f.side === "York" ? [0, 0] : far.slice();   // the others out of the way, apart
+  theirs.pos = ours.pos.slice(); theirs.pos[0] += 1;
+  ours.men = 5000; theirs.men = 500;
+  D.noteSightings();
+  const cf = D.commanderFight();
+  assert.ok(cf && cf.side === "York" && cf.k === 0 && cf.title.includes(theirs.name), JSON.stringify(cf));
+  ours.men = 100; theirs.men = 5000; D.S.seen = {}; D.noteSightings();
+  assert.equal(D.commanderFight(), null, "the weaker attacked");
+  ours.men = 5000; theirs.men = 500; D.S.cmd[D.S.mapId].York = "hold"; D.noteSightings();
+  assert.equal(D.commanderFight(), null, "holding, it attacked");
+});
+check("the console's view: the sides on the map and who moves each", () => {
+  const D = start(10, "towton-1461", "York", "hold");
+  const v = D.commandView();
+  assert.deepEqual(v.map(x => [x.side, x.stance]).sort(), [["Lancaster", null], ["York", "hold"]]);
+});
+
 console.log(`${tally.passed} passed, ${tally.failed} failed`);
 process.exit(tally.failed ? 1 : 0);

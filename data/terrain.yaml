@@ -21,6 +21,11 @@ day_starts: 8          # hour of the morning the march starts (for the clock sho
 # A fight can be set up only between forces that have marched to within this many hexes
 # of each other (1 = the same or the next hex: about a kilometre).
 fight_within: 1
+# The commander on the march (templates/travelday.js command; the Rules' Playing alone): a side
+# given to it is outnumbered when what it sees within near_hexes is `outnumbered` times its
+# strength; it rests an exhausted column at most rest_nights mornings running; and it camps in
+# the kind of camp `camp` names. Ours: no source gives these.
+commander: {outnumbered: 1.5, near_hexes: 6, rest_nights: 2, camp: watched}
 
 forces:
   foot:    {name: "On foot", kmh: 4}
