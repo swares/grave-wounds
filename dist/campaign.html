@@ -4684,7 +4684,7 @@ const tellRoller = (cmd, extra = {}) => tellFrame(rollerFrame(), cmd, extra);
 const tellField = (cmd, extra = {}) => tellFrame(fieldFrame(), cmd, extra);
 window.addEventListener("message", e => {
   if (SITE !== "*" && e.origin !== SITE) return;
-  if (e.data?.gw === "roller" && e.data.relay && e.source === rollerFrame()) return relayOut(e.data.relay);   // a player's fight screen, for him
+  if (e.data?.relay && ((e.data.gw === "roller" && e.source === rollerFrame()) || (e.data.gw === "field" && e.source === fieldFrame()))) return relayOut(e.data.relay);   // a player's fight screen, for him
   if (e.data?.gw === "roller" && e.source === rollerFrame()) FIGHT = e.data.status;
   else if (e.data?.gw === "field" && e.source === fieldFrame()) FIELD = e.data.status;
   else return;
@@ -5198,7 +5198,7 @@ function playerCommand(pl, m){                         // his proposed orders; h
   if (!m || typeof m.t !== "string") return;
   if (m.t === "propose") return propose(pl, m);
   if (m.t === "council") return askCouncil(pl, m);
-  if (PL.fighting.has(pl.id)) tellRoller("player", { id: pl.id, m });
+  if (PL.fighting.has(pl.id)) tellFrame(fightFrame(), "player", { id: pl.id, m });
 }
 function propose(pl, m){                              // a proposal: only for a force one of his men is with, only one of its own choices
   if (REC.proposeOff) return;
@@ -5227,13 +5227,14 @@ function answerProposal(n, yes){
 }
 /* His fight through his link: the roller in the frame draws his side's screen as for a Play online
    player and hands it here; this page passes it on to him, and his choices back. */
-function relayIn(){                                    // the roller hears who is connected and which men each plays (when that changes)
-  if (!rollerFrame()) return;
+const fightFrame = () => rollerFrame() || fieldFrame();   // the page in the frame that relays the players' fights: the roller or the field map
+function relayIn(){                                    // the roller (or the field map) hears who is connected and which men each plays (when that changes)
+  if (!fightFrame()) return;
   const named = Object.fromEntries(namedMen());
   const list = players().filter(pl => PL.conn[pl.id]?.state === "open")   // his men by their travel-map id, and by the team builder's (a man added to a fight anew has only that)
     .map(pl => ({ id: pl.id, uids: pl.men, pids: pl.men.map(u => named[u]?.pid).filter(Boolean) }));
   const key = JSON.stringify(list);
-  if (key !== PL.relayKey){ PL.relayKey = key; tellRoller("seats", { list }) }
+  if (key !== PL.relayKey){ PL.relayKey = key; tellFrame(fightFrame(), "seats", { list }) }
 }
 function relayOut({ id, m }){
   const c = PL.conn[id];
@@ -5306,7 +5307,7 @@ async function playerConnect(pl){                     // an invitation for his s
       note(pl.joined ? `${pl.name} rejoins` : `${pl.name} joins`);
       pl.joined = true; saveRecord(); render();
     }
-    if (st === "open"){ c.last = null; playerSend(pl); tellRoller("resend", { id: pl.id }) }   // his screens, whole: first or again
+    if (st === "open"){ c.last = null; playerSend(pl); tellFrame(fightFrame(), "resend", { id: pl.id }) }   // his screens, whole: first or again
     if (st !== "open") PL.fighting.delete(pl.id);
     if (NET_LOST.has(st)) roomAgain(pl, peer);
     relayIn();
@@ -5467,10 +5468,12 @@ function pgFight(m){                                  // his fight: the roller's
   }
   $("#p-fight").hidden = false;
   pgCoach();
+  const page = m.page === "field" ? "field.html" : "roller.html";   // a battle on the field map, or a fight on the roller
+  if (PG.frame && PG.page !== page && !m.part){ PG.frame.remove(); PG.frame = null; PG.ready = false; PG.queue = [] }
   if (!PG.frame){
     if (m.part) return;                             // a change to a fight this page never had: the whole one comes when it rejoins
-    PG.frame = document.createElement("iframe");
-    PG.frame.title = "Your fight"; PG.frame.src = "roller.html#relay"; PG.frame.style.height = "88vh";
+    PG.frame = document.createElement("iframe"); PG.page = page;
+    PG.frame.title = "Your fight"; PG.frame.src = page + "#relay"; PG.frame.style.height = "88vh";
     $("#p-fight").append(PG.frame);
   }
   if (PG.ready) PG.frame.contentWindow.postMessage({ gw: "relay-screen", m }, SITE);

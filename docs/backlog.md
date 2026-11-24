@@ -18,15 +18,15 @@ not this repository.
 
   | Way to play | Support | What works | The main gap |
   | --- | --- | --- | --- |
-  | Online: commander against commander (simulation) | First cut | The field map's Play online (a seat a side, room codes; each player sees his side's view and moves on his side's move; the GM's page hosts); two people on one screen with the side's view; the commander against itself to check a battlefield | Not yet through the campaign console (next); the travel map is not online for two commanders; no TURN relay; the log is filtered by name; set-up is the GM's |
+  | Online: commander against commander (simulation) | First cut | The field map's Play online (a seat a side, room codes; each player sees his side's view and moves on his side's move; the GM's page hosts); two people on one screen with the side's view; the commander against itself to check a battlefield | The travel map is not online for two commanders; no TURN relay; the log is filtered by name; set-up is the GM's |
   | Online: you against the commander (solo) | Strong | The enemy commander on the field map (sees only what its units see, reserves, guns, objectives), Beat history and its scorecard, the GM's script on the roller, the rules' chapter on playing alone, the commander running the travel map's day; a war played alone season by season (posture, journal, promotion, the season's fights; played through end to end in solo play tests 16 and 17) | Runs in the browser with no connection needed; the commander does not yet notice some campaign events |
-  | Online: a GM and his party (VTT) | First cut | The GM hosts from the roller or the campaign console; players join by room code and see their men, the public news and their fights, propose orders, and see only what their side has seen | The field and travel maps are not shared online; no TURN relay for strict networks; no voice or chat (groups bring their own); tested only with scripted players |
+  | Online: a GM and his party (VTT) | First cut | The GM hosts from the roller or the campaign console; players join by room code and see their men, the public news and their fights (on the roller, and on the field map for a player whose man is a hero there), propose orders, and see only what their side has seen | The travel map is not shared online for moving forces; no TURN relay for strict networks; no voice or chat (groups bring their own); tested only with scripted players |
   | At the table: an RPG with a GM | Good on paper, untested | The rule book and five period books, the team builder's sheets, the roller as the GM's aid, the council card, the tables | The 309-page tables PDF is a reference, not a table booklet; making a man by hand is not checked for pencil and dice; never played at a table |
   | At the table: print-and-play modules | One module | Ferrybridge (the playtest packet 0.2.4): characters, map, counters, roster and reference, laid out for printing on both sides | The only module, and not yet played; the plan for more is under *Print-and-play modules* |
 
   What would widen the reach most, in order: the Ferrybridge playtest (it tests both table rows);
-  the field map online (first cut: the field page hosts, a seat a side; next, the campaign console
-  relaying it for a GM's party); a TURN relay before strangers are asked to play online. Solo is the
+  the field map online (first cut: the field page hosts, a seat a side, and the campaign console
+  relays it for a GM's party); a TURN relay before strangers are asked to play online. Solo is the
   strongest today, which suits itch.io's Solo RPG category.
 - **Table playtests.** None has been recorded: every result so far is self-play. The four to run
   are in the README's *Next steps*, and `design.md` has the disease numbers to try over a few weeks
@@ -206,8 +206,10 @@ not this repository.
   works and the other panels from his page (first aid he gives, on his side's turn), and the travel
   page online for two commanders. The field page's own Play online (first cut, docs/units.md *Play
   online*): a seat a side, room codes or codes by hand, his side's view, his clicks made by the host
-  on his side's move; still left: the campaign console relaying it, set-up by the players, the log's
-  side tags (its filter is by name), and a player's page with no map zoom.
+  on his side's move; the campaign console relays it to its players (a player plays the side of
+  his hero). Still left: set-up by the players, the log's side tags (its filter is by name), a
+  player's page with no map zoom, and a console player whose named man is not a hero there (a
+  follower unit of his, say) has no seat.
 - **Fog of war on the travel map, third cut** (`docs/travel.md`, `docs/fog-of-war-research.md`).
   A side sees enemy forces within a distance in km (3 on foot, 8 mounted, 2 with wagons; cut by the
   weather, dusk and the dark; outposts find any enemy within 1 km; woods and towns hide a force
