@@ -94,9 +94,9 @@ function makeTravelDay(DATA, RULES, env = {}){
   }
 
   const KEY = "gravewounds-travel";
-  const S = { mapId: Object.keys(DATA.maps)[0], edits: {}, forces: {}, sel: {}, mode: "plan", paint: "forest", seq: 1, msg: "", wx: {}, plague: {}, fought: [], clock: {}, seen: {}, sieges: {}, dead: {}, cmd: {} };
-  function save(){ try{ localStorage.setItem(KEY, JSON.stringify({ mapId: S.mapId, edits: S.edits, forces: S.forces, sel: S.sel, seq: S.seq, paint: S.paint, wx: S.wx, plague: S.plague, fought: S.fought, clock: S.clock, seen: S.seen, sieges: S.sieges, dead: S.dead, cmd: S.cmd })) }catch(e){} }
-  function restore(){ try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j?.mapId && DATA.maps[j.mapId]) Object.assign(S, j, { plague: j.plague || {}, fought: j.fought || [], clock: j.clock || {}, seen: j.seen || {}, sieges: j.sieges || {}, dead: j.dead || {}, cmd: j.cmd || {} }) }catch(e){ /* nothing saved, or unreadable: start fresh */ } }
+  const S = { mapId: Object.keys(DATA.maps)[0], edits: {}, forces: {}, sel: {}, mode: "plan", paint: "forest", seq: 1, msg: "", wx: {}, plague: {}, fought: [], clock: {}, seen: {}, sieges: {}, dead: {}, cmd: {}, sent: {} };
+  function save(){ try{ localStorage.setItem(KEY, JSON.stringify({ mapId: S.mapId, edits: S.edits, forces: S.forces, sel: S.sel, seq: S.seq, paint: S.paint, wx: S.wx, plague: S.plague, fought: S.fought, clock: S.clock, seen: S.seen, sieges: S.sieges, dead: S.dead, cmd: S.cmd, sent: S.sent })) }catch(e){} }
+  function restore(){ try{ const j = JSON.parse(localStorage.getItem(KEY) || "null"); if (j?.mapId && DATA.maps[j.mapId]) Object.assign(S, j, { plague: j.plague || {}, fought: j.fought || [], clock: j.clock || {}, seen: j.seen || {}, sieges: j.sieges || {}, dead: j.dead || {}, cmd: j.cmd || {}, sent: j.sent || {} }) }catch(e){ /* nothing saved, or unreadable: start fresh */ } }
   const baseMap = () => DATA.maps[S.mapId];
   function curMap(){                           // the map with any painting applied
     const b = baseMap();
@@ -1505,8 +1505,10 @@ function makeTravelDay(DATA, RULES, env = {}){
     const bold = Object.entries(S.cmd[S.mapId] || {}).filter(([, st]) => st === "attack").map(([sd]) => sd);
     if (!bold.length) return null;
     noteSightings();
+    const waiting = new Set((S.sent[S.mapId] = (S.sent[S.mapId] || []).filter(x => !S.fought.includes(x.battle))).map(x => x.defender));   // sent, its result not yet taken in
     for (const x of fightsOnOffer(false)){
       const p = fightOptions(byId(x.id))[0], dfd = byId(p.defender);
+      if (waiting.has(dfd.id)) continue;
       for (const side of bold){
         const ours = p.attackers.map(byId).filter(o => o.side === side);
         if (!ours.length || dfd.side === side || ours.length !== p.attackers.length) continue;   // its own fight, not one shared with others
@@ -1576,7 +1578,9 @@ function makeTravelDay(DATA, RULES, env = {}){
     return { chance: s.chance, roll, surprised: roll <= s.chance, text: surpriseText(s) };
   }
   function sendFightTo(p, on){                    // the fight p sent to the roller ("roller"), the field map ("field") or a battlefield ("field:<id>") -> the page to open
-    if (on.startsWith("field")) return sendField(p, on.slice(6) || null);
+    const field = on.startsWith("field"), battle = `${S.mapId}:${p.day}:${p.used}:${p.defender}${field ? "" : ":roller"}`;
+    (S.sent[S.mapId] ||= []).push({ defender: p.defender, battle });   // waiting for its result: the commander does not send it again
+    if (field) return sendField(p, on.slice(6) || null);
     const dfd = byId(p.defender), st = campStatus(dfd, p), m = curMap(), today = dayWeather(p.day);
     const brief = o => ({ id: o.id, name: o.name, side: o.side, men: fitOf(o).fit, type: o.type, fatigue: o.fatigue || 0, km: +(hexDist(o.pos, dfd.pos) * m.hex_km).toFixed(1), from: cameFrom(dfd, o) });   // the sick stay out of it
     const foes = p.attackers.map(byId).map(brief), allies = p.allies.map(byId).map(brief), surprise = rollSurprise(p);

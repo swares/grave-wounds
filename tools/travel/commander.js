@@ -105,6 +105,11 @@ check("in reach and the stronger, an attacking commander sends its own fight; ho
   D.noteSightings();
   const cf = D.commanderFight();
   assert.ok(cf && cf.side === "York" && cf.k === 0 && cf.title.includes(theirs.name), JSON.stringify(cf));
+  D.sendFightTo(D.fightOptions(D.byId(cf.id))[0], cf.on);
+  assert.equal(D.commanderFight(), null, "the fight it sent, its result not yet in, was sent again");
+  D.S.fought.push(D.S.sent[D.S.mapId][0].battle);
+  assert.ok(D.commanderFight(), "its result taken in, the fight is the commander's to send again");
+  D.S.sent = {};
   ours.men = 100; theirs.men = 5000; D.S.seen = {}; D.noteSightings();
   assert.equal(D.commanderFight(), null, "the weaker attacked");
   ours.men = 5000; theirs.men = 500; D.S.cmd[D.S.mapId].York = "hold"; D.noteSightings();

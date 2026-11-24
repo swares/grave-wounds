@@ -61,7 +61,8 @@ first of these that applies:
 
 Its baggage marches with its biggest column. When its columns come within reach of an enemy force
 and are the stronger, an attacking commander sends the fight itself, as **Fights on offer** would:
-the page opens on it. Holding, or the weaker, it does not attack; a fight is still yours to set up
+the page opens on it. A fight sent, by it or by you, is not sent again until its result is
+taken back into the travel map. Holding, or the weaker, it does not attack; a fight is still yours to set up
 against it. The sizes are ours.
 
 ## A war, season by season {#alone-war}
