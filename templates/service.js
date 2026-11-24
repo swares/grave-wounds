@@ -94,7 +94,7 @@ function makeService(SV, RULES){
     if (out.small && (W.small_fights || []).length) out.fight = smallFight(W, s.state, rng);
     const acts = s.actions.filter(a => rolled.includes(a))
       .sort((a, b) => actionWeek(W, sid, a) - actionWeek(W, sid, b) || s.actions.indexOf(a) - s.actions.indexOf(b));
-    for (const m of men) out.men.push(manSeason(W, s, { ...m, hit_mult: P.hit }, acts, rng));
+    for (const m of men) out.men.push(manSeason(W, s, { ...m, hit_mult: P.hit, deed_mult: P.deed ?? 1 }, acts, rng));
     return out;
   }
   const between = (lo, hi, roll) => lo + Math.floor((roll - 1) * (hi - lo + 1) / 100);
@@ -126,7 +126,7 @@ function makeService(SV, RULES){
   }
   function manSeason(W, s, m, acts, rng){
     let h = startHealth(m);
-    const r = { name: m.name, dead: null, dead_week: null, sick_days: 0, wound: null, worst: null, hits: [], taken: null, missed: [], rolls: [], health: null };
+    const r = { name: m.name, dead: null, dead_week: null, sick_days: 0, wound: null, worst: null, hits: [], taken: null, missed: [], rolls: [], deeds: [], health: null };
     const end = m.endurance ?? undefined, sid = s.id;   // none: the typical man's
     for (let wk = 0; wk < weeks(W); wk++){
       for (const aid of acts.filter(a => actionWeek(W, sid, a) === wk)){
@@ -171,9 +171,17 @@ function makeService(SV, RULES){
     r.rolls.push({ action: aid, pct, roll });
     if (roll <= pct){ r.hits.push({ action: aid, pct, roll, weapon: weaponFor(W, rng()) }); return }
     const t = edgeScaled(W, takenPct(W, aid, pos, unit), unit, edge);
-    if (t){ const tr = rng(); if (tr <= t) r.taken = { action: aid, pct: t, roll: tr } }   // came through unhit: taken?
+    if (t){ const tr = rng(); if (tr <= t){ r.taken = { action: aid, pct: t, roll: tr }; return } }   // came through unhit: taken?
+    const dp = deedPct(pos, m.deed_mult ?? 1);
+    if (dp){ const dr = rng(); if (dr <= dp) r.deeds.push({ action: aid, pct: dp, roll: dr, position: pos }) }   // unhit and free: a deed there?
   }
-  return { postureOf, war, warsFor, season, seasonStart, weeks, actionWeek, hitPct, vacancyPct, takenPct, desertPct, inWeek, factors, dayCtx, weaponFor, worstStep, woundStep, unfit, serve, between, smallFight };
+  function deedPct(pos, mult = 1, small = false){   // his % chance of a deed at a rolled action (or small fight), as service.deed_pct
+    const D = SV.deeds;
+    if (!D) return 0;
+    const base = small ? (D.small || 0) : ((D.action || {})[pos] || 0);
+    return Math.min(100, pyRound(base * mult));
+  }
+  return { postureOf, war, warsFor, season, seasonStart, weeks, actionWeek, hitPct, vacancyPct, deedPct, takenPct, desertPct, inWeek, factors, dayCtx, weaponFor, worstStep, woundStep, unfit, serve, between, smallFight };
 }
 
 if (typeof module !== "undefined") module.exports = makeService;   // Node (the tests); the page has no `module`

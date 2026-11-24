@@ -9,7 +9,8 @@
 #   diff     - the difficulty of his Command check for it (checks.yaml)
 #   letters  - least Letters to hold it (an army that wanted its sergeants to read and write);
 #   unlettered - instead of a bar, a modifier to the check for a man under `literate` Letters
-#   deed_only - only a deed in battle opens it (a knighting on the field)
+#   deed_only - only a deed in battle opens it (a knighting on the field): a man of the rank below
+#               with a deed that season is a vacancy of his own, no other needed
 #   shares   - his shares of prize money (eras with prize money)
 # start - the rank each career starts at (the rest start at the bottom)
 # career_pay - a career paid at another rate than the foot (horsemen, surgeons), multiplying his
@@ -42,6 +43,14 @@ season_vacancies: {background: 2, cap: 90}
 #   ladder's single years would otherwise fall to two seasons); spent on that roll, won or lost. Ours (23 November 2026): no source
 #   counts it, though the memoirs are full of men put forward by an officer who had seen them.
 known: {bonus: 20, years: 0.5, floor: 1}
+# season_deeds - a deed in a season's rolled parts (data/service, the team builder's panel; a played
+#   fight's deeds are the roller's After the fight): at each named action rolled, not played, a man
+#   there who comes through unhit and is not taken rolls d100 against `action` by where he stood (a
+#   war's positions: reserve, line, thick), times the posture's `deed` (data/posture.yaml); in a small
+#   fight rolled, each man in it unhit, against `small`. A deed: +deed_bonus to his next promotion
+#   roll and the years waived, as a GM's; a rank `deed_only` (a knighting) opens to it. All ours
+#   (24 November 2026): no source counts how often a man distinguished himself.
+season_deeds: {action: {thick: 10, line: 3, reserve: 0}, small: 5}
 presence: {per_rank: 2, cap: 6, approx: true}   # Presence a promotion adds, at most `cap` in all (a design estimate: no source found)
 days_a_year: 365
 
