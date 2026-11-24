@@ -480,6 +480,30 @@ that names an enemy unit it does not see or an enemy hero. The log has no side t
 filter is by name: a line that tells of an unseen enemy without naming it is shown. Tested by
 `tools/field/sideview.py`.
 
+**Play online.** Under the battle's buttons, *Play online* invites a player for a side, on his own
+computer. This page is the host, and the GM keeps everything:
+- **Connecting.** With the site's room server (`worker/rooms.json`, or the browser's own choice, as
+  on the campaign console), the player opens `field.html#room=CODE` or is given the code. The two
+  pages pass their connection codes through the room by themselves, and a player lost (or the GM's
+  page reloaded) is invited again by itself. Without a room server, the invitation is a link
+  (`#join=`) and the player's reply is pasted back by hand. The connection is WebRTC, page to page
+  (`templates/net.js`); there is no TURN relay, so a few strict networks will not connect.
+- **What he sees.** After every change, the host draws the field as his side's view shows it (above)
+  and sends him its panels: the map, the phase, the unit list, the selected unit, his side's
+  batteries and heroes, the log and the story. Nothing else leaves the host. His pick of a unit and
+  any order he has half made (March to…, a fire mission) are his own, not the GM's.
+- **What he does.** His page sends back his clicks: a hex, a unit, a control of his selected unit,
+  his batteries or heroes, and End the move. The host makes each through the same handler its own
+  click would reach, as his side's view: on his side's move only (picking a unit to look at, any
+  time), on his own units, and never the GM's controls (set-up, End the battle, the commander,
+  adding or removing units). Set-up is the GM's.
+- **The commander.** A side with a player is not the commander's: inviting him takes the side from
+  the commander.
+
+Tested by `tools/net/fieldtwo.py`: by hand and by room code; his side's view only; his pick his own; a
+hex moves his unit; Turn right; an enemy he does not see, the GM's End the battle and a move on the
+other side's turn all refused; no page errors.
+
 **Arcs.** The two hexsides either side of the facing corner are the front; the next one on
 each side is the flank; the two behind are the rear.
 

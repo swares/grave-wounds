@@ -291,6 +291,7 @@ legend{padding:0}
         <button class="small" id="btn-ai-undo" hidden title="Put its units back where they began this move, to move them yourself">Undo its orders</button>
         <button class="small" id="btn-ai-go" hidden title="Let the commander order its side for this move">Give its orders</button>
       </div>
+      <div id="net-box"></div>
       <div class="beat" id="beat" hidden aria-live="polite"></div>
       <div id="after-box" hidden>
         <h2>After the battle</h2>
@@ -345,6 +346,7 @@ legend{padding:0}
       <p class="muted" id="lifts" hidden></p>
       <div class="muted" id="helos" hidden></div>
 
+      <div id="sel-box">
       <h2 id="h-sel">Selected unit <span class="muted" id="sel-name"></span></h2>
       <dl class="summary" id="sel-info"></dl>
       <div class="toolbar">
@@ -391,6 +393,7 @@ legend{padding:0}
           <div><label for="sel-sec-shot">Section's shot</label><select id="sel-sec-shot"></select></div>
           <div><button class="small" id="btn-add-sec">Add the section</button></div>
         </div>
+      </div>
       </div>
 
       <section id="support-box" aria-labelledby="h-support">
@@ -6049,6 +6052,289 @@ const PHONETABS = (() => {
   return { init, set, get now(){ return now } };
 })();
 
+/* Play over the network: the GM's roller is the host, each player's page joins it over WebRTC.
+
+   No server: the two pages set up the connection by passing two codes by hand (copy and paste,
+   or a chat). The host makes an invitation for a seat (a side); the player opens it as a link,
+   his page answers with a reply code; the GM pastes the reply in; the pages then talk directly
+   over a data channel. A STUN server (by default a public one) lets pages find each other across
+   the internet; there is no relay (TURN), so a few strict networks will not connect.
+
+   What crosses the channel is JSON: the host sends each seat its own screen (see the roller's
+   net section), the player sends his choices. Messages are cut into pieces the channel carries.
+   NET.packCode / NET.unpackCode turn a session description into a short code and back (deflated,
+   then base64url). build.py puts this file into the roller at its NET_JS marker; in Node it is a
+   module (tools/net/test.mjs tests the codes, the pieces and the changes). */
+const NET = (() => {
+  const PIECE = 60000;                                   // under the 256 kB a Chromium data channel message may be
+  const STUN = [{ urls: "stun:stun.l.google.com:19302" }];
+
+  const toB64url = bytes => {
+    let bin = "";
+    for (const b of bytes) bin += String.fromCodePoint(b);
+    let out = btoa(bin).replaceAll("+", "-").replaceAll("/", "_");
+    while (out.endsWith("=")) out = out.slice(0, -1);   // no padding: safe in a link
+    return out;
+  };
+  const fromB64url = text => {
+    const b64 = text.replaceAll("-", "+").replaceAll("_", "/");
+    const bin = atob(b64 + "=".repeat((4 - b64.length % 4) % 4));
+    return Uint8Array.from(bin, ch => ch.codePointAt(0));
+  };
+  async function squeeze(bytes, how){                    // deflate or inflate through the browser's own streams
+    const stream = new Blob([bytes]).stream().pipeThrough(how === "in" ? new DecompressionStream("deflate-raw") : new CompressionStream("deflate-raw"));
+    return new Uint8Array(await new Response(stream).arrayBuffer());
+  }
+  async function packCode(obj){                          // {kind, seat, sdp, ...} -> a code to copy
+    return toB64url(await squeeze(new TextEncoder().encode(JSON.stringify(obj)), "out"));
+  }
+  async function unpackCode(code){                       // the code back, or an error saying it is not one
+    const clean = String(code).trim().replace(/^.*#join=/, "").replaceAll(/\s+/g, "");
+    if (!/^[\w-]+$/.test(clean)) throw new Error("That is not a code from this page.");
+    return JSON.parse(new TextDecoder().decode(await squeeze(fromB64url(clean), "in")));
+  }
+
+  function pieces(msg, n = PIECE){                       // a message as JSON pieces small enough to send
+    const text = JSON.stringify(msg), id = toB64url(crypto.getRandomValues(new Uint8Array(6))), count = Math.max(1, Math.ceil(text.length / n));
+    return Array.from({ length: count }, (_, k) => JSON.stringify({ id, k, of: count, part: text.slice(k * n, (k + 1) * n) }));
+  }
+  function joiner(){                                     // put pieces back together: feed(piece) -> the whole message, or null
+    const open = new Map();
+    return piece => {
+      const p = JSON.parse(piece);
+      if (!open.has(p.id)) open.set(p.id, []);
+      const got = open.get(p.id);
+      got[p.k] = p.part;
+      if (got.filter(x => x !== undefined).length < p.of) return null;
+      open.delete(p.id);
+      return JSON.parse(got.join(""));
+    };
+  }
+
+  function gathered(pc, wait = 4000){                    // the description once the network addresses are found (or after `wait`)
+    return new Promise(done => {
+      if (pc.iceGatheringState === "complete") return done(pc.localDescription);
+      const finish = () => { clearTimeout(t); done(pc.localDescription) };
+      const t = setTimeout(finish, wait);
+      pc.addEventListener("icegatheringstatechange", () => { if (pc.iceGatheringState === "complete") finish() });
+    });
+  }
+  function wire(ch, onMessage, onState){                 // a data channel's messages, whole, and its state
+    const feed = joiner();
+    ch.onmessage = e => { const m = feed(e.data); if (m) onMessage(m) };
+    ch.onopen = () => onState("open");
+    ch.onclose = () => onState("closed");
+    return msg => { if (ch.readyState === "open") pieces(msg).forEach(p => ch.send(p)) };
+  }
+
+  // The connection's ups and downs: lost (disconnected, failed) is said; a connection that comes back by
+  // itself after a short drop (the network blinked) is said to be open again, while its channel is.
+  function watch(pc, onState, channelOpen){
+    let lost = false;
+    pc.onconnectionstatechange = () => {
+      const s = pc.connectionState;
+      if (s === "failed" || s === "disconnected"){ lost = true; onState(s) }
+      else if (s === "connected" && lost && channelOpen()){ lost = false; onState("open") }
+    };
+  }
+
+  // The host's end of one player's connection: invite(seat) -> link code; accept(reply) connects.
+  function hostPeer({ seat, stun = true, onMessage, onState }){
+    const pc = new RTCPeerConnection({ iceServers: stun ? STUN : [] });
+    const ch = pc.createDataChannel("gravewounds", { ordered: true });
+    const send = wire(ch, onMessage, onState);
+    watch(pc, onState, () => ch.readyState === "open");
+    return {
+      seat, send, close: () => pc.close(),
+      async invite(extra = {}){
+        await pc.setLocalDescription(await pc.createOffer());
+        const d = await gathered(pc);
+        return packCode({ kind: "invite", seat, sdp: d.sdp, ...extra });
+      },
+      async accept(replyCode){
+        const r = await unpackCode(replyCode);
+        if (r.kind !== "reply") throw new Error("That is not a player's reply code.");
+        await pc.setRemoteDescription({ type: "answer", sdp: r.sdp });
+      },
+    };
+  }
+  // The player's end: from the invitation, a reply code for the GM; then messages both ways.
+  async function guestPeer({ invite, stun = true, onMessage, onState }){
+    if (invite.kind !== "invite") throw new Error("That is not an invitation.");
+    const pc = new RTCPeerConnection({ iceServers: stun ? STUN : [] });
+    let send = () => {}, chan = null;
+    pc.ondatachannel = e => { chan = e.channel; send = wire(chan, onMessage, onState) };
+    watch(pc, onState, () => chan?.readyState === "open");
+    await pc.setRemoteDescription({ type: "offer", sdp: invite.sdp });
+    await pc.setLocalDescription(await pc.createAnswer());
+    const d = await gathered(pc);
+    return { reply: await packCode({ kind: "reply", seat: invite.seat, sdp: d.sdp }), send: msg => send(msg), close: () => pc.close() };
+  }
+
+  // A drawing that changed, sent as its changes: the HTML cut into tags, the tags that stayed the same
+  // kept by count (Myers' shortest edit), the rest sent. edit(was, now) → now itself (short or not text),
+  // { cut: [a, b, middle] } (all but the a characters at the start and b at the end, when that is
+  // shorter or the changes are too many to look for) or { ops: [...] }: n > 0 keeps n tags, n < 0 drops
+  // n, a string is put in. apply(was, change) is the other end's half: the new drawing.
+  const SHORT = 2000, MOST_EDITS = 800;
+  const tags = text => text.split(/(?=<)/);
+  function shortestEdit(A, B){                           // Myers: the fewest drops and puts that make A into B, or null past MOST_EDITS
+    const N = A.length, M = B.length, max = Math.min(N + M, MOST_EDITS), off = max + 1, trace = [];
+    let V = new Int32Array(2 * max + 3);
+    for (let d = 0; d <= max; d++){
+      trace.push(V.slice());
+      for (let k = -d; k <= d; k += 2){
+        let x = (k === -d || (k !== d && V[off + k - 1] < V[off + k + 1])) ? V[off + k + 1] : V[off + k - 1] + 1, y = x - k;
+        while (x < N && y < M && A[x] === B[y]){ x++; y++ }
+        V[off + k] = x;
+        if (x >= N && y >= M) return backtrack(trace, d, N, M, off, B);
+      }
+    }
+    return null;
+  }
+  function backtrack(trace, D, N, M, off, B){
+    const out = [];                                      // from the end: ["k"], ["d"], ["i", tag]
+    let x = N, y = M;
+    for (let d = D; d > 0; d--){
+      const V = trace[d], k = x - y;
+      const pk = (k === -d || (k !== d && V[off + k - 1] < V[off + k + 1])) ? k + 1 : k - 1;
+      const px = V[off + pk], py = px - pk;
+      while (x > px && y > py){ out.push(["k"]); x--; y-- }
+      if (pk === k + 1) out.push(["i", B[py]]); else out.push(["d"]);
+      x = px; y = py;
+    }
+    while (x > 0){ out.push(["k"]); x-- }
+    return out.reverse();
+  }
+  function compact(steps){                               // the steps as the message carries them
+    const ops = [];
+    for (const [s, tag] of steps){
+      const last = ops.length - 1;
+      if (s === "i"){ if (typeof ops[last] === "string") ops[last] += tag; else ops.push(tag) }
+      else {
+        const n = s === "k" ? 1 : -1;
+        if (typeof ops[last] === "number" && Math.sign(ops[last]) === n) ops[last] += n; else ops.push(n);
+      }
+    }
+    return ops;
+  }
+  function edit(was, now){
+    if (typeof was !== "string" || typeof now !== "string" || now.length < SHORT) return now;
+    let a = 0, b = 0;
+    const most = Math.min(was.length, now.length);
+    while (a < most && was[a] === now[a]) a++;
+    while (b < most - a && was[was.length - 1 - b] === now[now.length - 1 - b]) b++;
+    const cut = { cut: [a, b, now.slice(a, now.length - b)] };
+    if (cut.cut[2].length < 200) return cut;
+    const steps = shortestEdit(tags(was), tags(now));
+    const ops = steps ? { ops: compact(steps) } : null;
+    const best = ops && JSON.stringify(ops).length < JSON.stringify(cut).length ? ops : cut;
+    return JSON.stringify(best).length < JSON.stringify(now).length ? best : now;   // an edit longer than the panel itself: the panel
+  }
+  function apply(was, change){
+    if (!change || typeof change !== "object" || !(Array.isArray(change.cut) || Array.isArray(change.ops))) return change;   // anything else is itself
+    const old = String(was ?? "");
+    if (Array.isArray(change.cut)){ const [a, b, mid] = change.cut; return old.slice(0, a) + mid + old.slice(old.length - b) }
+    const from = tags(old), out = [];
+    let i = 0;
+    for (const op of change.ops){
+      if (typeof op === "string") out.push(op);
+      else if (op > 0){ out.push(...from.slice(i, i + op)); i += op }
+      else i -= op;
+    }
+    return out.join("");
+  }
+
+  // A seat's screen, as panels of HTML: the first whole, then each later one as only what changed.
+  // screenPart(was, now, always) -> the message to send (now itself when there was none before; a
+  // part {part: true, ...} with the `always` fields and the changed panels as edits), or null when
+  // nothing at all changed. merge(screen, m) is the other end's half: the whole screen again.
+  function screenPart(was, now, always = []){
+    if (!was) return now;
+    const part = { part: true };
+    let changed = false;
+    for (const [k, v] of Object.entries(now)){
+      const same = JSON.stringify(v) === JSON.stringify(was[k]);
+      if (always.includes(k)) part[k] = v;
+      else if (!same) part[k] = edit(was[k], v);
+      if (!same) changed = true;
+    }
+    return changed ? part : null;
+  }
+  function merge(screen, m){
+    if (!m.part) return m;
+    const whole = { ...screen, part: false };
+    for (const [k, v] of Object.entries(m)) if (k !== "part") whole[k] = apply(screen?.[k], v);
+    return whole;
+  }
+  // The host's drawing as elements, with nothing in it that could run (a player's page shows only this).
+  const DROP = "script,iframe,object,embed,link,meta,base,form";
+  function safeAttrs(el){                                // no event handler, no javascript: link
+    for (const a of Array.from(el.attributes)){
+      const name = a.name.toLowerCase(), v = a.value.replaceAll(/\s+/g, "").toLowerCase();
+      const link = (name.endsWith("href") || name === "src") && v.startsWith("javascript:");
+      if (name.startsWith("on") || link) el.removeAttribute(a.name);
+    }
+  }
+  function clean(html){
+    const doc = new DOMParser().parseFromString(`<body>${typeof html === "string" ? html : ""}</body>`, "text/html");
+    doc.body.querySelectorAll(DROP).forEach(el => el.remove());
+    doc.body.querySelectorAll("*").forEach(safeAttrs);
+    return Array.from(doc.body.childNodes);
+  }
+
+  // Room codes: the two connection codes passed through a room server (worker/rooms.js, a Cloudflare
+  // Worker) instead of by hand. rooms(server) -> {create, invite, invitation, reply, replied}; each a
+  // promise of the server's answer, null for "nothing yet", or an error with its status.
+  async function roomCall(method, url, { body, key } = {}){   // one call to the room server -> its answer, null for 204, or an error with its status
+    const headers = {};
+    if (key) headers["X-Room-Key"] = key;
+    if (body !== undefined) headers["Content-Type"] = "application/json";
+    const r = await fetch(url, { method, headers, body: body === undefined ? undefined : JSON.stringify(body) });
+    if (r.status === 204) return null;
+    const out = await r.json().catch(() => ({}));
+    if (!r.ok) throw Object.assign(new Error(out.error || `The room server said ${r.status}.`), { status: r.status });
+    return out;
+  }
+  function rooms(server){
+    let base = String(server || "");
+    while (base.endsWith("/")) base = base.slice(0, -1);
+    const at = (code, what) => `${base}/rooms/${encodeURIComponent(code)}/${what}`;
+    return {
+      create: () => roomCall("POST", `${base}/rooms`),                                         // -> {code, key}
+      invite: (code, key, data) => roomCall("PUT", at(code, "invite"), { key, body: { data } }),  // -> {v}
+      invitation: (code, after = 0) => roomCall("GET", `${at(code, "invite")}?after=${after}`),   // -> {v, data} or null
+      reply: (code, v, data) => roomCall("PUT", at(code, "reply"), { body: { v, data } }),
+      replied: (code, key, v) => roomCall("GET", `${at(code, "reply")}?v=${v}`, { key }),         // -> {data} or null
+    };
+  }
+  // ask() again and again until it gives something, or stop() says to give up (-> null). A refusal
+  // (a 4xx: no such room, not the host, already answered) ends it with that error; the network or the
+  // server failing is tried again. It asks less often the longer it waits (a page left waiting must
+  // not use up the server's day): every 1.5 s for two minutes, every 5 s to ten, then every 20 s.
+  function pollEvery(waited){
+    if (waited < 120e3) return 1500;
+    return waited < 600e3 ? 5000 : 20000;
+  }
+  function poll(ask, { stop = () => false, every = pollEvery } = {}){
+    const from = Date.now();
+    return new Promise((done, fail) => {
+      const go = async () => {
+        if (stop()) return done(null);
+        try { const v = await ask(); if (v !== null && v !== undefined) return done(v) }
+        catch (e){ if (e.status >= 400 && e.status < 500) return fail(e) }
+        setTimeout(go, every(Date.now() - from));
+      };
+      void go();
+    });
+  }
+
+  return { packCode, unpackCode, pieces, joiner, hostPeer, guestPeer, PIECE, edit, apply, screenPart, merge, clean, rooms, poll, pollEvery };
+})();
+
+if (typeof module !== "undefined") module.exports = NET;   // Node (the tests); the page has no `module`
+
+const ROOM_SERVER_SITE = "https://grave-wounds-rooms.waresscott.workers.dev";   // the room-code server (worker/rooms.json), once deployed
 const $ = s => document.querySelector(s);
 const KEY = "gravewounds-field", DEFAULT_SIZE = [FD.units.map.cols, FD.units.map.rows];
 let SIZE = DEFAULT_SIZE.slice();                   // this battle's field, cols x rows: the default, or a battlefield's
@@ -9222,7 +9508,310 @@ function render(){
   $("#teamin").hidden = !TEAMIN;
   save();
   consolePush();
+  if (!NETF.rendering){ netfSides(); netfSync() }
 }
+/* ---------- play online (net.js): this page as the host, each side's player on his own page ----------
+   The GM invites a player for a side. With a room server (worker/rooms.json, or this browser's choice
+   as the console's) the player opens field.html#room=CODE and the pages pass the connection codes
+   through the room by themselves; without one, the invitation is a link (#join=) and the player's
+   reply is pasted back. Then, after every change, this page draws the field as that side's view shows
+   it (A side's view), with the player's own selected unit and half-made orders swapped in, and sends
+   him its panels: what his side may not see never leaves this page. His page sends back his clicks: a
+   hex, a unit, a control of the selected unit, his batteries or heroes, or Next. This page makes each
+   through the same handler its own click would reach, as his side's view, only where a player may
+   act (the panels above, never the GM's), and on his side's move only (picking a unit to look at,
+   any time). A side with a player is not the commander's. */
+const NETF = { seats: [], seq: 0, rendering: false, timer: null, stun: true, open: false };
+const FIELD_GUEST = /^#(join=|room=|relay)/.test(location.hash);
+const SEAT_UI = ["sel", "marching", "calling", "laying", "placing", "msg"];   // what is his own, not the GM's: his unit picked, his order half made, his message
+const SEAT_PANELS = { map: "#map", scale: "#map-scale", legend: "#unit-legend", stage: "#stage", phase: "#phase", units: "#units", sel: "#sel-box", support: "#support", heroes: "#heroes", log: "#log", story: "#story" };
+const SEAT_ACTS = ["#sel-box", "#support", "#heroes"];   // where his clicks and changes may land (besides the map, the unit list and Next)
+const SEAT_NEVER = new Set(["btn-remove", "btn-narrow", "btn-wider", "btn-reserve", "btn-add-sec"]);   // the GM's, even there
+const NETF_ALWAYS = ["t", "seat", "mine", "msg", "next", "title"];
+const fieldRoomServer = () => {
+  let s = "";
+  try { s = localStorage.getItem("gw-room-server") || "" } catch { s = "" }   // this browser's own choice, as the console's
+  return s === "off" ? "" : (s || ROOM_SERVER_SITE || "").trim();
+};
+const netfOpen = () => NETF.seats.filter(p => p.state === "open");
+function withSeat(p, fn){                          // fn as that seat's side sees the field, with his own selection and half-made orders
+  const keep = Object.fromEntries(SEAT_UI.map(k => [k, S[k]])), screen = S.screen, tool = S.tool;
+  for (const k of SEAT_UI) S[k] = p.ui[k] ?? null;
+  S.screen = p.seat; S.tool = "unit"; NETF.rendering = true;
+  try { render(); return fn() }
+  finally {
+    for (const k of SEAT_UI) p.ui[k] = S[k] ?? null;
+    Object.assign(S, keep); S.screen = screen; S.tool = tool; NETF.rendering = false;
+  }
+}
+function seatHtml(sel){                            // a panel as HTML, its selects' choices, inputs' values and boxes' ticks written in
+  const el = $(sel); if (!el) return "";
+  for (const s of el.querySelectorAll("select")) for (const o of s.options) o.toggleAttribute("selected", o.selected);
+  for (const i of el.querySelectorAll("input")){ if (i.type === "checkbox") i.toggleAttribute("checked", i.checked); else i.setAttribute("value", i.value) }
+  return el.innerHTML;
+}
+function seatScreen(p){                            // his side's screen: its panels, his message, whose move it is
+  return withSeat(p, () => {
+    const k = S.sides.indexOf(p.seat), b = $("#btn-next");
+    return { t: "screen", seat: p.seat, title: `${p.seat} on the field`, mine: S.phase === k, msg: S.msg || "",
+      next: { text: S.phase === k ? `End ${p.seat}' move` : (S.phase === "over" ? "The battle is over" : (S.phase === "setup" ? "The GM is setting up" : `${S.sides[S.phase]} are moving`)), disabled: S.phase !== k || b.disabled },
+      ...Object.fromEntries(Object.entries(SEAT_PANELS).map(([key, sel]) => [key, seatHtml(sel)])) };
+  });
+}
+function netfSend(p){                              // his screen: whole the first time, then only the panels that changed
+  const now = seatScreen(p), msg = NET.screenPart(p.last, now, NETF_ALWAYS);
+  p.last = now;
+  if (msg) p.peer.send(msg);
+}
+function netfSync(){                               // after a change: each connected player gets his side's screen, soon
+  if (NETF.rendering || !netfOpen().length) return;
+  clearTimeout(NETF.timer);
+  NETF.timer = setTimeout(() => { for (const p of netfOpen()) netfSend(p); gmView() }, 60);
+}
+function gmView(){                                 // the GM's own view again, after drawing the seats' (it sends nothing)
+  NETF.rendering = true;
+  try { render() } finally { NETF.rendering = false }
+}
+function netfSides(){                              // the sides changed: the invitations follow (not on every change: it would clear a reply being pasted)
+  const k = S.sides.join("|");
+  if (k !== NETF.sidesKey){ NETF.sidesKey = k; renderNetf() }
+}
+function seatTarget(m){                            // the element his click or change is for, in a panel he may act in, or null
+  for (const box of SEAT_ACTS.map(s => $(s)).filter(Boolean)){
+    let el = null;
+    if (typeof m.id === "string" && m.id) el = document.getElementById(m.id);
+    else if (m.data && typeof m.data === "object" && /^(button|select|input|li)$/.test(m.tag)){
+      const sel = m.tag + Object.entries(m.data).slice(0, 4).map(([k, v]) => `[data-${String(k).replaceAll(/[A-Z]/g, c => "-" + c.toLowerCase())}="${CSS.escape(String(v))}"]`).join("");
+      el = box.querySelector(sel);
+    }
+    if (el && box.contains(el) && !SEAT_NEVER.has(el.id) && !el.disabled && !el.closest("[hidden]")) return el;
+  }
+  return null;
+}
+const SEAT_COMMANDS = {                            // each choice a player may send; each checks it is his to make
+  unit: (p, m) => { const u = S.units.find(x => x.id === m.id); if (u && shownTo(u)) { S.sel = u.id; S.msg = "" } },
+  hex: (p, m, mine) => {
+    if (!Array.isArray(m.h)) return;
+    const h = [Number(m.h[0]), Number(m.h[1])];
+    if (!Number.isInteger(h[0]) || !Number.isInteger(h[1]) || h[0] < 0 || h[1] < 0 || h[0] >= SIZE[0] || h[1] >= SIZE[1]) return;
+    if (!mine){                                    // not his move: a hex picks the unit his side sees there, nothing else
+      const there = occupancy(S.units)[hk(h)];
+      if (there !== undefined && shownTo(S.units[there])) S.sel = S.units[there].id;
+      return;
+    }
+    const u = selUnit();
+    if (u && u.side !== p.seat && S.marching == null && S.calling == null && S.laying == null) { const there = occupancy(S.units)[hk(h)]; if (there !== undefined && shownTo(S.units[there])) S.sel = S.units[there].id; return }
+    $(`#map .hx[data-h="${h[0]},${h[1]}"]`)?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+  },
+  click: (p, m, mine) => {
+    const u = selUnit();
+    if (!mine || (u && u.side !== p.seat)) return;
+    seatTarget(m)?.click();
+  },
+  change: (p, m, mine) => {
+    const u = selUnit(), el = mine && (!u || u.side === p.seat) ? seatTarget(m) : null;
+    if (!el || !/^(SELECT|INPUT)$/.test(el.tagName) || el.type === "file") return;
+    if (el.type === "checkbox") el.checked = !!m.v; else el.value = String(m.v ?? "");
+    el.dispatchEvent(new Event("change", { bubbles: true }));
+  },
+  next: (p, m, mine) => { if (mine && !$("#btn-next").disabled) $("#btn-next").click() },
+};
+function netfCommand(p, m){                         // his choice, made as his side's view only if it is his to make
+  if (!m || typeof m.t !== "string" || !Object.hasOwn(SEAT_COMMANDS, m.t)) return;
+  const k = S.sides.indexOf(p.seat);
+  if (k < 0) return;
+  withSeat(p, () => SEAT_COMMANDS[m.t](p, m, S.phase === k));
+  render();
+}
+async function netfRoom(p, peer){                   // with a room server: his invitation into his room, his reply back out of it
+  const server = fieldRoomServer(), R = NET.rooms(server);
+  if (!p.room || p.room.server !== server){ const r = await R.create(); p.room = { server, code: r.code, key: r.key }; netfKeep() }
+  let sent;
+  try { sent = await R.invite(p.room.code, p.room.key, p.code) }
+  catch (e){                                       // the room was forgotten (hours unused): a new one, a new code
+    if (e.status !== 404 && e.status !== 403) throw e;
+    const r = await R.create(); p.room = { server, code: r.code, key: r.key }; netfKeep();
+    sent = await R.invite(p.room.code, p.room.key, p.code);
+  }
+  p.state = "waiting for him to open his link"; renderNetf();
+  const r = await NET.poll(() => R.replied(p.room.code, p.room.key, sent.v), { stop: () => p.peer !== peer || p.state === "open" });
+  if (r && p.peer === peer){ await peer.accept(r.data); p.state = "connecting"; renderNetf() }
+}
+async function netfConnect(p){                      // an invitation for his side: a first one, or again after he was lost
+  const k = S.sides.indexOf(p.seat);
+  if (k >= 0 && aiOf(k)) setAi(k, "");             // a person moves this side now
+  p.peer?.close();
+  Object.assign(p, { state: "inviting", code: "", err: "", last: null });
+  const peer = NET.hostPeer({ seat: p.seat, stun: NETF.stun, onMessage: m => netfCommand(p, m), onState: st => {
+    if (p.peer !== peer) return;
+    p.state = st;
+    if (st === "open"){ p.last = null; netfSend(p); render() }
+    else if (["closed", "failed", "disconnected"].includes(st) && fieldRoomServer() && p.room) setTimeout(() => { if (p.peer === peer && p.state === st && NETF.seats.includes(p)) netfConnect(p) }, 2000);   // lost: with a room, invited again by itself
+    renderNetf();
+  } });
+  p.peer = peer;
+  renderNetf();
+  try {
+    p.code = await peer.invite({ stun: NETF.stun });
+    p.state = "waiting for the reply";
+    if (fieldRoomServer()) await netfRoom(p, peer);
+  } catch (e){ p.state = "failed"; p.err = String(e.message || e) }
+  renderNetf();
+}
+const NETF_KEY = "gravewounds-field-seats";         // the seats and their rooms, this tab only: after a reload they are invited again
+function netfKeep(){
+  try { sessionStorage.setItem(NETF_KEY, JSON.stringify(NETF.seats.map(p => ({ seat: p.seat, room: p.room || null })))) } catch { /* storage off: a reload forgets them */ }
+}
+function netfRemembered(){                          // after a reload: the seats invited again (with a room, the player's page answers by itself)
+  let kept = [];
+  try { kept = JSON.parse(sessionStorage.getItem(NETF_KEY) || "[]") } catch { kept = [] }
+  for (const x of kept) if (S.sides.includes(x.seat)){
+    const p = { n: ++NETF.seq, seat: x.seat, room: x.room, state: "closed", code: "", err: "", peer: null, ui: {} };
+    NETF.seats.push(p);
+    if (fieldRoomServer() && x.room) netfConnect(p);
+  }
+}
+function netfInvite(side){
+  if (NETF.seats.some(p => p.seat === side)) return;
+  const p = { n: ++NETF.seq, seat: side, state: "inviting", code: "", err: "", peer: null, ui: {} };
+  NETF.seats.push(p); netfKeep();
+  return netfConnect(p);
+}
+const netfLink = p => (p.room ? `${location.href.split("#")[0]}#room=${p.room.code}${p.room.server !== ROOM_SERVER_SITE ? "&s=" + encodeURIComponent(p.room.server) : ""}` : `${location.href.split("#")[0]}#join=${p.code}`);
+function netfRow(p){
+  const st = { open: "connected", closed: "gone", failed: "could not connect", disconnected: "lost" }[p.state] || p.state, side = esc(p.seat);
+  const lost = ["closed", "failed", "disconnected"].includes(p.state);
+  let how = "";
+  if (p.room && p.state !== "open") how = `<p class="muted" style="margin:0">Send him this link, or the room code <b>${esc(p.room.code)}</b>: <input readonly data-netf-link="${p.n}" style="width:100%" value="${esc(netfLink(p))}"></p>`;
+  else if (p.code && !p.room && p.state !== "open" && !lost) how = `<label class="muted" style="display:block">1. Send this link to the player for ${side}:
+      <textarea readonly rows="2" data-netf-link="${p.n}" style="width:100%">${esc(netfLink(p))}</textarea></label>
+      <label class="muted" style="display:block">2. Paste the reply code his page gives him:
+      <textarea rows="2" data-netf-reply="${p.n}" style="width:100%"></textarea></label>
+      <button type="button" class="small" data-netf="accept" data-n="${p.n}">Connect</button>`;
+  const again = lost ? ` <button type="button" class="small primary" data-netf="again" data-n="${p.n}">Invite again</button>` : "";
+  const err = p.err ? `<p class="bad" style="margin:0">${esc(p.err)}</p>` : "";
+  return `<li><b>${side}</b>: ${esc(st)}${again} <button type="button" class="small" data-netf="drop" data-n="${p.n}">Drop</button>${how}${err}</li>`;
+}
+function renderNetf(){
+  const box = $("#net-box"); if (!box) return;
+  const on = netfOpen().length, rooms = !!fieldRoomServer();
+  const invites = S.sides.filter(sd => !NETF.seats.some(p => p.seat === sd)).map(sd => `<button type="button" class="small" data-netf="invite" data-side="${esc(sd)}">Invite a player for ${esc(sd)}</button>`).join(" ");
+  box.innerHTML = `<details class="after"${NETF.open || NETF.seats.length ? " open" : ""}><summary><b>Play online</b> <span class="muted">${on} player${on === 1 ? "" : "s"} connected</span></summary>
+    <div class="toolbar" style="flex-wrap:wrap">${invites}</div>
+    <label class="check" title="Lets pages find each other across the internet; on one network it is not needed"><input type="checkbox" id="netf-stun"${NETF.stun ? " checked" : ""}> Use a public STUN server (stun.l.google.com)</label>
+    ${NETF.seats.length ? `<ul class="support">${NETF.seats.map(netfRow).join("")}</ul>` : ""}
+    <p class="muted" style="margin:0">Each player sees his side's view and moves his side's units on its move; you see everything, and set up the battle. A side with a player is not the commander's. ${rooms ? "The codes pass through the room server: nothing to paste back." : "No room server: the link and the reply are passed by hand."} Some strict networks will not connect.</p></details>`;
+}
+function netfWire(){
+  const box = $("#net-box"); if (!box) return;
+  box.addEventListener("toggle", e => { NETF.open = e.target.open }, true);
+  box.addEventListener("change", e => { if (e.target.id === "netf-stun") NETF.stun = e.target.checked });
+  box.addEventListener("click", e => {
+    const b = e.target.closest("button[data-netf]"); if (!b) return;
+    const p = NETF.seats.find(x => x.n === +b.dataset.n);
+    if (b.dataset.netf === "invite") netfInvite(b.dataset.side);
+    else if (b.dataset.netf === "accept" && p) p.peer.accept(box.querySelector(`[data-netf-reply="${p.n}"]`).value).then(() => { p.state = "connecting"; renderNetf() }, err => { p.err = String(err.message || err); renderNetf() });
+    else if (b.dataset.netf === "again" && p) netfConnect(p);
+    else if (b.dataset.netf === "drop" && p){ p.peer?.close(); NETF.seats = NETF.seats.filter(x => x !== p); netfKeep(); renderNetf() }
+  });
+  netfRemembered(); renderNetf();
+}
+
+/* ---------- the player's page: his side's screen from the GM's field page, his clicks back to it ---------- */
+const FG = { send: () => {}, screen: null, peer: null, run: 0, after: 0 };
+function fieldGuestLayout(){
+  document.body.innerHTML = `<div class="wrap" style="max-width:1400px;margin:0 auto;padding:12px">
+    <h1 style="margin:0 0 6px" id="g-title">Grave Wounds: the field</h1>
+    <p id="g-status" aria-live="polite" style="margin:0 0 8px"></p>
+    <section class="panel" id="g-join" hidden></section>
+    <div class="grid">
+      <section class="panel"><p class="stage" id="stage"></p><output class="msg" id="msg"></output><div class="mapbox" id="map"></div>
+        <span class="muted" id="map-scale"></span><div class="legend" id="unit-legend"></div></section>
+      <section class="panel"><div class="phase" id="phase"></div>
+        <div class="toolbar"><button class="primary" id="g-next" disabled>Waiting</button></div>
+        <h2>Units</h2><ul class="units" id="units"></ul>
+        <div id="sel-box"></div>
+        <h2>Fire support</h2><ul class="support" id="support"></ul>
+        <h2>Heroes</h2><ul class="support" id="heroes"></ul>
+        <h2>Battle log</h2><ol class="log" id="log"></ol>
+        <h2>Narrative</h2><ol class="story" id="story"></ol></section>
+    </div></div>`;
+}
+function fieldGuestShow(m, changed = null){         // the GM's drawing of his side's screen (changed: only those panels again)
+  for (const [key, sel] of Object.entries(SEAT_PANELS)){
+    const el = $(sel);
+    if (el && (!changed || changed.includes(key)) && typeof m[key] === "string") el.replaceChildren(...NET.clean(m[key]));
+  }
+  $("#msg").textContent = m.msg || "";
+  $("#g-title").textContent = m.title || "Grave Wounds: the field";
+  $("#g-next").textContent = m.next?.text || "Waiting"; $("#g-next").disabled = !!m.next?.disabled;
+  $("#g-status").textContent = m.mine ? "Your side's move: pick a unit, click a hex to move it, then End the move." : "Waiting for the other side.";
+}
+function fieldGuestDescribe(el){                    // a control as the GM's page can find it: its id, or its tag and data
+  if (el.id) return { id: el.id };
+  return { tag: el.tagName.toLowerCase(), data: { ...el.dataset } };
+}
+function fieldGuestWire(){
+  const send = m => FG.send(m);
+  $("#map").addEventListener("click", e => { const hx = e.target.closest(".hx"); if (hx) send({ t: "hex", h: hx.dataset.h.split(",").map(Number) }) });
+  $("#units").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li) send({ t: "unit", id: +li.dataset.id }) });
+  $("#g-next").addEventListener("click", () => send({ t: "next" }));
+  for (const sel of SEAT_ACTS){
+    const box = $(sel);
+    box.addEventListener("click", e => { const b = e.target.closest("button"); if (b && box.contains(b) && !b.disabled) send({ t: "click", ...fieldGuestDescribe(b) }) });
+    box.addEventListener("change", e => { const el = e.target; if (/^(SELECT|INPUT)$/.test(el.tagName)) send({ t: "change", v: el.type === "checkbox" ? el.checked : el.value, ...fieldGuestDescribe(el) }) });
+  }
+}
+function fieldGuestScreen(m){                       // a screen, or a part of one, from the GM's page
+  if (m?.t !== "screen") return;
+  const whole = NET.merge(FG.screen, m);
+  FG.screen = whole;
+  $("#g-join").hidden = true;
+  fieldGuestShow(whole, m.part ? Object.keys(m) : null);
+}
+async function fieldGuestPeer(invite, onLost){
+  FG.peer?.close?.();
+  const g = await NET.guestPeer({ invite, stun: invite.stun !== false, onMessage: fieldGuestScreen,
+    onState: st => { if (st !== "open" && FG.peer === g) onLost(g) } });
+  FG.peer = g; FG.send = g.send;
+  return g;
+}
+async function fieldGuestJoin(){                    // a #join= link: answer it, and show the reply to send back
+  const status = t => { $("#g-status").textContent = t };
+  let invite;
+  try { invite = await NET.unpackCode(location.hash) } catch { return status("This link is not a working invitation. Ask the GM for a new one.") }
+  status(`Joining the GM's field as ${invite.seat}...`);
+  const g = await fieldGuestPeer(invite, () => status("Lost the GM's page. Your side's last screen stays; ask the GM to invite you again."));
+  $("#g-join").hidden = false;
+  $("#g-join").innerHTML = `<h2>Send this reply to the GM</h2><p class="muted">The GM pastes it into Play online, under ${esc(invite.seat)}.</p><textarea readonly rows="3" id="g-reply" style="width:100%">${esc(g.reply)}</textarea>`;
+  status("Waiting for the GM to paste your reply.");
+}
+async function fieldGuestRoom(){                    // a #room= link: wait in the room for the GM's invitation, and answer it there
+  const q = new URLSearchParams(location.hash.slice(1)), code = (q.get("room") || "").trim().toUpperCase(), server = (q.get("s") || fieldRoomServer()).trim();
+  const status = t => { $("#g-status").textContent = t }, run = ++FG.run;
+  if (!server) return status("This page knows no room server: ask the GM for his link.");
+  const R = NET.rooms(server);
+  for (;;){
+    status(FG.screen ? "Lost the GM's page: waiting for it to invite you again..." : `Room ${code}: waiting for the GM's invitation...`);
+    let inv;
+    try { inv = await NET.poll(() => R.invitation(code, FG.after), { stop: () => run !== FG.run }) }
+    catch (e){ return status(e.status === 404 ? `There is no room ${code} (or it has been forgotten): check the code with the GM.` : String(e.message || e)) }
+    if (!inv) return;
+    FG.after = inv.v;
+    try {
+      const g = await fieldGuestPeer(await NET.unpackCode(inv.data), lost => setTimeout(() => { if (FG.peer === lost && run === FG.run) fieldGuestRoom() }, 2000));
+      await R.reply(code, inv.v, g.reply);
+      return status("Connecting to the GM's page...");
+    } catch (e){ if (e.status !== 409) return status(`Could not answer the invitation: ${e.message || e}`) }
+  }
+}
+function fieldGuestMain(){
+  fieldGuestLayout(); fieldGuestWire();
+  const go = () => (location.hash.startsWith("#room=") ? fieldGuestRoom() : fieldGuestJoin()).catch(e => { $("#g-status").textContent = String(e.message || e) });
+  window.addEventListener("hashchange", () => { if (/^#(join=|room=)/.test(location.hash)) go() });
+  go();
+}
+
 /* ---------- the campaign console: this page in its frame, run from there ----------
    The console sends {gw: "console", cmd} (status, setup, next, run, end, ai with k and v, send) by
    postMessage; this page does it as its own buttons would and answers {gw: "field", status}. It
@@ -9633,7 +10222,9 @@ function init(){
   $("#chk-quick-shell").checked = !!UD.quick.shellfire;
   $("#chk-quick-shell").onchange = e => { UD.quick.shellfire = e.target.checked };
   $("#btn-quick-sheet").onclick = quickSheet;
+  netfWire();
   render();
 }
-init();
+if (FIELD_GUEST) fieldGuestMain();
+else init();
 </script>
