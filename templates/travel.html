@@ -173,6 +173,7 @@ label.inline input[type=number]{width:5.5em;background:var(--bg);border:1px soli
         <button id="btn-clock-night" title="On to the end of today's marching hours">To nightfall</button>
         <button id="btn-clock-event" title="On until a force arrives, forces of different sides meet, or a camp is finished (nights pass on the way)">Until something happens</button>
       </div>
+      <div class="toolbar" id="moved-by" title="The commander orders a side's forces each press of the clock, from what that side has seen, and sends its own fights when it is the stronger"></div>
       <ul class="forces" id="forces"></ul>
       <details>
         <summary class="muted">Add a force</summary>
@@ -289,7 +290,7 @@ const WK = DATA.works, CAMP_HEX_M = DATA.battle_hex_m, CG = DATA.ground;
 /*__CAMP_JS__*/
 /* ---------- the travel map's day: templates/travelday.js (state, march, night, the clock) ---------- */
 /*__TRAVELDAY_JS__*/
-const { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, rollerFor, councilForces, councilView, councilRole, councilRollBy, councilStanding, councilHeld, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, sightings, fortresses, siegeState, termsChance, summon, sortie, buryDead, deadNow, fireMine, countermine, stormWon, callOffSack, sacking, roll100 } = makeTravelDay(DATA, RULES);
+const { SIDE_NAMES, sidesAround, sideToward, cameFrom, nearWoods, campPerimeter, campHours, KEY, S, save, restore, baseMap, curMap, sameHex, forcesHere, newForce, selForce, sides, MONTHS, WEEKDAYS, win, hpdOf, hpdList, clock, dateText, wxState, dayWeather, regroundFrom, rerollDay, setDay, groundOf, knownGround, healthOf, fitOf, horsesOf, horsePct, speedOf, loadEraOf, loadOrder, forceBands, loadPct, loadOptions, marchedKm, loadTire, blisters, packsLost, groundText, wxLine, localTongues, speaksLocal, tongueNames, interpHere, forageTongue, foraged, USES, bestTalk, billetCheck, hostFeeds, huntNight, animalRow, wheelsToday, fodderNight, wayToday, amongNight, endDay, supOf, waterHere, supplyNight, depotHere, trainHere, refillForce, rationCost, buyRations, supplyHtml, BED_TERRAIN, fedByArmy, keepLedger, keepWants, keepMan, keepNight, keepText, forceEra, eventsOn, hungryNow, conditionsOf, eventsNight, namedAccidents, dzName, dzShort, tallyText, nightHardness, nightHard, healthNight, NAMED_KEY, readNamed, writeNamed, namedWith, hasWagons, riskGround, sweptOff, fordMan, fordAt, fordsCrossed, strainNight, hasCases, kitNight, mendDay, awayNight, xpNight, drillWeek, clothedCtx, namedNight, namedEnd, namedDay, namedWeek, ableNow, nursesNow, bestSkill, rollerFor, councilForces, councilView, councilRole, councilRollBy, councilStanding, councilHeld, namedLine, weekFactorsFor, healthWeekFor, fmtH, placeAt, where, refusal, leaderOf, columnOf, colType, colSpeed, colMen, colTools, colFit, colDiggers, colName, colRefusal, joinOptions, joinColumn, leaveColumn, replan, addWaypoint, noMarchText, NIGHT, nightHoursOf, dayEnd, isNight, nightWay, march, followLeader, CLOCK_STEP, CLOCK_LEAST, nextTick, atOrAfter, busy, waitUntil, clockNow, marching, pairKey, meetings, nightFalls, tickClock, marchAll, newMeetings, marchLogs, anyAtWork, passNight, clockStep, runClock, moveClock, setOrder, hexDist, campHere, campCost, makeCamp, campOption, campText, esc, byId, restColumn, marchStep, orderText, marchSummary, campStatus, planFor, fightOptions, nearFields, surpriseFor, rollSurprise, sendFightTo, sendField, battleTime, fieldSupplies, applyFieldResult, fightsOnOffer, sendFightFor, takeBattle, orderChoices, routeText, giveOrder, sightings, fortresses, siegeState, termsChance, summon, sortie, buryDead, deadNow, fireMine, countermine, stormWon, callOffSack, sacking, roll100, stanceOf, commanderFight } = makeTravelDay(DATA, RULES);
 /*__MAPZOOM_JS__*/
 /* ---------- drawing ---------- */
 const R = 12, W = Math.sqrt(3) * R;
@@ -689,8 +690,23 @@ function barShow(){                                  // scroll the map so the se
   box.scrollLeft += (r.left + r.width / 2) - (b.left + box.clientWidth / 2);
   box.scrollTop += (r.top + r.height / 2) - (b.top + box.clientHeight / 2);
 }
+const MOVED_BY = [["", "You"], ["attack", "The commander, attacking"], ["hold", "The commander, holding"]];
+const movedByOptions = stance => MOVED_BY.map(([k, t]) => '<option value="' + k + '"' + ((stance || "") === k ? " selected" : "") + ">" + t + "</option>").join("");
+function renderMovedBy(){                       // who moves each side: you, or the commander (travelday.js command)
+  const box = $("#moved-by"), sd = sides();
+  const html = sd.length ? `<span class="muted">Moved by:</span>` + sd.map(x => `<label class="inline muted">${esc(x)} <select data-movedby="${esc(x)}">${movedByOptions(stanceOf(x))}</select></label>`).join("") : "";
+  if (box.dataset.html !== html){ box.innerHTML = html; box.dataset.html = html }
+}
+function commanderFights(){                     // after a press: a commander attacking, the stronger, sends its fight as Fight here does
+  const cf = commanderFight();
+  if (!cf) return false;
+  const p = fightOptions(byId(cf.id))[cf.k];
+  save();
+  location.href = sendFightTo(p, cf.on);
+  return true;
+}
 function render(){
-  renderMap(); renderSide(); renderWeather();
+  renderMap(); renderSide(); renderWeather(); renderMovedBy();
   $("#msg").textContent = S.msg || "";
   document.querySelectorAll("[data-mode]").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === S.mode));
   $("#paint-box").hidden = S.mode !== "paint";
@@ -870,9 +886,17 @@ function init(){
   $("#forces").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li){ S.sel[S.mapId] = +li.dataset.id; S.msg = ""; render() } });
   $("#forces").addEventListener("keydown", e => { if (e.key === "Enter" || e.key === " "){ const li = e.target.closest("li[data-id]"); if (li){ e.preventDefault(); S.sel[S.mapId] = +li.dataset.id; render() } } });
   $("#palette").addEventListener("click", e => { const b = e.target.closest("button[data-key]"); if (b){ S.paint = BYKEY[b.dataset.key].id; render() } });
-  $("#btn-clock-hour").onclick = () => { moveClock("hour"); render() };
-  $("#btn-clock-night").onclick = () => { moveClock("nightfall"); render() };
-  $("#btn-clock-event").onclick = () => { moveClock("event"); render() };
+  $("#btn-clock-hour").onclick = () => { moveClock("hour"); render(); commanderFights() };
+  $("#btn-clock-night").onclick = () => { moveClock("nightfall"); render(); commanderFights() };
+  $("#btn-clock-event").onclick = () => { moveClock("event"); render(); commanderFights() };
+  $("#moved-by").onchange = e => {
+    const sel = e.target.closest("select[data-movedby]"); if (!sel) return;
+    const m = (S.cmd[S.mapId] ||= {});
+    if (sel.value) m[sel.dataset.movedby] = sel.value; else delete m[sel.dataset.movedby];
+    const how = sel.value === "attack" ? "attacking" : "holding";
+    S.msg = sel.value ? `The commander moves ${sel.dataset.movedby}, ${how}: it gives its orders at each press of the clock.` : `${sel.dataset.movedby} are moved by hand.`;
+    render();
+  };
   tabsInit();
   $("#sel-order").onchange = e => { const f = selForce(); if (f){ setOrder(f, e.target.value); render() } };
   $("#btn-undo-wp").onclick = () => { const f = leaderOf(selForce()); if (f && f.waypoints.length){ f.waypoints.pop(); replan(f); render() } };

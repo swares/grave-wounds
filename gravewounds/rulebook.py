@@ -268,6 +268,9 @@ def _travel_values(d: Data) -> dict:
     T, DZ, W, WX = d.terrain, d.disease, d.works, d.weather
     S = W["surprise"]
     return {
+        "cmd_out": f'{(T.get("commander") or {}).get("outnumbered", 1.5):g}', "cmd_near": (T.get("commander") or {}).get("near_hexes", 6),
+        "cmd_rest": (T.get("commander") or {}).get("rest_nights", 2), "cmd_camp": W["camps"][(T.get("commander") or {}).get("camp", "watched")]["name"].lower(),
+        "cmd_beaten": d.units["morale"].get("beaten_days", 7),
         "t_hours": T["hours_per_day"], "t_within": T["fight_within"], "t_start": f"{WX['daylight']['start_after_sunrise']:g}",
         "t_stop": f"{WX['daylight']['stop_before_sunset']:g}", "t_evening": W["evening_hours"], "t_share": _pct(W["work_share"]),
         "s_base": S["base"], "s_none": S["none"], "s_dark": S["dark"], "s_fog": S["fog"], "s_per": S["per"], "s_lo": S["range"][0], "s_hi": S["range"][1],

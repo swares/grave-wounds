@@ -13,8 +13,10 @@ season](#alone-war)).
    [travel map](travel.html).
 2. **Open the [campaign page](campaign.html).** It follows the pages through muster, march, fight,
    aftermath and downtime, and keeps the game's log and save.
-3. **March** on the travel map. Its clock stops when your force meets the enemy. Ask the dice
-   anything the map does not say: is the farm empty, will the villagers sell bread.
+3. **March** on the travel map. Give the enemy's side to the commander (**Moved by**, on the
+   travel map or under Run the march: [The commander on the march](#alone-march)). Its clock stops
+   when your force meets the enemy. Ask the dice anything the map does not say: is the farm
+   empty, will the villagers sell bread.
 4. **Fight.** A skirmish goes to the roller: turn on **Run the fight**, play your own men, and let
    the GM's script play the other side; **Play to my turn** runs it until it is yours. A battle goes
    to the field map: give the other side to the [enemy commander](#commander), attacking or holding
@@ -37,6 +39,31 @@ season](#alone-war)).
     Alone, you are the GM as well as the players, so be a fair one. Ask the dice before you look
     at what the answer would cost you, and take the answer the dice give. Let the commander have
     the enemy's choices, not you.
+
+## The commander on the march {#alone-march}
+
+On the travel map, and under **Run the march** on the campaign page, **Moved by** gives a side to
+the commander, attacking or holding. At each press of the clock it orders each of that side's
+columns before the clock moves, from what the side has seen: where it saw each enemy force last,
+and how big it looked. It never knows where an enemy it has not seen is. For each column, the
+first of these that applies:
+
+1. **Its rations are gone:** it marches back to its side's nearest depot.
+2. **Exhausted or spent:** it makes a {{cmd_camp}} and rests until morning; exhausted, at most
+   {{cmd_rest}} mornings running, then it goes on; spent, until it can march.
+3. **Beaten** and fallen back within {{cmd_beaten}} days, or **outnumbered**: what it sees within
+   {{cmd_near}} hexes is {{cmd_out}} times its strength or more. It falls back to its nearest depot
+   or camp away from them.
+4. **Attacking:** it marches on the nearest enemy force it has seen, if it is the stronger;
+   otherwise on the nearest objective it has not yet reached, looking for them.
+5. **Holding:** it marches to its nearest objective, or stays where it is, and makes a
+   {{cmd_camp}} there.
+
+Its baggage marches with its biggest column. When its columns come within reach of an enemy force
+and are the stronger, an attacking commander sends the fight itself, as **Fights on offer** would:
+the page opens on it. A fight sent, by it or by you, is not sent again until its result is
+taken back into the travel map. Holding, or the weaker, it does not attack; a fight is still yours to set up
+against it. The sizes are ours.
 
 ## A war, season by season {#alone-war}
 

@@ -371,11 +371,12 @@ function renderMarch(){
   const why = m.night ? "The day's marching is done: the night passes, with its rest, food, sickness and incidents."
     : councilViews().some(v => v.started) ? "Every force with a march order marches until one arrives, forces of different sides meet, a camp is finished, or evening comes and the council can sit."
     : "Every force with a march order marches until one arrives, forces of different sides meet, or a camp is finished; nights pass on the way.";
-  const idle = !m.night && !m.working;
+  const idle = !m.night && !m.working && !(m.commanded || []).length;   // a commanded side gives its own orders on the press
   box.innerHTML = `<h3 id="h-march">Run the march</h3>
     <p style="margin:0"><span class="when">Day ${m.day}, ${esc(m.time)}</span> · ${esc(m.date)} · ${esc(m.map)}${m.night ? "" : ` · marching until ${esc(m.until)}`}</p>
     <div class="tablewrap"><table><thead><tr><th>Force</th><th>Side</th><th>Doing</th><th>At</th><th>Fit</th><th>Fatigue</th><th></th></tr></thead>
       <tbody>${m.forces.map(forceRow).join("")}</tbody></table></div>
+    ${movedByHtml()}
     <div class="toolbar"><button type="button" class="primary" id="c-run"${idle ? " disabled" : ""} title="${esc(why)}">${label}</button>${idle ? restButton() : ""}
       <span class="muted" style="font-size:.88rem">${idle ? "No force is marching or making camp: give one a route under <b>Orders</b>, or rest where they are." : "Routes, orders and camps: <b>Orders</b> on each force, or the travel map."}</span></div>
     <p id="c-march-said" aria-live="polite" style="margin:0">${esc(MARCH_SAID)}</p>${fightsHtml()}`;
@@ -495,6 +496,15 @@ function sendFight(id, k){                             // the fight sent as the 
   render();
   show(page);
 }
+const MOVED_BY = [["", "You"], ["attack", "The commander, attacking"], ["hold", "The commander, holding"]];
+const movedByOptions = stance => MOVED_BY.map(([k, t]) => '<option value="' + k + '"' + ((stance || "") === k ? " selected" : "") + ">" + t + "</option>").join("");
+function movedByHtml(){                               // who moves each side on the march: the GM, or the commander (travelday.js command)
+  let v = [];
+  try { v = newDay().commandView() } catch { return "" }
+  if (!v.length) return "";
+  const one = x => `<label class="muted" style="font-size:.88rem">${esc(x.side)}: <select data-movedby="${esc(x.side)}">${movedByOptions(x.stance)}</select></label>`;
+  return `<div class="toolbar" title="The commander orders a side's forces each press, from what that side has seen, and sends its own fights when it is the stronger"><span class="muted" style="font-size:.88rem">Moved by:</span>${v.map(one).join("")}</div>`;
+}
 function restButton(){ return ' <button type="button" id="c-rest" title="Every force stays where it is: on to nightfall, and the night passes (rest, food, the sick and the wounded in camp)">Rest until tomorrow</button>' }
 function restDay(){                                   // nothing marches: the day runs out where they are, and the night passes (or the evening council waits)
   const a = newDay().marchStep("nightfall"), b = a.night && !councilDue() ? newDay().marchStep("nightfall") : a;
@@ -508,6 +518,12 @@ function runMarch(){                                  // one press: the day move
   const r = newDay().marchStep(councilViews().some(v => v.started) ? "nightfall" : "event");   // with roles, each day stops for its evening council
   MARCH_SAID = r.text || "";
   if (r.text) note(r.text, false, "march");
+  const cf = newDay().commanderFightSaved();         // a commander attacking, the stronger, sends its own fight
+  if (cf){
+    note(`The commander of ${cf.side} attacks: ${cf.title}.`, false, "march");
+    MAP_CHOICE[cf.id] ||= cf.on;
+    return sendFight(cf.id, cf.k);
+  }
   if (r.met.length){
     const who = r.met.map(p => p.join(" and ")).join("; ");
     $("#c-notice").textContent = `${who} have met. Set up the fight on the travel map: the force is selected there; choose Fight here.`;
@@ -712,6 +728,8 @@ $("#c-march").addEventListener("click", e => {
 $("#c-march").addEventListener("change", e => {
   const sel = e.target.closest("select[data-fightmap]");
   if (sel) MAP_CHOICE[+sel.dataset.fightmap] = sel.value;
+  const mb = e.target.closest("select[data-movedby]");
+  if (mb){ note(newDay().setCommander(mb.dataset.movedby, mb.value || null)); mb.blur(); return render() }
   const pick = e.target.closest("select[data-pick]");
   if (pick){ ORDER_PICK[pick.dataset.pick] = pick.value; pick.blur(); render() }   // the camp's estimate follows the choice
 });
