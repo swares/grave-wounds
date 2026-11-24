@@ -18,6 +18,7 @@ from pathlib import Path
 from gravewounds import load, DataError
 from gravewounds.engine import aimed_ranges, table_ranges, mechanism_ranges, severity_ranges, compose_wound, weapon_mix_ranges
 from gravewounds.model import MECHANISMS, SEVERITIES, THREATS, available_weapons, commons_url, resolve_table, slot_layers, periods
+from gravewounds.rulebook import ask_tables
 
 ROOT = Path(__file__).parent
 DIST = ROOT / "dist"
@@ -1584,7 +1585,29 @@ def markdown(d) -> str:
     out += ["", "## Survival tracking (optional)", "", f"Blood pool: {T['blood_pool']} points.", ""]
     out += [f"- At {int(th['at']*100)}% Blood: {th['effect']}" for th in T["thresholds"]]
     out += [f"- {k.title()}: {v['note']}" for k, v in T["treatment"].items()]
+    out += ask_markdown(d)
     return "\n".join(out) + "\n"
+
+
+def ask_text(d) -> tuple[str, str]:
+    """Ask the dice's two rules lines, for the printed tables (the rule book has them in full)."""
+    within = d.checks.get("ask", {}).get("within", 5)
+    crit, fumble = round(d.checks.get("critical_fraction", 0.1) * 100), d.checks.get("fumble_from", 96)
+    return (f"A question with no rule to answer it: put it as yes or no, pick how likely a yes is, and roll d100. "
+            f"At or under is yes ({crit}% of the chance or under, a critical: more than you asked for); "
+            f"over is no ({fumble} or more, a fumble: worse than you feared).",
+            f"Within {within} of the number, either side, the answer comes with a complication: roll d10.")
+
+
+def ask_markdown(d) -> list[str]:
+    """Ask the dice on the printed tables (checks.yaml `ask`), when the data has it."""
+    odds, comp = ask_tables(d)
+    if not odds:
+        return []
+    rule, band = ask_text(d)
+    return (["", "## Ask the dice", "", rule, "", "| How likely | Roll at or under |", "|---|---|"]
+            + [f"| {n} | {c} |" for n, c in odds] + ["", band, "", "| d10 | Complication |", "|---|---|"]
+            + [f"| {i} | {c} |" for i, c in comp])
 
 
 # --------------------------------------------------------------------------
@@ -2025,6 +2048,14 @@ def pdf(d, path: Path, figs: dict | None = None) -> None:
                                       f"total Pain above {T['pain_cap']} calls for a stop check each round.", B),
                             Spacer(1, 4), grid(trk, [0.8 * inch, W - 0.8 * inch], font=8), Spacer(1, 6),
                             grid(trt, [1.2 * inch, W - 1.2 * inch], font=8)])]
+    odds, comp = ask_tables(d)
+    if odds:
+        ask_rule, ask_band = ask_text(d)
+        story += [Spacer(1, 10), KeepTogether([
+            Paragraph("Ask the Dice", H1), Paragraph(ask_rule, B), Spacer(1, 4),
+            grid([["How likely", "Roll at or under"]] + [[n, str(c)] for n, c in odds], [1.6 * inch, 1.2 * inch], font=8),
+            Spacer(1, 6), Paragraph(ask_band, B), Spacer(1, 4),
+            grid([["d10", "Complication"]] + [[str(i), Paragraph(c, C)] for i, c in comp], [0.5 * inch, W - 0.5 * inch], font=8)])]
     doc.build(story, onFirstPage=footer, onLaterPages=footer)
 
 
