@@ -2344,12 +2344,13 @@ def main() -> int:
     (DIST / "armoury.html").write_text(armoury(d, load_books(d, ROOT), COPYRIGHT), encoding="utf-8")
     from gravewounds.paperman import render as paper_man
     (DIST / "makeaman.html").write_text(paper_man(d, COPYRIGHT), encoding="utf-8")
-    from gravewounds.playtest import render as playtest_packet
-    packet, packet_path = playtest_packet(d, ROOT), DIST / "playtest-packet.html"
-    changed = not packet_path.exists() or packet_path.read_text(encoding="utf-8") != packet
-    packet_path.write_text(packet, encoding="utf-8")
-    if changed or not (DIST / "playtest-packet.pdf").exists():   # only when the packet changes: a PDF's bytes differ each print
-        packet_pdf(packet_path, DIST / "playtest-packet.pdf")
+    from gravewounds.playtest import render as module_page, modules, load_module
+    for mid in modules(ROOT):                          # the print-and-play modules (data/modules): Ferrybridge is the playtest packet
+        page, path = module_page(d, ROOT, mid), DIST / f"{load_module(ROOT, mid)['file']}.html"
+        changed = not path.exists() or path.read_text(encoding="utf-8") != page
+        path.write_text(page, encoding="utf-8")
+        if changed or not path.with_suffix(".pdf").exists():   # only when the module changes: a PDF's bytes differ each print
+            packet_pdf(path, path.with_suffix(".pdf"))
     (DIST / "privacy.html").write_text((ROOT / "templates" / "privacy.html").read_text(encoding="utf-8"), encoding="utf-8")
     (DIST / "guide.html").write_text((ROOT / "templates" / "guide.html").read_text(encoding="utf-8").replace("<!--__SIGNUP__-->", signup()), encoding="utf-8")   # how to play: the pages, mode by mode
     (ROOT / "index.html").write_text(index_page(d).replace("<!--__SIGNUP__-->", signup("dist/")), encoding="utf-8")

@@ -1,7 +1,9 @@
-"""The playtest packet (dist/playtest-packet.html): one fight and a week in camp, printed. The words
-are in templates/playtest/packet.md; every number and table comes from the data, through the same
-values and tables as the Rules, so the packet follows the rules. The four men are the Rules' own
-running retinue, made with the same seeded dice."""
+"""Print-and-play modules (data/modules/*.yaml), each built to dist/<file>.html: a scenario with its
+pregenerated men, map, counters, the enemy's roster, the tables it needs and a quick reference. The
+words are in the module's `text` (Markdown); every number and table comes from the data, through the
+same values and tables as the Rules, so a module follows the rules. The first is Ferrybridge, the
+playtest packet (data/modules/ferrybridge.yaml): one fight and a week in camp, its four men the Rules'
+own running retinue, made with the same seeded dice."""
 
 from __future__ import annotations
 
@@ -21,34 +23,39 @@ from .model import Data
 from .team import make_team
 from .units import SeededDice
 
-VERSION = "0.2.5, 24 November 2026"
-LINK = "https://swares.github.io/grave-wounds/dist/team.html#playtest"
 SITE = "https://swares.github.io/grave-wounds/"
 # Feedback goes through the Google Form, not a printed email address. The packet prints the short address of
 # feedback.html, which build.py writes to forward to the form, so it can be typed from paper.
 FORM = "https://docs.google.com/forms/d/e/1FAIpQLSfGgYKRfBpDth3odGXHWHI1iXSNCmscYczxBW7BE_2Pv9-Hwg/viewform"
 FEEDBACK = SITE + "feedback.html"
-MEN = (("William of Ely", "leader", "Leader"), ("Gilbert Cooper", "scout", "Scout"),
-       ("Edmund Miller", "quartermaster", "Quartermaster"), ("Nicholas Fletcher", "leech", "Leech"))
-# Clifford's five (the roller's PLAYTEST in templates/roller.html lists the same men). Five, because the script
-# playing both sides won 5 of 12 against five and 3 of 12 against seven with a serjeant (tools/campaign/playtest.py).
-FOES = (("Billman", "jack_sallet", "bill", "regular"), ("Billman", "jack_sallet", "bill", "regular"),
-        ("Billman", "jack_sallet", "bill", "regular"), ("Billman", "jack_sallet", "bill", "regular"),
-        ("Archer", "jack_sallet", "longbow", "regular"))
-TABLE = "towton-1461-all-hits"
-WEAPONS = ("sword", "bill", "longbow", "dagger")
-SKILLS = (("blade", "Blade"), ("polearm", "Polearm"), ("bow", "Bow"), ("parry", "Parry"), ("dodge", "Dodge"),
-          ("leechcraft", "Leechcraft"), ("fieldcraft", "Fieldcraft"), ("watch", "Watch"), ("stealth", "Stealth"),
-          ("persuade", "Persuade"), ("command", "Command"))
-QUESTIONS = ("Did the margin-to-severity result feel fair?", "Was the fight fast enough to stay tense?",
-             "Did you understand why a wound had the effect it did?", "Were the daily and weekly checks interesting?",
-             "Did the weather and sickness change any decisions?", "Was the evening council worth its time?",
-             "Did your role give you something to decide?", "Was the lethality right for the setting?",
-             "Would you play a second session with these men?")
+M: dict = {}                                       # the module being built (load_module): its men, foes, map and words
+
+
+def modules(root: Path) -> list[str]:
+    """The modules in data/modules, by id."""
+    return sorted(p.stem for p in (root / "data" / "modules").glob("*.yaml"))
+
+
+def load_module(root: Path, mid: str) -> dict:
+    """data/modules/<mid>.yaml, checked: its men, foes and parts named."""
+    m = yaml.safe_load((root / "data" / "modules" / f"{mid}.yaml").read_text(encoding="utf-8"))
+    for k in ("id", "title", "footer", "file", "text", "version", "team", "men", "foes", "table", "weapons", "battlemap", "weather"):
+        if k not in m:
+            raise ValueError(f"data/modules/{mid}.yaml: no {k}")
+    return m
+
+
+def _men() -> list:
+    return [(x["name"], x["role"]) for x in M["men"]]
+
+
+def _foelist() -> list:
+    return [(x["name"], x["kit"], x["weapon"], x["quality"]) for x in M["foes"]]
 
 
 def _team(d: Data) -> dict:
-    team = make_team(d, "medieval", "england", "retinue", "roll", SeededDice(3))
+    T = M["team"]
+    team = make_team(d, T["era"], T["region"], T["template"], T["mode"], SeededDice(T["seed"]))
     return {c["name"]: c for c in team}
 
 
@@ -60,8 +67,8 @@ def _table(rows: list, head: list | None = None, cls: str = "") -> str:
 
 
 def _hit(d: Data) -> str:
-    cols = [{r["id"]: r for r in table_ranges(d, TABLE, w)} for w in WEAPONS]
-    head = ["Place"] + [d.weapons[w].get("short", d.weapons[w]["name"]).split(" (")[0] for w in WEAPONS]
+    cols = [{r["id"]: r for r in table_ranges(d, M["table"], w)} for w in M["weapons"]]
+    head = ["Place"] + [d.weapons[w].get("short", d.weapons[w]["name"]).split(" (")[0] for w in M["weapons"]]
     rows = []
     for L in d.locations:
         cells = []
@@ -75,7 +82,7 @@ def _hit(d: Data) -> str:
 
 def _armour(d: Data) -> str:
     A = d.armor
-    kits = [A["kits"][k] for k in ("brigandine_sallet", "jack_sallet")]
+    kits = [A["kits"][k] for k, _ in M["armour"]]
     mats = A["materials"]
     def cell(k, slot):
         v = (k.get("slots") or {}).get(slot)
@@ -92,7 +99,7 @@ def _armour(d: Data) -> str:
         c = [cell(k, slot) for k in kits]
         if any(x != "–" for x in c):
             rows.append([slot.replace("_", " ")] + c)
-    return _table(rows, ["Part (steps: cut/pierce/crush)", "Brigandine and sallet", "Jack and sallet"], "tight")
+    return _table(rows, ["Part (steps: cut/pierce/crush)", *[head for _, head in M["armour"]]], "tight")
 
 
 def _short(w: dict) -> str:
@@ -123,9 +130,7 @@ def _effects(d: Data) -> str:
 
 def _sickness(d: Data) -> str:
     rows = []
-    for name, f in (("Quarters, dead buried or far off", ["good"]), ("Watched camp", []), ("Bivouac", ["poor"]),
-                    ("Quarters, dead unburied nearby", ["good", "dead"]), ("Watched camp, dead unburied", ["dead"]),
-                    ("Bivouac, dead unburied", ["poor", "dead"])):
+    for name, f in M["camps"]:
         rows.append([name, f"{DZ.catch_chance(d, 'flux', f, 50):.1f}".rstrip("0").rstrip(".") + "%"])
     return _table(rows, ["Camp", "Flux this week, Endurance 50"], "tight")
 
@@ -138,7 +143,8 @@ def _sheet(d: Data, c: dict, role: str, v: dict) -> str:
     s = c["stats"]
     stats = _table([[s["str"], s["agi"], s["end"], s["wits"], s["nerve"], s["pres"]]],
                    ["Strength", "Agility", "Endurance", "Wits", "Nerve", "Presence"], "tight")
-    skills = _table([[f"{n} {c['skills'].get(k, 0)}" for k, n in SKILLS[i:i + 4]] for i in range(0, len(SKILLS), 4)], None, "tight")
+    SK = M["skills"]
+    skills = _table([[f"{n} {c['skills'].get(k, 0)}" for k, n in SK[i:i + 4]] for i in range(0, len(SK), 4)], None, "tight")
     R = d.council["roles"][role]
     rolls = ", ".join(x["name"] for x in d.council["rolls"].values() if x["role"] == role)
     weapon = d.weapons[c["weapon"]]["name"].split(" (")[0]
@@ -156,20 +162,11 @@ def _sheet(d: Data, c: dict, role: str, v: dict) -> str:
 
 
 def _map() -> str:
-    return ('<svg viewBox="0 0 480 170" role="img" aria-label="Sketch of the ford: the river across the middle, the ford, the broken bridge to the east, Clifford\'s men to the north, the four men to the south">'
-            '<rect width="480" height="170" fill="#fff" stroke="#555"/><path d="M0 70 C120 60 240 95 480 72 L480 108 C240 130 120 98 0 106Z" fill="#cdd9e3"/>'
-            '<rect x="190" y="74" width="62" height="42" fill="#e4dcc8" stroke="#777" stroke-dasharray="3 3"/><text x="221" y="99" font-size="11" text-anchor="middle">The ford</text>'
-            '<path d="M410 64 v50 M425 64 v50" stroke="#333" stroke-width="3" stroke-dasharray="9 7"/><text x="417" y="60" font-size="11" text-anchor="middle">Broken bridge</text>'
-            '<text x="221" y="26" font-size="12" text-anchor="middle">Clifford\'s men come from the north</text><text x="221" y="155" font-size="12" text-anchor="middle">Your four men, south bank</text>'
-            '<text x="40" y="92" font-size="11">River Aire</text></svg>')
+    return "".join(M["sketch"])
 
 
 # ---------- the kit for playing on paper: a hex map of the ford, counters, the enemy's roster and a blank sheet ----------
-# The map is pointy-topped hexes, odd rows pushed right, at HEX inches across, so the counters (CTR inches) sit in one.
-HEX, CTR, CTR_H = 0.55, 0.47, 0.30          # a counter is CTR wide and CTR_H tall: inside a hex, no taller than its straight sides
-COLS, ROWS = 12, 17
-RIVER, FORD = range(5, 9), range(5, 8)            # rows of the Aire; columns of the ford
-TRACK = 18                                         # boxes north of the map: a man on box 18 is 30 hexes from row 12
+# The map is pointy-topped hexes, odd rows pushed right, at the module's `hex` inches across, so the counters sit in one.
 
 
 def _hexpath(cx: float, cy: float, r: float) -> str:
@@ -179,8 +176,12 @@ def _hexpath(cx: float, cy: float, r: float) -> str:
 
 
 def _battlemap() -> str:
-    """The ford as a printed hex map, true to size on Letter: 2 yards a hex, the approach track to the north."""
+    """The module's map as a printed hex map, true to size on Letter: 2 yards a hex, the approach track to the north."""
     import math
+    B = M["battlemap"]
+    HEX, COLS, ROWS, TRACK = B["hex"], B["cols"], B["rows"], B["track"]
+    RIVER, FORD = range(*B["river"]), range(*B["ford"])
+    e = html.escape
     r = HEX / math.sqrt(3)                         # centre to corner
     w, top = COLS * HEX + HEX / 2, 0.62
     hexes = []
@@ -197,14 +198,14 @@ def _battlemap() -> str:
     track = "".join(f'<rect x="{0.05 + i * box:.3f}" y="0.2" width="{box - 0.03:.3f}" height="0.32" fill="#fff" stroke="#7d8590" stroke-width="0.012"/>'
                     f'<text x="{0.05 + i * box + box / 2:.3f}" y="0.42" font-size="0.15" text-anchor="middle">{TRACK - i}</text>' for i in range(TRACK))
     ry = top + r + RIVER.start * 1.5 * r
-    labels = (f'<text x="0.05" y="0.15" font-size="0.13">Approach track. Clifford\'s men start on box {TRACK} and come south a box for each hex they move. Box 1 is next to the north edge.</text>'
-              f'<text x="{w / 2:.3f}" y="{top + 0.28:.3f}" font-size="0.16" text-anchor="middle">North bank</text>'
-              f'<text x="{HEX * 9.6:.3f}" y="{ry + 0.62:.3f}" font-size="0.17" text-anchor="middle" font-style="italic">River Aire: too deep</text>'
-              f'<text x="{HEX * 6.5:.3f}" y="{ry + 1.05:.3f}" font-size="0.17" text-anchor="middle" font-weight="bold">The ford</text>'
-              f'<text x="{w - 0.08:.3f}" y="{ry - 0.12:.3f}" font-size="0.13" text-anchor="end">To the broken bridge, a bowshot east →</text>'
-              f'<text x="{w / 2:.3f}" y="{h - 0.12:.3f}" font-size="0.16" text-anchor="middle">South bank: the four set up here</text>')
+    labels = (f'<text x="0.05" y="0.15" font-size="0.13">{e(B["track_label"].format(track=TRACK), quote=False)}</text>'
+              f'<text x="{w / 2:.3f}" y="{top + 0.28:.3f}" font-size="0.16" text-anchor="middle">{e(B["north"])}</text>'
+              f'<text x="{HEX * 9.6:.3f}" y="{ry + 0.62:.3f}" font-size="0.17" text-anchor="middle" font-style="italic">{e(B["river_label"])}</text>'
+              f'<text x="{HEX * 6.5:.3f}" y="{ry + 1.05:.3f}" font-size="0.17" text-anchor="middle" font-weight="bold">{e(B["ford_label"])}</text>'
+              f'<text x="{w - 0.08:.3f}" y="{ry - 0.12:.3f}" font-size="0.13" text-anchor="end">{e(B["east"])}</text>'
+              f'<text x="{w / 2:.3f}" y="{h - 0.12:.3f}" font-size="0.16" text-anchor="middle">{e(B["south"])}</text>')
     return (f'<svg class="mapsheet" viewBox="0 0 {w:.3f} {h + 0.02:.3f}" width="{w:.3f}in" height="{h + 0.02:.3f}in" role="img" '
-            f'aria-label="Hex map of the ford over the Aire: the north bank, four rows of river with a three-hex ford, the south bank, and the approach track above">'
+            f'aria-label="{e(B["aria"])}">'
             f'{track}{"".join(hexes)}{labels}</svg>')
 
 
@@ -213,15 +214,21 @@ def _counters(team: dict) -> str:
     e = html.escape
     def ctr(top: str, bottom: str, cls: str) -> str:
         return f'<div class="ctr {cls}"><b>{e(top)}</b><span>{e(bottom)}</span></div>'
-    short = {"sword": "Sword", "bill": "Bill", "longbow": "Bow", "dagger": "Dagger"}
-    men = [ctr(n.split(" ")[0], short.get(team[n]["weapon"], team[n]["weapon"]), "york") for n, _, _ in MEN]
-    foes = [ctr(f"Billman {i + 1}" if w == "bill" else "Archer", short[w], "clifford") for i, (_, _, w, _) in enumerate(FOES)]
+    short = M["short"]
+    men = [ctr(n.split(" ")[0], short.get(team[n]["weapon"], team[n]["weapon"]), "york") for n, _ in _men()]
+    foes = [ctr(_foe_name(i, name), short[w], "clifford") for i, (name, _, w, _) in enumerate(_foelist())]
     marks = ([ctr("Down", "", "mark")] * 9 + [ctr("Stopped", "", "mark")] * 6 + [ctr("Bound", "", "mark")] * 6 + [ctr("Prisoner", "", "mark")] * 3
              + [ctr("Bleed", f"B{n}", "mark bleed") for n in (1, 2, 3) for _ in range(5)] + [ctr("Aimed", "", "mark")] * 4
              + [ctr("Fate", "used", "mark")] * 4 + [ctr("Round", "", "mark round")] * 2)
     return (f'<p class="sub">Print on card, or glue to card, and cut along the lines. Each fits in a hex of the map. A man\'s Bleed marker shows his bleeding step (B1 to B3), his wounds\' bleed added up (<i>Wounds</i> gives the Blood it costs each round); swap it as wounds are bound.</p>'
-            f'<h2>The four</h2><div class="ctrs">{"".join(men)}</div><h2>Clifford\'s men</h2><div class="ctrs">{"".join(foes)}</div>'
+            f'<h2>{e(M["men_side"])}</h2><div class="ctrs">{"".join(men)}</div><h2>{e(M["foe_side"], quote=False)}</h2><div class="ctrs">{"".join(foes)}</div>'
             f'<h2>Markers</h2><div class="ctrs">{"".join(marks)}</div>')
+
+
+def _foe_name(i: int, name: str) -> str:
+    """A foe's name on his counter and the roster: numbered when the module has more than one of the name."""
+    names = [x["name"] for x in M["foes"]]
+    return f"{name} {i + 1}" if names.count(name) > 1 else name
 
 
 def _roster(d: Data) -> str:
@@ -230,8 +237,8 @@ def _roster(d: Data) -> str:
     Q, pool = d.units["quality"], d.wounds["tracking"]["blood_pool"]
     boxes = '<span class="ticks">' + "☐" * pool + "</span>"
     rows = []
-    for i, (name, kit, w, q) in enumerate(FOES):
-        nm = f"Billman {i + 1}" if w == "bill" else name
+    for i, (name, kit, w, q) in enumerate(_foelist()):
+        nm = _foe_name(i, name)
         rows.append(f'<tr><td><b>{e(nm)}</b><br>{e(d.weapons[w]["name"].split(" (")[0])}, {e(d.armor["kits"][kit]["name"].split(" (")[0].lower())}</td>'
                     f'<td></td><td>{Q[q]["attack"]}</td><td>{Q[q]["defence"]}</td><td>{Q[q]["nerve"]}</td><td>{boxes}</td><td></td></tr>')
     rounds = "".join(f"<td>{i}</td>" for i in range(1, 21))
@@ -242,7 +249,8 @@ def _roster(d: Data) -> str:
 def _blank_sheet() -> str:
     """A character sheet to fill in by hand, laid out as the four's."""
     stats = _table([["", "", "", "", "", ""]], ["Strength", "Agility", "Endurance", "Wits", "Nerve", "Presence"], "lined")
-    skills = _table([[f"{n}" for _, n in SKILLS[i:i + 4]] for i in range(0, len(SKILLS), 4)], None, "lined")
+    SK = M["skills"]
+    skills = _table([[f"{n}" for _, n in SK[i:i + 4]] for i in range(0, len(SK), 4)], None, "lined")
     track = _table([["", "", "", "", ""] for _ in range(5)], ["Place", "Wound", "Bleed, pain", "On the track", "Day"], "lined")
     return ('<section class="page sheet"><h1>Name: <span class="line"></span></h1><p class="sub">Career, age, origin, trait, drawback, old wounds:</p><div class="blank small"></div>'
             '<p class="role"><b>Role:</b> <span class="line"></span></p>'
@@ -301,19 +309,21 @@ def t_is_blank(p: str) -> bool:
 def _foes(d: Data) -> str:
     Q = d.units["quality"]
     rows = []
-    for name, kit, w, q in FOES:
+    for name, kit, w, q in _foelist():
         rows.append([name, d.weapons[w]["name"].split(" (")[0], d.armor["kits"][kit]["name"].split(" (")[0], Q[q]["attack"], Q[q]["defence"], Q[q]["nerve"], d.wounds["tracking"]["blood_pool"]])
     return _table(rows, ["Man", "Weapon", "Armour", "Attack", "Defence", "Nerve", "Blood"], "tight")
 
 
 def _weather(d: Data, root: Path) -> str:
-    m = yaml.safe_load((root / "data" / "maps" / "towton-1461.yaml").read_text(encoding="utf-8"))
-    rng, prev, rows = random.Random(1461), None, []
+    W = M["weather"]
+    m = yaml.safe_load((root / "data" / "maps" / f"{W['map']}.yaml").read_text(encoding="utf-8"))
+    rng, prev, rows = random.Random(W["seed"]), None, []
     C = d.weather["conditions"]
-    for day in range(2, 9):
+    for day in range(W["days"][0], W["days"][1] + 1):
         w = WX.roll_weather(d, m, day, prev, [rng.randint(1, 100) for _ in range(7)])
-        if day == 3:                                 # Palm Sunday: the snow of the record, not a roll
-            w = {**w, "cond": "snow", "high": min(w["high"], 1), "low": min(w["low"], -2)}
+        fx = (W.get("fixed") or {}).get(day)
+        if fx:                                       # the record's day, not a roll (Ferrybridge: the snow of Palm Sunday)
+            w = {**w, "cond": fx["cond"], "high": min(w["high"], fx["high_at_most"]), "low": min(w["low"], fx["low_at_most"])}
         prev = w
         y, mo, dd = WX.map_date(m, day)
         hard = C[w["cond"]].get("precip", "none") != "none" or w["low"] <= 0
@@ -322,12 +332,11 @@ def _weather(d: Data, root: Path) -> str:
 
 
 def _camplog() -> str:
-    days = ["28 Mar", "29 Mar", "30 Mar", "31 Mar", "1 Apr", "2 Apr", "3 Apr"]
-    return _table([[x, "", "", "", "", ""] for x in days], ["Day", "Where, what camp", "Food left", "Council decided", "Rolls and results", "Who is worse or better"], "lined log")
+    return _table([[x, "", "", "", "", ""] for x in M["camp_log"]], ["Day", "Where, what camp", "Food left", "Council decided", "Rolls and results", "Who is worse or better"], "lined log")
 
 
 def _feedback() -> str:
-    return _table([[f"{i + 1}. {q}", "1  2  3  4  5", ""] for i, q in enumerate(QUESTIONS)], ["Question", "Score", "Comment"], "lined")
+    return _table([[f"{i + 1}. {q}", "1  2  3  4  5", ""] for i, q in enumerate(M["questions"])], ["Question", "Score", "Comment"], "lined")
 
 
 CSS = """
@@ -358,19 +367,23 @@ table.roster td{height:62px}table.roster .ticks{font-size:11pt;letter-spacing:1p
 def _getpdf(out: str) -> str:
     """On screen only: the packet as a PDF to download (build.py prints it beside this page)."""
     n = out.count('<section class="page')
-    return (f'<div class="getpdf"><a href="playtest-packet.pdf" download>Download the packet as a PDF</a> ({n} Letter pages). '
+    return (f'<div class="getpdf"><a href="{M["file"]}.pdf" download>Download the packet as a PDF</a> ({n} Letter pages). '
             'Print it at actual size (100%), on both sides: each character, the reference, the map and the counters then have a sheet of their own.</div>')
 
-def render(d: Data, root: Path) -> str:
-    team, v, tabs = _team(d), RB.values(d), RB.tables(d, {"medieval"})
-    gil = team["Gilbert Cooper"]
-    v = {**v, "pt_version": VERSION, "pt_link": LINK, "pt_link_short": "swares.github.io/grave-wounds/dist/team.html#playtest", "pt_site": SITE, "pt_feedback": FEEDBACK, "pt_feedback_short": FEEDBACK.removeprefix("https://"),
-         "pt_gil_attack": gil["attack"], "pt_gil_margin": gil["attack"] - 31, "pt_foe_def": d.units["quality"]["regular"]["defence"], "pt_foe_nerve": d.units["quality"]["regular"]["nerve"], "pt_foe_pain": 2 * v["pain_step"],
-         "pt_rations": d.supplies["rations"]["carried"]["medieval"], "pt_bow_range": ", ".join(str(x) for x in d.weapons["longbow"]["range"]),
+def render(d: Data, root: Path, mid: str = "ferrybridge") -> str:
+    """The module mid as one printable page."""
+    global M
+    M = load_module(root, mid)
+    T, X = M["team"], M["example"]
+    team, v, tabs = _team(d), RB.values(d), RB.tables(d, {T["era"]})
+    ex, bow, q = team[X["man"]], d.weapons[X["bow"]]["range"], d.units["quality"][M["foes"][0]["quality"]]
+    v = {**v, "pt_version": M["version"], "pt_link": M["link"], "pt_link_short": M["link_short"], "pt_site": SITE, "pt_feedback": FEEDBACK, "pt_feedback_short": FEEDBACK.removeprefix("https://"),
+         "pt_gil_attack": ex["attack"], "pt_gil_margin": ex["attack"] - X["roll"], "pt_foe_def": q["defence"], "pt_foe_nerve": q["nerve"], "pt_foe_pain": 2 * v["pain_step"],
+         "pt_rations": d.supplies["rations"]["carried"][M["rations_era"]], "pt_bow_range": ", ".join(str(x) for x in bow),
          "aim_cost": d.wounds["combat"]["aim"]["cost"], "dead_days": d.disease.get("dead_days", 14),
-         "pt_bleed_rates": _rates(d), "pt_track": TRACK, "pt_short": d.weapons["longbow"]["range"][0], "pt_medium": d.weapons["longbow"]["range"][1], "pt_long": d.weapons["longbow"]["range"][2]}
-    text = (root / "templates" / "playtest" / "packet.md").read_text(encoding="utf-8")
-    sheets = [_sheet(d, team[n], r, v) for n, r, _ in MEN] + [_blank_sheet()]
+         "pt_bleed_rates": _rates(d), "pt_track": M["battlemap"]["track"], "pt_short": bow[0], "pt_medium": bow[1], "pt_long": bow[2]}
+    text = (root / M["text"]).read_text(encoding="utf-8")
+    sheets = [_sheet(d, team[n], r, v) for n, r in _men()] + [_blank_sheet()]
     parts = {"hit": _hit(d), "armour": _armour(d), "effects": _effects(d), "sickness": _sickness(d), "map": _map(), "foes": _foes(d),
              "weather": _weather(d, root), "camplog": _camplog(), "feedback": _feedback(),
              "battlemap": _battlemap(), "counters": _counters(team), "roster": _roster(d)}
@@ -379,8 +392,8 @@ def render(d: Data, root: Path) -> str:
     for k, h in parts.items():
         keep[f"@@{k}@@"] = h
         text = text.replace("{{pt:" + k + "}}", f"@@{k}@@")
-    text = RB._fill(text, v, tabs, "templates/playtest/packet.md")
-    foot = (f'<div class="foot"><span>Grave Wounds playtest packet, version {html.escape(VERSION)}</span><span class="pageno">Page __PAGE__</span>'
+    text = RB._fill(text, v, tabs, M["text"])
+    foot = (f'<div class="foot"><span>{html.escape(M["footer"])}, version {html.escape(M["version"])}</span><span class="pageno">Page __PAGE__</span>'
             '<span>© 2026 Scott Wares. All rights reserved. Free to copy for playtesting.</span></div>')
     blank = ('<section class="page blankpage"><p class="sub">This page is left blank, so that printed on both sides each character, '
              'the quick reference, the map and the counters have a sheet of their own.</p>__FOOT__</section>')
@@ -407,5 +420,5 @@ def render(d: Data, root: Path) -> str:
     for n in range(1, out.count("__FOOT__") + 1):    # number the pages in order, one footer to a page
         out = out.replace("__FOOT__", foot.replace("__PAGE__", str(n)), 1)
     return ('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-            f'<title>Grave Wounds: playtest packet</title><style>{CSS}</style></head><body>{_getpdf(out)}{out}'
+            f'<title>{html.escape(M["title"])}</title><style>{CSS}</style></head><body>{_getpdf(out)}{out}'
             '</body></html>\n')
