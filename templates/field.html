@@ -1694,9 +1694,11 @@ function seenNow(){                               // [side: Set of the enemy uni
 }
 const skyNow = () => JSON.stringify([lightOf(S.field), S.field.weather?.cond ?? null, S.field.weather?.wind ?? null]);
 const heldOf = log => (log || []).filter(l => l.kind === "objective").map(l => `${l.second ? 2 : 1}:${l.held}`).join(" ");
+const seatedSide = k => (k === 0 || k === 1) && NETF.seats.some(p => p.seat === S.sides[k]);   // a side with a player online (his own, or the console's): his to move
 function runOnToggle(){                           // Run on, or Stop
   if (RUNON) return stopRunOn(["you stopped it"]);
   if ((S.phase !== 0 && S.phase !== 1) || bothAi()) return;
+  if (seatedSide(S.phase)){ S.msg = `Not running on: it is ${S.sides[S.phase]}' move, and their player makes it (Play online).`; return render() }
   if (LAST_EX?.stop){ S.msg = `Not running on: ${STOP_TEXT[LAST_EX.stop.why](LAST_EX.stop)}. End the battle, or play on exchange by exchange.`; return render() }
   const near = runOnReach();
   if (near){ S.msg = `Not out of reach: ${near}. Play on exchange by exchange.`; return render() }
@@ -1709,6 +1711,7 @@ function runOnTick(){
   RUNON.timer = setTimeout(() => {
     if (!RUNON) return;
     if (S.phase === "over") return stopRunOn(["the battle is over"]);
+    if (seatedSide(S.phase)) return stopRunOn([`${S.sides[S.phase]}' player to move (Play online): Run on never moves or ends a side with a player`]);
     if (!aiOf(S.phase)){                          // your side's move: anything to stop for first, then the marches
       const why = runOnStops();
       if (why.length) return stopRunOn(why);

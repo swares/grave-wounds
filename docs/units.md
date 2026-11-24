@@ -499,6 +499,9 @@ computer. This page is the host, and the GM keeps everything:
   adding or removing units). Set-up is the GM's.
 - **The commander.** A side with a player is not the commander's: inviting him takes the side from
   the commander.
+- **Run on.** The GM's Run on never moves or ends a side with a player: it will not start on that
+  side's move, and running on, it stops before it ("Yorkists' player to move"), his units' march
+  orders left for him. The GM's own Next still ends any side's move, as the GM's to give.
 - **Through the campaign console.** With the field page in the console's frame, the console's own
   players come through their one link each: a player one of whose named men is a hero of a unit
   here plays its side (docs/campaign.md, *His fights come through the same link*). His screen and
