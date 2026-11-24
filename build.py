@@ -2340,6 +2340,8 @@ def main() -> int:
     from gravewounds.armoury import render as armoury
     from gravewounds.books import load_books
     (DIST / "armoury.html").write_text(armoury(d, load_books(d, ROOT), COPYRIGHT), encoding="utf-8")
+    from gravewounds.paperman import render as paper_man
+    (DIST / "makeaman.html").write_text(paper_man(d, COPYRIGHT), encoding="utf-8")
     from gravewounds.playtest import render as playtest_packet
     packet, packet_path = playtest_packet(d, ROOT), DIST / "playtest-packet.html"
     changed = not packet_path.exists() or packet_path.read_text(encoding="utf-8") != packet

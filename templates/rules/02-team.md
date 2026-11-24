@@ -5,7 +5,9 @@ patrol. The first character leads it, and when he falls another steps up. The
 [team builder](team.html) makes a whole team in one click, or one character at a time, from
 the tables of {{eras}} eras; the [printed tables](tables.pdf) hold the same tables for the
 table top. This chapter uses the medieval tables (c.1180–1500). The other eras follow the
-same five steps with their own careers, skills and kit ([Other wars](#eras)).
+same five steps with their own careers, skills and kit ([Other wars](#eras)). For a table with no
+team builder, [Making a man on paper](makeaman.html) prints each era's tables for these steps and
+a blank sheet, and each period book holds the same tables.
 
 ## The five steps {#five-steps}
 

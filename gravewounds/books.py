@@ -12,6 +12,7 @@ from pathlib import Path
 import yaml
 
 from . import rulebook as RB
+from . import paperman as PM
 from .model import Data
 
 ERA = re.compile(r"\{\{era:([a-z_]+)\}\}")
@@ -208,7 +209,9 @@ def _switched_on(d: Data, B: dict) -> str:
     return RB._md(["Era", "Armies", "A career term", "Fighting skills"], rows)
 
 
-TEAM_TABLES = (("careers", "Careers"), ("fq", "Followers"), ("ranks", "Ranks"), ("jobs", "Work between fights"),
+TEAM_TABLES = (("careers", "Careers"), ("pm_skills", "Skills: where each starts"), ("pm_origins", "Origins (d100)"),
+               ("pm_origins_f", "Origins of a woman (d100)"), ("pm_career_kit", "Careers: old wounds, kit and weapon"),
+               ("pm_terms", "Career terms (d100)"), ("fq", "Followers"), ("ranks", "Ranks"), ("jobs", "Work between fights"),
                ("job_trouble", "Trouble at work"), ("skill_uses", "What each skill is for"))
 
 
@@ -217,14 +220,17 @@ def _armies(d: Data, B: dict, tabs: dict, spots: list) -> list:
     Making a team), each era's under its own heading when the book holds several; then each era
     table's rows, linked to the rule they belong to."""
     out, eras = [], B["eras"]
-    own = {e: RB.team_tables(d, e) for e in eras}
+    own = {e: {**RB.team_tables(d, e), **{"pm_" + k: v for k, v in PM.book_tables(d, e).items() if k != "sides"}} for e in eras}   # the paper tables (paperman.py) too
     for name, title in TEAM_TABLES:
         have = [e for e in eras if name in own[e]]
         if not have:
             continue
-        out.append(f"## {title} {{#era-{'careers' if name == 'careers' else 'followers' if name == 'fq' else name}}}")
+        out.append(f"## {title} {{#era-{'careers' if name == 'careers' else 'followers' if name == 'fq' else name.removeprefix('pm_')}}}")
         if name == "careers" and "medieval" in eras:
             out.append("The Rules' [Making a team](rules.html#team) uses these same tables for its running example.")
+        if name == "pm_skills":
+            out.append("The tables the team builder rolls on, for the Rules' [five steps](rules.html#five-steps) on paper; "
+                       "[Making a man on paper](makeaman.html) prints them with the steps and a blank sheet.")
         if len(eras) == 1:
             out.append(own[have[0]][name])
         else:
