@@ -25,9 +25,23 @@ not this repository.
   | At the table: print-and-play modules | One module | Ferrybridge (the playtest packet 0.2.4): characters, map, counters, roster and reference, laid out for printing on both sides | The only module, and not yet played; the plan for more is under *Print-and-play modules* |
 
   What would widen the reach most, in order: the Ferrybridge playtest (it tests both table rows);
+  the first solo playtest by a person (below: *A solo war, played by a person*);
   the field map online (first cut: the field page hosts, a seat a side, and the campaign console
   relays it for a GM's party); a TURN relay before strangers are asked to play online. Solo is the
   strongest today, which suits itch.io's Solo RPG category.
+- **A solo war, played by a person** (planned 24 November 2026: the user, first). Every solo war so
+  far is scripted (solo play tests 16 and 17, about 150 whole-war test runs); whether the season
+  loop is fun, or only numbers, is the open question. Play Italy (8 seasons) or the Western Front
+  (18) in an evening, as the rule book's *A war, season by season* (`#alone-war`) says: Standard
+  or Gritty, the posture chosen each season, some small fights played on the roller, and **Save
+  the journal** at the end. Note:
+  - which seasons dragged, or were only pressing buttons;
+  - whether the posture was a real choice;
+  - whether the season's log read clearly;
+  - which small fights were played and which rolled;
+  - deaths, deeds and promotions that felt too common or too rare.
+
+  The journal and the notes go to a project doc, as the play tests do.
 - **Table playtests.** None has been recorded: every result so far is self-play. The four to run
   are in the README's *Next steps*, and `design.md` has the disease numbers to try over a few weeks
   of camp. The playability review (project doc `claude/playability-review.md`) ranks this first.
