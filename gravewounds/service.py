@@ -181,7 +181,7 @@ def serve(d: Data, wid: str, sid: str, men: list[dict], rolled: list[str], rng, 
         out["fight"] = small_fight(W, s["state"], rng)
     acts = sorted([a for a in s["actions"] if a in rolled], key=lambda a: (action_week(W, sid, a), s["actions"].index(a)))
     for m in men:
-        out["men"].append(_man(d, W, s, {**m, "hit_mult": P["hit"]}, acts, rng))
+        out["men"].append(_man(d, W, s, {**m, "hit_mult": P["hit"], "deed_mult": P.get("deed", 1)}, acts, rng))
     return out
 
 
@@ -227,7 +227,7 @@ def start_health(m: dict) -> dict:
 
 def _man(d: Data, W: dict, s: dict, m: dict, acts: list, rng) -> dict:
     h, r = start_health(m), {"name": m["name"], "dead": None, "dead_week": None, "sick_days": 0, "wound": None,
-                             "worst": None, "hits": [], "taken": None, "missed": [], "rolls": [], "health": None}
+                             "worst": None, "hits": [], "taken": None, "missed": [], "rolls": [], "deeds": [], "health": None}
     end, sid = m.get("endurance"), s["id"]
     for wk in range(weeks(W)):
         for aid in [a for a in acts if action_week(W, sid, a) == wk]:
@@ -303,6 +303,22 @@ def _action(d: Data, W: dict, aid: str, m: dict, h: dict, r: dict, rng) -> None:
         roll = rng()
         if roll <= t:
             r["taken"] = {"action": aid, "pct": t, "roll": roll}
+            return
+    dp = deed_pct(d, pos, m.get("deed_mult", 1))
+    if dp:                                          # came through unhit and free: did he distinguish himself there?
+        roll = rng()
+        if roll <= dp:
+            r["deeds"].append({"action": aid, "pct": dp, "roll": roll, "position": pos})
+
+
+def deed_pct(d: Data, pos: str, mult: float = 1, small: bool = False) -> int:
+    """His % chance of a deed at a rolled action where he stood at pos (or in a rolled small fight),
+    times the posture's deed (data/ranks.yaml season_deeds, ours). 0 with no rule."""
+    D = (d.ranks or {}).get("season_deeds")
+    if not D:
+        return 0
+    base = D.get("small", 0) if small else (D.get("action") or {}).get(pos, 0)
+    return min(100, round(base * mult))
 
 
 def calibrate(d: Data, wid: str, n: int, seed: int, position: str = "line", every: bool = True) -> dict:

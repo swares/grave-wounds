@@ -2206,7 +2206,7 @@ def service_bundle(d) -> dict | None:
     return {"wars": d.service, "mix": mix, "weapons": names, "steps": d.disease["steps"], "unfit_from": d.disease["unfit_from"],
             "rules": {"terrain": d.terrain, "weather": d.weather, "works": d.works, "disease": d.disease},
             "fields": {W_a["field"]: d.fields[W_a["field"]]["name"] for W in d.service.values() for W_a in W["actions"].values() if W_a.get("field")},
-            "posture": d.posture or None, "vacancies": (d.ranks or {}).get("season_vacancies")}
+            "posture": d.posture or None, "vacancies": (d.ranks or {}).get("season_vacancies"), "deeds": (d.ranks or {}).get("season_deeds")}
 
 
 def team_bundle(d) -> dict:

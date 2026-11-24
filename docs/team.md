@@ -473,6 +473,16 @@ are in the project doc "promotion-loot-research"; `approx: true` marks estimates
   but at least a year (the 1914 ladder's single years stay a year: on the Western Front, at about
   23% vacancies a rank a season, two seasons let a volunteering private reach captain in 3 of 8 wars).
   It is spent on that roll, won or lost; the GM can tick or clear it on the rank list.
+  **Deeds in a season's rolled parts** (`season_deeds` in `data/ranks.yaml`, ours): a played
+  fight's deeds are marked on the roller's *After the fight*; for the parts of a season that are
+  rolled, at each named action rolled, a man there who comes through unhit and is not taken rolls
+  d100 for a deed: 10% in the thick of it, 3% in the line, none in reserve, times the posture
+  (volunteer ×1.5, keeping their heads down ×0.5). In a small fight rolled, each man in it unhit,
+  on 5% times the posture. The season's log says where. A deed is as the GM's: +20 on his next
+  promotion roll and the years waived, at that End of season, and it makes him known to his
+  officers. A rank that only a deed opens (`deed_only`: a knighting on the field) needs no
+  vacancy: each man of the rank below with a deed that season is a place of his own, gone with the
+  season if he does not win it.
 - **Pay.** The travel map counts each night a named man's force is fed by its army (`army` in
   the experience store), or owed when its pay is in arrears. End of season pays days × pay ×
   `kept` into his purse and adds the arrears to his debt, paid when the GM presses Pay owed.

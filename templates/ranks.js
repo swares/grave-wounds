@@ -71,6 +71,12 @@ function rkPromote(team, vacancies, rng){          // every roll made: [{name, t
   const L = rkLadder(), R = RK(), out = [];
   for (let idx = L.length - 1; idx > 0; idx--){
     const r = L[idx];
+    let opened = 0;
+    if (r.deed_only){                               // a knighting: each man of the rank below with a deed is a vacancy of his own
+      const n = team.filter(c => c.deed && rkEligible(c, idx)[0]).length;
+      opened = Math.max(0, n - (vacancies[r.id] || 0));
+      vacancies[r.id] = (vacancies[r.id] || 0) + opened;
+    }
     while ((vacancies[r.id] || 0) > 0){
       const cands = team.filter(c => rkEligible(c, idx)[0]).sort((a, b) => (b.rank_days || 0) - (a.rank_days || 0));
       let won = null;
@@ -91,6 +97,7 @@ function rkPromote(team, vacancies, rng){          // every roll made: [{name, t
       vacancies[r.id] -= 1;
       if (old > 0) vacancies[L[old].id] = (vacancies[L[old].id] || 0) + 1;
     }
+    if (opened) vacancies[r.id] = Math.max(0, (vacancies[r.id] || 0) - opened);   // a deed's own place, not won: gone with the season
   }
   for (const c of team) c.deed = false;
   return out;

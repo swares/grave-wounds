@@ -114,6 +114,11 @@ def promote(d: Data, eid: str, team: list[dict], vacancies: dict, rng) -> list[d
     L, R, out = ladder(d, eid), d.ranks, []
     for idx in range(len(L) - 1, 0, -1):
         r = L[idx]
+        opened = 0
+        if r.get("deed_only"):                    # a knighting: each man of the rank below with a deed is a vacancy of his own
+            n = sum(1 for c in team if c.get("deed") and eligible(d, eid, c, idx)[0])
+            opened = max(0, n - vacancies.get(r["id"], 0))
+            vacancies[r["id"]] = vacancies.get(r["id"], 0) + opened
         while vacancies.get(r["id"], 0) > 0:
             cands = [c for c in team if eligible(d, eid, c, idx)[0]]
             cands.sort(key=lambda c: -c.get("rank_days", 0))
@@ -140,6 +145,8 @@ def promote(d: Data, eid: str, team: list[dict], vacancies: dict, rng) -> list[d
             vacancies[r["id"]] -= 1
             if old > 0:
                 vacancies[L[old]["id"]] = vacancies.get(L[old]["id"], 0) + 1
+        if opened:                                # a deed's own place, not won: gone with the season
+            vacancies[r["id"]] = max(0, vacancies.get(r["id"], 0) - opened)
     for c in team:
         c["deed"] = False
     return out

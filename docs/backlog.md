@@ -266,9 +266,10 @@ not this repository.
       Edward of March, 8 seeds a posture; project doc "solo-campaign-posture"): the posture works as
       elsewhere (volunteering about half again duty's hits and skill, and the most promotions: 0.5
       a war in Henry V, 1.8 in the Roses). But no one rose above man-at-arms in 48 wars, and *a
-      knight never comes in solo play*: knighthood is by a deed only (`deed_only`), and a deed is
-      the GM's to tick at End of season; nothing in a solo season ticks one. A deed for solo play
-      (from a season's fight won, or volunteering at a named action?) is the user's call.
+      knight never came in solo play*: knighthood is by a deed only (`deed_only`), and a deed was
+      the GM's to tick. Since: deeds in a season's rolled parts (`season_deeds`, ours: an action
+      rolled 10% thick, 3% line; a small fight rolled 5%; times the posture), and a deed opens a
+      `deed_only` rank by itself (docs/team.md).
     - *A promotion roll against 0* (low Command, keeping his head down, no longer known) is still
       rolled and shown, though he cannot win it.
     - *Lying low and capture:* the posture scales the hit chance, not the chance of being taken

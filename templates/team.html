@@ -1530,6 +1530,10 @@ function serveSeason(){
       hits.push(svcHit(c, W, `${actName(h.action)}, ${s.name}`, h.weapon));
     }
     for (const x of m.missed) bits.push(`${x.why === "sick" ? "missed" : "not at"} ${W.actions[x.action].name} (${x.why === "no share" ? "no share set" : x.why})`);
+    for (const x of m.deeds || []){                // a deed at a rolled action (data/ranks.yaml season_deeds): for his next promotion
+      bits.push(`distinguished himself at ${actName(x.action)} (a deed: ${x.pct}%, rolled ${x.roll})`);
+      c.deed = true; c.deedWhy = `at ${actName(x.action)}, ${W.positions[x.position]?.name.toLowerCase() || "there"}`;
+    }
     if (m.sick_days){
       const still = m.worst ? ", still " + m.worst + " at the season's end" : "";
       bits.push(`sick ${m.sick_days} day${m.sick_days === 1 ? "" : "s"}${still}`);
@@ -1663,7 +1667,11 @@ function svcSmallFight(){                           // the small fight rolled, n
       const weapon = SVC.weaponFor(W, svcD100());
       hits.push(svcHit(c, W, "a small fight", weapon));
       bits.push(`${c.name} hit (rolled ${roll}) by ${TD.service.weapons[weapon].toLowerCase()}`);
-    } else bits.push(`${c.name} unhurt (${roll})`);
+    } else {
+      const dp = SVC.deedPct(null, svcPostures()[V.seasonPosture || svcPostureId(V)]?.deed ?? 1, true), dr = dp ? svcD100() : null;   // a deed in it? (data/ranks.yaml season_deeds)
+      if (dp && dr <= dp){ c.deed = true; c.deedWhy = "in a small fight"; bits.push(`${c.name} unhurt (${roll}), and distinguished himself (a deed: ${dp}%, rolled ${dr})`) }
+      else bits.push(`${c.name} unhurt (${roll})`);
+    }
   }
   const lost = [];
   for (const f of S.crew){                          // the lost come off after the loop
