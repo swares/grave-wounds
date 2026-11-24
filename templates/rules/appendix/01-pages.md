@@ -45,6 +45,10 @@ fires at, times {{ammo_burn}}% (men do not fire every round they could). Longbow
 - **Running low.** Each exchange it shoots uses one. At {{ammo_low}}% of a full load or less it
   shoots at half rate; with none it cannot shoot at all, still fights hand to hand, and has
   {{ammo_morale}} on morale.
+- **From the march.** A force sent from the travel map brings its state: its units start as tired
+  as it is (its fatigue off attack and defence, as for a man), with {{worn_hungry}} on morale if its
+  rations are gone, and {{worn_beaten}} if it was beaten and fell back within {{beaten_days}} days.
+  The commander's select names a side that comes worn; its stance is still yours to choose.
 - **Resupply.** An exchange out of contact, neither moving nor firing, within {{ammo_reach}}
   hexes of a supply source: its side's map edge (behind the way most of its men face), a
   lorry or armoured carrier of its side, or a **supply dump**. The GM places dumps before the

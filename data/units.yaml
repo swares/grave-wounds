@@ -934,6 +934,12 @@ morale:
     losing_cap: 30
     dug_in: 10                # gone to ground or in a bunker: men in holes stay put
     no_ammo: -10              # out of ammunition (ammunition, below)
+    # A unit drawn from a travel-map force in a bad way (field.html forceState): its rations gone
+    # (hungry), or beaten in a fight within `beaten_days` before this one and fallen back (beaten).
+    # Ours: no source gives a size. Its march fatigue comes with it too, at weather.yaml's penalty.
+    hungry: -10
+    beaten: -10
+  beaten_days: 7
 
 # ---------- the rout ----------
 # A broken unit flees. Every enemy man in reach of it strikes, not just the front rank (the

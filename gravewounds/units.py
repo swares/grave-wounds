@@ -1187,6 +1187,10 @@ def _morale_mods(mods: dict, unit: dict) -> int:
         m += mods.get("dug_in", 0)
     if unit.get("no_ammo"):
         m += mods.get("no_ammo", 0)
+    if unit.get("hungry"):                           # from the march (field.html forceState)
+        m += mods.get("hungry", 0)
+    if unit.get("beaten"):
+        m += mods.get("beaten", 0)
     m -= min(mods["losing_cap"], mods["losing_per_man"] * max(0, unit.get("lost", 0) - unit.get("dealt", 0)))
     return m
 
@@ -4776,6 +4780,7 @@ def _morale_all(d: Data, us: list, occ: dict, before: list, acc: tuple, rng, tab
                 "contact": any(us[j]["side"] != u["side"] for j in near),
                 "friends": any(us[j]["side"] == u["side"] and us[j]["state"] == "steady" for j in near),
                 "dug": low(u) or in_bunker(d, field, u), "no_ammo": ammo_state(d, u) == "out",
+                "hungry": bool(u.get("hungry")), "beaten": bool(u.get("beaten")),
                 "holds": bool(M.get("posture")) and bool(u.get("holding")) and holds_position(d, us, i, field),
                 "hand_lost": hand[0][i], "hand_dealt": hand[1][i],
                 "braced": bool(d.units["melee"]["pikes"].get("holds")) and braced[i] is True}

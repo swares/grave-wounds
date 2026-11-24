@@ -1346,7 +1346,7 @@ function next(){
   if (S.phase === "over") return;
   if (S.phase === "setup"){
     S.aiMemory = [null, null]; S.held = { side: null, n: 0 }; S.story = []; S.commits = []; LAST_EX = null;
-    forceAmmo();
+    forceAmmo(); forceState();
     const r = beginBattle(T(), dice);
     newMove();
     const staged = stagesNote(r.stages);
@@ -1611,7 +1611,8 @@ function renderAi(){
   const fought = S.fieldId ? playStances(S.fieldId) : null, asFought = (k, st) => (fought && (FD.fields[S.fieldId]?.objective || FD.fields[S.fieldId]?.stances) && fought[k] === st ? " (as fought)" : "");
   [0, 1].forEach(k => {
     const el = $("#sel-ai" + k), opts = [["", "You move them"], ["attack", "Commander, attacking" + asFought(k, "attack")], ["hold", "Commander, holding" + asFought(k, "hold")]];
-    $("#ai-label" + k).textContent = S.sides[k];
+    const worn = sideWorn(k);
+    $("#ai-label" + k).textContent = S.sides[k] + (worn ? ` (${worn})` : "");
     el.innerHTML = opts.map(([v, t]) => `<option value="${v}">${esc(t)}</option>`).join("");
     el.value = aiOf(k) || "";
     el.disabled = S.phase === "over";
@@ -2052,6 +2053,32 @@ function forceAmmo(){                              // units of a travel-map forc
     if (share === undefined || share >= 1 || u.ammo !== undefined) continue;
     const full = ammoFull(u);
     if (full !== null) u.ammo = Math.max(0, Math.round(full * share));
+  }
+}
+// A travel-map force's state from the march (the handoff): its units start the battle as tired as
+// it is (weather.yaml fatigue), and hungry or beaten (units.yaml morale mods) as it is.
+function forceWorn(f){                             // what a force brings: {fatigue, hungry, beaten}
+  if (!f || !S.from) return null;
+  const days = FD.units.morale.beaten_days ?? 7, start = S.from.start?.day;
+  const beaten = f.beatenDay != null && start != null && start - f.beatenDay >= 0 && start - f.beatenDay < days;
+  return { fatigue: Math.min(f.fatigue || 0, WXD.fatigue.levels.length - 1), hungry: !!f.hungry, beaten };
+}
+function wornText(w){
+  return [w.fatigue ? WXD.fatigue.levels[w.fatigue].name.toLowerCase() : null, w.hungry && "hungry", w.beaten && "beaten days ago"].filter(Boolean).join(", ");
+}
+function sideWorn(k){                              // a side's forces' state, for the commander's select
+  return [...new Set((S.forces || []).filter(f => forceSide(f) === S.sides[k]).map(f => forceWorn(f)).filter(Boolean).map(wornText).filter(Boolean))].join("; ");
+}
+function forceState(){
+  const told = new Set();
+  for (const u of S.units){
+    const f = forceOf(u), w = forceWorn(f);
+    if (!w) continue;
+    if (w.fatigue > (u.fatigue || 0)) u.fatigue = w.fatigue;
+    if (w.hungry) u.hungry = true;
+    if (w.beaten) u.beaten = true;
+    const t = wornText(w);
+    if (t && !told.has(f.id)){ told.add(f.id); S.log.unshift({ cls: "morale", text: `${f.name} come to the fight ${t}.` }) }
   }
 }
 function ammoShares(){                             // per travel-map force: the share of a full load its units have left (by men), or null where none counts
