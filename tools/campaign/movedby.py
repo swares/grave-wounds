@@ -5,8 +5,8 @@
 On the travel map's Towton map: Moved by offers each side to you or the commander; given York,
 attacking, a press of the clock has the commander send its columns; with Edward's army beside a
 Lancastrian force far smaller, a press sends the fight itself (the page opens on it, with its
-handoff). On the campaign page in the march: Moved by is under Run the march, and a choice there
-is kept and logged. Needs Python's playwright with Chromium and a built site.
+handoff). On the campaign page in the march: Moved by is under Run the march, a choice there
+is kept and logged, and a press of its clock sends the commander's fight by itself. Needs Python's playwright with Chromium and a built site.
 """
 import json
 from harness import check, main, serve
@@ -50,6 +50,14 @@ def run(pw):
     c.select_option("#c-march select[data-movedby='Lancaster']", "hold")
     c.wait_for_function("() => JSON.parse(localStorage.getItem('gravewounds-travel')).cmd['towton-1461'].Lancaster === 'hold'", timeout=6000)
     check("The commander moves Lancaster, holding" in c.inner_text("body"), "a choice there is kept, and logged")
+    # the console: a press with York's commander in reach of a weaker force sends the fight by itself
+    c.select_option("#c-march select[data-movedby='Lancaster']", "")
+    c.evaluate("() => localStorage.removeItem('gravewounds-handoff')")
+    c.click("#c-run")
+    c.wait_for_function("() => REC.log.some(e => (e.data?.text || '').startsWith('The commander of York attacks'))", timeout=15000)
+    texts = c.evaluate("() => REC.log.map(e => e.data?.text || '')")
+    check(any(t.startswith("Fight set up:") for t in texts) and c.evaluate("() => localStorage.getItem('gravewounds-handoff') !== null || localStorage.getItem('gravewounds-field-handoff') !== null"),
+          "on the console's press, the commander sends the fight itself: logged, set up and the console moved to it")
     check(not errors, "no page errors" + ("" if not errors else ": " + "; ".join(errors)))
     br.close()
 
