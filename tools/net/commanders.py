@@ -4,46 +4,19 @@
 
 On the Towton map, with the commander moving York before (Moved by): the GM adds two players and
 gives each a side to command (Commands: York, Commands: Lancaster), which takes York from the
-commander. Each joins on his own link from a browser profile of his own. His page shows every
+commander. Each joins by his room's link (the room server's own code on a local port) from a
+browser profile of his own. His page shows every
 force of his side and none of the other's; he gives a force a route from his page and it is given
 at once, with no proposal for the GM to accept; the other commander's page hears nothing of it.
 Each presses Ready; the console says every commander is ready; the GM runs the clock, and the
 ready marks clear for the next orders. Needs Python's playwright with Chromium and a built site.
 Exits non-zero on any failure.
 """
-import functools, http.server, threading
-from pathlib import Path
 from playwright.sync_api import sync_playwright
+from roomharness import CONNECTED, add_player, check, failures, serve
 
-ROOT = Path(__file__).resolve().parents[2]
 MAP = "towton-1461"
-failures = []
-
-
-def check(ok, what):
-    print(("ok   " if ok else "FAIL ") + what)
-    if not ok:
-        failures.append(what)
-
-
-class Quiet(http.server.SimpleHTTPRequestHandler):
-    def log_message(self, format, *args):
-        return None
-
-
-server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), functools.partial(Quiet, directory=str(ROOT)))
-threading.Thread(target=server.serve_forever, daemon=True).start()
-BASE = f"http://127.0.0.1:{server.server_port}/dist/"
-
-
-def connect(gm, pl, pid):
-    link = gm.input_value(f'textarea[data-pl-link="{pid}"]')
-    pl.goto(link)
-    pl.wait_for_function("() => (document.querySelector('#p-reply') || {}).value", timeout=20000)
-    gm.fill(f'textarea[data-pl-reply="{pid}"]', pl.input_value("#p-reply"))
-    gm.click(f'button[data-pl="accept"][data-id="{pid}"]')
-    pl.wait_for_function("() => document.querySelector('#p-status').textContent.startsWith('Connected')", timeout=20000)
-
+site, BASE, ROOMS, stop = serve()
 
 try:
     with sync_playwright() as p:
@@ -59,20 +32,12 @@ try:
           const man = (name, f) => ({{ name, map: {MAP!r}, force: f.id, pid: 'pid-' + name, endurance: 50, str: 50, sex: 'm', fieldcraft: 40, leechcraft: 20, log: [], health: {{ cases: [], immune: {{}}, had: {{}}, dead: 0 }} }});
           localStorage.setItem('gravewounds-named', JSON.stringify({{ u1: man('Hal Ashby', y), u2: man('Wat Tyler', l) }})) }}""")
         york, lanc = gm.evaluate("() => ['York', 'Lancaster'].map(s => forcesHere().filter(f => f.side === s).map(f => f.name))")
-        gm.evaluate("() => localStorage.setItem('gw-room-server', 'off')")
         gm.goto(BASE + "campaign.html")
         gm.wait_for_function("() => typeof REC === 'object' && REC", timeout=15000)
         gm.evaluate("() => { setPhase('march'); render() }")
         gm.wait_for_selector("[data-pl-new]")
-        ids = []
-        for name, man in (("Edward", "u1"), ("Somerset", "u2")):
-            gm.fill("#pl-name", name); gm.uncheck("#pl-stun")
-            for x in gm.query_selector_all("[data-pl-new]:checked"):
-                x.uncheck()
-            gm.check(f'[data-pl-new][value="{man}"]')
-            gm.click("#pl-add")
-            gm.wait_for_function(f"() => REC.players.some(p => p.name === {name!r})", timeout=10000)
-            ids.append(gm.evaluate(f"() => REC.players.find(p => p.name === {name!r}).id"))
+        codes = [add_player(gm, ROOMS, name, man) for name, man in (("Edward", "u1"), ("Somerset", "u2"))]
+        ids = gm.evaluate("() => REC.players.map(p => p.id)")
         gm.select_option(f'select[data-pl-side="{ids[0]}"]', "York")
         gm.select_option(f'select[data-pl-side="{ids[1]}"]', "Lancaster")
         check(gm.evaluate("() => REC.players.map(p => p.side).join()") == "York,Lancaster", "the GM gives each player a side to command")
@@ -80,13 +45,11 @@ try:
               "a side a person commands is taken from the commander (Moved by)")
 
         pls = []
-        for i, pid in enumerate(ids):
-            ctx = br.new_context(viewport={"width": 1100, "height": 900})   # his own computer
-            pg = ctx.new_page()
+        for i, pid in enumerate(ids):                    # each on his own computer, by his room's link: nothing passed back by hand
+            pg = br.new_context(viewport={"width": 1100, "height": 900}).new_page()
             pg.on("pageerror", lambda e, i=i: errors.append(f"player {i}: {e}"))
-            pg.on("dialog", lambda d: d.accept())
-            gm.wait_for_selector(f'textarea[data-pl-link="{pid}"]', timeout=15000)
-            connect(gm, pg, pid)
+            pg.goto(gm.input_value(f'textarea[data-pl-link="{pid}"]'))
+            pg.wait_for_function(CONNECTED, timeout=30000)
             pls.append(pg)
         ed, so = pls
         ed.wait_for_function("() => document.querySelector('#p-force').textContent.includes('You command York')", timeout=10000)
@@ -117,7 +80,7 @@ try:
         check(not errors, "no page errors" + ("" if not errors else ": " + "; ".join(errors)))
         br.close()
 finally:
-    server.shutdown()
+    stop()
 
 print("all checks passed" if not failures else f"{len(failures)} failure(s)")
 raise SystemExit(1 if failures else 0)
