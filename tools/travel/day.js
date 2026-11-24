@@ -7,49 +7,8 @@
 // state holds together (fatigue in range, forces on the map, the clock never going back, the weather
 // rolled day by day from the first, with no gaps).
 "use strict";
-const fs = require("node:fs");
-const path = require("node:path");
-const assert = require("node:assert/strict");
+const { assert, makeTravelDay, DATA, RULES, store, tally, check, parkMiller, fresh, snapshot } = require("./harness.js");
 
-const makeTravelRules = require("../../templates/travelrules.js");
-const makeTravelDay = require("../../templates/travelday.js");
-
-const CACHE = path.join(__dirname, ".cache");
-if (process.env.TRAVEL_PARITY !== "1" || !fs.existsSync(path.join(CACHE, "shared.js"))){
-  console.error("Run it through python3 tools/travel/parity.py: it writes the data and the shared files.");
-  process.exit(1);
-}
-const DATA = JSON.parse(fs.readFileSync(path.join(CACHE, "data.json"), "utf8"));
-
-// The browser the travel page runs in, as much as the day needs: storage, crypto's dice, and the
-// shared rule files with the page's own names they read (as travel.html sets them).
-const mem = new Map();
-const store = {
-  getItem: k => (mem.has(k) ? mem.get(k) : null), setItem: (k, v) => { mem.set(k, String(v)) }, removeItem: k => { mem.delete(k) },
-  key: i => [...mem.keys()][i] ?? null, get length(){ return mem.size }, clear: () => mem.clear(),
-};
-Object.defineProperty(globalThis, "localStorage", { value: store, configurable: true });
-let cryptoState = 1;
-globalThis.crypto.getRandomValues = a => { for (let i = 0; i < a.length; i++){ cryptoState = (cryptoState * 48271) % 2147483647; a[i] = cryptoState } return a };
-globalThis.TD = { checks: DATA.checks, training: DATA.training, loads: DATA.loads, weights: DATA.weights, supplies: DATA.supplies, kit: DATA.kit,
-  stress: DATA.stress, hazards: DATA.hazards, languages: DATA.languages, era: { id: null, skills: [] } };
-Object.assign(globalThis, require(path.join(CACHE, "shared.js")));
-Object.assign(COINS, DATA.coins || {});
-const RULES = makeTravelRules(DATA, { partyOf, hzCurrentBand, hzFordWater, spMedicalShort });
-Object.assign(globalThis, { WK: DATA.works, CAMP_HEX_M: DATA.battle_hex_m, CG: DATA.ground,
-  NEIGHBOURS: RULES.NEIGHBOURS, hexDistance: RULES.hexDistance, hkey: RULES.hkey, edgeKey: RULES.edgeKey });
-
-let failed = 0, passed = 0;
-function check(name, fn){
-  try { fn(); passed++ } catch (e){ failed++; console.error(`FAIL ${name}\n  ${String(e.stack || e).split("\n").slice(0, 8).join("\n  ")}`) }
-}
-const parkMiller = seed => { let s = Math.max(1, seed % 2147483647); return () => { s = (s * 16807) % 2147483647; return 1 + (s % 100) } };
-
-function fresh(seed){                               // an empty browser and a new day on these dice
-  store.clear();
-  cryptoState = seed * 7919 + 1;
-  return { D: makeTravelDay(DATA, RULES, { roll100: parkMiller(seed) }), seed };
-}
 function setUp(D, mapId){                           // its forces as on the map, named men in two, each force's route to an enemy
   const S = D.S;
   S.mapId = mapId;
@@ -76,10 +35,6 @@ function move(D, i){                                // one press of a clock butt
   if (i === 11 && forces[1]) D.restColumn(forces[1]);
   D.moveClock(KINDS[i % KINDS.length]);
   return D.S.msg;
-}
-function snapshot(D){                               // all a game is: the travel state and what the day keeps beside it
-  D.save();
-  return JSON.stringify(Object.fromEntries([...mem.entries()].sort(([a], [b]) => (a < b ? -1 : 1))));
 }
 function holds(D, before){                          // the state holds together after a move
   const S = D.S, m = D.curMap(), c = S.clock[S.mapId], L = DATA.weather.fatigue.levels.length;
@@ -540,6 +495,6 @@ check("fog of war: a player's view holds his side's forces and only the enemy it
 });
 check("the day runs with no page: no document or window", () => assert.equal(typeof document + typeof window, "undefinedundefined"));
 
-const tally = failed ? `${failed} failed, ${passed} passed` : `all ${passed} passed`;
-console.log(`travel day on ${MAPS.length} maps: ${tally}`);
-process.exit(failed ? 1 : 0);
+const said = tally.failed ? `${tally.failed} failed, ${tally.passed} passed` : `all ${tally.passed} passed`;
+console.log(`travel day on ${MAPS.length} maps: ${said}`);
+process.exit(tally.failed ? 1 : 0);
