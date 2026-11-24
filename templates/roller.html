@@ -875,16 +875,24 @@ function followersButton(){
   return n ? `<button class="small" id="btn-followers-back" title="Send the followers' fates to the team builder once the fight is settled: the dead, taken or left behind, and those with a serious or critical wound (invalided home), come off its followers">Followers back to the team builder (${n})</button>` : "";
 }
 function rollerResult(){                            // the travel map's battle result, from this fight: {battle, mapId, place, start, minutes, kind, forces, beaten}
-  const T = S.travelFrom, w = wonBy(), out = {};
+  const T = S.travelFrom, w = wonBy(), out = {}, after = [];
   for (const c of S.chars){
     if (c.forceId === undefined || c.forceId === null) continue;
     const x = out[c.forceId] ??= { killed: 0, left: 0, died: 0, taken: 0, lost: 0, cases: [] };
+    if (c.sheet && !c.taken && !c.fled && !c.away && !c.dead){   // a named man: the hours after, as a season's (minutesAfter); then, down on a field his side does not hold, taken prisoner
+      const worst = charStats(c).worst, line = minutesAfter(c);
+      if (line) after.push(line);
+      if (c.dead){ x[DIES[worst] === "killed" ? "killed" : "died"] += 1; continue }
+      if (!holdsField(c) && isDown(c)){ after.push(takenBy(c, `${c.name}, down on a field his side does not hold, is taken prisoner`)); x.taken += 1; continue }
+      if (line || campable(c).length){ if (campable(c).length) toCamp(c); continue }   // he lived through it (fate, or the roll): his wounds go to camp with him, not counted lost
+    }
     const fate = fighterFate(c, holdsField(c));
     if (fate === "wounded" && c.uid) toCamp(c);                   // his own record: his wounds go to camp with him
     else if (fate === "wounded") x.cases.push(woundCaseFor(worstWound(c)));
     else if (fate) x[fate] += 1;
   }
   for (const x of Object.values(out)) x.lost = x.killed + x.left + x.died + x.taken;
+  if (after.length) S.afterLog = [...after, ...(S.afterLog || [])];
   const beaten = w ? [...new Set(S.chars.filter(c => c.forceId != null && sideOf(c) !== w).map(c => c.forceId))] : [];
   return { battle: T.battle, mapId: T.mapId, place: T.place, start: T.start, minutes: Math.max(1, Math.round(S.round / 10)), kind: "skirmish", forces: out, beaten };
 }
