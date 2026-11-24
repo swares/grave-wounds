@@ -1216,6 +1216,8 @@ def bundle(d) -> dict:
         "checks": d.checks, "ranks": d.ranks, "loads": d.loads, "weights": d.weights, "stress": d.stress, "hazards": d.hazards, "languages": d.languages, "patrons": d.patrons,     # the shared rules in templates/ranks.js: loot, deeds, coups after a fight
         "locations": d.locations,
         "quality": d.units["quality"],          # attack, defence and Nerve by quality: men without a sheet when the roller runs the fight
+        "aftermath": {"dead_if": d.units["dead_if"], "saved": d.units["aftermath"]["saved"],   # a named man's wound in the hours after, as a hero carried from a field battle
+                      "medevac": d.units["aftermath"].get("medevac") or {}},
         "weapons": {wid: {**w, "mech_ranges": mechanism_ranges(d, wid)} for wid, w in d.weapons.items()},
         "tables": tables,
         "severity": d.wounds["severity"]["tiers"],
