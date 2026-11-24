@@ -8,6 +8,12 @@
      GET  /rooms/CODE/invite?after=V  the invitation newer than V -> 200 {v, data}, or 204 none yet
      PUT  /rooms/CODE/reply           the player's reply to version v {v, data} -> 200; 409 if stale or already answered
      GET  /rooms/CODE/reply?v=V       the reply to version V, with X-Room-Key -> 200 {data}, or 204 none yet
+     GET  /turn                       a relay for strict networks -> 200 {iceServers}, or 404 when none is set up
+
+   The relay is Cloudflare's TURN service: with the secrets TURN_KEY_ID and TURN_KEY_API_TOKEN set
+   (worker/README.md, The relay), each call mints credentials good for RELAY_HOURS (default 6) and
+   returns them as RTCPeerConnection iceServers, less the port-53 address browsers block. Without
+   the secrets it says there is none, and the pages use STUN alone, as before.
 
    A room forgets everything ROOM_HOURS after it was last written (an alarm deletes it). Only pages
    from ALLOWED_ORIGINS (a comma list; localhost is always allowed, for testing) may call it.
@@ -48,6 +54,17 @@ function withHeaders(response, headers){
   return out;
 }
 
+async function relay(env){                                  // Cloudflare TURN credentials as iceServers, or null with none set up
+  if (!env.TURN_KEY_ID || !env.TURN_KEY_API_TOKEN) return null;
+  const ttl = Math.round(Number(env.RELAY_HOURS || 6) * 3600);
+  const r = await fetch(`https://rtc.live.cloudflare.com/v1/turn/keys/${env.TURN_KEY_ID}/credentials/generate-ice-servers`, {
+    method: "POST", headers: { Authorization: `Bearer ${env.TURN_KEY_API_TOKEN}`, "Content-Type": "application/json" }, body: JSON.stringify({ ttl }) });
+  if (!r.ok) return null;
+  const servers = (await r.json()).iceServers || [];
+  const noPort53 = u => !/:53(\?|$)/.test(u);                // browsers block port 53: a candidate there only waits for a timeout
+  return servers.map(s => ({ ...s, urls: [].concat(s.urls).filter(noPort53) })).filter(s => s.urls.length);
+}
+
 async function makeRoom(env, tries){                       // a room under a code not in use (a room that exists says so) -> {code, key}, or null
   if (tries <= 0) return null;
   const code = newCode(), stub = env.ROOMS.get(env.ROOMS.idFromName(code));
@@ -61,6 +78,10 @@ export default {
     if (!cors) return empty(403);
     if (request.method === "OPTIONS") return empty(204, cors);
     const url = new URL(request.url), parts = url.pathname.split("/").filter(Boolean);
+    if (parts[0] === "turn" && parts.length === 1 && request.method === "GET"){
+      const iceServers = await relay(env);
+      return iceServers ? json({ iceServers }, 200, { ...cors, "Cache-Control": "no-store" }) : json({ error: "no relay" }, 404, cors);
+    }
     if (parts[0] !== "rooms") return json({ error: "not found" }, 404, cors);
     if (parts.length === 1 && request.method === "POST"){
       const made = await makeRoom(env, 8);

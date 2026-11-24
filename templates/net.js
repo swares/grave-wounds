@@ -4,7 +4,9 @@
    or a chat). The host makes an invitation for a seat (a side); the player opens it as a link,
    his page answers with a reply code; the GM pastes the reply in; the pages then talk directly
    over a data channel. A STUN server (by default a public one) lets pages find each other across
-   the internet; there is no relay (TURN), so a few strict networks will not connect.
+   the internet. With a room server that has a relay set up (worker/README.md, The relay), its TURN
+   servers are used too (NET.relay), so strict networks connect through it; without one, a few
+   strict networks will not connect.
 
    What crosses the channel is JSON: the host sends each seat its own screen (see the roller's
    net section), the player sends his choices. Messages are cut into pieces the channel carries.
@@ -14,6 +16,20 @@
 const NET = (() => {
   const PIECE = 60000;                                   // under the 256 kB a Chromium data channel message may be
   const STUN = [{ urls: "stun:stun.l.google.com:19302" }];
+  let RELAY = null, RELAY_FOR = null, RELAY_P = null;   // the room server's relay (iceServers), once asked
+  function relay(server){                                // ask the room server for its relay -> a promise of iceServers or null
+    let base = String(server || "");
+    while (base.endsWith("/")) base = base.slice(0, -1);
+    if (!base || typeof fetch !== "function") return Promise.resolve(null);
+    if (RELAY_FOR === base && RELAY_P) return RELAY_P;
+    RELAY_FOR = base; RELAY = null;                      // another server: its own relay or none
+    RELAY_P = fetch(`${base}/turn`).then(r => (r.ok ? r.json() : null)).then(j => {
+      RELAY = Array.isArray(j?.iceServers) && j.iceServers.length ? j.iceServers : null;
+      return RELAY;
+    }).catch(() => null);
+    return RELAY_P;
+  }
+  const iceFor = stun => (stun ? [...STUN, ...(RELAY || [])] : []);   // STUN (and the relay, when there is one); on one network, none
 
   const toB64url = bytes => {
     let bin = "";
@@ -86,7 +102,7 @@ const NET = (() => {
 
   // The host's end of one player's connection: invite(seat) -> link code; accept(reply) connects.
   function hostPeer({ seat, stun = true, onMessage, onState }){
-    const pc = new RTCPeerConnection({ iceServers: stun ? STUN : [] });
+    const pc = new RTCPeerConnection({ iceServers: iceFor(stun) });
     const ch = pc.createDataChannel("gravewounds", { ordered: true });
     const send = wire(ch, onMessage, onState);
     watch(pc, onState, () => ch.readyState === "open");
@@ -107,7 +123,8 @@ const NET = (() => {
   // The player's end: from the invitation, a reply code for the GM; then messages both ways.
   async function guestPeer({ invite, stun = true, onMessage, onState }){
     if (invite.kind !== "invite") throw new Error("That is not an invitation.");
-    const pc = new RTCPeerConnection({ iceServers: stun ? STUN : [] });
+    if (stun && RELAY_P) await RELAY_P;                  // the relay asked for: wait for it, so this end can use it too
+    const pc = new RTCPeerConnection({ iceServers: iceFor(stun) });
     let send = () => {}, chan = null;
     pc.ondatachannel = e => { chan = e.channel; send = wire(chan, onMessage, onState) };
     watch(pc, onState, () => chan?.readyState === "open");
@@ -245,6 +262,7 @@ const NET = (() => {
   function rooms(server){
     let base = String(server || "");
     while (base.endsWith("/")) base = base.slice(0, -1);
+    relay(base);                                         // its relay, if it has one, ready for the next connection
     const at = (code, what) => `${base}/rooms/${encodeURIComponent(code)}/${what}`;
     return {
       create: () => roomCall("POST", `${base}/rooms`),                                         // -> {code, key}
@@ -275,7 +293,7 @@ const NET = (() => {
     });
   }
 
-  return { packCode, unpackCode, pieces, joiner, hostPeer, guestPeer, PIECE, edit, apply, screenPart, merge, clean, rooms, poll, pollEvery };
+  return { packCode, unpackCode, pieces, joiner, hostPeer, guestPeer, PIECE, edit, apply, screenPart, merge, clean, rooms, poll, pollEvery, relay, iceFor };
 })();
 
 if (typeof module !== "undefined") module.exports = NET;   // Node (the tests); the page has no `module`

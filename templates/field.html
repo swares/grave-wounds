@@ -4498,6 +4498,7 @@ function init(){
   $("#chk-quick-shell").onchange = e => { UD.quick.shellfire = e.target.checked };
   $("#btn-quick-sheet").onclick = quickSheet;
   netfWire();
+  NET.relay(fieldRoomServer());                     // the room server's relay for strict networks, if it has one
   render();
 }
 if (FIELD_GUEST) fieldGuestMain();

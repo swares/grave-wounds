@@ -93,5 +93,31 @@ await check("two rooms never share a code", async () => {
   assert.equal(new Set(made.map(r => r.code)).size, 300);
 });
 
+await check("no relay set up: /turn says there is none, and the pages use STUN alone", async () => {
+  const r = await call(makeEnv(), "GET", "/turn");
+  assert.equal(r.status, 404);
+});
+await check("a relay set up: /turn mints Cloudflare TURN credentials, less the port-53 address", async () => {
+  const env = makeEnv({ TURN_KEY_ID: "kid", TURN_KEY_API_TOKEN: "tok", RELAY_HOURS: "2" }), real = globalThis.fetch;
+  let asked = null;
+  globalThis.fetch = async (url, init) => {
+    asked = { url, init };
+    return new Response(JSON.stringify({ iceServers: [{ urls: ["stun:stun.cloudflare.com:3478", "stun:stun.cloudflare.com:53"] },
+      { urls: ["turn:turn.cloudflare.com:3478?transport=udp", "turn:turn.cloudflare.com:53?transport=udp", "turns:turn.cloudflare.com:443?transport=tcp"], username: "u", credential: "c" }] }), { status: 201 });
+  };
+  try {
+    const r = await call(env, "GET", "/turn");
+    assert.equal(r.status, 200);
+    assert.equal(asked.url, "https://rtc.live.cloudflare.com/v1/turn/keys/kid/credentials/generate-ice-servers");
+    assert.equal(asked.init.headers.Authorization, "Bearer tok");
+    assert.deepEqual(JSON.parse(asked.init.body), { ttl: 7200 });
+    const { iceServers } = await r.json();
+    assert.deepEqual(iceServers[1].urls, ["turn:turn.cloudflare.com:3478?transport=udp", "turns:turn.cloudflare.com:443?transport=tcp"]);
+    assert.equal(iceServers[1].username, "u");
+    assert.ok(!JSON.stringify(iceServers).includes(":53"), "no port 53");
+    assert.equal((await call(env, "GET", "/turn", { origin: "https://elsewhere.example" })).status, 403, "only the site's pages may ask");
+  } finally { globalThis.fetch = real }
+});
+
 console.log(`${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

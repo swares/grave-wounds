@@ -8,6 +8,8 @@ preview_urls = false                            # no extra per-version addresses
 [vars]
 ALLOWED_ORIGINS = "https://swares.github.io"   # the site's pages; add others with commas (localhost is always allowed)
 ROOM_HOURS = "6"                                # a room is forgotten this long after it was last written
+RELAY_HOURS = "6"                               # the relay's credentials last this long (README.md, The relay)
+# The relay's secrets, TURN_KEY_ID and TURN_KEY_API_TOKEN, are set with `npx wrangler secret put` (README.md), never here.
 
 [[durable_objects.bindings]]
 name = "ROOMS"

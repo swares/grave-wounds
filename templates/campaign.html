@@ -1581,6 +1581,7 @@ if (PLAYER_PAGE){
 } else {
   loadRecord();
   render();
+  NET.relay(roomServer());                            // the room server's relay for strict networks, if it has one, ready before anyone is invited
   const gmLink = () => gmStart().catch(e => { $("#c-notice").textContent = `The coached session could not start: ${e.message || e}`; $("#c-notice").hidden = false });
   if (location.hash === "#gmstart") gmLink();
   else show(phaseOf(REC.phase).page);
