@@ -40,6 +40,11 @@ function fightLabel(n, k){                         // the button for fight k of 
   if (n < 2) return "Set up the fight";
   return k ? "Wait for the camp" : "Attack now";
 }
+function roughN(n){                               // a force's size as an enemy reckons it, as a number: for a commander weighing it
+  if (n < 10) return Math.max(1, n);
+  const p = 10 ** Math.floor(Math.log10(n));
+  return Math.round(n / p * 2) / 2 * p;
+}
 function makeTravelDay(DATA, RULES, env = {}){
   const { mapJdn, mapDate, marchWindow, rollWeather, WIND_NAMES, nextGround, nightRest, fatigueAfter, NEIGHBOURS, terrainAt, forceTypes, fordHere, passable, stepHours, plan, advance, hexDistance, campDone, before, laterOf, dzProfile, newHealth, dzStep, healthCounts, sickMarchPct, campHygiene, campCare, weekFactors, nursingOf, contagionOf, freshToday, fieldcraftNeeded, leechBonus, reopenOld, healthWeek, healthDay, neighbours, campLabourDone, fightPlan, lightAt, coldLevel, surpriseChance } = RULES;
   const TER = DATA.terrain, TT = TER.terrain, FT = TER.forces;
@@ -1381,16 +1386,17 @@ function makeTravelDay(DATA, RULES, env = {}){
   // nearest objective, or where it is, and a watched camp there. Baggage marches with the side's
   // biggest column. The order and the sizes are ours (asked and answered, 24 November 2026).
   const CMD = { outnumbered: 1.5, near_hexes: 6, camp: "watched", rest_nights: 2 };   // rest_nights: an exhausted column rests at most so many mornings running, then goes on (one too spent to march rests till it can)
-  const stanceOf = side => (S.cmd[S.mapId] || {})[side] || null;
+  const stanceOf = side => S.cmd[S.mapId]?.[side] || null;
   function setCommander(side, stance){            // stance: "attack", "hold" or null (the player moves them)
     restore();
     const m = (S.cmd[S.mapId] ||= {});
     if (stance === "attack" || stance === "hold") m[side] = stance; else delete m[side];
     save();
-    return stance ? `The commander moves ${side}, ${stance === "attack" ? "attacking" : "holding"}.` : `${side} are moved by hand.`;
+    if (!stance) return `${side} are moved by hand.`;
+    return `The commander moves ${side}, ${stance === "attack" ? "attacking" : "holding"}.`;
   }
   function seenFoes(f){                           // what f's side remembers of the enemy, less a force looked for where it was last seen and not there
-    const mem = (S.seen[S.mapId] || {})[f.side] || {}, now = new Set(sightings(f.side).map(e => e.id));
+    const mem = S.seen[S.mapId]?.[f.side] || {}, now = new Set(sightings(f.side).map(e => e.id));
     return Object.entries(mem).map(([id, r]) => ({ id: +id, ...r })).filter(r => now.has(r.id) || hexDist(r.pos, f.pos) > TER.fight_within);
   }
   function strengthNear(f){                       // its column's fit men and its side's other columns' within fighting reach
@@ -1416,72 +1422,85 @@ function makeTravelDay(DATA, RULES, env = {}){
     return line;
   }
   function cmdHalt(L){ if (L.order === "march"){ L.waypoints = []; replan(L); L.order = "halt" } }
-  function commandColumn(L, stance){              // -> the line said, or ""
-    const c = clockNow(), fresh = L.day <= c.day;
-    if (!fresh) return "";                        // resting until a later morning
-    if ((L.fatigue || 0) < 3) L.cmdRested = 0;
-    if (hungryNow(L)){ const d = nearestOf(L, depotsOf(L.side)); if (d) return cmdGo(L, d, "back for rations to its depot") }
+  function cmdCamp(L){                            // a watched camp where it stands, if it has none and one can be made
+    if (campHere(L) || !WK.camps[CMD.camp] || campCost(L, CMD.camp).error) return false;
+    const was = S.msg; makeCamp(L, CMD.camp); S.msg = was;
+    return true;
+  }
+  function cmdRations(L){                         // 1) its rations gone: back to its depot
+    if (!hungryNow(L)) return null;
+    const d = nearestOf(L, depotsOf(L.side));
+    return d ? cmdGo(L, d, "back for rations to its depot") : null;
+  }
+  function cmdRest(L){                            // 2) exhausted or spent: a watched camp first (a night in the open does not mend it, weather.yaml fatigue night)
     const lv = WXD.fatigue.levels[L.fatigue || 0];
-    if ((L.fatigue || 0) >= 3 && (!lv.march || (L.cmdRested || 0) < CMD.rest_nights)){   // a night in the open does not mend it (weather.yaml fatigue night): a watched camp first
-      L.cmdRested = (L.cmdRested || 0) + 1;
-      const tired = WXD.fatigue.levels[L.fatigue].name.toLowerCase();
+    if ((L.fatigue || 0) < 3) return null;
+    if (lv.march && (L.cmdRested || 0) >= CMD.rest_nights) return null;   // exhausted two mornings running: it goes on
+    L.cmdRested = (L.cmdRested || 0) + 1;
+    cmdHalt(L); cmdCamp(L); restColumn(L);
+    const line = `The commander rests ${colName(L)} in camp: it is ${lv.name.toLowerCase()}.`;
+    L.log.unshift(line);
+    return line;
+  }
+  function isBeaten(L, day){
+    const days = DATA.units?.morale?.beaten_days ?? 7;
+    return L.beatenDay != null && day - L.beatenDay >= 0 && day - L.beatenDay < days;
+  }
+  function cmdFallBack(L, near, beaten){            // 3) back to its nearest depot or camp away from what it sees
+    const far = h => (near.length ? Math.min(...near.map(r => hexDist(r.pos, h))) : Infinity), here = far(L.pos);
+    const camps = (baseMap().places || []).filter(p => p.hex && p.kind === "camp").map(p => p.hex);
+    const to = nearestOf(L, [...depotsOf(L.side), ...camps].filter(h => !near.length || far(h) > here));
+    if (to) return cmdGo(L, to, beaten ? "back, beaten" : "back before a stronger enemy");
+    cmdHalt(L);
+    return "";
+  }
+  function cmdAttack(L, foes, mine){               // 4) on the nearest enemy seen if the stronger, else to an objective not yet reached
+    const target = foes.slice().sort((a, b) => hexDist(a.pos, L.pos) - hexDist(b.pos, L.pos))[0];
+    if (target && (target.est || 1) <= mine){
+      if (hexDist(target.pos, L.pos) > TER.fight_within) return cmdGo(L, target.pos, `on ${target.name}, last seen ${target.size}`);
       cmdHalt(L);
-      if (!campHere(L) && WK.camps[CMD.camp] && !campCost(L, CMD.camp).error){ const was = S.msg; makeCamp(L, CMD.camp); S.msg = was }
-      restColumn(L);
-      const line = `The commander rests ${colName(L)} in camp: it is ${tired}.`; L.log.unshift(line); return line;
+      return "";
     }
+    const been = new Set(L.cmdBeen || []), left = objectives().filter(h => !been.has(h.join(",")));   // nothing seen: it looks for them, objective by objective
+    if (left.some(h => sameHex(h, L.pos))) L.cmdBeen = [...been, L.pos.join(",")];
+    const obj = nearestOf(L, left.filter(h => !sameHex(h, L.pos)));
+    return obj ? cmdGo(L, obj, "to the nearest objective it has not yet reached") : null;
+  }
+  function cmdHold(L){                             // 5) to its nearest objective; there (or with none), a watched camp
+    const obj = nearestOf(L, objectives());
+    return obj && !sameHex(obj, L.pos) ? cmdGo(L, obj, "to hold the nearest objective") : null;
+  }
+  function commandColumn(L, stance){              // -> the line said, or ""
+    const c = clockNow();
+    if (L.day > c.day) return "";                 // resting until a later morning
+    if ((L.fatigue || 0) < 3) L.cmdRested = 0;
+    const need = cmdRations(L) ?? cmdRest(L);
+    if (need !== null) return need;
     const foes = seenFoes(L), mine = Math.max(1, strengthNear(L));
     const near = foes.filter(r => hexDist(r.pos, L.pos) <= CMD.near_hexes), theirs = near.reduce((t, r) => t + (r.est || 1), 0);
-    const days = DATA.units?.morale?.beaten_days ?? 7, beaten = L.beatenDay != null && c.day - L.beatenDay >= 0 && c.day - L.beatenDay < days;
-    if (beaten || theirs >= CMD.outnumbered * mine){
-      const far = h => (near.length ? Math.min(...near.map(r => hexDist(r.pos, h))) : Infinity), here = far(L.pos);
-      const backs = [...depotsOf(L.side), ...(baseMap().places || []).filter(p => p.hex && p.kind === "camp").map(p => p.hex)]
-        .filter(h => !near.length || far(h) > here);
-      const to = nearestOf(L, backs);
-      if (to) return cmdGo(L, to, beaten ? "back, beaten" : "back before a stronger enemy");
-      cmdHalt(L); return "";
-    }
-    if (stance === "attack"){
-      const target = foes.slice().sort((a, b) => hexDist(a.pos, L.pos) - hexDist(b.pos, L.pos))[0];
-      if (target && (target.est || 1) <= mine){
-        if (hexDist(target.pos, L.pos) <= TER.fight_within){ cmdHalt(L); return "" }
-        return cmdGo(L, target.pos, `on ${target.name}, last seen ${target.size}`);
-      }
-      const been = new Set(L.cmdBeen || []), left = objectives().filter(h => !been.has(h.join(",")));   // nothing seen: it looks for them, objective by objective
-      if (left.some(h => sameHex(h, L.pos))) L.cmdBeen = [...been, L.pos.join(",")];
-      const obj = nearestOf(L, left.filter(h => !sameHex(h, L.pos)));
-      if (obj) return cmdGo(L, obj, "to the nearest objective it has not yet reached");
-    } else {
-      const obj = nearestOf(L, objectives());
-      if (obj && !sameHex(obj, L.pos)) return cmdGo(L, obj, "to hold the nearest objective");
-    }
+    const beaten = isBeaten(L, c.day);
+    if (beaten || theirs >= CMD.outnumbered * mine) return cmdFallBack(L, near, beaten);
+    const go = stance === "attack" ? cmdAttack(L, foes, mine) : cmdHold(L);
+    if (go !== null) return go;
     cmdHalt(L);
-    if (!campHere(L) && WK.camps[CMD.camp] && !campCost(L, CMD.camp).error && L.used < dayEnd(L.day) - 1e-9){
-      const was = S.msg; makeCamp(L, CMD.camp); S.msg = was;
-      const line = `The commander has ${colName(L)} make a ${WK.camps[CMD.camp].name.toLowerCase()}.`; return line;
-    }
+    if (L.used < dayEnd(L.day) - 1e-9 && cmdCamp(L)) return `The commander has ${colName(L)} make a ${WK.camps[CMD.camp].name.toLowerCase()}.`;
     return "";
+  }
+  function commandBaggage(L, biggest){            // the baggage keeps with the army's biggest column -> the line said, or ""
+    if (!biggest || biggest === L || columnOf(L).includes(biggest)) return "";
+    if (hexDist(L.pos, biggest.pos) > TER.fight_within) return cmdGo(L, biggest.pos, `after ${biggest.name}`);
+    joinColumn(L, biggest);
+    return `The commander has ${L.name} march with ${biggest.name}.`;
+  }
+  function commandSide(side){                     // -> the lines said for one commanded side
+    const cols = forcesHere().filter(f => f.side === side && Array.isArray(f.pos) && f.men > 0 && leaderOf(f) === f);
+    const biggest = cols.filter(f => f.type !== "wagons").sort((a, b) => fitOf(b).fit - fitOf(a).fit)[0];
+    return cols.map(L => (L.type === "wagons" ? commandBaggage(L, biggest) : commandColumn(L, stanceOf(side)))).filter(Boolean);
   }
   function command(){                             // every commanded side's columns ordered -> the lines said
     if (!S.mapId || !S.forces[S.mapId] || !Object.keys(S.cmd[S.mapId] || {}).length) return [];
     noteSightings();
-    const out = [];
-    for (const side of Object.keys(S.cmd[S.mapId])){
-      const stance = stanceOf(side), cols = forcesHere().filter(f => f.side === side && Array.isArray(f.pos) && f.men > 0 && leaderOf(f) === f);
-      const fighting = cols.filter(f => f.type !== "wagons"), biggest = fighting.slice().sort((a, b) => fitOf(b).fit - fitOf(a).fit)[0];
-      for (const L of cols){
-        if (L.type === "wagons"){                 // the baggage keeps with the army
-          if (biggest && biggest !== L){
-            if (hexDist(L.pos, biggest.pos) <= TER.fight_within && !columnOf(L).includes(biggest)){ joinColumn(L, biggest); out.push(`The commander has ${L.name} march with ${biggest.name}.`) }
-            else { const s = cmdGo(L, biggest.pos, `after ${biggest.name}`); if (s) out.push(s) }
-          }
-          continue;
-        }
-        const s = commandColumn(L, stance);
-        if (s) out.push(s);
-      }
-    }
-    return out;
+    return Object.keys(S.cmd[S.mapId]).flatMap(commandSide);
   }
   function clockMove(kind){                      // kind: "hour", "nightfall" or "event"; at nightfall any of them passes the night
     const c = clockNow();
@@ -1797,11 +1816,6 @@ function makeTravelDay(DATA, RULES, env = {}){
     if (n < 10) return "fewer than 10";
     const p = 10 ** Math.floor(Math.log10(n));
     return `about ${(Math.round(n / p * 2) / 2 * p).toLocaleString("en-US")}`;
-  }
-  function roughN(n){                             // the same reckoning as a number, for a commander weighing it
-    if (n < 10) return Math.max(1, n);
-    const p = 10 ** Math.floor(Math.log10(n));
-    return Math.round(n / p * 2) / 2 * p;
   }
   const report = e => ({ name: e.name, side: e.side, type: e.type, size: roughly(fitOf(e).fit || e.men), est: roughN(fitOf(e).fit || e.men), pos: e.pos.slice() });
   function noteSightings(){                       // each side remembers where it last saw each enemy force, and when
