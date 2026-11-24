@@ -4938,6 +4938,7 @@ function setAttacker(i){
   if (S.attacker === S.active && S.chars.length > 1) S.active = S.chars.findIndex((_, j) => j !== i);
   const c = attackerChar();
   if (c && c.weapon && DATA.tables[S.table].weapons.includes(c.weapon)){ S.weapon = c.weapon; fillWeapons(); syncArmor() }
+  else if (c && !c.weapon && DATA.tables[S.table].weapons.includes("punch")){ S.weapon = "punch"; fillWeapons(); syncArmor() }   // a man with no weapon fights with his fists, not the last man's weapon
   fillFromSheets();
   renderChars();
 }

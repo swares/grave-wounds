@@ -270,7 +270,7 @@ python -m gravewounds roll --table visby-1361-adjusted --weapon axe --attack 65 
   No shield; attacker on the ground = Attacker lower.
 
 In the roller, mark a casualty as Attacker and another as Defender; the attacker's weapon
-and the defender's armour are filled in, penalties apply to the attack roll, and Apply hit
+(his fists, if he has none) and the defender's armour are filled in, penalties apply to the attack roll, and Apply hit
 adds the wound to the defender. Leave the attack % blank to use your own system's roll.
 
 ## Weapons by conflict and close combat
