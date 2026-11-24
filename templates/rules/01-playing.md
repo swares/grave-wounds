@@ -71,8 +71,8 @@ and they share it.
 
 {{table:lethality}}
 
-**Fate.** A player character has the setting's fate points each season; the ones he spends come
-back at End of season. One fate point, spent after the dice:
+**Fate.** A player character has the setting's fate points each term of service; the ones he spends
+come back at the End of season that completes a term (four years served, about sixteen seasons). One fate point, spent after the dice:
 
 - lowers a wound he has just taken one severity step (a light wound turned is no wound at all),
   a fall's as well as a blow's;

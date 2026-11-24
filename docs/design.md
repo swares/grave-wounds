@@ -89,7 +89,7 @@ Together they give an effects line, the same five effects HitLoc already uses:
 
 ## Lethality dials
 
-*Decided (October 2026): three dials, set together as a preset, with fate points back at End of season.* The GM sets lethality before play; the wound data never changes, only how much of it reaches the player characters (the team builder's sheeted men, the field map's heroes). Followers, enemies and bystanders stay as fragile as real people. Every page has a Gritty | Standard | Heroic switch, shared like US | Metric; Standard is the default.
+*Decided (October 2026): three dials, set together as a preset, with fate points back at End of season. Changed (24 November 2026): back when a term of service is served (`fate_back: term` in `data/experience.yaml`; "season" keeps the old rule), since back each season a named man in a solo war died only of two deadly wounds in one season: 1 death in about 100 test wars under Standard.* The GM sets lethality before play; the wound data never changes, only how much of it reaches the player characters (the team builder's sheeted men, the field map's heroes). Followers, enemies and bystanders stay as fragile as real people. Every page has a Gritty | Standard | Heroic switch, shared like US | Metric; Standard is the default.
 
 | Dial | Gritty | Standard | Heroic |
 | --- | --- | --- | --- |

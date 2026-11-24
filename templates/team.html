@@ -1869,9 +1869,10 @@ function endSeason(){
       const owedText = owed ? ", " + cash(owed) + " owed" : "";
       if (paid || owed) line = line.replace(/\.$/, "") + `; pay ${cash(paid)}${owedText}.`;
     }
-    if (x.fate_spent) line = line.replace(/\.$/, "") + `; his fate comes back (${x.fate_spent} spent).`;
+    const back = (TD.xp?.fate_back || "term") === "season" || r.terms > 0;   // spent fate back: a term served (data/experience.yaml fate_back), or each season
+    if (x.fate_spent) line = line.replace(/\.$/, "") + (back ? `; his fate comes back (${x.fate_spent} spent${r.terms > 0 ? ", a term served" : ""}).` : `; fate ${x.fate_spent} spent this term, back when it is served.`);
     lines.push(line);
-    all[c.pid] = { ticks: {}, served: 0, army: 0, owed: 0, hard: 0 };   // and his fate points spent this season (lethality.js) are back
+    all[c.pid] = { ticks: {}, served: 0, army: 0, owed: 0, hard: 0, ...(back || !x.fate_spent ? {} : { fate_spent: x.fate_spent }) };   // his fate points spent (lethality.js) kept until his term is served
   }
   for (const [c, roll] of found){                 // found out under or over age: sent home
     const why = c.lied === "under" ? "found under age" : "found over age";

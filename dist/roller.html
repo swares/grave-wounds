@@ -2339,7 +2339,7 @@ const sheetEnd = c => (c.sheet && c.sheet.stats && Number.isFinite(c.sheet.stats
 const enduranceOf = c => (Number.isFinite(c.endurance) ? c.endurance : sheetEnd(c));
 const isPC = c => !!(c && c.sheet);                  // a player character: a team-builder sheet (the GM's lethality, lethality.js, spares him)
 const poolOf = c => { const p = bloodPool(enduranceOf(c)); return isPC(c) ? pcPool(p) : p };   // his Blood pool, from his Endurance (a player character's under the lethality)
-const pcFate = c => (isPC(c) ? fateLeft(c.sheet.pid) : 0);   // fate points he has left this season
+const pcFate = c => (isPC(c) ? fateLeft(c.sheet.pid) : 0);   // fate points he has left this term
 function sickOf(c){                               // {step, did} at his worst showing step, {incubating}, {dead}, or null
   const n = c.uid ? NAMED[c.uid] : null;
   if (!n) return null;
