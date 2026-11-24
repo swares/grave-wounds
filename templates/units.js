@@ -686,6 +686,8 @@ function moraleMods(mods, u){
   if (u.state === "steady") m += mods.in_order;
   if (u.dug) m += mods.dug_in || 0;
   if (u.no_ammo) m += mods.no_ammo || 0;
+  if (u.hungry) m += mods.hungry || 0;           // from the march: rations gone, or beaten days before (field.html forceState)
+  if (u.beaten) m += mods.beaten || 0;
   m -= Math.min(mods.losing_cap, mods.losing_per_man * Math.max(0, (u.lost || 0) - (u.dealt || 0)));
   return m;
 }
@@ -2566,7 +2568,7 @@ function moraleAll(us, occ, before, acc, rng, table, field = null){
     const near = adjacentUnits(us, occ, i);
     const [down, lost] = vehicleLosses(u, before[i], acc.lost[i]);
     const unit = { quality: u.quality, start: u.start, down, lost, dealt: acc.dealt[i], men: before[i], state: u.state,
-      leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u), no_ammo: ammoState(u) === "out",
+      leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u), no_ammo: ammoState(u) === "out", hungry: !!u.hungry, beaten: !!u.beaten,
       holds: !!M.posture && !!u.holding && holdsPosition(us, i, field), hand_lost: acc.hand.lost[i], hand_dealt: acc.hand.dealt[i], braced: !!UD.melee.pikes.holds && acc.braced[i] === true };
     const m = morale(unit, rng.randint(1, 100));
     if (m.check) log.push({ kind: "morale", unit: i, target: m.target, from: u.state, state: m.state });

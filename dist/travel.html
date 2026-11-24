@@ -3456,7 +3456,8 @@ function makeTravelDay(DATA, RULES, env = {}){
   }
   function sendField(p, battlefield){             // the fight on the field map: on open ground the GM splits each force into units; on a battlefield they stand as drawn up
     const dfd = byId(p.defender), m = curMap(), today = dayWeather(p.day);
-    const brief = (o, role) => { const c = campHere(o); return { id: o.id, name: o.name, side: o.side, type: o.type, men: fitOf(o).fit, role, care: campCare(c ? c.kind : null, o), camp: c ? c.kind : null, ammo: supOf(o)?.ammo ?? 1 } };
+    const brief = (o, role) => { const c = campHere(o); return { id: o.id, name: o.name, side: o.side, type: o.type, men: fitOf(o).fit, role, care: campCare(c ? c.kind : null, o), camp: c ? c.kind : null, ammo: supOf(o)?.ammo ?? 1,
+      fatigue: o.fatigue || 0, hungry: !!hungryNow(o), beatenDay: o.beatenDay ?? null } };   // its state from the march (field.html forceState)
     const forces = [brief(dfd, "defender"), ...p.allies.map(byId).map(o => brief(o, "ally")), ...p.attackers.map(byId).map(o => brief(o, "attacker"))];
     const st = campStatus(dfd, p), lay = st.camp && WK.camps[st.camp.kind].layout;   // the camp's works, as far as they are built
     const camp = lay ? { kind: st.camp.kind, frac: st.done === null ? null : st.done / (st.camp.labour || 1), hauled: !nearWoods(m, dfd.pos), party: columnOf(dfd).length > 1 ? colType(dfd) : null } : null;
@@ -3490,7 +3491,7 @@ function makeTravelDay(DATA, RULES, env = {}){
       if (h[1] < 0 || h[1] >= m.rows.length || h[0] < 0 || h[0] >= m.rows[0].length || hexDist(f.pos, h) > 2 || !passable(m, h, colType(f), groundOf(f.day))) continue;
       if (!best || far(h) > far(best)) best = h;
     }
-    f.waypoints = []; f.path = null; f.order = "halt";
+    f.waypoints = []; f.path = null; f.order = "halt"; f.beatenDay = f.day;   // the field map's beaten: shakier in a fight soon after
     if (best && foes.length && far(best) > far(f.pos)){ f.pos = best; f.log.unshift(`Beaten, it fell back to ${where(best)}.`) }
   }
   function applyFieldResult(){                 // a battle fought on the field map (or a skirmish on the roller): the dead come off, the wounded join the sick
