@@ -161,7 +161,8 @@ careers:
     weapon: {default: rifle_service}
     terms:
       - {to: 20, skill: watch, text: "Stood watch in a frozen foxhole through a long night."}
-      - {to: 40, skill: fieldcraft, text: "Climbed ridge after ridge with a full pack."}
+      - {to: 30, skill: fieldcraft, text: "Climbed ridge after ridge with a full pack."}
+      - {to: 40, skill: bayonet, text: "Fixed bayonets for a charge up a ridge."}   # ours, the share; Captain Lewis Millett led a bayonet charge up Hill 180 on 7 February 1951 (Medal of Honor) (militaryhistorynow.com, "The Last of the Great Bayonet Charges"; CSMonitor, 28 Sept 2010)
       - {to: 55, skill: dodge, text: "Lay flat while mortar rounds walked across the slope."}
       - {to: 70, skill: stealth, text: "Went out on a night patrol into the valley."}
       - {to: 85, skill: grenade, text: "Fought off a night attack with grenades.", wound: true}

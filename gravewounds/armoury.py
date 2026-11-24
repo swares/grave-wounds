@@ -2,7 +2,7 @@
 
 An era's common weapons and armour are what its careers start with (data/teams, `weapon` and
 `kit`, every side's), the weapons of the skills its careers train in (`weapon_skill`, a career's
-main or second skill: a rifleman's bayonet), what its price list sells (data/equipment, an item's
+main or second skill or one its terms teach: a rifleman's bayonet), what its price list sells (data/equipment, an item's
 `weapon` or `kit`), and what the guns among them fight with while reloading (`close`). Each line carries the game's
 figures; the data's own note goes under it, shown or hidden by the page's Show notes switch. One era
 is shown (and printed) at a time; its period book holds the war itself.
@@ -30,11 +30,11 @@ def era_items(d: Data, era: str) -> tuple[list[str], list[str]]:
     """An era's common weapons and armour kits, in a stable order (as the data lists them)."""
     ws, ks = [], []
     T = d.teams[era]
-    trained = {c.get(k) for c in T["careers"] for k in ("main", "second")}
+    trained = {c.get(k) for c in T["careers"] for k in ("main", "second")} | {t.get("skill") for c in T["careers"] for t in c["terms"]}
     for c in T["careers"]:
         ws += _ids(c.get("weapon"))
         ks += _ids(c.get("kit"))
-    ws += [w for w, sk in (T.get("weapon_skill") or {}).items() if sk in trained]   # the weapons of a skill a career trains in (a rifleman's bayonet)
+    ws += [w for w, sk in (T.get("weapon_skill") or {}).items() if sk in trained and d.weapons.get(w, {}).get("melee") != "unarmed"]   # the weapons of a skill a career trains in (a rifleman's bayonet)
     for i in (d.equipment.get(era) or {}).get("items", []):
         ws += _ids(i.get("weapon"))
         ks += _ids(i.get("kit"))

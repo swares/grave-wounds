@@ -175,7 +175,8 @@ careers:
     weapon: {default: rifle_assault}
     terms:
       - {to: 20, skill: watch, text: "Lay in an ambush by a trail through the night."}
-      - {to: 40, skill: fieldcraft, text: "Carried a heavy pack through the jungle for days."}
+      - {to: 30, skill: fieldcraft, text: "Carried a heavy pack through the jungle for days."}
+      - {to: 40, skill: bayonet, text: "Drilled with the bayonet in basic training."}   # ours, the share; bayonet drill stayed in basic training; the US Army dropped it from basic only in 2010 (militaryhistorynow.com, "The Last of the Great Bayonet Charges"; CSMonitor, 28 Sept 2010)
       - {to: 55, skill: dodge, text: "Lay flat in a paddy as fire swept the dike."}
       - {to: 70, skill: stealth, text: "Crossed a river by night."}
       - {to: 85, skill: grenade, text: "Fought through a bunker line in the jungle.", wound: true}
