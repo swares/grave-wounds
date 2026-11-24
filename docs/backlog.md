@@ -168,8 +168,6 @@ not this repository.
   council and does not stop for one, the council records decisions by word only (its orders and
   settings are still given in the usual places), and only human play can say if it is worth the
   table's time.
-- **Campaign frames for the other books.** The Medieval Wars has four (`templates/books/medieval/frames.md`).
-  The other four books have none, and each frame needs its own sourcing.
 - **Visby's evidence table is still a placeholder** (`data/tables/visby-1361-evidence.yaml`). Its
   weights are fitted to published summaries. Replace them with Ingelmark's per-bone counts
   (Thordeman, *Armour from the Battle of Wisby 1361*, vol. I, ch. IV, p. 149ff.), which have not
