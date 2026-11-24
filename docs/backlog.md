@@ -175,9 +175,15 @@ not this repository.
   (Thordeman, *Armour from the Battle of Wisby 1361*, vol. I, ch. IV, p. 149ff.), which have not
   been read. The adjusted table derives from it, so it needs refitting too. A library copy, or the
   Chivalry Bookshelf reprint of 2001, is the likeliest route.
-- **Overfitting to the benchmark.** The self-play benchmark is also what gets tuned against. Track
-  the match rate separately on the battlefields added most recently, which were tuned least. If it
-  stays near the overall rate, the gains are real.
+- **Overfitting to the benchmark** (measured 24 November 2026, `tools/selfplay/overfit.py`). The
+  self-play benchmark is also what gets tuned against. On the benchmark as it stands, the 14
+  battlefields added from 20 October match the battle as fought in 79% of runs (pooled, ±3.6%),
+  against 87% (±1.8%) for the 35 before: a real gap of about 8 points. How often a battlefield's
+  own file was changed does not explain it (changed 4 times or fewer, 84%; 8 or more, 82%), so the
+  gap is more likely the shared rules fitting the first set, or the newer battlefields being
+  harder: the sieges (Badajoz 53%, Ciudad Rodrigo 72%) and Tumbledown (36%), Babuna (67%) and Snipe
+  (69%) are most of it. Next: rerun the tool after each rule change measured on the benchmark, and
+  look at Tumbledown and Babuna first, the two least worked on.
 
 - **The campaign, first cut** (`docs/campaign.md`). A console page over the others: the phase,
   what to do, where things stand, the campaign's log, and save and load of the whole game as a
