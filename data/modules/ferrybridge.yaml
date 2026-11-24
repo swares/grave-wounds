@@ -1,0 +1,91 @@
+# A print-and-play module (gravewounds/playtest.py builds it): a scenario with its pregenerated men, map,
+# counters, the enemy's roster, the tables it needs and a quick reference, playable on paper or on the
+# pages. The words are in `text` (Markdown, with {{value}} and {{pt:part}} placeholders); every number
+# and table comes from the data, as the Rules' do. Ferrybridge is the first: the playtest packet.
+id: ferrybridge
+title: "Grave Wounds: playtest packet"
+footer: "Grave Wounds playtest packet"
+file: playtest-packet          # dist/<file>.html and .pdf
+text: templates/modules/ferrybridge/packet.md
+version: "0.2.5, 24 November 2026"
+link: "https://swares.github.io/grave-wounds/dist/team.html#playtest"
+link_short: "swares.github.io/grave-wounds/dist/team.html#playtest"
+
+# The four: the Rules' running retinue, made with the same seeded dice (gravewounds.team.make_team).
+team: {era: medieval, region: england, template: retinue, mode: roll, seed: 3}
+men:
+  - {name: "William of Ely", role: leader}
+  - {name: "Gilbert Cooper", role: scout}
+  - {name: "Edmund Miller", role: quartermaster}
+  - {name: "Nicholas Fletcher", role: leech}
+# Clifford's five (the roller's PLAYTEST in templates/roller.html lists the same men). Five, because the script
+# playing both sides won 5 of 12 against five and 3 of 12 against seven with a serjeant (tools/campaign/playtest.py).
+foes:
+  - {name: "Billman", kit: jack_sallet, weapon: bill, quality: regular}
+  - {name: "Billman", kit: jack_sallet, weapon: bill, quality: regular}
+  - {name: "Billman", kit: jack_sallet, weapon: bill, quality: regular}
+  - {name: "Billman", kit: jack_sallet, weapon: bill, quality: regular}
+  - {name: "Archer", kit: jack_sallet, weapon: longbow, quality: regular}
+foe_side: "Clifford's men"
+men_side: "The four"
+table: towton-1461-all-hits     # the hit-location table printed
+weapons: [sword, bill, longbow, dagger]   # its columns, and the counters' short names
+short: {sword: Sword, bill: Bill, longbow: Bow, dagger: Dagger}
+armour: [[brigandine_sallet, "Brigandine and sallet"], [jack_sallet, "Jack and sallet"]]   # kits, and their heads on the armour table
+skills: [[blade, Blade], [polearm, Polearm], [bow, Bow], [parry, Parry], [dodge, Dodge], [leechcraft, Leechcraft],
+         [fieldcraft, Fieldcraft], [watch, Watch], [stealth, Stealth], [persuade, Persuade], [command, Command]]
+questions:
+  - "Did the margin-to-severity result feel fair?"
+  - "Was the fight fast enough to stay tense?"
+  - "Did you understand why a wound had the effect it did?"
+  - "Were the daily and weekly checks interesting?"
+  - "Did the weather and sickness change any decisions?"
+  - "Was the evening council worth its time?"
+  - "Did your role give you something to decide?"
+  - "Was the lethality right for the setting?"
+  - "Would you play a second session with these men?"
+
+# The worked example in the text: Gilbert's bow shot, rolled 31.
+example: {man: "Gilbert Cooper", roll: 31, bow: longbow}
+rations_era: medieval
+
+# The ford, printed true to size: pointy-topped hexes, odd rows pushed right, `hex` inches across, so a
+# counter (0.47 by 0.30 inches, the packet's style) sits in one.
+battlemap:
+  hex: 0.55
+  cols: 12
+  rows: 17
+  river: [5, 9]                 # rows of the river (from, to: not included)
+  ford: [5, 8]                  # columns of the ford
+  track: 18                     # boxes north of the map: a man on box 18 is 30 hexes from row 12
+  aria: "Hex map of the ford over the Aire: the north bank, four rows of river with a three-hex ford, the south bank, and the approach track above"
+  track_label: "Approach track. Clifford's men start on box {track} and come south a box for each hex they move. Box 1 is next to the north edge."
+  north: "North bank"
+  river_label: "River Aire: too deep"
+  ford_label: "The ford"
+  east: "To the broken bridge, a bowshot east →"
+  south: "South bank: the four set up here"
+# The sketch of the ford on the scenario's page, as drawn.
+sketch:                         # its pieces, joined as they are
+  - "<svg viewBox=\"0 0 480 170\" role=\"img\" aria-label=\"Sketch of the ford: the river across the middle, the ford, the broken bridge to the east, Clifford's men to the north, the four men to the south\">"
+  - "<rect width=\"480\" height=\"170\" fill=\"#fff\" stroke=\"#555\"/><path d=\"M0 70 C120 60 240 95 480 72 L480 108 C240 130 120 98 0 106Z\" fill=\"#cdd9e3\"/>"
+  - "<rect x=\"190\" y=\"74\" width=\"62\" height=\"42\" fill=\"#e4dcc8\" stroke=\"#777\" stroke-dasharray=\"3 3\"/><text x=\"221\" y=\"99\" font-size=\"11\" text-anchor=\"middle\">The ford</text>"
+  - "<path d=\"M410 64 v50 M425 64 v50\" stroke=\"#333\" stroke-width=\"3\" stroke-dasharray=\"9 7\"/><text x=\"417\" y=\"60\" font-size=\"11\" text-anchor=\"middle\">Broken bridge</text>"
+  - "<text x=\"221\" y=\"26\" font-size=\"12\" text-anchor=\"middle\">Clifford's men come from the north</text><text x=\"221\" y=\"155\" font-size=\"12\" text-anchor=\"middle\">Your four men, south bank</text>"
+  - "<text x=\"40\" y=\"92\" font-size=\"11\">River Aire</text></svg>"
+
+# The week in camp: its weather rolled on the map's climate with this seed, day by day; `fixed` days
+# are the record's, not a roll.
+weather:
+  map: towton-1461
+  seed: 1461
+  days: [2, 8]                  # map days, from and to (included)
+  fixed: {3: {cond: snow, high_at_most: 1, low_at_most: -2}}   # Palm Sunday: the snow of the record
+camp_log: ["28 Mar", "29 Mar", "30 Mar", "31 Mar", "1 Apr", "2 Apr", "3 Apr"]
+camps:
+  - ["Quarters, dead buried or far off", [good]]
+  - ["Watched camp", []]
+  - ["Bivouac", [poor]]
+  - ["Quarters, dead unburied nearby", [good, dead]]
+  - ["Watched camp, dead unburied", [dead]]
+  - ["Bivouac, dead unburied", [poor, dead]]

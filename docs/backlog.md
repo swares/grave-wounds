@@ -45,8 +45,8 @@ not this repository.
 - **Table playtests.** None has been recorded: every result so far is self-play. The four to run
   are in the README's *Next steps*, and `design.md` has the disease numbers to try over a few weeks
   of camp. The playability review (project doc `claude/playability-review.md`) ranks this first.
-- **The playtest packet, version 0.2** (`dist/playtest-packet.html`, built by `gravewounds/playtest.py`
-  from `templates/playtest/packet.md`). Wars of the Roses, four pregenerated men with camp roles, a
+- **The playtest packet, version 0.2** (`dist/playtest-packet.html`, the module `data/modules/ferrybridge.yaml`
+  built by `gravewounds/playtest.py`, its words in `templates/modules/ferrybridge/packet.md`). Wars of the Roses, four pregenerated men with camp roles, a
   fight at the Aire crossing and a week in camp, played on the roller or on paper, with feedback
   through the feedback form (`feedback.html`, which forwards to it; from 0.2.4 the packet prints no email address). Version 0.2 adds the kit to play it on paper, at the back: a one-page quick reference, a hex map
   of the ford printed true to size (2 yards a hex, with an approach track for the enemy's first 18 hexes),
@@ -71,8 +71,11 @@ not this repository.
     with four pregenerated men, a hex map, counters, the enemy's roster and a quick reference. One or two
     more, from other periods, so the series reaches medieval, Napoleonic and modern players (candidates:
     the baggage raid at Agincourt, a breach at Badajoz, a patrol on Tumbledown, the ditch at Dornach).
-    Before the second, `gravewounds/playtest.py` becomes a module generator: each module a data file
-    (men, enemies, map, ford-style local rules) and its own pages, rather than a copy of Ferrybridge's code.
+    `gravewounds/playtest.py` is now a module generator (24 November 2026): each module a data file in
+    `data/modules/` (its men, foes, tables, map, weather and words) built to its own page and PDF; Ferrybridge
+    is the first, and comes out as before. A second module is a new data file and its text. Still in
+    the code, not the data: the printed map is always a river with a ford (its rows, columns and
+    labels are the module's), so a module with other ground needs the map drawing widened first.
   - **Then a battle module:** a battle such as Towton or Albuera on paper, with unit counters, a printed
     battlefield and paper rules for formations, morale and losses, which the field page now works out.
     Start small, a wing or a few units a side, to learn whether battle-scale play is quick enough at a table.
