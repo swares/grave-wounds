@@ -21,7 +21,7 @@ not this repository.
   | Online: commander against commander (simulation) | First cut | The field map's Play online (a seat a side, room codes; each player sees his side's view and moves on his side's move; the GM's page hosts); two people on one screen with the side's view; the commander against itself to check a battlefield | The travel map is not online for two commanders; no TURN relay; the log is filtered by name; set-up is the GM's |
   | Online: you against the commander (solo) | Strong | The enemy commander on the field map (sees only what its units see, reserves, guns, objectives), Beat history and its scorecard, the GM's script on the roller, the rules' chapter on playing alone, the commander running the travel map's day; a war played alone season by season (posture, journal, promotion, the season's fights; played through end to end in solo play tests 16 and 17) | Runs in the browser with no connection needed; the commander does not yet notice some campaign events |
   | Online: a GM and his party (VTT) | First cut | The GM hosts from the roller or the campaign console; players join by room code and see their men, the public news and their fights (on the roller, and on the field map for a player whose man is a hero there), propose orders, and see only what their side has seen | The travel map is not shared online for moving forces; no TURN relay for strict networks; no voice or chat (groups bring their own); tested only with scripted players |
-  | At the table: an RPG with a GM | Good on paper, untested | The rule book and five period books, the team builder's sheets, the roller as the GM's aid, the council card, the tables | The 309-page tables PDF is a reference, not a table booklet; making a man by hand is not checked for pencil and dice; never played at a table |
+  | At the table: an RPG with a GM | Good on paper, untested | The rule book and five period books, the team builder's sheets, the roller as the GM's aid, the council card, the tables | The 309-page tables PDF is a reference; the armoury and making a man on paper print one era each, but are not yet tried with pencil and dice; never played at a table |
   | At the table: print-and-play modules | One module | Ferrybridge (the playtest packet 0.2.4): characters, map, counters, roster and reference, laid out for printing on both sides | The only module, and not yet played; the plan for more is under *Print-and-play modules* |
 
   What would widen the reach most, in order: the Ferrybridge playtest (it tests both table rows);
@@ -60,9 +60,10 @@ not this repository.
 - **Print-and-play modules.** More ways to play reach more people: the plan is to publish print-and-play
   adventures like the old modules, each a scenario with its pregenerated men, map, counters, roster, the
   tables it needs and a quick reference, playable on paper or on the pages. Ferrybridge (the playtest
-  packet) is the first. Still to come: a short table booklet of the common weapons and armour (the
-  packet carries only its own fight's), Ask the dice on the printed tables, paper rules for making a man
-  without the team builder, and further modules; field battles, travel and the campaign on paper are
+  packet) is the first. Done since: each era's common weapons and armour on one printed page (the
+  armoury, `armoury.html`, #620 and #621), Ask the dice on the printed tables (#619), and making a man on
+  paper (`makeaman.html` and the period books' Making a team tables, #622; its ageing and age at enlistment
+  are still the team builder's alone). Still to come: further modules; field battles, travel and the campaign on paper are
   further off, since the pages do their arithmetic. The plan, if the Ferrybridge playtest goes well:
   - **Fix the shared parts first.** What the playtest finds slow or unclear on paper is fixed in what every
     module shares (the quick reference, the table booklet, the counters and map style) before it is copied.
