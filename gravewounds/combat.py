@@ -241,15 +241,16 @@ def toil(d: Data, fatigue: int, toil_count: int, kit: str | None, strength: int 
     return fatigue + 1, n - need
 
 
-def morale_check(d: Data, fighters: list[dict], roll: int) -> dict | None:
+def morale_check(d: Data, fighters: list[dict], roll: int, leader_fell: bool = False) -> dict | None:
     """Team morale at the end of a round. fighters: one side's [{nerve, down, leader, pres}]
-    (pres: Presence, 50 without a sheet). None if fewer than the trigger share are down (or
-    no one is left up)."""
+    (pres: Presence, 50 without a sheet). leader_fell: its leader went down this round, which
+    calls a check by itself (the roller's moraleCheck). None if fewer than the trigger share are
+    down and no leader fell (or no one is left up)."""
     M = d.wounds["combat"]["morale"]
     n = len(fighters)
     down = sum(1 for f in fighters if f["down"])
     up = [f for f in fighters if not f["down"]]
-    if not n or not up or down / n < M["trigger"]:
+    if not n or not up or (down / n < M["trigger"] and not leader_fell):
         return None
     leaders_up = [f for f in up if f.get("leader")]
     base = max(f["nerve"] for f in (leaders_up or up))

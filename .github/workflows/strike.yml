@@ -33,6 +33,7 @@ jobs:
       - run: "pip install --only-binary :all: PyYAML==6.0.3 Markdown==3.11 reportlab==5.0.1"
       - run: python3 tools/strike/parity.py 5000 1
       - run: node tools/gm/test.js
+      - run: python3 tools/gm/leader.py
       - run: node tools/net/test.mjs
       - run: node tools/net/roomscheck.mjs
       - run: python3 tools/guide/check.py

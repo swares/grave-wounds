@@ -21,7 +21,7 @@ from .model import Data
 from .team import make_team
 from .units import SeededDice
 
-VERSION = "0.2.4, 14 November 2026"
+VERSION = "0.2.5, 24 November 2026"
 LINK = "https://swares.github.io/grave-wounds/dist/team.html#playtest"
 SITE = "https://swares.github.io/grave-wounds/"
 # Feedback goes through the Google Form, not a printed email address. The packet prints the short address of
