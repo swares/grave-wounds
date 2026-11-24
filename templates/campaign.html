@@ -1024,20 +1024,25 @@ function proposalText(o, what, arg){                  // a proposal in words, fr
 const PROPOSAL_STATE = { open: "waiting for the GM", accepted: "accepted", declined: "declined", replaced: "replaced", given: "given" };
 function proposeHtml(pl, f){                          // his orders for one of his forces: as proposals to the GM, or given outright by a side's commander
   const cmd = !!pl.side, last = [...proposals()].reverse().find(x => x.player === pl.id && x.force === f.id);
-  const said = last ? `<p class="muted" style="margin:0">Your ${cmd ? "order" : "proposal"}: ${esc(last.text)} · ${esc(PROPOSAL_STATE[last.state] || last.state)}${last.said ? " (" + esc(last.said) + ")" : ""}</p>` : "";
+  const W = cmd ? { mine: "order", head: "Give its orders", route: "Give this route", camp: "Make this camp" }
+    : { mine: "proposal", head: "Propose its orders", route: "Propose this route", camp: "Propose a camp" };
+  const came = last?.said ? " (" + esc(last.said) + ")" : "";
+  const said = last ? `<p class="muted" style="margin:0">Your ${W.mine}: ${esc(last.text)} · ${esc(PROPOSAL_STATE[last.state] || last.state)}${came}</p>` : "";
   if (REC.proposeOff && !cmd) return said + '<p class="muted" style="margin:0">The GM is giving the orders himself just now.</p>';
   let o = null;
   try { o = newDay().orderChoices(f.id) } catch { o = null }
   if (!o || o.led) return said;
   const opt = rows => rows.map(([v, name]) => `<option value="${esc(v)}">${esc(name)}</option>`).join("");
   const camps = o.camps.filter(c => c[3]).map(c => [c[0], c[1]]);
+  const marching = o.order === "march", go = marching ? "halt" : "march", goText = marching ? "Halt" : "March on its route";
+  const campRow = camps.length ? '<span class="toolbar"><label class="muted">Make camp <select data-pick="camp">' + opt(camps) + '</select></label><button type="button" class="small" data-propose="camp">' + W.camp + "</button></span>" : "";
   return `<div class="propose" data-force="${f.id}" style="display:flex;flex-direction:column;gap:6px;border-top:1px dashed var(--line);padding-top:6px">
-    <b style="font-size:.9rem">${cmd ? "Give its orders" : "Propose its orders"}</b>
+    <b style="font-size:.9rem">${W.head}</b>
     <span class="toolbar"><label class="muted">March to <select data-pick="to">${opt(o.places)}</select></label>
-      <button type="button" class="small" data-propose="to">${cmd ? "Give this route" : "Propose this route"}</button><button type="button" class="small" data-propose="via">As a waypoint</button></span>
-    <span class="toolbar"><button type="button" class="small" data-propose="${o.order === "march" ? "halt" : "march"}">${o.order === "march" ? "Halt" : "March on its route"}</button>
+      <button type="button" class="small" data-propose="to">${W.route}</button><button type="button" class="small" data-propose="via">As a waypoint</button></span>
+    <span class="toolbar"><button type="button" class="small" data-propose="${go}">${goText}</button>
       <button type="button" class="small" data-propose="rest">Rest until next morning</button><button type="button" class="small" data-propose="clear">Clear the route</button></span>
-    ${camps.length ? `<span class="toolbar"><label class="muted">Make camp <select data-pick="camp">${opt(camps)}</select></label><button type="button" class="small" data-propose="camp">${cmd ? "Make this camp" : "Propose a camp"}</button></span>` : ""}
+    ${campRow}
     ${said}</div>`;
 }
 function forceHtml(v, pl = null){                      // the forces his men are with, and nothing of anyone else's
@@ -1059,8 +1064,9 @@ function readyHtml(pl){                                // a side's commander: hi
 function readyLine(){                                  // under Run the march: the commanders and whether each is ready
   const cmd = players().filter(pl => pl.side);
   if (!cmd.length) return "";
-  const all = cmd.every(pl => pl.ready);
-  return `<p style="margin:0" class="${all ? "" : "muted"}"><b>Commanders:</b> ${cmd.map(pl => `${esc(pl.name)} (${esc(pl.side)}) ${pl.ready ? "ready" : "giving orders"}`).join("; ")}${all ? ". Every commander is ready: run the clock." : "."}</p>`;
+  const all = cmd.every(pl => pl.ready), who = pl => esc(pl.name) + " (" + esc(pl.side) + ") " + (pl.ready ? "ready" : "giving orders");
+  const end = all ? ". Every commander is ready: run the clock." : ".";
+  return `<p style="margin:0" class="${all ? "" : "muted"}"><b>Commanders:</b> ${cmd.map(who).join("; ")}${end}</p>`;
 }
 function clocked(){                                    // the clock moved: every commander gives his next orders
   let any = false;
@@ -1259,6 +1265,17 @@ function commandPicker(pl){                           // a whole side for him to
   const opt = [["", "no side"], ...sides.map(s => [s, s])].map(([v, t]) => `<option value="${esc(v)}"${(pl.side || "") === v ? " selected" : ""}>${esc(t)}</option>`).join("");
   return `<label class="muted" style="font-size:.88rem" title="He gives every force of the side its orders from his map, at once, without your accepting them; you run the clock and the fights">Commands: <select data-pl-side="${esc(pl.id)}">${opt}</select></label>`;
 }
+function setSide(id, side){                            // player id commands side (or none) on the march
+  const pl = players().find(x => x.id === id);
+  if (!pl) return;
+  pl.side = side; pl.ready = false;
+  if (side) takeFromCommander(side);
+  note(side ? `${pl.name} commands ${side} on the march.` : `${pl.name} commands no side.`, true);
+  saveRecord(); render(); playersSync();
+}
+function takeFromCommander(side){                      // a side with a person to command it is not the commander's (Moved by)
+  try { if (newDay().commandView().find(x => x.side === side)?.stance) newDay().setCommander(side, null) } catch { /* no map: nothing to hand over */ }
+}
 function menPicker(chosen, attrs){                     // a checkbox for each named man
   const men = namedMen();
   if (!men.length) return '<span class="muted">No named men yet: Send to the roller from the team builder, then Add the team on the roller.</span>';
@@ -1374,14 +1391,7 @@ $("#c-players").addEventListener("change", e => {
   if (e.target.id === "pl-stun") PL.stun = e.target.checked;
   if (e.target.id === "pl-propose"){ REC.proposeOff = !e.target.checked; saveRecord(); playersSync() }
   const sd = e.target.closest("[data-pl-side]");
-  if (sd){
-    const pl = players().find(x => x.id === sd.dataset.plSide); if (!pl) return;
-    pl.side = sd.value || null; pl.ready = false;
-    if (pl.side){ try { if (newDay().commandView().find(x => x.side === pl.side)?.stance) newDay().setCommander(pl.side, null) } catch { /* no map: nothing to hand over */ } }   // a side with a person to command it is not the commander's
-    note(pl.side ? `${pl.name} commands ${pl.side} on the march.` : `${pl.name} commands no side.`, true);
-    saveRecord(); render(); playersSync();
-    return;
-  }
+  if (sd) return setSide(sd.dataset.plSide, sd.value || null);
   const man = e.target.closest("[data-pl-man]");
   if (man){
     const pl = players().find(x => x.id === man.dataset.plMan); if (!pl) return;
