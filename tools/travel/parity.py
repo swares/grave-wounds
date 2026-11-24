@@ -303,6 +303,7 @@ def main(argv) -> int:
     env = {**os.environ, "TRAVEL_PARITY": "1"}
     rules = subprocess.call(["node", str(Path(__file__).parent / "test.js")], env=env)
     day = subprocess.call(["node", str(Path(__file__).parent / "day.js")], env=env)
+    day += subprocess.call(["node", str(Path(__file__).parent / "commander.js")], env=env)   # the commander on the march
     return rules or day or check_page()
 
 
