@@ -2,7 +2,9 @@
 
 Grave Wounds can be played by one person. The pages take the GM's work that needs no judgement:
 the enemy's moves on the field map, its blows on the roller, the march, the weather, sickness and
-the camp. What is left is the judgement, and for that you ask the dice.
+the camp. What is left is the judgement, and for that you ask the dice. A session can follow a
+campaign on the travel map (below), or a whole war a season at a time ([A war, season by
+season](#alone-war)).
 
 ## How a session runs {#alone-session}
 
@@ -35,6 +37,61 @@ the camp. What is left is the judgement, and for that you ask the dice.
     Alone, you are the GM as well as the players, so be a fair one. Ask the dice before you look
     at what the answer would cost you, and take the answer the dice give. Let the commander have
     the enemy's choices, not you.
+
+## A war, season by season {#alone-war}
+
+A soldier's war was mostly marching, quarters, sickness and small fights, with a few named
+battles. The [team builder](team.html)'s **A season with the battalion** plays it a season (three
+months) at a time. Eight wars are there, from Henry V's in France to Italy in 1943-45. Italy (8
+seasons) or the Western Front (18) fit an evening; the Peninsula (24) or Henry V's war (29) a long
+one, and the Roses with Edward of March (47) a campaign.
+
+1. **Set the lethality** at the top of any page: Gritty, Standard or Heroic. Under Standard each
+   man has one fate point. Spent, it comes back only when he has served a term (four years, about
+   sixteen seasons), so a man who spends it early in a war carries on without it. For a war where
+   your men can die, choose Gritty.
+2. **Make the team.** Pick the era, the region and a team (*company*, *retinue*, *section*...),
+   then **Roll the team**. **Send to the roller**, and there **Add the team**, so the roller knows
+   your men when their wounds come to it.
+3. **Open A season with the battalion** on the team builder, and pick the **War** and its first
+   **Season**.
+4. **Each season:**
+
+    - **The team's posture**, for the season (the table below).
+    - **Who serves it**, and where each man stands at its actions: in reserve, in the line, or
+      in the thick of it.
+    - **Serve the season.** Its log tells the season: sickness week by week, each named action
+      and what it did to each man, any deed, the small fight if one came, the followers.
+    - **A named action** with its own battlefield (Albuera, Badajoz, Towton...) can be played on
+      the field map instead of rolled; one with scenes at its edge (the forlorn hope at Badajoz)
+      offers them first.
+    - **A small fight:** **Play it on the roller**, with **Run the fight** on and your own men to
+      move, or **Roll it**. Played, the roller's **After the fight** offers each man's deeds
+      (**Mark deeds**), and **Followers back** takes the followers' fates home; rolled, each man
+      unhit may still do a deed.
+    - **Wounds** wait on the roller: **Roll** each man's wound and apply it. Then the hours
+      after: a wound that kills within rounds kills him, one within minutes or hours he may live
+      through. A fate point, if he has one, is spent for him to live.
+    - **End of season** rolls his ticked skills, ages him, pays him, opens the battalion's
+      vacancies and rolls each man's promotion. A deed waives his years in rank and is worth +20;
+      a knighting comes only by a deed.
+
+5. **The journal**, under the panel, keeps every season; **Save the journal** keeps the war as a
+   text file, the last season included.
+
+The postures:
+
+| Posture | Small fights | Hit at actions | Skill ticks | Promotion | Deeds |
+| --- | --- | --- | --- | --- | --- |
+| Keep their heads down | ×0.5 | ×0.75 | one fewer | −10 | ×0.5 |
+| Do their duty | ×1 | ×1 | as ever | as ever | ×1 |
+| Volunteer | ×1.5 | ×1.25 | one more | +10, and known to his officers | ×1.5 |
+
+!!! gm "Choosing a posture"
+    Nothing decides it for you, and that is the season's choice. A rule some players use: volunteer
+    while every man is fit and someone wants rank; do their duty after a man has been sick; keep
+    their heads down after one was badly hurt, until he mends. On the Western Front a man is hit
+    in most seasons by the line itself, and that rule keeps the team down for most of the war.
 
 ## Ask the dice {#ask}
 
