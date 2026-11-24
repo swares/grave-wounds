@@ -798,6 +798,34 @@ function renderAfterFight(){
    taken prisoner), its wounded men without a record of their own join its sick, its named men's wounds
    go to camp (To camp), the beaten force falls back, and the team's captives go to the team builder. */
 const DIES = { instant: "killed", rounds: "died", minutes: "died" };
+/* A named man of a season with the battalion, his wounds going to camp (a season's hit, or after a season's
+   small fight): first the minutes and hours after, as a hero carried from a field battle (data/units.yaml
+   dead_if and aftermath.saved, medevac by the wound table's battle). His worst untreated wound kills him
+   outright or within rounds; within minutes he lives at saved.minutes or the medevac's; within hours at the
+   field-care figure (a field hospital, ours for a season) or the medevac's. Fate, if he has it, is spent to
+   live, his wound as it is. -> a log line, or "" if no wound of his could kill him so soon. */
+const SEASON_CARE = "field";
+function minutesAfter(c){
+  const A = DATA.aftermath, worst = charStats(c).worst;
+  if (!A || !c.sheet) return "";
+  const K = A.medevac?.kinds?.[A.medevac?.battles?.[DATA.tables[S.table]?.battle]] || {};
+  let chance = null, roll = null;
+  if (worst === "minutes") chance = Math.max(A.saved.minutes, K.minutes || 0);
+  else if (worst === "hours") chance = Math.max(A.saved.hours[SEASON_CARE], K.hours || 0);
+  else if (!A.dead_if.includes(worst)) return "";
+  const by = K.name ? `, ${K.name.toLowerCase()}` : "", fatal = `a wound fatal ${V.lethal[worst] ? worst === "instant" ? "outright" : `within ${worst}` : ""}`;
+  if (chance !== null){
+    roll = d100();
+    if (roll <= chance) return `${c.name} lives through the hours after: ${fatal}, saved on ${chance}%${by} (rolled ${roll})`;
+  }
+  const how = chance === null ? `${fatal}: he dies of it` : `${fatal}, saved on ${chance}%${by} (rolled ${roll}): he dies of it before help comes`;
+  if (pcFate(c) > 0 && fateSpend(c.sheet.pid, `lived through ${fatal}`)) return `${c.name}: ${how}, but fate is spent and he lives`;
+  const all = readNamed(), n = c.uid ? all[c.uid] : null;
+  if (n){ n.dead = true; n.died = "wound"; writeNamed(all) }
+  c.dead = true;
+  markLost(c.sheet.pid, "killed");                  // the team builder takes him off the team
+  return `${c.name}: ${how}`;
+}
 function worstWound(c){ return campable(c).sort((a, b) => DZR.steps.indexOf(DZR.wounds.start[b.sev]) - DZR.steps.indexOf(DZR.wounds.start[a.sev]))[0] }
 function fighterFate(c, held){                      // "taken", "killed", "died", "left", "wounded" or null (came through, or ran)
   if (c.taken) return "taken";
@@ -821,7 +849,12 @@ function followerFate(c){
 const followersToSend = () => S.chars.filter(c => c.follower?.fid && !c.followerSent);
 function followersBack(){
   const men = followersToSend(), fates = [];
-  for (const c of S.chars) if (c.team && c.uid && !c.dead && !c.taken && campable(c).length) toCamp(c);   // the named men's wounds go onto the wound track with the followers' fates: they mend through the season
+  const after = [];
+  for (const c of S.chars) if (c.team && c.uid && !c.dead && !c.taken && campable(c).length){   // the named men's wounds: the hours after (minutesAfter), then onto the wound track with the followers' fates, to mend through the season
+    const line = minutesAfter(c);
+    if (line) after.push(line);
+    if (!c.dead) toCamp(c);
+  }
   for (const c of men){
     c.followerSent = true;
     const fate = followerFate(c);
@@ -834,7 +867,7 @@ function followersBack(){
   } catch { S.mapMsg = "Could not send the followers back (storage is off)."; return renderChars() }
   const words = { dead: "dead", taken: "taken", invalided: "invalided home" };
   const said = fates.length ? fates.map(o => `${o.name} ${words[o.fate]}`).join(", ") : "none lost";
-  S.afterLog = [`Followers back to the team builder: ${said}; ${men.length - fates.length} stay.`, ...(S.afterLog || [])];
+  S.afterLog = [`Followers back to the team builder: ${said}; ${men.length - fates.length} stay.`, ...after, ...(S.afterLog || [])];
   renderChars();
 }
 function followersButton(){
@@ -4480,10 +4513,16 @@ function applyCurrentHit(){                       // Apply hit to defender: the 
     strainFor(c, ["serious", "critical"].includes(h.sev) ? "wounded_badly" : "wounded");
     if (!wasDown && isDown(c)){ creditDown(attackerChar(), c); strainOnDown(c) }
     logWound(c, h, line, stop);
-    if (S.svcHitFor === c.id){                       // a hit from a season with the battalion: onto his wound track, to mend through the next season
+    if (S.svcHitFor === c.id){                       // a hit from a season with the battalion: the hours after (minutesAfter), then onto his wound track, to mend through the next season
       S.svcHitFor = null;
-      toCamp(c);
-      S.pending.push(`${c.name}'s wound goes onto his wound track: it mends (or turns septic) through his next season with the battalion`);
+      const after = minutesAfter(c);
+      if (after) S.pending.push(after);
+      if (!c.dead){
+        toCamp(c);
+        S.pending.push(`${c.name}'s wound goes onto his wound track: it mends (or turns septic) through his next season with the battalion`);
+      }
+      msg += after ? ` ${after}.` : "";
+      if (c.dead) S.fateOffer = null;                  // dead of it: nothing left to spend fate on
     }
   } else msg = `Armour stopped that blow: nothing to add to ${c.name}.`;
   if (veiled(c) && h.loc) $("#apply-msg").textContent = `${c.name} is hit in the ${LOC[h.loc].name.toLowerCase()}.${isDown(c) ? " He goes down." : ""}`;

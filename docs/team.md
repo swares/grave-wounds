@@ -842,7 +842,13 @@ for each man whether he serves and where he stands, and the team's **posture** f
   season, its days and its tick. A man's health is one record, shared with the roller and the
   travel map (his entry in `gravewounds-named`, or on the team builder for a man never added to
   the roller): the season starts from it and writes back to it. A wound rolled on the roller
-  goes onto his wound track there (*To camp*), so in his next season it mends week by week, may
+  (a season's hit, or one taken in a season's small fight when the followers go back) first
+  faces the hours after, as a hero carried from a field battle does (`dead_if` and
+  `aftermath.saved` in `data/units.yaml`): his worst untreated wound kills him if it is fatal
+  outright or within rounds; fatal within minutes he lives on 10% (or the war's medevac's
+  figure), within hours on the field-care 40% (a field hospital, ours for a season) or the
+  medevac's (WWI motor ambulances 65%). Fate, if he has it, is spent for him to live; dead, the
+  team builder takes him off the team. A wound that spares him goes onto his wound track there (*To camp*), so in his next season it mends week by week, may
   turn to wound fever, and keeps him out of actions while it leaves him unfit. A case still
   running at the season's end goes on into his next season, and the panel shows him still sick
   or wounded.
