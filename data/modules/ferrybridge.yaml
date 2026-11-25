@@ -55,16 +55,22 @@ battlemap:
   hex: 0.55
   cols: 12
   rows: 17
-  river: [5, 9]                 # rows of the river (from, to: not included)
-  ford: [5, 8]                  # columns of the ford
   track: 18                     # boxes north of the map: a man on box 18 is 30 hexes from row 12
   aria: "Hex map of the ford over the Aire: the north bank, four rows of river with a three-hex ford, the south bank, and the approach track above"
   track_label: "Approach track. Clifford's men start on box {track} and come south a box for each hex they move. Box 1 is next to the north edge."
-  north: "North bank"
-  river_label: "River Aire: too deep"
-  ford_label: "The ford"
-  east: "To the broken bridge, a bowshot east →"
-  south: "South bank: the four set up here"
+  # The ground: blocks of rows and columns ([from, to), every one if left out), each later one on top.
+  areas:
+    - {rows: [0, 5], fill: "#dfe6d8"}           # the north bank
+    - {rows: [5, 9], fill: "#bcd0de"}           # the river, too deep
+    - {rows: [5, 9], cols: [5, 8], fill: "#e8dcc0"}   # the ford
+    - {rows: [9, 17], fill: "#efe9da"}          # the south bank
+  # Words on the map: x in hexes across (or left, mid, right), y a row (or top, bottom), dy inches more.
+  labels:
+    - {text: "North bank", x: mid, y: top, dy: 0.28}
+    - {text: "River Aire: too deep", x: 9.6, y: 5, dy: 0.62, size: 0.17, italic: true}
+    - {text: "The ford", x: 6.5, y: 5, dy: 1.05, size: 0.17, bold: true}
+    - {text: "To the broken bridge, a bowshot east →", x: right, y: 5, dy: -0.12, size: 0.13, anchor: end}
+    - {text: "South bank: the four set up here", x: mid, y: bottom, dy: -0.12}
 # The sketch of the ford on the scenario's page, as drawn.
 sketch:                         # its pieces, joined as they are
   - "<svg viewBox=\"0 0 480 170\" role=\"img\" aria-label=\"Sketch of the ford: the river across the middle, the ford, the broken bridge to the east, Clifford's men to the north, the four men to the south\">"

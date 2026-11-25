@@ -42,6 +42,10 @@ def load_module(root: Path, mid: str) -> dict:
     for k in ("id", "title", "footer", "file", "text", "version", "team", "men", "foes", "table", "weapons", "battlemap", "weather"):
         if k not in m:
             raise ValueError(f"data/modules/{mid}.yaml: no {k}")
+    B = m["battlemap"]
+    for k in ("hex", "cols", "rows", "aria", "areas"):
+        if k not in B:
+            raise ValueError(f"data/modules/{mid}.yaml: battlemap has no {k}")
     return m
 
 
@@ -165,7 +169,7 @@ def _map() -> str:
     return "".join(M["sketch"])
 
 
-# ---------- the kit for playing on paper: a hex map of the ford, counters, the enemy's roster and a blank sheet ----------
+# ---------- the kit for playing on paper: a hex map, counters, the enemy's roster and a blank sheet ----------
 # The map is pointy-topped hexes, odd rows pushed right, at the module's `hex` inches across, so the counters sit in one.
 
 
@@ -175,35 +179,50 @@ def _hexpath(cx: float, cy: float, r: float) -> str:
     return "M" + " L".join(f"{x:.3f} {y:.3f}" for x, y in pts) + "Z"
 
 
+def _fill(B: dict, row: int, col: int) -> str:
+    """A hex's colour: the last of the map's `areas` holding it (rows and cols are [from, to), all if left out)."""
+    fill = B.get("fill", "#fff")
+    for a in B["areas"]:
+        rows, cols = a.get("rows") or [0, B["rows"]], a.get("cols") or [0, B["cols"]]
+        if rows[0] <= row < rows[1] and cols[0] <= col < cols[1]:
+            fill = a["fill"]
+    return fill
+
+
+def _label(B: dict, L: dict, geo: dict) -> str:
+    """One of the map's `labels`: x in hexes across (or left, mid, right), y at a row's top (or top,
+    bottom) plus `dy` inches; size, anchor, italic and bold as given."""
+    x = {"left": 0.05, "mid": geo["w"] / 2, "right": geo["w"] - 0.08}.get(L["x"]) if isinstance(L["x"], str) else geo["hex"] * L["x"]
+    y = {"top": geo["top"], "bottom": geo["h"]}.get(L["y"]) if isinstance(L["y"], str) else geo["top"] + geo["r"] + L["y"] * 1.5 * geo["r"]
+    style = (' font-style="italic"' if L.get("italic") else "") + (' font-weight="bold"' if L.get("bold") else "")
+    anchor = f' text-anchor="{L["anchor"]}"' if L.get("anchor", "middle") != "start" else ""
+    return f'<text x="{x:.3f}" y="{y + L.get("dy", 0):.3f}" font-size="{L.get("size", 0.16)}"{anchor}{style}>{html.escape(L["text"])}</text>'
+
+
 def _battlemap() -> str:
-    """The module's map as a printed hex map, true to size on Letter: 2 yards a hex, the approach track to the north."""
+    """The module's map as a printed hex map, true to size on Letter: its ground in `areas` (each a block of
+    rows and columns and its colour, later ones on top), its `labels`, and an approach track above if it has one."""
     import math
     B = M["battlemap"]
-    HEX, COLS, ROWS, TRACK = B["hex"], B["cols"], B["rows"], B["track"]
-    RIVER, FORD = range(*B["river"]), range(*B["ford"])
+    HEX, COLS, ROWS, TRACK = B["hex"], B["cols"], B["rows"], B.get("track", 0)
     e = html.escape
     r = HEX / math.sqrt(3)                         # centre to corner
-    w, top = COLS * HEX + HEX / 2, 0.62
+    w, top = COLS * HEX + HEX / 2, 0.62 if TRACK else 0.1
     hexes = []
     for row in range(ROWS):
         for col in range(COLS):
             cx = HEX / 2 + col * HEX + (HEX / 2 if row % 2 else 0)
             cy = top + r + row * 1.5 * r
-            water = row in RIVER
-            ford = water and col in FORD
-            fill = "#dfe6d8" if row < RIVER.start else "#efe9da" if row > RIVER[-1] else "#e8dcc0" if ford else "#bcd0de"
-            hexes.append(f'<path d="{_hexpath(cx, cy, r)}" fill="{fill}" stroke="#7d8590" stroke-width="0.01"/>')
+            hexes.append(f'<path d="{_hexpath(cx, cy, r)}" fill="{_fill(B, row, col)}" stroke="#7d8590" stroke-width="0.01"/>')
     h = top + r * 2 + (ROWS - 1) * 1.5 * r
-    box = (w - 0.1) / TRACK
-    track = "".join(f'<rect x="{0.05 + i * box:.3f}" y="0.2" width="{box - 0.03:.3f}" height="0.32" fill="#fff" stroke="#7d8590" stroke-width="0.012"/>'
-                    f'<text x="{0.05 + i * box + box / 2:.3f}" y="0.42" font-size="0.15" text-anchor="middle">{TRACK - i}</text>' for i in range(TRACK))
-    ry = top + r + RIVER.start * 1.5 * r
-    labels = (f'<text x="0.05" y="0.15" font-size="0.13">{e(B["track_label"].format(track=TRACK), quote=False)}</text>'
-              f'<text x="{w / 2:.3f}" y="{top + 0.28:.3f}" font-size="0.16" text-anchor="middle">{e(B["north"])}</text>'
-              f'<text x="{HEX * 9.6:.3f}" y="{ry + 0.62:.3f}" font-size="0.17" text-anchor="middle" font-style="italic">{e(B["river_label"])}</text>'
-              f'<text x="{HEX * 6.5:.3f}" y="{ry + 1.05:.3f}" font-size="0.17" text-anchor="middle" font-weight="bold">{e(B["ford_label"])}</text>'
-              f'<text x="{w - 0.08:.3f}" y="{ry - 0.12:.3f}" font-size="0.13" text-anchor="end">{e(B["east"])}</text>'
-              f'<text x="{w / 2:.3f}" y="{h - 0.12:.3f}" font-size="0.16" text-anchor="middle">{e(B["south"])}</text>')
+    track = ""
+    if TRACK:
+        box = (w - 0.1) / TRACK
+        track = "".join(f'<rect x="{0.05 + i * box:.3f}" y="0.2" width="{box - 0.03:.3f}" height="0.32" fill="#fff" stroke="#7d8590" stroke-width="0.012"/>'
+                        f'<text x="{0.05 + i * box + box / 2:.3f}" y="0.42" font-size="0.15" text-anchor="middle">{TRACK - i}</text>' for i in range(TRACK))
+        track += f'<text x="0.05" y="0.15" font-size="0.13">{e(B["track_label"].format(track=TRACK), quote=False)}</text>'
+    geo = {"w": w, "h": h, "top": top, "r": r, "hex": HEX}
+    labels = "".join(_label(B, L, geo) for L in B.get("labels", []))
     return (f'<svg class="mapsheet" viewBox="0 0 {w:.3f} {h + 0.02:.3f}" width="{w:.3f}in" height="{h + 0.02:.3f}in" role="img" '
             f'aria-label="{e(B["aria"])}">'
             f'{track}{"".join(hexes)}{labels}</svg>')
