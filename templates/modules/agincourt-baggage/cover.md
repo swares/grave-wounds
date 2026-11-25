@@ -17,9 +17,9 @@ differently from a fight to the finish? Do wounds feel fair? Nobody has played t
 blunt "this dragged" is the most useful thing you can tell us.
 
 **What you need.** Pencils, two ten-sided dice for d100, scissors, and these pages. Everything to play on
-paper is here, with a hex map of the baggage and counters to cut out at the back. If you'd rather, the
-**wound roller** can run the fight on a phone or laptop: open [{{pt_link_short}}]({{pt_link}}) and add the
-four and the raiders from the sheets and the roster. Please tell us which way you played.
+paper is here, with a hex map of the baggage and counters to cut out at the back. If you'd rather, a phone or
+laptop can run the fight: **the wound roller does the arithmetic**. Open [{{pt_link_short}}]({{pt_link}}). It
+sets up the four men against the raiders, and the GM's script can play the raiders. Please tell us which way you played.
 
 | Pages | Who needs them |
 | --- | --- |
