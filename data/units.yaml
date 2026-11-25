@@ -458,7 +458,10 @@ indirect:
   # danger_light: the light levels (weather.yaml light) in which it holds: a dark night, when an
   #   observer cannot see where his own men are or adjust a fall of shot close to them. In every
   #   light the full benchmark (36 seeds) lost 9 runs: Tumbledown, Cassino's Poles and Hue gained, but
-  #   Cisterna (a day battle, the Germans' close fire on the Rangers historical) and Snipe lost. Ours.
+  #   Cisterna (a day battle, the Germans' close fire on the Rangers historical) and Snipe lost. On a
+  #   dark night only, 36 seeds: 1,538 to 1,551 of 1,836 runs as fought. Tumbledown 13 to 23 of 36,
+  #   Cassino (the Poles) 14 to 21, Chipyong-ni 31 to 32; the Cassino monastery 28 to 24, Khe Sanh 36
+  #   to 35. Ours.
   danger: 10
   danger_light: [night]
   displace_shift: 30
