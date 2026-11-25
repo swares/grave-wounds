@@ -1509,11 +1509,18 @@ def _commander_errors(d: Data) -> list[str]:
 
 def _rout_errors(d: Data) -> list[str]:
     """units.yaml rout (how far a broken unit runs through its friends, and how much it jostles
-    them), escalade (ladders) and how far a placed battery displaces."""
+    them), escalade (ladders), how far a placed battery displaces, and danger close."""
     R, errors = d.units.get("rout") or {}, []
     shift = (d.units.get("indirect") or {}).get("displace_shift")
     if not (isinstance(shift, int) and shift >= 1):
         errors.append("units.yaml: indirect.displace_shift must be a whole number of hexes, 1 or more")
+    danger = (d.units.get("indirect") or {}).get("danger", 0)
+    if not (isinstance(danger, int) and danger >= 0):
+        errors.append("units.yaml: indirect.danger must be a whole number of hexes, 0 or more")
+    levels = ((d.weather or {}).get("light") or {}).get("levels") or {}
+    for x in (d.units.get("indirect") or {}).get("danger_light") or []:
+        if x not in levels:
+            errors.append(f"units.yaml: indirect.danger_light names {x!r}, not a light level of weather.yaml")
     if not (isinstance(R.get("through", 1), int) and R.get("through", 1) >= 1):
         errors.append("units.yaml: rout.through must be a whole number of 1 or more")
     if not (isinstance(R.get("jostle", 0), (int, float)) and 0 <= R.get("jostle", 0) <= 1):
