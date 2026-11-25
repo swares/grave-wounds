@@ -4243,6 +4243,8 @@ function bestOrder(us, i, t, [size, field, stance, known]){   // the best-scorin
   const shooter = "range" in FD.weapons[u.weapon] && !storm, charge = mayCharge(u, tu, stance, storm, support(us, i));
   const best = firstMove(base, i, tu, [size, field], [charge, hold, shooter, storm]);
   if (storm && !best?.[2].charge && bounding(us, i, t)) return u.prone ? null : { act: "ground", target: t };   // storming in bounds: down and firing after a bound that drew fire
+  const round = charge && !hold && (best === null || (best[0][0] === u.pos[0] && best[0][1] === u.pos[1])) ? wayRound(base, i, t, tu, [size, field]) : null;
+  if (round) return round;                         // it would close and charge, but nothing in reach brings it on: round the works to a gap (commander.round)
   if (best === null){
     const f = keepFront(u, bearing(u.pos, tu.pos));
     const g = turnToward(base, i, f, [size, field]);   // no hex it likes is in reach: it turns where it stands, as far toward the target as it can
@@ -4252,6 +4254,48 @@ function bestOrder(us, i, t, [size, field, stance, known]){   // the best-scorin
   if (h[0] === u.pos[0] && h[1] === u.pos[1]) return stayOrder(us, i, t, f, shooter);
   return { act: m.charge ? "charge" : "move", target: t, pos: h, facing: f, cost: m.cost, ...(u.prone ? { up: true } : {}), ...(m.through?.length ? { through: m.through } : {}) };
 }
+function wayRound(base, i, t, tu, [size, field]){   // a unit that would charge but can get no nearer this move: the way round (works, walls) toward the hex nearest its target it can reach in commander.round.moves moves, this move's part of it; or null (as commander._way_round)
+  const u = base[i], allow = allowance(u), moves = UD.commander.round?.moves || 0;
+  if (!moves || !field?.works || enveloping(u) || !walledOff(field, u, tu)) return null;   // on a plan, it keeps to it; only works it cannot cross in a move send it round
+  const ways = reachWays(base, i, size, allow * moves, field), at = hk(u.pos);
+  let goal = null;
+  for (const [k, [h, c]] of ways){
+    const key = [hdist(h, tu.pos), c, h[1], h[0]];
+    if (!goal || key[0] < goal[0][0] || (key[0] === goal[0][0] && (key[1] < goal[0][1] || (key[1] === goal[0][1] && (key[2] < goal[0][2] || (key[2] === goal[0][2] && key[3] < goal[0][3])))))) goal = [key, k];
+  }
+  if (!goal || goal[0][0] >= hdist(u.pos, tu.pos)) return null;   // no way round brings it nearer
+  let k = goal[1];
+  while (ways.get(k)[1] > allow) k = ways.get(k)[2];   // back along the way to where this move ends
+  if (k === at) return null;
+  const [h, c] = ways.get(k), f = keepFront(u, bearing(h, tu.pos));
+  const foes = new Set(Object.keys(occupancy(base)).filter(x => base[occupancy(base)[x]].side !== u.side));
+  const [m, g] = legalFacing(base, i, [h, f, c, touches({ ...u, pos: h, facing: f }, foes)], [size, field, foes]);
+  return m.ok && !m.charge ? { act: "move", target: t, pos: h, facing: g, cost: m.cost, round: true, ...(u.prone ? { up: true } : {}) } : null;
+}
+function reachWays(units, i, size, limit, field){   // Map hk -> [hex, least movement, the hex it came from (hk)] for every hex the middle hex can reach within limit, round its own side's units; of equal ways, the one from the lowest row, then column (as commander._reach_ways)
+  const occ = occupancy(mates(units, i, false)), u = units[i], start = hk(u.pos);
+  const best = new Map([[start, [0, null]]]), done = new Map(), open = [[0, u.pos]];
+  while (open.length){
+    const [cost, h] = popCheapest(open), kh = hk(h);
+    if (done.has(kh)) continue;
+    done.set(kh, [h, cost, best.get(kh)[1]]);
+    for (const [x, c] of stepsFrom(field, u, h, occ, size)){
+      const kx = hk(x), was = best.get(kx), n = cost + c;
+      if (n > limit || done.has(kx)) continue;
+      if (!was || n < was[0] || (n === was[0] && lowerHex(h, done.get(was[1])?.[0]))){
+        if (!was || n < was[0]) open.push([n, x]);
+        best.set(kx, [n, kh]);
+      }
+    }
+  }
+  return done;
+}
+function walledOff(field, u, tu){                   // the straight way from its middle hex to the target's crosses ground or a work it cannot pass in a move (a wall, a palisade, a deep ditch without ladders; with ladders, a climb dearer than its move) (as commander._walled_off)
+  const way = ray(u.pos, tu.pos, hdist(u.pos, tu.pos)), allow = allowance(u);
+  for (let k = 1; k < way.length; k++){ const c = stepOf(field, u, way[k - 1], way[k]); if (c === null || c > allow) return true }
+  return false;
+}
+const lowerHex = (a, b) => !b || a[1] < b[1] || (a[1] === b[1] && a[0] < b[0]);   // a before b: the lower row, then column
 function firstMove(base, i, tu, [size, field], [charge, hold, shooter, storm]){   // [hex, facing, move] for the best-scoring hex it will move to, or null
   const u = base[i];
   if (hold && !charge) return null;
