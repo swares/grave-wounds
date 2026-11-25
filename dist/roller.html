@@ -4229,18 +4229,23 @@ function worksStop(){                               // the map has works or grou
   const edgeStops = it => { const sp = specOf("edge", it); return intact("edge", it) && (sp.gate ? !it.open : none(sp.cross)) };
   return Object.values(W.edges || {}).some(items => items.some(edgeStops)) || Object.values(W.hexes || {}).some(it => intact("hex", it) && none(specOf("hex", it).enter));
 }
-function wayRound(c, foes){                          // {pathDist} for the script when works stop men and there is a way round from where he stands; {} otherwise (no works in the way, or none open to him: he presses up to them as the crow flies)
+function engagedHexes(c, foes){                      // the hexes of c's friends who are fighting (next to an enemy they can strike, not over a work): they will not move, so no one passes them
+  const { cols, rows } = mapSize();
+  return new Set(S.chars.filter(o => o !== c && o.pos && !isOut(o) && sideOf(o) === sideOf(c)
+    && foes.some(e => hexDistance(o.pos, e.pos) === 1 && !meleeAcross(S.works, o.pos, e.pos, 1, cols, rows).blocked)).map(o => hkey(o.pos)));
+}
+function wayRound(c, foes){                          // {pathDist} for the script when works stop men and there is a way round from where he stands; {} otherwise (no works in the way, or none open to him, a friend fighting in the gap: he presses up to them as the crow flies)
   if (!foes.length || !worksStop()) return {};
-  const d = worksDistance(foes);
+  const d = worksDistance(foes, engagedHexes(c, foes));
   return Number.isFinite(d(hkey(c.pos))) ? { pathDist: d } : {};
 }
-function worksDistance(foes){                      // hex -> steps to the nearest of these men, going only where the works let a man step (ladders count as steps)
+function worksDistance(foes, held = new Set()){    // hex -> steps to the nearest of these men, going only where the works let a man step (ladders count as steps), never through a held hex
   const { cols, rows } = mapSize(), d = new Map(), q = foes.map(o => o.pos);
   q.forEach(h => d.set(hkey(h), 0));
   for (let i = 0; i < q.length; i++){
     const h = q[i], k = d.get(hkey(h));
     for (const n of neighbours(h, cols, rows)){
-      if (d.has(hkey(n)) || deepAt(n) || stepCost(S.works, n, h) === null) continue;
+      if (d.has(hkey(n)) || held.has(hkey(n)) || deepAt(n) || stepCost(S.works, n, h) === null) continue;
       d.set(hkey(n), k + 1); q.push(n);
     }
   }
