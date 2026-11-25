@@ -9,8 +9,8 @@ file: module-agincourt-baggage   # dist/<file>.html and .pdf
 text: [templates/modules/agincourt-baggage/cover.md, templates/modules/shared/fight.md, templates/modules/agincourt-baggage/example.md,
        templates/modules/shared/rules.md, templates/modules/agincourt-baggage/scenario.md, templates/modules/shared/back.md]
 version: "0.1, 24 November 2026"
-link: "https://swares.github.io/grave-wounds/dist/roller.html"
-link_short: "swares.github.io/grave-wounds/dist/roller.html"
+link: "https://swares.github.io/grave-wounds/dist/team.html#baggage"
+link_short: "swares.github.io/grave-wounds/dist/team.html#baggage"
 values:
   ref_rule: "**The baggage.** No one moves through a cart. A man taking plunder spends his whole turn at it."
   map_title: "The baggage at Maisoncelles"
@@ -24,7 +24,9 @@ men:
   - {name: "Ralph Carter", role: quartermaster}
   - {name: "Henry of Ely", role: leech}
 # The raiders who reach this corner of the baggage: of the "six hundred peasants" and the few men-at-arms
-# Monstrelet gives for the whole raid, a handful (ours).
+# Monstrelet gives for the whole raid, a handful (ours). The roller's BAGGAGE (templates/roller.html) lists the
+# same men. With the script playing both sides to a finish, the four held in 6 of 12 (four clear, two with both
+# sides down; tools/campaign/baggage.py), against Ferrybridge's 5 of 12: left as they are.
 foes:
   - {name: "Countryman", kit: gambeson, weapon: spear, quality: green}
   - {name: "Countryman", kit: none, weapon: axe, quality: green}

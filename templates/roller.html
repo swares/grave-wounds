@@ -1845,7 +1845,7 @@ const GMQ = { undo: [], timer: null, steps: 0 };            // not saved: the un
 const gmOn = () => !!S.gm?.on;
 const gmSide = side => (S.gm?.sides || {})[side] || { ctl: "player", stance: "steady", quality: "regular" };
 const scripted = c => gmOn() && !!c && gmSide(sideOf(c)).ctl === "script";
-const qualityOf = c => DATA.quality[gmSide(sideOf(c)).quality] || DATA.quality.regular;
+const qualityOf = c => DATA.quality[c.quality || gmSide(sideOf(c)).quality] || DATA.quality.regular;   // a man of his own quality (a module's foes), else his side's
 function gmStart(){                                // Run the fight on: who plays which side, by a first guess
   const sides = sidesInOrder(), sheeted = sides.filter(sd => S.chars.some(c => sideOf(c) === sd && c.sheet));
   const players = sheeted.length ? sheeted : sides.slice(0, 1);
@@ -4630,19 +4630,28 @@ function quickSetup(){
 const PLAYTEST = { side: "Clifford's men", keep: ["William of Ely", "Gilbert Cooper", "Edmund Miller", "Nicholas Fletcher"],
   foes: [["Billman 1", "jack_sallet", "bill", "regular"], ["Billman 2", "jack_sallet", "bill", "regular"], ["Billman 3", "jack_sallet", "bill", "regular"],
     ["Billman 4", "jack_sallet", "bill", "regular"], ["Archer", "jack_sallet", "longbow", "regular"]] };
-function playtestSetup(){
+/* The king's baggage module's fight (dist/module-agincourt-baggage.html, team.html#baggage): the four of the
+   retinue rolled with seed 1415 against the raiders who reach their corner of the baggage at Maisoncelles.
+   data/modules/agincourt-baggage.yaml lists the same men. */
+const BAGGAGE = { side: "Ysembart's raiders", keep: ["Robert Hayward", "Walter Carter", "Ralph Carter", "Henry of Ely"],
+  foes: [["Countryman 1", "gambeson", "spear", "green"], ["Countryman 2", "none", "axe", "green"], ["Countryman 3", "none", "spear", "green"],
+    ["Countryman 4", "gambeson", "dagger", "green"], ["Varlet", "gambeson", "spear", "regular"], ["Man-at-arms", "harness_1415", "sword", "veteran"]],
+  msg: "The king's baggage: the four men with the English baggage at Maisoncelles, 25 October 1415, against Ysembart's raiders. The GM's script plays them; roll initiative to begin." };
+PLAYTEST.msg = "The playtest packet's fight: the four men at the Aire crossing, 28 March 1461, against five of Clifford's men. The GM's script plays them; roll initiative to begin.";
+function playtestSetup(P = PLAYTEST){              // a print-and-play module's fight: its four and its enemy, the GM's script playing the enemy
   if (!freshWithTeam()) return;
-  S.chars = S.chars.filter(c => PLAYTEST.keep.includes(c.name));
-  for (const [name, kit, weapon, quality] of PLAYTEST.foes){
-    const c = newChar(name, kit, weapon, {}, PLAYTEST.side);
+  S.chars = S.chars.filter(c => P.keep.includes(c.name));
+  for (const [name, kit, weapon, quality] of P.foes){
+    const c = newChar(name, kit, weapon, {}, P.side);
     c.nerve = DATA.quality[quality].nerve;
+    if (quality !== "regular") c.quality = quality;    // he fights at his own quality, not his side's
     S.chars.push(c);
   }
   placeUnplaced();
   gmStart();
-  S.gm.sides[PLAYTEST.side] = { ...gmSide(PLAYTEST.side), ctl: "script", stance: "steady", quality: "regular" };
+  S.gm.sides[P.side] = { ...gmSide(P.side), ctl: "script", stance: "steady", quality: "regular" };
   S.gm.auto = true;
-  S.mapMsg = "The playtest packet's fight: the four men at the Aire crossing, 28 March 1461, against five of Clifford's men. The GM's script plays them; roll initiative to begin.";
+  S.mapMsg = P.msg;
   save();
 }
 /* The GM's coached first session (campaign.html#gmstart): the team builder sends the same retinue here
@@ -4793,6 +4802,7 @@ function init(){
   if (location.hash === "#quickstart") quickSetup();
   if (location.hash === "#gmstart") gmQuickSetup();
   if (location.hash === "#playtest") playtestSetup();
+  if (location.hash === "#baggage") playtestSetup(BAGGAGE);
   unitToggle($("#units-toggle"), () => { renderResult(); renderChars() });
   lethalToggle($("#lethal-toggle"), () => {      // a new lethality: an unhurt player character's Blood is his new pool; a hurt one keeps what he has, up to it
     for (const c of S.chars.filter(isPC)) c.blood = c.wounds.length ? Math.min(c.blood, poolOf(c)) : poolOf(c);

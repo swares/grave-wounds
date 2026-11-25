@@ -2229,14 +2229,14 @@ function rollerSheet(c){                          // what the roller keeps of a 
 /* The quick start (the start page's Play in 15 minutes): the Rules' own retinue, made with the running
    example's seeded dice (gravewounds/rulebook.py example: medieval, England, a lord's retinue, dice 3),
    so the men are the ones the Rules' examples name; then on to the roller's quick-start fight. */
-function quickStart(dest = "roller.html#quickstart"){   // the Rules' example retinue, sent to the roller's quick start (or the GM's coached session: dest roller.html#gmstart)
+function quickStart(dest = "roller.html#quickstart", seed = 3){   // the Rules' example retinue, sent to the roller's quick start (or the GM's coached session: dest roller.html#gmstart); seed: another retinue rolled the same way (a module's four)
   history.replaceState(null, "", location.pathname);
   if (dest !== "roller.html#gmstart" && S.team?.length && !confirm("The quick start puts the Rules' example retinue here in place of this team. Go on?")) return render();
   setEra("medieval"); S.era = T.id; startEra();
   Object.assign(S, { region: "england", template: "retinue", mode: "roll", side: "The retinue", crew: [] });
   S.slots = byId(T.templates, "retinue").slots.map(s => [...s]);
   S.fcounts = []; S.fmuster = null;
-  S.team = makeTeam(S.region, S.slots, S.mode, new SeededDice(3));
+  S.team = makeTeam(S.region, S.slots, S.mode, new SeededDice(seed));
   S.team.forEach(c => { c.pid = newPid() });
   S.lootlog = []; S.chklog = []; S.xplog = []; S.vacancies = {}; S.prisoners = []; S.prlog = []; S.worklog = []; S.losses = [];
   save();
@@ -2583,6 +2583,7 @@ function init(){
   lethalToggle($("#lethal-toggle"), () => render());
   if (location.hash === "#quickstart") return quickStart();
   if (location.hash === "#playtest") return quickStart("roller.html#playtest");   // the playtest packet's fight (gravewounds/playtest.py)
+  if (location.hash === "#baggage") return quickStart("roller.html#baggage", 1415);   // the king's baggage module's fight (data/modules/agincourt-baggage.yaml)
   if (location.hash === "#gmstart") return quickStart("roller.html#gmstart");   // the GM's coached first session (campaign.html#gmstart)
   render();
 }
