@@ -1570,11 +1570,11 @@ const PG = { send: () => {}, peer: null, screen: null, frame: null, ready: false
 function pgFight(m){                                  // his fight: the roller's player screen in a frame of its own, fed from here
   if (m.t === "nofight"){
     PG.frame?.remove(); PG.frame = null; PG.ready = false; PG.queue = [];
-    $("#p-fight").hidden = true;
+    $("#p-fight").hidden = true; pgFightTab(false);
     pgCoach();
     return;
   }
-  $("#p-fight").hidden = false;
+  $("#p-fight").hidden = false; pgFightTab(true);
   pgCoach();
   const page = m.page === "field" ? "field.html" : "roller.html";   // a battle on the field map, or a fight on the roller
   if (PG.frame && PG.page !== page && !m.part){ PG.frame.remove(); PG.frame = null; PG.ready = false; PG.queue = [] }
@@ -1599,12 +1599,17 @@ function pgLayout(){
     <p id="p-status" aria-live="polite" style="margin:0"></p>
     <p class="notice coach" id="p-coach" hidden aria-live="polite"></p>
     <section class="panel" id="p-join"></section>
-    <section class="panel" id="p-fight" hidden aria-labelledby="h-pfight"><h2 id="h-pfight">Your fight</h2></section>
+    <nav class="g-tabs" id="p-tabs" aria-label="Watching">${[["forces", "Forces"], ["map", "Map"], ["fight", "Fight"], ["news", "News"]].map(([k, t], i) => `<button type="button" class="small" data-tab="${k}" aria-pressed="${!i}"${k === "fight" ? " hidden" : ""}>${t}</button>`).join("")}</nav>
+    <section class="panel" id="p-fight" data-wpane="fight" hidden aria-labelledby="h-pfight"><h2 id="h-pfight">Your fight</h2></section>
     <div class="top"><section class="panel" aria-labelledby="h-pmen"><h2 id="h-pmen">Your men</h2><div id="p-men"></div></section>
-      <section class="panel march" style="border-top:0;padding-top:14px" aria-labelledby="h-pforce"><h2 id="h-pforce">Your force</h2><div id="p-force" style="display:flex;flex-direction:column;gap:6px"></div></section></div>
-    <section class="panel" id="p-mapbox" hidden aria-labelledby="h-pmap"><h2 id="h-pmap">Your map</h2>
+      <section class="panel march on" data-wpane="forces" style="border-top:0;padding-top:14px" aria-labelledby="h-pforce"><h2 id="h-pforce">Your force</h2><div id="p-force" style="display:flex;flex-direction:column;gap:6px"></div></section></div>
+    <section class="panel" id="p-mapbox" data-wpane="map" hidden aria-labelledby="h-pmap"><h2 id="h-pmap">Your map</h2>
       <p class="muted" id="p-mapnote" style="margin:0;font-size:.88rem">Your side's forces, and of the enemy only what your side's forces can see from where they are, or where they last saw it.</p></section>
-    <section class="panel" aria-labelledby="h-pnews"><h2 id="h-pnews">News</h2><ol class="log" id="p-news" aria-label="The campaign's news, newest first"></ol></section>`;
+    <section class="panel" data-wpane="news" aria-labelledby="h-pnews"><h2 id="h-pnews">News</h2><ol class="log" id="p-news" aria-label="The campaign's news, newest first"></ol></section>
+    <style>.g-tabs{display:none;gap:6px} .g-tabs [aria-pressed="true"]{border-color:var(--ink);font-weight:700}
+      @media (max-width:700px){ body.watching .g-tabs{display:flex;position:sticky;top:0;z-index:2;background:var(--bg);padding:4px 0}
+        body.watching [data-wpane]:not(.on){display:none !important} }</style>`;
+  $("#p-tabs").addEventListener("click", e => { const b = e.target.closest("[data-tab]"); if (b) pgTab(b.dataset.tab) });
 }
 function pgShow(m, changed = null){
   const picks = [...document.querySelectorAll("#p-force .propose select[data-pick]")].map(el => [el.closest(".propose").dataset.force, el.dataset.pick, el.value]);
@@ -1617,6 +1622,15 @@ function pgShow(m, changed = null){
   pgWatching(m);
   if (!changed || changed.includes("map")) pgMap(m.map);
   pgCoach();
+}
+function pgTab(tab){                                 // a watcher's phone: one panel at a time (the map's frame is drawn as it is shown)
+  for (const b of document.querySelectorAll("#p-tabs [data-tab]")) b.setAttribute("aria-pressed", String(b.dataset.tab === tab));
+  for (const el of document.querySelectorAll("[data-wpane]")) el.classList.toggle("on", el.dataset.wpane === tab);
+}
+function pgFightTab(on){                              // a fight began or ended: its tab shows, and a watcher's phone goes to it (or back to the forces)
+  const b = $("#p-tabs [data-tab=fight]"); if (!b || b.hidden === !on) return;
+  b.hidden = !on;
+  if (document.body.classList.contains("watching")) pgTab(on ? "fight" : "forces");
 }
 function pgMapNote(watch){                           // the line under his map
   if (!watch) return "Your side's forces, and of the enemy only what your side's forces can see from where they are, or where they last saw it.";
