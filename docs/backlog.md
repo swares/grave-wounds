@@ -73,9 +73,9 @@ not this repository.
     the baggage raid at Agincourt, a breach at Badajoz, a patrol on Tumbledown, the ditch at Dornach).
     `gravewounds/playtest.py` is now a module generator (24 November 2026): each module a data file in
     `data/modules/` (its men, foes, tables, map, weather and words) built to its own page and PDF; Ferrybridge
-    is the first, and comes out as before. A second module is a new data file and its text. Still in
-    the code, not the data: the printed map is always a river with a ford (its rows, columns and
-    labels are the module's), so a module with other ground needs the map drawing widened first.
+    is the first, and comes out as before. A second module is a new data file and its text. The printed
+    map is the module's too: its ground in blocks of rows and columns, each with its colour, its words
+    placed by hex and row, and the approach track only if it has one (#639), so any ground can be drawn.
   - **Then a battle module:** a battle such as Towton or Albuera on paper, with unit counters, a printed
     battlefield and paper rules for formations, morale and losses, which the field page now works out.
     Start small, a wing or a few units a side, to learn whether battle-scale play is quick enough at a table.
