@@ -15,8 +15,7 @@ at or under a tenth of the number is a **critical**.
    the armour, or both. Each costs {{aim_cost}} of your margin on a hit, and is free on a critical.
 3. **Defence.** The defender rolls d100 against Defence, less his penalties. Success turns the blow. A critical
    can't be defended.
-4. **Where it lands.** d100 on *Where it lands*, under the attacker's weapon. With a sword, bill or dagger, the
-   attacker chooses **cut** or **thrust** before he rolls. A longbow pierces.
+4. **Where it lands.** d100 on *Where it lands*, under the attacker's weapon. {{pt_blow_note}}
 5. **How bad.** Margin under {{band_serious}}: **light**. {{band_serious}} or more: **serious**. {{band_critical}}
    or more, or a critical: **critical**. A margin of {{graze}} or less only **grazes**, unless it is a
    critical: a step less bleeding and pain, and no stop check.

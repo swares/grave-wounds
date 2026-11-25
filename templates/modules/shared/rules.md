@@ -18,7 +18,7 @@ B2 is the second bleeding step, and the Bleeding table below gives the Blood it 
 
 **The clock.** How long the wound takes to kill if left untreated: days, hours, minutes, rounds or instant.
 
-**A man with an arm hurt** can't use a two-handed weapon: a bow, a bill or a poleaxe. He can only defend until he
+**A man with an arm hurt** can't use a two-handed weapon: {{pt_two_handed}}. He can only defend until he
 takes up something else.
 
 **First aid.** A friend beside him may treat a wound on his turn. Roll d100 against the side's best Leechcraft:
@@ -30,8 +30,7 @@ takes up something else.
 <!-- page -->
 # Where it lands {#where}
 
-Roll d100 under the attacker's weapon. These odds come from the Towton table, adjusted from the bone evidence for
-wounds that leave no mark on bone.
+Roll d100 under the attacker's weapon. {{pt_hit_source}}
 
 {{pt:hit}}
 
@@ -41,15 +40,15 @@ At or under the cover shown in tens, the blow met the armour.
 
 {{pt:armour}}
 
-A longbow's arrows take 1 step off the armour's pierce figure, so a jack gives them nothing and a brigandine only 1.
+{{pt_missile_armour}}
 
-**Range.** A longbow reaches {{pt_bow_range}} hexes: short, medium and long. Each hex is {{hex_yd}} yards. On paper take −20 at medium range and −40 at long; the roller does it for you. On the map, count the hexes between the two men; to a man still on the approach track, count the hexes to the map's north edge and add his box number.
+{{pt_range_rule}}
 
 <!-- page -->
 # What it does {#effects}
 
 Find the place and the blow. Each entry gives its **bleeding step** (B) and **pain step** (P), then **S** if it calls for a stop check, then how long it
-takes to kill and any impairments. Fever is the risk of wound fever in camp. A longbow's wound uses the thrust columns. A knee or
+takes to kill and any impairments. Fever is the risk of wound fever in camp. {{pt_missile_effect}}A knee or
 foot may not bleed at all.
 
 {{pt:effects}}

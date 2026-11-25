@@ -72,6 +72,8 @@ jobs:
         run: python3 tools/campaign/playtest.py
       - name: "The king's baggage module's fight on the roller"
         run: python3 tools/campaign/baggage.py
+      - name: "The escalade module's fight on the roller"
+        run: python3 tools/campaign/escalade.py
       - name: Camp roles and the evening council on the campaign console
         run: python3 tools/campaign/council.py
       - name: The commander on the march, on the travel map and the console
