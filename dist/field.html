@@ -9610,14 +9610,16 @@ function render(){
    hex, a unit, a control of the selected unit, his batteries or heroes, or Next. This page makes each
    through the same handler its own click would reach, as his side's view, only where a player may
    act (the panels above, never the GM's), and on his side's move only (picking a unit to look at,
-   any time). A side with a player is not the commander's. */
+   any time). A side with a player is not the commander's. A watcher (p.watch) moves nothing: the GM
+   picks what he sees (p.view: null for everything, or a side's view), he may pick a unit he sees to
+   look at it, and his page draws the field with no controls. */
 const NETF = { seats: [], seq: 0, rendering: false, timer: null, stun: true, open: false };
 const FIELD_GUEST = /^#(join=|room=|relay)/.test(location.hash);
 const SEAT_UI = ["sel", "marching", "calling", "laying", "placing", "msg"];   // what is his own, not the GM's: his unit picked, his order half made, his message
 const SEAT_PANELS = { map: "#map", scale: "#map-scale", legend: "#unit-legend", stage: "#stage", phase: "#phase", units: "#units", sel: "#sel-box", support: "#support", heroes: "#heroes", log: "#log", story: "#story" };
 const SEAT_ACTS = ["#sel-box", "#support", "#heroes"];   // where his clicks and changes may land (besides the map, the unit list and Next)
 const SEAT_NEVER = new Set(["btn-remove", "btn-narrow", "btn-wider", "btn-reserve", "btn-add-sec"]);   // the GM's, even there
-const NETF_ALWAYS = ["t", "page", "seat", "mine", "msg", "next", "title"];
+const NETF_ALWAYS = ["t", "page", "seat", "mine", "msg", "next", "title", "watch"];
 const fieldRoomServer = () => {
   let s = "";
   try { s = localStorage.getItem("gw-room-server") || "" } catch { s = "" }   // this browser's own choice, as the console's
@@ -9627,7 +9629,7 @@ const netfOpen = () => NETF.seats.filter(p => p.state === "open");
 function withSeat(p, fn){                          // fn as that seat's side sees the field, with his own selection and half-made orders
   const keep = Object.fromEntries(SEAT_UI.map(k => [k, S[k]])), screen = S.screen, tool = S.tool;
   for (const k of SEAT_UI) S[k] = p.ui[k] ?? null;
-  S.screen = p.seat; S.tool = "unit"; NETF.rendering = true;
+  S.screen = p.watch ? p.view : p.seat; S.tool = "unit"; NETF.rendering = true;
   try { render(); return fn() }
   finally {
     for (const k of SEAT_UI) p.ui[k] = S[k] ?? null;
@@ -9640,7 +9642,16 @@ function seatHtml(sel){                            // a panel as HTML, its selec
   for (const i of el.querySelectorAll("input")){ if (i.type === "checkbox") i.toggleAttribute("checked", i.checked); else i.setAttribute("value", i.value) }
   return el.innerHTML;
 }
+const fieldWatchLabel = view => (view ? `${view}' view` : "everything (the GM's view)");
+function fieldMoving(){                            // whose move it is, in a few words
+  if (S.phase === "over") return "The battle is over";
+  if (S.phase === "setup") return "The GM is setting up";
+  return `${S.sides[S.phase]} are moving`;
+}
 function seatScreen(p){                            // his side's screen: its panels, his message, whose move it is
+  if (p.watch) return withSeat(p, () => ({ t: "screen", page: "field", seat: "watch", title: "Watching the field", mine: false, msg: S.msg || "",
+    watch: fieldWatchLabel(p.view), next: { text: fieldMoving(), disabled: true },
+    ...Object.fromEntries(Object.entries(SEAT_PANELS).map(([key, sel]) => [key, seatHtml(sel)])) }));
   return withSeat(p, () => {
     const k = S.sides.indexOf(p.seat), b = $("#btn-next");
     return { t: "screen", page: "field", seat: p.seat, title: `${p.seat} on the field`, mine: S.phase === k, msg: S.msg || "",
@@ -9664,7 +9675,11 @@ function gmView(){                                 // the GM's own view again, a
 }
 function netfSides(){                              // the sides changed: the invitations follow (not on every change: it would clear a reply being pasted)
   const k = S.sides.join("|");
-  if (k !== NETF.sidesKey){ NETF.sidesKey = k; renderNetf() }
+  if (k !== NETF.sidesKey){
+    NETF.sidesKey = k;
+    for (const p of NETF.seats.filter(x => x.watch && x.view && !S.sides.includes(x.view))){ p.view = null; p.last = null }   // his side is gone: he sees all of it
+    renderNetf();
+  }
 }
 function seatTarget(m){                            // the element his click or change is for, in a panel he may act in, or null
   for (const box of SEAT_ACTS.map(s => $(s)).filter(Boolean)){
@@ -9708,6 +9723,10 @@ const SEAT_COMMANDS = {                            // each choice a player may s
 };
 function netfCommand(p, m){                         // his choice, made as his side's view only if it is his to make
   if (!m || typeof m.t !== "string" || !Object.hasOwn(SEAT_COMMANDS, m.t)) return;
+  if (p.watch){                                    // a watcher only picks a unit he sees, to look at it
+    if (m.t === "unit" || m.t === "hex"){ withSeat(p, () => SEAT_COMMANDS[m.t](p, m, false)); render() }
+    return;
+  }
   const k = S.sides.indexOf(p.seat);
   if (k < 0) return;
   withSeat(p, () => SEAT_COMMANDS[m.t](p, m, S.phase === k));
@@ -9728,11 +9747,11 @@ async function netfRoom(p, peer){                   // with a room server: his i
   if (r && p.peer === peer){ await peer.accept(r.data); p.state = "connecting"; renderNetf() }
 }
 async function netfConnect(p){                      // an invitation for his side: a first one, or again after he was lost
-  const k = S.sides.indexOf(p.seat);
-  if (k >= 0 && aiOf(k)) setAi(k, "");             // a person moves this side now
+  const k = p.watch ? -1 : S.sides.indexOf(p.seat);
+  if (k >= 0 && aiOf(k)) setAi(k, "");             // a person moves this side now (a watcher moves none)
   p.peer?.close();
   Object.assign(p, { state: "inviting", code: "", err: "", last: null });
-  const peer = NET.hostPeer({ seat: p.seat, stun: NETF.stun, onMessage: m => netfCommand(p, m), onState: st => {
+  const peer = NET.hostPeer({ seat: p.watch ? "watch" : p.seat, stun: NETF.stun, onMessage: m => netfCommand(p, m), onState: st => {
     if (p.peer !== peer) return;
     p.state = st;
     if (st === "open"){ p.last = null; netfSend(p); render() }
@@ -9750,16 +9769,28 @@ async function netfConnect(p){                      // an invitation for his sid
 }
 const NETF_KEY = "gravewounds-field-seats";         // the seats and their rooms, this tab only: after a reload they are invited again
 function netfKeep(){
-  try { sessionStorage.setItem(NETF_KEY, JSON.stringify(NETF.seats.filter(p => !p.relay).map(p => ({ seat: p.seat, room: p.room || null })))) } catch { /* storage off: a reload forgets them */ }
+  try { sessionStorage.setItem(NETF_KEY, JSON.stringify(NETF.seats.filter(p => !p.relay).map(p => ({ seat: p.seat, room: p.room || null, ...(p.watch ? { watch: true, view: p.view } : {}) })))) } catch { /* storage off: a reload forgets them */ }
 }
 function netfRemembered(){                          // after a reload: the seats invited again (with a room, the player's page answers by itself)
   let kept = [];
   try { kept = JSON.parse(sessionStorage.getItem(NETF_KEY) || "[]") } catch { kept = [] }
-  for (const x of kept) if (S.sides.includes(x.seat)){
-    const p = { n: ++NETF.seq, seat: x.seat, room: x.room, state: "closed", code: "", err: "", peer: null, ui: {} };
+  for (const x of kept) if (x.watch || S.sides.includes(x.seat)){
+    const p = { n: ++NETF.seq, seat: x.seat, room: x.room, state: "closed", code: "", err: "", peer: null, ui: {},
+      ...(x.watch ? { watch: true, view: S.sides.includes(x.view) ? x.view : null } : {}) };
     NETF.seats.push(p);
     if (fieldRoomServer() && x.room) netfConnect(p);
   }
+}
+function netfWatch(){                              // a watcher: one side's view to start with (nothing hidden leaks), the GM may change it
+  const p = { n: ++NETF.seq, seat: `watcher ${NETF.seq}`, watch: true, view: S.sides[0] || null, state: "inviting", code: "", err: "", peer: null, ui: {} };
+  NETF.seats.push(p); netfKeep();
+  return netfConnect(p);
+}
+function netfSetView(p, view){                      // the GM changes what a watcher sees
+  if (!p?.watch || (view && !S.sides.includes(view))) return;
+  p.view = view || null; p.last = null; p.ui = {}; netfKeep();
+  if (p.state === "open") netfSend(p);
+  gmView(); renderNetf();
 }
 function netfInvite(side){
   if (NETF.seats.some(p => p.seat === side)) return;
@@ -9768,40 +9799,49 @@ function netfInvite(side){
   return netfConnect(p);
 }
 const netfLink = p => (p.room ? `${location.href.split("#")[0]}#room=${p.room.code}${p.room.server !== ROOM_SERVER_SITE ? "&s=" + encodeURIComponent(p.room.server) : ""}` : `${location.href.split("#")[0]}#join=${p.code}`);
+function netfWatchPick(p){                          // a watcher's row: what he sees
+  const opts = [["", "Everything (your view)"], ...S.sides.map(sd => [sd, `${sd}' view`])].map(([v, t]) => `<option value="${esc(v)}"${v === (p.view || "") ? " selected" : ""}>${esc(t)}</option>`).join("");
+  return ` <label class="muted">sees <select data-netf-view="${p.n}" aria-label="What watcher ${p.n} sees">${opts}</select></label>`;
+}
 function netfRow(p){
-  const st = { open: "connected", closed: "gone", failed: "could not connect", disconnected: "lost" }[p.state] || p.state, side = esc(p.seat);
+  const st = { open: "connected", closed: "gone", failed: "could not connect", disconnected: "lost" }[p.state] || p.state, side = p.watch ? `Watcher ${p.n}` : esc(p.seat);
   const lost = ["closed", "failed", "disconnected"].includes(p.state);
   let how = "";
-  if (p.room && p.state !== "open") how = `<p class="muted" style="margin:0">Send him this link, or the room code <b>${esc(p.room.code)}</b>: <input readonly data-netf-link="${p.n}" style="width:100%" value="${esc(netfLink(p))}"></p>`;
-  else if (p.code && !p.room && p.state !== "open" && !lost) how = `<label class="muted" style="display:block">1. Send this link to the player for ${side}:
+  const who = p.watch ? "the watcher" : `the player for ${side}`;
+  if (p.room && p.state !== "open") how = `<p class="muted" style="margin:0">Send ${p.watch ? "the watcher" : "him"} this link, or the room code <b>${esc(p.room.code)}</b>: <input readonly data-netf-link="${p.n}" style="width:100%" value="${esc(netfLink(p))}"></p>`;
+  else if (p.code && !p.room && p.state !== "open" && !lost) how = `<label class="muted" style="display:block">1. Send this link to ${who}:
       <textarea readonly rows="2" data-netf-link="${p.n}" style="width:100%">${esc(netfLink(p))}</textarea></label>
       <label class="muted" style="display:block">2. Paste the reply code his page gives him:
       <textarea rows="2" data-netf-reply="${p.n}" style="width:100%"></textarea></label>
       <button type="button" class="small" data-netf="accept" data-n="${p.n}">Connect</button>`;
   const again = lost ? ` <button type="button" class="small primary" data-netf="again" data-n="${p.n}">Invite again</button>` : "";
   const err = p.err ? `<p class="bad" style="margin:0">${esc(p.err)}</p>` : "";
-  return `<li><b>${side}</b>: ${esc(st)}${again} <button type="button" class="small" data-netf="drop" data-n="${p.n}">Drop</button>${how}${err}</li>`;
+  return `<li><b>${side}</b>: ${esc(st)}${p.watch ? netfWatchPick(p) : ""}${again} <button type="button" class="small" data-netf="drop" data-n="${p.n}">Drop</button>${how}${err}</li>`;
 }
 function renderNetf(){
   const box = $("#net-box"); if (!box) return;
   const own = NETF.seats.filter(p => !p.relay), relayed = NETF.seats.length - own.length;
-  const on = netfOpen().length, rooms = !!fieldRoomServer();
+  const on = netfOpen().filter(p => !p.watch).length, watching = netfOpen().length - on, rooms = !!fieldRoomServer();
   const camp = relayed ? `<p class="muted" style="margin:0">${relayed} player${relayed === 1 ? "" : "s"} from the campaign console, on its links.</p>` : "";
   const invites = S.sides.filter(sd => !NETF.seats.some(p => p.seat === sd)).map(sd => `<button type="button" class="small" data-netf="invite" data-side="${esc(sd)}">Invite a player for ${esc(sd)}</button>`).join(" ");
-  box.innerHTML = `<details class="after"${NETF.open || NETF.seats.length ? " open" : ""}><summary><b>Play online</b> <span class="muted">${on} player${on === 1 ? "" : "s"} connected</span></summary>${camp}
-    <div class="toolbar" style="flex-wrap:wrap">${invites}</div>
+  box.innerHTML = `<details class="after"${NETF.open || NETF.seats.length ? " open" : ""}><summary><b>Play online</b> <span class="muted">${on} player${on === 1 ? "" : "s"} connected${watching ? `, ${watching} watching` : ""}</span></summary>${camp}
+    <div class="toolbar" style="flex-wrap:wrap">${invites} <button type="button" class="small" data-netf="watch" title="Someone to watch the battle from his own computer or phone, with no say in it: you choose what he sees">Invite a watcher</button></div>
     <label class="check" title="Lets pages find each other across the internet; on one network it is not needed"><input type="checkbox" id="netf-stun"${NETF.stun ? " checked" : ""}> Use a public STUN server (stun.l.google.com)</label>
     ${own.length ? `<ul class="support">${own.map(netfRow).join("")}</ul>` : ""}
-    <p class="muted" style="margin:0">Each player sees his side's view and moves his side's units on its move; you see everything, and set up the battle. A side with a player is not the commander's. ${rooms ? "The codes pass through the room server: nothing to paste back." : "No room server: the link and the reply are passed by hand."} Some strict networks will not connect.</p></details>`;
+    <p class="muted" style="margin:0">Each player sees his side's view and moves his side's units on its move; you see everything, and set up the battle. A side with a player is not the commander's. A watcher only watches: he sees one side's view, or everything if you choose (he could tell a player what his side cannot see). ${rooms ? "The codes pass through the room server: nothing to paste back." : "No room server: the link and the reply are passed by hand."} Some strict networks will not connect.</p></details>`;
 }
 function netfWire(){
   const box = $("#net-box"); if (!box) return;
   box.addEventListener("toggle", e => { NETF.open = e.target.open }, true);
-  box.addEventListener("change", e => { if (e.target.id === "netf-stun") NETF.stun = e.target.checked });
+  box.addEventListener("change", e => {
+    if (e.target.id === "netf-stun") NETF.stun = e.target.checked;
+    else if (e.target.dataset.netfView) netfSetView(NETF.seats.find(x => x.n === +e.target.dataset.netfView), e.target.value);
+  });
   box.addEventListener("click", e => {
     const b = e.target.closest("button[data-netf]"); if (!b) return;
     const p = NETF.seats.find(x => x.n === +b.dataset.n);
     if (b.dataset.netf === "invite") netfInvite(b.dataset.side);
+    else if (b.dataset.netf === "watch") netfWatch();
     else if (b.dataset.netf === "accept" && p) p.peer.accept(box.querySelector(`[data-netf-reply="${p.n}"]`).value).then(() => { p.state = "connecting"; renderNetf() }, err => { p.err = String(err.message || err); renderNetf() });
     else if (b.dataset.netf === "again" && p) netfConnect(p);
     else if (b.dataset.netf === "drop" && p){ p.peer?.close(); NETF.seats = NETF.seats.filter(x => x !== p); netfKeep(); renderNetf() }
@@ -9816,18 +9856,23 @@ function fieldGuestLayout(){
     <h1 style="margin:0 0 6px" id="g-title">Grave Wounds: the field</h1>
     <p id="g-status" aria-live="polite" style="margin:0 0 8px"></p>
     <section class="panel" id="g-join" hidden></section>
+    <nav class="g-tabs" id="g-tabs" aria-label="Watching">${["Map", "Units", "Log", "Story"].map((t, i) => `<button type="button" class="small" data-tab="${t.toLowerCase()}" aria-pressed="${!i}">${t}</button>`).join("")}</nav>
     <div class="grid">
-      <section class="panel"><p class="stage" id="stage"></p><output class="msg" id="msg"></output><div class="mapbox" id="map"></div>
+      <section class="panel on" data-wpane="map"><p class="stage" id="stage"></p><output class="msg" id="msg"></output><div class="mapbox" id="map"></div>
         <span class="muted" id="map-scale"></span><div class="legend" id="unit-legend"></div></section>
-      <section class="panel"><div class="phase" id="phase"></div>
-        <div class="toolbar"><button class="primary" id="g-next" disabled>Waiting</button></div>
-        <h2>Units</h2><ul class="units" id="units"></ul>
+      <section class="panel g-side"><div class="phase" id="phase"></div>
+        <div class="toolbar g-orders"><button class="primary" id="g-next" disabled>Waiting</button></div>
+        <div data-wpane="units"><h2>Units</h2><ul class="units" id="units"></ul>
         <div id="sel-box"></div>
         <h2>Fire support</h2><ul class="support" id="support"></ul>
-        <h2>Heroes</h2><ul class="support" id="heroes"></ul>
-        <h2>Battle log</h2><ol class="log" id="log"></ol>
-        <h2>Narrative</h2><ol class="story" id="story"></ol></section>
-    </div></div>`;
+        <h2>Heroes</h2><ul class="support" id="heroes"></ul></div>
+        <div data-wpane="log"><h2>Battle log</h2><ol class="log" id="log"></ol></div>
+        <div data-wpane="story"><h2>Narrative</h2><ol class="story" id="story"></ol></div></section>
+    </div></div><style>
+    .g-tabs{display:none;gap:6px} #g-join[hidden]{display:none}
+    body.watching .g-orders,body.watching #sel-box :is(button,select,input,label),body.watching #support :is(button,select,input),body.watching #heroes :is(button,select,input){display:none}   /* a watcher: nothing to order */
+    @media (max-width:700px){ body.watching .g-tabs{display:flex;position:sticky;top:0;z-index:2;background:var(--bg);padding:4px 0}
+      body.watching [data-wpane]:not(.on){display:none} body.watching .g-side:not(:has(.on)){display:none} }</style>`;
   MAPZOOM.attach($("#map"));                       // − + Fit and two-finger pinch, as on the GM's page; it holds as his screens come
 }
 function fieldGuestShow(m, changed = null){         // the GM's drawing of his side's screen (changed: only those panels again)
@@ -9838,7 +9883,13 @@ function fieldGuestShow(m, changed = null){         // the GM's drawing of his s
   $("#msg").textContent = m.msg || "";
   if ($("#g-title")) $("#g-title").textContent = m.title || "Grave Wounds: the field";
   $("#g-next").textContent = m.next?.text || "Waiting"; $("#g-next").disabled = !!m.next?.disabled;
-  $("#g-status").textContent = m.mine ? "Your side's move: pick a unit, click a hex to move it, then End the move." : "Waiting for the other side.";
+  document.body.classList.toggle("watching", !!m.watch);
+  if (m.watch) $("#g-status").textContent = `Watching: ${m.watch}. ${m.next?.text || ""}. Click a unit to look at it.`;
+  else $("#g-status").textContent = m.mine ? "Your side's move: pick a unit, click a hex to move it, then End the move." : "Waiting for the other side.";
+}
+function fieldGuestTab(tab){                          // a watcher's phone: one pane at a time
+  for (const b of document.querySelectorAll("#g-tabs [data-tab]")) b.setAttribute("aria-pressed", String(b.dataset.tab === tab));
+  for (const el of document.querySelectorAll("[data-wpane]")) el.classList.toggle("on", el.dataset.wpane === tab);
 }
 function fieldGuestDescribe(el){                    // a control as the GM's page can find it: its id, or its tag and data
   if (el.id) return { id: el.id };
@@ -9846,6 +9897,7 @@ function fieldGuestDescribe(el){                    // a control as the GM's pag
 }
 function fieldGuestWire(){
   const send = m => FG.send(m);
+  $("#g-tabs").addEventListener("click", e => { const b = e.target.closest("[data-tab]"); if (b) fieldGuestTab(b.dataset.tab) });
   $("#map").addEventListener("click", e => { const hx = e.target.closest(".hx"); if (hx) send({ t: "hex", h: hx.dataset.h.split(",").map(Number) }) });
   $("#units").addEventListener("click", e => { const li = e.target.closest("li[data-id]"); if (li) send({ t: "unit", id: +li.dataset.id }) });
   $("#g-next").addEventListener("click", () => send({ t: "next" }));
@@ -9873,10 +9925,10 @@ async function fieldGuestJoin(){                    // a #join= link: answer it,
   const status = t => { $("#g-status").textContent = t };
   let invite;
   try { invite = await NET.unpackCode(location.hash) } catch { return status("This link is not a working invitation. Ask the GM for a new one.") }
-  status(`Joining the GM's field as ${invite.seat}...`);
-  const g = await fieldGuestPeer(invite, () => status("Lost the GM's page. Your side's last screen stays; ask the GM to invite you again."));
+  status(invite.seat === "watch" ? "Joining the GM's field to watch..." : `Joining the GM's field as ${invite.seat}...`);
+  const g = await fieldGuestPeer(invite, () => status("Lost the GM's page. The last screen stays; ask the GM to invite you again."));
   $("#g-join").hidden = false;
-  $("#g-join").innerHTML = `<h2>Send this reply to the GM</h2><p class="muted">The GM pastes it into Play online, under ${esc(invite.seat)}.</p><textarea readonly rows="3" id="g-reply" style="width:100%">${esc(g.reply)}</textarea>`;
+  $("#g-join").innerHTML = `<h2>Send this reply to the GM</h2><p class="muted">The GM pastes it into Play online, under ${invite.seat === "watch" ? "your watcher's row" : esc(invite.seat)}.</p><textarea readonly rows="3" id="g-reply" style="width:100%">${esc(g.reply)}</textarea>`;
   status("Waiting for the GM to paste your reply.");
 }
 async function fieldGuestRoom(){                    // a #room= link: wait in the room for the GM's invitation, and answer it there

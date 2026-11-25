@@ -4464,7 +4464,9 @@ $("#gm-bar").addEventListener("click", e => {
    only: what his side may not see never leaves this page. His page sends back his choices (a hex,
    a target, Stay, Take cover, Undo move, the roll with his aim, gap, blow and any dice he typed,
    Skip, Next fighter), and this page makes them, only for his side's fighter on its turn or its
-   free attack, through the same functions the buttons use. */
+   free attack, through the same functions the buttons use. A watcher (p.watch) is a seat that sends no
+   choices: the GM picks what he sees (p.view: everything, GM_SEAT, or one side's screen), and his page
+   draws it with no controls. */
 const NETH = { peers: [], seq: 0, rendering: false, timer: null, stun: true };
 const netOpen = () => NETH.peers.filter(p => p.state === "open");
 const ownPeers = () => NETH.peers.filter(p => !p.relay);   // Play online's own players (not the campaign console's)
@@ -4479,22 +4481,24 @@ function netSeatTurn(seat){                        // what this seat's player ma
   return { acting: mine ? acting.name : null, free, roll: !!striker && attackerChar() === striker && !!defenderChar() && defenderChar() !== striker,
     weapon: w ? shortName(S.weapon) : "", blows: w && w.choose && striker.sheet ? Object.keys(w.mechanisms).filter(m => w.mechanisms[m]) : [] };
 }
-function netSeatScreen(seat){                      // the page as this seat's screen draws it, as HTML
+const NET_WATCHING = { acting: null, free: false, roll: false, weapon: "", blows: [] };   // a watcher's turn: never his
+const watchLabel = view => (view === GM_SEAT ? "everything (the GM's view)" : `${view.slice(5)}'s view`);
+function netSeatScreen(seat, watch = false){       // the page as this seat's screen draws it, as HTML (watch: a watcher's, of that seat's view)
   const keep = S.screen;
   NETH.rendering = true;
   try {
-    S.screen = seat; renderChars(); renderResult();
-    return { t: "screen", seat, chars: $("#chars").innerHTML, map: $("#map").innerHTML, bar: $("#map-actions").innerHTML, key: $("#map-key").innerHTML,
+    S.screen = seat === GM_SEAT ? null : seat; renderChars(); renderResult();
+    return { t: "screen", seat, chars: $("#chars").innerHTML, map: $("#map").innerHTML, bar: watch ? "" : $("#map-actions").innerHTML, key: $("#map-key").innerHTML,
       result: $("#result").innerHTML, log: $("#round-log").innerHTML, round: $("#round-no").textContent, turn: $("#turn-no").innerHTML,
-      events: $("#events").innerHTML, msg: S.gmMsg || "", mine: netSeatTurn(seat) };
+      events: $("#events").innerHTML, msg: S.gmMsg || "", mine: watch ? NET_WATCHING : netSeatTurn(seat), watch: watch ? watchLabel(seat) : "" };
   } finally {
     S.screen = keep; renderChars(); renderResult();
     NETH.rendering = false;
   }
 }
-const NET_ALWAYS = ["t", "seat", "mine", "msg", "round"];   // small: sent every time
+const NET_ALWAYS = ["t", "seat", "mine", "msg", "round", "watch"];   // small: sent every time
 function netSendScreen(p){                           // his screen: whole the first time, then only the panels that changed since the last he got
-  const now = netSeatScreen(p.seat), msg = NET.screenPart(p.last, now, NET_ALWAYS);
+  const now = p.watch ? netSeatScreen(p.view, true) : netSeatScreen(p.seat), msg = NET.screenPart(p.last, now, NET_ALWAYS);
   p.last = now;
   if (msg) p.peer.send(msg);
 }
@@ -4538,25 +4542,29 @@ const NET_COMMANDS = {                              // each choice a player may 
     if (S.hit?.stray?.hit && striker && sideOf(striker) === side) strayHit();
   },
 };
-function netCommand(p, m){                          // a player's choice: made only if it is his to make now
-  if (!m || typeof m.t !== "string" || !Object.hasOwn(NET_COMMANDS, m.t)) return;
+function netCommand(p, m){                          // a player's choice: made only if it is his to make now (a watcher makes none)
+  if (p.watch || !m || typeof m.t !== "string" || !Object.hasOwn(NET_COMMANDS, m.t)) return;
   NET_COMMANDS[m.t]({ may: netSeatTurn(p.seat), m, side: p.seat.slice(5) });
   renderChars();
 }
 const NET_SEATS = "gravewounds-net-seats";          // the seats with a player, this tab only: after a reload the GM can invite them again
-function netKeepSeats(){
-  try { sessionStorage.setItem(NET_SEATS, JSON.stringify([...new Set(ownPeers().map(p => p.seat))])) } catch { /* storage off: a reload forgets them */ }
+function netKeepSeats(){                            // the players' seats, and each watcher with his view
+  const keep = [...new Set(ownPeers().filter(p => !p.watch).map(p => p.seat))].concat(ownPeers().filter(p => p.watch).map(p => ({ watch: true, view: p.view })));
+  try { sessionStorage.setItem(NET_SEATS, JSON.stringify(keep)) } catch { /* storage off: a reload forgets them */ }
 }
 function netRemembered(){                            // after the GM's page is reloaded: his players' seats, gone, to invite again
   if (ownPeers().length) return;
   let seats = [];
   try { seats = JSON.parse(sessionStorage.getItem(NET_SEATS) || "[]") } catch { seats = [] }
-  for (const seat of seats) if (sidesInOrder().includes(seat.slice(5))) NETH.peers.push({ n: ++NETH.seq, seat, state: "closed", code: "", err: "", peer: null });
+  for (const seat of seats){
+    if (seat?.watch) NETH.peers.push({ n: ++NETH.seq, seat: "watch", watch: true, view: netViewOk(seat.view) ? seat.view : GM_SEAT, state: "closed", code: "", err: "", peer: null });
+    else if (typeof seat === "string" && sidesInOrder().includes(seat.slice(5))) NETH.peers.push({ n: ++NETH.seq, seat, state: "closed", code: "", err: "", peer: null });
+  }
 }
+const netViewOk = view => view === GM_SEAT || (typeof view === "string" && view.startsWith("side:") && sidesInOrder().includes(view.slice(5)));
 async function netConnect(p){                       // an invitation for p's seat: a first one, or again after he was lost (the same seat, a new link)
-  const side = p.seat.slice(5);
   if (!gmOn()){ gmStart(); gmSoloScreen() }
-  S.gm.sides[side] = { ...gmSide(side), ctl: "player" };      // a person plays this side now
+  if (!p.watch) S.gm.sides[p.seat.slice(5)] = { ...gmSide(p.seat.slice(5)), ctl: "player" };   // a person plays this side now (a watcher plays none)
   S.screen = null;                                   // the host's page is the GM's
   p.peer?.close();
   Object.assign(p, { state: "inviting", code: "", err: "" });
@@ -4577,6 +4585,17 @@ function netInvite(side){                           // a new invitation for a si
   NETH.peers.push(p);
   return netConnect(p);
 }
+function netWatch(){                                // a new invitation for a watcher: one side's view to start with (nothing hidden leaks), the GM may change it
+  const p = { n: ++NETH.seq, seat: "watch", watch: true, view: sideSeat(sidesInOrder()[0]), state: "inviting", code: "", err: "", peer: null };
+  NETH.peers.push(p);
+  return netConnect(p);
+}
+function netSetView(p, view){                       // the GM changes what a watcher sees
+  if (!p?.watch || !netViewOk(view)) return;
+  p.view = view; p.last = null; netKeepSeats();
+  if (p.state === "open") netSendScreen(p);
+  renderNet();
+}
 async function netAccept(p, reply){
   p.err = "";
   try { await p.peer.accept(reply); p.state = "connecting" }
@@ -4585,9 +4604,14 @@ async function netAccept(p, reply){
 }
 const netLink = code => `${location.href.split("#")[0]}#join=${code}`;
 const NET_LOST = new Set(["closed", "failed", "disconnected"]);
+function netWatchPick(p){                          // a watcher's row: what he sees
+  const opts = [GM_SEAT, ...sidesInOrder().map(sideSeat)].map(v => `<option value="${attr(v)}"${v === p.view ? " selected" : ""}>${esc(v === GM_SEAT ? "Everything (your view)" : v.slice(5) + "'s view")}</option>`).join("");
+  return ` <label class="muted">sees <select data-net-view="${p.n}" aria-label="What watcher ${p.n} sees">${opts}</select></label>`;
+}
 function netPeerRow(p){
-  const side = esc(p.seat.slice(5)), st = { open: "connected", closed: "gone", failed: "could not connect", disconnected: "lost" }[p.state] || p.state;
-  const invite = p.code && p.state !== "open" && !NET_LOST.has(p.state) ? `<label class="muted" style="display:block">1. Send this link to the player for ${side}:
+  const side = p.watch ? `Watcher ${p.n}` : esc(p.seat.slice(5)), st = { open: "connected", closed: "gone", failed: "could not connect", disconnected: "lost" }[p.state] || p.state;
+  const who = p.watch ? "the watcher" : `the player for ${side}`;
+  const invite = p.code && p.state !== "open" && !NET_LOST.has(p.state) ? `<label class="muted" style="display:block">1. Send this link to ${who}:
       <textarea readonly rows="2" data-net-link="${p.n}" style="width:100%">${esc(netLink(p.code))}</textarea></label>
       <button type="button" class="small" data-net="copy" data-n="${p.n}">Copy the link</button>
       <label class="muted" style="display:block">2. Paste the reply code his page gives him:
@@ -4596,12 +4620,15 @@ function netPeerRow(p){
   const err = p.err ? `<p class="ev-bad" style="margin:0">${esc(p.err)}</p>` : "";
   const lost = NET_LOST.has(p.state);
   const again = lost ? ` <button type="button" class="small primary" data-net="again" data-n="${p.n}" title="A new link for the same side: his page keeps his last screen until he is back">Invite again</button>` : "";
-  const note = lost ? `<p class="muted" style="margin:0">His side waits for him on its turns: invite him again, or play it yourself (Run the fight: GM by hand).</p>` : "";
-  return `<li><b>${side}</b>: ${esc(st)}${again} <button type="button" class="small" data-net="drop" data-n="${p.n}">Drop</button>${invite}${note}${err}</li>`;
+  const note = lost && !p.watch ? `<p class="muted" style="margin:0">His side waits for him on its turns: invite him again, or play it yourself (Run the fight: GM by hand).</p>` : "";
+  return `<li><b>${side}</b>: ${esc(st)}${p.watch ? netWatchPick(p) : ""}${again} <button type="button" class="small" data-net="drop" data-n="${p.n}">Drop</button>${invite}${note}${err}</li>`;
 }
 function netSides(){                               // the sides changed: Play online's invitations follow (not on every change: it would clear a reply being pasted)
   const k = sidesInOrder().join("|");
-  if (k !== NETH.sidesKey){ NETH.sidesKey = k; renderNet() }
+  if (k === NETH.sidesKey) return;
+  NETH.sidesKey = k;
+  for (const p of NETH.peers.filter(x => x.watch && !netViewOk(x.view))){ p.view = GM_SEAT; p.last = null }   // his side is gone from the fight: he sees all of it
+  renderNet();
 }
 function renderNet(){
   const box = $("#net-bar"); if (!box) return;
@@ -4609,20 +4636,24 @@ function renderNet(){
   netRemembered();
   if (sides.length < 2){ box.innerHTML = oneSideNote("Play online", "players on their own computers"); return }
   const invites = sides.map(sd => `<button type="button" class="small" data-net="invite" data-side="${attr(sd)}">Invite a player for ${esc(sd)}</button>`).join("");
-  const own = ownPeers(), on = own.filter(p => p.state === "open").length, relayed = NETH.peers.length - own.length;
+  const own = ownPeers(), on = own.filter(p => p.state === "open" && !p.watch).length, watching = own.filter(p => p.state === "open" && p.watch).length, relayed = NETH.peers.length - own.length;
   const rows = own.length ? `<ul class="roundlog" style="max-height:none">${own.map(netPeerRow).join("")}</ul>` : "";
   const camp = relayed ? `<p class="muted" style="margin:0">${relayed} player${relayed === 1 ? "" : "s"} from the campaign console, on its links.</p>` : "";
-  box.innerHTML = `<details class="after"${NETH.open || own.length ? " open" : ""}><summary><b>Play online</b> <span class="muted">${on} player${on === 1 ? "" : "s"} connected</span></summary>${camp}
-    <div class="toolbar" style="flex-wrap:wrap">${invites}</div>
+  box.innerHTML = `<details class="after"${NETH.open || own.length ? " open" : ""}><summary><b>Play online</b> <span class="muted">${on} player${on === 1 ? "" : "s"} connected${watching ? `, ${watching} watching` : ""}</span></summary>${camp}
+    <div class="toolbar" style="flex-wrap:wrap">${invites}<button type="button" class="small" data-net="watch" title="Someone to watch the fight from his own computer or phone, with no say in it: you choose what he sees">Invite a watcher</button></div>
     <label class="check" title="Lets pages find each other across the internet; on one network it is not needed"><input type="checkbox" id="net-stun"${NETH.stun ? " checked" : ""}> Use a public STUN server (stun.l.google.com)</label>
-    ${rows}<p class="muted" style="margin:0">Each player sees his side's screen and plays his side's fighters on their turns; you see everything. No server: the link and the reply are passed by hand. Some strict networks will not connect.</p></details>`;
+    ${rows}<p class="muted" style="margin:0">Each player sees his side's screen and plays his side's fighters on their turns; you see everything. A watcher only watches: he sees one side's screen, or everything if you choose (he could tell a player what his side cannot see). No server: the link and the reply are passed by hand. Some strict networks will not connect.</p></details>`;
 }
 $("#net-bar").addEventListener("toggle", e => { NETH.open = e.target.open }, true);
-$("#net-bar").addEventListener("change", e => { if (e.target.id === "net-stun") NETH.stun = e.target.checked });
+$("#net-bar").addEventListener("change", e => {
+  if (e.target.id === "net-stun") NETH.stun = e.target.checked;
+  else if (e.target.dataset.netView) netSetView(NETH.peers.find(x => x.n === +e.target.dataset.netView), e.target.value);
+});
 $("#net-bar").addEventListener("click", e => {
   const b = e.target.closest("button[data-net]"); if (!b) return;
   const p = NETH.peers.find(x => x.n === +b.dataset.n);
   if (b.dataset.net === "invite") netInvite(b.dataset.side);
+  else if (b.dataset.net === "watch") netWatch();
   else if (b.dataset.net === "copy" && p) navigator.clipboard?.writeText(netLink(p.code)).catch(() => { $(`[data-net-link="${p.n}"]`).select() });
   else if (b.dataset.net === "accept" && p) netAccept(p, $(`[data-net-reply="${p.n}"]`).value);
   else if (b.dataset.net === "again" && p) netConnect(p);
@@ -4635,12 +4666,17 @@ function guestLayout(){
     <h1 style="margin:0">Grave Wounds: player</h1>
     <p id="g-status" aria-live="polite" style="margin:0"></p>
     <section class="panel" id="g-join"></section>
-    <section class="panel" id="map-panel"><div class="mapbar" id="map-actions" aria-live="polite"></div>
+    <nav class="g-tabs" id="g-tabs" aria-label="Watching"><button type="button" class="small" data-tab="map" aria-pressed="true">Map</button><button type="button" class="small" data-tab="fighters" aria-pressed="false">Fighters</button><button type="button" class="small" data-tab="log" aria-pressed="false">Log</button></nav>
+    <section class="panel on" id="map-panel" data-wpane="map"><div class="mapbar" id="map-actions" aria-live="polite"></div>
       <div class="hexmap" id="map" role="group" aria-label="Battle map"></div><div class="mapkey" id="map-key"></div></section>
-    <section class="panel" id="g-strike"><h2>Your strike</h2><div class="toolbar" style="flex-wrap:wrap" id="g-rollbar"></div><div class="result" id="result" aria-live="polite"></div></section>
+    <section class="panel on" id="g-strike" data-wpane="map"><h2 id="g-strike-h">Your strike</h2><div class="toolbar" style="flex-wrap:wrap" id="g-rollbar"></div><div class="result" id="result" aria-live="polite"></div></section>
     <section class="panel tracker"><div class="roundbar"><span class="roundno" id="round-no"></span><span class="turnno" id="turn-no"></span></div>
-      <ol class="roundlog" id="round-log"></ol><div id="chars" style="display:flex;flex-direction:column;gap:10px"></div><div id="events"></div></section>
+      <ol class="roundlog" id="round-log" data-wpane="log"></ol><div id="chars" data-wpane="fighters" style="display:flex;flex-direction:column;gap:10px"></div><div id="events" data-wpane="log"></div></section>
   </div><style>#ev-save{display:none}
+    .g-tabs{display:none;gap:6px}
+    body.watching #g-rollbar,body.watching #chars button,body.watching #chars .treat{display:none}   /* a watcher: nothing to press */
+    @media (max-width:700px){ body.watching .g-tabs{display:flex;position:sticky;top:0;z-index:2;background:var(--bg);padding:4px 0}
+      body.watching [data-wpane]:not(.on){display:none} }
     #chars button:not([data-act="select"]):not([data-act="bind"]):not([data-act="tourniquet"]):not([data-act="cauterise"]),#chars .grip{display:none}   /* the GM's card controls: not the player's (first aid is his) */
     #chars.noturn .treat button{opacity:.45;pointer-events:none}   /* first aid on his side's turn only */
     #chars input,#chars select{pointer-events:none;border-color:transparent;background:transparent}
@@ -4681,13 +4717,22 @@ function guestShow(m, changed = null){               // the host's drawing of th
     if (!changed || changed.includes(k)) $("#" + id).replaceChildren(...guestClean(m[k]));
   $("#round-no").textContent = m.round || "";
   if (open) $("#events details")?.setAttribute("open", "");
-  $("#g-status").textContent = m.mine.acting ? `Your turn: ${m.mine.acting}.` : m.msg || "Waiting for the other side.";
+  GUEST.watch = !!m.watch;
+  document.body.classList.toggle("watching", GUEST.watch);
+  $("#g-strike-h").textContent = GUEST.watch ? "The last strike" : "Your strike";
+  if (GUEST.watch) $("#g-status").textContent = `Watching: ${m.watch}.${m.msg ? " " + m.msg : ""}`;
+  else $("#g-status").textContent = m.mine.acting ? `Your turn: ${m.mine.acting}.` : m.msg || "Waiting for the other side.";
   $("#chars").classList.toggle("noturn", !m.mine.acting);
   guestRollBar(m.mine);
   GUEST.mine = m.mine;
 }
-const GUEST = { send: () => {}, mine: {}, peer: null, screen: null };
-function guestWire(){                                // the player's clicks, as choices sent to the host
+function guestTab(tab){                              // a watcher's phone: one pane at a time
+  for (const b of document.querySelectorAll("#g-tabs [data-tab]")) b.setAttribute("aria-pressed", String(b.dataset.tab === tab));
+  for (const el of document.querySelectorAll("[data-wpane]")) el.classList.toggle("on", el.dataset.wpane === tab);
+}
+const GUEST = { send: () => {}, mine: {}, peer: null, screen: null, watch: false };
+function guestWire(){                                // the player's clicks, as choices sent to the host (a watcher's go nowhere: the host would refuse them anyway)
+  $("#g-tabs").addEventListener("click", e => { const b = e.target.closest("[data-tab]"); if (b) guestTab(b.dataset.tab) });
   $("#map").addEventListener("click", e => {
     const tok = e.target.closest(".tok"), hx = e.target.closest(".hex");
     if (tok) GUEST.send({ t: "target", id: +tok.dataset.id });
@@ -4727,9 +4772,9 @@ function guestKept(seat){                            // the last screen kept for
 }
 function guestLost(){                                // the GM's page is gone: his last screen stays, and a new invitation can be pasted here
   GUEST.send = () => {};
-  $("#g-status").textContent = "Lost the GM's page. Your side's last screen stays below; ask the GM to invite you again.";
+  $("#g-status").textContent = `Lost the GM's page. ${GUEST.watch ? "The" : "Your side's"} last screen stays below; ask the GM to invite you again.`;
   $("#g-join").style.display = "";
-  $("#g-join").innerHTML = `<h2>Rejoin</h2><p class="muted">The GM presses <b>Invite again</b> for your side and sends you a new link. Paste it here (or open it in this tab).</p>
+  $("#g-join").innerHTML = `<h2>Rejoin</h2><p class="muted">The GM presses <b>Invite again</b> for ${GUEST.watch ? "your watcher's row" : "your side"} and sends you a new link. Paste it here (or open it in this tab).</p>
     <label for="g-relink" style="position:absolute;left:-9999px">The GM's new invitation link</label><input type="text" id="g-relink" style="width:100%" placeholder="The new invitation link">
     <button type="button" class="small" id="g-rejoin">Rejoin</button>`;
   $("#g-rejoin").onclick = () => {
@@ -4743,9 +4788,9 @@ async function guestJoin(){                           // join (or rejoin) the GM
   let invite;
   try { invite = await NET.unpackCode(location.hash) }
   catch { return status("This link is not a working invitation. Ask the GM for a new one.") }
-  const side = esc(invite.seat.slice(5)), kept = guestKept(invite.seat);
+  const watching = invite.seat === "watch", side = watching ? "Watchers" : esc(invite.seat.slice(5)), kept = guestKept(invite.seat);
   if (kept){ guestShow(kept); GUEST.screen = kept }  // rejoining: his last screen while the GM pastes the reply
-  status(`${kept ? "Rejoining" : "Joining"} the GM's fight as ${invite.seat.slice(5)}...`);
+  status(`${kept ? "Rejoining" : "Joining"} the GM's fight ${watching ? "to watch" : "as " + invite.seat.slice(5)}...`);
   GUEST.peer?.close?.();
   try {
     const g = await NET.guestPeer({ invite, stun: invite.stun !== false,
@@ -4762,7 +4807,7 @@ async function guestJoin(){                           // join (or rejoin) the GM
       } });
     GUEST.peer = g; GUEST.send = g.send;
     $("#g-join").style.display = "";
-    $("#g-join").innerHTML = `<h2>Send this reply to the GM</h2><p class="muted">The GM pastes it into Play online, under ${side}. This page then shows your side's view of the fight.</p>
+    $("#g-join").innerHTML = `<h2>Send this reply to the GM</h2><p class="muted">The GM pastes it into Play online, under ${watching ? "your watcher's row" : side}. This page then shows ${watching ? "the fight as the GM lets you watch it" : "your side's view of the fight"}.</p>
       <textarea readonly rows="3" id="g-reply" style="width:100%">${esc(g.reply)}</textarea>
       <button type="button" class="small" id="g-copy">Copy the reply</button>`;
     $("#g-copy").onclick = () => navigator.clipboard?.writeText(g.reply).catch(() => $("#g-reply").select());
