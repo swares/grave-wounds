@@ -1,0 +1,110 @@
+# A print-and-play module (gravewounds/playtest.py builds it; see ferrybridge.yaml for the parts). The king's
+# baggage at Maisoncelles, 25 October 1415: four men left with the English baggage while the battle is fought,
+# and the raid on it. The raid is history (Monstrelet; Barker, from the chaplain's Gesta); the four, the ground
+# of the baggage park and the raiders' numbers here are ours (project doc claude/agincourt-baggage-module).
+id: agincourt-baggage
+title: "Grave Wounds: the king's baggage"
+footer: "Grave Wounds: the king's baggage"
+file: module-agincourt-baggage   # dist/<file>.html and .pdf
+text: [templates/modules/agincourt-baggage/cover.md, templates/modules/shared/fight.md, templates/modules/agincourt-baggage/example.md,
+       templates/modules/shared/rules.md, templates/modules/agincourt-baggage/scenario.md, templates/modules/shared/back.md]
+version: "0.1, 24 November 2026"
+link: "https://swares.github.io/grave-wounds/dist/roller.html"
+link_short: "swares.github.io/grave-wounds/dist/roller.html"
+values:
+  ref_rule: "**The baggage.** No one moves through a cart. A man taking plunder spends his whole turn at it."
+  map_title: "The baggage at Maisoncelles"
+  roster_note: "On foot. Ysembart's man-at-arms is a veteran, the varlet a regular, the countrymen green. Roll each man's initiative at the start: d{{init_die}} + 5. Blood is not multiplied for the setting: only the four's is."
+
+# The four: an English retinue made with the seeded dice (gravewounds.team.make_team), the four kept with the baggage.
+team: {era: medieval, region: england, template: retinue, mode: roll, seed: 1415}
+men:
+  - {name: "Robert Hayward", role: leader}
+  - {name: "Walter Carter", role: scout}
+  - {name: "Ralph Carter", role: quartermaster}
+  - {name: "Henry of Ely", role: leech}
+# The raiders who reach this corner of the baggage: of the "six hundred peasants" and the few men-at-arms
+# Monstrelet gives for the whole raid, a handful (ours).
+foes:
+  - {name: "Countryman", kit: gambeson, weapon: spear, quality: green}
+  - {name: "Countryman", kit: none, weapon: axe, quality: green}
+  - {name: "Countryman", kit: none, weapon: spear, quality: green}
+  - {name: "Countryman", kit: gambeson, weapon: dagger, quality: green}
+  - {name: "Varlet", kit: gambeson, weapon: spear, quality: regular}
+  - {name: "Man-at-arms", kit: harness_1415, weapon: sword, quality: veteran}
+foe_side: "Ysembart's raiders"
+men_side: "The four"
+table: towton-1461-all-hits     # the hit-location table printed (the field of Agincourt uses it too)
+weapons: [sword, spear, axe, longbow, dagger]   # its columns, and the counters' short names
+short: {sword: Sword, spear: Spear, axe: Axe, longbow: Bow, dagger: Dagger}
+armour: [[full_plate, "Plate"], [harness_1415, "Harness of 1415"], [jack_sallet, "Jack and sallet"], [gambeson, "Gambeson and cap"]]
+skills: [[blade, Blade], [polearm, Polearm], [bow, Bow], [parry, Parry], [dodge, Dodge], [leechcraft, Leechcraft],
+         [fieldcraft, Fieldcraft], [watch, Watch], [stealth, Stealth], [persuade, Persuade], [command, Command]]
+questions:
+  - "Did the margin-to-severity result feel fair?"
+  - "Was the fight fast enough to stay tense?"
+  - "Did the plunder rule make the raiders want something other than a fight?"
+  - "Did you understand why a wound had the effect it did?"
+  - "Was the march to Calais a decision, or a chore?"
+  - "Did the weather and sickness change any decisions?"
+  - "Was the evening council worth its time?"
+  - "Was the lethality right for the setting?"
+  - "Would you play a second session with these men?"
+
+# The worked example in the text: Walter's bow shot, rolled 31.
+example: {man: "Walter Carter", roll: 31, bow: longbow}
+rations_era: medieval
+
+# The baggage park, printed true to size (see ferrybridge.yaml): the open field to the north, the carts and the
+# horse lines, the hedges, and the edge of Maisoncelles to the south. Laid out by us: no plan of it survives.
+battlemap:
+  hex: 0.55
+  cols: 12
+  rows: 17
+  track: 18                     # boxes north of the map: a raider on box 18 is 18 hexes from the north edge
+  aria: "Hex map of the English baggage at Maisoncelles: the open field to the north, the baggage carts and horse lines in the middle with the king's cart, a hedge, and the village edge to the south, with the raiders' approach track above"
+  track_label: "Approach track. The raiders start on box {track} and come south a box for each hex they move. Box 1 is next to the north edge."
+  areas:
+    - {rows: [0, 4], fill: "#dfe6d8"}               # the open field, wet ploughland
+    - {rows: [4, 11], fill: "#e6e0cc"}              # the baggage park, trodden mud
+    - {rows: [5, 6], cols: [1, 3], fill: "#a88b5c"}  # carts
+    - {rows: [5, 6], cols: [5, 7], fill: "#a88b5c"}
+    - {rows: [5, 6], cols: [9, 11], fill: "#a88b5c"}
+    - {rows: [8, 9], cols: [2, 4], fill: "#a88b5c"}
+    - {rows: [8, 9], cols: [7, 8], fill: "#8c2b2b"}  # the king's cart
+    - {rows: [8, 9], cols: [10, 12], fill: "#a88b5c"}
+    - {rows: [6, 8], cols: [0, 1], fill: "#c8d4b8"}  # the horse lines
+    - {rows: [11, 12], fill: "#93ab86"}             # a hedge, with a gap
+    - {rows: [11, 12], cols: [5, 7], fill: "#e6e0cc"}
+    - {rows: [12, 17], fill: "#efe9da"}             # the village edge
+    - {rows: [14, 16], cols: [2, 4], fill: "#c9bfae"}   # houses
+    - {rows: [14, 16], cols: [8, 10], fill: "#c9bfae"}
+  labels:
+    - {text: "Open field: the battle is beyond, to the north", x: mid, y: top, dy: 0.28}
+    - {text: "Carts", x: 4, y: 6, dy: 0.35, size: 0.13}
+    - {text: "Horse lines", x: 0.1, y: 8, dy: 0.05, size: 0.11, anchor: start}
+    - {text: "The king's cart", x: 7.5, y: 8, dy: 0.62, size: 0.15, bold: true}
+    - {text: "Hedge (gap in the middle)", x: mid, y: 11, dy: 0.28, size: 0.13, italic: true}
+    - {text: "Maisoncelles: the four set up anywhere here or in the park", x: mid, y: bottom, dy: -0.12}
+sketch:
+  - "<svg viewBox=\"0 0 480 170\" role=\"img\" aria-label=\"Sketch of the baggage: the field to the north where the battle is fought, the carts and the king's cart in the middle, the hedge, and the village to the south\">"
+  - "<rect width=\"480\" height=\"170\" fill=\"#fff\" stroke=\"#555\"/><rect x=\"40\" y=\"52\" width=\"400\" height=\"62\" fill=\"#ece6d2\"/>"
+  - "<rect x=\"70\" y=\"62\" width=\"60\" height=\"14\" fill=\"#a88b5c\"/><rect x=\"210\" y=\"62\" width=\"60\" height=\"14\" fill=\"#a88b5c\"/><rect x=\"350\" y=\"62\" width=\"60\" height=\"14\" fill=\"#a88b5c\"/>"
+  - "<rect x=\"280\" y=\"90\" width=\"36\" height=\"14\" fill=\"#8c2b2b\"/><text x=\"298\" y=\"124\" font-size=\"11\" text-anchor=\"middle\">The king's cart</text>"
+  - "<path d=\"M0 132 H200 M260 132 H480\" stroke=\"#6f8f62\" stroke-width=\"5\"/>"
+  - "<text x=\"240\" y=\"26\" font-size=\"12\" text-anchor=\"middle\">The raiders come from the north, round the fighting</text><text x=\"240\" y=\"158\" font-size=\"12\" text-anchor=\"middle\">Maisoncelles: the four men are here</text></svg>"
+
+# The week: the march to Calais, 26 October to 1 November (map days 19 to 25), its weather rolled on the map's
+# climate with this seed.
+weather:
+  map: agincourt-1415
+  seed: 1415
+  days: [19, 25]
+camp_log: ["26 Oct", "27 Oct", "28 Oct", "29 Oct", "30 Oct", "31 Oct", "1 Nov"]
+camps:
+  - ["Quarters, dead buried or far off", [good]]
+  - ["Watched camp", []]
+  - ["Bivouac", [poor]]
+  - ["Quarters, dead unburied nearby", [good, dead]]
+  - ["Watched camp, dead unburied", [dead]]
+  - ["Bivouac, dead unburied", [poor, dead]]

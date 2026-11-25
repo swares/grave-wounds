@@ -28,6 +28,7 @@ SITE = "https://swares.github.io/grave-wounds/"
 # feedback.html, which build.py writes to forward to the form, so it can be typed from paper.
 FORM = "https://docs.google.com/forms/d/e/1FAIpQLSfGgYKRfBpDth3odGXHWHI1iXSNCmscYczxBW7BE_2Pv9-Hwg/viewform"
 FEEDBACK = SITE + "feedback.html"
+MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 M: dict = {}                                       # the module being built (load_module): its men, foes, map and words
 
 
@@ -92,6 +93,10 @@ def _armour(d: Data) -> str:
         v = (k.get("slots") or {}).get(slot)
         if not v:
             return "–"
+        if isinstance(v, list):                     # layers: the outer one where it covers, then the one beneath
+            return ", then ".join(layer(x) for x in v)
+        return layer(v)
+    def layer(v):
         m, cover = (v, None) if isinstance(v, str) else (v.get("material"), v.get("cover"))
         if m is None:
             return "bands"
@@ -347,7 +352,7 @@ def _weather(d: Data, root: Path) -> str:
         prev = w
         y, mo, dd = WX.map_date(m, day)
         hard = C[w["cond"]].get("precip", "none") != "none" or w["low"] <= 0
-        rows.append([f"{dd} {'March' if mo == 3 else 'April'}", C[w["cond"]].get("name", w["cond"]), f"{round(w['high'] * 9 / 5 + 32)}°F", f"{round(w['low'] * 9 / 5 + 32)}°F", "Yes" if hard else "No"])
+        rows.append([f"{dd} {MONTHS[mo - 1]}", C[w["cond"]].get("name", w["cond"]), f"{round(w['high'] * 9 / 5 + 32)}°F", f"{round(w['low'] * 9 / 5 + 32)}°F", "Yes" if hard else "No"])
     return _table(rows, ["Day", "Weather", "High", "Low", "Hard night in the open?"], "tight")
 
 
@@ -402,7 +407,9 @@ def render(d: Data, root: Path, mid: str = "ferrybridge") -> str:
          "pt_rations": d.supplies["rations"]["carried"][M["rations_era"]], "pt_bow_range": ", ".join(str(x) for x in bow),
          "aim_cost": d.wounds["combat"]["aim"]["cost"], "dead_days": d.disease.get("dead_days", 14),
          "pt_bleed_rates": _rates(d), "pt_track": M["battlemap"]["track"], "pt_short": bow[0], "pt_medium": bow[1], "pt_long": bow[2]}
-    text = (root / M["text"]).read_text(encoding="utf-8")
+    files = M["text"] if isinstance(M["text"], list) else [M["text"]]   # its own pages, and the pages every module shares (templates/modules/shared)
+    text = "".join((root / f).read_text(encoding="utf-8") for f in files)
+    v = {**v, **{f"pt_{k}": RB._fill(str(x), v, tabs, f"data/modules/{mid}.yaml values.{k}") for k, x in (M.get("values") or {}).items()}, "pt_foe_side": M["foe_side"]}
     sheets = [_sheet(d, team[n], r, v) for n, r in _men()] + [_blank_sheet()]
     parts = {"hit": _hit(d), "armour": _armour(d), "effects": _effects(d), "sickness": _sickness(d), "map": _map(), "foes": _foes(d),
              "weather": _weather(d, root), "camplog": _camplog(), "feedback": _feedback(),
@@ -412,7 +419,7 @@ def render(d: Data, root: Path, mid: str = "ferrybridge") -> str:
     for k, h in parts.items():
         keep[f"@@{k}@@"] = h
         text = text.replace("{{pt:" + k + "}}", f"@@{k}@@")
-    text = RB._fill(text, v, tabs, M["text"])
+    text = RB._fill(text, v, tabs, f"data/modules/{mid}.yaml text")
     foot = (f'<div class="foot"><span>{html.escape(M["footer"])}, version {html.escape(M["version"])}</span><span class="pageno">Page __PAGE__</span>'
             '<span>© 2026 Scott Wares. All rights reserved. Free to copy for playtesting.</span></div>')
     blank = ('<section class="page blankpage"><p class="sub">This page is left blank, so that printed on both sides each character, '

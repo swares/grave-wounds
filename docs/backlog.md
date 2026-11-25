@@ -46,7 +46,7 @@ not this repository.
   are in the README's *Next steps*, and `design.md` has the disease numbers to try over a few weeks
   of camp. The playability review (project doc `claude/playability-review.md`) ranks this first.
 - **The playtest packet, version 0.2** (`dist/playtest-packet.html`, the module `data/modules/ferrybridge.yaml`
-  built by `gravewounds/playtest.py`, its words in `templates/modules/ferrybridge/packet.md`). Wars of the Roses, four pregenerated men with camp roles, a
+  built by `gravewounds/playtest.py`, its words in `templates/modules/ferrybridge/` and the pages every module shares in `templates/modules/shared/`). Wars of the Roses, four pregenerated men with camp roles, a
   fight at the Aire crossing and a week in camp, played on the roller or on paper, with feedback
   through the feedback form (`feedback.html`, which forwards to it; from 0.2.4 the packet prints no email address). Version 0.2 adds the kit to play it on paper, at the back: a one-page quick reference, a hex map
   of the ford printed true to size (2 yards a hex, with an approach track for the enemy's first 18 hexes),
@@ -63,7 +63,7 @@ not this repository.
   packet) is the first. Done since: each era's common weapons and armour on one printed page (the
   armoury, `armoury.html`, #620 and #621), Ask the dice on the printed tables (#619), and making a man on
   paper (`makeaman.html` and the period books' Making a team tables, #622; its ageing and age at enlistment
-  are still the team builder's alone). Still to come: further modules; field battles, travel and the campaign on paper are
+  are still the team builder's alone). The second module (#644): *The king's baggage* (`dist/module-agincourt-baggage.html`), Agincourt 1415: four men with the English baggage at Maisoncelles, the raid on it (Monstrelet; Barker), a plunder rule, and the march to Calais; the four, the ground and the raiders' numbers are ours, and its balance is untried (Ferrybridge's five were set by the script's runs). Still to come: further modules; field battles, travel and the campaign on paper are
   further off, since the pages do their arithmetic. The plan, if the Ferrybridge playtest goes well:
   - **Fix the shared parts first.** What the playtest finds slow or unclear on paper is fixed in what every
     module shares (the quick reference, the table booklet, the counters and map style) before it is copied.

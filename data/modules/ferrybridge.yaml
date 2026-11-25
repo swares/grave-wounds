@@ -6,7 +6,14 @@ id: ferrybridge
 title: "Grave Wounds: playtest packet"
 footer: "Grave Wounds playtest packet"
 file: playtest-packet          # dist/<file>.html and .pdf
-text: templates/modules/ferrybridge/packet.md
+# Its pages in order: its own (templates/modules/ferrybridge) and those every module shares (templates/modules/shared).
+text: [templates/modules/ferrybridge/cover.md, templates/modules/shared/fight.md, templates/modules/ferrybridge/example.md,
+       templates/modules/shared/rules.md, templates/modules/ferrybridge/scenario.md, templates/modules/shared/back.md]
+# Words the shared pages take from the module ({{pt_<key>}}).
+values:
+  ref_rule: "**The ford.** Too deep elsewhere. In the ford, advance only."
+  map_title: "The ford at Ferrybridge"
+  roster_note: "All regulars, on foot. Roll each man's initiative at the start: d{{init_die}} + 5. Blood is not multiplied for the setting: only the four's is."
 version: "0.2.5, 24 November 2026"
 link: "https://swares.github.io/grave-wounds/dist/team.html#playtest"
 link_short: "swares.github.io/grave-wounds/dist/team.html#playtest"
