@@ -1,0 +1,117 @@
+# A print-and-play module (gravewounds/playtest.py builds it; see ferrybridge.yaml for the parts). The escalade of
+# the San Vicente bastion at Badajoz, the night of 6 to 7 April 1812: four men of the 5th Division up a ladder
+# and onto the rampart, then the sack of the town and the week after. The escalade is history (historyofwar;
+# Napier, retold; Stanhope; Kincaid); the four, this stretch of the rampart and the French on it are ours
+# (project doc claude/badajoz-escalade-module).
+id: badajoz-escalade
+title: "Grave Wounds: the escalade"
+footer: "Grave Wounds: the escalade"
+file: module-badajoz-escalade   # dist/<file>.html and .pdf
+text: [templates/modules/badajoz-escalade/cover.md, templates/modules/shared/fight.md, templates/modules/badajoz-escalade/example.md,
+       templates/modules/shared/rules.md, templates/modules/badajoz-escalade/scenario.md, templates/modules/shared/back.md]
+version: "0.1, 25 November 2026"
+link: "https://swares.github.io/grave-wounds/dist/team.html#escalade"
+link_short: "swares.github.io/grave-wounds/dist/team.html#escalade"
+values:
+  blow_note: "With the bayonet or a sabre, the\n   attacker chooses **cut** or **thrust** before he rolls. A ball from a musket or pistol is a **shot**. A musket or pistol that has fired is empty: a musket shoots every {{pt_musket_every}} round, a pistol every {{pt_pistol_every}}, and meanwhile its man fights with the bayonet, or the pistol's butt."
+  two_handed: "a musket, or a musket with the bayonet"
+  hit_source: "These odds come from the Peninsular War's records of where men were hit, by weapon."
+  missile_armour: "No one here wears armour: the French and the British alike fight in their coats."
+  range_rule: "**Range.** A musket reaches {{pt_bow_range}} hexes: short, medium and long. Each hex is {{hex_yd}} yards. On paper take −20 at medium range and −40 at long; the roller does it for you. **At night** every shot is at −20 more, except at a man in the light of the burning hay (the lit hexes on the map)."
+  missile_effect: "A ball uses the shot columns. "
+  missile_short: "cut or thrust is the attacker's choice before rolling (a ball is a shot); a musket shoots every {{pt_musket_every}} round, a pistol every {{pt_pistol_every}}"
+  range_ref: "**Range (musket).** Short to {{pt_short}} hexes, medium to {{pt_medium}} (−20), long to {{pt_long}} (−40). At night −20 more, unless the target is lit."
+  ref_rule: "**The ladders.** Climbing takes a whole turn. A man at the top of a ladder fights at −20, and can't be helped by a friend. A man on a ladder who fails a stop check falls into the ditch: he is out of the fight for 2 rounds, and rolls a stop check again when he lands."
+  map_title: "The rampart of San Vicente"
+  roster_note: "On foot, in their coats. The sergent is a veteran, the others regulars. Roll each man's initiative at the start: d{{init_die}} + 5. Blood is not multiplied for the setting: only the four's is."
+  musket_every: third
+  pistol_every: fifth
+
+# The four: a British company of foot of the Peninsula, made with the seeded dice (gravewounds.team.make_team), four of its five.
+team: {era: horse_musket, region: british_pen, template: company, mode: roll, seed: 1812}
+men:
+  - {name: "William Green", role: leader}
+  - {name: "Donald Murray", role: scout}
+  - {name: "John Morris", role: quartermaster}
+  - {name: "George Costello", role: leech}
+# The French on this stretch of the rampart: the escalade came where the wall was thinly held (ours). The
+# roller's ESCALADE (templates/roller.html) lists the same men. With the script playing both sides to a finish
+# (tools/campaign/modulefight.py escalade, 12 fights) the four held in 3 against five French, and in 6 against these four
+# (Ferrybridge's four: 5 of 12). The ladders, on paper only, are the French side's advantage.
+foes:
+  - {name: "Fusilier", kit: none, weapon: musket_smoothbore, quality: regular}
+  - {name: "Fusilier", kit: none, weapon: musket_smoothbore, quality: regular}
+  - {name: "Fusilier", kit: none, weapon: musket_smoothbore, quality: regular}
+  - {name: "Sergent", kit: none, weapon: musket_smoothbore, quality: veteran}
+foe_side: "The French on the rampart"
+men_side: "The four"
+table: peninsular-1808-14-all-hits    # the hit-location table printed (the Badajoz battlefield uses it too)
+weapons: [musket_smoothbore, bayonet, saber, pistol_flintlock]   # its columns, and the counters' short names
+short: {musket_smoothbore: Musket, bayonet: Bayonet, saber: Sabre, pistol_flintlock: Pistol}
+effects: [[ballistic, shot], [pierce, thrust], [cut, cut]]
+armour: [[none, "Coat (no armour)"]]
+skills: [[musket, Musket], [pistol, Pistol], [blade, Blade], [bayonet, Bayonet], [parry, Parry], [dodge, Dodge], [leechcraft, Surgery],
+         [fieldcraft, Fieldcraft], [watch, Watch], [stealth, Stealth], [persuade, Persuade], [command, Command]]
+questions:
+  - "Did the margin-to-severity result feel fair?"
+  - "Was the fight fast enough to stay tense?"
+  - "Did the ladders make the climb feel dangerous?"
+  - "Did reloading change how you fought?"
+  - "Did you understand why a wound had the effect it did?"
+  - "Was the sack a real decision, or something to skip?"
+  - "Did the weather and sickness change any decisions?"
+  - "Was the lethality right for the setting?"
+  - "Would you play a second session with these men?"
+
+# The worked example in the text: Donald's musket shot, rolled 20 (a margin of 20 or more is serious).
+example: {man: "Donald Murray", roll: 20, bow: musket_smoothbore}
+rations_era: horse_musket
+
+# This stretch of the rampart, printed true to size (see ferrybridge.yaml): the town's houses to the north, the
+# rampart's walk, the parapet, the wall's face and the ditch to the south, the ladders, and the burning hay.
+# Laid out by us.
+battlemap:
+  hex: 0.55
+  cols: 12
+  rows: 17
+  track: 0                      # no approach track: the French are on the map
+  aria: "Hex map of a stretch of the rampart of San Vicente at Badajoz: the town's houses to the north, the open rampart walk, the parapet, three ladders against the wall's face, the ditch below, and two fires of burning hay"
+  areas:
+    - {rows: [0, 4], fill: "#c9bfae"}                # the town: houses and lanes
+    - {rows: [0, 4], cols: [5, 7], fill: "#e0d8cc"}  # a lane down from the rampart
+    - {rows: [4, 9], fill: "#e3dccb"}                # the rampart's walk (terre-plein)
+    - {rows: [9, 10], fill: "#9a8f80"}               # the parapet
+    - {rows: [10, 12], fill: "#b7ab98"}              # the wall's face: men here are on the ladders
+    - {rows: [10, 12], cols: [0, 3], fill: "#8d8273"}
+    - {rows: [10, 12], cols: [6, 12], fill: "#8d8273"}
+    - {rows: [12, 17], fill: "#cfd6dc"}              # the ditch
+    - {rows: [6, 7], cols: [2, 3], fill: "#f1c27d"}  # burning hay
+    - {rows: [6, 7], cols: [9, 10], fill: "#f1c27d"}
+  labels:
+    - {text: "The town: houses and lanes", x: mid, y: top, dy: 0.28}
+    - {text: "The rampart's walk", x: mid, y: 4, dy: 0.62, size: 0.15, italic: true}
+    - {text: "Burning hay", x: 2.5, y: 6, dy: 0.95, size: 0.12}
+    - {text: "Parapet", x: right, y: 9, dy: 0.3, size: 0.13, anchor: end}
+    - {text: "Ladders (3 hexes)", x: 4.5, y: 10, dy: 0.62, size: 0.15, bold: true}
+    - {text: "The ditch: the four start here", x: mid, y: bottom, dy: -0.12}
+sketch:
+  - "<svg viewBox=\"0 0 480 170\" role=\"img\" aria-label=\"Sketch of the escalade: the town to the north, the rampart and parapet, ladders up the wall from the ditch to the south\">"
+  - "<rect width=\"480\" height=\"170\" fill=\"#fff\" stroke=\"#555\"/><rect x=\"0\" y=\"0\" width=\"480\" height=\"40\" fill=\"#d8cfbf\"/>"
+  - "<rect x=\"0\" y=\"40\" width=\"480\" height=\"46\" fill=\"#ece6d6\"/><rect x=\"0\" y=\"86\" width=\"480\" height=\"10\" fill=\"#9a8f80\"/>"
+  - "<rect x=\"0\" y=\"96\" width=\"480\" height=\"26\" fill=\"#a89c8a\"/><rect x=\"0\" y=\"122\" width=\"480\" height=\"48\" fill=\"#dfe5ea\"/>"
+  - "<path d=\"M200 140 L206 92 M212 140 L218 92 M240 140 L246 92 M252 140 L258 92 M280 140 L286 92 M292 140 L298 92\" stroke=\"#5a4630\" stroke-width=\"3\"/>"
+  - "<text x=\"240\" y=\"25\" font-size=\"12\" text-anchor=\"middle\">The town</text><text x=\"240\" y=\"68\" font-size=\"12\" text-anchor=\"middle\">The rampart: the French are here</text><text x=\"240\" y=\"160\" font-size=\"12\" text-anchor=\"middle\">The ditch: the four, at the foot of the ladders</text></svg>"
+
+# The week: 7 to 13 April 1812 (map days 23 to 29), its weather rolled on the map's climate with this seed.
+weather:
+  map: badajoz-1812
+  seed: 1812
+  days: [23, 29]
+camp_log: ["7 Apr", "8 Apr", "9 Apr", "10 Apr", "11 Apr", "12 Apr", "13 Apr"]
+camps:
+  - ["Quarters, dead buried or far off", [good]]
+  - ["Watched camp", []]
+  - ["Bivouac", [poor]]
+  - ["Quarters, dead unburied nearby", [good, dead]]
+  - ["Watched camp, dead unburied", [dead]]
+  - ["Bivouac, dead unburied", [poor, dead]]

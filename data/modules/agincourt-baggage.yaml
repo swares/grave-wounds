@@ -26,7 +26,7 @@ men:
 # The raiders who reach this corner of the baggage: of the "six hundred peasants" and the few men-at-arms
 # Monstrelet gives for the whole raid, a handful (ours). The roller's BAGGAGE (templates/roller.html) lists the
 # same men. With the script playing both sides to a finish, the four held in 6 of 12 (four clear, two with both
-# sides down; tools/campaign/baggage.py), against Ferrybridge's 5 of 12: left as they are.
+# sides down; tools/campaign/modulefight.py baggage), against Ferrybridge's 5 of 12: left as they are.
 foes:
   - {name: "Countryman", kit: gambeson, weapon: spear, quality: green}
   - {name: "Countryman", kit: none, weapon: axe, quality: green}

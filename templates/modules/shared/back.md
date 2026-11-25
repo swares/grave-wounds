@@ -51,11 +51,11 @@ Score 1 (no) to 5 (yes), and add a comment if you can. Send it through the feedb
 
 **How bad.** Margin under {{band_serious}}: light. {{band_serious}}+: serious. {{band_critical}}+ or a critical: critical. Margin {{graze}} or less: a **graze** (a step less bleed and pain, no stop check), unless a critical.
 
-**Where and what.** d100 on *Where it lands* under the weapon; cut or thrust is the attacker's choice before rolling (a longbow pierces). Armour takes steps off: Critical → Serious → Light → Stopped. Part-covered: the attack roll's units digit (0 = 10) at or under the cover's tens met the armour. Read the wound on *What it does*.
+**Where and what.** d100 on *Where it lands* under the weapon; {{pt_missile_short}}. Armour takes steps off: Critical → Serious → Light → Stopped. Part-covered: the attack roll's units digit (0 = 10) at or under the cover's tens met the armour. Read the wound on *What it does*.
 
 **Stop check (S).** d100 against Nerve, less pain and blood penalties, {{crit_stop}} more for a critical. Fail: he stops.
 
-**Range (longbow).** Short to {{pt_short}} hexes, medium to {{pt_medium}} (−20), long to {{pt_long}} (−40). Off the map: hexes to the north edge plus the box.
+{{pt_range_ref}}
 
 **End of the round.** Everyone bleeds: {{pt_bleed_rates}}. A side with {{morale_trigger}} or more down, or its leader just down, rolls d100 against its best Nerve still up: +{{leader_present}} with a leader up, −{{leader_down}} if he's down, −{{heavy_losses}} once {{morale_heavy}} are down. Over: the side breaks.
 

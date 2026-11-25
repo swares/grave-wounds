@@ -4540,12 +4540,12 @@ function rollerSheet(c){                          // what the roller keeps of a 
 /* The quick start (the start page's Play in 15 minutes): the Rules' own retinue, made with the running
    example's seeded dice (gravewounds/rulebook.py example: medieval, England, a lord's retinue, dice 3),
    so the men are the ones the Rules' examples name; then on to the roller's quick-start fight. */
-function quickStart(dest = "roller.html#quickstart", seed = 3){   // the Rules' example retinue, sent to the roller's quick start (or the GM's coached session: dest roller.html#gmstart); seed: another retinue rolled the same way (a module's four)
+function quickStart(dest = "roller.html#quickstart", seed = 3, [era, region, template, side] = ["medieval", "england", "retinue", "The retinue"]){   // the Rules' example retinue, sent to the roller's quick start (or the GM's coached session: dest roller.html#gmstart); seed, and era, region, template and side: another team rolled the same way (a module's four)
   history.replaceState(null, "", location.pathname);
   if (dest !== "roller.html#gmstart" && S.team?.length && !confirm("The quick start puts the Rules' example retinue here in place of this team. Go on?")) return render();
-  setEra("medieval"); S.era = T.id; startEra();
-  Object.assign(S, { region: "england", template: "retinue", mode: "roll", side: "The retinue", crew: [] });
-  S.slots = byId(T.templates, "retinue").slots.map(s => [...s]);
+  setEra(era); S.era = T.id; startEra();
+  Object.assign(S, { region, template, mode: "roll", side, crew: [] });
+  S.slots = byId(T.templates, template).slots.map(s => [...s]);
   S.fcounts = []; S.fmuster = null;
   S.team = makeTeam(S.region, S.slots, S.mode, new SeededDice(seed));
   S.team.forEach(c => { c.pid = newPid() });
@@ -4895,6 +4895,7 @@ function init(){
   if (location.hash === "#quickstart") return quickStart();
   if (location.hash === "#playtest") return quickStart("roller.html#playtest");   // the playtest packet's fight (gravewounds/playtest.py)
   if (location.hash === "#baggage") return quickStart("roller.html#baggage", 1415);   // the king's baggage module's fight (data/modules/agincourt-baggage.yaml)
+  if (location.hash === "#escalade") return quickStart("roller.html#escalade", 1812, ["horse_musket", "british_pen", "company", "The company"]);   // the escalade module's fight (data/modules/badajoz-escalade.yaml)
   if (location.hash === "#gmstart") return quickStart("roller.html#gmstart");   // the GM's coached first session (campaign.html#gmstart)
   render();
 }

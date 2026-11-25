@@ -28,6 +28,18 @@ SITE = "https://swares.github.io/grave-wounds/"
 # feedback.html, which build.py writes to forward to the form, so it can be typed from paper.
 FORM = "https://docs.google.com/forms/d/e/1FAIpQLSfGgYKRfBpDth3odGXHWHI1iXSNCmscYczxBW7BE_2Pv9-Hwg/viewform"
 FEEDBACK = SITE + "feedback.html"
+# The shared pages' words that change with the weapons and the ground (a module's `values` may give its own):
+# as for a medieval module with a longbow and an approach track.
+SHARED = {
+    "blow_note": "With a sword, bill or dagger, the\n   attacker chooses **cut** or **thrust** before he rolls. A longbow pierces.",
+    "two_handed": "a bow, a bill or a poleaxe",
+    "hit_source": "These odds come from the Towton table, adjusted from the bone evidence for\nwounds that leave no mark on bone.",
+    "missile_armour": "A longbow's arrows take 1 step off the armour's pierce figure, so a jack gives them nothing and a brigandine only 1.",
+    "range_rule": "**Range.** A longbow reaches {{pt_bow_range}} hexes: short, medium and long. Each hex is {{hex_yd}} yards. On paper take −20 at medium range and −40 at long; the roller does it for you. On the map, count the hexes between the two men; to a man still on the approach track, count the hexes to the map's north edge and add his box number.",
+    "missile_effect": "A longbow's wound uses the thrust columns. ",
+    "missile_short": "cut or thrust is the attacker's choice before rolling (a longbow pierces)",
+    "range_ref": "**Range (longbow).** Short to {{pt_short}} hexes, medium to {{pt_medium}} (−20), long to {{pt_long}} (−40). Off the map: hexes to the north edge plus the box.",
+}
 MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
 M: dict = {}                                       # the module being built (load_module): its men, foes, map and words
 
@@ -127,10 +139,11 @@ def _effects(d: Data) -> str:
     seen, rows = {}, []
     for L in d.locations:
         seen.setdefault(L["class"], L)
-    head = ["Place", "Fever", "Light cut", "Serious cut", "Critical cut", "Light thrust", "Serious thrust", "Critical thrust"]
+    mechs = M.get("effects") or [["cut", "cut"], ["pierce", "thrust"]]   # the blows its weapons deal, and their names on the page
+    head = ["Place", "Fever"] + [f"{sev.capitalize()} {name}" for _, name in mechs for sev in ("light", "serious", "critical")]
     for cls, L in seen.items():
         row = [cls.replace("_", " ").capitalize(), compose_wound(d, L["id"], "pierce", "serious").get("infection", "")]
-        for mech in ("cut", "pierce"):
+        for mech, _ in mechs:
             for sev in ("light", "serious", "critical"):
                 row.append(_short(compose_wound(d, L["id"], mech, sev)))
         rows.append(row)
@@ -158,7 +171,7 @@ def _sheet(d: Data, c: dict, role: str, v: dict) -> str:
     rolls = ", ".join(x["name"] for x in d.council["rolls"].values() if x["role"] == role)
     weapon = d.weapons[c["weapon"]]["name"].split(" (")[0]
     kit = d.armor["kits"][c["kit"]]["name"]
-    career = RB._career(d, c).capitalize()
+    career = next(x["name"] for x in d.teams[M["team"]["era"]]["careers"] if x["id"] == c["career"]).lower().capitalize()   # its era's name for his career
     track = _table([["", "", "", "", ""] for _ in range(4)], ["Place", "Wound", "Bleed, pain", "On the track", "Day"], "lined")
     old = "; ".join(f"{o['loc'].replace('_', ' ')}" for o in c.get("old", [])) or "none"
     return (f'<section class="page sheet"><h1>{e(c["name"])}</h1><p class="sub">{e(career)}, aged {c["age"]}. {e(c["origin"])}. '
@@ -409,7 +422,9 @@ def render(d: Data, root: Path, mid: str = "ferrybridge") -> str:
          "pt_bleed_rates": _rates(d), "pt_track": M["battlemap"]["track"], "pt_short": bow[0], "pt_medium": bow[1], "pt_long": bow[2]}
     files = M["text"] if isinstance(M["text"], list) else [M["text"]]   # its own pages, and the pages every module shares (templates/modules/shared)
     text = "".join((root / f).read_text(encoding="utf-8") for f in files)
-    v = {**v, **{f"pt_{k}": RB._fill(str(x), v, tabs, f"data/modules/{mid}.yaml values.{k}") for k, x in (M.get("values") or {}).items()}, "pt_foe_side": M["foe_side"]}
+    words = {**SHARED, **(M.get("values") or {})}
+    v = {**v, **{f"pt_{k}": x for k, x in words.items() if "{{" not in str(x)}, "pt_foe_side": M["foe_side"]}   # plain words first: the rest may use them
+    v = {**v, **{f"pt_{k}": RB._fill(str(x), v, tabs, f"data/modules/{mid}.yaml values.{k}") for k, x in words.items() if "{{" in str(x)}}
     sheets = [_sheet(d, team[n], r, v) for n, r in _men()] + [_blank_sheet()]
     parts = {"hit": _hit(d), "armour": _armour(d), "effects": _effects(d), "sickness": _sickness(d), "map": _map(), "foes": _foes(d),
              "weather": _weather(d, root), "camplog": _camplog(), "feedback": _feedback(),

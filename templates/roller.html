@@ -4637,6 +4637,13 @@ const BAGGAGE = { side: "Ysembart's raiders", keep: ["Robert Hayward", "Walter C
   foes: [["Countryman 1", "gambeson", "spear", "green"], ["Countryman 2", "none", "axe", "green"], ["Countryman 3", "none", "spear", "green"],
     ["Countryman 4", "gambeson", "dagger", "green"], ["Varlet", "gambeson", "spear", "regular"], ["Man-at-arms", "harness_1415", "sword", "veteran"]],
   msg: "The king's baggage: the four men with the English baggage at Maisoncelles, 25 October 1415, against Ysembart's raiders. The GM's script plays them; roll initiative to begin." };
+/* The escalade module's fight (dist/module-badajoz-escalade.html, team.html#escalade): four of the company of
+   foot rolled with seed 1812 against the French on the rampart of San Vicente. The ladders and the night stay on
+   paper. data/modules/badajoz-escalade.yaml lists the same men. */
+const ESCALADE = { side: "The French on the rampart", keep: ["William Green", "Donald Murray", "John Morris", "George Costello"],
+  foes: [["Fusilier 1", "none", "musket_smoothbore", "regular"], ["Fusilier 2", "none", "musket_smoothbore", "regular"], ["Fusilier 3", "none", "musket_smoothbore", "regular"],
+    ["Sergent", "none", "musket_smoothbore", "veteran"]],
+  msg: "The escalade: four men of a company of foot on the rampart of San Vicente, Badajoz, the night of 6 April 1812, against the French. The GM's script plays them; roll initiative to begin." };
 PLAYTEST.msg = "The playtest packet's fight: the four men at the Aire crossing, 28 March 1461, against five of Clifford's men. The GM's script plays them; roll initiative to begin.";
 function playtestSetup(P = PLAYTEST){              // a print-and-play module's fight: its four and its enemy, the GM's script playing the enemy
   if (!freshWithTeam()) return;
@@ -4803,6 +4810,7 @@ function init(){
   if (location.hash === "#gmstart") gmQuickSetup();
   if (location.hash === "#playtest") playtestSetup();
   if (location.hash === "#baggage") playtestSetup(BAGGAGE);
+  if (location.hash === "#escalade") playtestSetup(ESCALADE);
   unitToggle($("#units-toggle"), () => { renderResult(); renderChars() });
   lethalToggle($("#lethal-toggle"), () => {      // a new lethality: an unhurt player character's Blood is his new pool; a hurt one keeps what he has, up to it
     for (const c of S.chars.filter(isPC)) c.blood = c.wounds.length ? Math.min(c.blood, poolOf(c)) : poolOf(c);
