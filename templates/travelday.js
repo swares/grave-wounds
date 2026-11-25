@@ -1859,12 +1859,16 @@ function makeTravelDay(DATA, RULES, env = {}){
   // What one player's map shows: his side's forces, and of the enemy only what his side sees now, or
   // where it last saw them. side: his side. -> {mapId, edits, day, when, weather, light, air (its aircraft up), sides, ours,
   // seen, last} or null with no map. Nothing else of the enemy's is in it.
-  function fogView(side, mine = []){                 // mine: the ids of the forces his own men are with (he may propose their routes)
+  function fogView(side, mine = []){                 // mine: the ids of the forces his own men are with (he may propose their routes); side null: every force, no fog (a watcher the GM lets see everything)
     restore();
     if (!S.mapId || !DATA.maps[S.mapId] || !S.forces[S.mapId]) return null;
-    const c = clockNow(), now = sightNow(), seenNow = sightings(side), ids = new Set(seenNow.map(e => e.id));
+    const c = clockNow(), now = sightNow(), seenNow = side === null ? [] : sightings(side), ids = new Set(seenNow.map(e => e.id));
     const ours = f => ({ id: f.id, mine: mine.includes(f.id), name: f.name, side: f.side, type: f.type, men: f.men, pos: f.pos.slice(), route: f.path && f.index < f.path.length - 1 ? f.path.slice(f.index) : [],
       camp: f.camp ? { hex: f.camp.hex, kind: f.camp.kind } : null, order: orderText(f, c) });
+    if (side === null) return { mapId: S.mapId, edits: S.edits[S.mapId] || null, day: c.day, when: `${dateText(c.day, true)}, ${clock(c.used, c.day)}`,
+      weather: WXD.conditions[now.cond]?.name || now.cond, light: now.light, air: false, sides: sides(), all: true,
+      sieges: fortresses().map(siegeState).filter(x => x.invested).map(x => ({ name: x.name, practicable: x.practicable, ours: false, ...(x.terms ? { terms: x.terms } : {}) })),
+      ours: forcesHere().filter(placed).map(ours), seen: [], last: [] };
     const last = Object.entries(S.seen[S.mapId]?.[side] || {}).filter(([id]) => !ids.has(+id))
       .map(([, x]) => ({ name: x.name, side: x.side, type: x.type, size: x.size, pos: x.pos, when: `${dateText(x.day, true)}, ${clock(x.used, x.day)}` }));
     return { mapId: S.mapId, edits: S.edits[S.mapId] || null, day: c.day, when: `${dateText(c.day, true)}, ${clock(c.used, c.day)}`,

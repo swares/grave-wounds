@@ -1734,7 +1734,7 @@ function seenNow(){                               // [side: Set of the enemy uni
 }
 const skyNow = () => JSON.stringify([lightOf(S.field), S.field.weather?.cond ?? null, S.field.weather?.wind ?? null]);
 const heldOf = log => (log || []).filter(l => l.kind === "objective").map(l => `${l.second ? 2 : 1}:${l.held}`).join(" ");
-const seatedSide = k => (k === 0 || k === 1) && NETF.seats.some(p => p.seat === S.sides[k]);   // a side with a player online (his own, or the console's): his to move
+const seatedSide = k => (k === 0 || k === 1) && NETF.seats.some(p => p.seat === S.sides[k] && !p.watch);   // a side with a player online (his own, or the console's): his to move
 function runOnToggle(){                           // Run on, or Stop
   if (RUNON) return stopRunOn(["you stopped it"]);
   if ((S.phase !== 0 && S.phase !== 1) || bothAi()) return;
@@ -3926,7 +3926,7 @@ function netfSetView(p, view){                      // the GM changes what a wat
   gmView(); renderNetf();
 }
 function netfInvite(side){
-  if (NETF.seats.some(p => p.seat === side)) return;
+  if (NETF.seats.some(p => p.seat === side && !p.watch)) return;
   const p = { n: ++NETF.seq, seat: side, state: "inviting", code: "", err: "", peer: null, ui: {} };
   NETF.seats.push(p); netfKeep();
   return netfConnect(p);
@@ -3956,7 +3956,7 @@ function renderNetf(){
   const own = NETF.seats.filter(p => !p.relay), relayed = NETF.seats.length - own.length;
   const on = netfOpen().filter(p => !p.watch).length, watching = netfOpen().length - on, rooms = !!fieldRoomServer();
   const camp = relayed ? `<p class="muted" style="margin:0">${relayed} player${relayed === 1 ? "" : "s"} from the campaign console, on its links.</p>` : "";
-  const invites = S.sides.filter(sd => !NETF.seats.some(p => p.seat === sd)).map(sd => `<button type="button" class="small" data-netf="invite" data-side="${esc(sd)}">Invite a player for ${esc(sd)}</button>`).join(" ");
+  const invites = S.sides.filter(sd => !NETF.seats.some(p => p.seat === sd && !p.watch)).map(sd => `<button type="button" class="small" data-netf="invite" data-side="${esc(sd)}">Invite a player for ${esc(sd)}</button>`).join(" ");
   box.innerHTML = `<details class="after"${NETF.open || NETF.seats.length ? " open" : ""}><summary><b>Play online</b> <span class="muted">${on} player${on === 1 ? "" : "s"} connected${watching ? `, ${watching} watching` : ""}</span></summary>${camp}
     <div class="toolbar" style="flex-wrap:wrap">${invites} <button type="button" class="small" data-netf="watch" title="Someone to watch the battle from his own computer or phone, with no say in it: you choose what he sees">Invite a watcher</button></div>
     <label class="check" title="Lets pages find each other across the internet; on one network it is not needed"><input type="checkbox" id="netf-stun"${NETF.stun ? " checked" : ""}> Use a public STUN server (stun.l.google.com)</label>
@@ -4156,7 +4156,10 @@ const RELAYF = { list: [] };
 function relayFieldTell(id, m){
   try { window.parent.postMessage({ gw: "field", relay: { id, m } }, fieldSite()) } catch { /* the console has gone */ }
 }
-function relayFieldSide(x){                         // the side he commands on the travel map, if it fights here; else the side of the first unit with one of his men as its hero; or null
+const WATCH_ALL = "\u0000everything";                // a console watcher who sees everything (not a side's name)
+function relayFieldSide(x){                         // the side he commands on the travel map, if it fights here; else the side of the first unit with one of his men as its hero; or null. A watcher: his side if it fights here, or everything
+  if (x.watch && !x.view) return WATCH_ALL;
+  if (x.watch) return S.sides.includes(x.view) ? x.view : null;
   if (typeof x.side === "string" && S.from && S.sides.includes(x.side)) return x.side;
   const pids = Array.isArray(x.pids) ? x.pids : [];
   const u = S.units.find(v => (v.heroes || []).some(h => h.pid && pids.includes(h.pid)));
@@ -4171,6 +4174,10 @@ function relayFieldFollow(){                         // the console's players in
   }
   for (const [id, side] of want){
     if (NETF.seats.some(p => p.relay && p.id === id)) continue;
+    if (RELAYF.list.find(x => String(x.id) === id)?.watch){   // a watcher: a seat with no side of his own
+      NETF.seats.push({ n: ++NETF.seq, relay: true, id, seat: side, watch: true, view: side === WATCH_ALL ? null : side, state: "open", last: null, ui: {}, peer: { send: m => relayFieldTell(id, m), close(){} } });
+      continue;
+    }
     NETF.seats.push({ n: ++NETF.seq, relay: true, id, seat: side, state: "open", last: null, ui: {}, peer: { send: m => relayFieldTell(id, m), close(){} } });
     const k = S.sides.indexOf(side);
     if (k >= 0 && aiOf(k)) setAi(k, "");          // a person moves this side now (after he is seated: setAi draws the page again)

@@ -64,6 +64,8 @@ jobs:
         run: python3 tools/net/fieldtwo.py
       - name: Watchers on the roller and the field map
         run: python3 tools/net/watch.py
+      - name: A watcher on the campaign console, with its fights
+        run: python3 tools/net/campwatch.py
       - name: A team through a fight on the roller (its force, its followers, a prisoner)
         run: python3 tools/campaign/team.py
       - name: The quick start, played by the coach's words
