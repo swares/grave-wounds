@@ -201,6 +201,16 @@ and what it does not do.
 
 Not yet: a relay (TURN) for strict networks, and the field map on his page.
 
+
+**Two commanders.** Beside a player's men, **Commands** gives him a whole side on the travel map. His
+page then shows every force of that side (and his map that side's view), and the orders he gives
+from it (a route, a waypoint, halt or march, rest, a camp, or a hex clicked on his map) are given at
+once, as the GM's own, with no proposal to accept; they go into the log for him and the GM only. A
+side a person commands is taken from the commander (Moved by). He presses **Ready: run the clock**
+when his orders are given; under Run the march the console says which commanders are ready, and when
+all are, the GM runs the clock (he may run it sooner). Each press of the clock clears the ready marks
+for the next orders. The fights are still set up and run from the console.
+
 ## The log
 
 Each phase the campaign moves to, and why, goes into the campaign's log at the travel map's day,
