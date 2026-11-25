@@ -17,7 +17,7 @@ from roomharness import CONNECTED, add_player, check, failures, serve
 
 MAP = "towton-1461"
 site, BASE, ROOMS, stop = serve()
-TRAVEL = f"JSON.parse(localStorage.getItem('gravewounds-travel'))"
+TRAVEL = "JSON.parse(localStorage.getItem('gravewounds-travel'))"
 
 try:
     with sync_playwright() as p:
@@ -46,7 +46,7 @@ try:
 
         # Edward plays at this console: his seat in another tab of the same browser
         gm.check(f'[data-pl-local="{ids[0]}"]')
-        check(gm.evaluate(f"() => REC.players[0].local") is True, "Edward plays at this console")
+        check(gm.evaluate("() => REC.players[0].local") is True, "Edward plays at this console")
         with gctx.expect_page() as pinfo:
             gm.click(f'button[data-pl="seat"][data-id="{ids[0]}"]')
         ed = pinfo.value

@@ -5818,7 +5818,11 @@ $("#c-players").addEventListener("change", e => {
   if (e.target.id === "pl-stun") PL.stun = e.target.checked;
   if (e.target.id === "pl-propose"){ REC.proposeOff = !e.target.checked; saveRecord(); playersSync() }
   const lc = e.target.closest("[data-pl-local]");
-  if (lc){ const pl = players().find(x => x.id === lc.dataset.plLocal); if (pl) setLocal(pl, lc.checked); return }
+  if (lc){
+    const pl = players().find(x => x.id === lc.dataset.plLocal);
+    if (pl) setLocal(pl, lc.checked);
+    return;
+  }
   const sd = e.target.closest("[data-pl-side]");
   if (sd) return setSide(sd.dataset.plSide, sd.value || null);
   const man = e.target.closest("[data-pl-man]");
@@ -6090,7 +6094,11 @@ if (PLAYER_PAGE){
     PG.send({ t: "attack", id: +b.dataset.attack, k: +b.dataset.k });
     $("#p-status").textContent = "You attack: the battle is set up.";
   });
-  const go = () => (location.hash.startsWith("#seat=") ? Promise.resolve(pgSeat()) : location.hash.startsWith("#room") ? pgRoom() : pgJoin()).catch(e => pgStatus(String(e.message || e)));
+  const join = () => (location.hash.startsWith("#room") ? pgRoom() : pgJoin());
+  const go = () => {
+    if (location.hash.startsWith("#seat=")) return pgSeat();          // a seat at this console: no connection to make
+    return join().catch(e => pgStatus(String(e.message || e)));
+  };
   window.addEventListener("hashchange", () => { if (/^#(join=|room)/.test(location.hash)) go() });   // a new invitation or room opened in this tab
   go();
 } else {
