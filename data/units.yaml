@@ -925,7 +925,7 @@ morale:
   # scale: (measuring) flank: struck in flank or rear counts only when the men striking it there are
   #   at least this share of its men; losing: it lost the exchange only when it lost more than it put
   #   down by this share of its men striking hand to hand (at least one man). 0: the old rules.
-  scale: {flank: 0, losing: 0}
+  scale: {flank: 0, losing: 0.05}
   shaken_by: 20
   mods:
     leader: 10                # a named leader with the unit, up and fighting
