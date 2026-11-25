@@ -100,7 +100,7 @@ def age_rows(d: Data, eid: str) -> dict:
     dice = lambda b, k: f"{b[k][0]}d{b[k][1]}" if b.get(k) else "–"
     bands = A["decline"]
     out["ageing"] = (["Age (middle of the 4 years)", *names.values()],
-                     [(f"Under {bands[i + 1]['from']}" if not b["from"] else f"{b['from']}–{bands[i + 1]['from'] - 1}") if i + 1 < len(bands) else f"{b['from']} and over", *[dice(b, k) for k in names]] for i, b in enumerate(bands)])
+                     [[_band(bands, i), *[dice(b, k) for k in names]] for i, b in enumerate(bands)])
     return out
 
 
@@ -140,6 +140,14 @@ def steps(d: Data, eid: str) -> str:
 <li><b>Age.</b> {age_step(d, eid)}</li>
 <li><b>Skills and kit.</b> Each skill starts at its characteristic ÷ the divisor (rounded down), plus what he gained, to {E['skill_max']} at most. His defence is his {defence}. Kit and weapon come with his career and side; a purse of Days for each term (the Rules' Money).</li>
 </ol>"""
+
+
+def _band(bands: list, i: int) -> str:
+    """An ageing band's ages: 'Under 30', '30–39', '60 and over'."""
+    b = bands[i]
+    if i + 1 == len(bands):
+        return f"{b['from']} and over"
+    return f"Under {bands[i + 1]['from']}" if not b["from"] else f"{b['from']}–{bands[i + 1]['from'] - 1}"
 
 
 def age_step(d: Data, eid: str) -> str:
