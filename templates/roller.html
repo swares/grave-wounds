@@ -10,7 +10,7 @@
   --ok:#2f6b46; --warn:#a86512; --crit:#8e1b2c;
   --side0:#2f5d8a; --side1:#8e1b2c; --side2:#8a5a12; --side3:#2f6b46;
   --wk-ditch:#5f7a88; --wk-bank:#a37a48; --wk-wood:#4a3320; --wk-gate:#c27a22; --wk-stone:#7f7f7f; --wk-green:#476b35;
-  --g-rough:#d3d0bd; --g-brush:#b5cfa6; --g-marsh:#b9cfcc; --g-water:#8db7d6; --g-water-line:#2f5f86; --g-road:#d9c7a3; --hill:#7a5a2e; --gg:#5b5440;
+  --g-rough:#d3d0bd; --g-brush:#b5cfa6; --g-marsh:#b9cfcc; --g-water:#8db7d6; --g-water-line:#2f5f86; --g-road:#d9c7a3; --g-wallface:#8d8273; --lit:#f1a93b; --hill:#7a5a2e; --gg:#5b5440;
   --display:"Alegreya SC",Georgia,serif; --body:"Alegreya Sans","Gill Sans","Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
 }
@@ -19,14 +19,14 @@
   --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --heat:228,101,118; --map-sea:#1b2a33; --map-land:#3c4237; --map-coast:#66705e; --map-hl:#57604a; --map-dot:#e46576;
   --side0:#8db8e0; --side1:#e8909c; --side2:#e3b46d; --side3:#86cfa1;
   --wk-ditch:#7fa0b2; --wk-bank:#b48d5a; --wk-wood:#d9b98c; --wk-gate:#f0a54a; --wk-stone:#b5b5b5; --wk-green:#8fbf74;
-  --g-rough:#3a3a30; --g-brush:#24402a; --g-marsh:#1d3133; --g-water:#25445c; --g-water-line:#8db7d6; --g-road:#5a4b33; --hill:#e3c48c; --gg:#b9b39a;
+  --g-rough:#3a3a30; --g-brush:#24402a; --g-marsh:#1d3133; --g-water:#25445c; --g-water-line:#8db7d6; --g-road:#5a4b33; --g-wallface:#4a443c; --lit:#e0a040; --hill:#e3c48c; --gg:#b9b39a;
   --ok:#6cc08d; --warn:#e3a14d; --crit:#e46576; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#12161a; --panel:#1a2026; --ink:#e2e6e9; --muted:#97a3ad; --line:#2f3942;
   --steel:#a9b8c5; --blood:#e46576; --blood-soft:#3a1d23; --heat:228,101,118; --map-sea:#1b2a33; --map-land:#3c4237; --map-coast:#66705e; --map-hl:#57604a; --map-dot:#e46576;
   --side0:#8db8e0; --side1:#e8909c; --side2:#e3b46d; --side3:#86cfa1;
   --wk-ditch:#7fa0b2; --wk-bank:#b48d5a; --wk-wood:#d9b98c; --wk-gate:#f0a54a; --wk-stone:#b5b5b5; --wk-green:#8fbf74;
-  --g-rough:#3a3a30; --g-brush:#24402a; --g-marsh:#1d3133; --g-water:#25445c; --g-water-line:#8db7d6; --g-road:#5a4b33; --hill:#e3c48c; --gg:#b9b39a;
+  --g-rough:#3a3a30; --g-brush:#24402a; --g-marsh:#1d3133; --g-water:#25445c; --g-water-line:#8db7d6; --g-road:#5a4b33; --g-wallface:#4a443c; --lit:#e0a040; --hill:#e3c48c; --gg:#b9b39a;
   --ok:#6cc08d; --warn:#e3a14d; --crit:#e46576; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:16px/1.45 var(--body);padding-inline:16px;padding-block:20px 40px}
@@ -222,7 +222,8 @@ tr.hitrow td:first-child{box-shadow:inset 3px 0 0 var(--blood)}
 .wkh.breached{opacity:.3}
 .wk-prog{font:700 8px var(--mono);fill:var(--crit);text-anchor:middle;pointer-events:none;paint-order:stroke;stroke:var(--panel);stroke-width:2.5px}
 .hexmap.building .hex{cursor:cell}
-.hex.g-rough:not(.h-adv,.h-run){fill:var(--g-rough)} .hex.g-brush:not(.h-adv,.h-run){fill:var(--g-brush)} .hex.g-marsh:not(.h-adv,.h-run){fill:var(--g-marsh)} .hex.g-water{fill:var(--g-water)} .hex.g-road:not(.h-adv,.h-run){fill:var(--g-road)} .hex.g-bridge{fill:var(--g-road)}
+.hex.g-rough:not(.h-adv,.h-run){fill:var(--g-rough)} .hex.g-brush:not(.h-adv,.h-run){fill:var(--g-brush)} .hex.g-marsh:not(.h-adv,.h-run){fill:var(--g-marsh)} .hex.g-water{fill:var(--g-water)} .hex.g-road:not(.h-adv,.h-run){fill:var(--g-road)} .hex.g-bridge{fill:var(--g-road)} .hex.g-wall_face{fill:var(--g-wallface)}
+.lit{fill:var(--lit);fill-opacity:.28;pointer-events:none} .ldr{fill:none;stroke:var(--wk-wood);stroke-width:1.6;stroke-linecap:round;pointer-events:none}
 .gg-water{stroke:var(--g-water-line);opacity:.9} .gg-bridge{stroke:var(--wk-wood);stroke-width:1.6;opacity:1}
 .gg{pointer-events:none;fill:none;stroke:var(--gg);stroke-width:1.3;stroke-linecap:round;stroke-linejoin:round;opacity:.75}
 .gg-rough{fill:var(--gg)} .gg-brush circle{fill:var(--gg);fill-opacity:.35}
@@ -1474,7 +1475,7 @@ const isEvidence = () => DATA.tables[rtid()].armor !== "allowed";
 
 /* ---------- storage (per-viewer convenience only) ---------- */
 let SAVED_AS = null;                                 // the fight as this page last wrote or read it: another page changing it means a reload, not a save over it
-function save(){ try{ SAVED_AS = JSON.stringify({chars:S.chars,events:S.events,gm:S.gm,screen:S.screen,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,leadersFell:S.leadersFell,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,fightEnd:S.fightEnd,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone,travelFrom:S.travelFrom,quick:S.quick}); localStorage.setItem("gravewounds-chars", SAVED_AS) }catch(e){ /* storage off: the fight lasts while the page is open */ } }
+function save(){ try{ SAVED_AS = JSON.stringify({chars:S.chars,events:S.events,gm:S.gm,screen:S.screen,active:S.active,attacker:S.attacker,seq:S.seq,round:S.round,log:S.log,turn:S.turn,broken:S.broken,leadersFell:S.leadersFell,pending:S.pending,map:S.map,tm:S.tm,free:S.free,works:S.works,ground:S.ground,ladders:S.ladders,lit:S.lit,storm:S.storm,groundLike:S.groundLike,hauled:S.hauled,wholeLabour:S.wholeLabour,addSide:S.addSide,weather:S.weather,wonBy:S.wonBy,fightEnd:S.fightEnd,deedsDone:S.deedsDone,afterLog:S.afterLog,afterK:S.afterK,packsDropped:S.packsDropped,packsLost:S.packsLost,strainDone:S.strainDone,travelFrom:S.travelFrom,quick:S.quick}); localStorage.setItem("gravewounds-chars", SAVED_AS) }catch(e){ /* storage off: the fight lasts while the page is open */ } }
 function restore(){
   try {
     SAVED_AS = localStorage.getItem("gravewounds-chars");
@@ -1888,6 +1889,7 @@ function brainView(c){                             // what the script sees of th
     .map(([hex, cost]) => ({ hex, cost, run: cost > t.allow.advance })) : [];
   const foes = S.chars.filter(o => o.pos && sideOf(o) !== sideOf(c) && !isOut(o));
   const targetsFrom = hex => {                     // whom he could strike from that hex (he is put there for a moment to look)
+    if (hex !== here && ladderAt(parseHex(hex))) return [];   // climbing a ladder takes his turn: no strike after it
     const pos = c.pos; c.pos = parseHex(hex);
     let out = foes.filter(o => canTarget(c, o)).map(o => { const dist = hexDistance(c.pos, o.pos); return { id: o.id, dist, penalty: shotPenalty(c, o) ?? weaponReach(S.weapon, dist)?.penalty ?? 0 } })
       .filter(t => t.penalty !== false);           // a shot the rules would refuse (no sight, works in the way): not a target
@@ -1906,7 +1908,21 @@ function brainView(c){                             // what the script sees of th
     enemies: foes.map(o => ({ id: o.id, hex: hkey(o.pos), frac: o.blood / poolOf(o), ...kitArmour(o.kit) })),
     dist: (a, b) => hexDistance(parseHex(a), parseHex(b)),
     coverAt: hex => groundCover(S.ground, parseHex(hex)).cover,
+    ...(S.ladders ? { pathDist: worksDistance(foes) } : {}),   // a wall with ladders: how far round by the ladders, not as the crow flies
+    storming: !!S.storm && S.storm.side === sideOf(c) && levelAt(S.ground, c.pos) < S.storm.level,   // his side storms the wall and he is not up yet
   };
+}
+function worksDistance(foes){                      // hex -> steps to the nearest of these men, going only where the works let a man step (ladders count as steps)
+  const { cols, rows } = mapSize(), d = new Map(), q = foes.map(o => o.pos);
+  q.forEach(h => d.set(hkey(h), 0));
+  for (let i = 0; i < q.length; i++){
+    const h = q[i], k = d.get(hkey(h));
+    for (const n of neighbours(h, cols, rows)){
+      if (d.has(hkey(n)) || deepAt(n) || stepCost(S.works, n, h) === null) continue;
+      d.set(hkey(n), k + 1); q.push(n);
+    }
+  }
+  return hex => d.get(hex) ?? Infinity;
 }
 function gmTurnLine(c, plan, from){                // the script's choice in the log: the move for all, the reason for the GM
   const to = c.pos ? hkey(c.pos) : from;
@@ -2486,7 +2502,7 @@ function combatLines(c){
   const wkName = wkLabel;
   const parts = [wp ? ` − ${wp} wounds` : "", rangeP ? ` − ${rangeP} ${R0.band} range` : "",
     R0.cover ? ` − ${R0.cover} cover (${wkName(R0.coverWork)})` : "", R0.height ? ` − ${R0.height} fighting up (${wkName(R0.heightWork)})` : "", R0.weatherPen ? ` − ${R0.weatherPen} weather (${R0.weatherNotes.map(n => n.replace(/ -\d+%$/, "")).join(", ")})` : "",
-    R0.wayPen ? ` − ${R0.wayPen} in the way (${R0.way.map(charName).join(", ")})` : ""].join("");
+    R0.wayPen ? ` − ${R0.wayPen} in the way (${R0.way.map(charName).join(", ")})` : "", R0.ladderPen ? ` − ${R0.ladderPen} on a ladder` : ""].join("");
   const apen = parts ? ` (${a.base}${parts})` : "";
   if (c.hide) return `<div class="sitline">Attack d100 ${d2(a.roll)}: ${a.hit ? "hit" : "miss"}</div>` + (c.def ? `<div class="sitline">Defence d100 ${d2(c.def.roll)}: ${c.def.defended ? "parried or dodged" : "failed"}</div>` : "");
   let out = `<div class="sitline">Attack d100 ${d2(a.roll)} vs ${a.effective}%${apen}: ${a.hit ? `hit, margin ${a.margin}${a.critical ? " · <b>critical</b>, cannot be defended" : ""}` : "miss"}</div>`;
@@ -2521,6 +2537,7 @@ function sitLine(h){                             // the range, cover and height 
   if (g.cover) bits.push(`cover (${wkLabel(g.coverWork)}), −${g.cover}%`);
   if (g.height) bits.push(`fighting up (${wkLabel(g.heightWork)}), −${g.height}%`);
   if (g.heightReach) bits.push(`shooting downhill, +${g.heightReach}% reach`);
+  if (g.ladderPen) bits.push(`on a ladder, −${g.ladderPen}%`);
   const line = bits.join(" · ");
   return g.penalty && !h.combat ? line + " (not applied: no attack roll)" : line;
 }
@@ -3178,10 +3195,30 @@ function turnInfo(){                         // the acting fighter's movement th
   const others = S.chars.filter(o => o !== c && o.pos), rise = risingCost(c), budget = Math.max(allow.advance, allow.run) - rise;
   const found = S.tm.moved || budget <= 0 ? new Map() : reachableWorks(c.pos, budget, { cols, rows,
     enemies: others.filter(o => sideOf(o) !== sideOf(c)).map(o => o.pos), friends: others.filter(o => sideOf(o) === sideOf(c)).map(o => o.pos),
-    works: S.works, extra: deepGoing(S.weather && S.weather.ground), stepExtra: (a, b) => groundStep(S.ground, a, b) });
+    works: S.works, extra: deepGoing(S.weather && S.weather.ground), stepExtra: (a, b) => ladderStep(c, a, b, allow.advance - rise - 1 - deepGoing(S.weather && S.weather.ground)) ?? groundStep(S.ground, a, b) });
   const reach = new Map([...found].filter(([k, v]) => v > 0).map(([k, v]) => [k, v + rise]));   // getting up comes off his move
   return { c, allow, reach, rise };
 }
+/* Scaling ladders (wounds.yaml combat.ladder): S.ladders maps a ladder's hex to the hex at its foot,
+   where a man who falls from it lands. Laid by a module's set-up (ESCALADE); the roller's own. */
+const LDR = CMB.ladder;
+const ladderAt = h => !!(h && S.ladders && S.ladders[hkey(h)]);
+const onLadder = c => !!c && ladderAt(c.pos);
+function ladderFoot(h){                            // where a man falling from the ladder in h lands: its foot, or the free hex nearest it
+  const [fc, fr] = S.ladders[hkey(h)].split(",").map(Number), { cols, rows } = mapSize();
+  let best = null, bd = Infinity;
+  for (let r = 0; r < rows; r++) for (let col = 0; col < cols; col++){
+    const x = [col, r], d = hexDistance(x, [fc, fr]);
+    if (d < bd && !ladderAt(x) && !deepAt(x) && !occupant(x)){ bd = d; best = x }
+  }
+  return best || [fc, fr];
+}
+function ladderStep(c, a, b, whole){               // the extra cost of the step from a into b if a ladder is in it (null if not): onto one, his whole move, only from where he starts the turn; off one, no climb (the ladder was the climb)
+  if (ladderAt(b)) return sameHex(a, c.pos) ? Math.max(0, whole) : 99;
+  if (ladderAt(a)) return sameHex(a, c.pos) ? groundSpec(S.ground, b).move : 99;   // he climbed onto it this turn: he goes no further
+  return null;
+}
+const heightAt = (ground, h) => (ladderAt(h) ? Math.max(0, ...neighbours(h, mapSize().cols, mapSize().rows).map(n => levelAt(ground, n))) : levelAt(ground, h));   // a man at the top of a ladder fights at the height of the wall it stands against
 // Range and reach for the hit about to be rolled: {blocked} or {range} (null when there is no map check).
 function rangeCheck(){
   const a = attackerChar(), dd = defenderChar();
@@ -3189,6 +3226,7 @@ function rangeCheck(){
   if (S.turn && act && !f && a !== act){     // during a turn only the acting fighter attacks (or a free attack)
     if (S.tm && S.tm.id === act.id && S.tm.ran) return { blocked: `${act.name} ran this turn and cannot attack.` };
     if (S.tm && S.tm.id === act.id && S.tm.worked) return { blocked: `${act.name} spent this turn on the works and cannot attack.` };
+    if (S.tm && S.tm.id === act.id && S.tm.climbed) return { blocked: `${act.name} spent this turn climbing the ladder and cannot attack.` };
     if (cannotAttack(penalties(act))) return { blocked: `${act.name} cannot attack: ${act.state ? CMB.states[act.state.id].name.toLowerCase() : "incapacitated"}.` };
     if (a) return { blocked: `It is ${act.name}'s turn: only he attacks now.` };
   }
@@ -3198,9 +3236,10 @@ function rangeCheck(){
   if (S.tm && S.tm.id === a.id && S.tm.ran) return { blocked: `${a.name} ran this turn and cannot attack.` };
   if (S.tm && S.tm.id === a.id && S.tm.worked) return { blocked: `${a.name} spent this turn on the works and cannot attack.` };
   if (S.tm && S.tm.id === a.id && S.tm.covered) return { blocked: `${a.name} took cover this turn and cannot attack.` };
+  if (S.tm && S.tm.id === a.id && S.tm.climbed) return { blocked: `${a.name} spent this turn climbing the ladder and cannot attack.` };
   if (a.cover && !isShot(S.weapon) && S.turn === a.id && GRD.rise > allowanceOf(a).advance)
     return { blocked: `${a.name} cannot get up from cover and strike this turn (getting up takes ${hexes(GRD.rise)} of his move).` };
-  const dist = hexDistance(a.pos, dd.pos), wx = darkOnAttack(weatherAttack(S.weather, S.weather ? S.weapon : null, dist, a.pos, dd.pos), dist, a);
+  const dist = hexDistance(a.pos, dd.pos), wx = darkOnAttack(weatherAttack(S.weather, S.weather ? S.weapon : null, dist, a.pos, dd.pos), dist, a, dd.pos);
   const ranged = isShot(S.weapon), ht = heightEffects(S.ground, a.pos, dd.pos, !ranged);
   const r = weaponReach(S.weapon, windDist(dist, { reach: (wx.reach || 0) + ht.reach }));
   const wmin = DATA.weapons[S.weapon].min_range;
@@ -3211,15 +3250,16 @@ function rangeCheck(){
   if (wk.blocked) return { blocked: wk.blocked };
   if (wx.blocked) return { blocked: wx.blocked };
   const extra = { weatherPen: wx.penalty, weatherNotes: wx.notes, misfire: wx.misfire, heightReach: ht.reach };
-  const way = shotWay(a, dd);
-  return { range: { dist, ...r, rangePen: r.penalty, ...wk, ...extra, wayPen: way.penalty, way: way.men, stray: way.stray,
-    penalty: r.penalty + (wk.cover || 0) + (wk.height || 0) + wx.penalty + way.penalty } };
+  const way = shotWay(a, dd), ladderPen = onLadder(a) ? LDR.penalty : 0;   // he fights from a ladder
+  return { range: { dist, ...r, rangePen: r.penalty, ...wk, ...extra, wayPen: way.penalty, way: way.men, stray: way.stray, ladderPen,
+    penalty: r.penalty + (wk.cover || 0) + (wk.height || 0) + wx.penalty + way.penalty + ladderPen } };
 }
 const isShot = wid => !!DATA.weapons[wid]?.range && !DATA.weapons[wid]?.off_map;   // a man with no weapon (fists) shoots nothing
 /* The light (weather.yaml light, as the field map's): in the dark no one can be seen to aim a
    missile at beyond the light's sight (battle hexes of 2 m, as the roller's), and aimed fire is its
    aim % off; a man whose kit carries night vision sees and aims by his device where it is better.
    Moving and losing the way in the dark are the field map's (units), not the roller's. */
+const litAt = h => !!(h && S.lit && S.lit.includes(hkey(h)));
 const lightLevel = () => (WXD && WXD.light ? WXD.light.levels[(S.weather || {}).light || "day"] : null);
 function darkSight(a){                             // [sight, aim, device name] for this shooter in this light
   const L = lightLevel(), NV = (WXD.light || {}).night_vision || {};
@@ -3231,9 +3271,9 @@ function darkSight(a){                             // [sight, aim, device name] 
   }
   return [sight, aim, dev];
 }
-function darkOnAttack(wx, dist, a){                // the light's effect on a missile attack, after the weather's
+function darkOnAttack(wx, dist, a, to = null){      // the light's effect on a missile attack, after the weather's; a target standing in a lit hex (S.lit: a module's fires) is seen as by day
   const L = lightLevel();
-  if (wx.blocked || !L || L.sight === null || !isShot(S.weapon)) return wx;
+  if (wx.blocked || !L || L.sight === null || !isShot(S.weapon) || litAt(to)) return wx;
   const [sight, aim, dev] = darkSight(a);
   if (dist > sight) return { ...wx, blocked: `${L.name}: no one can be seen to aim at beyond ${sight} hexes (${fmtM(sight * 2)})${dev ? ", with " + dev.toLowerCase() : ""}.` };
   return aim ? { ...wx, penalty: wx.penalty + aim, notes: [...(wx.notes || []), `${L.name.toLowerCase()} -${aim}%`] } : wx;
@@ -3279,7 +3319,7 @@ function sightClear(ground, frm, to){             // no higher ground between ri
   return hexRay(frm, to, k).slice(1, -1).every((x, j) => levelAt(ground, x) * k <= levelAt(ground, frm) * (k - j - 1) + levelAt(ground, to) * (j + 1));
 }
 function heightEffects(ground, a, b, melee){       // {situation, penalty (uphill blow), reach (shot downhill)}
-  const diff = levelAt(ground, a) - levelAt(ground, b), out = { situation: null, penalty: 0, reach: 0 };
+  const diff = heightAt(ground, a) - heightAt(ground, b), out = { situation: null, penalty: 0, reach: 0 };
   if (diff > 0){ out.situation = "attacker_higher"; out.reach = melee ? 0 : GRD.downhill_reach * diff }
   else if (diff < 0){ out.situation = "defender_higher"; out.penalty = melee ? GRD.uphill * Math.min(2, -diff) : 0 }
   return out;
@@ -3538,7 +3578,7 @@ function worksOnAttack(a, dd){
 }
 function canTarget(a, o){                    // ringed on the map: an enemy the acting fighter can strike now
   if (!a.pos || !o.pos || sideOf(o) === sideOf(a)) return false;
-  const dist = hexDistance(a.pos, o.pos), wx = darkOnAttack(weatherAttack(S.weather, S.weapon, dist, a.pos, o.pos), dist, a), ranged = isShot(S.weapon);
+  const dist = hexDistance(a.pos, o.pos), wx = darkOnAttack(weatherAttack(S.weather, S.weapon, dist, a.pos, o.pos), dist, a, o.pos), ranged = isShot(S.weapon);
   const ht = heightEffects(S.ground, a.pos, o.pos, !ranged);
   return !!weaponReach(S.weapon, windDist(dist, { reach: (wx.reach || 0) + ht.reach })) && !worksOnAttack(a, o).blocked && !wx.blocked
     && (!ranged || sightClear(S.ground, a.pos, o.pos));
@@ -3580,8 +3620,9 @@ function moveActing(h){
     .map(o => ({ id: o.id, pos: o.pos, able: !isOut(o) && !cannotAttack(penalties(o)) }));
   const free = freeAttackers(c.pos, h, cost, enemies);
   S.tm.prev = { pos: c.pos.slice(), pending: (S.pending || []).length, free: (S.free || []).length, attacker: S.attacker, active: S.active, cover: !!c.cover };
-  c.pos = h.slice(); c.cover = false; Object.assign(S.tm, { moved: true, steps: cost, ran, queued: free.length });
-  (S.pending = S.pending || []).push(`${c.name} ${ran ? "runs" : "advances"} ${hexes(cost)}${ran ? ": no attack this turn" : ""}`);
+  const climbs = ladderAt(h) && !sameHex(h, c.pos);
+  c.pos = h.slice(); c.cover = false; Object.assign(S.tm, { moved: true, steps: cost, ran, queued: free.length, climbed: climbs });
+  (S.pending = S.pending || []).push(climbs ? `${c.name} climbs the ladder: his whole turn, no attack` : `${c.name} ${ran ? "runs" : "advances"} ${hexes(cost)}${ran ? ": no attack this turn" : ""}`);
   if (free.length){
     S.pending.push(`${c.name} leaves contact: free attack${free.length > 1 ? "s" : ""} from ${free.map(id => S.chars.find(o => o.id === id).name).join(", ")}`);
     S.free = [...(S.free || []), ...free.map(id => ({ att: id, def: c.id }))];
@@ -3594,7 +3635,7 @@ function undoMove(){
   if (!p || !c || (S.free || []).length !== p.free + (S.tm.queued || 0)) return;
   c.pos = p.pos; c.cover = p.cover; S.pending.length = p.pending; S.free = (S.free || []).slice(0, p.free);
   S.attacker = p.attacker; S.active = p.active;
-  Object.assign(S.tm, { moved: false, steps: 0, ran: false, covered: false, prev: null, queued: 0 });
+  Object.assign(S.tm, { moved: false, steps: 0, ran: false, covered: false, climbed: false, prev: null, queued: 0 });
   renderChars();
 }
 // ----- works: drawing, editing, breaching -----
@@ -3666,6 +3707,13 @@ function groundSvg(){                            // a small mark on each hex of 
     return `<g class="gg gg-${g}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})">${GROUND_GLYPH[g]}</g>`;
   }).join("");
 }
+function litSvg(){                               // the light of a module's fires (S.lit)
+  return (S.lit || []).map(k => `<polygon class="lit" points="${hexPts(hexXY(k.split(",").map(Number)))}"/>`).join("");
+}
+const LADDER_GLYPH = `<path d="M-4 9L-2 -9M4 9L6 -9M-3.5 5h8M-3 0h8M-2.4 -5h8"/>`;
+function laddersSvg(){                            // the ladders (S.ladders): two rails and rungs up the wall
+  return Object.keys(S.ladders || {}).map(k => { const [x, y] = hexXY(k.split(",").map(Number)); return `<g class="ldr" transform="translate(${x.toFixed(1)},${y.toFixed(1)})">${LADDER_GLYPH}</g>` }).join("");
+}
 function groundIcon(g){                          // the ground's mark, small, for the palette and the key
   if (!GROUND_GLYPH[g]) return "";
   return `<svg viewBox="-10 -9 20 18" width="16" height="14" aria-hidden="true"><g class="gg gg-${g}">${GROUND_GLYPH[g]}</g></svg>`;
@@ -3673,6 +3721,9 @@ function groundIcon(g){                          // the ground's mark, small, fo
 function groundLegend(){                           // the map key's ground entries, once any is painted
   const G = S.ground || {}, used = new Set(Object.values(G.kinds || {}));
   const bits = Object.keys(GROUND_GLYPH).filter(g => used.has(g)).map(g => `<span>${groundIcon(g)}${attr(GRD.kinds[g].name.toLowerCase())}</span>`);
+  if (used.has("wall_face")) bits.push(`<span><i style="background:var(--g-wallface)"></i>${attr(GRD.kinds.wall_face.name.toLowerCase())}: no one stands on it</span>`);
+  if (Object.keys(S.ladders || {}).length) bits.push(`<span><svg viewBox="-10 -10 20 20" width="16" height="14" aria-hidden="true"><g class="ldr">${LADDER_GLYPH}</g></svg>ladder: climbing onto it takes a turn; −${LDR.penalty}% to a man fighting from it</span>`);
+  if ((S.lit || []).length) bits.push(`<span><i style="background:var(--lit);opacity:.5"></i>firelight: a man in it is seen to shoot at as by day</span>`);
   if (Object.keys(G.levels || {}).length) bits.push(`<span><i style="background:var(--hill);opacity:.35"></i>higher ground (darker is higher)</span>`);
   if (S.chars.some(c => c.cover && c.pos)) bits.push(`<span>dotted edge: taking cover</span>`);
   return bits.join("");
@@ -3963,7 +4014,7 @@ function setupHandoff(){                     // a camp or position sent from the
   const at = lay && spotted && bankNormal(h.ground, spotted) ? campCentre(h.ground, spotted, cols, rows, r, ring) : null;   // only at a crossing
   const gate = lay ? campGates(h.ground, spotted, cols, rows, at || [cols >> 1, rows >> 1], r) : [0];   // main gate first
   const L = lay ? campWorks(h.camp, men, ft, cols, rows, h.done ?? null, { hauled: !!h.hauled, at, gate }) : { centre: [cols >> 1, rows >> 1], radius: r, fits: true, works: { edges: {}, hexes: {} } };
-  S.works = L.works;
+  S.works = L.works; S.ladders = null; S.lit = null; S.storm = null;
   S.groundLike = { terrain: GRD.seed[h.ground] ? h.ground : "open", seed, n: 0, clear: lay ? [L.centre, L.radius, gate] : null, edges };
   S.ground = layGroundLike();
   S.wholeLabour = L.fits ? null : h.campLabour;                             // the whole camp's, when only part is on the map
@@ -4068,7 +4119,7 @@ function renderMap(){
     const label = `${what} ${hexes(cost)}`, tail = cls ? ` tabindex="0" role="button" aria-label="${label} to column ${c + 1}, row ${r + 1}"><title>${label}</title></polygon>` : "/>";
     hx += `<polygon class="hex ${cls}${gcls}" data-h="${c},${r}" points="${hexPts(hexXY([c, r]))}"${tail}`;
   }
-  hx += levelsSvg() + groundSvg();
+  hx += levelsSvg() + groundSvg() + litSvg() + laddersSvg();
   const toks = S.chars.filter(c => c.pos).map(c => {
     const [x, y] = hexXY(c.pos), i = S.chars.indexOf(c), k = sides.indexOf(sideOf(c)) % 4;
     const target = canAtk && canTarget(acting, c);
@@ -4493,9 +4544,10 @@ function spendFate(kind){                         // a fate point spent on the l
       w.sev = sev; w.fx = w.graze ? grazeFx(fx) : fx;
       line = `${c.name}: fate spent, the ${where} wound is ${sev}`;
     }
-    if (sev === "stopped" || !(CMB.stop_check.severities.includes(sev) && w.fx.shock)){ c.state = o.prevState; o.failed = false }   // the lighter wound calls for no stop check
+    if (sev === "stopped" || !(CMB.stop_check.severities.includes(sev) && w.fx.shock)){ c.state = o.prevState; if (o.prevPos) c.pos = o.prevPos; o.failed = false }   // the lighter wound calls for no stop check (nor a fall from a ladder)
   } else {
     c.state = o.prevState;
+    if (o.prevPos) c.pos = o.prevPos;              // back on his ladder, if the check had thrown him off it
     const r = applyStopCheck(c, w);
     o.failed = /failed by/.test(r);
     line = `${c.name}: fate spent, ${plainText(r) || "no stop check"}`;
@@ -4506,9 +4558,16 @@ function spendFate(kind){                         // a fate point spent on the l
   renderChars();
 }
 const fateWoundGone = (c, o) => !c.wounds[o.w] || c.wounds.length <= o.w;
-function stopResult(c, r, why){
+function stopResult(c, r, why, again = null){       // again: a fresh check of the same kind, for a man who falls from a ladder and checks on landing
   const head = `${c.name}: stop check${why} d100 ${d2(r.roll)} vs ${r.target}`;
   if (r.passed) return `${head} \u2014 fights on`;
+  if (onLadder(c)){                                // a man on a ladder who fails falls to its foot (wounds.yaml combat.ladder)
+    c.pos = ladderFoot(c.pos);
+    const order = Object.keys(CMB.states), cur = c.state ? order.indexOf(c.state.id) : -1;
+    if (order.indexOf("fallen") >= cur) c.state = { id: "fallen", rounds: LDR.fall_rounds };
+    const r2 = again ? again() : null, land = r2 ? stopResult(c, r2, " on landing") : "";
+    return `${head} (failed by ${r.fail_by}) \u2014 <span class="ev-warn">falls from the ladder: ${CMB.states.fallen.name.toLowerCase()} for ${LDR.fall_rounds} rounds</span>${land ? "; " + land : ""}`;
+  }
   const order = Object.keys(CMB.states), cur = c.state ? order.indexOf(c.state.id) : -1, now = order.indexOf(r.state);
   if (now > cur || (now === cur && (r.rounds ?? Infinity) > (c.state.rounds ?? Infinity))) c.state = { id: r.state, rounds: r.rounds };
   return `${head} (failed by ${r.fail_by}) \u2014 <span class="${r.state === "out" ? "ev-bad" : "ev-warn"}">${CMB.states[r.state].name.toLowerCase()}${r.rounds ? ` for ${r.rounds} rounds` : ""}</span>`;
@@ -4527,9 +4586,9 @@ function applyCurrentHit(){                       // Apply hit to defender: the 
   else if (applyHit(c, h)){
     h.applied = true;
     msg = `Added ${h.graze ? "grazing " : ""}${LOC[h.loc].name.toLowerCase()} wound to ${c.name}.`;
-    const prevState = c.state ? { ...c.state } : null, stop = {};
+    const prevState = c.state ? { ...c.state } : null, prevPos = c.pos ? c.pos.slice() : null, stop = {};
     line = applyStopCheck(c, c.wounds[c.wounds.length - 1], stop);
-    S.fateOffer = isPC(c) ? { id: c.id, w: c.wounds.length - 1, prevState, failed: /failed by/.test(line) } : null;
+    S.fateOffer = isPC(c) ? { id: c.id, w: c.wounds.length - 1, prevState, prevPos, failed: /failed by/.test(line) } : null;
     (S.pending = S.pending || []).push(`${c.name}: ${h.graze ? "grazed" : h.sev} ${LOC[h.loc].name.toLowerCase()}`, ...(line ? [line] : []));
     countCoup(attackerChar(), c, h.weapon);              // a Plains man's blow landed: a coup
     strainFor(c, ["serious", "critical"].includes(h.sev) ? "wounded_badly" : "wounded");
@@ -4560,7 +4619,7 @@ function applyStopCheck(c, w, rec = null){        // rec, if given, takes the ch
   const r = stopCheck(nerve, w.sev, painOf(c), roll, c.blood / poolOf(c), !!w.fx.shock);
   $("#in-stop").value = "";
   if (rec && r) Object.assign(rec, { check: r, die: roll, by: own === null ? "dice" : "player" });
-  return r ? stopResult(c, r, "") : "";
+  return r ? stopResult(c, r, "", () => stopCheck(nerve, w.sev, painOf(c), d100(), c.blood / poolOf(c), !!w.fx.shock)) : "";
 }
 // End of a round: pain above the cap calls for a stop check.
 function painChecks(){
@@ -4572,7 +4631,7 @@ function painChecks(){
     const r = painCheck(nerve, pain, readDie("#in-stop") ?? d100(), c.blood / poolOf(c));
     if (!r) continue;
     $("#in-stop").value = "";
-    out.push(stopResult(c, r, " (pain)"));
+    out.push(stopResult(c, r, " (pain)", () => painCheck(nerve, pain, d100(), c.blood / poolOf(c))));
     logLine("stop", out.at(-1), c);
   }
   return out;
@@ -4605,7 +4664,7 @@ function freshWithTeam(){                         // the quick starts: an empty 
   history.replaceState(null, "", location.pathname);
   if (!S.teamIn) return false;
   Object.assign(S, { chars: [], events: [], log: [], pending: [], round: 1, turn: null, tm: null, free: [], broken: {}, leadersFell: {}, attacker: -1, active: 0, hit: null, handoff: null,
-    works: { edges: {}, hexes: {} }, ground: { kinds: {}, levels: {} }, map: { cols: MOVE.map.cols, rows: MOVE.map.rows }, gm: null });
+    works: { edges: {}, hexes: {} }, ground: { kinds: {}, levels: {} }, map: { cols: MOVE.map.cols, rows: MOVE.map.rows }, gm: null, ladders: null, lit: null, storm: null });
   newFightMarks();
   addTeam();
   return true;
@@ -4638,12 +4697,19 @@ const BAGGAGE = { side: "Ysembart's raiders", keep: ["Robert Hayward", "Walter C
     ["Countryman 4", "gambeson", "dagger", "green"], ["Varlet", "gambeson", "spear", "regular"], ["Man-at-arms", "harness_1415", "sword", "veteran"]],
   msg: "The king's baggage: the four men with the English baggage at Maisoncelles, 25 October 1415, against Ysembart's raiders. The GM's script plays them; roll initiative to begin." };
 /* The escalade module's fight (dist/module-badajoz-escalade.html, team.html#escalade): four of the company of
-   foot rolled with seed 1812 against the French on the rampart of San Vicente. The ladders and the night stay on
-   paper. data/modules/badajoz-escalade.yaml lists the same men. */
+   foot rolled with seed 1812 against the French on the rampart of San Vicente, on the module's map, at night.
+   data/modules/badajoz-escalade.yaml lists the same men and draws the same map (its battlemap). field: the
+   rampart (rows above `face`, raised `high` levels: no one sees over its parapet), the wall's face (row `face`:
+   no one stands on it but on the `ladders`, by column, each with its foot in the ditch below), a stone wall
+   along the parapet's edge, the burning hay (`fires`: each lights its hex and those round it) and where each
+   man starts. */
 const ESCALADE = { side: "The French on the rampart", keep: ["William Green", "Donald Murray", "John Morris", "George Costello"],
-  foes: [["Fusilier 1", "none", "musket_smoothbore", "regular"], ["Fusilier 2", "none", "musket_smoothbore", "regular"], ["Fusilier 3", "none", "musket_smoothbore", "regular"],
+  foes: [["Fusilier 1", "none", "musket_smoothbore", "regular"], ["Fusilier 2", "none", "musket_smoothbore", "regular"],
     ["Sergent", "none", "musket_smoothbore", "veteran"]],
-  msg: "The escalade: four men of a company of foot on the rampart of San Vicente, Badajoz, the night of 6 April 1812, against the French. The GM's script plays them; roll initiative to begin." };
+  field: { cols: 12, rows: 17, high: 3, face: 10, ladders: [3, 4, 5], fires: [[2, 6], [9, 6]], light: "night",
+    at: { "William Green": [4, 11], "Donald Murray": [3, 11], "John Morris": [5, 11], "George Costello": [4, 12],
+      "Fusilier 1": [3, 4], "Fusilier 2": [8, 4], "Sergent": [5, 4] } },
+  msg: "The escalade: four men of a company of foot in the ditch below the rampart of San Vicente, Badajoz, the dark night of 6 April 1812, against the French on it. Up a ladder is the only way in: climbing onto one takes a man's turn. The GM's script plays the French; roll initiative to begin." };
 PLAYTEST.msg = "The playtest packet's fight: the four men at the Aire crossing, 28 March 1461, against five of Clifford's men. The GM's script plays them; roll initiative to begin.";
 function playtestSetup(P = PLAYTEST){              // a print-and-play module's fight: its four and its enemy, the GM's script playing the enemy
   if (!freshWithTeam()) return;
@@ -4654,12 +4720,32 @@ function playtestSetup(P = PLAYTEST){              // a print-and-play module's 
     if (quality !== "regular") c.quality = quality;    // he fights at his own quality, not his side's
     S.chars.push(c);
   }
+  if (P.field) layField(P.field);
   placeUnplaced();
   gmStart();
   S.gm.sides[P.side] = { ...gmSide(P.side), ctl: "script", stance: "steady", quality: "regular" };
   S.gm.auto = true;
   S.mapMsg = P.msg;
   save();
+}
+function layField(F){                              // a module's own map (ESCALADE.field): the ground, the wall, the ladders, the fires, the light and where each man stands
+  const { cols, rows, high, face } = F, kinds = {}, levels = {}, edges = {}, ladders = {};
+  S.map = { cols, rows };
+  for (let r = 0; r < face; r++) for (let c = 0; c < cols; c++) levels[c + "," + r] = high;
+  for (let c = 0; c < cols; c++){
+    if (F.ladders.includes(c)) ladders[c + "," + face] = c + "," + (face + 1);
+    else kinds[c + "," + face] = "wall_face";
+    for (const n of neighbours([c, face], cols, rows)) if (n[1] === face - 1 && !F.ladders.includes(c))
+      edges[edgeKey([c, face], n)] = [{ type: "wall", high: hkey(n) }];   // the parapet: covers the man behind it from below
+  }
+  S.ground = { kinds, levels };
+  S.works = { edges, hexes: {} };
+  S.ladders = ladders;
+  S.lit = [...new Set(F.fires.flatMap(h => [h, ...neighbours(h, cols, rows)]).map(hkey))];
+  S.weather = { ...(S.weather || { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } }), light: F.light };
+  for (const c of S.chars) if (F.at[c.name]) c.pos = F.at[c.name].slice();
+  const below = S.chars.find(c => c.pos && c.pos[1] > face);
+  S.storm = below ? { side: sideOf(below), level: high } : null;   // the side starting below the wall storms it (the script makes for the ladders)
 }
 /* The GM's coached first session (campaign.html#gmstart): the team builder sends the same retinue here
    with #gmstart; it is added as named men and put with Edward's army on the Towton map, which the
@@ -4792,7 +4878,7 @@ function init(){
     S.hauled = e.target.checked;
     renderChars();
   };
-  $("#btn-clear-works").onclick = () => { S.works = { edges: {}, hexes: {} }; S.wholeLabour = null; S.mapMsg = "Works cleared."; renderChars() };
+  $("#btn-clear-works").onclick = () => { S.works = { edges: {}, hexes: {} }; S.ladders = null; S.storm = null; S.wholeLabour = null; S.mapMsg = "Works cleared."; renderChars() };
   $("#btn-freeplace").onclick = () => { S.freePlace = !S.freePlace; S.placing = null; S.mapMsg = ""; renderChars() };
   const resize = () => {
     const m = mapSize(), cl = (v, lo, hi, d) => Math.min(hi, Math.max(lo, parseInt(v, 10) || d));

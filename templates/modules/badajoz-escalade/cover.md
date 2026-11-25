@@ -19,8 +19,8 @@ fight different from a medieval one? Do wounds feel fair? Nobody has played this
 **What you need.** Pencils, two ten-sided dice for d100, scissors, and these pages. Everything to play on
 paper is here, with a hex map of the rampart and counters to cut out at the back. If you'd rather, a phone or
 laptop can run the fight: **the wound roller does the arithmetic**. Open [{{pt_link_short}}]({{pt_link}}). It
-sets up the four men against the French, and the GM's script can play the French (the ladders and the night
-are yours to keep on paper). Please tell us which way you played.
+sets up the four men against the French on this map, with the ladders, the night and the fires, and the GM's
+script can play the French. Please tell us which way you played.
 
 | Pages | Who needs them |
 | --- | --- |
