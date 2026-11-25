@@ -445,6 +445,22 @@ indirect:
   #   Given to every defender's guns it put Tumbledown back to 0 of 12 (the Argentine mortars again),
   #   so it is the battlefield's to give. Design choice.
   planned: {scatter: 0, near: 3, defend: 12}
+  # danger: the enemy commander calls a battery (mortars, guns: not aircraft, not tanks firing over
+  #   open sights) no nearer its own men than `danger` field hexes (100 m at 10 m a hex), or the
+  #   burst and scatter if more. A creeping barrage keeps to the burst and scatter: it lifts ahead
+  #   of the advance by its fire plan. US doctrine names a target within 600 m of friendly troops
+  #   "danger close" (FM 23-91, Mortar Gunnery, ch. 5) and adjusts onto it with care; at Tumbledown
+  #   the British guns could not fire ahead of 15 Platoon until 02:30 (naval-history.net). The
+  #   100 m is ours. Self-play: at Tumbledown the marines' 81 mm mortars were called onto Left Flank
+  #   110 m from their own 4th Platoon and put 37 to 66 Scots Guards down a run (history: Left Flank
+  #   7 killed and 21 wounded all night); with danger 10, 7 of 12 runs as fought (3 before); with
+  #   20, 6. Babuna 8 to 9 of 12. 0: only the burst and scatter.
+  # danger_light: the light levels (weather.yaml light) in which it holds: a dark night, when an
+  #   observer cannot see where his own men are or adjust a fall of shot close to them. In every
+  #   light the full benchmark (36 seeds) lost 9 runs: Tumbledown, Cassino's Poles and Hue gained, but
+  #   Cisterna (a day battle, the Germans' close fire on the Rangers historical) and Snipe lost. Ours.
+  danger: 10
+  danger_light: [night]
   displace_shift: 30
   weapon: mortar_artillery
   fallback: explosive_fragment

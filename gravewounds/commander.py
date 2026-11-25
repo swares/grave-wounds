@@ -1138,11 +1138,22 @@ def _plans(planned: dict, kind: dict) -> bool:
     return bool(planned) and not kind.get("air") and not kind.get("direct")
 
 
+def _danger_close(d: Data, field: dict | None) -> int:
+    """In the light levels of indirect.danger_light, a battery is called no nearer its own men than indirect.danger hexes; else 0."""
+    I = d.units["indirect"]
+    light = ((field or {}).get("weather") or {}).get("light") or "day"
+    return I.get("danger", 0) if light in (I.get("danger_light") or []) else 0
+
+
 def _clear_shot(d: Data, uof: tuple, bk: tuple, h, extra: int) -> bool:
-    """Battery b reaches hex h, with none of the side's men within the burst and scatter (and extra)."""
+    """Battery b reaches hex h, with none of the side's men within the burst and scatter (and extra),
+    nor, a battery (not aircraft or tanks), within indirect.danger hexes (danger close)."""
     us, ours, field = uof
     b, K = bk
-    return U.in_reach(d, b, h) and not _too_near(d, ours, h, K["radius"] + _air_scatter(d, us, field, bk, h) + extra)
+    near = K["radius"] + _air_scatter(d, us, field, bk, h) + extra
+    if not (K.get("air") or K.get("direct")):
+        near = max(near, _danger_close(d, field))      # danger close, in the dark
+    return U.in_reach(d, b, h) and not _too_near(d, ours, h, near)
 
 
 def _aim_at(d: Data, us: list, sfk: tuple, je: tuple, plan) -> tuple:
