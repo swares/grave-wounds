@@ -211,6 +211,29 @@ when his orders are given; under Run the march the console says which commanders
 all are, the GM runs the clock (he may run it sooner). Each press of the clock clears the ready marks
 for the next orders. The fights are still set up and run from the console.
 
+**No GM.** Two commanders can play with no GM: under Run the march, tick **No GM: the commanders run
+it**. Then:
+
+- **The clock** runs by itself when every commander is ready.
+- **Fights:** when his forces are in reach of the enemy, a commander's page lists the fights his own
+  side would attack in (**Fights on offer**), and he may attack, or give other orders and let it pass.
+- **A fight on a battlefield** (the place has one on the field map) opens there in the console's frame.
+  It is set up with the armies as drawn up and started by itself, and each commander moves his own
+  side from his page (the field map gives him the side he commands on the travel map). It is ended
+  when a side has nothing standing or the battlefield's time is up, and its result goes back to the
+  travel map by itself, back on the march.
+- **A fight on open ground** (no battlefield there) still needs someone at the console to set out the
+  units: the field map splits a force into units only by hand.
+- **One commander may host.** On his row under Players online, **Plays at this console** gives him
+  **Open his seat**: his side's screen in another tab of the same browser, which talks to the console
+  over the browser's own channel (no link or room). He plays from that tab and keeps the console open
+  in its own. The console still holds the whole game, so he could look at the other side's forces
+  there: it is for friends. The other commander joins online as any player does.
+
+`python3 tools/net/nogm.py` plays it: the host's seat in a second tab, the other commander by his room,
+the clock running when both are ready, an attack at Towton on its battlefield with each commander on
+his own side, and the result back on the travel map.
+
 ## The log
 
 Each phase the campaign moves to, and why, goes into the campaign's log at the travel map's day,

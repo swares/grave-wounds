@@ -1659,7 +1659,7 @@ function makeTravelDay(DATA, RULES, env = {}){
     try{ localStorage.removeItem("gravewounds-field-result") }catch(e){ /* storage off: the result stays applied once, by its battle id */ }
   }
   // For the campaign console: the fights on offer where enemies are within reach, sent from the saved state; a battle's result taken in.
-  function fightOffer(f, opts){                     // one fight on offer, set up from force f -> {id, title, options, maps, map}
+  function fightOffer(f, opts){                     // one fight on offer, set up from force f -> {id, title, options, maps, map, attackers (sides), defenderSide}
     const p = opts[0], dfd = byId(p.defender), st = campStatus(dfd, p), names = ids => namesList(ids.map(id => byId(id).name));
     const built = st.done === null ? "" : " (" + st.pct + "% built)";
     const at = st.camp ? `at its ${WK.camps[st.camp.kind].name.toLowerCase()}${built}` : `at ${where(dfd.pos)}`;
@@ -1672,6 +1672,7 @@ function makeTravelDay(DATA, RULES, env = {}){
         note: `${q.late.length ? names(q.late) + " will miss it. " : ""}${surpriseText(surpriseFor(q))}` })),
       maps: [["roller", "The wound roller (man by man)"], ["field", "The field map (in units, open ground)"], ...near.map(([id, b]) => ["field:" + id, `${b.name} (the field map, as drawn up)`])],
       map: near.length ? "field:" + near[0][0] : "roller",
+      attackers: [...new Set(p.attackers.map(id => byId(id).side))], defenderSide: dfd.side,   // the sides attacking and defending (a commander attacks only with his own)
     };
   }
   function fightsOnOffer(fromSaved = true){       // [{id (the force to set up from), title, options: [{label, when, note}], maps: [[value, name]], map (the default)}]
