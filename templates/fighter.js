@@ -16,6 +16,10 @@
                     the blows meet)}], only those still fighting
      view.targetsFrom(hex) -> [{id, dist, penalty}]: whom he could strike from that hex
      view.dist(hexA, hexB) -> hexes between them
+     view.storming  optional: his side storms a wall by its ladders and he is still below its top; he
+                    makes for the ladders and over, rather than stand and shoot from below (ours)
+     view.pathDist(hex) -> optional: steps from that hex to the nearest enemy going round works a man
+                    cannot cross (a wall with ladders); when given, closing in and falling back go by it
      view.coverAt(hex) -> the cover % a shooter would have there
      view.losing    his side is near breaking (morale)
      view.stance    "cautious" | "steady" | "reckless" (the GM's setting for the side)
@@ -53,6 +57,7 @@ const FIGHTER = (() => {                          // one name in the page: its h
     return pool.slice().sort((a, b) => (frac[a.id] - frac[b.id]) || (a.penalty - b.penalty) || (a.dist - b.dist) || (a.id - b.id))[0] || null;
   }
   function nearestEnemy(view, hex){
+    if (view.pathDist) return view.pathDist(hex);
     let best = Infinity;
     for (const e of view.enemies) best = Math.min(best, view.dist(hex, e.hex));
     return best;
@@ -94,6 +99,11 @@ const FIGHTER = (() => {                          // one name in the page: its h
     return strikeFrom(view, st, best ? best.hex : null, best ? "closes with the enemy" : "cannot get closer: holds");
   }
 
+  function storm(view, st){                         // storming a wall: a man next to him he strikes (with the bayonet or his sidearm if he must); else he goes for the ladders and over, loaded or not (ours)
+    if (view.me.able && view.targetsFrom(view.here).some(t => t.dist <= 1)) return strikeFrom(view, st, null, "strikes the man at the top");
+    const go = closeIn({ ...view, me: { ...view.me, ranged: false } }, st);
+    return go.move ? { ...go, why: "makes for the ladders" } : go;
+  }
   const safe = (view, hex) => nearestEnemy(view, hex) > 1;   // no enemy next to that hex
   function makeAway(view, st){                      // his side wins by getting away: the hex he can reach nearest his own edge (ours)
     let best = { hex: null, d: view.edgeDist(view.here), cost: 0 };
@@ -129,6 +139,7 @@ const FIGHTER = (() => {                          // one name in the page: its h
     const hurt = view.me.frac <= (view.losing ? st.fallBackLosing : st.fallBack);
     if (hurt && st.fallBack > 0) return fallBack(view, st);
     if (view.away && safe(view, view.here)) return makeAway(view, st);   // his side wins by getting away: he makes for his edge
+    if (view.storming) return storm(view, st);
     if (view.me.reloading){                        // reloading: he stays where he is; a man next to him he strikes with his sidearm or the butt (ours)
       if (view.me.able && view.targetsFrom(view.here).length) return strikeFrom(view, st, null, "strikes the man next to him while he reloads");
       return { move: null, cover: false, target: null, gap: false, blow: "", why: "reloads" };

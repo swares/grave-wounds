@@ -18,7 +18,7 @@ over the top. Someone above is shouting in French. You climb.*
 
 {{pt:map}}
 
-**The French.** Four men of the garrison hold this stretch of the rampart, a sergent and three fusiliers. Most of
+**The French.** Three men of the garrison hold this stretch of the rampart, a sergent and two fusiliers. Most of
 the garrison is at the breaches, and these few were not expecting anyone here.
 
 {{pt:foes}}

@@ -17,10 +17,10 @@ values:
   two_handed: "a musket, or a musket with the bayonet"
   hit_source: "These odds come from the Peninsular War's records of where men were hit, by weapon."
   missile_armour: "No one here wears armour: the French and the British alike fight in their coats."
-  range_rule: "**Range.** A musket reaches {{pt_bow_range}} hexes: short, medium and long. Each hex is {{hex_yd}} yards. On paper take −20 at medium range and −40 at long; the roller does it for you. **At night** every shot is at −20 more, except at a man in the light of the burning hay (the lit hexes on the map)."
+  range_rule: "**Range.** A musket reaches {{pt_bow_range}} hexes: short, medium and long. Each hex is {{hex_yd}} yards. On paper take −20 at medium range and −40 at long; the roller does it for you. **At night** every shot is at −20 more, except at a man in the light of the burning hay (the lit hexes on the map, round each fire). **Over the wall** no one sees: from the ditch or a ladder a man can shoot only at a man on the parapet (its row of hexes) or on a ladder, and from the rampart a man can shoot into the ditch only from the parapet. A man on the parapet is behind it: −50 to a shot at him from below, unless the hex of the wall's face between him and the shooter is a ladder."
   missile_effect: "A ball uses the shot columns. "
   missile_short: "cut or thrust is the attacker's choice before rolling (a ball is a shot); a musket shoots every {{pt_musket_every}} round, a pistol every {{pt_pistol_every}}"
-  range_ref: "**Range (musket).** Short to {{pt_short}} hexes, medium to {{pt_medium}} (−20), long to {{pt_long}} (−40). At night −20 more, unless the target is lit."
+  range_ref: "**Range (musket).** Short to {{pt_short}} hexes, medium to {{pt_medium}} (−20), long to {{pt_long}} (−40). At night −20 more, unless the target is lit. No one sees over the parapet; a man on it has −50 cover from the ditch."
   ref_rule: "**The ladders.** Climbing takes a whole turn. A man at the top of a ladder fights at −20, and can't be helped by a friend. A man on a ladder who fails a stop check falls into the ditch: he is out of the fight for 2 rounds, and rolls a stop check again when he lands."
   map_title: "The rampart of San Vicente"
   roster_note: "On foot, in their coats. The sergent is a veteran, the others regulars. Roll each man's initiative at the start: d{{init_die}} + 5. Blood is not multiplied for the setting: only the four's is."
@@ -35,11 +35,10 @@ men:
   - {name: "John Morris", role: quartermaster}
   - {name: "George Costello", role: leech}
 # The French on this stretch of the rampart: the escalade came where the wall was thinly held (ours). The
-# roller's ESCALADE (templates/roller.html) lists the same men. With the script playing both sides to a finish
-# (tools/campaign/modulefight.py escalade, 12 fights) the four held in 3 against five French, and in 6 against these four
-# (Ferrybridge's four: 5 of 12). The ladders, on paper only, are the French side's advantage.
+# roller's ESCALADE (templates/roller.html) lists the same men and lays this map, the ladders, the night and the
+# fires. With the script playing both sides to a finish, up the ladders (tools/campaign/modulefight.py escalade,
+# 24 fights), the four held in 4 against four French and in 9 against these three (Ferrybridge's four: 5 of 12).
 foes:
-  - {name: "Fusilier", kit: none, weapon: musket_smoothbore, quality: regular}
   - {name: "Fusilier", kit: none, weapon: musket_smoothbore, quality: regular}
   - {name: "Fusilier", kit: none, weapon: musket_smoothbore, quality: regular}
   - {name: "Sergent", kit: none, weapon: musket_smoothbore, quality: veteran}
@@ -81,10 +80,16 @@ battlemap:
     - {rows: [0, 4], cols: [5, 7], fill: "#e0d8cc"}  # a lane down from the rampart
     - {rows: [4, 9], fill: "#e3dccb"}                # the rampart's walk (terre-plein)
     - {rows: [9, 10], fill: "#9a8f80"}               # the parapet
-    - {rows: [10, 12], fill: "#b7ab98"}              # the wall's face: men here are on the ladders
-    - {rows: [10, 12], cols: [0, 3], fill: "#8d8273"}
-    - {rows: [10, 12], cols: [6, 12], fill: "#8d8273"}
-    - {rows: [12, 17], fill: "#cfd6dc"}              # the ditch
+    - {rows: [10, 11], fill: "#b7ab98"}              # the wall's face: the three ladders (no one stands on the rest)
+    - {rows: [10, 11], cols: [0, 3], fill: "#8d8273"}
+    - {rows: [10, 11], cols: [6, 12], fill: "#8d8273"}
+    - {rows: [11, 17], fill: "#cfd6dc"}              # the ditch
+    - {rows: [5, 6], cols: [1, 3], fill: "#f6dfb4"}  # the firelight: the hexes round each fire (odd rows sit half a hex right)
+    - {rows: [6, 7], cols: [1, 4], fill: "#f6dfb4"}
+    - {rows: [7, 8], cols: [1, 3], fill: "#f6dfb4"}
+    - {rows: [5, 6], cols: [8, 10], fill: "#f6dfb4"}
+    - {rows: [6, 7], cols: [8, 11], fill: "#f6dfb4"}
+    - {rows: [7, 8], cols: [8, 10], fill: "#f6dfb4"}
     - {rows: [6, 7], cols: [2, 3], fill: "#f1c27d"}  # burning hay
     - {rows: [6, 7], cols: [9, 10], fill: "#f1c27d"}
   labels:
@@ -92,7 +97,7 @@ battlemap:
     - {text: "The rampart's walk", x: mid, y: 4, dy: 0.62, size: 0.15, italic: true}
     - {text: "Burning hay", x: 2.5, y: 6, dy: 0.95, size: 0.12}
     - {text: "Parapet", x: right, y: 9, dy: 0.3, size: 0.13, anchor: end}
-    - {text: "Ladders (3 hexes)", x: 4.5, y: 10, dy: 0.62, size: 0.15, bold: true}
+    - {text: "The ladders: the three light hexes above", x: 4.5, y: 11, dy: 0.5, size: 0.15, bold: true}
     - {text: "The ditch: the four start here", x: mid, y: bottom, dy: -0.12}
 sketch:
   - "<svg viewBox=\"0 0 480 170\" role=\"img\" aria-label=\"Sketch of the escalade: the town to the north, the rampart and parapet, ladders up the wall from the ditch to the south\">"

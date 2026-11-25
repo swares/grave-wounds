@@ -492,6 +492,11 @@ def validate(d: Data) -> None:
     for s in mv["no_move_states"]:
         if s not in CB["states"]:
             errors.append(f"wounds.yaml: combat.move.no_move_states names unknown state {s}")
+    LDR = CB.get("ladder", {})
+    if not (isinstance(LDR.get("penalty"), int) and LDR["penalty"] >= 0 and isinstance(LDR.get("fall_rounds"), int) and LDR["fall_rounds"] >= 1):
+        errors.append("wounds.yaml: combat.ladder needs a whole penalty of 0 or more and fall_rounds of 1 or more")
+    if "fallen" not in CB["states"]:
+        errors.append("wounds.yaml: combat.states needs fallen (combat.ladder)")
 
     # travel: terrain types and maps
     TT = d.terrain["terrain"]
