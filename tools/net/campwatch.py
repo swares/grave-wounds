@@ -12,9 +12,11 @@ paste); he opens his link, the GM pastes his reply. Then:
 - Set to a side that is not in that fight, the fight goes from his page; when that side is in it, he watches it as
   that side, the enemy veiled.
 - A battle on the console's field map comes to him too, as its watcher, and seats no side.
+- On a phone his page is in tabs (Forces, Map, Fight while a fight is on, News), the fight's opened when it begins.
 
 Needs Python's playwright with Chromium and a built site. Exits non-zero on any failure.
 """
+from pathlib import Path
 from playwright.sync_api import sync_playwright
 from roomharness import check, failures, serve
 
@@ -129,6 +131,22 @@ try:
         check(fin.evaluate("() => document.body.classList.contains('watching')") and fin.evaluate("() => document.querySelectorAll('#map g.unit').length") == 4,
               "a battle on the console's field map comes to him as its watcher, every unit shown")
         check(ff.evaluate("() => NETF.seats.some(p => p.relay && p.watch) && !seatedSide(0) && !seatedSide(1)"), "and seats no side there")
+        # his page on a phone: in tabs, the battle's first while it is on
+        w.set_viewport_size({"width": 390, "height": 844})
+        tabs = [t for t in w.locator("#p-tabs button:visible").all_inner_texts()]
+        check(tabs == ["Forces", "Map", "Fight", "News"] and w.get_attribute('#p-tabs [data-tab="fight"]', "aria-pressed") == "true"
+              and w.is_visible("#p-fight") and not w.is_visible("#p-force"), f"on a phone his page is in tabs, the battle's open while it is on ({tabs})")
+        w.click('#p-tabs [data-tab="map"]')
+        check(w.is_visible("#p-mapbox iframe") and not w.is_visible("#p-fight") and not w.is_visible("#p-news"), "the Map tab shows his map alone")
+        w.wait_for_timeout(400)
+        w.screenshot(path=str(Path(__file__).parent / ".cache" / "campaign-watcher-phone.png"))
+        w.click('#p-tabs [data-tab="news"]')
+        check(w.is_visible("#p-news") and not w.is_visible("#p-mapbox"), "the News tab shows the news")
+        gm.evaluate("() => show('travel.html')")
+        w.wait_for_function("() => document.querySelector('#p-tabs [data-tab=fight]').hidden", timeout=15000)
+        check(w.is_visible("#p-force") and w.get_attribute('#p-tabs [data-tab="forces"]', "aria-pressed") == "true", "the battle over, its tab goes and his page is back on the forces")
+        w.set_viewport_size({"width": 1100, "height": 900})
+        check(w.is_visible("#p-force") and w.is_visible("#p-news") and not w.is_visible("#p-tabs"), "on a wider screen every panel shows, with no tabs")
         check(not errors, f"no page errors {errors[:3]}")
         br.close()
 finally:
