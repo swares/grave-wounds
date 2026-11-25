@@ -195,7 +195,8 @@ def _label(B: dict, L: dict, geo: dict) -> str:
     x = {"left": 0.05, "mid": geo["w"] / 2, "right": geo["w"] - 0.08}.get(L["x"]) if isinstance(L["x"], str) else geo["hex"] * L["x"]
     y = {"top": geo["top"], "bottom": geo["h"]}.get(L["y"]) if isinstance(L["y"], str) else geo["top"] + geo["r"] + L["y"] * 1.5 * geo["r"]
     style = (' font-style="italic"' if L.get("italic") else "") + (' font-weight="bold"' if L.get("bold") else "")
-    anchor = f' text-anchor="{L["anchor"]}"' if L.get("anchor", "middle") != "start" else ""
+    a = L.get("anchor", "middle")
+    anchor = f' text-anchor="{a}"' if a != "start" else ""
     return f'<text x="{x:.3f}" y="{y + L.get("dy", 0):.3f}" font-size="{L.get("size", 0.16)}"{anchor}{style}>{html.escape(L["text"])}</text>'
 
 
@@ -220,9 +221,9 @@ def _battlemap() -> str:
         box = (w - 0.1) / TRACK
         track = "".join(f'<rect x="{0.05 + i * box:.3f}" y="0.2" width="{box - 0.03:.3f}" height="0.32" fill="#fff" stroke="#7d8590" stroke-width="0.012"/>'
                         f'<text x="{0.05 + i * box + box / 2:.3f}" y="0.42" font-size="0.15" text-anchor="middle">{TRACK - i}</text>' for i in range(TRACK))
-        track += f'<text x="0.05" y="0.15" font-size="0.13">{e(B["track_label"].format(track=TRACK), quote=False)}</text>'
     geo = {"w": w, "h": h, "top": top, "r": r, "hex": HEX}
-    labels = "".join(_label(B, L, geo) for L in B.get("labels", []))
+    labels = (f'<text x="0.05" y="0.15" font-size="0.13">{e(B["track_label"].format(track=TRACK), quote=False)}</text>' if TRACK else "")   # the track's word, then the map's
+    labels += "".join(_label(B, L, geo) for L in B.get("labels", []))
     return (f'<svg class="mapsheet" viewBox="0 0 {w:.3f} {h + 0.02:.3f}" width="{w:.3f}in" height="{h + 0.02:.3f}in" role="img" '
             f'aria-label="{e(B["aria"])}">'
             f'{track}{"".join(hexes)}{labels}</svg>')
