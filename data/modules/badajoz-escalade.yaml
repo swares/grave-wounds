@@ -36,7 +36,7 @@ men:
   - {name: "George Costello", role: leech}
 # The French on this stretch of the rampart: the escalade came where the wall was thinly held (ours). The
 # roller's ESCALADE (templates/roller.html) lists the same men. With the script playing both sides to a finish
-# (tools/campaign/escalade.py, 12 fights) the four held in 3 against five French, and in 6 against these four
+# (tools/campaign/modulefight.py escalade, 12 fights) the four held in 3 against five French, and in 6 against these four
 # (Ferrybridge's four: 5 of 12). The ladders, on paper only, are the French side's advantage.
 foes:
   - {name: "Fusilier", kit: none, weapon: musket_smoothbore, quality: regular}
