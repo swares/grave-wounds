@@ -6,6 +6,8 @@ A fortified camp from the travel map (its ditch, bank, palisade and one gate), e
 outside, all with swords:
 - Gate barred: no way in, so the script presses up to the works as the crow flies, as before (no way round given).
 - Gate open: a raider far from it goes round towards it, each step bringing him nearer by the way in.
+- A friend fighting in the gate holds it: the man behind him has no way through, so he presses up to the works
+  instead of walking back and forth; once no one fights there, the way is open again.
 - Half built (gaps in the palisade): the way round goes through the gaps.
 - Open ground: no works, so no way round is worked out at all.
 - A river across open ground with a ford: a man heads along it for the ford. With no crossing anywhere, he goes
@@ -57,6 +59,18 @@ try:
         pg.evaluate(SET_UP, [HANDOFF, True])
         r = pg.evaluate(TURN, "The raiders 1")
         check(r[0] and r[2] < r[1], f"gate open: he goes round by the gate, nearer by the way in ({r[1]} to {r[2]} steps; as the crow flies {r[3]} to {r[4]})")
+
+        gate = pg.evaluate("() => Object.entries(S.works.edges).find(([, v]) => v.some(i => i.type === 'gate'))[1].find(i => i.type === 'gate').inside")
+        held = pg.evaluate("""g => { const [gc, gr] = g.split(',').map(Number), ours = S.chars.filter(c => sideOf(c) === 'York'), theirs = S.chars.filter(c => sideOf(c) === 'Lancaster');
+          const gateTo = neighbours([gc, gr], S.map.cols, S.map.rows).find(n => (S.works.edges[edgeKey([gc, gr], n)] || []).some(i => i.type === 'gate'));
+          for (const c of S.chars) c.pos = null;
+          ours[0].pos = [gc, gr]; theirs[0].pos = gateTo;           // the gate held: our man in it, fighting theirs outside
+          ours[1].pos = neighbours([gc, gr], S.map.cols, S.map.rows).find(n => n !== gateTo && hexDistance(n, gateTo) === 2);   // a man behind him
+          const foes = theirs.filter(c => c.pos), behind = !!wayRound(ours[1], foes).pathDist;
+          theirs[0].pos = [gateTo[0], Math.max(0, gateTo[1] - 4)];    // the enemy steps back: the gate is no longer fought in
+          const free = !!wayRound(ours[1], foes).pathDist;
+          return [behind, free] }""", gate)
+        check(held == [False, True], f"a friend fighting in the gate holds it: the man behind him has no way through, and presses up to the works; once no one fights there, the way is open ({held})")
 
         half = {**HANDOFF, "done": 300, "built": 60}
         pg.evaluate(SET_UP, [half, False])
