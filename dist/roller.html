@@ -1786,7 +1786,8 @@ if (typeof module !== "undefined") module.exports = { LOG_KEEP, GM_SEAT, sideSea
      view.storming  optional: his side storms a wall by its ladders and he is still below its top; he
                     makes for the ladders and over, rather than stand and shoot from below (ours)
      view.pathDist(hex) -> optional: steps from that hex to the nearest enemy going round works a man
-                    cannot cross (a wall with ladders); when given, closing in and falling back go by it
+                    cannot cross (a palisade's gate or gap, a wall's ladders); when given, closing in and
+                    falling back go by it
      view.coverAt(hex) -> the cover % a shooter would have there
      view.losing    his side is near breaking (morale)
      view.stance    "cautious" | "steady" | "reckless" (the GM's setting for the side)
@@ -4218,9 +4219,20 @@ function brainView(c){                             // what the script sees of th
     enemies: foes.map(o => ({ id: o.id, hex: hkey(o.pos), frac: o.blood / poolOf(o), ...kitArmour(o.kit) })),
     dist: (a, b) => hexDistance(parseHex(a), parseHex(b)),
     coverAt: hex => groundCover(S.ground, parseHex(hex)).cover,
-    ...(S.ladders ? { pathDist: worksDistance(foes) } : {}),   // a wall with ladders: how far round by the ladders, not as the crow flies
+    ...wayRound(c, foes),                            // works a man cannot cross: how far round (by a gate, a gap, the ladders), not as the crow flies
     storming: !!S.storm && S.storm.side === sideOf(c) && levelAt(S.ground, c.pos) < S.storm.level,   // his side storms the wall and he is not up yet
   };
+}
+function worksStop(){                               // the map has works a man cannot cross: ladders, a wall, palisade, chevaux, barred gate, wagon
+  if (S.ladders) return true;
+  const W = S.works || {}, none = v => v === null || v === undefined;
+  const edgeStops = it => { const sp = specOf("edge", it); return intact("edge", it) && (sp.gate ? !it.open : none(sp.cross)) };
+  return Object.values(W.edges || {}).some(items => items.some(edgeStops)) || Object.values(W.hexes || {}).some(it => intact("hex", it) && none(specOf("hex", it).enter));
+}
+function wayRound(c, foes){                          // {pathDist} for the script when works stop men and there is a way round from where he stands; {} otherwise (no works in the way, or none open to him: he presses up to them as the crow flies)
+  if (!foes.length || !worksStop()) return {};
+  const d = worksDistance(foes);
+  return Number.isFinite(d(hkey(c.pos))) ? { pathDist: d } : {};
 }
 function worksDistance(foes){                      // hex -> steps to the nearest of these men, going only where the works let a man step (ladders count as steps)
   const { cols, rows } = mapSize(), d = new Map(), q = foes.map(o => o.pos);
