@@ -1,5 +1,6 @@
 """Making a man on paper: an era's tables for the five steps of Making a team (the Rules), as the
-team builder rolls them (templates/team.js, gravewounds/team.py), from data/teams.
+team builder rolls them (templates/team.js, gravewounds/team.py), from data/teams; and his age
+(data/ageing.yaml, as gravewounds/ageing.py rolls it).
 
 The tables: each skill's characteristic and divisor; the origins on d100 (equal shares, the men's
 and the women's lists); each career's main and second skills, wound chance, kit and weapon by
@@ -71,6 +72,35 @@ def rows(d: Data, eid: str) -> dict:
             lo = t["to"] + 1
     out["terms"] = (["Career", "d100", "Skill +" + str(E["gain"]), "Event (* an old wound)"], terms)
     out["sides"] = (["Side", "Old wounds roll on"], [[r["name"], d.tables.get(r.get("table"), {}).get("name", r.get("table") or "-")] for r in E["regions"]])
+    out.update(age_rows(d, eid))
+    return out
+
+
+def age_rows(d: Data, eid: str) -> dict:
+    """The age tables (data/ageing.yaml, as gravewounds/ageing.py rolls them): each side's least and most age
+    for service and the d100 for his age at enlistment (none where the era has no limits), and the ageing
+    every few years: the dice each characteristic loses by age band, and maturity."""
+    A = d.ageing or {}
+    if not A:
+        return {}
+    E, out = A["enlist"], {}
+    eras = E["eras"].get(eid)
+    if eras:
+        from .ageing import limits
+        sh = E["shares"].get(eid, E["shares"]["default"])
+        out["age_limits"] = (["Side", "Least age", "Most age", "Source"],
+                             [[r["name"], limits(d, eid, r["id"])["min"], limits(d, eid, r["id"])["max"],
+                               (eras.get("regions") or {}).get(r["id"], {}).get("source") or eras.get("source", "")] for r in d.teams[eid]["regions"]])
+        lo, hi = sh["under"], 100 - sh["older"]
+        out["age_roll"] = (["d100", "His age at enlistment"],
+                           [[f"01–{lo:02d}" if lo > 1 else "01", f"A boy under age: the least less 1 to {E['under_years']} years. He lied: each end of a season he is found out at {E['found_out']}% and sent home, until he is of age."],
+                            [f"{lo + 1:02d}–{hi:02d}", f"The era's start age ({d.teams[eid]['age']['start']}), raised to the least."],
+                            [f"{hi + 1:02d}–00" if hi < 99 else "00", f"An older recruit: {E['older_from']} to the most plus {E['over_years']} years, as you choose or roll. Over the most, he lied (found out as a boy is, until his first term is served). From {E['older_from']} he takes twice the Wear."]])
+    names = {"str": "Strength", "agi": "Agility", "end": "Endurance", "wits": "Wits"}
+    dice = lambda b, k: f"{b[k][0]}d{b[k][1]}" if b.get(k) else "–"
+    bands = A["decline"]
+    out["ageing"] = (["Age (middle of the 4 years)", *names.values()],
+                     [(f"Under {bands[i + 1]['from']}" if not b["from"] else f"{b['from']}–{bands[i + 1]['from'] - 1}") if i + 1 < len(bands) else f"{b['from']} and over", *[dice(b, k) for k in names]] for i, b in enumerate(bands)])
     return out
 
 
@@ -85,7 +115,8 @@ def book_tables(d: Data, eid: str) -> dict:
 
 
 TITLES = {"skills": "Skills: where each starts", "origins": "Origins (d100)", "origins_f": "Origins of a woman (d100)",
-          "career_kit": "Careers: skills, old-wound chance, kit and weapon", "terms": "Career terms (d100)", "sides": "Sides and their wound tables"}
+          "career_kit": "Careers: skills, old-wound chance, kit and weapon", "terms": "Career terms (d100)", "sides": "Sides and their wound tables",
+          "age_limits": "Ages for service, by side", "age_roll": "His age at enlistment (d100)", "ageing": "Ageing: what he loses every 4 years"}
 
 
 def _table(head, body) -> str:
@@ -104,17 +135,33 @@ def steps(d: Data, eid: str) -> str:
 <li><b>Characteristics.</b> Roll 3d6 × 5 for each in order ({chars}; {E['stat_range'][0]} to 90), or place the array {', '.join(map(str, E['array']))}, highest where his career wants it.</li>
 <li><b>Side and career.</b> Choose his side (its army) and his career. A woman's career is open only where the side's women's rules allow it (the Rules' Women under arms).</li>
 <li><b>Origin.</b> Roll d100 on the origin table: one skill +{E['gain']}, a trait and a drawback.</li>
-<li><b>Career terms.</b> The leader serves three, the others one or two. Each term: the main skill +{E['first_term']} in the first term, +{E['term_main']} after; the second skill +{E['term_second']}; and d100 on the career's terms for an event, its skill +{E['gain']}. An event he has had already moves to the next row down (from the last, to the first). He starts at about {E['age']['start']} and is {E['age']['per_term']} years older a term.</li>
+<li><b>Career terms.</b> The leader serves three, the others one or two. Each term: the main skill +{E['first_term']} in the first term, +{E['term_main']} after; the second skill +{E['term_second']}; and d100 on the career's terms for an event, its skill +{E['gain']}. An event he has had already moves to the next row down (from the last, to the first).</li>
 <li><b>Old wounds.</b> Each term, an event marked * leaves an old wound, and so does a d100 at or under the career's old-wound chance. Roll its place on his side's wound table (the printed tables), in the column of the career's weapon in brackets (the first column if it has none), then d100: up to {scar} a healed scar; above, a lasting hurt, −{E['lasting']} to {lasting}.</li>
+<li><b>Age.</b> {age_step(d, eid)}</li>
 <li><b>Skills and kit.</b> Each skill starts at its characteristic ÷ the divisor (rounded down), plus what he gained, to {E['skill_max']} at most. His defence is his {defence}. Kit and weapon come with his career and side; a purse of Days for each term (the Rules' Money).</li>
 </ol>"""
+
+
+def age_step(d: Data, eid: str) -> str:
+    """His age, on paper: enlistment, then every 4 years of his terms, as the team builder ages him."""
+    A, E = d.ageing or {}, d.teams[eid]
+    if not A:
+        return f"He starts at about {E['age']['start']} and is {E['age']['per_term']} years older a term."
+    M, W, st = A["maturity"], A["wear"], A["step"]
+    enl = (f"Roll d100 on <i>His age at enlistment</i> for his side's least and most ages. "
+           if A["enlist"]["eras"].get(eid) else f"He enlists at {E['age']['start']} (this era has no limits). ")
+    return (enl + f"He is {E['age']['per_term']} year{'s' if E['age']['per_term'] > 1 else ''} older a term. For every {st} years of his terms, "
+            f"from his age at enlistment: roll the dice of <i>Ageing</i> for the middle of those years (2 years older for each {W['per']} Wear) "
+            f"and take them off each characteristic (Endurance twice, the worse, from {W['end_twice']} Wear); from {M['from']}, add 1 to Presence and Nerve "
+            f"while under {M['pres']['to']}, and to Wits while under {M['wits']['to']} ({M['pres']['cap']} each at most); and mark {W['per_step']} Wear. "
+            "Skills fall with their characteristics.")
 
 
 def sheet(d: Data, eid: str) -> str:
     E = d.teams[eid]
     chars = "".join(f"<tr><th>{esc(c['name'])}</th><td></td></tr>" for c in E["characteristics"])
     skills = "".join(f"<tr><th>{esc(s['name'])}</th><td></td></tr>" for s in E["skills"])
-    lines = "".join(f"<tr><th>{x}</th><td></td></tr>" for x in ("Name", "Side", "Career", "Terms and age", "Origin", "Trait", "Drawback",
+    lines = "".join(f"<tr><th>{x}</th><td></td></tr>" for x in ("Name", "Side", "Career", "Terms and age", "Enlisted at", "Wear", "Origin", "Trait", "Drawback",
                                                                   "Events", "Old wounds", "Kit", "Weapon", "Defence", "Blood", "Purse (Days)"))
     return (f"<div class='sheet'><h3>A man: {esc(E['name'])}</h3><div class='cols'><table class='blank'>{lines}</table>"
             f"<div><table class='blank'>{chars}</table><table class='blank'>{skills}</table></div></div></div>")
