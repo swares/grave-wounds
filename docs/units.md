@@ -1012,7 +1012,10 @@ general. All its numbers are in units.yaml `commander`.
   - Its off-map batteries (not tanks) with no mission are called on the enemy unit it sees
     now that scores best as a target. It fires at the first of that unit's hexes its side
     can see and the battery reaches, and never where its own men are within the burst and
-    scatter.
+    scatter, nor (mortars and guns) within 10 hexes, 100 m: danger close (`indirect.danger`;
+    ours, after Tumbledown, where the marines' mortars fell on Left Flank 110 m from their own
+    platoon and put down twice the battalion's losses of the night). A creeping barrage keeps
+    to the burst and scatter.
   - **Aircraft.** Its aircraft on call with attacks left are called the same way, unless the
     weather or the dark grounds them. Fighter-bombers come in two exchanges later; a forward
     air controller of its side who sees the aim cuts their scatter as usual.

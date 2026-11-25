@@ -3474,7 +3474,7 @@ function shootingAt(us, side, known){              // [[distance, enemy index]],
   }
   return [...seen.values()].sort((a, b) => a[0] - b[0] || a[1] - b[1]);
 }
-function fireAim(us, side, field, known, b, K, attacking = false){   // [enemy index, hex, planned] to fire on, or null: none of its men within burst and scatter (airScatter, more for planned fire); aircraft prefer an aim a controller sees (as commander._fire_aim)
+function fireAim(us, side, field, known, b, K, attacking = false){   // [enemy index, hex, planned] to fire on, or null: none of its men within burst and scatter (airScatter, more for planned fire), nor, a battery, within indirect.danger; aircraft prefer an aim a controller sees (as commander._fire_aim)
   const ours = us.filter(u => u.side === side && u.men > 0 && u.state !== "fled"), P = UD.indirect.planned;
   const plan = !!P && !K.air && !K.direct;   // the attacker's guns have the defenders' positions from before the battle; the defender's, its defensive fire round its own
   let best = null;
@@ -3483,7 +3483,7 @@ function fireAim(us, side, field, known, b, K, attacking = false){   // [enemy i
     const seen = String(j) in known ? marksOf(e).find(x => spotted(us, field, side, x)) : undefined;
     const planned = !seen && plan && (attacking ? nearLocated(field, e) : !!b.df && nearOwn(field, side, e));
     const h = seen || (planned ? e.pos : undefined);
-    if (!h || !inReach(b, h) || tooNear(ours, h, K.radius + airScatter(us, field, b, K, h) + (planned ? P.scatter : 0))) return;
+    if (!h || !inReach(b, h) || tooNear(ours, h, Math.max(K.air || K.direct ? 0 : UD.indirect.danger || 0, K.radius + airScatter(us, field, b, K, h) + (planned ? P.scatter : 0)))) return;
     const u = ours.reduce((a, o) => (hdist(o.pos, e.pos) < hdist(a.pos, e.pos) ? o : a), ours[0]);
     const talked = !!K.air && facSees(us, field, b, h), sc = threatScore(u, e, e);
     if (!best || (talked && !best[0]) || (talked === best[0] && sc > best[1])) best = [talked, sc, [j, [...h], planned]];
