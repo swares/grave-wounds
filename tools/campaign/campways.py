@@ -1,4 +1,4 @@
-"""The GM's script in a camp with works (the roller), in a headless browser: the way round, not as the crow flies.
+"""The GM's script among works and rivers (the roller), in a headless browser: the way round, not as the crow flies.
 
     python3 tools/campaign/campways.py
 
@@ -8,6 +8,8 @@ outside, all with swords:
 - Gate open: a raider far from it goes round towards it, each step bringing him nearer by the way in.
 - Half built (gaps in the palisade): the way round goes through the gaps.
 - Open ground: no works, so no way round is worked out at all.
+- A river across open ground with a ford: a man heads along it for the ford. With no crossing anywhere, he goes
+  to the bank as the crow flies, as before.
 
 Needs Python's playwright with Chromium and a built site. Exits non-zero on any failure.
 """
@@ -65,6 +67,20 @@ try:
         pg.evaluate("() => { S.works = { edges: {}, hexes: {} }; renderChars() }")
         check(not pg.evaluate("() => worksStop()") and pg.evaluate("() => !wayRound(S.chars[0], S.chars.filter(o => sideOf(o) !== sideOf(S.chars[0]))).pathDist"),
               "open ground: no works in the way, so none is worked out (the script closes in as the crow flies)")
+        # a river across open ground, with a ford at one end: he heads for the ford; with no crossing, to the bank as before
+        RIVER = """ford => { S.chars = []; S.map = { cols: 24, rows: 16 }; const kinds = {};
+          for (let c = 0; c < 24; c++) for (const r of [7, 8]) kinds[c + ',' + r] = ford && (c === 4 || c === 5) ? 'marsh' : 'water';
+          S.ground = { kinds, levels: {} }; S.works = { edges: {}, hexes: {} };
+          for (let i = 0; i < 3; i++){ const a = newChar('North ' + (i + 1), 'none', 'sword', {}, 'North'); a.pos = [12 + i, 1]; S.chars.push(a);
+            const b = newChar('South ' + (i + 1), 'none', 'sword', {}, 'South'); b.pos = [12 + i, 14]; S.chars.push(b) }
+          gmStart(); for (const sd of sidesInOrder()) S.gm.sides[sd].ctl = 'script'; S.gm.auto = false; renderChars() }"""
+        pg.evaluate(RIVER, True)
+        r = pg.evaluate(TURN, "North 1")
+        pos = pg.evaluate("() => S.chars.find(c => c.name === 'North 1').pos")
+        check(r[0] and r[2] < r[1] and pos[0] < 12, f"a river with a ford: he heads along it for the ford ({r[1]} to {r[2]} steps, now at {pos})")
+        pg.evaluate(RIVER, False)
+        r = pg.evaluate(TURN, "North 1")
+        check(not r[0] and r[4] < r[3], f"no crossing at all: no way round, so he goes to the bank as the crow flies ({r[3]} to {r[4]} hexes)")
         check(not errors, f"no page errors {errors[:3]}")
         br.close()
 finally:

@@ -19,7 +19,7 @@
      view.storming  optional: his side storms a wall by its ladders and he is still below its top; he
                     makes for the ladders and over, rather than stand and shoot from below (ours)
      view.pathDist(hex) -> optional: steps from that hex to the nearest enemy going round works a man
-                    cannot cross (a palisade's gate or gap, a wall's ladders); when given, closing in and
+                    cannot cross (a palisade's gate or gap, a wall's ladders, a river's ford or bridge); when given, closing in and
                     falling back go by it
      view.coverAt(hex) -> the cover % a shooter would have there
      view.losing    his side is near breaking (morale)

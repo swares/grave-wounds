@@ -78,7 +78,7 @@ jobs:
         run: python3 tools/campaign/modulefight.py baggage
       - name: "The escalade module's fight on the roller"
         run: python3 tools/campaign/modulefight.py escalade
-      - name: The GM's script goes round a camp's works by its gate or gaps
+      - name: The GM's script goes round a camp's works by its gate or gaps, and a river by its ford
         run: python3 tools/campaign/campways.py
       - name: Camp roles and the evening council on the campaign console
         run: python3 tools/campaign/council.py
