@@ -2480,7 +2480,16 @@ def storming(d: Data, u: dict, t: dict, field: dict | None, stance: str) -> bool
         return False
     if _enveloping(u) and (_charging(u, t) or U.arc(t["facing"], U.bearing(t["pos"], u["pos"])) != "front"):
         return True
-    return stance == "attack" and (U.holds_works(d, field, u["pos"], t) or U.at_works(d, field, t))
+    return stance == "attack" and (U.holds_works(d, field, u["pos"], t) or U.at_works(d, field, t) or _carries(d, u, t, field))
+
+
+def _carries(d: Data, u: dict, t: dict, field: dict | None) -> bool:
+    """Black powder with the bayonet (commander.storm_objective), its target on the side's objective
+    (within its radius): it is carried with the bayonet, not fired at."""
+    obj = (field or {}).get("objective")
+    if not obj or u["weapon"] not in (d.units["commander"].get("storm_objective") or []):
+        return False
+    return U.off_objective(d, t, obj) <= U.objective_radii(d, field)[0]
 
 
 def support(d: Data, us: list, i: int) -> int:

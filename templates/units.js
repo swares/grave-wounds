@@ -4216,7 +4216,11 @@ function bounding(us, i, t){                     // storming in bounds (commande
 function storming(u, t, field, stance){           // attacking, armed for storming (black powder with the bayonet), its target holding works: it closes and charges; so does one so armed gone round on a plan with the target's flank or rear, whatever the stance (as commander.storming)
   if (!UD.commander.storm.includes(u.weapon)) return false;
   if (enveloping(u) && (charging(u, t) || arc(t.facing, bearing(t.pos, u.pos)) !== "front")) return true;   // in with the bayonet
-  return stance === "attack" && (holdsWorks(field, u.pos, t) || atWorks(field, t));
+  return stance === "attack" && (holdsWorks(field, u.pos, t) || atWorks(field, t) || carries(u, t, field));
+}
+function carries(u, t, field){                     // black powder with the bayonet, its target on the side's objective (within its radius): carried with the bayonet, not fired at (commander.storm_objective)
+  const obj = objectiveOf(field);
+  return obj !== null && (UD.commander.storm_objective || []).includes(u.weapon) && offObjective(t, obj) <= objectiveRadii(field)[0];
 }
 function support(us, i){                          // men times attack % of the steady friendly units (not guns or vehicles) touching unit i: they go in with it (as commander.support)
   const u = us[i], near = new Set(footprint(u).flat().flatMap(h => [0, 1, 2, 3, 4, 5].map(n => hk(step(h, n)))));

@@ -1288,6 +1288,13 @@ commander:
   # trading fire at range). So armed, a unit gone round on a plan (an envelopment) with its
   # target's flank or rear goes in too, at any odds (Burgos 1812). Design choice.
   storm: [musket_smoothbore, rifle_musket, breechloader, rifle_service, rifle_assault, pistol_smg]
+  # storm_objective: attacking, a unit armed with one of these whose target stands on its side's
+  #   objective (within its radius) closes and charges it as storming, works or not: the objective is
+  #   carried with the bayonet. At Ciudad Rodrigo (self-play) the town was taken but 145 French left
+  #   at the lesser breach, in the open within the objective's radius, held off some 2,000 Allied
+  #   infantry who stood and fired at them in the dark for 45 exchanges, and the run ran out of time.
+  #   Black powder only (measuring).
+  storm_objective: [musket_smoothbore, rifle_musket]
   # bounds: storming in bounds. A storming unit with a modern weapon (ground_with) that heeds cover
   # (regulars and better) and was fired on (hit or not: a unit lying under fire that lost no one
   # has still drawn fire) or pinned in the last exchange goes to ground where it is
