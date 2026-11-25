@@ -211,7 +211,8 @@ def _switched_on(d: Data, B: dict) -> str:
 
 TEAM_TABLES = (("careers", "Careers"), ("pm_skills", "Skills: where each starts"), ("pm_origins", "Origins (d100)"),
                ("pm_origins_f", "Origins of a woman (d100)"), ("pm_career_kit", "Careers: old wounds, kit and weapon"),
-               ("pm_terms", "Career terms (d100)"), ("fq", "Followers"), ("ranks", "Ranks"), ("jobs", "Work between fights"),
+               ("pm_terms", "Career terms (d100)"), ("pm_age_limits", "Ages for service, by side"), ("pm_age_roll", "His age at enlistment (d100)"),
+               ("pm_ageing", "Ageing: what he loses every 4 years"), ("fq", "Followers"), ("ranks", "Ranks"), ("jobs", "Work between fights"),
                ("job_trouble", "Trouble at work"), ("skill_uses", "What each skill is for"))
 
 
