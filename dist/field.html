@@ -9931,7 +9931,8 @@ function fieldStatus(){                              // the battle as the GM's c
   if (S.phase === "setup") phase = "setup";
   else if (S.phase === 0 || S.phase === 1) phase = "moving";
   return { phase, exchange: S.exchange || 0, moving: moving(), msg: S.msg || "", running: !!RUN, both: bothAi(),
-    handoff: HANDOFF ? `${HANDOFF.place}, ${HANDOFF.day}` : null, fromTravel: !!S.from, sent: !!S.from?.sent,
+    handoff: HANDOFF ? `${HANDOFF.place}, ${HANDOFF.day}` : null, fromTravel: !!S.from, sent: !!S.from?.sent, handoffKey: S.from?.battle || null,
+    stop: S.phase === 0 || S.phase === 1 ? LAST_EX?.stop?.why || null : null,   // why a self-played run would stop here: a side gone, the time up (a console with no GM ends it)
     sides: S.sides.map(fieldSideStatus), lines: (S.log || []).slice(0, 8).map(l => l.text) };
 }
 function consolePush(){                             // after each change, the console hears of it
@@ -9969,7 +9970,8 @@ const RELAYF = { list: [] };
 function relayFieldTell(id, m){
   try { window.parent.postMessage({ gw: "field", relay: { id, m } }, fieldSite()) } catch { /* the console has gone */ }
 }
-function relayFieldSide(x){                         // the side of the first unit with one of his men as its hero, or null
+function relayFieldSide(x){                         // the side he commands on the travel map, if it fights here; else the side of the first unit with one of his men as its hero; or null
+  if (typeof x.side === "string" && S.from && S.sides.includes(x.side)) return x.side;
   const pids = Array.isArray(x.pids) ? x.pids : [];
   const u = S.units.find(v => (v.heroes || []).some(h => h.pid && pids.includes(h.pid)));
   return u ? u.side : null;

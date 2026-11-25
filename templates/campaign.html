@@ -526,7 +526,10 @@ function runMarch(){                                  // one press: the day move
     MAP_CHOICE[cf.id] ||= cf.on;
     return sendFight(cf.id, cf.k);
   }
-  if (r.met.length){
+  if (r.met.length && REC.noGM){
+    $("#c-notice").textContent = `${r.met.map(p => p.join(" and ")).join("; ")} have met: each commander may attack from his seat.`;
+    $("#c-notice").hidden = false;
+  } else if (r.met.length){
     const who = r.met.map(p => p.join(" and ")).join("; ");
     $("#c-notice").textContent = `${who} have met. Set up the fight on the travel map: the force is selected there; choose Fight here.`;
     $("#c-notice").hidden = false;
@@ -572,7 +575,7 @@ window.addEventListener("message", e => {
   if (SITE !== "*" && e.origin !== SITE) return;
   if (e.data?.relay && ((e.data.gw === "roller" && e.source === rollerFrame()) || (e.data.gw === "field" && e.source === fieldFrame()))) return relayOut(e.data.relay);   // a player's fight screen, for him
   if (e.data?.gw === "roller" && e.source === rollerFrame()) FIGHT = e.data.status;
-  else if (e.data?.gw === "field" && e.source === fieldFrame()) FIELD = e.data.status;
+  else if (e.data?.gw === "field" && e.source === fieldFrame()){ FIELD = e.data.status; noGMField(FIELD) }
   else return;
   renderFight();
 });
@@ -730,6 +733,7 @@ $("#c-march").addEventListener("click", e => {
 $("#c-march").addEventListener("change", e => {
   const sel = e.target.closest("select[data-fightmap]");
   if (sel) MAP_CHOICE[+sel.dataset.fightmap] = sel.value;
+  if (e.target.id === "c-nogm"){ REC.noGM = e.target.checked; note(REC.noGM ? "No GM: the commanders run the campaign." : "The GM runs the campaign.", true); saveRecord(); render(); playersSync(); return noGMClock() }
   const mb = e.target.closest("select[data-movedby]");
   if (mb){ note(newDay().setCommander(mb.dataset.movedby, mb.value || null)); mb.blur(); return render() }
   const pick = e.target.closest("select[data-pick]");
@@ -745,7 +749,7 @@ $("#c-add-note").addEventListener("click", () => {
 });
 $("#c-note").addEventListener("keydown", e => { if (e.key === "Enter") $("#c-add-note").click() });
 $("#c-frame").addEventListener("load", () => { showing(); FIGHT = null; FIELD = null; relayGone(); renderFight(); tellRoller("status"); tellField("status") });
-const PLAYER_PAGE = /^#(join=|room)/.test(location.hash);   // opened from a GM's invitation (a link, or a room code)   // opened from a GM's invitation: the player's page, not the console
+const PLAYER_PAGE = /^#(join=|room|seat=)/.test(location.hash);   // opened from a GM's invitation (a link, or a room code)   // opened from a GM's invitation: the player's page, not the console
 if (!PLAYER_PAGE){
   window.addEventListener("storage", e => { if (!e.key || e.key.startsWith(CAMPAIGN.PREFIX)) render() });   // a page in the frame wrote: look again
   setInterval(render, 3000);                           // and now and then, in case a write was missed
@@ -1053,25 +1057,89 @@ function forceHtml(v, pl = null){                      // the forces his men are
     <p style="margin:0">${esc(f.order)} · at ${esc(f.where)} · ${f.fit}/${f.men} fit · ${esc(f.fatigue)}</p>
     <p class="muted" style="margin:0">${f.route ? "Route: " + esc(f.route) : "No route."}</p>
     ${f.log.length ? '<ol class="log" style="max-height:9rem">' + f.log.map(l => "<li>" + esc(l) + "</li>").join("") + "</ol>" : ""}${pl ? councilSeatHtml(pl, f) + proposeHtml(pl, f) : ""}`;
-  return head + (pl?.side ? readyHtml(pl) : "") + v.forces.map(one).join("");
+  return head + (pl?.side ? readyHtml(pl) + seatFightsHtml(pl) : "") + v.forces.map(one).join("");
 }
 function readyHtml(pl){                                // a side's commander: his orders given, the clock may run
   const others = players().filter(x => x.side && x !== pl).map(x => `${esc(x.name)} ${x.ready ? "ready" : "not yet"}`).join(", ");
   return `<p class="toolbar" style="margin:0"><b>You command ${esc(pl.side)}.</b> Give each force its orders, then
     <button type="button" class="small${pl.ready ? "" : " primary"}" data-ready="${pl.ready ? "" : "1"}">${pl.ready ? "Not ready yet" : "Ready: run the clock"}</button>
-    <span class="muted">${pl.ready ? "The GM runs the clock when every commander is ready." : "The GM waits for you."}${others ? " Others: " + others + "." : ""}</span></p>`;
+    <span class="muted">${readyWords(pl)}${others ? " Others: " + others + "." : ""}</span></p>`;
+}
+function readyWords(pl){                               // what waits on his being ready
+  if (REC.noGM) return pl.ready ? "The clock runs when every commander is ready." : "The clock waits for you.";
+  return pl.ready ? "The GM runs the clock when every commander is ready." : "The GM waits for you.";
 }
 function readyLine(){                                  // under Run the march: the commanders and whether each is ready
   const cmd = players().filter(pl => pl.side);
   if (!cmd.length) return "";
+  const nogm = `<label class="muted" style="display:inline-flex;gap:4px;align-items:center;font-size:.88rem" title="The clock runs when every commander is ready; the commanders attack from their seats; battles on a battlefield are set up, started, ended and sent back by themselves"><input type="checkbox" id="c-nogm"${REC.noGM ? " checked" : ""}> No GM: the commanders run it</label>`;
+  return `<p style="margin:0">${nogm}</p>` + readyList(cmd);
+}
+function readyList(cmd){
   const all = cmd.every(pl => pl.ready), who = pl => esc(pl.name) + " (" + esc(pl.side) + ") " + (pl.ready ? "ready" : "giving orders");
-  const end = all ? ". Every commander is ready: run the clock." : ".";
+  const end = all && !REC.noGM ? ". Every commander is ready: run the clock." : ".";
   return `<p style="margin:0" class="${all ? "" : "muted"}"><b>Commanders:</b> ${cmd.map(who).join("; ")}${end}</p>`;
 }
 function clocked(){                                    // the clock moved: every commander gives his next orders
   let any = false;
   for (const pl of players()) if (pl.ready){ pl.ready = false; any = true }
   if (any){ saveRecord(); playersSync() }
+}
+/* ---------- No GM: the commanders run it (REC.noGM) ----------
+   Two people command the sides on the travel map, with no GM. The clock runs when every commander is
+   ready; a commander attacks from the fights his forces are offered; a fight on a battlefield is set up,
+   started, ended (when a side has nothing standing, or the battlefield's time is up) and its result
+   taken into the travel map by this console, each commander moving his own side on the field map. One
+   of them may play at this console, from a seat in another tab of this browser (pl.local): his browser
+   holds the whole game, so he could look at the other side's forces here. It is for friends. */
+const commanders = () => players().filter(pl => pl.side);
+function noGMClock(){                                  // every commander ready: the clock runs
+  if (!REC.noGM || REC.phase !== "march" || !commanders().length || !commanders().every(pl => pl.ready)) return;
+  setTimeout(() => { if (REC.noGM && commanders().length && commanders().every(pl => pl.ready)) runMarch() }, 50);
+}
+function seatFights(pl){                               // the fights on offer in which every attacker is of his side: [{x, k, label}]
+  let fights = [];
+  try { fights = newDay().fightsOnOffer() } catch { return [] }
+  return fights.filter(x => x.attackers?.length && x.attackers.every(s => s === pl.side) && x.defenderSide !== pl.side)
+    .flatMap(x => x.options.map((o, k) => ({ x, k, label: `${o.label}: ${o.when}` })));
+}
+function seatFightsHtml(pl){                           // his side's fights on offer, with no GM: he may attack
+  if (!REC.noGM) return "";
+  const fs = seatFights(pl);
+  if (!fs.length) return "";
+  const where = x => (x.maps.some(([v]) => v.startsWith("field:")) ? "on its battlefield" : "on open ground: the host sets out the units");
+  const row = f => `<li><span>${esc(f.x.title)} <span class="muted">(${esc(where(f.x))})</span></span>
+    <button type="button" class="small${f.k ? "" : " primary"}" data-attack="${f.x.id}" data-k="${f.k}">${esc(f.label)}</button></li>`;
+  return `<h3 style="margin:0">Fights on offer</h3><p class="muted" style="margin:0;font-size:.88rem">Your forces are in reach of the enemy. Attack, or give other orders and let it pass.</p><ul class="fights">${fs.map(row).join("")}</ul>`;
+}
+function fightPage(x){                                 // with no GM, where a fight goes: its battlefield, else the field map on open ground
+  return x.maps.find(([v]) => v.startsWith("field:"))?.[0] || (x.maps.some(([v]) => v === "field") ? "field" : x.map);
+}
+function seatAttack(pl, m){                            // his side attacks: only a fight on offer to it, with no GM
+  if (!REC.noGM || !pl.side) return;
+  const f = seatFights(pl).find(y => y.x.id === +m.id && y.k === +m.k);
+  if (!f) return;
+  MAP_CHOICE[f.x.id] = fightPage(f.x);
+  note(`${pl.name} attacks with ${pl.side}: ${f.x.title}.`, false, "march");
+  sendFight(f.x.id, f.k);
+  playersSync();
+}
+const NG = { battle: null };                           // the battle this console is running with no GM: what it has done for it
+function noGMField(f){                                 // the field map's word, with no GM: set up, start, end and send back a battle from the travel map
+  if (!REC.noGM || !f) return;
+  if (f.handoff) return tellField("setup");
+  if (!f.fromTravel) return;
+  const key = f.handoffKey || "battle";
+  if (NG.battle !== key) NG.battle = key;
+  if (f.phase === "setup") return tellField("next");  // the armies stand as drawn up: the battle starts
+  if (f.phase === "moving" && (f.stop === "gone" || f.stop === "limit")) return tellField("end");
+  if (f.phase === "over" && !f.sent) return tellField("send");
+  if (f.phase === "over" && f.sent && NG.taken !== key){
+    NG.taken = key;
+    const said = newDay().takeBattle();
+    note(said || "The battle's result was already on the travel map", false, "march");
+    setTimeout(() => { setPhase("march", "the battle is over"); render(); show("travel.html"); playersSync() }, 0);
+  }
 }
 function newsHtml(seat){                              // the campaign's log as this seat hears it, newest first
   const lines = viewFor(REC.log, seat).filter(e => e.full && e.data.kind !== "march").slice(-40).reverse();   // the clock's word tells of every force: his own force's comes in its own log
@@ -1109,7 +1177,8 @@ function playerCommand(pl, m){                         // his proposed orders; h
   if (!m || typeof m.t !== "string") return;
   if (m.t === "propose") return propose(pl, m);
   if (m.t === "council") return askCouncil(pl, m);
-  if (m.t === "ready"){ if (pl.side){ pl.ready = !!m.on; saveRecord(); render(); playersSync() } return }
+  if (m.t === "ready"){ if (pl.side){ pl.ready = !!m.on; saveRecord(); render(); playersSync(); noGMClock() } return }
+  if (m.t === "attack") return seatAttack(pl, m);
   if (PL.fighting.has(pl.id)) tellFrame(fightFrame(), "player", { id: pl.id, m });
 }
 function propose(pl, m){                              // a proposal: only for a force one of his men is with (a commander: of his side), only one of its own choices
@@ -1155,7 +1224,7 @@ function relayIn(){                                    // the roller (or the fie
   if (!fightFrame()) return;
   const named = Object.fromEntries(namedMen());
   const list = players().filter(pl => PL.conn[pl.id]?.state === "open")   // his men by their travel-map id, and by the team builder's (a man added to a fight anew has only that)
-    .map(pl => ({ id: pl.id, uids: pl.men, pids: pl.men.map(u => named[u]?.pid).filter(Boolean) }));
+    .map(pl => ({ id: pl.id, uids: pl.men, pids: pl.men.map(u => named[u]?.pid).filter(Boolean), side: pl.side || null }));
   const key = JSON.stringify(list);
   if (key !== PL.relayKey){ PL.relayKey = key; tellFrame(fightFrame(), "seats", { list }) }
 }
@@ -1211,14 +1280,43 @@ function roomAgain(pl, peer){                         // he was lost: with a roo
 }
 function inviteThroughRooms(){                         // every player with a room invited again (a page load, a file loaded, a game taken back); not from a copy handed over
   if (!roomServer() || REC.handedTo) return;
-  for (const pl of players().filter(x => x.room)) playerConnect(pl);   // (it catches its own failures)
+  for (const pl of players().filter(x => x.room && !x.local)) playerConnect(pl);   // (it catches its own failures)
+}
+function localSeats(){                                 // a page load: the seats at this console find it again
+  if (!REC.handedTo) for (const pl of players().filter(x => x.local)) localSeat(pl);
 }
 function letPlayersGo(){                               // this console's connections closed and not renewed: the pages fall back to waiting in their rooms
   for (const c of Object.values(PL.conn)){ const p = c.peer; c.peer = null; p?.close() }   // (no peer: its closing is not heard as "lost")
   PL.conn = {}; PL.fighting.clear();
   relayIn(); renderPlayers();
 }
+function localSeat(pl){                                // his seat in another tab of this browser: no invitation, a channel
+  const old = PL.conn[pl.id];
+  old?.peer?.close();
+  const ch = seatChannel(pl.id), c = PL.conn[pl.id] = { state: "waiting for his seat's tab", code: "", err: "", last: null, local: true };
+  c.peer = { send: m => ch.postMessage({ to: "seat", m }), close: () => ch.close() };
+  ch.onmessage = e => {
+    if (PL.conn[pl.id] !== c || e.data?.to !== "console") return;
+    if (e.data.bye){ c.state = "closed"; PL.fighting.delete(pl.id); relayIn(); return renderPlayers() }
+    if (e.data.hello){
+      if (!pl.joined){ note(`${pl.name} takes his seat at this console`); pl.joined = true; saveRecord() }
+      c.state = "open"; c.last = null; playerSend(pl); tellFrame(fightFrame(), "resend", { id: pl.id }); relayIn(); return render()
+    }
+    if (c.state === "open") playerCommand(pl, e.data.m);
+  };
+  ch.postMessage({ to: "seat", who: true });           // a seat already open answers
+  renderPlayers();
+}
+const seatLink = pl => `${location.href.split("#")[0]}#seat=${encodeURIComponent(pl.id)}`;
+function setLocal(pl, on){                             // he plays at this console (his seat in another tab), or from his own computer
+  pl.local = !!on;
+  if (on) localSeat(pl);
+  else { PL.conn[pl.id]?.peer?.close(); delete PL.conn[pl.id]; relayIn() }
+  note(on ? `${pl.name} plays at this console.` : `${pl.name} plays from his own computer.`, true);
+  saveRecord(); renderPlayers();
+}
 async function playerConnect(pl){                     // an invitation for his seat: a first one, or again after he was lost or this page reloaded
+  if (pl.local) return localSeat(pl);
   const c = (PL.conn[pl.id] ||= {});
   c.peer?.close();
   Object.assign(c, { state: "inviting", code: "", err: "", last: null });
@@ -1271,7 +1369,7 @@ function setSide(id, side){                            // player id commands sid
   pl.side = side; pl.ready = false;
   if (side) takeFromCommander(side);
   note(side ? `${pl.name} commands ${side} on the march.` : `${pl.name} commands no side.`, true);
-  saveRecord(); render(); playersSync();
+  saveRecord(); render(); renderPlayers(); playersSync();
 }
 function takeFromCommander(side){                      // a side with a person to command it is not the commander's (Moved by)
   try { if (newDay().commandView().find(x => x.side === side)?.stance) newDay().setCommander(side, null) } catch { /* no map: nothing to hand over */ }
@@ -1301,6 +1399,7 @@ function inviteHtml(pl, c){                           // how he is being invited
   return "";
 }
 function connectButton(pl, c){                        // Invite, or Invite again, when he is neither connected nor being invited
+  if (pl.local) return `<button type="button" class="small${c.state === "open" ? "" : " primary"}" data-pl="seat" data-id="${esc(pl.id)}" title="His side's screen, in a tab of its own: play from there, and keep this console open in its tab">Open his seat</button>`;
   const waiting = c.code && c.state !== "open" && !NET_LOST.has(c.state);
   if (c.state === "open" || waiting || (c.room && c.state !== "failed")) return "";
   const label = c.peer ? "Invite again" : "Invite";
@@ -1324,8 +1423,12 @@ function playerRow(pl){
   return `<li><span class="toolbar"><b>${esc(pl.name)}</b> <span class="muted">${esc(st)}${code}</span>${connectButton(pl, c)}
       <button type="button" class="small" data-pl="drop" data-id="${esc(pl.id)}">Remove</button></span>
     <span class="muted" style="font-size:.88rem">Plays: ${menPicker(pl.men, `data-pl-man="${esc(pl.id)}"`)}</span>
-    ${commandPicker(pl)}
-    ${inviteHtml(pl, c)}${err}</li>`;
+    ${commandPicker(pl)}${localPicker(pl)}
+    ${pl.local ? "" : inviteHtml(pl, c)}${err}</li>`;
+}
+function localPicker(pl){                              // a commander may play at this console: the host commanding a side himself
+  if (!pl.side && !pl.local) return "";
+  return ` <label class="muted" style="display:inline-flex;gap:4px;align-items:center;font-size:.88rem" title="He hosts: his side's screen opens in another tab of this browser. This console still holds the whole game, so he could look at the other side here: for friends."><input type="checkbox" data-pl-local="${esc(pl.id)}"${pl.local ? " checked" : ""}> Plays at this console</label>`;
 }
 function renderPlayers(){
   const box = $("#c-players");
@@ -1379,6 +1482,7 @@ $("#c-players").addEventListener("click", e => {
   const pl = players().find(x => x.id === b.dataset.id); if (!pl) return;
   const what = b.dataset.pl;
   if (what === "invite") playerConnect(pl);
+  else if (what === "seat") window.open(seatLink(pl), "_blank", "noopener");
   else if (what === "copy") navigator.clipboard?.writeText(playerLink(PL.conn[pl.id].code)).catch(() => $(`[data-pl-link="${pl.id}"]`).select());
   else if (what === "copyroom") navigator.clipboard?.writeText(roomLink(PL.conn[pl.id].room)).catch(() => $(`[data-pl-link="${pl.id}"]`).select());
   else if (what === "accept") playerAccept(pl, $(`[data-pl-reply="${pl.id}"]`).value);
@@ -1390,6 +1494,8 @@ $("#c-players").addEventListener("click", e => {
 $("#c-players").addEventListener("change", e => {
   if (e.target.id === "pl-stun") PL.stun = e.target.checked;
   if (e.target.id === "pl-propose"){ REC.proposeOff = !e.target.checked; saveRecord(); playersSync() }
+  const lc = e.target.closest("[data-pl-local]");
+  if (lc){ const pl = players().find(x => x.id === lc.dataset.plLocal); if (pl) setLocal(pl, lc.checked); return }
   const sd = e.target.closest("[data-pl-side]");
   if (sd) return setSide(sd.dataset.plSide, sd.value || null);
   const man = e.target.closest("[data-pl-man]");
@@ -1537,19 +1643,37 @@ function pgReady(invite){                             // his invitation read: hi
   pgStatus(`${kept ? "Rejoining" : "Joining"} the GM's campaign${invite.name ? " as " + invite.name : ""}...`);
   return !!kept;
 }
+function pgReceive(m, seat, said){                    // a screen from the console: his fight, or his campaign screen (whole or in part)
+  if (m.t === "screen" || m.t === "nofight") return pgFight(m);
+  if (m.t !== "camp") return;
+  const whole = NET.merge(PG.screen, m);
+  PG.screen = whole;
+  $("#p-join").hidden = true;
+  pgStatus(said);
+  pgShow(whole, m.part ? Object.keys(m) : null);
+  pgKeep(seat, whole);
+}
+/* A seat at this console: a commander who hosts plays his side from another tab of the same browser,
+   which talks to the console's tab over a BroadcastChannel (no connection to make). */
+const seatChannel = id => new BroadcastChannel("gravewounds-seat:" + id);
+function pgSeat(){                                    // #seat=<player id>: his seat, fed by the console in another tab
+  const id = decodeURIComponent(location.hash.slice(6)), ch = seatChannel(id), seat = "player:" + id;
+  const kept = pgKept(seat);
+  if (kept){ pgShow(kept); PG.screen = kept }
+  PG.send = m => ch.postMessage({ to: "console", m });
+  ch.onmessage = e => {
+    if (e.data?.to !== "seat") return;
+    if (e.data.who) return ch.postMessage({ to: "console", hello: true });   // the console (re)loaded: here
+    if (e.data.m) pgReceive(e.data.m, seat, "Your seat at this console.");
+  };
+  window.addEventListener("pagehide", () => ch.postMessage({ to: "console", bye: true }));
+  ch.postMessage({ to: "console", hello: true });
+  pgStatus("Waiting for the console in this browser's other tab (keep it open)...");
+}
 async function pgPeer(invite, onLost){                // his end of the connection: his screens shown as they come
   PG.peer?.close?.();
   const g = await NET.guestPeer({ invite, stun: invite.stun !== false,
-    onMessage: m => {
-      if (m.t === "screen" || m.t === "nofight") return pgFight(m);
-      if (m.t !== "camp") return;
-      const whole = NET.merge(PG.screen, m);
-      PG.screen = whole;
-      $("#p-join").hidden = true;
-      pgStatus("Connected to the GM's console.");
-      pgShow(whole, m.part ? Object.keys(m) : null);
-      pgKeep(invite.seat, whole);
-    },
+    onMessage: m => pgReceive(m, invite.seat, "Connected to the GM's console."),
     onState: st => {
       if (PG.peer !== g) return;                      // an old connection, closing
       PG.state = st;
@@ -1636,9 +1760,14 @@ if (PLAYER_PAGE){
   $("#p-force").addEventListener("click", e => {          // a commander: ready, or not
     const b = e.target.closest("button[data-ready]"); if (!b) return;
     PG.send({ t: "ready", on: b.dataset.ready === "1" });
-    $("#p-status").textContent = b.dataset.ready === "1" ? "You are ready: the GM runs the clock." : "You are giving orders.";
+    $("#p-status").textContent = b.dataset.ready === "1" ? "You are ready: the clock runs when every commander is." : "You are giving orders.";
   });
-  const go = () => (location.hash.startsWith("#room") ? pgRoom() : pgJoin()).catch(e => pgStatus(String(e.message || e)));
+  $("#p-force").addEventListener("click", e => {          // a commander with no GM: he attacks
+    const b = e.target.closest("button[data-attack]"); if (!b) return;
+    PG.send({ t: "attack", id: +b.dataset.attack, k: +b.dataset.k });
+    $("#p-status").textContent = "You attack: the battle is set up.";
+  });
+  const go = () => (location.hash.startsWith("#seat=") ? Promise.resolve(pgSeat()) : location.hash.startsWith("#room") ? pgRoom() : pgJoin()).catch(e => pgStatus(String(e.message || e)));
   window.addEventListener("hashchange", () => { if (/^#(join=|room)/.test(location.hash)) go() });   // a new invitation or room opened in this tab
   go();
 } else {
@@ -1650,6 +1779,7 @@ if (PLAYER_PAGE){
   else show(phaseOf(REC.phase).page);
   window.addEventListener("hashchange", () => { if (location.hash === "#gmstart") gmLink() });   // the link followed again in this tab
   inviteThroughRooms();                               // through their rooms, his players are invited again by themselves
+  localSeats();
   IDB.all().then(x => { SLOTS = x; renderSlots() }).catch(() => { $("#c-slots").innerHTML = '<p class="muted" style="margin:0">This browser keeps no campaigns side by side (IndexedDB is off): save to a file instead.</p>' });
 }
 </script>
