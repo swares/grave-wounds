@@ -99,6 +99,11 @@ not this repository.
   yet, and each licence must be checked before its picture goes in.
 - **Sources and Methods: the infringement check.** Before release, check every source for what may
   be reprinted and what must be cited or re-derived. The play books can ship without waiting for it.
+  Quotations, checked 24 November 2026 (`tools/release/quotes.py` lists every one in the books and the
+  Rules, longest first): the longest is 14 words, and only four reach 12, so the books quote a line,
+  not passages. Still to check: the wound tables and figures built from modern studies (the facts are
+  free to use, but each table's layout and selection should be ours, and each cited), and the period
+  pictures' licences (above).
 
 ## Deferred work
 
