@@ -999,7 +999,10 @@ $("#c-load").addEventListener("change", async e => {
    no server) connects his page to this one; this page draws what he may see (his men, the forces they
    are with, the campaign's news as he hears it) and sends him only that, and after the first time only
    what changed. Who plays whom is kept with the campaign (REC.players); the connections are not, and
-   after a reload the GM invites each again. */
+   after a reload the GM invites each again. A watcher (pl.watch) is a row with no men and no say: the GM
+   picks what he sees (pl.view: a side's forces and fogged map, or null for every force and no fog), he
+   hears only the public news, and a fight reaches him only when he sees everything or his side fights
+   in it, as that fight's watcher. */
 const PL = { conn: {}, stun: true, timer: null, menKey: null, relayKey: "", fighting: new Set() };   // conn by player id: {state, code, err, peer, last}
 const players = () => (REC.players ||= []);
 const seatOf = pl => `player:${pl.id}`;
@@ -1049,14 +1052,19 @@ function proposeHtml(pl, f){                          // his orders for one of h
     ${campRow}
     ${said}</div>`;
 }
+function noForcesText(pl){                             // his panel with no force in it
+  if (pl?.watch) return "No forces on the map to watch.";
+  if (pl?.side) return `${esc(pl.side)} have no force on the map.`;
+  return "None of your men is with a force on the map.";
+}
 function forceHtml(v, pl = null){                      // the forces his men are with, and nothing of anyone else's
   if (!v.map) return '<p class="muted" style="margin:0">No map yet.</p>';
   const head = `<p style="margin:0"><span class="when">Day ${v.day}, ${esc(v.time)}</span> · ${esc(v.date)} · ${esc(v.map)}</p>`;
-  if (!v.forces.length) return head + (pl?.side ? `<p class="muted" style="margin:0">${esc(pl.side)} have no force on the map.</p>` : '<p class="muted" style="margin:0">None of your men is with a force on the map.</p>');
+  if (!v.forces.length) return head + `<p class="muted" style="margin:0">${noForcesText(pl)}</p>`;
   const one = f => `<h3>${esc(f.name)} <span class="muted">(${esc(f.side)})</span></h3>
     <p style="margin:0">${esc(f.order)} · at ${esc(f.where)} · ${f.fit}/${f.men} fit · ${esc(f.fatigue)}</p>
     <p class="muted" style="margin:0">${f.route ? "Route: " + esc(f.route) : "No route."}</p>
-    ${f.log.length ? '<ol class="log" style="max-height:9rem">' + f.log.map(l => "<li>" + esc(l) + "</li>").join("") + "</ol>" : ""}${pl ? councilSeatHtml(pl, f) + proposeHtml(pl, f) : ""}`;
+    ${f.log.length ? '<ol class="log" style="max-height:9rem">' + f.log.map(l => "<li>" + esc(l) + "</li>").join("") + "</ol>" : ""}${pl && !pl.watch ? councilSeatHtml(pl, f) + proposeHtml(pl, f) : ""}`;
   return head + (pl?.side ? readyHtml(pl) + seatFightsHtml(pl) : "") + v.forces.map(one).join("");
 }
 function readyHtml(pl){                                // a side's commander: his orders given, the clock may run
@@ -1145,7 +1153,24 @@ function newsHtml(seat){                              // the campaign's log as t
   const lines = viewFor(REC.log, seat).filter(e => e.full && e.data.kind !== "march").slice(-40).reverse();   // the clock's word tells of every force: his own force's comes in its own log
   return lines.map(e => `<li><b>${e.round ? "Day " + e.round : "–"}</b>${esc(e.data.text || "")}</li>`).join("") || '<li class="muted">Nothing yet.</li>';
 }
+function campSides(){                                // the sides with forces on the map
+  try { const D = newDay(); D.restore(); return [...new Set((D.marchSummary()?.forces || []).map(f => f.side))] } catch { return [] }
+}
+const watchWords = pl => (pl.view ? `${pl.view}' view` : "everything (every force, no fog)");
+function watcherScreen(pl){                           // a watcher's page: the forces of the side he watches (or all), its map, the public news; no men, no orders
+  let v;
+  try {
+    v = newDay().seatView([], pl.view || null);
+    if (!pl.view) v.forces = campSides().flatMap(sd => newDay().seatView([], sd).forces);
+  } catch { v = { map: null, men: [], forces: [] } }
+  let map = null;
+  try { map = newDay().fogView(pl.view || null, []) } catch { map = null }
+  if (map){ map.propose = false; map.command = false }
+  return { t: "camp", seat: seatOf(pl), name: pl.name, campaign: REC.name || "The campaign", phase: phaseOf(REC.phase).name,
+    watch: watchWords(pl), men: "", force: forceHtml(v, pl), news: newsHtml(seatOf(pl)), map };
+}
 function playerScreen(pl){                            // what this player's page shows: drawn here, as HTML
+  if (pl.watch) return watcherScreen(pl);
   let v;
   try { v = newDay().seatView(pl.men, pl.side || null) } catch { v = { map: null, men: [], forces: [] } }
   const phase = phaseOf(REC.phase).name;
@@ -1174,7 +1199,8 @@ function playersFollow(){                             // after the console draws
   playersSync();
 }
 function playerCommand(pl, m){                         // his proposed orders; his choices in his fight go on to the roller, which checks they are his to make
-  if (!m || typeof m.t !== "string") return;
+  if (pl.watch || !m || typeof m.t !== "string") return;   // a watcher has no say
+
   if (m.t === "propose") return propose(pl, m);
   if (m.t === "council") return askCouncil(pl, m);
   if (m.t === "ready"){ if (pl.side){ pl.ready = !!m.on; saveRecord(); render(); playersSync(); noGMClock() } return }
@@ -1224,7 +1250,8 @@ function relayIn(){                                    // the roller (or the fie
   if (!fightFrame()) return;
   const named = Object.fromEntries(namedMen());
   const list = players().filter(pl => PL.conn[pl.id]?.state === "open")   // his men by their travel-map id, and by the team builder's (a man added to a fight anew has only that)
-    .map(pl => ({ id: pl.id, uids: pl.men, pids: pl.men.map(u => named[u]?.pid).filter(Boolean), side: pl.side || null }));
+    .map(pl => (pl.watch ? { id: pl.id, uids: [], pids: [], side: null, watch: true, view: pl.view || null }
+      : { id: pl.id, uids: pl.men, pids: pl.men.map(u => named[u]?.pid).filter(Boolean), side: pl.side || null }));
   const key = JSON.stringify(list);
   if (key !== PL.relayKey){ PL.relayKey = key; tellFrame(fightFrame(), "seats", { list }) }
 }
@@ -1415,8 +1442,16 @@ function allLinksHtml(){                               // every waiting player's
       <textarea readonly rows="${Math.min(n, 6)}" id="pl-all-links" aria-label="Every waiting player's link" style="width:100%">${esc(text)}</textarea>
       <span class="toolbar"><button type="button" class="small" id="pl-copy-all">Copy every link</button></span></details>`;
 }
+function watchPicker(pl){                              // a watcher's row: what he sees
+  const opts = [["", "Everything (every force, no fog)"], ...campSides().map(sd => [sd, `${sd}' view`])]
+    .map(([v, t]) => `<option value="${esc(v)}"${(pl.view || "") === v ? " selected" : ""}>${esc(t)}</option>`).join("");
+  return `<label class="muted" style="font-size:.88rem" title="One side's forces and the enemy it sees, or every force: with everything he could tell a player what his side does not know">Watches: <select data-pl-view="${esc(pl.id)}">${opts}</select></label>`;
+}
 function playerRow(pl){
   const c = PL.conn[pl.id] || { state: "not connected" };
+  if (pl.watch) return `<li><span class="toolbar"><b>${esc(pl.name)}</b> <span class="muted">watcher · ${esc({ open: "connected", closed: "gone", failed: "could not connect", disconnected: "lost" }[c.state] || c.state)}</span>${connectButton(pl, c)}
+      <button type="button" class="small" data-pl="drop" data-id="${esc(pl.id)}">Remove</button></span>
+    ${watchPicker(pl)}${inviteHtml(pl, c)}${c.err ? `<p class="bad">${esc(c.err)}</p>` : ""}</li>`;
   const st = { open: "connected", closed: "gone", failed: "could not connect", disconnected: "lost" }[c.state] || c.state;
   const code = c.room && c.state === "open" ? ` · room <span style="font-family:var(--mono)">${esc(c.room)}</span>` : "";
   const err = c.err ? `<p class="bad">${esc(c.err)}</p>` : "";
@@ -1434,15 +1469,16 @@ function renderPlayers(){
   const box = $("#c-players");
   if (!box || PLAYER_PAGE) return;
   if (box.contains(document.activeElement) && ["TEXTAREA", "INPUT"].includes(document.activeElement.tagName) && document.activeElement.type !== "checkbox") return;   // not while the GM types
-  const open = players().filter(pl => PL.conn[pl.id]?.state === "open").length;
+  const open = players().filter(pl => PL.conn[pl.id]?.state === "open" && !pl.watch).length, watching = players().filter(pl => PL.conn[pl.id]?.state === "open" && pl.watch).length;
   PL.allOpen = $("#pl-all")?.open || false;           // kept open across redraws
-  box.innerHTML = `<div class="toolbar" style="justify-content:space-between"><h2 id="h-players">Players online</h2><span class="muted">${open} connected</span></div>
+  box.innerHTML = `<div class="toolbar" style="justify-content:space-between"><h2 id="h-players">Players online</h2><span class="muted">${open} connected${watching ? `, ${watching} watching` : ""}</span></div>
     <p class="muted" style="margin:0;font-size:.9rem">Each player gets his own link for the session and sees his men, the forces they are with and the campaign's news (not the GM's notes, nor the march's word on other forces), from his own computer. ${roomServer() ? "Through the room server: he opens his link (or types his room's code), and nothing comes back by hand; if he is lost, or this page reloads, or the game is handed to another GM, he is invited again by itself." : "No room server: the link and his reply are passed by hand."}</p>
     ${proposalsHtml()}
     ${allLinksHtml()}
     ${players().length ? `<ul class="players">${players().map(playerRow).join("")}</ul>` : ""}
     <div class="toolbar"><label class="muted">Player <input type="text" id="pl-name" placeholder="His name" style="width:12em"></label>
       <button type="button" class="small" id="pl-add">Add a player</button>
+      <button type="button" class="small" id="pl-watch" title="Someone to watch the campaign and its fights from his own computer or phone, with no say in it: you choose what he sees">Add a watcher</button>
       <label class="muted" style="display:inline-flex;gap:4px;align-items:center" title="Lets pages find each other across the internet; on one network it is not needed"><input type="checkbox" id="pl-stun"${PL.stun ? " checked" : ""}> Public STUN server</label></div>
     <details id="pl-room-box"><summary class="muted" style="font-size:.88rem">Room server${roomServer() ? ": " + esc(roomServer()) : ": none (copy and paste)"}</summary>
       <span class="toolbar"><label class="muted" for="pl-room">Its address</label><input type="text" id="pl-room" value="${esc(roomServer())}" placeholder="https://grave-wounds-rooms.you.workers.dev" style="width:24em">
@@ -1458,6 +1494,21 @@ function proposalsHtml(){                             // the players' proposed o
     <span class="toolbar"><button type="button" class="small primary" data-prop="yes" data-n="${x.n}">Accept</button><button type="button" class="small" data-prop="no" data-n="${x.n}">Decline</button></span></li>`;
   return `${off}<h3 style="margin:0">Proposed orders</h3><ul class="fights">${open.map(row).join("")}</ul>`;
 }
+function addWatcher(){                                 // a watcher: the name typed, or one made up; the first side's view to start with (nothing hidden leaks)
+  const typed = $("#pl-name").value.trim(), n = players().filter(x => x.watch).length + 1;
+  const pl = { id: `p${Date.now().toString(36)}`, name: typed || `Watcher ${n}`, men: [], watch: true, view: campSides()[0] || null };
+  players().push(pl);
+  note(`${pl.name} is added as a watcher`);
+  render(); renderPlayers();
+  playerConnect(pl);
+}
+function setView(id, view){                            // the GM changes what a watcher sees
+  const pl = players().find(x => x.id === id && x.watch);
+  if (!pl) return;
+  pl.view = view || null;
+  const c = PL.conn[pl.id]; if (c) c.last = null;
+  saveRecord(); renderPlayers(); playerSend(pl); relayIn();
+}
 function addPlayer(){
   const name = $("#pl-name").value.trim(), men = [...document.querySelectorAll("[data-pl-new]:checked")].map(x => x.value);
   if (!name) return $("#pl-name").focus();
@@ -1470,6 +1521,7 @@ function addPlayer(){
 }
 $("#c-players").addEventListener("click", e => {
   if (e.target.id === "pl-add") return addPlayer();
+  if (e.target.id === "pl-watch") return addWatcher();
   if (e.target.id === "pl-copy-all") return navigator.clipboard?.writeText(allLinks()).catch(() => $("#pl-all-links").select());
   if (e.target.id === "pl-room-set" || e.target.id === "pl-room-off"){
     const v = e.target.id === "pl-room-off" ? ROOM_OFF : $("#pl-room").value.trim();
@@ -1500,6 +1552,8 @@ $("#c-players").addEventListener("change", e => {
     if (pl) setLocal(pl, lc.checked);
     return;
   }
+  const wv = e.target.closest("[data-pl-view]");
+  if (wv) return setView(wv.dataset.plView, wv.value);
   const sd = e.target.closest("[data-pl-side]");
   if (sd) return setSide(sd.dataset.plSide, sd.value || null);
   const man = e.target.closest("[data-pl-man]");
@@ -1549,7 +1603,7 @@ function pgLayout(){
     <div class="top"><section class="panel" aria-labelledby="h-pmen"><h2 id="h-pmen">Your men</h2><div id="p-men"></div></section>
       <section class="panel march" style="border-top:0;padding-top:14px" aria-labelledby="h-pforce"><h2 id="h-pforce">Your force</h2><div id="p-force" style="display:flex;flex-direction:column;gap:6px"></div></section></div>
     <section class="panel" id="p-mapbox" hidden aria-labelledby="h-pmap"><h2 id="h-pmap">Your map</h2>
-      <p class="muted" style="margin:0;font-size:.88rem">Your side's forces, and of the enemy only what your side's forces can see from where they are, or where they last saw it.</p></section>
+      <p class="muted" id="p-mapnote" style="margin:0;font-size:.88rem">Your side's forces, and of the enemy only what your side's forces can see from where they are, or where they last saw it.</p></section>
     <section class="panel" aria-labelledby="h-pnews"><h2 id="h-pnews">News</h2><ol class="log" id="p-news" aria-label="The campaign's news, newest first"></ol></section>`;
 }
 function pgShow(m, changed = null){
@@ -1560,9 +1614,25 @@ function pgShow(m, changed = null){
     if (el && [...el.options].some(o => o.value === v)) el.value = v;
   }
   $("#p-title").textContent = m.campaign || "Campaign";
-  $("#p-who").textContent = `${m.name}, playing · ${m.phase}`;
+  pgWatching(m);
   if (!changed || changed.includes("map")) pgMap(m.map);
   pgCoach();
+}
+function pgMapNote(watch){                           // the line under his map
+  if (!watch) return "Your side's forces, and of the enemy only what your side's forces can see from where they are, or where they last saw it.";
+  if (watch.startsWith("everything")) return "Every force on the map, each side in its own colour.";
+  return "This side's forces, and of the enemy only what they can see, or where they last saw it.";
+}
+function pgWatching(m){                              // a watcher's page: the same panels, worded for watching, with no men of his own
+  const w = !!m.watch;
+  document.body.classList.toggle("watching", w);
+  $("#h-pmen").closest("section").hidden = w;
+  $("#h-pforce").textContent = w ? "The forces" : "Your force";
+  $("#h-pmap").textContent = w ? "The map" : "Your map";
+  $("#h-pfight").textContent = w ? "The fight" : "Your fight";
+  $("#p-mapnote").textContent = pgMapNote(m.watch);
+  $("#p-who").textContent = w ? `${m.name}, watching ${m.watch} · ${m.phase}` : `${m.name}, playing · ${m.phase}`;
+  if (PG.frame) PG.frame.title = w ? "The fight" : "Your fight";
 }
 /* The player's coach: on his first games, a line above the panels says what each is and what to press,
    a step at a time (joining, his panels, proposing orders, his turn in a fight); each step, once he has
@@ -1572,7 +1642,7 @@ const pcDone = () => { try { return JSON.parse(localStorage.getItem(PC_KEY) || "
 function pcMark(step){ try { localStorage.setItem(PC_KEY, JSON.stringify({ ...pcDone(), [step]: true })) } catch { /* storage off: the coach shows again */ } pgCoach() }
 function pgCoachStep(){                               // [step, text] for what to show now, or null
   const done = pcDone();
-  if (done.off) return null;
+  if (done.off || PG.screen?.watch) return null;      // a watcher has nothing to press
   if (!$("#p-fight").hidden && !done.fight)
     return ["fight", "<b>Your fight.</b> On your turn: click a hex to move your man, click an enemy in reach to strike, choose your aim and roll (you may type your own dice), give first aid with <b>Bind</b> and the like, and press <b>Next fighter</b> when you are done. The GM, or the pages, play the rest."];
   if (!PG.screen) return $("#p-code") && !done.join ? ["join", "<b>Joining.</b> Type the room code the GM gave you (like WOLF-OAK-42) and press <b>Join</b>. With the link he sent, just open it."] : null;

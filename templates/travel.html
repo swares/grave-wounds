@@ -817,6 +817,7 @@ function seatShow(v){
   const sieges = (v.sieges || []).map(x => ` · ${x.name} ${x.ours ? "besieged" : "invested"}${x.practicable ? ": the breach is practicable" : ""}${x.terms ? ` (terms ${x.terms})` : ""}`).join("");
   $("#seat-when").textContent = `${DATA.maps[v.mapId].name} · ${v.when} · ${v.weather}${light}${v.air ? " · our aircraft are up" : ""}${sieges}`;
   seatPropose(v);
+  if (v.all){ $("#seat-key").textContent = `Every force on the map: ${v.ours.length}, each side in its own colour. Hover a mark for more.`; return }
   $("#seat-key").textContent = `${v.ours.length} of your side's forces; ${v.seen.length} enemy seen now (red ring)${v.last.length ? `, ${v.last.length} last seen (faded, where and when it was seen)` : ""}. Hover a mark for more.`;
 }
 function seatPropose(v){                       // his forces' routes, proposed by clicking his map (when the GM takes proposals)

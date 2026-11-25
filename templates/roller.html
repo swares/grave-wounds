@@ -4387,10 +4387,15 @@ const RELAY = { list: [] };
 function relayTell(id, m){
   try { window.parent.postMessage({ gw: "roller", relay: { id, m } }, location.origin) } catch { /* the console has gone */ }
 }
-function relaySeatOf(x){                            // the side of the first of his men in this fight, as a seat, or null
+function relaySeatOf(x){                            // the side of the first of his men in this fight, as a seat, or null; a watcher's view (everything, or his side if it fights here)
+  if (x.watch) return relayWatchSeat(x.view);
   const has = (list, v) => !!v && Array.isArray(list) && list.includes(v);
   const c = S.chars.find(ch => has(x.uids, ch.uid) || has(x.pids, ch.sheet?.pid));
   return c ? sideSeat(sideOf(c)) : null;
+}
+function relayWatchSeat(view){                       // a console watcher's view of this fight: everything, or his side's if it is in it (else he is not sent it)
+  if (!view) return GM_SEAT;
+  return sidesInOrder().includes(view) ? sideSeat(view) : null;
 }
 function relayFollow(){                              // the console's players in this fight: added, moved, gone
   if (!inConsole() || NETH.rendering) return;
@@ -4401,6 +4406,10 @@ function relayFollow(){                              // the console's players in
   }
   for (const [id, seat] of want){
     if (NETH.peers.some(p => p.relay && p.id === id)) continue;
+    if (RELAY.list.find(x => String(x.id) === id)?.watch){   // a watcher: a seat with no side of his own
+      NETH.peers.push({ n: ++NETH.seq, relay: true, id, seat, watch: true, view: seat, state: "open", last: null, peer: { send: m => relayTell(id, m), close(){} } });
+      continue;
+    }
     const side = seat.slice(5);
     if (!gmOn()){ gmStart(); gmSoloScreen() }
     S.gm.sides[side] = { ...gmSide(side), ctl: "player" };   // a person plays this side now
