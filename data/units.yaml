@@ -1338,6 +1338,13 @@ commander:
   cover: {green: 0, regular: 1, veteran: 2}
   flank: {green: 0, regular: 0, veteran: 30}
   closing: 10
+  # way_round: on a battlefield with works the unit cannot cross (a wall, palisade, chevaux de frise, a
+  # barred gate; a hex work it cannot enter), `closing` counts the steps by the way round (its middle
+  # hex stepping one hex at a time where it can: through breaches and open gates, over what its ladders
+  # get it over) to its target or objective, not as the crow flies. Shooting ranges stay straight.
+  # Not for a unit going to its route's next waypoint, nor when there is no way round from where it
+  # stands. Ours (Ciudad Rodrigo: the Allies stood outside the town wall once their plan was done).
+  way_round: true
   in_range: 1000
   too_close: 500
   keep_off: 2

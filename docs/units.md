@@ -709,6 +709,15 @@ general. All its numbers are in units.yaml `commander`.
   - Of hexes that score the same and cost the same, it takes the one nearest the straight
     line to the target (or the objective), so a long advance goes straight rather than
     drifting to one side.
+  - **The way round works** (`commander.way_round`, 26 November 2026). On a battlefield with works
+    a unit cannot cross (a wall, palisade, chevaux de frise, barred gate, or a hex work it cannot
+    enter), it counts how far it is from its target or objective by the way round: its middle hex
+    stepping a hex at a time where it can, through breaches and open gates, over what its ladders
+    get it over. Shooting ranges stay straight; a unit going to its route's next waypoint goes
+    straight; with no way from where it stands it goes as the crow flies, as before. Ours: at Ciudad
+    Rodrigo, once the Light Division's plan was done, the Allies stood outside the town wall, because
+    getting round it meant first moving away from it. The full benchmark (36 seeds): 1,551 to 1,561 of
+    1,836 matching history; Badajoz 19 to 29 of 36, Ciudad Rodrigo 26 to 30, Burgos 33 to 29.
 - **Shooters.** A unit with missiles stops where the target is in range and shoots rather
   than closing. In range means its weapon (or main gun) reaches, the weather and light let it
   see that far (for its small arms as for a main gun: at 73 Easting the tanks, whose machine

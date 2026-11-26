@@ -4034,7 +4034,7 @@ function routeOrder(us, i, ctx){                   // a unit on its route (via: 
   else delete u.via;
   if (!via.length || routeBlocked(us, i, via[0], ctx[3])) return null;
   const [size, field, stance, known, exchange] = ctx;
-  return toward(us, i, null, [size, { ...field, objective: via[0], objective_radius: null }, stance, known, exchange], "advance");
+  return toward(us, i, null, [size, { ...field, objective: via[0], objective_radius: null, straight: true }, stance, known, exchange], "advance");   // straight to its waypoints (no way round)
 }
 function routeBlocked(us, i, w, known){            // in contact, or an enemy it knows of within its move of the straight way to waypoint w (within a hex of it) (as commander._route_blocked)
   const u = us[i];
@@ -4161,10 +4161,10 @@ function toward(us, i, t, [size, field, , known], act){   // a move toward the o
   return null;
 }
 function towardHexes(base, i, tu, [size, field]){   // [[movement, hex]] it can reach nearer the objective, best first (as commander._toward_hexes)
-  const u = base[i], C = UD.commander, obj = objectiveOf(field), q = u.quality, now = hdist(u.pos, obj);
-  const cands = [...reachable(base, i, size, allowance(u), field).values()].filter(([h]) => hdist(h, obj) < now).map(([h, c]) => {
+  const u = base[i], C = UD.commander, obj = objectiveOf(field), q = u.quality, w = wayOf(field, u, obj), now = wayDist(w, u.pos, obj);
+  const cands = [...reachable(base, i, size, allowance(u), field).values()].filter(([h]) => wayDist(w, h, obj) < now).map(([h, c]) => {
     const cover = tu === null ? 0 : (C.cover[q] ?? 0) * coverAt(field, tu.pos, h);
-    return [C.closing * hdist(h, obj) + c + (C.mines[q] ?? 0) * mined(field, u.pos, h, u.side) - cover, c, aside(h, obj), h[1], h[0]];
+    return [C.closing * wayDist(w, h, obj) + c + (C.mines[q] ?? 0) * mined(field, u.pos, h, u.side) - cover, c, aside(h, obj), h[1], h[0]];
   });
   cands.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || a[3] - b[3] || a[4] - b[4]);
   return cands.map(([, c, , row, col]) => [c, [col, row]]);
@@ -4321,16 +4321,49 @@ function stayOrder(us, i, t, f, shooter){         // turn to the target (on the 
   return dig ? { act: "ground", target: t } : null;
 }
 const aside = (h, to) => { const x = 2 * h[0] + (h[1] & 1), tx = 2 * to[0] + (to[1] & 1); return (x - tx) ** 2 + 3 * (h[1] - to[1]) ** 2 };   // squared straight-line distance: ties go to the move nearer the straight line (as commander.aside)
-function aiScore(field, u, tu, h, cost, shooter, storm = false){   // how much the commander likes unit u ending at h (higher is better); storming works, it takes no account of cover on the way
-  const C = UD.commander, q = u.quality, dist = hdist(h, tu.pos);
+function wayStops(field, u){                       // the field has works u cannot cross: an edge it cannot step over, or a hex work it cannot enter (as commander._way_stops)
+  const W = field?.works || {};
+  for (const [k, its] of Object.entries(W.edges || {})){
+    if (!its.some(it => intact("edge", it))) continue;
+    const [a, b] = k.split("|").map(p => p.split(",").map(Number));
+    if (unitStepCost(field, u, a, b) === null || unitStepCost(field, u, b, a) === null) return true;
+  }
+  return Object.values(W.hexes || {}).some(it => intact("hex", it) && (specOf("hex", it).enter === null || specOf("hex", it).enter === undefined));
+}
+function wayOf(field, u, goal){                     // {"c,r": steps} to goal by the way round (u's middle hex, a hex at a time where it can), or null: not wanted or no way from where it stands; remembered while a commander orders its side (as commander.way)
+  if (!UD.commander.way_round || !field || field.straight || !field.works) return null;
+  const top = STEPS.at(-1), memo = top ? (top.get(field.works) || top.set(field.works, new Map()).get(field.works)) : new Map();
+  const sk = "stops:" + moverOf(u);
+  if (!memo.has(sk)) memo.set(sk, wayStops(field, u));
+  const key = "way:" + moverOf(u) + ":" + hk(goal);
+  if (!memo.has(key)) memo.set(key, memo.get(sk) ? wayFrom(field, u, goal) : null);
+  const w = memo.get(key);
+  return w && w.has(hk(u.pos)) ? w : null;
+}
+function wayFrom(field, u, goal){                   // steps to goal from every hex u's kind can get to it from (as commander._way_from)
+  const [cols, rows] = fieldSize(field), out = new Map([[hk(goal), 0]]), q = [goal];
+  for (let i = 0; i < q.length; i++){
+    const h = q[i];
+    for (let dirn = 0; dirn < 6; dirn++){
+      const n = step(h, dirn);
+      if (out.has(hk(n)) || n[0] < 0 || n[1] < 0 || n[0] >= cols || n[1] >= rows || unitStepCost(field, u, n, h) === null) continue;
+      out.set(hk(n), out.get(hk(h)) + 1);
+      q.push(n);
+    }
+  }
+  return out;
+}
+const wayDist = (w, h, goal) => (w === null ? hdist(h, goal) : (w.get(hk(h)) ?? hdist(h, goal) + 10000));   // steps by the way round, or as the crow flies (as commander._way_dist)
+function aiScore(field, u, tu, h, cost, shooter, storm = false){   // how much the commander likes unit u ending at h (higher is better); storming works, it takes no account of cover on the way; closing goes by the way round (wayOf)
+  const C = UD.commander, q = u.quality, dist = hdist(h, tu.pos), near = wayDist(wayOf(field, u, tu.pos), h, tu.pos);
   const s = (storm ? 0 : (C.cover[q] ?? 0)) * coverAt(field, tu.pos, h) - cost - (C.mines[q] ?? 0) * mined(field, u.pos, h, u.side);
   if (shooter){
     const inr = dist >= 1 && ((fieldRange(u.weapon, dist) !== null && seesTo(field, u, [h, tu.pos, dist])) || gunInRange(field, u, [h, tu.pos, dist])) && clearSight(field, h, tu.pos, dist);   // in range, and the weather and light let it see there: and no woods, buildings or crest across the line from there
     const stand = inr && u.vehicle && gunOf(u) && !answers(field, tu, [tu.pos, [...h], dist]) ? C.stand_off : 0;
-    return s + stand + (inr ? C.in_range : -C.closing * dist) - (dist < C.keep_off ? C.too_close : 0);
+    return s + stand + (inr ? C.in_range : -C.closing * near) - (dist < C.keep_off ? C.too_close : 0);
   }
   const flank = arc(tu.facing, bearing(tu.pos, h)) === "front" ? 0 : (C.flank[q] ?? 0);
-  return s - C.closing * dist + flank;
+  return s - C.closing * near + flank;
 }
 function seesTo(field, u, [h, t, dist]){          // the weather and light let u, at h, see t dist away (as commander._sees_to)
   const sight = sightHexes(field, [...t], seerOf({ ...u, pos: [...h] }));

@@ -2006,7 +2006,7 @@ def _route_order(d: Data, us: list, i: int, ctx: tuple) -> dict | None:
     if not via or _route_blocked(d, us, i, via[0], ctx[3]):
         return None
     size, field, stance, known, exchange = ctx
-    return _toward(d, us, i, None, (size, {**(field or {}), "objective": via[0], "objective_radius": None}, stance, known, exchange), "advance")
+    return _toward(d, us, i, None, (size, {**(field or {}), "objective": via[0], "objective_radius": None, "straight": True}, stance, known, exchange), "advance")   # straight to its waypoints (no way round)
 
 
 def _route_blocked(d: Data, us: list, i: int, w, known: dict | None) -> bool:
@@ -2394,16 +2394,18 @@ def _turning(d: Data, u: dict, f: int) -> int:
 
 def _toward_hexes(d: Data, base: list, i: int, tu: dict | None, where: tuple) -> list:
     """[(movement, hex)] the unit can reach within its allowance nearer the objective, best
-    first: commander.closing a hex from the objective, a point a hex moved, known minefields
-    on the way, less cover from the target (if any) by its quality."""
+    first: commander.closing a hex from the objective (by the way round works it cannot cross:
+    way), a point a hex moved, known minefields on the way, less cover from the target (if any)
+    by its quality."""
     (size, field), u, C = where, base[i], d.units["commander"]
     obj, q = objective(field), u["quality"]
-    now, out = U.hdist(u["pos"], obj), []
+    w = way(d, field, u, obj)
+    now, out = _way_dist(w, u["pos"], obj), []
     for h, c in reachable(d, base, i, size, U.allowance(d, u), field).items():
-        if U.hdist(list(h), obj) >= now:
+        if _way_dist(w, h, obj) >= now:
             continue
         cover = 0 if tu is None else C["cover"].get(q, 0) * U.cover_at(d, field, tu["pos"], list(h))
-        out.append((C["closing"] * U.hdist(list(h), obj) + c + C["mines"].get(q, 0) * _mined(field, u["pos"], h, u["side"]) - cover, c, aside(h, obj), h[1], h[0]))
+        out.append((C["closing"] * _way_dist(w, h, obj) + c + C["mines"].get(q, 0) * _mined(field, u["pos"], h, u["side"]) - cover, c, aside(h, obj), h[1], h[0]))
     return [(c, [col, row]) for _, c, _, row, col in sorted(out)]
 
 
@@ -2694,19 +2696,79 @@ def aside(h, to) -> int:
     return (x - tx) ** 2 + 3 * (h[1] - to[1]) ** 2
 
 
+def _way_stops(d: Data, field: dict | None, u: dict) -> bool:
+    """The field has works unit u cannot cross: an edge it cannot step over, or a hex work it cannot
+    enter (commander.way_round)."""
+    W = (field or {}).get("works") or {}
+    for k, its in (W.get("edges") or {}).items():
+        if any(C.intact(d, "edge", it) for it in its):
+            a, b = ([int(x) for x in p.split(",")] for p in k.split("|"))
+            if U.step_cost(d, field, u, a, b) is None or U.step_cost(d, field, u, b, a) is None:
+                return True
+    return any(C.intact(d, "hex", it) and C._spec(d, "hex", it).get("enter") is None for it in (W.get("hexes") or {}).values())
+
+
+def way(d: Data, field: dict | None, u: dict, goal) -> dict | None:
+    """{(col, row): steps} to goal by the way round, for unit u's middle hex stepping one hex at a
+    time where it can (units.step_cost), or None: not wanted (commander.way_round off, no works it
+    cannot cross, a route's waypoint) or no way from where it stands. Remembered while a commander
+    orders its side."""
+    if not d.units["commander"].get("way_round") or not field or field.get("straight"):
+        return None
+    memo = U._STEPS[-1] if U._STEPS else {}
+    key = ("way", id(field.get("works")), id(field.get("ground")), U._mover(u), goal[0], goal[1])   # the works and ground, not the field: orders pass copies of it with another objective
+    if key not in memo:
+        memo[key] = _way_from(d, field, u, goal) if _way_stops_memo(d, field, u, memo) else None
+    w = memo[key]
+    return w if w is not None and (u["pos"][0], u["pos"][1]) in w else None
+
+
+def _way_stops_memo(d: Data, field: dict, u: dict, memo: dict) -> bool:
+    key = ("stops", id(field.get("works")), U._mover(u))
+    if key not in memo:
+        memo[key] = _way_stops(d, field, u)
+    return memo[key]
+
+
+def _way_from(d: Data, field: dict, u: dict, goal) -> dict:
+    """Steps to goal from every hex u's kind can get to it from (a search out from goal)."""
+    size = U._size(d, field)
+    g = (goal[0], goal[1])
+    out, q = {g: 0}, [g]
+    for h in q:
+        for dirn in range(6):
+            n = tuple(U.step(list(h), dirn))
+            if n in out or not (0 <= n[0] < size[0] and 0 <= n[1] < size[1]) or U.step_cost(d, field, u, n, h) is None:
+                continue
+            out[n] = out[h] + 1
+            q.append(n)
+    return out
+
+
+def _way_dist(w: dict | None, h, goal) -> int:
+    """Steps from h to goal by the way round w, or as the crow flies without one (a hex it cannot
+    get there from: as the crow flies, plus the map's worth)."""
+    if w is None:
+        return U.hdist(list(h), list(goal))
+    k = (h[0], h[1])
+    return w[k] if k in w else U.hdist(list(h), list(goal)) + 10000
+
+
 def score(d: Data, field: dict | None, u: dict, tu: dict, h: tuple, cost: int, shooter: bool, storm: bool = False) -> int:
     """How much the commander likes unit u ending at h (higher is better). Storming works, it
-    takes no account of cover on the way."""
+    takes no account of cover on the way. Closing on its target goes by the way round works it
+    cannot cross (way)."""
     C, q = d.units["commander"], u["quality"]
     dist = U.hdist(list(h), tu["pos"])
+    near = _way_dist(way(d, field, u, tu["pos"]), h, tu["pos"])
     s = (0 if storm else C["cover"].get(q, 0)) * U.cover_at(d, field, tu["pos"], list(h)) - cost - C["mines"].get(q, 0) * _mined(field, u["pos"], h, u["side"])
     if shooter:
         inr = (dist >= 1 and ((U.field_range(d, u["weapon"], dist) is not None and _sees_to(d, field, u, (h, tu["pos"], dist))) or _gun_in_range(d, field, u, (h, tu["pos"], dist)))
                and U.clear_sight(d, field, list(h), tu["pos"], dist))   # in range: and no woods, buildings or crest across the line from there
         stand = C["stand_off"] if inr and u.get("vehicle") and U._gun_of(d, u) and not _answers(d, field, tu, (tu["pos"], list(h), dist)) else 0
-        return s + stand + (C["in_range"] if inr else -C["closing"] * dist) - (C["too_close"] if dist < C["keep_off"] else 0)
+        return s + stand + (C["in_range"] if inr else -C["closing"] * near) - (C["too_close"] if dist < C["keep_off"] else 0)
     flank = C["flank"].get(q, 0) if U.arc(tu["facing"], U.bearing(tu["pos"], list(h))) != "front" else 0
-    return s - C["closing"] * dist + flank
+    return s - C["closing"] * near + flank
 
 
 def _sees_to(d: Data, field: dict | None, u: dict, shot: tuple) -> bool:
