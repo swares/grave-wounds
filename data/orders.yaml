@@ -51,6 +51,11 @@ badajoz-1812:
     - "French at the curtain breach"
     - "French at the Santa Maria breach"
     - "Guns on the Santa Maria bastion"
+    # on the wall the 3rd Division climbed, they threw down ladders and fired into the men below until
+    # Ridge's men got up (badajoz-research): they fight where they stand until broken, as the
+    # breaches' defenders do; without this the commander drew them back off the wall to the castle's
+    # middle (traced 25 November 2026). The reserve inside has no entry: the fight decides.
+    - "The castle's garrison on the outwork wall"
 ciudad-rodrigo-1812:
   source: "project doc ciudad-rodrigo-research (napoleon-series; the 94th's narrative): the great breach's defenders held it until they were taken from behind"
   hold:

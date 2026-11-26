@@ -98,6 +98,15 @@ const LIGHT = { ...LINE, quality: "veteran" };
 const LADDERS = { ...LINE, ladders: true };
 const GUNS = { quality: "regular", weapon: "artillery_smoothbore", kit: "none", formation: "battery", mounted: false };   // ten crew to a gun
 const TRINIDAD = [[68, 60], [68, 52]], CURTAIN = [[55, 56], [55, 48]], SANTA_MARIA = [[50, 53], [45, 52]];   // to the foot of each breach, then over its top
+// The second brigade goes at the castle's own east wall (col 70, rows 15-20), south of the outwork, where
+// no one stands on it: in 1812 the first attempt failed under the cross-fire, and the 5th Regiment got in by a
+// lower stretch, repaired since 1811, whose French were "unprepared" (britishbattles.com, Storming of Badajoz).
+// Which stretch, and that the second brigade went there: ours (asked and answered, 26 November 2026).
+// It goes in second, behind the storming party and before the first brigade, by the dyke and along the foot of
+// the slope: the strip of slope below the castle holds one column waiting and no room to pass it, so the
+// brigade behind the queue never reached the east wall (traced 26 November 2026; order and way ours).
+const CASTLE_EAST = [[79, 24], [77, 20], [76, 17], [76, 10], [66, 10], [60, 22]];
+const CASTLE_MAIN = [[79, 24], [74, 21], [72, 17], [72, 10], [66, 10], [60, 22]];
 const CASTLE = [[79, 24], [74, 21], [74, 10], [66, 10], [60, 22]];   // over the Rivillas by the dyke, up the hill, over the outwork's south face (row 14) to a hex inside it, through the castle, out by the gate (a waypoint counts as reached within commander.route.reach, 3 hexes, so the one inside stands 4 rows past the wall: one just outside it was dropped before the column climbed)
 // The breaches' defenders (Napier): "each man supplied with three muskets" (spare_muskets: 3), and
 // "beams of wood, stones, broken wagons, and live shells were poured upon their heads from above"
@@ -119,7 +128,15 @@ const units = [
   // canister along the ditch before the curtain and the breaches (where and how many: ours)
   at("Guns on the Trinidad's flank", FR, 60, { ...GUNS, emplaced: true }, 3, [63, 49], 4),
   at("Guns on the Santa Maria's flank", FR, 60, { ...GUNS, emplaced: true }, 3, [40, 47], 5),
-  at("The castle's garrison (French and Hesse-Darmstadt)", FR, 450, LINE, 6, [68, 10], 5),
+  // the castle's garrison (French and Hesse-Darmstadt): about half on the wall the 3rd Division climbs,
+  // the outwork's south face (row 14, its front along the wall), the rest in reserve inside. Its men
+  // lined the walls, threw down the ladders and fired into the ditch: posted six hexes inside, all
+  // 450 let the 3rd Division climb unopposed for about 10 men lost, where it lost over 500 (traced
+  // 25 November 2026; the split and the posts are ours, asked and answered)
+  // with spare muskets and things to throw down, as at the breaches: "explosive devices thrown down from the
+  // parapet" and "a lighted carcass" on the castle wall (britishbattles.com; Napier, retold)
+  at("The castle's garrison on the outwork wall", FR, 240, BREACH, 3, [72, 14], S),
+  at("The castle's garrison (reserve)", FR, 210, LINE, 6, [68, 10], 5),
   unit("Philippon's reserve in the town", FR, 500, LINE, [6, 52, 38]),
   // the storm: each division's storming party (500 with 12 ladders), then its two brigades (ours)
   // in columns a breach wide or less (8 hexes): a wider block cannot get through the gap. Each
@@ -142,13 +159,13 @@ const units = [
   unit("Light Division, second brigade (left half)", AL, 500, { ...LIGHT, via: CURTAIN, straight: true }, [4, 45, 75]),
   unit("Light Division, second brigade (right half)", AL, 500, { ...LIGHT, via: CURTAIN, straight: true }, [4, 49, 75]),
   // the 3rd Division escaladed the castle as a division: every unit of it carries ladders
-  at("3rd Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", via: CASTLE, straight: true, leaders: [{ name: "Picton", rank: "Lieutenant-General" }] }, 5, [84, 18], 2),
+  at("3rd Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", via: CASTLE_MAIN, straight: true, leaders: [{ name: "Picton", rank: "Lieutenant-General" }] }, 3, [84, 23], 2),
   // each brigade in two halves of about 625 (5 wide, 4 deep): a 1,250-man block 7 deep had no room to
   // turn inside the outwork (7 hexes wide) to face the garrison, and stood there all night (ours)
-  at("3rd Division, first brigade (right half)", AL, 625, { ...LADDERS, via: CASTLE, straight: true, leaders: [{ name: "Kempt", rank: "Major-General" }] }, 5, [87, 12], N),
-  at("3rd Division, first brigade (left half)", AL, 625, { ...LADDERS, via: CASTLE, straight: true }, 5, [87, 8], N),
-  at("3rd Division, second brigade (right half)", AL, 625, { ...LADDERS, via: CASTLE, straight: true }, 5, [87, 4], N),
-  at("3rd Division, second brigade (left half)", AL, 625, { ...LADDERS, via: CASTLE, straight: true }, 5, [87, 0], N),
+  at("3rd Division, first brigade (right half)", AL, 625, { ...LADDERS, via: CASTLE, straight: true, leaders: [{ name: "Kempt", rank: "Major-General" }] }, 5, [87, 4], N),
+  at("3rd Division, first brigade (left half)", AL, 625, { ...LADDERS, via: CASTLE, straight: true }, 5, [87, 0], N),
+  at("3rd Division, second brigade (right half)", AL, 625, { ...LADDERS, via: CASTLE_EAST }, 4, [87, 13], N),
+  at("3rd Division, second brigade (left half)", AL, 625, { ...LADDERS, via: CASTLE_EAST }, 4, [87, 8], N),
 ];
 
 writeField({

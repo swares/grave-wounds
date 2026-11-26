@@ -2757,6 +2757,34 @@ def _tired(d: Data, u: dict) -> dict:
     return {"attack": -pen, "defence": -pen} if pen else {}
 
 
+def _plant_ladders(d: Data, us: list, field: dict | None) -> None:
+    """Ladders up (escalade.planted): a unit with ladders, not broken or fled, whose front rank
+    stands at the foot of a work its ladders get it up (across from a hex of its front rank) has
+    them planted, and its next move pays no escalade.cross to climb (step_cost); one not at the
+    foot of one has none planted."""
+    if not field or not d.units["escalade"].get("planted"):
+        return
+    for u in us:
+        if not has_ladders(u) or _out(u) or not u.get("pos"):
+            u.pop("planted", None)
+            continue
+        if _at_foot(d, field, u):
+            u["planted"] = True
+        else:
+            u.pop("planted", None)
+
+
+def _at_foot(d: Data, field: dict, u: dict) -> bool:
+    """A hex of its front rank has a work its ladders get it up between it and the next hex."""
+    own = {f"{h[0]},{h[1]}" for row in footprint(d, u) for h in row}
+    for h in (footprint(d, u) or [[]])[0]:
+        for dirn in range(6):
+            x = step(h, dirn)
+            if f"{x[0]},{x[1]}" not in own and _wall_between(d, field, h, x) and ladders_reach(d, field, u, h, x):
+                return True
+    return False
+
+
 def _toil_going(d: Data, us: list, field: dict | None) -> None:
     """In deep mud or snow, every hex a unit (not a vehicle) went since the last exchange is a toil."""
     if C.deep_going(d, ((field or {}).get("weather") or {}).get("ground")) <= 0:
@@ -2801,6 +2829,7 @@ def exchange(d: Data, units: list, table: str, rng, field: dict | None = None) -
     acc = (lost, dead, dealt)
     under = [False] * len(us)                     # under shellfire or machine-gun fire this exchange (suppression)
     _toil_going(d, us, field)
+    _plant_ladders(d, us, field)
     log += _mines_all(d, us, table, rng, acc, field)
     log += _closing_all(d, us, table, rng, acc, field)
     log += _closing_volleys(d, us, table, rng, acc, field)
@@ -5055,7 +5084,7 @@ def _mover(u: dict) -> str:
         return "m"
     if u.get("no_deep"):
         return "d"                                  # a charge without ladders: a deep ditch stops it
-    return ("s" if short_ladders(u) else "l") if has_ladders(u) else "f"
+    return (("s" if short_ladders(u) else "l") + ("p" if u.get("planted") else "")) if has_ladders(u) else "f"
 
 
 def step_cost(d: Data, field: dict | None, u: dict, a, b) -> int | None:
@@ -5076,7 +5105,7 @@ def _step_cost(d: Data, field: dict, u: dict, a, b) -> int | None:
     """step_cost, worked out."""
     if not _can_enter(d, field, u, b):
         return None
-    c = C.step_cost(d, _works(field), a, b, climb=d.units["escalade"]["cross"] if has_ladders(u) else None, deep_stops=bool(u.get("no_deep")), short=short_ladders(u))
+    c = C.step_cost(d, _works(field), a, b, climb=(0 if u.get("planted") else d.units["escalade"]["cross"]) if has_ladders(u) else None, deep_stops=bool(u.get("no_deep")), short=short_ladders(u))   # ladders planted: the climb under way (escalade.planted)
     if c is None:
         return None
     wx = field.get("weather") or {}
