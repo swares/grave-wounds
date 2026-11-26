@@ -1344,7 +1344,7 @@ commander:
   # get it over) to its target or objective, not as the crow flies. Shooting ranges stay straight.
   # Not for a unit going to its route's next waypoint, nor when there is no way round from where it
   # stands, nor for a unit its battlefield marks `straight` (its account has it press its own attack
-  # where its route ends: Pack's Portuguese at Burgos, the breaches at Badajoz). Ours (Ciudad Rodrigo:
+  # where its route ends: Pack's Portuguese at Burgos, the breaches and the castle at Badajoz). Ours (Ciudad Rodrigo:
   # the Allies stood outside the town wall once their plan was done).
   way_round: true
   in_range: 1000
