@@ -112,7 +112,7 @@ breach_share: 0.5
 # must be clear of the enemy). Design estimates. `ladders: short`: ladders that do not reach the
 # top of a tall work (works.yaml `tall`: a wall); against one the unit is as if it had none, but
 # they still serve over a palisade or gate and down into a deep ditch (Burgos 1812).
-escalade: {share: 1.0, penalty: 20, cross: 4}   # share: the whole front rank fights from the ladders (0.25 until 1 November 2026: escalades never got a footing)
+escalade: {share: 1.0, penalty: 20, cross: 4, planted: true}   # share: the whole front rank fights from the ladders (0.25 until 1 November 2026: escalades never got a footing)
 # Filing through a gap: only a unit's front row must stand clear of walls, palisades and barred gates
 # (`front_clear`); its ranks behind may lie across one, as men file through a breach or a gate in a
 # column narrower than the block the rules lay out (its ranks slant behind its front, so a block

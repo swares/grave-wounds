@@ -1807,6 +1807,17 @@ function coverAt(field, h, t){                    // % off shots from h at t: th
 }
 const fatiguePenalty = u => (u.fatigue ? WXD.fatigue.levels[u.fatigue].penalty : 0);
 const sideOfUnit = (u, table) => { const f = fatiguePenalty(u); return { table, weapon: u.weapon, kit: u.kit, quality: u.quality, ...(f ? { attack: -f, defence: -f } : {}) } };
+function plantLadders(us, field){                 // ladders up (escalade.planted): a unit with ladders at the foot of a work they get it up has them planted, and its next move pays no escalade.cross (as units._plant_ladders)
+  if (!field || !UD.escalade.planted) return;
+  for (const u of us){
+    if (hasLadders(u) && !out_(u) && u.pos && atFoot(field, u)) u.planted = true;
+    else delete u.planted;
+  }
+}
+function atFoot(field, u){                         // a hex of its front rank has a work its ladders get it up between it and the next hex (as units._at_foot)
+  const fp = footprint(u), own = new Set(fp.flat().map(hk));
+  return (fp[0] || []).some(h => [0, 1, 2, 3, 4, 5].some(dn => { const x = step(h, dn); return !own.has(hk(x)) && wallBetween(field, h, x) && laddersReach(field, u, h, x) }));
+}
 function toilGoing(us, field){                    // in deep mud or snow, every hex a unit (not a vehicle) went since the last exchange is a toil (as units._toil_going)
   if (deepGoing(field?.weather?.ground) <= 0) return;
   for (const u of us) if (u.toil_from && !u.vehicle) tire(u, hdist(u.toil_from, u.pos));
@@ -2241,6 +2252,7 @@ function exchange(units, table, rng, field = null){   // -> {units, log}; works 
   const us = units.map(copyUnit), n = us.length, log = [];
   const acc = { lost: new Array(n).fill(0), dead: new Array(n).fill(0), dealt: new Array(n).fill(0), flanked: new Array(n).fill(false), braced: new Array(n).fill(null) };
   toilGoing(us, field);
+  plantLadders(us, field);
   const under = new Array(n).fill(false);          // under shellfire or machine-gun fire this exchange (suppression)
   minesAll(us, table, rng, acc, log, field);
   for (const c of closingFire(us, field)) fireBattery(us, table, rng, acc, log, c);
@@ -2723,7 +2735,7 @@ function moverOf(u){                               // what a step's movement dep
   if (u.vehicle) return "v";
   if (u.mounted) return "m";
   if (u.no_deep) return "d";                       // a charge without ladders: a deep ditch stops it
-  return hasLadders(u) ? (shortLadders(u) ? "s" : "l") : "f";
+  return hasLadders(u) ? (shortLadders(u) ? "s" : "l") + (u.planted ? "p" : "") : "f";
 }
 function unitStepCost(field, u, a, b){            // movement for the middle hex from a to b: works, ground, deep going; null if it cannot; remembered while a commander orders its side (as units.step_cost)
   if (!field) return 1;
@@ -2735,7 +2747,7 @@ function unitStepCost(field, u, a, b){            // movement for the middle hex
 }
 function stepOf(field, u, a, b){                  // unitStepCost, worked out (as units._step_cost)
   if (!canEnter(field, u, b)) return null;
-  const c = stepCost(field.works, a, b, hasLadders(u) ? UD.escalade.cross : null, !!u.no_deep, shortLadders(u));
+  const c = stepCost(field.works, a, b, hasLadders(u) ? (u.planted ? 0 : UD.escalade.cross) : null, !!u.no_deep, shortLadders(u));   // ladders planted: the climb under way (escalade.planted)
   if (c === null) return null;
   const going = u.vehicle ? UD.vehicles.ground[groundKey(field, b)] : groundAt(field, b).move;
   return c + going - 1 + deepGoing(field.weather?.ground) + (coldOf(field)?.move || 0) + (lightOf(field)?.move || 0);
