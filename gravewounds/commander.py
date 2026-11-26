@@ -49,6 +49,7 @@ def _command(d: Data, units: list, side, where: tuple, stance: str, memory: dict
     _hold_back(d, us, side, known)
     orders += _plan_if_needed(d, us, side, (field, known, exchange, stance, table), rng)
     orders += plan_steps(d, us, side, (field, known, exchange))
+    orders += _route_passing(d, us, side, field)
     orders += _commit(d, us, side, known, memory, stance)
     if stance == "hold":
         orders += _fix_lines(d, us, side, (field, known, exchange))
@@ -2003,10 +2004,63 @@ def _route_order(d: Data, us: list, i: int, ctx: tuple) -> dict | None:
         u["via"] = via
     else:
         del u["via"]
-    if not via or _route_blocked(d, us, i, via[0], ctx[3]):
+    if not via:
+        return None
+    R = d.units["commander"]["route"]
+    j = _broken_ahead(d, us, i, via[0]) if R.get("pass_broken") else None
+    if j is not None:                                # a broken friend in its way: they pass each other's lines (commander.route.pass_broken)
+        u["route_pass"] = {"with": us[j]["name"], "left": d.units["commander"]["plans"]["relieve"]}
+        u["passing"] = us[j]["passing"] = True
+        return {"act": "pass_lines", "with": j}
+    if _route_blocked(d, us, i, via[0], ctx[3]):
         return None
     size, field, stance, known, exchange = ctx
-    return _toward(d, us, i, None, (size, {**(field or {}), "objective": via[0], "objective_radius": None, "straight": True}, stance, known, exchange), "advance")   # straight to its waypoints (no way round)
+    return _toward(d, us, i, None, (size, {**(field or {}), "objective": via[0], "objective_radius": None, "straight": True,
+                                       "spaced": bool(d.units["commander"]["route"].get("spaced"))}, stance, known, exchange), "advance")   # straight to its waypoints (no way round), a hex clear of friends ahead on theirs
+
+
+def _broken_ahead(d: Data, us: list, i: int, w) -> int | None:
+    """A broken friend of unit i within commander.route.reach hexes of it, nearer its waypoint w,
+    not already passing and not passed before: the nearest, or None."""
+    u, reach = us[i], d.units["commander"]["route"]["reach"]
+    near, best, gap = U.hdist(u["pos"], w), None, math.inf
+    for k, x in enumerate(us):
+        if k == i or x["side"] != u["side"] or x["state"] != "broken" or x["men"] <= 0 or not x.get("pos") or x.get("passing") \
+                or x["name"] in (u.get("route_passed") or []) or U.hdist(x["pos"], w) >= near:
+            continue
+        g = U.unit_gap(d, u, x)
+        if g <= reach and g < gap:
+            best, gap = k, g
+    return best
+
+
+def _route_passing(d: Data, us: list, side, field: dict | None) -> list:
+    """Units of side passing a broken friend's lines on their route: after commander.plans.relieve
+    exchanges (neither firing nor moving) they change places, the broken friend going to where it
+    stood, once for each friend; it stops if the friend has gone, re-formed or run off.
+    -> orders [{unit, act: pass_lines, with, done | blocked | gone}]."""
+    out, reach = [], d.units["commander"]["route"]["reach"]
+    for i, u in enumerate(us):
+        if u["side"] != side or not u.get("route_pass"):
+            continue
+        j = next((k for k, x in enumerate(us) if x["name"] == u["route_pass"]["with"] and x["side"] == side), None)
+        b = None if j is None else us[j]
+        if b is None or b["state"] != "broken" or b["men"] <= 0 or not b.get("pos") or U.unit_gap(d, u, b) > reach \
+                or u["state"] in ROUTED or u["men"] <= 0:
+            u.pop("route_pass", None)
+            u.pop("passing", None)
+            if b is not None:
+                b.pop("passing", None)
+            out.append({"unit": i, "act": "pass_lines", "with": -1 if j is None else j, "gone": True})
+            continue
+        if u["route_pass"]["left"] > 1:
+            u["route_pass"] = {**u["route_pass"], "left": u["route_pass"]["left"] - 1}
+            continue
+        u.pop("route_pass")
+        u["route_passed"] = [*(u.get("route_passed") or []), b["name"]]   # once each: not again, done or blocked
+        r = _change_places(d, us, i, j, field)
+        out.append({"unit": i, "act": "pass_lines", "with": j, **({"done": True} if "relieved" in r else {"blocked": True})})
+    return out
 
 
 def _route_blocked(d: Data, us: list, i: int, w, known: dict | None) -> bool:
@@ -2362,6 +2416,8 @@ def _toward(d: Data, us: list, i: int, t: int | None, ctx: tuple, act: str) -> d
     free = {**u, "prone": False} if u.get("prone") else u
     base = [free if k == i else x for k, x in enumerate(us)]
     foes = {k for k, j in U.occupancy(d, base).items() if base[j]["side"] != u["side"]}
+    if (field or {}).get("spaced"):                  # on its route: a hex clear of a friend ahead of it on its own (commander.route.spaced)
+        foes |= {C.hkey(h) for k in _ahead_on_route(base, i, obj) for row in U.footprint(d, base[k]) for h in row}
     tries, allow = d.units["commander"]["tries"], U.allowance(d, free)
     for c, h in _toward_hexes(d, base, i, tu, (size, field)):
         f = _facing(h, tu, obj, u["facing"])
@@ -2375,6 +2431,14 @@ def _toward(d: Data, us: list, i: int, t: int | None, ctx: tuple, act: str) -> d
         if m["ok"]:
             return _rising(u, {"act": act, "target": t, "pos": h, "facing": g, "cost": m["cost"]})
     return None
+
+
+def _ahead_on_route(us: list, i: int, obj) -> list:
+    """Friends of unit i still on a route (via), standing, nearer obj than it is."""
+    u = us[i]
+    near = U.hdist(u["pos"], obj)
+    return [k for k, x in enumerate(us) if k != i and x["side"] == u["side"] and x.get("via") and x.get("pos") and not U._out(x)
+            and U.hdist(x["pos"], obj) < near]
 
 
 def _stuck(u: dict) -> bool:

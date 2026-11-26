@@ -271,6 +271,15 @@ missile:
   # 15 yards and charged the guns (project doc "closing-volley-research"). The range bands give
   # the close volley its weight, with no multiplier.
   closing_volley: {weapons: [matchlock_musket, musket_smoothbore, rifle_musket]}
+  # over_ladders: a unit touching the enemy only across a work that blocks hand to hand (a wall,
+  #   palisade or barred gate), which that enemy climbs on its ladders, still fires its volleys,
+  #   down into the men at its foot, rather than only striking the few on the ladders. At Badajoz
+  #   the 3rd Division's first attempt on the castle was held 45 minutes by "devastating cross-fire"
+  #   with explosives thrown down from the parapet (britishbattles.com); the leading files were
+  #   "crushed" (Napier, retold). Without it, the castle's wall party stopped firing once the
+  #   ladders went up and almost no one was hurt either way (claude/way-round.md). Design choice
+  #   (asked and answered, 26 November 2026).
+  over_ladders: true
   tempo: 0.033
   rate:                     # shots a minute, by weapon (design estimates): a unit's battle rate, below the drilled
                             # maxima the battle map uses for one man (weapons.yaml shots_a_minute; docs/units.md)
@@ -932,6 +941,24 @@ morale:
   #   while at the English line). Measured on 24 runs of every battlefield: 671 of 912 from 658,
   #   the June Redan 2 to 14.
   posture_hand: true
+  # ladders: a unit on its ladders, in contact only with the defenders of the work it climbs
+  #   (units.climbs_at), does not count an exchange it lost there as lost: the men at the foot of a
+  #   wall cannot reach those behind it, and almost every exchange goes against them. Nor is it
+  #   flanked by them: a wall's defenders wider than the column touch its side across the wall
+  #   (the mirror of posture_flank). A quarter down or a tenth down in one exchange still calls
+  #   the check, as does any other enemy touching it (then it is not on its ladders only). At
+  #   Badajoz the 3rd Division's first attempt on the castle wall held 45 minutes under cross-fire
+  #   and explosives before the men "fell back and took cover" (britishbattles.com, Storming of
+  #   Badajoz); here they broke in two or three exchanges at about 3% down (claude/way-round.md).
+  #   The mirror of posture_hand for the defenders. Design choice (asked and answered, 26 November
+  #   2026).
+  # ladders_give_up: a unit on its ladders this many exchanges running without a footing (not
+  #   broken) gives the attempt up at the start of the next: it falls back as a broken unit runs,
+  #   but in order (shaken, struck by no one as it goes), leaving the wall to the next wave, and may
+  #   go again once rallied. The 3rd Division's first attempt on the castle at Badajoz "fell back
+  #   and took cover" after 45 minutes (britishbattles.com); an exchange is a minute. Otherwise one
+  #   that could neither win the wall nor break stood on its ladders all night with its division
+  #   queued behind it (claude/way-round.md). Design choice (asked and answered, 26 November 2026).
   # posture_flank: a unit holding a position (as posture) is not flanked: men in buildings or works
   #   face every way. Being struck in flank or rear neither calls a check nor costs it -20, nor
   #   breaks it at once on a bad failure. At Keating the barracks (B Troop, 10 to 21 men, steady)
@@ -941,6 +968,8 @@ morale:
   #   broke the next exchange). Measured on 24 runs of every battlefield: 766 of 1,056 from 763 (Keating 18 to
   #   19, Chipyong-ni 21 to 23, Mogadishu 17 to 18; Goose Green 5 to 3). false: the old rule.
   posture_flank: true
+  ladders: true
+  ladders_give_up: 45
   shaken_by: 20
   mods:
     leader: 10                # a named leader with the unit, up and fighting
@@ -997,6 +1026,12 @@ rout:
   #   attackers almost never lose men as prisoners (TDI capture-rate study: 0.04% of strength),
   #   and the Rangers at Cisterna, who did, were surrounded by more men. Design estimate.
   outnumbered: true
+  # stormers_surrender: false: attackers (the side a battlefield's objective names) cornered
+  #   among the works (a work on a hex they stand on or on one of its sides) do not give up: they
+  #   stay broken where they stand and are struck. Stormers in a breach or a ditch were shot down or got back over
+  #   it; at Badajoz almost none were taken, and any were freed when the town fell at dawn
+  #   (claude/way-round.md). Design choice (asked and answered, 25 November 2026).
+  stormers_surrender: false
   # overrun: at the start of an exchange, a battery or anti-tank guns (not broken) touched hand to
   #   hand by standing enemy (not vehicles, not only across a wall no one fights over) who have at
   #   least as many men as its crews standing is overrun: the guns are lost, the war's quarter % of
@@ -1252,7 +1287,20 @@ commander:
   # flank). Its commander moves it on to each in turn, dropping one once its middle hex is within
   # `reach` hexes; it turns aside only for an enemy in contact or one it knows of across its way
   # within its move, and then fights as any other unit. Design choice.
-  route: {reach: 3}
+  # spaced: on its route it keeps a hex clear of any friend ahead of it still on a route (nearer
+  #   its waypoint), as a column on the march keeps its distance, so the unit in front has room
+  #   to wheel. At Badajoz the 3rd Division's four brigade halves closed up nose to tail, the
+  #   leader could not turn on to its next waypoint without stepping into the one behind, and
+  #   none of them moved again (claude/way-round.md). Design choice (asked and answered,
+  #   25 November 2026).
+  # pass_broken: a unit on its route with a broken friend in its way (within `reach` hexes,
+  #   nearer its waypoint) passes its lines as a relieve step does (plans.relieve exchanges,
+  #   neither firing nor moving), then they change places, once for each friend: the next wave
+  #   goes in where the last broke. At Badajoz the ladders went up again and again until Ridge's
+  #   men got in; a broken storming party under the castle wall otherwise stood in its own
+  #   division's way all night (claude/way-round.md). Design choice (asked and answered,
+  #   26 November 2026).
+  route: {reach: 3, spaced: false, pass_broken: true}
   # plans (data/plans.yaml; docs/units.md, Plans): a step's outflanked trigger is a steady enemy
   # it knows of off the flank or in the rear of one of the step's units, within `flank` hexes of
   # it (between their nearest hexes). Design estimate: the reserve's 12, close enough to matter.
