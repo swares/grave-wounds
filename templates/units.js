@@ -4331,7 +4331,7 @@ function wayStops(field, u){                       // the field has works u cann
   return Object.values(W.hexes || {}).some(it => intact("hex", it) && (specOf("hex", it).enter === null || specOf("hex", it).enter === undefined));
 }
 function wayOf(field, u, goal){                     // {"c,r": steps} to goal by the way round (u's middle hex, a hex at a time where it can), or null: not wanted or no way from where it stands; remembered while a commander orders its side (as commander.way)
-  if (!UD.commander.way_round || !field || field.straight || !field.works) return null;
+  if (!UD.commander.way_round || !field || field.straight || u.straight || !field.works) return null;   // u.straight: its account has it press its own attack (battlefield files)
   const top = STEPS.at(-1), memo = top ? (top.get(field.works) || top.set(field.works, new Map()).get(field.works)) : new Map();
   const sk = "stops:" + moverOf(u);
   if (!memo.has(sk)) memo.set(sk, wayStops(field, u));
@@ -4664,7 +4664,7 @@ function fieldLeaders(o, id){                       // a battlefield unit's lead
 function unitMarks(o){                             // a drawn unit's optional marks, copied as given
   return { ...(o.prone ? { prone: true } : {}), ...(o.emplaced ? { emplaced: true } : {}), ...(o.vehicle ? { vehicle: o.vehicle } : {}), ...(o.fixed ? { fixed: o.fixed.slice() } : {}), ...(o.armour ? { armour: o.armour } : {}),
     ...(o.via?.length ? { via: o.via.map(h => [...h]) } : {}), ...unitOrders(o), ...(o.fac ? { fac: true } : {}), ...(o.ladders ? { ladders: o.ladders === "short" ? "short" : true } : {}), ...(o.type ? { type: o.type } : {}), ...(o.size ? { size: o.size } : {}),
-    ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}), ...(o.fights_on ? { fights_on: true } : {}), ...(o.throws ? { throws: true } : {}), ...(o.masks ? { masks: true } : {}), ...(o.holds_fire ? { holds_fire: true } : {}), ...(o.spare_muskets ? { spare_muskets: o.spare_muskets } : {}), ...(o.sidearm ? { sidearm: o.sidearm } : {}), ...(o.unfit != null ? { unfit: o.unfit } : {}), ...(o.he === false ? { he: false } : {}), ...(o.asFought ? { asFought: true } : {}) };
+    ...(o.medics ? { medics: o.medics, medic_quality: o.medic_quality || o.quality } : {}), ...(o.fights_on ? { fights_on: true } : {}), ...(o.straight ? { straight: true } : {}), ...(o.throws ? { throws: true } : {}), ...(o.masks ? { masks: true } : {}), ...(o.holds_fire ? { holds_fire: true } : {}), ...(o.spare_muskets ? { spare_muskets: o.spare_muskets } : {}), ...(o.sidearm ? { sidearm: o.sidearm } : {}), ...(o.unfit != null ? { unfit: o.unfit } : {}), ...(o.he === false ? { he: false } : {}), ...(o.asFought ? { asFought: true } : {}) };
 }
 const unitOrders = o => ({ ...(o.hold ? { hold: true } : {}), ...(o.withdraw ? { withdraw: { ...o.withdraw } } : {}) });   // its orders from the accounts
 function ensureTags(B){                            // each unit's number on its side, kept for the battle (B3 stays B3) (as battle.ensure_tags)

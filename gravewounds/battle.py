@@ -77,6 +77,8 @@ def _unit_marks(o: dict) -> dict:
         out["hold"] = True
     if o.get("fights_on"):
         out["fights_on"] = True
+    if o.get("straight"):
+        out["straight"] = True                        # its account has it press its own attack where its route ends (no way round: commander.way_round)
     if o.get("unfit") is not None:
         out["unfit"] = o["unfit"]
     if o.get("he") is False:

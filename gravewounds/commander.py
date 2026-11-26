@@ -2713,7 +2713,7 @@ def way(d: Data, field: dict | None, u: dict, goal) -> dict | None:
     time where it can (units.step_cost), or None: not wanted (commander.way_round off, no works it
     cannot cross, a route's waypoint) or no way from where it stands. Remembered while a commander
     orders its side."""
-    if not d.units["commander"].get("way_round") or not field or field.get("straight"):
+    if not d.units["commander"].get("way_round") or not field or field.get("straight") or u.get("straight"):   # straight: its account has it press its own attack (battlefield files)
         return None
     memo = U._STEPS[-1] if U._STEPS else {}
     key = ("way", id(field.get("works")), id(field.get("ground")), U._mover(u), goal[0], goal[1])   # the works and ground, not the field: orders pass copies of it with another objective
