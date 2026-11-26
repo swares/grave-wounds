@@ -716,7 +716,8 @@ general. All its numbers are in units.yaml `commander`.
     get it over. Shooting ranges stay straight; a unit going to its route's next waypoint goes
     straight; with no way from where it stands it goes as the crow flies, as before. A unit its
     battlefield marks `straight: true` never goes round: its account has it press its own attack where
-    its route ends (Pack's Portuguese at Burgos, the 4th and Light Divisions at Badajoz's breaches;
+    its route ends (Pack's Portuguese at Burgos; at Badajoz the 4th and Light Divisions at the breaches and
+    the 3rd Division's escalade of the castle;
     without the mark the way round sent the Portuguese round to the gorge and took the 4th's storming
     party alongside the Trinidad's flank guns, which it overran). Ours: at Ciudad Rodrigo, once the
     Light Division's plan was done, the Allies stood outside the town wall, because getting round it
