@@ -46,6 +46,10 @@ with sync_playwright() as p:
     check(len(pg.evaluate(SHOWN)) == 11, "Every era shows all eleven")
     pg.select_option("#era", "medieval")
     pg.reload()
+    try:                                               # the page restores the choice as it loads; on a slow runner the check came first (CI, 25 November 2026)
+        pg.wait_for_function(f"want => JSON.stringify(({SHOWN})()) === want", arg='["medieval"]', timeout=5000)
+    except Exception:
+        pass                                           # the check below says what it found
     check(pg.evaluate(SHOWN) == ["medieval"] and not pg.is_visible("section[data-era=medieval] tr.note"), "the choice is kept on reload")
     ph = br.new_page(viewport={"width": 390, "height": 800})
     ph.goto(PAGE)
