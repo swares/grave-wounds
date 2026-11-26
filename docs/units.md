@@ -721,8 +721,8 @@ general. All its numbers are in units.yaml `commander`.
     without the mark the way round sent the Portuguese round to the gorge and took the 4th's storming
     party alongside the Trinidad's flank guns, which it overran). Ours: at Ciudad Rodrigo, once the
     Light Division's plan was done, the Allies stood outside the town wall, because getting round it
-    meant first moving away from it. The full benchmark (36 seeds): 1,551 to 1,553 of 1,836 matching
-    history; Ciudad Rodrigo 26 to 30 of 36, Badajoz 19 to 17, Burgos unchanged at 33.
+    meant first moving away from it. The full benchmark (36 seeds): 1,551 to 1,557 of 1,836 matching
+    history; Ciudad Rodrigo 26 to 30 of 36, Badajoz 19 to 21, Burgos unchanged at 33.
 - **Shooters.** A unit with missiles stops where the target is in range and shoots rather
   than closing. In range means its weapon (or main gun) reaches, the weather and light let it
   see that far (for its small arms as for a main gun: at 73 Easting the tanks, whose machine
