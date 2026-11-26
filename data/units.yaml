@@ -279,7 +279,7 @@ missile:
   #   "crushed" (Napier, retold). Without it, the castle's wall party stopped firing once the
   #   ladders went up and almost no one was hurt either way (claude/way-round.md). Design choice
   #   (asked and answered, 26 November 2026).
-  over_ladders: true
+  over_ladders: false
   tempo: 0.033
   rate:                     # shots a minute, by weapon (design estimates): a unit's battle rate, below the drilled
                             # maxima the battle map uses for one man (weapons.yaml shots_a_minute; docs/units.md)
@@ -968,8 +968,8 @@ morale:
   #   broke the next exchange). Measured on 24 runs of every battlefield: 766 of 1,056 from 763 (Keating 18 to
   #   19, Chipyong-ni 21 to 23, Mogadishu 17 to 18; Goose Green 5 to 3). false: the old rule.
   posture_flank: true
-  ladders: true
-  ladders_give_up: 45
+  ladders: false
+  ladders_give_up: 0
   shaken_by: 20
   mods:
     leader: 10                # a named leader with the unit, up and fighting
@@ -1031,7 +1031,7 @@ rout:
   #   stay broken where they stand and are struck. Stormers in a breach or a ditch were shot down or got back over
   #   it; at Badajoz almost none were taken, and any were freed when the town fell at dawn
   #   (claude/way-round.md). Design choice (asked and answered, 25 November 2026).
-  stormers_surrender: false
+  stormers_surrender: true
   # overrun: at the start of an exchange, a battery or anti-tank guns (not broken) touched hand to
   #   hand by standing enemy (not vehicles, not only across a wall no one fights over) who have at
   #   least as many men as its crews standing is overrun: the guns are lost, the war's quarter % of
