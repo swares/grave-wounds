@@ -304,6 +304,31 @@ to hand for "lost the exchange in contact" was measured with it and not built: i
 (1 to 0), where the Marines then broke from the hand-to-hand fights they met storming the
 buildings, and it cost Agincourt (8 to 3) while lifting the June Redan (2 to 13).
 
+**On the ladders** (`morale.ladders`; 26 November 2026). The mirror for the stormers: a unit on its
+ladders (*Escalade*), in contact only with the defenders of the work it climbs, does not count an
+exchange it lost there as lost, since the men at the foot of a wall cannot reach those behind it
+and almost every exchange goes against them; nor is it flanked by a wall's defenders wider than its
+column, who touch its side across the wall. A quarter down, a tenth down in one exchange, or any
+other enemy touching it still calls the check. At Badajoz the 3rd Division's first attempt on the
+castle held 45 minutes under cross-fire and explosives before the men "fell back and took cover"
+(britishbattles.com); here they broke in two or three exchanges at about 3% down. A design choice.
+Measured on 36 runs of every battlefield: 1,558 of 1,836 from 1,557 (Badajoz 21 to 22).
+
+**Giving up an attempt** (`morale.ladders_give_up`, 45). A unit on its ladders that many exchanges
+running without a footing (and not broken) gives the attempt up at the start of the next: it falls
+back as a broken unit runs, but in order (shaken, struck by no one as it goes), leaving the wall to
+the next wave, and may go again once rallied ("gave up the attempt" in the log). Badajoz again: 45
+minutes, an exchange being a minute. Measured with the ladders rule: the same 1,558; it changed no
+run, but keeps a stormer that can neither win the wall nor break from standing there all night.
+
+Three more rules for the fight at a wall were built and measured alone the same day, and are off
+because each cost the benchmark: attackers cornered among the works not giving up
+(`rout.stormers_surrender: false`; 1,554, Badajoz 21 to 19), the wall's defenders firing their
+volleys down at the men at the foot of the ladders (`missile.over_ladders: true`; 1,555, the
+September Redan 33 to 31), and the next wave passing the lines of a broken one in its way on its
+route (`commander.route.pass_broken: true`; 1,554, Badajoz 21 to 19, Ciudad Rodrigo 30 to 28). See
+the project doc *way-round*.
+
 ## The rout
 
 A broken unit runs. Every enemy man in reach strikes it, not just the front rank, at +20,

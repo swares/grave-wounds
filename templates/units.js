@@ -697,10 +697,10 @@ function failedState(mo, u, by, rallying = false){   // a failed check; a failed
   return hard && by > mo.shaken_by ? "broken" : "shaken";
 }
 function morale(u0, roll){                       // {check, target, state}; holding a position, its men face every way: not flanked (morale.posture_flank)
-  const M = UD.morale, u = M.posture_flank && u0.holds ? { ...u0, flanked: false } : u0;
+  const M = UD.morale, u = (M.posture_flank && u0.holds) || u0.climbing ? { ...u0, flanked: false } : u0;   // on its ladders, only the wall's defenders touch it (morale.ladders)
   if (u.state === "broken") return { check: false, target: null, state: "broken" };
   const byHand = !!M.posture_hand && u.holds && !u.flanked;   // holding a position: lost the fight hand to hand, not men lost to fire from afar (morale.posture_hand)
-  const losing = !u.braced && (byHand ? (u.hand_lost || 0) > (u.hand_dealt || 0) : (u.lost || 0) > (u.dealt || 0)) && u.contact;   // a front of pikes or bayonets struck only by horse at its front does not count as losing (melee.pikes.holds)
+  const losing = !u.braced && !u.climbing && (byHand ? (u.hand_lost || 0) > (u.hand_dealt || 0) : (u.lost || 0) > (u.dealt || 0)) && u.contact;   // a front of pikes or bayonets struck only by horse at its front does not count as losing (melee.pikes.holds), nor men on their ladders (morale.ladders)
   const attrition = u.down >= M.trigger * u.start && (u.lost > 0 || !(u.holds && !u.flanked));   // past a quarter down: every exchange in the open; holding a position, only when it lost men (morale.posture)
   const struck = attrition || u.lost >= M.shock * Math.max(1, u.men) || u.flanked || losing;
   const rally = u.state === "shaken" && !u.contact;
@@ -827,6 +827,18 @@ function engaged(units, occ, i, field){            // in contact with an enemy i
   }
   return false;
 }
+function overLadders(units, occ, i, field){       // unit i touches the enemy only across a work that blocks hand to hand, which the enemy climbs on its ladders (missile.over_ladders): it still shoots, down at the men at its foot (as units.over_ladders)
+  if (!UD.missile.over_ladders || !field?.works) return false;
+  const u = units[i];
+  let any = false;
+  for (const h of footprint(u).flat()) for (let dn = 0; dn < 6; dn++){
+    const x = step(h, dn), j = occ[hk(x)];
+    if (j === undefined || j === i || units[j].side === u.side) continue;
+    if (!across(field, u, h, x, 1)[0] || !laddersReach(field, units[j], x, h)) return false;
+    any = true;
+  }
+  return any;
+}
 function walledOff(field, u, e, h, x){            // touching hexes h (u's) and x (e's) across a work that blocks hand to hand, with neither reach-2 weapons nor ladders that get up it: no one fights across it (as units.walled_off)
   if (!field || !across(field, u, h, x, 1)[0]) return false;
   if ([u, e].some(w => (FD.weapons[meleeWeapon(w)].reach || 1) >= 2)) return false;
@@ -942,7 +954,7 @@ function nearestAhead(u, front, fv, hexes, field, clear = null){  // [distance, 
 function volleys(units, field = null){            // [{att, dfd, men, dist, cover, penalty, misfire, reach, from, to, over}]; riders shooting from vehicles too (riders: true)
   const occ = occupancy(units), out = [];
   units.forEach((u, i) => {
-    if (out_(u) || busyDigging(u) || (engaged(units, occ, i, field) && !inBunker(field, u))) return;   // a bunker's men shoot out even in contact; across a wall no one fights over, men shoot
+    if (out_(u) || busyDigging(u) || (engaged(units, occ, i, field) && !inBunker(field, u) && !overLadders(units, occ, i, field))) return;   // a bunker's men shoot out even in contact; across a wall no one fights over, men shoot; so do men on a wall the enemy climbs only on ladders (missile.over_ladders)
     if ("range" in FD.weapons[u.weapon] && ammoState(u) !== "out" && !(u.resupplying && ammoFull(u))) out.push(...volleyOf(units, occ, field, i));
     out.push(...riderVolley(units, occ, field, i));
   });
@@ -2561,6 +2573,11 @@ function reformAll(us, lost, rng, field){                // broken units that lo
   });
   return log;
 }
+function onLadders(us, near, i, field){            // in contact only with enemies it is on its ladders against, across the work it climbs (morale.ladders) (as units._on_ladders)
+  if (!UD.morale.ladders || !field) return false;
+  const foes = near.filter(j => us[j].side !== us[i].side);
+  return foes.length > 0 && foes.every(j => climbsAt(field, us[i], us[j]));
+}
 function moraleAll(us, occ, before, acc, rng, table, field = null){
   const log = [], broke = [], M = UD.morale;
   us.forEach((u, i) => {
@@ -2569,11 +2586,14 @@ function moraleAll(us, occ, before, acc, rng, table, field = null){
     const [down, lost] = vehicleLosses(u, before[i], acc.lost[i]);
     const unit = { quality: u.quality, start: u.start, down, lost, dealt: acc.dealt[i], men: before[i], state: u.state,
       leader: leaderState(u), flanked: acc.flanked[i], contact: near.some(j => us[j].side !== u.side), friends: near.some(j => us[j].side === u.side && us[j].state === "steady"), dug: low(u) || inBunker(field, u), no_ammo: ammoState(u) === "out", hungry: !!u.hungry, beaten: !!u.beaten,
-      holds: !!M.posture && !!u.holding && holdsPosition(us, i, field), hand_lost: acc.hand.lost[i], hand_dealt: acc.hand.dealt[i], braced: !!UD.melee.pikes.holds && acc.braced[i] === true };
+      holds: !!M.posture && !!u.holding && holdsPosition(us, i, field), hand_lost: acc.hand.lost[i], hand_dealt: acc.hand.dealt[i], braced: !!UD.melee.pikes.holds && acc.braced[i] === true,
+      climbing: onLadders(us, near, i, field) };
     const m = morale(unit, rng.randint(1, 100));
     if (m.check) log.push({ kind: "morale", unit: i, target: m.target, from: u.state, state: m.state });
     if (m.state === "broken") broke.push(i);
     u.state = m.state;
+    if (unit.climbing) u.on_ladders = (u.on_ladders || 0) + 1;   // exchanges running on its ladders without a footing (morale.ladders_give_up)
+    else delete u.on_ladders;
   });
   for (const j of broke) log.push(...routStrike(us, occ, j, table, rng));
   return log;
@@ -2807,10 +2827,10 @@ function chargePath(units, i, pos, size, most, field){   // [least movement, pas
   if (steps !== null || units[i].state !== "steady") return [steps, false];
   return [pathLen(units, i, pos, size, most, field, true), true];
 }
-function flee(units, i, size, field = null){      // a broken unit runs straight back; off the map it has fled; through its own side's units to the first free ground beyond (as units.flee)
+function flee(units, i, size, field = null, backDir = null){      // a broken unit runs straight back; off the map it has fled; through its own side's units to the first free ground beyond (as units.flee)
   let u = { ...units[i] };
   if (!footprint(u).some(row => row.length)) return { ...u, state: "fled" };   // no men left standing in it: it is gone
-  const back = mod6(u.facing + 3), allow = allowance(u);
+  const back = backDir ?? mod6(u.facing + 3), allow = allowance(u);
   const others = units.filter((x, k) => k === i || x.side !== u.side), j = others.indexOf(units[i]);
   let clear = u;
   for (let n = 0; n < allow * UD.rout.through; n++){
@@ -2837,12 +2857,30 @@ function ranThrough(units, i, after){             // indices of the friendly uni
   }
   return out;
 }
-function cornered(units, i, after){               // broken unit i cannot run (it would stand where it is) with an enemy touching it, and its side gives up (rout.surrender; not fights_on) (as units.cornered)
+const givesUp = u => !!UD.morale.ladders_give_up && (u.on_ladders || 0) >= UD.morale.ladders_give_up && (u.state === "steady" || u.state === "shaken") && u.men > 0;   // on its ladders that many exchanges running without a footing, not broken: the attempt is given up (as units.gives_up)
+function fallBack(units, i, size, field){          // it falls back as a broken unit runs (straight back, else back to either side), but in order: shaken, struck by no one as it goes, its count on the ladders begun again; with no clear ground it stays, shaken (as units.fall_back)
+  const u = units[i];
+  let after = null;
+  for (const turn of [0, -1, 1]){                  // straight back, else back to either side: the first way with clear ground
+    const a = flee(units, i, size, field, mod6(u.facing + 3 + turn));
+    if (a.state !== "fled" && (a.pos[0] !== u.pos[0] || a.pos[1] !== u.pos[1])){ after = a; break }
+  }
+  const out = { ...(after || u), state: "shaken", fell_back: true };
+  delete out.on_ladders;
+  return out;
+}
+function cornered(units, i, after, field = null){   // broken unit i cannot run (it would stand where it is) with an enemy touching it, and its side gives up (rout.surrender; not fights_on; not attackers among the works, rout.stormers_surrender) (as units.cornered)
   const u = units[i];
   if (!UD.rout.surrender || u.fights_on || after.state === "fled" || after.pos[0] !== u.pos[0] || after.pos[1] !== u.pos[1]) return false;
+  if ((UD.rout.stormers_surrender ?? true) === false && field && u.side === field.attackers && amongWorks(field, u)) return false;
   const foes = adjacentUnits(units, occupancy(units), i).filter(j => units[j].side !== u.side);
   if (!foes.length) return false;
   return !UD.rout.outnumbered || foes.filter(j => !out_(units[j])).reduce((n, j) => n + units[j].men, 0) >= u.men;   // only when the enemy touching it is at least as many as it has standing (rout.outnumbered)
+}
+function amongWorks(field, u){                     // a work (standing) on a hex unit u stands on, or on one of those hexes' sides (as units.among_works)
+  const w = field?.works;
+  if (!w) return false;
+  return footprint(u).flat().some(h => !!hexItem(w, h) || [0, 1, 2, 3, 4, 5].some(dn => edgeItems(w, h, step(h, dn)).length > 0));
 }
 function overrun(units, i, field = null){         // a battery or anti-tank guns, not broken, touched hand to hand by standing enemy (not vehicles, not only across a wall no one fights over) with at least as many men as its crews standing (rout.overrun) (as units.overrun)
   const u = units[i];
@@ -2888,6 +2926,7 @@ function orderSide(units, side, [size, field, rng, exchange], { stance, memory, 
   holdBack(us, side, known);
   orders.push(...planIfNeeded(us, side, [field, known, exchange, stance, table], rng));
   orders.push(...planSteps(us, side, [field, known, exchange]));
+  orders.push(...routePassing(us, side, field));
   orders.push(...commitReserve(us, side, known, mem, stance));
   if (stance === "hold") orders.push(...fixLines(us, side, [field, known, exchange]));
   for (let i = 0; i < us.length; i++){
@@ -4032,9 +4071,41 @@ function routeOrder(us, i, ctx){                   // a unit on its route (via: 
   while (via.length && hdist(u.pos, via[0]) <= UD.commander.route.reach) via.shift();
   if (via.length) u.via = via;
   else delete u.via;
-  if (!via.length || routeBlocked(us, i, via[0], ctx[3])) return null;
+  if (!via.length) return null;
+  const pass = UD.commander.route.pass_broken ? brokenAhead(us, i, via[0]) : null;
+  if (pass !== null){ u.route_pass = { with: us[pass].name, left: UD.commander.plans.relieve }; u.passing = us[pass].passing = true; return { act: "pass_lines", with: pass } }   // a broken friend in its way: they pass each other's lines (commander.route.pass_broken)
+  if (routeBlocked(us, i, via[0], ctx[3])) return null;
   const [size, field, stance, known, exchange] = ctx;
-  return toward(us, i, null, [size, { ...field, objective: via[0], objective_radius: null, straight: true }, stance, known, exchange], "advance");   // straight to its waypoints (no way round)
+  return toward(us, i, null, [size, { ...field, objective: via[0], objective_radius: null, straight: true, spaced: !!UD.commander.route.spaced }, stance, known, exchange], "advance");   // straight to its waypoints (no way round), a hex clear of friends ahead on theirs
+}
+function brokenAhead(us, i, w){                    // a broken friend of unit i within commander.route.reach hexes of it, nearer its waypoint w, not already passing and not passed before: the nearest, or null (as commander._broken_ahead)
+  const u = us[i], d = hdist(u.pos, w);
+  let best = null, gap = Infinity;
+  us.forEach((x, k) => {
+    if (k === i || x.side !== u.side || x.state !== "broken" || x.men <= 0 || !x.pos || x.passing || (u.route_passed || []).includes(x.name) || hdist(x.pos, w) >= d) return;
+    const g = unitGap(u, x);
+    if (g <= UD.commander.route.reach && g < gap){ best = k; gap = g }
+  });
+  return best;
+}
+function routePassing(us, side, field){             // units of side passing a broken friend's lines on their route: after commander.plans.relieve exchanges (neither firing nor moving) they change places, the broken friend going to where it stood; it stops if the friend has gone, re-formed or run off (as commander._route_passing): orders [{unit, act: pass_lines, with, done | blocked | gone}]
+  const out = [];
+  us.forEach((u, i) => {
+    if (u.side !== side || !u.route_pass) return;
+    const j = us.findIndex(x => x.name === u.route_pass.with && x.side === side);
+    const b = j < 0 ? null : us[j];
+    if (b === null || b.state !== "broken" || b.men <= 0 || !b.pos || unitGap(u, b) > UD.commander.route.reach || ROUTED.has(u.state) || u.men <= 0){
+      delete u.route_pass; delete u.passing; if (b) delete b.passing;
+      out.push({ unit: i, act: "pass_lines", with: j, gone: true });
+      return;
+    }
+    if (u.route_pass.left > 1){ u.route_pass = { ...u.route_pass, left: u.route_pass.left - 1 }; return }
+    delete us[i].route_pass;
+    us[i].route_passed = [...(us[i].route_passed || []), b.name];   // once each: not again, done or blocked
+    const r = changePlaces(us, i, j, field);
+    out.push({ unit: i, act: "pass_lines", with: j, ...(r.relieved ? { done: true } : { blocked: true }) });
+  });
+  return out;
 }
 function routeBlocked(us, i, w, known){            // in contact, or an enemy it knows of within its move of the straight way to waypoint w (within a hex of it) (as commander._route_blocked)
   const u = us[i];
@@ -4148,6 +4219,7 @@ function toward(us, i, t, [size, field, , known], act){   // a move toward the o
   const obj = objectiveOf(field), tu = t === null ? null : knownAt(us, t, known);
   const free = u.prone ? { ...u, prone: false } : u, base = us.map((x, k) => (k === i ? free : x));
   const occ = occupancy(base), foes = new Set(Object.keys(occ).filter(k => base[occ[k]].side !== u.side)), allow = allowance(free);
+  if (field?.spaced) for (const k of aheadOnRoute(base, i, obj)) for (const h of footprint(base[k]).flat()) foes.add(hk(h));   // on its route: a hex clear of a friend ahead of it on its own (commander.route.spaced)
   let tries = UD.commander.tries;
   for (const [c, h] of towardHexes(base, i, tu, [size, field])){
     const f = facingFrom(h, tu, obj, u.facing);
@@ -4283,6 +4355,10 @@ function aiReach(base, i, [size, limit, field], through){   // Map hk -> [hex, l
   return out;
 }
 const keepFront = (u, b) => (arc(u.facing, b) === "front" ? u.facing : b);   // the facing to take toward direction b: its own if b is already in its front arc, else b (as commander.keep_front)
+function aheadOnRoute(us, i, obj){                 // friends of unit i still on a route (via), standing, nearer obj than it is (as commander._ahead_on_route)
+  const u = us[i], d = hdist(u.pos, obj);
+  return us.map((x, k) => k).filter(k => k !== i && us[k].side === u.side && us[k].via && us[k].pos && !out_(us[k]) && hdist(us[k].pos, obj) < d);
+}
 function facingsFor(f, now){                       // f, then a point either side, then two, then the facing it has now (each once) (as commander._facings)
   const out = [];
   for (const g of [f, f + 1, f - 1, f + 2, f - 2, now]) if (!out.includes(mod6(g))) out.push(mod6(g));
@@ -4811,9 +4887,10 @@ function startPhase(B, k){                         // side k's move; at the star
       ran.push({ unit: i, through: [], fled: true, surrendered: true, overrun: true, taken: s.taken, killed: s.killed });
       continue;
     }
+    if (k === 0 && givesUp(B.units[i])){ const from = [...B.units[i].pos]; B.units[i] = fallBack(B.units, i, B.size, B.field); ran.push({ unit: i, through: [], fled: false, gave_up: true, from }); continue }   // an attempt on a wall given up (morale.ladders_give_up): it falls back in order
     if (k !== 0 || B.units[i].state !== "broken") continue;
     const after = flee(B.units, i, B.size, B.field);
-    if (cornered(B.units, i, after)){ const s = surrender(B.units[i], quarterFor(B.table, B.field, B.units[i].side)); B.units[i] = s.unit; ran.push({ unit: i, through: [], fled: true, surrendered: true, taken: s.taken, killed: s.killed }); continue }
+    if (cornered(B.units, i, after, B.field)){ const s = surrender(B.units[i], quarterFor(B.table, B.field, B.units[i].side)); B.units[i] = s.unit; ran.push({ unit: i, through: [], fled: true, surrendered: true, taken: s.taken, killed: s.killed }); continue }
     const through = ranThrough(B.units, i, after);
     B.units = runAway(B.units, i, B.size, B.field);
     ran.push({ unit: i, through, fled: B.units[i].state === "fled" });

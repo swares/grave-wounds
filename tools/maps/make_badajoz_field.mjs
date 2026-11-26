@@ -128,25 +128,27 @@ const units = [
   // (traced 1 November 2026); the two halves follow the same route.
   // Each goes by its route (via) to its breach or wall, as the plan of attack sent it: walls stand
   // between every column and the town, and with no route a column halts at the first wall in its way.
+  // straight (units.yaml commander.way_round): each presses its own attack where its route ends, as
+  // the accounts have it, rather than the commander's way round the works (claude/way-round.md).
   // the storming parties were picked volunteers: veterans, all three
-  unit("4th Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", formation: "open", via: TRINIDAD, leaders: [{ name: "Bowes", rank: "Major-General" }] }, [7, 62, 64]),
-  unit("4th Division, first brigade (left half)", AL, 750, { ...LINE, via: TRINIDAD, leaders: [{ name: "Colville", rank: "Major-General" }] }, [4, 61, 69]),
-  unit("4th Division, first brigade (right half)", AL, 750, { ...LINE, via: TRINIDAD }, [4, 65, 69]),
-  unit("4th Division, second brigade (left half)", AL, 750, { ...LINE, via: CURTAIN }, [4, 61, 75]),
-  unit("4th Division, second brigade (right half)", AL, 750, { ...LINE, via: CURTAIN }, [4, 65, 75]),
-  unit("Light Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", formation: "open", via: SANTA_MARIA }, [7, 46, 64]),
-  unit("Light Division, first brigade (left half)", AL, 500, { ...LIGHT, via: SANTA_MARIA, leaders: [{ name: "Barnard", rank: "Lieutenant-Colonel" }] }, [4, 45, 69]),
-  unit("Light Division, first brigade (right half)", AL, 500, { ...LIGHT, via: SANTA_MARIA }, [4, 49, 69]),
-  unit("Light Division, second brigade (left half)", AL, 500, { ...LIGHT, via: CURTAIN }, [4, 45, 75]),
-  unit("Light Division, second brigade (right half)", AL, 500, { ...LIGHT, via: CURTAIN }, [4, 49, 75]),
+  unit("4th Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", formation: "open", via: TRINIDAD, straight: true, leaders: [{ name: "Bowes", rank: "Major-General" }] }, [7, 62, 64]),
+  unit("4th Division, first brigade (left half)", AL, 750, { ...LINE, via: TRINIDAD, straight: true, leaders: [{ name: "Colville", rank: "Major-General" }] }, [4, 61, 69]),
+  unit("4th Division, first brigade (right half)", AL, 750, { ...LINE, via: TRINIDAD, straight: true }, [4, 65, 69]),
+  unit("4th Division, second brigade (left half)", AL, 750, { ...LINE, via: CURTAIN, straight: true }, [4, 61, 75]),
+  unit("4th Division, second brigade (right half)", AL, 750, { ...LINE, via: CURTAIN, straight: true }, [4, 65, 75]),
+  unit("Light Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", formation: "open", via: SANTA_MARIA, straight: true }, [7, 46, 64]),
+  unit("Light Division, first brigade (left half)", AL, 500, { ...LIGHT, via: SANTA_MARIA, straight: true, leaders: [{ name: "Barnard", rank: "Lieutenant-Colonel" }] }, [4, 45, 69]),
+  unit("Light Division, first brigade (right half)", AL, 500, { ...LIGHT, via: SANTA_MARIA, straight: true }, [4, 49, 69]),
+  unit("Light Division, second brigade (left half)", AL, 500, { ...LIGHT, via: CURTAIN, straight: true }, [4, 45, 75]),
+  unit("Light Division, second brigade (right half)", AL, 500, { ...LIGHT, via: CURTAIN, straight: true }, [4, 49, 75]),
   // the 3rd Division escaladed the castle as a division: every unit of it carries ladders
-  at("3rd Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", via: CASTLE, leaders: [{ name: "Picton", rank: "Lieutenant-General" }] }, 5, [84, 18], 2),
+  at("3rd Division storming party (with ladders)", AL, 500, { ...LADDERS, quality: "veteran", via: CASTLE, straight: true, leaders: [{ name: "Picton", rank: "Lieutenant-General" }] }, 5, [84, 18], 2),
   // each brigade in two halves of about 625 (5 wide, 4 deep): a 1,250-man block 7 deep had no room to
   // turn inside the outwork (7 hexes wide) to face the garrison, and stood there all night (ours)
-  at("3rd Division, first brigade (right half)", AL, 625, { ...LADDERS, via: CASTLE, leaders: [{ name: "Kempt", rank: "Major-General" }] }, 5, [87, 12], N),
-  at("3rd Division, first brigade (left half)", AL, 625, { ...LADDERS, via: CASTLE }, 5, [87, 8], N),
-  at("3rd Division, second brigade (right half)", AL, 625, { ...LADDERS, via: CASTLE }, 5, [87, 4], N),
-  at("3rd Division, second brigade (left half)", AL, 625, { ...LADDERS, via: CASTLE }, 5, [87, 0], N),
+  at("3rd Division, first brigade (right half)", AL, 625, { ...LADDERS, via: CASTLE, straight: true, leaders: [{ name: "Kempt", rank: "Major-General" }] }, 5, [87, 12], N),
+  at("3rd Division, first brigade (left half)", AL, 625, { ...LADDERS, via: CASTLE, straight: true }, 5, [87, 8], N),
+  at("3rd Division, second brigade (right half)", AL, 625, { ...LADDERS, via: CASTLE, straight: true }, 5, [87, 4], N),
+  at("3rd Division, second brigade (left half)", AL, 625, { ...LADDERS, via: CASTLE, straight: true }, 5, [87, 0], N),
 ];
 
 writeField({

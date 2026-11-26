@@ -1125,8 +1125,8 @@ def morale(d: Data, unit: dict, roll: int) -> dict:
     M = d.units["morale"]
     if unit["state"] == "broken":
         return {"check": False, "target": None, "state": "broken"}
-    if M.get("posture_flank") and unit.get("holds"):
-        unit = {**unit, "flanked": False}   # holding a position, its men face every way (morale.posture_flank)
+    if (M.get("posture_flank") and unit.get("holds")) or unit.get("climbing"):
+        unit = {**unit, "flanked": False}   # holding a position, its men face every way (morale.posture_flank); on its ladders, only the wall's defenders touch it (morale.ladders)
     struck = _attrition(M, unit) or unit["lost"] >= M["shock"] * max(1, unit["men"]) or unit.get("flanked") or _losing(M, unit)
     rally = unit["state"] == "shaken" and not unit.get("contact")
     if not struck and not rally:
@@ -1142,11 +1142,21 @@ def _holding(unit: dict) -> bool:
     return bool(unit.get("holds")) and not unit.get("flanked")
 
 
+def _on_ladders(d: Data, us: list, near: list, i: int, field: dict | None) -> bool:
+    """In contact only with enemies it is on its ladders against, across the work it climbs
+    (morale.ladders)."""
+    if not d.units["morale"].get("ladders") or not field:
+        return False
+    foes = [j for j in near if us[j]["side"] != us[i]["side"]]
+    return bool(foes) and all(_climbs_at(d, field, us[i], us[j]) for j in foes)
+
+
 def _losing(mo: dict, unit: dict) -> bool:
     """Lost the exchange in contact: more men down than it put down; holding a position
     (morale.posture_hand), only by its losses hand to hand. A front of pikes or bayonets struck
-    hand to hand only by horse at its front (braced, melee.pikes.holds) does not count as losing."""
-    if not unit.get("contact") or unit.get("braced"):
+    hand to hand only by horse at its front (braced, melee.pikes.holds) does not count as losing,
+    nor men on their ladders against the defenders of the work they climb (climbing, morale.ladders)."""
+    if not unit.get("contact") or unit.get("braced") or unit.get("climbing"):
         return False
     if mo.get("posture_hand") and _holding(unit):
         return unit.get("hand_lost", 0) > unit.get("hand_dealt", 0)
@@ -1444,11 +1454,14 @@ def men_by_hex(d: Data, u: dict) -> list:
     return out
 
 
-def cornered(d: Data, units: list, i: int, after: dict) -> bool:
+def cornered(d: Data, units: list, i: int, after: dict, field: dict | None = None) -> bool:
     """Broken unit i cannot run (after its flee it would stand where it is) with an enemy touching
-    it, and its side gives up (rout.surrender; not fights_on)."""
+    it, and its side gives up (rout.surrender; not fights_on; not attackers among the works,
+    rout.stormers_surrender)."""
     u = units[i]
     if not d.units["rout"].get("surrender") or u.get("fights_on") or after["state"] == "fled" or list(after["pos"]) != list(u["pos"]):
+        return False
+    if not d.units["rout"].get("stormers_surrender", True) and field and u["side"] == field.get("attackers") and among_works(d, field, u):
         return False
     foes = [j for j in _adjacent_units(d, units, occupancy(d, units), i) if units[j]["side"] != u["side"]]
     if not foes:
@@ -1456,6 +1469,18 @@ def cornered(d: Data, units: list, i: int, after: dict) -> bool:
     if not d.units["rout"].get("outnumbered"):
         return True
     return sum(units[j]["men"] for j in foes if not _out(units[j])) >= u["men"]   # the enemy touching it at least as many as it has standing
+
+
+def among_works(d: Data, field: dict | None, u: dict) -> bool:
+    """A work (standing) on a hex unit u stands on, or on one of those hexes' sides."""
+    w = _works(field) if field else None
+    if not w:
+        return False
+    for row in footprint(d, u):
+        for h in row:
+            if C._hex_item(d, w, h) or any(C._edge_items(d, w, h, step(h, dirn)) for dirn in range(6)):
+                return True
+    return False
 
 
 def overrun(d: Data, units: list, i: int, field: dict | None = None) -> bool:
@@ -1475,6 +1500,29 @@ def overrun(d: Data, units: list, i: int, field: dict | None = None) -> bool:
                         and not walled_off(d, field, u, units[j], h, x):
                     foes.add(j)
     return bool(foes) and sum(units[j]["men"] for j in foes) >= u["men"]
+
+
+def gives_up(d: Data, u: dict) -> bool:
+    """On its ladders morale.ladders_give_up exchanges running without a footing, not broken:
+    the attempt is given up."""
+    n = d.units["morale"].get("ladders_give_up")
+    return bool(n) and u.get("on_ladders", 0) >= n and u["state"] in ("steady", "shaken") and u["men"] > 0
+
+
+def fall_back(d: Data, units: list, i: int, size, field: dict | None) -> dict:
+    """A unit that gives up its attempt on a wall falls back as a broken unit runs (straight back,
+    else back to either side, through its own side to clear ground beyond) but in order: shaken,
+    struck by no one as it goes, its count on the ladders begun again. With no clear ground any of
+    those ways it stays where it is, shaken."""
+    u, after = units[i], None
+    for turn in (0, -1, 1):                        # straight back, else back to either side: the first way with clear ground
+        a = flee(d, units, i, size, field, (u["facing"] + 3 + turn) % 6)
+        if a["state"] != "fled" and list(a["pos"]) != list(u["pos"]):
+            after = a
+            break
+    out = {**(after or u), "state": "shaken", "fell_back": True}
+    out.pop("on_ladders", None)
+    return out
 
 
 def surrender(u: dict, quarter_pct: int) -> dict:
@@ -1531,6 +1579,25 @@ def engaged(d: Data, units: list, occ: dict, i: int, field: dict | None = None) 
                 if j is not None and j != i and units[j]["side"] != u["side"] and not walled_off(d, field, u, units[j], h, x):
                     return True
     return False
+
+
+def over_ladders(d: Data, units: list, occ: dict, i: int, field: dict | None) -> bool:
+    """Unit i touches the enemy only across a work that blocks hand to hand, which the enemy
+    climbs on its ladders (missile.over_ladders): it still shoots, down at the men at its foot."""
+    if not d.units["missile"].get("over_ladders") or not field or not field.get("works"):
+        return False
+    u, any_ = units[i], False
+    for row in footprint(d, u):
+        for h in row:
+            for dirn in range(6):
+                x = step(h, dirn)
+                j = occ.get(f"{x[0]},{x[1]}")
+                if j is None or j == i or units[j]["side"] == u["side"]:
+                    continue
+                if not _across(d, field, u, h, x, 1)[0] or not ladders_reach(d, field, units[j], x, h):
+                    return False
+                any_ = True
+    return any_
 
 
 def walled_off(d: Data, field: dict | None, u: dict, e: dict, h, x) -> bool:
@@ -1714,6 +1781,8 @@ def battlefield(d: Data, fid: str) -> dict:
         out["objective"] = list(f["objective"]["at"])
         if f["objective"].get("radius"):
             out["objective_radius"] = f["objective"]["radius"]
+        if isinstance(f["objective"].get("side"), int):
+            out["attackers"] = f["sides"][f["objective"]["side"]]   # the side the objective names: it attacks (rout.stormers_surrender)
     if f.get("support"):
         out["support"] = _field_support(d, f)
     if f.get("lit"):
@@ -1860,7 +1929,7 @@ def volleys(d: Data, units: list, field: dict | None = None) -> list:
     for i, u in enumerate(units):
         if u["state"] in ("broken", "fled") or u["men"] <= 0 or busy_digging(u):
             continue
-        if engaged(d, units, occ, i, field) and not in_bunker(d, field, u):
+        if engaged(d, units, occ, i, field) and not in_bunker(d, field, u) and not over_ladders(d, units, occ, i, field):
             continue                                # in contact across a wall no one fights over, it still shoots
         if "range" in d.weapons[u["weapon"]] and ammo_state(d, u) != "out" and not (u.get("resupplying") and ammo_full(d, u)):
             out += _volley_of(d, units, occ, field, i)
@@ -4783,13 +4852,18 @@ def _morale_all(d: Data, us: list, occ: dict, before: list, acc: tuple, rng, tab
                 "hungry": bool(u.get("hungry")), "beaten": bool(u.get("beaten")),
                 "holds": bool(M.get("posture")) and bool(u.get("holding")) and holds_position(d, us, i, field),
                 "hand_lost": hand[0][i], "hand_dealt": hand[1][i],
-                "braced": bool(d.units["melee"]["pikes"].get("holds")) and braced[i] is True}
+                "braced": bool(d.units["melee"]["pikes"].get("holds")) and braced[i] is True,
+                "climbing": _on_ladders(d, us, near, i, field)}
         m = morale(d, unit, rng.randint(1, 100))
         if m["check"]:
             log.append({"kind": "morale", "unit": i, "target": m["target"], "from": u["state"], "state": m["state"]})
         if m["state"] == "broken":
             broke.append(i)
         u["state"] = m["state"]
+        if unit["climbing"]:
+            u["on_ladders"] = u.get("on_ladders", 0) + 1   # exchanges running on its ladders without a footing (morale.ladders_give_up)
+        else:
+            u.pop("on_ladders", None)
     for j in broke:
         log += _rout_strike(d, us, occ, j, table, rng)
     return log
@@ -5274,7 +5348,7 @@ def _vehicles_after(d: Data, us: list, field: dict | None) -> list:
     return log
 
 
-def flee(d: Data, units: list, i: int, size: tuple, field: dict | None = None) -> dict:
+def flee(d: Data, units: list, i: int, size: tuple, field: dict | None = None, back: int | None = None) -> dict:
     """A broken unit runs straight back as far as its allowance takes it; off the map, it has
     fled the field (as has one with no men left in it). Running into its own side's units it runs on through them to the first
     free ground beyond (rout.through times its allowance at most), else it stops where it last
@@ -5282,7 +5356,7 @@ def flee(d: Data, units: list, i: int, size: tuple, field: dict | None = None) -
     u = dict(units[i])
     if not any(footprint(d, u)):                 # no men left standing in it: it is gone
         return {**u, "state": "fled"}
-    back, allow = (u["facing"] + 3) % 6, allowance(d, u)
+    back, allow = (u["facing"] + 3) % 6 if back is None else back, allowance(d, u)
     # Its own side's other units do not stop it: it may pass through them, but not end on them.
     others = [x for k, x in enumerate(units) if k == i or x["side"] != u["side"]]
     j = next(k for k, x in enumerate(others) if x is units[i])

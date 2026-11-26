@@ -82,8 +82,8 @@ const units = [
   unit("1st battalion, 34th Line (east half)", FR, 250, LINE, [6, 49, FRONT]),
   unit("Guns on the castle", FR, 60, { ...GUNS, emplaced: true }, [3, 10, 58]),
   unit("1/42nd, the firing party", AL, 300, LINE, [8, 41, 7]),
-  unit("Pack's Portuguese, west column (short ladders)", AL, 400, { ...LINE, ladders: "short", via: WEST, leaders: [{ name: "Pack", rank: "Brigadier-General" }] }, [5, 33, 6]),
-  unit("Pack's Portuguese, east column (short ladders)", AL, 400, { ...LINE, ladders: "short", via: EAST }, [5, 53, 6]),
+  unit("Pack's Portuguese, west column (short ladders)", AL, 400, { ...LINE, ladders: "short", via: WEST, straight: true, leaders: [{ name: "Pack", rank: "Brigadier-General" }] }, [5, 33, 6]),
+  unit("Pack's Portuguese, east column (short ladders)", AL, 400, { ...LINE, ladders: "short", via: EAST, straight: true }, [5, 53, 6]),
   unit("Light companies of the 1/42nd, 1/24th and 1/79th (Cocks)", AL, 140, { ...LINE, quality: "veteran", formation: "open", ladders: true, leaders: [{ name: "Somers Cocks", rank: "Major" }] }, [4, 66, 10]),
 ];
 

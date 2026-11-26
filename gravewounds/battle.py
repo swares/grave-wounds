@@ -335,10 +335,15 @@ def start_phase(d: Data, bt: dict, k: int) -> list:
             bt["units"][i] = {**s["unit"], "overrun": True}
             ran.append({"unit": i, "through": [], "fled": True, "surrendered": True, "overrun": True, "taken": s["taken"], "killed": s["killed"]})
             continue
+        if k == 0 and U.gives_up(d, bt["units"][i]):   # an attempt on a wall given up (morale.ladders_give_up): it falls back in order
+            before = list(bt["units"][i]["pos"])
+            bt["units"][i] = U.fall_back(d, bt["units"], i, bt["size"], bt["field"])
+            ran.append({"unit": i, "through": [], "fled": False, "gave_up": True, "from": before})
+            continue
         if k != 0 or bt["units"][i]["state"] != "broken":
             continue
         after = U.flee(d, bt["units"], i, bt["size"], bt["field"])
-        if U.cornered(d, bt["units"], i, after):
+        if U.cornered(d, bt["units"], i, after, bt["field"]):
             s = U.surrender(bt["units"][i], U.quarter(d, bt["table"], bt["field"], bt["units"][i]["side"]))
             bt["units"][i] = s["unit"]
             ran.append({"unit": i, "through": [], "fled": True, "surrendered": True, "taken": s["taken"], "killed": s["killed"]})
