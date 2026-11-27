@@ -20,9 +20,9 @@ not this repository.
   | --- | --- | --- | --- |
   | Online head to head (PvP): commander against commander | First cut | The field map's Play online (a seat a side, room codes; each player sees his side's view and moves on his side's move; the GM's page hosts); two people on one screen with the side's view; the commander against itself to check a battlefield | Two commanders can each command a side on the travel map from the campaign console's Players online (orders given at once, Ready marks), with a GM running the clock or with none (No GM: the clock runs when both are ready, each attacks from his page, a battle on a battlefield is set up, run and sent back by itself; one commander may host from a second tab, on trust); a fight on open ground still needs hands at the console to set out the units; the TURN relay is built but off until its key is added (worker/README.md, The relay); the log is filtered by name; set-up is the GM's |
   | Online: you against the commander (solo) | Strong | The enemy commander on the field map (sees only what its units see, reserves, guns, objectives), Beat history and its scorecard, the GM's script on the roller, the rules' chapter on playing alone, the commander running the travel map's day, and moving a side on it (Moved by); a war played alone season by season (posture, journal, promotion, the season's fights; played through end to end in solo play tests 16 and 17) | Runs in the browser with no connection needed; a force's fatigue, hunger and a recent beating now carry from the march into a field battle (#625), and the commander now moves a side on the travel map from what it has seen and sends its own fights when the stronger (#627, #629); on the field map it can choose its own stance (#632), and on the roller a side whose leader falls checks morale (#631). Never played by a person end to end |
-  | Online with a GM: a GM and his party (VTT) | First cut | The GM hosts from the roller or the campaign console; players join by room code and see their men, the public news and their fights (on the roller, and on the field map for a player whose man is a hero there), propose orders, and see only what their side has seen | The travel map is not shared online for moving forces; the TURN relay for strict networks waits on its key; no voice or chat (groups bring their own); tested only with scripted players |
+  | Online with a GM: a GM and his party (VTT) | First cut | The GM hosts from the roller or the campaign console; players join by room code and see their men, the public news and their fights (on the roller, and on the field map for a player whose man is a hero there), propose orders, and see only what their side has seen; watchers, by the GM's leave, on the roller, field map and campaign page (#651-#653) | The travel map is not shared online for moving forces; the TURN relay for strict networks waits on its key; no voice or chat (groups bring their own); tested only with scripted players |
   | At the table: an RPG with a GM | Good on paper, untested | The rule book and five period books, the team builder's sheets, the roller as the GM's aid, the council card, the tables | The 309-page tables PDF is a reference; the armoury and making a man on paper print one era each, but are not yet tried with pencil and dice; never played at a table |
-  | At the table: print-and-play modules | One module | Ferrybridge (the playtest packet 0.2.5): characters, map, counters, roster and reference, laid out for printing on both sides | The only module, and not yet played; the plan for more is under *Print-and-play modules* |
+  | At the table: print-and-play modules | Three modules | Ferrybridge (the playtest packet 0.2.5), *The king's baggage* (Agincourt, #644) and *The escalade* (Badajoz, #649): characters, map, counters, roster and reference, laid out for printing on both sides; the two later ones also on the roller (#645, #650) | None yet played at a table; no battle-scale module; the plan for more is under *Print-and-play modules* |
 
   What would widen the reach most, in order: the Ferrybridge playtest (it tests both table rows);
   the first solo playtest by a person (below: *A solo war, played by a person*);
@@ -726,6 +726,21 @@ not this repository.
     the best-scoring one elsewhere) changed nothing on any of the 50 battlefields, to three
     decimals (run 41361333394): after the split the 3rd Division's halves target the garrison
     themselves, and no other battlefield has the case. Branch route-blocker, not merged.
+  - **The 3rd Division's losses at Badajoz's castle** (26 November 2026; parked). On main the division loses
+    about 3% (history over 500, about 580 by the regimental list) because nobody defends the wall it climbs:
+    the garrison stands six hexes inside. Tried, each measured on 36 runs of every battlefield against main's 1,558
+    of 1,836, and none merged:
+    - the garrison split onto the outwork's wall;
+    - that wall split into a defended stretch and the lower, unwatched one the 5th got in by
+      (britishbattles.com);
+    - ladders planted (`escalade.planted`: a unit at the foot of a wall its ladders reach climbs next move
+      without `escalade.cross`), on main's map and on the new one: 1,553 either way (Badajoz 22 to 18, Burgos
+      33 to 32), though French losses at Badajoz came to 47.5% (1812: about 47%) and Allied losses at Ciudad
+      Rodrigo 3.9% to 6.3%.
+
+    Branches `planted` and `bdj-map`. The trace and the tallies are in project doc `claude/way-round.md`. Left
+    open: at the wall foot the columns crowd each other (36% of empty route orders); a climb costs a whole move
+    (26%); a brigade that gets in breaks on the castle reserve touching its flank.
   - **The siege before the storm** is off every field map. Jacob's Ford's map starts at the
     storm (its mine, the outer wall and the days before are not played); the Redan's battlefields
     leave out the British siege guns, which were silent during both assaults.
