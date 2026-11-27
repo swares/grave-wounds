@@ -130,6 +130,8 @@ def promote(d: Data, eid: str, team: list[dict], vacancies: dict, rng) -> list[d
                 mod += c.get("posture_mod", 0)    # the team's posture through the season (data/posture.yaml)
                 if r.get("unlettered") and c["skills"].get("letters", 0) < R.get("literate", 20):
                     mod += r["unlettered"]
+                if check(d, c["skills"].get("command", 0) + mod, r.get("diff", "ordinary"), 1)["target"] <= 0:
+                    continue                      # a roll he cannot win: not made, and his officers' notice not spent
                 k = check(d, c["skills"].get("command", 0) + mod, r.get("diff", "ordinary"), rng.randint(1, 100))
                 out.append({"name": c["name"], "to": r["id"], "roll": k["roll"], "target": k["target"], "success": k["success"]})
                 c["known"] = False                # known to his officers: spent on the roll

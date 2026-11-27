@@ -85,6 +85,7 @@ function rkPromote(team, vacancies, rng){          // every roll made: [{name, t
         if (c.patron_help) mod += TD.patrons?.promotion_bonus ?? 20;   // his patron's word (data/patrons.yaml)
         mod += c.posture_mod || 0;                    // the team's posture through the season (data/posture.yaml)
         if (r.unlettered && (c.skills.letters || 0) < (R.literate ?? 20)) mod += r.unlettered;
+        if (skillCheck((c.skills.command || 0) + mod, r.diff || "ordinary", 1).target <= 0) continue;   // a roll he cannot win (Command and his modifiers at 0 or less): not made, and his officers' notice not spent (as ranks.promote)
         const k = skillCheck((c.skills.command || 0) + mod, r.diff || "ordinary", rng.randint(1, 100));
         out.push({ name: c.name, to: r.id, roll: k.roll, target: k.target, success: k.success });
         c.known = false;                              // known to his officers: spent on the roll

@@ -432,6 +432,36 @@ def lost_in_fights(pg):
     check(med == [3, True, 0], f"the medics are lost at the unit's loss rate: all of a unit that lost every man, none of one that lost none ({med})")
 
 
+def commission(pg):
+    """A commission from the ranks on the Western Front from 1916 goes through an officer cadet battalion:
+    away two seasons, then back; a man who cannot win a promotion roll makes none."""
+    pg.goto(BASE + "team.html")
+    pg.evaluate(CLEAR)
+    pg.reload()
+    pg.select_option("#sel-era", "wwi")
+    pg.select_option("#sel-region", "british")
+    pg.select_option("#sel-template", "section")
+    pg.click("#btn-roll")
+    pg.wait_for_selector("#h-service")
+    r = pg.evaluate("""() => { const V = S.service; V.war = 'western_front'; const W = SVC.war('western_front');
+      V.i = W.seasons.findIndex(s => s.id === '1916-summer') + 1;
+      const [a, b] = S.team; a.rank = 'csm'; a.rank_days = 2000; a.skills.command = 90; a.skills.letters = 40;
+      b.rank = 'private'; b.rank_days = 2000; b.skills.command = 0; b.known = false; b.deed = false;
+      for (const c of S.team.slice(2)){ c.rank = 'private'; c.rank_days = 0 }
+      S.vacancies = { lieutenant: 1, corporal: 1 }; 
+      const was = realDice.randint; realDice.randint = () => 1; endSeason(); realDice.randint = was;
+      return { rank: a.rank, course: (V.course || {})[a.pid], serves: svcServes(V, a), known: b.known, log: S.xplog.join(' | '), names: [a.name, b.name] } }""")
+    check(r["rank"] == "lieutenant" and r["course"] == 2 and not r["serves"] and "officer cadet battalion" in r["log"],
+          f"a sergeant-major commissioned in 1916 goes to an officer cadet battalion and serves no part of the next season ({r['course']}, {r['log'][:160]!r})")
+    zero = pg.evaluate("""() => { const b = { ...S.team[1], rank: 'private', rank_days: 2000, skills: { ...S.team[1].skills, command: 0 }, known: false, deed: false, posture_mod: -10 };
+      const rolls = rkPromote([b], { corporal: 1 }, { randint: () => 1 }); return [rolls.length, b.rank] }""")
+    check(zero == [0, "private"], f"a man whose Command and modifiers come to 0 or less makes no promotion roll he cannot win ({zero})")
+    back = pg.evaluate("""() => { const V = S.service, a = S.team[0]; endSeason(); const one = (V.course || {})[a.pid];
+      endSeason(); return [one, (V.course || {})[a.pid] ?? null, svcServes(V, a), S.xplog.join(' | ')] }""")
+    check(back[0] == 1 and back[1] is None and back[2] and "back from his officer's course" in back[3],
+          f"two seasons later he is back and serves again ({back[:3]})")
+
+
 def run(p):
     br = p.chromium.launch()
     pg = br.new_page(viewport={"width": 1400, "height": 1100})
@@ -786,6 +816,7 @@ def run(p):
       return S.flost.length }""")
     check(stale == 0, f"a loss kept from another era's muster owes no draft and breaks nothing ({stale})")
     followers(pg)
+    commission(pg)
     check(not errors, f"no page errors {errors[:3]}")
     br.close()
 

@@ -296,14 +296,20 @@ not this repository.
       the GM's to tick. Since: deeds in a season's rolled parts (`season_deeds`, ours: an action
       rolled 10% thick, 3% line; a small fight rolled 5%; times the posture), and a deed opens a
       `deed_only` rank by itself (docs/team.md).
-    - *A promotion roll against 0* (low Command, keeping his head down, no longer known) is still
-      rolled and shown, though he cannot win it.
+    - *A promotion roll against 0*: done (27 November 2026): a man who cannot win the roll makes none.
     - *Lying low and capture:* the posture scales the hit chance, not the chance of being taken
       (left so by choice: capture came with being overrun).
     - *The Western Front's deadly share* is 9% of hits (most are the line's wastage, which rolls
-      lighter), against the Peninsula's 15% (the sources' 1 killed outright in 6 hit).
-    - *Volunteering on the Western Front* still promotes fast (6.1 promotions a war for a section,
-      a private to captain in 1 of 8 wars), from the war's losses and its one-year ranks (ours).
+      lighter), against the Peninsula's 15% (the sources' 1 killed outright in 6 hit). Left so (27
+      November 2026, the user's choice): under Gritty it already kills about 2.0 of a section of 5 a
+      war against about 1 in 5 of the infantry sent there, because named men are hit about 4.4 times
+      a war (the team stands at every main action, and the line's wastage). The low share offsets
+      part of that high hit rate; deaths a war, not the share, are the measure. Raising the share
+      would make it about 3 a war.
+    - *Volunteering on the Western Front* promoted fast (6.1 promotions a war for a section, a
+      private to captain in 1 of 8 wars). Since 27 November 2026 a second lieutenant must read and
+      write, and from 1916 a commission from the ranks goes through an officer cadet battalion, two
+      seasons away (docs/team.md). Not yet measured over whole wars.
     - *The posture rule in the play tests* (lie low after any hit) kept the Western Front team down
       12 seasons in 18: a player's choice, but a solo player may want a suggested rule.
 - **The enemy commander, beyond the second cut.** A scripted commander moves one side on
