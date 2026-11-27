@@ -452,6 +452,13 @@ templates:
     name: "A lord's retinue"
     slots: [[man_at_arms, 3], [archer, 2], [archer, 1], [spearman, 1], [barber_surgeon, 1], [servant, 1]]
     followers: [[archer, 8], [spearman, 4], [servant, 2]]
+  # Henry V's war: captains indented to bring men-at-arms and archers, usually 3 archers to 1 man-at-arms
+  # (1415; Historical Britain, "Indentures and the king's army"), so a retinue of 20 has about five men-at-arms.
+  # The Roses' retinues ran about 1 to 9 (Spencer, TRHS 2025): the lord's retinue above.
+  - id: retinue_france
+    name: "A retinue indented for France (1415-22)"
+    slots: [[man_at_arms, 3], [archer, 2], [archer, 1], [spearman, 1], [barber_surgeon, 1], [servant, 1]]
+    followers: [[man_at_arms, 3], [archer, 9], [servant, 2]]
   - id: free_company
     name: "A free company"
     slots: [[mercenary, 3], [mercenary, 2], [crossbowman, 2], [archer, 1], [spearman, 1]]

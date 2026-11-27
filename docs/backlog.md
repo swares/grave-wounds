@@ -1199,6 +1199,18 @@ not this repository.
   as a longbow does) and what English men-at-arms wore (brigandine here, full plate for the
   French).
 
+  **Since (27 November 2026):** with the generic retinue the English won 63 of 108 (four seeded
+  teams, each fighting all 27 fights; exchange 0.45, French down per English down), the raid 4 of
+  12 and the ambush 1 of 12, both English wins in the sources (Valmont 1416; near Rouen 1418). A
+  strike count showed French men-at-arms' spears wounding 27% of the time against about 3% for
+  every English close-combat weapon: the rolled retinue had one man-at-arms in twenty. A new
+  template, *A retinue indented for France (1415-22)*, has the indentures' 3 archers to 1
+  man-at-arms (3 men-at-arms among its followers). With the same four teams it won 80 of 108
+  (exchange 0.64), better for every team (22, 17, 20, 21 against 18, 14, 15, 16): the raid 10 of
+  12, the sally 7 (was 3), the ford 11 (was 8), the ambush still only 2 of 12. Quarters taken by
+  surprise (Ferrifontaine, an English disaster) is won 11 of 12: the surprise is not modelled. The
+  ambush and the surprise stay open. The lord's retinue stays for the Roses (1 to 9).
+
 - **A season's small fight brought the team's men as the roller last left them** (play test 8):
   a follower's wounds, blood and state (out of the fight, defend only) stayed with him into the
   next season's fight, three months on. Done: as the user chose, the followers the team builder

@@ -78,8 +78,10 @@ one, and the Roses with Edward of March (47) a campaign.
    sixteen seasons), so a man who spends it early in a war carries on without it. For a war where
    your men can die, choose Gritty.
 2. **Make the team.** Pick the era, the region and a team (*company*, *retinue*, *section*...),
-   then **Roll the team**. **Send to the roller**, and there **Add the team**, so the roller knows
-   your men when their wounds come to it.
+   then **Roll the team**. For Henry V's war, take *A retinue indented for France*: it has the
+   indentures' men-at-arms (three archers to one), where the lord's retinue fits the Roses.
+   **Send to the roller**, and there **Add the team**, so the roller knows your men when their
+   wounds come to it.
 3. **Open A season with the battalion** on the team builder, and pick the **War** and its first
    **Season**.
 4. **Each season:**
