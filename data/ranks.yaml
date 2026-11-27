@@ -12,6 +12,8 @@
 #   deed_only - only a deed in battle opens it (a knighting on the field): a man of the rank below
 #               with a deed that season is a vacancy of his own, no other needed
 #   shares   - his shares of prize money (eras with prize money)
+#   course   - a commission from the ranks in a season with the battalion goes through this officer's
+#              course (data/training.yaml `id`) from the year `from`: he is away for `seasons` seasons
 # start - the rank each career starts at (the rest start at the bottom)
 # career_pay - a career paid at another rate than the foot (horsemen, surgeons), multiplying his
 #              rank's pay; 0 for one the army does not pay (a sutler sells to it)
@@ -134,7 +136,8 @@ eras:
       - {id: corporal, name: "Corporal", pay: 1.67, years: 1, diff: ordinary, approx: true}
       - {id: sergeant, name: "Sergeant", pay: 2.33, years: 1, diff: ordinary, approx: true}
       - {id: csm, name: "Company sergeant-major", pay: 4, years: 2, diff: hard, approx: true}
-      - {id: lieutenant, name: "Second lieutenant", pay: 7.5, years: 1, diff: hard, approx: true}
+      - {id: lieutenant, name: "Second lieutenant", pay: 7.5, years: 1, diff: hard, letters: true, approx: true,
+         course: {id: cadet_battalion, from: 1916, seasons: 2}}   # from February 1916 a ranker went through an officer cadet battalion, 4 months (later 6) and over 540 hours (heartheboatsing.com, "The Oxbridge OCBs"); two seasons, rounded up, ours
       - {id: captain, name: "Captain", pay: 12.5, years: 1, diff: ordinary, approx: true}
     pay_by: {russia: [1, 4, 8, 12, 140, 290]}     # Russia: the corporal's an estimate (no source); the rest from the 1914 rates above
     start: {nco: sergeant, officer: lieutenant}

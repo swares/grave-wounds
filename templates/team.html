@@ -1233,6 +1233,7 @@ function svcState(){                                // S.service for the team's 
   return V;
 }
 const svcPostures = () => (TD.service.posture || {}).postures || {};
+const svcServes = (V, c) => V.with[c.pid] !== false && !(V.course || {})[c.pid];   // with the battalion this season: ticked, and not away on an officer's course (data/ranks.yaml course)
 const svcPostureId = V => (V.posture && svcPostures()[V.posture] ? V.posture : (TD.service.posture || {}).default || "duty");
 function svcJournal(lines, fresh = null){             // the journal (V.journal): a new season's entry (fresh: {sid, name, posture}), or more lines for the last
   const V = svcState(); if (!V) return;
@@ -1288,12 +1289,12 @@ function svcActionHtml(W, V, aid){                  // one action of the season:
    (pos_at in the season roll). */
 function svcEdge(V, aid){ V.edge ||= {}; V.edge[aid] ||= { done: {}, chosen: {}, failed: {} }; return V.edge[aid] }
 function svcEdgeMen(V, sc, st){                     // the men a scene takes: those with the battalion, or an earlier choice's
-  const serving = S.team.filter(c => V.with[c.pid] !== false);
+  const serving = S.team.filter(c => svcServes(V, c));
   return sc.only ? serving.filter(c => (st.chosen[sc.only] || {})[c.pid]) : serving;
 }
 function svcEdgeChoice(W, V, aid, sc, st){           // a choice's ticks, one for each man with the battalion
   const picked = st.chosen[sc.id] || {};
-  const boxes = S.team.filter(c => V.with[c.pid] !== false).map(c => `<label><input type="checkbox" data-svedgechoice="${aid}:${sc.id}:${c.pid}" ${picked[c.pid] ? "checked" : ""}> ${esc(c.name)}</label>`).join(" ");
+  const boxes = S.team.filter(c => svcServes(V, c)).map(c => `<label><input type="checkbox" data-svedgechoice="${aid}:${sc.id}:${c.pid}" ${picked[c.pid] ? "checked" : ""}> ${esc(c.name)}</label>`).join(" ");
   return boxes + ` <span class="muted">(the ${esc(sc.label)} stand ${esc(W.positions[sc.position].name.toLowerCase())} at ${esc(W.actions[aid].name)})</span>`;
 }
 function svcEdgeScene(W, V, aid, sc, st){            // a scene's controls
@@ -1372,6 +1373,13 @@ function svcSeasonOptions(W, V){                     // the next season first, t
   const later = ks.filter(k => k >= V.i).map(opt).join(""), earlier = ks.filter(k => k < V.i).map(opt).join("");
   return later + (earlier ? `<optgroup label="Earlier seasons">${earlier}</optgroup>` : "");
 }
+function svcCourse(V, c, rid, lines){               // a commission from the ranks through an officer's course (data/ranks.yaml course): away for its seasons, from its year
+  const r = rkLadder().find(x => x.id === rid), K = r?.course, W = SVC.war(V.war), s = W.seasons[V.i - 1];
+  const k = K && (TRN().courses || []).find(x => x.id === K.id);
+  if (!c || !k || !s || +s.id.slice(0, 4) < K.from || (k.regions && !k.regions.includes(c.region))) return;
+  (V.course ||= {})[c.pid] = K.seasons;
+  lines.push(`${c.name} goes to ${k.name.replace(/^An? /, m => m.toLowerCase())} for his commission: away for the next ${K.seasons === 1 ? "season" : K.seasons + " seasons"}.`);
+}
 function svcStillHtml(c){                          // '(still serious from last season)', or his wounds'
   const H = svcHealthOf(namedStore(), c), sick = H && SVC.worstStep(H), hurt = H && SVC.woundStep(H);
   if (!sick && !hurt) return "";
@@ -1388,7 +1396,7 @@ function renderService(){
   const W = SVC.war(V.war), s = W.seasons[V.i];
   if (!s){ box.innerHTML = svcOverHtml(W); return }
   const st = W.states[s.state], fx = Object.entries(s.factors || {}).map(([k, n]) => `${k.replace("_", " ")} ${n} week${n > 1 ? "s" : ""}`).join(", ");
-  const men = S.team.map((c, k) => `<li><label><input type="checkbox" data-svwith="${k}" ${V.with[c.pid] !== false ? "checked" : ""}> ${esc(c.name)}</label>${svcStillHtml(c)}
+  const men = S.team.map((c, k) => `<li><label><input type="checkbox" data-svwith="${k}" ${V.with[c.pid] !== false ? "checked" : ""}${(V.course || {})[c.pid] ? " disabled" : ""}> ${esc(c.name)}</label>${svcStillHtml(c)}${(V.course || {})[c.pid] ? ` <span class="tag" title="Away on his officer's course: he serves no part of this season">At an officer cadet battalion</span>` : ""}
       <select data-svpos="${k}" style="width:auto" aria-label="${esc(c.name)}: where he stands">${Object.entries(W.positions).map(([id, p]) => `<option value="${id}" ${(V.pos[c.pid] || "line") === id ? "selected" : ""}>${esc(p.name)}${p.mult !== 1 ? ` (×${p.mult})` : ""}</option>`).join("")}</select></li>`).join("");
   const acts = s.actions.length ? `<ul class="xp">${s.actions.map(a => svcActionHtml(W, V, a)).join("")}</ul>` : `<p class="muted">No named action this season.</p>`;
   const log = (S.svclog || []).map(l => `<li>${esc(l)}</li>`).join("");
@@ -1495,7 +1503,7 @@ function svcLived(m, saved, days){                  // the days of the season he
 }
 function serveSeason(){
   const V = svcState(), W = SVC.war(V.war), s = W.seasons[V.i], days = W.season_days, named = namedStore();
-  const serving = S.team.filter(c => V.with[c.pid] !== false);
+  const serving = S.team.filter(c => svcServes(V, c));
   const at = Object.fromEntries(s.actions.map(a => [a, svcEdgeAt(W, V, a)]));   // where an edge put each man at its action
   const men = serving.map(c => ({ name: c.name, endurance: c.stats.end, position: V.pos[c.pid] || "line", health: svcHealthOf(named, c),
     pos_at: Object.fromEntries(Object.entries(at).filter(([, P]) => P[c.pid]).map(([a, P]) => [a, P[c.pid]])),
@@ -1661,7 +1669,7 @@ function svcCrewHtml(W, V, s){                      // the followers' line on th
 }
 function svcSmallFight(){                           // the small fight rolled, not played: each man with the battalion
   const V = svcState(), W = SVC.war(V.war), hits = [], bits = [];
-  for (const c of S.team.filter(x => V.with[x.pid] !== false)){
+  for (const c of S.team.filter(x => svcServes(V, x))){
     const roll = svcD100();
     if (roll <= W.small_war.hit){
       const weapon = SVC.weaponFor(W, svcD100());
@@ -1891,6 +1899,8 @@ function endSeason(){
       lines.push(`The battalion's losses (${V0.seasonVac}% a rank): ${open.length ? open.map(v => `a vacancy for ${rkName(v.rank).toLowerCase()} (rolled ${v.roll})`).join(", ") : "no vacancy comes the team's way"}.`);
       delete V0.seasonVac;
     }
+    const CO = V0 ? (V0.course ||= {}) : {};      // back from an officer's course: he was away the season just served
+    for (const pid of Object.keys(CO)) if (--CO[pid] <= 0){ delete CO[pid]; const c = S.team.find(m => m.pid === pid); if (c) lines.push(`${c.name} is back from his officer's course and takes up his commission.`) }
     const rolls = rkPromote(S.team, VC, realDice);
     const gone = Object.keys(opened).filter(rid => (VC[rid] || 0) > 0);
     for (const rid of gone) VC[rid] -= 1;           // the battalion's vacancy no man of the team won: filled from outside it
@@ -1899,6 +1909,7 @@ function endSeason(){
     for (const c of S.team) finishChar(c);         // his Presence may have risen with his rank
     for (const c of S.team) delete c.deedWhy;
     for (const k of rolls) lines.push(`${k.name} for ${rkName(k.to).toLowerCase()}: Command rolled ${k.roll} against ${k.target}: ${k.success ? "promoted" : "passed over"}.`);
+    if (V0) for (const k of rolls.filter(x => x.success)) svcCourse(V0, S.team.find(m => m.name === k.name), k.to, lines);
     const was = S.team.find(m => m.leader), now = leadByRank();
     if (now && now !== was) lines.push(`${now.name} leads now, by rank.`);
     if (!rolls.length && Object.values(S.vacancies).some(n => n > 0)) lines.push("No one eligible for the vacancies yet.");

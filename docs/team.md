@@ -464,7 +464,12 @@ are in the project doc "promotion-loot-research"; `approx: true` marks estimates
   (horse twice the foot in the Thirty Years' War; sutlers and cantinières 0).
 - **Promotion** at End of season, vacancy by vacancy from the top: the eligible men one rank
   below, most days in rank first, roll Command (+20 and no wait for a deed) until one succeeds;
-  his old rank then falls vacant. A lost man's rank falls vacant by itself; the GM opens others
+  his old rank then falls vacant. A man whose Command, with his modifiers, comes to 0 or less (low
+  Command, keeping his head down, no longer known) makes no roll: he cannot win it, and his
+  officers' notice is not spent. On the Western Front a second lieutenant must read and write, and
+  from 1916 a man commissioned from the ranks in a season with the battalion goes to an officer
+  cadet battalion (`course` on the rank: 4 months, later 6, from February 1916; two seasons, ours):
+  he serves no part of the next two seasons, then takes up his commission. A lost man's rank falls vacant by itself; the GM opens others
   with + and −, sets any man's rank (a reduction resets his days in rank), and ticks deeds.
   A season with the battalion opens its own (below: the battalion's losses), which do not carry over.
   **Known to his officers** (`known` in `data/ranks.yaml`, ours): a man with a deed ticked at End
