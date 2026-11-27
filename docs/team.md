@@ -195,6 +195,7 @@ printed tables carry every era's jobs and trouble, the rule book the medieval on
 | Team | Members (terms) | Followers (quality) |
 | --- | --- | --- |
 | A lord's retinue | man-at-arms (3), archer (2), archer (1), spearman (1), barber-surgeon (1), servant (1) | 8 archers, 4 spearmen, 2 servants |
+| A retinue indented for France (1415-22) | as the lord's retinue | 3 men-at-arms, 9 archers, 2 servants: the indentures' 3 archers to 1 man-at-arms ([Historical Britain](https://historicalbritainblog.com/indentures-and-the-kings-army/)); for Henry V's war |
 | A free company | mercenary (3), mercenary (2), crossbowman (2), archer (1), spearman (1) | 6 mercenaries, 4 crossbowmen, 2 archers (hardened) |
 | A garrison patrol | mounted sergeant (3), crossbowman (2), crossbowman (1), spearman (1), clerk (1) | 4 crossbowmen, 4 spearmen, 2 mounted sergeants |
 | A farmers' muster | spearman (3), spearman (1), spearman (1), archer (1), forester (1) | 10 spearmen, 4 archers (raw) |
