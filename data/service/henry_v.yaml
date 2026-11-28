@@ -263,12 +263,13 @@ small_fights:
     where: "a road through a wood by a village"
     time: "in the morning"
     ground: forest
+    team_attacks: true   # "the English charged and routed them" (Monstrelet): the English come on at the ambush that formed up (ours)
     side: {name: "The English column", men: [100, 600]}
     foes: [{name: "The ambush's men-at-arms", men: [67, 667], kit: harness_1415, weapon: spear},   # mail with plate pieces, as at Agincourt (DeVries 2015; armor.yaml harness_1415)
            {name: "The ambush: crossbowmen and commons", men: [33, 333], kit: jack_sallet, weapon: crossbow}]   # two men-at-arms to each of the gens de trait (Curry: companies were to raise half as many; the 1415 musters of Vendôme, 300 and 150, and Berry, 1,000 and 500); the trait all crossbowmen is ours
     aims: {team: "Break the ambush and go on.", foes: "Cut the column up and take prisoners."}
-    ends: "The ambush breaks once a third of those here are down; the English are beaten if they are broken."
-    end: {down: {foes: 0.33}}
+    ends: "The ambush breaks once a tenth of those here are down; the English are beaten if they are broken."
+    end: {down: {foes: 0.1}}   # "the greater part ... turned their backs and fled" (Monstrelet): the French break early; the tenth is ours
     sources: [*mon5, *frarmy, *curry]
     note: "Monstrelet, ch. XV: the English came on warned, so there is no surprise; only the ambush that formed up stands, the rest having fled. Its size, half the French (the two ambushes taken as equal), is ours."
   - id: escort
