@@ -914,6 +914,15 @@ for each man whether he serves and where he stands, and the team's **posture** f
   fight of the war's own), the wet night at Maisoncelles (Endurance; failed, in the rearward), left
   with the baggage (in the rearward) and the raid on the baggage (those men only; Monstrelet, as the
   module *The king's baggage*). Their sizes are ours.
+  Towton (spring 1461, for the northern Lancastrians; Hall's sequence, as the Battlefields Trust
+  gives it, since no fifteenth-century source describes the fighting): ride with Clifford (in the
+  thick of it), taking the bridge at dawn and caught in the dale (the war's own fights, his men
+  only), into the snow (Nerve; failed, in the rearward) and down to the Cock Beck (a fight for the
+  whole team: get away over the beck; it falls in the battle's own hour, so the GM may leave the
+  man's Towton roll aside). Cassino (spring 1944, the 38th Irish Brigade in Diadem; Brigadier
+  Scott's narrative and the Royal Irish page): a night patrol on Castellone (the war's own fight),
+  across the Gari (Endurance; failed, in reserve), with the Skins at Piumarola (in the thick of it)
+  and into Piumarola (17 May, paratroopers in a walled village; those men only). Sizes ours.
 - **Each action not played**, in its week: d100 against his hit chance, the army's share lost
   (killed and wounded of those engaged, from the sources) times his position (in reserve ×0.25,
   in the line ×1, in the thick of it ×3, at most 90%; ours, set from Albuera, where the

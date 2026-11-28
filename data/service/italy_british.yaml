@@ -195,6 +195,35 @@ actions:
         lost: "about 40 on the start line (the CO among them) and 5 officers and 60 men at Sinagoga, of about 800 (ours)"
         sources: ["https://www.londonirishrifles.com/?p=729"]
     single: true
+    # The edge of the battle (layer 3): the line on Castellone, the Gari, and Piumarola.
+    edge:
+      name: "The edge of Cassino"
+      what: "In April the brigade holds Monte Castellone above Cassino, patrolling at night. The assault on the Gustav Line opens on the night of 11-12 May; on the 14th the brigade crosses the Gari into the bridgehead, and on the 15th-17th its three battalions attack in turn up the valley, the Skins to Grafton, the London Irish at Sinagoga, the Irish Fusiliers to Route Six, until on the 17th the Skins take the walled village of Piumarola from the 1st Parachute Division, with 100 prisoners and three self-propelled guns, and the Germans give up the abbey."
+      sources: ["https://www.irishbrigade.co.uk/brigadier-narratives/irish-brigade-in-italy-by-brigadier-tpd-scott/cracking-the-gustav-line/", "https://www.royal-irish.com/events/6th-battalion-royal-inniskilling-fusiliers-attacks-german-1st-para-division-plumarola-italy"]
+      scenes:
+        - id: castellone
+          kind: fight
+          fight: patrol
+          name: "A night patrol on Castellone"
+          what: "April: out from the line on the mountain at night."
+        - id: gari
+          kind: check
+          name: "Across the Gari"
+          what: "14 May: over the river into the crowded bridgehead under the German guns. A man who fails his Endurance is spent before the attacks: in reserve in the valley."
+          stat: end
+          fail_position: reserve
+        - id: skins
+          kind: choice
+          name: "With the Skins at Piumarola"
+          what: "The Inniskillings go for the walled village of Piumarola, held by paratroopers come back from Cassino. Who goes with them? They stand in the thick of it in the Liri valley."
+          label: "men at Piumarola"
+          position: thick
+        - id: piumarola
+          kind: fight
+          fight: piumarola
+          only: skins
+          name: "Into Piumarola"
+          what: "17 May, in the afternoon: in over the walls."
   trasimene:
     name: "Trasimene"
     date: 1944-06-21
@@ -355,3 +384,21 @@ small_fights:
     ends: "Either side gives up its face of the bank once half of those here are down, or the GM ends it after 10 rounds."
     end: {rounds: 10, wins: none, down: {team: 0.5, foes: 0.5}}
     sources: ["https://www.royal-irish.com/events/irish-brigade-fighting-on-the-senio-river"]
+  - id: piumarola
+    name: "Into Piumarola"
+    what: "The 6th Inniskillings attack the walled village of Piumarola, held by men of the 1st Parachute Division withdrawn from Cassino, and take it with 100 prisoners and three self-propelled guns, at comparatively small cost; their colonel, hit in the legs at 18.55, commands on from his jeep (17 May 1944)."
+    states: [line]
+    weight: 1
+    edge_only: true
+    at: 1944-spring
+    where: "the walled village of Piumarola, in the Liri valley"
+    time: "in the afternoon and evening"
+    ground: village
+    team_attacks: true
+    side: {name: "The company going in", men: [30, 90]}
+    foes: [{name: "German paratroopers in the village", men: [30, 120], kit: ww2_rifleman, weapon: machine_gun}]
+    aims: {team: "Get in over the walls and clear the village.", foes: "Hold the village."}
+    ends: "The company wins when the village is clear; it falls back if a third of those here are down."
+    end: {down: {team: 0.33}, hold: foes}
+    sources: ["https://www.royal-irish.com/events/6th-battalion-royal-inniskilling-fusiliers-attacks-german-1st-para-division-plumarola-italy", "https://www.irishbrigade.co.uk/brigadier-narratives/irish-brigade-in-italy-by-brigadier-tpd-scott/cracking-the-gustav-line/"]
+    note: "The Royal Irish page, after the war diary; Scott's narrative has the village 'strongly held and included tanks and paratroopers'. The sizes are ours; the self-propelled guns are not on the board."
