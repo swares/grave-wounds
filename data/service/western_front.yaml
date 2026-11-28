@@ -246,6 +246,45 @@ actions:
         lost: "585 (235 killed, 350 wounded) of about 720"
         sources: ["https://en.wikipedia.org/wiki/Accrington_Pals"]
     note: "The 2nd Royal Welch Fusiliers were at Givenchy that day."
+    # The edge of the battle (layer 3), at Beaumont-Hamel with the 29th Division (the field), for a
+    # team the GM ticks as there: the scenes before and at zero.
+    edge:
+      name: "The edge of the Somme: Beaumont-Hamel"
+      what: "A week's bombardment, the raids at night to see whether it had cut the German wire (it had not), then on 1 July the mine under the Hawthorn Ridge at 7.20 and the attack at 7.30 across 200 to 500 yards of open ground; the Germans manned their parapets before the barrage lifted, and the 29th Division lost 5,240 men, the Newfoundlanders, sent on at 9.15 from the reserve trenches through the gaps in their own wire, 710 of about 780."
+      sources: ["https://en.wikipedia.org/wiki/Capture_of_Beaumont-Hamel", "https://www.heritage.nf.ca/first-world-war/articles/beaumont-hamel-en.php", "https://legionmagazine.com/features/ill_fated_trench_raiders/"]
+      scenes:
+        - id: raiders
+          kind: choice
+          name: "Volunteers for the raids"
+          what: "Men are picked and trained to raid the German line on the nights before the attack and see the wire. Who goes? They go on the raid, and are known to their officers if they come through the battle."
+          label: "raiders"
+          position: line
+          reward: {known: true}
+        - id: raid
+          kind: fight
+          fight: wire_raid
+          only: raiders
+          name: "The raid to look at the wire"
+          what: "27-28 June: through a gap in the German wire in front of Y Ravine, until a flare goes up."
+        - id: crater_party
+          kind: choice
+          name: "The party for the crater"
+          what: "Ten minutes before zero the mine goes up under the Hawthorn Ridge redoubt; a party is to rush the crater. Who goes? They stand in the thick of it on the day, and are known to their officers if they come through."
+          label: "crater party"
+          position: thick
+          reward: {known: true}
+        - id: lip
+          kind: fight
+          fight: crater
+          only: crater_party
+          name: "At the Hawthorn crater"
+          what: "7.20: the Germans are on the far lip first."
+        - id: over
+          kind: check
+          name: "Over the top, through our own wire"
+          what: "The gaps cut in the British wire are marked by the German machine guns, and the men bunch at them and at the Danger Tree halfway down the slope. A man who fails his Nerve goes to ground short of the German wire: in support on the day."
+          stat: nerve
+          fail_position: reserve
   somme:
     name: "The Somme (a division's tour)"
     date: 1916-07-20
@@ -445,3 +484,41 @@ small_fights:
     ends: "The bombers are relieved after 8 rounds; the counter-attack breaks once a third of those here are down; the barricade is lost if the bombers are broken."
     end: {rounds: 8, wins: team, down: {foes: 0.33}, hold: team}
     sources: ["https://menonthegates.org.uk/men_front/bo-1917-arras-2-battle-of-scarpe-place-2-bn-royal-welsh-fusiliers-23-april-1917/", "https://www.pressreader.com/uk/western-mail/20160722/282020441647921"]
+  - id: wire_raid
+    name: "The raid to look at the wire"
+    what: "On the nights before the attack, raiders go out to see what the week's bombardment has done to the German wire and to bring back prisoners; the Newfoundlanders' second raid finds a 14-metre gap in front of Y Ravine, but a flare shows them to the Germans and many fall wounded; a few get into the trench, and Private George Phillips clears a stretch of it and fires from a shell hole until morning (Beaumont-Hamel, 27-28 June 1916)."
+    states: [battle]
+    weight: 1
+    edge_only: true
+    at: 1916-summer
+    where: "the German wire and front trench in front of Y Ravine"
+    time: "at night"
+    light: night
+    ground: open
+    team_attacks: true
+    side: {name: "The raiding party", men: [10, 30]}
+    foes: [{name: "The German trench garrison", men: [10, 40], weapon: rifle_service}]
+    surprise: {text: "The raiders are through the gap before a flare goes up", chance: 30}
+    aims: {team: "See the wire, get into the trench, take a prisoner, and get back.", foes: "Light them up at the wire and drive them off."}
+    ends: "The raiders go back after 4 rounds with what they have; they fail if a third of those here are down first; the Germans hold if the raiders never get in."
+    end: {rounds: 4, wins: team, down: {team: 0.33}, hold: foes}
+    sources: ["https://legionmagazine.com/features/ill_fated_trench_raiders/", "https://www.heritage.nf.ca/first-world-war/articles/beaumont-hamel-en.php"]
+    note: "Fifty-seven Newfoundlanders were hand-picked and trained for the raids; the first, on 26-27 June, was seen on the way in and called back by Captain Butler. The raids found the bombardment had done little to the Germans. The party's size and the garrison's are ours."
+  - id: crater
+    name: "At the Hawthorn crater"
+    what: "At 7.20 in the morning the mine under the Hawthorn Ridge redoubt goes up, ten minutes before zero, so that the infantry can take the crater; a party of the 2nd Royal Fusiliers with machine guns and bombers runs for it, but the Germans, warned, are on the far lip first; about 120 men reach the crater and none gets into the German front line beyond it (Beaumont-Hamel, 1 July 1916)."
+    states: [battle]
+    weight: 1
+    edge_only: true
+    at: 1916-summer
+    where: "the Hawthorn crater, between the lines"
+    time: "from 7.20 in the morning"
+    ground: open
+    team_attacks: true
+    side: {name: "The party at the crater", men: [40, 120]}
+    foes: [{name: "Germans on the far lip", men: [40, 120], weapon: rifle_service}, {name: "A German machine gun", men: [4, 8], weapon: machine_gun}]
+    aims: {team: "Take the crater and get into the German trench beyond it.", foes: "Hold the far lip and the trench behind it."}
+    ends: "The party is spent after 8 rounds; it falls back once half of those here are down; it wins if it takes the far lip."
+    end: {rounds: 8, wins: foes, down: {team: 0.5}, hold: foes}
+    sources: ["https://en.wikipedia.org/wiki/Capture_of_Beaumont-Hamel"]
+    note: "Edmonds (Official History, 1932, pp. 426-436, 451-452, as given by Wikipedia): the mine blown at 7.20 to let the infantry take the crater; the Germans occupied the far lip; about 120 men reached the crater, the few who went on were killed. The two sides' sizes and the machine gun are ours. On the roller: paint the crater's lips as a rise with broken ground in the bowl."

@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-10",
+ "generated": "2026-11-27",
  "coins": {
   "civil_war": {
    "currencies": {
@@ -1011,6 +1011,43 @@
     "fumble": -0.25
    }
   },
+  "ask": {
+   "odds": [
+    {
+     "name": "Almost certain",
+     "chance": 90
+    },
+    {
+     "name": "Likely",
+     "chance": 70
+    },
+    {
+     "name": "Even",
+     "chance": 50
+    },
+    {
+     "name": "Unlikely",
+     "chance": 30
+    },
+    {
+     "name": "Hardly possible",
+     "chance": 10
+    }
+   ],
+   "within": 5,
+   "complications": [
+    "Someone saw: an enemy, a villager or a rival now knows where you are",
+    "It costs time: half a day, or an exchange on the field",
+    "It costs something: food, ammunition, a horse, a day's pay",
+    "A man is hurt doing it: a fall, a kick, a cut (a light wound on the roller)",
+    "Someone wants something in return",
+    "The weather turns: roll the day's weather again, worse",
+    "It splits the team: one man is somewhere else for a day",
+    "An old trouble comes back: a debt, a grudge, a wound that opens",
+    "A stranger joins you, not entirely welcome",
+    "The enemy is nearer than you thought"
+   ]
+  },
   "uses": [
    {
     "id": "haggle",
@@ -1371,6 +1408,23 @@
  "ranks": {
   "literate": 20,
   "deed_bonus": 20,
+  "season_vacancies": {
+   "background": 2,
+   "cap": 90
+  },
+  "known": {
+   "bonus": 20,
+   "years": 0.5,
+   "floor": 1
+  },
+  "season_deeds": {
+   "action": {
+    "thick": 10,
+    "line": 3,
+    "reserve": 0
+   },
+   "small": 5
+  },
   "presence": {
    "per_rank": 2,
    "cap": 6,
@@ -1726,7 +1780,13 @@
       "pay": 7.5,
       "years": 1,
       "diff": "hard",
-      "approx": true
+      "letters": true,
+      "approx": true,
+      "course": {
+       "id": "cadet_battalion",
+       "from": 1916,
+       "seasons": 2
+      }
      },
      {
       "id": "captain",
@@ -7331,6 +7391,50 @@
    "nerve": 65
   }
  },
+ "aftermath": {
+  "dead_if": [
+   "instant",
+   "rounds"
+  ],
+  "saved": {
+   "minutes": 10,
+   "hours": {
+    "none": 0,
+    "field": 40,
+    "shelter": 60
+   }
+  },
+  "medevac": {
+   "battles": {
+    "American Civil War": "wagon",
+    "American Indian Wars": "wagon",
+    "WWI": "motor",
+    "WWII": "motor",
+    "Korea": "helicopter",
+    "Vietnam": "helicopter",
+    "Late 20th century": "helicopter",
+    "Iraq & Afghanistan": "helicopter"
+   },
+   "kinds": {
+    "wagon": {
+     "name": "Ambulance wagons",
+     "hours": 50,
+     "minutes": 10
+    },
+    "motor": {
+     "name": "Motor ambulances",
+     "hours": 65,
+     "minutes": 10
+    },
+    "helicopter": {
+     "name": "Medevac helicopters",
+     "hours": 85,
+     "minutes": 20,
+     "fallback": "motor"
+    }
+   }
+  }
+ },
  "weapons": {
   "sword": {
    "id": "sword",
@@ -7542,8 +7646,11 @@
     "head": 1.2,
     "legs": 1.1
    },
+   "armor_defeat": {
+    "pierce": 1
+   },
    "confidence": "extrapolated",
-   "notes": "The common infantry polearm of the Wars of the Roses: a cleaving blade with a hook and spike on a long haft. On the Towton evidence table it rolls on the blade wounds.\n",
+   "notes": "The common infantry polearm of the Wars of the Roses: a cleaving blade with a hook and spike on a long haft. On the Towton evidence table it rolls on the blade wounds. Its top spike thrusts as the halberd's does and ignores a step of armour against pierce (the step a design estimate, as the halberd's): a bill of c.1471 has a 10.5-inch top spike and a shorter back spike (Fordham, Medieval London objects), and the Mary Rose bills (1545) a top spike (Mary Rose Trust). The hook, to pull a man down, is not modelled.\n",
    "mech_ranges": [
     {
      "id": "cut",
@@ -7712,8 +7819,14 @@
    "armor_defeat": {
     "pierce": 1
    },
+   "defeat_only": [
+    "mail",
+    "padded",
+    "leather",
+    "jack"
+   ],
    "confidence": "extrapolated",
-   "notes": "Heavy war bow of the Hundred Years' War and the Wars of the Roses. Arrows mostly left soft-tissue wounds, so bone evidence under-counts them; at Towton a few head wounds are arrowheads. Heavy arrows punch through mail and jacks (ignores 1 step vs pierce): design estimate; against good plate they mostly glanced.\n",
+   "notes": "Heavy war bow of the Hundred Years' War and the Wars of the Roses. Arrows mostly left soft-tissue wounds, so bone evidence under-counts them; at Towton a few head wounds are arrowheads. Heavy arrows punch through bare mail and jacks (ignores 1 step vs pierce, there only): mail alone let arrows through to a lethal depth at almost every shot (Jones, J. Medieval Military History XVIII, 2020). Plate, a coat of plates and mail over padding get their full steps: a longbow arrow carries about 70-83 J (McEwen) and 100 J sinks only 9 mm into medium-carbon steel, so \"the plate protected the wearer\" (Williams, Wallace Collection); mail over a gambeson \"greatly reduce[s], but not eliminate[s]\" the risk (Jones).\n",
    "mech_ranges": [
     {
      "id": "cut",
@@ -7740,6 +7853,11 @@
     50,
     100
    ],
+   "shots_a_minute": 3,
+   "rate_note": "About three a minute spanned with a goat's-foot lever, two or three with a cranequin, one with a windlass (h2g2, after Payne-Gallwey); three or four (History Hit). Popular sources only: three is ours.",
+   "close": [
+    "dagger"
+   ],
    "string": true,
    "era": "medieval",
    "mechanisms": {
@@ -7754,8 +7872,14 @@
    "armor_defeat": {
     "pierce": 1
    },
+   "defeat_only": [
+    "mail",
+    "padded",
+    "leather",
+    "jack"
+   ],
    "confidence": "extrapolated",
-   "notes": "Visby's arrow and bolt wounds are counted together (126), mostly on the lower body; the Visby weights are used with a small head bias for aimed shots at the face and helmet. Heavy bolts punch through mail (ignores 1 step vs pierce): design estimate.\n",
+   "notes": "Visby's arrow and bolt wounds are counted together (126), mostly on the lower body; the Visby weights are used with a small head bias for aimed shots at the face and helmet. Heavy bolts punch through bare mail and cloth (ignores 1 step vs pierce, there only): as the longbow (Jones 2020). Not plate: quality armour was sold as \"proof against the crossbow\", and a 90 lb crossbow's bolt carries about 192 J (Williams, after McEwen).\n",
    "mech_ranges": [
     {
      "id": "pierce",
@@ -8128,6 +8252,12 @@
     40,
     75
    ],
+   "shots_a_minute": 1.5,
+   "rate_note": "The matchlock arquebus took 30-60 seconds to reload properly (Barwick, A Breefe Discourse, 1594); 45 seconds is ours.",
+   "close": [
+    "musket_butt",
+    "dagger"
+   ],
    "ignition": "match",
    "era": "1500s-1690s",
    "threat": "rifle",
@@ -8157,6 +8287,12 @@
     25,
     50
    ],
+   "shots_a_minute": 1,
+   "rate_note": "Reloading in the sixteenth century took 20 seconds to a minute (Andrade, The Gunpowder Age, p. 144); the early handgun at the slow end is ours.",
+   "close": [
+    "musket_butt",
+    "dagger"
+   ],
    "ignition": "match",
    "era": "1450s-1520s",
    "threat": "rifle",
@@ -8184,6 +8320,11 @@
     3,
     8,
     15
+   ],
+   "shots_a_minute": 1,
+   "rate_note": "Ours: no figure found; loaded as a matchlock, about a minute.",
+   "close": [
+    "musket_butt"
    ],
    "ignition": "wheel",
    "era": "1530s-1690s",
@@ -8214,6 +8355,12 @@
     50,
     100
    ],
+   "shots_a_minute": 3,
+   "rate_note": "Three rounds a minute, dependent on the soldier (American Battlefield Trust, Brown Bess and Charleville).",
+   "close": [
+    "bayonet",
+    "musket_butt"
+   ],
    "ignition": "flint",
    "era": "1700s-1850s",
    "threat": "rifle",
@@ -8242,6 +8389,12 @@
     50,
     100,
     150
+   ],
+   "shots_a_minute": 2,
+   "rate_note": "Two rounds a minute, dependent on the soldier (American Battlefield Trust, the American long rifle); the Baker's the same is ours.",
+   "close": [
+    "bayonet",
+    "musket_butt"
    ],
    "ignition": "flint",
    "era": "1700s-1840s",
@@ -8273,6 +8426,11 @@
     3,
     8,
     15
+   ],
+   "shots_a_minute": 2,
+   "rate_note": "Ours: loaded as a flintlock rifle, about two a minute.",
+   "close": [
+    "musket_butt"
    ],
    "ignition": "flint",
    "era": "1700s-1840s",
@@ -8332,6 +8490,12 @@
     50,
     150,
     250
+   ],
+   "shots_a_minute": 3,
+   "rate_note": "Three rounds a minute, dependent on the soldier (American Battlefield Trust, Springfield and Enfield).",
+   "close": [
+    "bayonet",
+    "musket_butt"
    ],
    "ignition": "percussion",
    "era": "1850s-1860s",
@@ -8426,6 +8590,9 @@
    "ignition": "percussion",
    "era": "1850s-",
    "threat": "pistol",
+   "magazine": 6,
+   "reload_s": 90,
+   "rate_note": "Six shots, then the cylinder: a percussion revolver's chambers took five steps each to load, and with paper cartridges could still easily take a minute and a half to two minutes or more (California Law Review, The Myth of Continuity in American Gun Culture); a minute and a half is ours. Spare cylinders were not issued in the Civil War: men carried more revolvers (GUNSweek, after Executive Document 99, 1867). Only the percussion-era tables (the ACW, the Crimea) have the revolver.",
    "mechanisms": {
     "ballistic": 100
    },
@@ -8669,6 +8836,9 @@
     100,
     150
    ],
+   "min_range": 3,
+   "shots_a_minute": 5,
+   "rate_note": "Four to six rounds a minute (Military.com, How an RPG works, 2019); five is ours.",
    "era": "1960s-",
    "threat": "fragment",
    "mechanisms": {
@@ -8704,6 +8874,9 @@
     60,
     100
    ],
+   "min_range": 2,
+   "shots_a_minute": 6,
+   "rate_note": "Six rounds a minute can be achieved with the M9 (weaponsystems.net); single report: ten a minute for the M9A1 (Korean War Online).",
    "era": "1942-1953",
    "threat": "fragment",
    "mechanisms": {
@@ -8804,6 +8977,9 @@
     200,
     400
    ],
+   "min_range": 8,
+   "shots_a_minute": 5,
+   "rate_note": "The M40: one round a minute sustained, five for short periods (weaponsystems.net, after the US manuals); a small fight is a short period, so five (ours).",
    "era": "1945-",
    "threat": "fragment",
    "mechanisms": {
@@ -8839,6 +9015,9 @@
     1000,
     2000
    ],
+   "min_range": 33,
+   "shots_a_minute": 2,
+   "rate_note": "The TOW can launch three missiles in 90 seconds (FAS); its time of flight to 3,750 m, about 20 seconds, is not modelled.",
    "era": "1970s-",
    "threat": "fragment",
    "mechanisms": {
@@ -25460,6 +25639,10 @@
     "no_attack": true,
     "defence": 50
    },
+   "fallen": {
+    "name": "Fallen from a ladder",
+    "no_attack": true
+   },
    "out": {
     "name": "Out of the fight",
     "no_attack": true,
@@ -25487,6 +25670,7 @@
     "load": {
      "hauberk": "medium",
      "transitional": "heavy",
+     "harness_1415": "heavy",
      "full_plate": "heavy",
      "gotland_armoured": "medium",
      "danish_maa": "heavy",
@@ -25518,6 +25702,7 @@
   },
   "move": {
    "hex_m": 2,
+   "round_s": 6,
    "advance": 4,
    "run": 12,
    "halved_by": [
@@ -25534,6 +25719,7 @@
    ],
    "no_move_states": [
     "stunned",
+    "fallen",
     "out",
     "surprised"
    ],
@@ -25542,6 +25728,10 @@
     "cols": 24,
     "rows": 16
    }
+  },
+  "ladder": {
+   "penalty": 20,
+   "fall_rounds": 2
   },
   "line_of_fire": {
    "per_man": 10,
@@ -25586,6 +25776,11 @@
     "bridge": {
      "name": "Bridge",
      "move": 0
+    },
+    "wall_face": {
+     "name": "Wall face",
+     "move": 99,
+     "deep": true
     }
    },
    "max_level": 3,
@@ -25801,6 +25996,18 @@
     "layout": "fortified",
     "desc": "Ditch, bank and palisade all round, with a gate."
    },
+   "hedged": {
+    "name": "Hedged garden",
+    "hours": 0,
+    "found": true,
+    "works": [
+     "hedge"
+    ],
+    "surprise": 0,
+    "rest": "fair",
+    "layout": "hedged",
+    "desc": "A garden or close already hedged round, held as it stands; nothing is built (Valmont, 1416: Dorset's men held a small hedged garden till nightfall)."
+   },
    "quartered": {
     "name": "Quartered",
     "hours": 0.5,
@@ -25853,6 +26060,15 @@
     "breach": 24,
     "no_ladders": true,
     "note": "A beam set with sword blades or spikes, chained across a breach (Badajoz 1812). Ladders get no one over it; axes clear it slowly (breach: ours, twice a palisade)."
+   },
+   "hedge": {
+    "name": "Hedge",
+    "per_metre": 0,
+    "cross": 1,
+    "cover": 10,
+    "cover_side": "both",
+    "breach": 4,
+    "note": "A garden or field hedge, already there (a found camp's): slows a man pushing through and screens him a little. Cover 10 as scrub (units.yaml), cross 1 and breach 4: ours."
    },
    "gate": {
     "name": "Gate",
@@ -26417,6 +26633,7 @@
    "watched": 1,
    "staked": 1,
    "fortified": 1,
+   "hedged": 0,
    "quartered": 3
   },
   "cold_hardship": [
@@ -30975,6 +31192,190 @@
        "plate",
        1,
        50
+      ]
+     ],
+     "sabaton": [
+      [
+       "mail",
+       1,
+       100
+      ]
+     ]
+    }
+   },
+   {
+    "id": "harness_1415",
+    "name": "Men-at-arms' harness, mail and plate pieces (c.1415)",
+    "group": "generic",
+    "shield": false,
+    "slots": {
+     "helm": "plate",
+     "visor": "plate",
+     "gorget": "mail_padded",
+     "torso_upper": [
+      {
+       "material": "plate",
+       "cover": 50
+      },
+      {
+       "material": "mail_padded"
+      }
+     ],
+     "torso_lower": [
+      {
+       "material": "plate",
+       "cover": 50
+      },
+      {
+       "material": "mail_padded"
+      }
+     ],
+     "skirt": "mail_padded",
+     "pauldron": [
+      {
+       "material": "plate",
+       "cover": 50
+      },
+      {
+       "material": "mail_padded"
+      }
+     ],
+     "arm": [
+      {
+       "material": "plate",
+       "cover": 50
+      },
+      {
+       "material": "mail_padded"
+      }
+     ],
+     "gauntlet": "plates",
+     "leg": [
+      {
+       "material": "plate",
+       "cover": 50
+      },
+      {
+       "material": "mail_padded"
+      }
+     ],
+     "greave": [
+      {
+       "material": "plate",
+       "cover": 50
+      },
+      {
+       "material": "mail"
+      }
+     ],
+     "sabaton": "mail"
+    },
+    "layers": {
+     "helm": [
+      [
+       "plate",
+       1,
+       100
+      ]
+     ],
+     "visor": [
+      [
+       "plate",
+       1,
+       100
+      ]
+     ],
+     "gorget": [
+      [
+       "mail_padded",
+       1,
+       100
+      ]
+     ],
+     "torso_upper": [
+      [
+       "plate",
+       1,
+       50
+      ],
+      [
+       "mail_padded",
+       51,
+       100
+      ]
+     ],
+     "torso_lower": [
+      [
+       "plate",
+       1,
+       50
+      ],
+      [
+       "mail_padded",
+       51,
+       100
+      ]
+     ],
+     "skirt": [
+      [
+       "mail_padded",
+       1,
+       100
+      ]
+     ],
+     "pauldron": [
+      [
+       "plate",
+       1,
+       50
+      ],
+      [
+       "mail_padded",
+       51,
+       100
+      ]
+     ],
+     "arm": [
+      [
+       "plate",
+       1,
+       50
+      ],
+      [
+       "mail_padded",
+       51,
+       100
+      ]
+     ],
+     "gauntlet": [
+      [
+       "plates",
+       1,
+       100
+      ]
+     ],
+     "leg": [
+      [
+       "plate",
+       1,
+       50
+      ],
+      [
+       "mail_padded",
+       51,
+       100
+      ]
+     ],
+     "greave": [
+      [
+       "plate",
+       1,
+       50
+      ],
+      [
+       "mail",
+       51,
+       100
       ]
      ],
      "sabaton": [

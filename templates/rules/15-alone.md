@@ -92,8 +92,10 @@ one, and the Roses with Edward of March (47) a campaign.
     - **Serve the season.** Its log tells the season: sickness week by week, each named action
       and what it did to each man, any deed, the small fight if one came, the followers.
     - **A named action** with its own battlefield (Albuera, Badajoz, Towton...) can be played on
-      the field map instead of rolled; one with scenes at its edge (the forlorn hope at Badajoz)
-      offers them first.
+      the field map instead of rolled; one with scenes at its edge (the forlorn hope at Badajoz,
+      the raid and the crater before the Somme) offers them first. Men who volunteer and come
+      through may be known to their officers, or promised promotion: the forlorn hope roll for
+      the rank above at the season's end.
     - **A small fight:** **Play it on the roller**, with **Run the fight** on and your own men to
       move, or **Roll it**. Played, the roller's **After the fight** offers each man's deeds
       (**Mark deeds**), and **Followers back** takes the followers' fates home; rolled, each man

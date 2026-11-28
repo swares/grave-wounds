@@ -892,6 +892,18 @@ for each man whether he serves and where he stands, and the team's **posture** f
   somewhere scales it by that position (Terry's men 17% × 4 = 68% hit and 24% taken; a straggler
   ×0.25), at most the cap: a unit's figure is its men's average, and the edge says where he stood
   within it. The season's own position menu does not scale a unit's figure.
+  The first day on the Somme (summer 1916, Beaumont-Hamel with the 29th Division, the field; off
+  the 2nd Royal Welch Fusiliers' calendar, so the edge comes when the GM ticks the battalion as
+  there): volunteers for the raids, the raid to look at the wire (27-28 June: the Newfoundlanders'
+  gap in front of Y Ravine and the flare, Legion Magazine), the party for the crater (in the thick of
+  it), at the Hawthorn crater (7.20, the Germans on the far lip first; Edmonds, as Wikipedia gives
+  him) and over the top through our own wire (Nerve; a man who fails goes to ground, in support).
+  Its sizes are ours. **A choice's reward** (`reward`) is for its men who come through the action
+  (not dead of it or taken): `known`, known to his officers (data/ranks.yaml `known`), and
+  `promote`, his own Command roll at the season's end for the rank above, at the deed's bonus, no
+  vacancy needed (the rank he leaves opens to the team). The forlorn hope at Badajoz has both:
+  "promotions and glory" (Fletcher, *Badajoz 1812*, p. 29, as given by Swift); the rule is ours.
+  The Somme's raiders and crater party are known to their officers (standing for the decorations).
 - **Each action not played**, in its week: d100 against his hit chance, the army's share lost
   (killed and wounded of those engaged, from the sources) times his position (in reserve ×0.25,
   in the line ×1, in the thick of it ×3, at most 90%; ours, set from Albuera, where the
