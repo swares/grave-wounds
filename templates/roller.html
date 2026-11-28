@@ -4089,7 +4089,10 @@ function setupHandoff(){                     // a camp or position sent from the
   S.chars = [];
   for (const o of defenders) S.chars.push(...forceChars(o, spots.splice(0, forceCount(o, named)), named));
   const sp = h.surprise;
-  if (sp && sp.surprised) S.chars.forEach(c => { c.state = { id: "surprised", rounds: 1 } });   // the defenders and their friends lose round 1
+  if (sp && sp.surprised) S.chars.forEach(c => {   // the defenders and their friends lose round 1 (a fight's surprise may say more: men caught asleep)
+    c.state = { id: "surprised", rounds: sp.rounds || 1 };
+    if (sp.disarmed && c.kit !== "none"){ c.kitOwn = c.kitOwn || c.kit; c.kit = "none" }   // out of their armour: his own kit goes back with the next fight (warKit)
+  });
   for (const o of foes) S.chars.push(...forceChars(o, o.from ? arrivalSpots(o.from, forceCount(o, named)) : null, named));
   if (h.weather) S.weather = h.weather;
   if (h.light) S.weather = { ...(S.weather || { cond: "fair", wind: "calm", ground: { mud: 0, snow: 0, flood: 0 } }), light: h.light === "day" ? undefined : h.light };   // a small fight's light
@@ -4116,7 +4119,7 @@ function setupHandoff(){                     // a camp or position sent from the
   const addNote = `Add brings in more on the side "${S.addSide}".`;
   const like = `The ground is laid out to ${h.from === "service" ? "suit the fight's" : "match the travel map's"} ${GRD.terrain_names[S.groundLike.terrain].toLowerCase()}${lay ? ", cleared inside the camp" : ""}${sidesText(S.ground.sides)}: Paint ground to change it.`;
   S.mapMsg = `Defending: ${defNote}, inside the ${where}${cut}.${unplaced} ${foeNote}${addNote} ${like} Click a fighter, on the map or with Place on map, then a hex to move him.`;
-  if (sp) S.pending.push(`${sp.text} Rolled ${sp.roll}: ${sp.surprised ? "caught unawares, they cannot act in round 1" : "not surprised"}`);
+  if (sp) S.pending.push(`${sp.text} Rolled ${sp.roll}: ${!sp.surprised ? "not surprised" : (sp.rounds || 1) > 1 ? `caught unawares, they cannot act in the first ${sp.rounds} rounds` : "caught unawares, they cannot act in round 1"}${sp.surprised && sp.disarmed ? ", and fight without their armour" : ""}`);
   for (const o of h.allies || []) S.pending.push(`With them: ${o.name}, ${o.men} men (${o.side})`);
   for (const o of foes) S.pending.push(`Facing them: ${o.name}, ${o.men} men (${o.side})`);
   const odds = oddsHidden(defenders, foes, named);

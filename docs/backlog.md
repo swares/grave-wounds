@@ -1211,7 +1211,16 @@ not this repository.
   (exchange 0.64), better for every team (22, 17, 20, 21 against 18, 14, 15, 16): the raid 10 of
   12, the sally 7 (was 3), the ford 11 (was 8), the ambush still only 2 of 12. Quarters taken by
   surprise (Ferrifontaine, an English disaster) is won 11 of 12: the surprise is not modelled. The
-  ambush and the surprise stay open. The lord's retinue stays for the Roses (1 to 9).
+  lord's retinue stays for the Roses (1 to 9).
+  **Since (28 November 2026), as Monstrelet tells them:** quarters' surprise now says the men were
+  "all disarmed, fast asleep, and without any guard" (ch. XIX): caught, they lose the first 3
+  rounds (ours) and fight out of their armour. Near Rouen the English came on warned, close enough
+  to count the French, and "the greater part" fled before the fight (ch. XV): no surprise, and only
+  the one ambush that formed up (half the French, ours). Four seeded teams, 6 seeds each (24
+  fights): quarters 22 → 16 English wins, English down 10% → 25% (the sources: half); the ambush
+  2 → 7, exchange 0.41 → 0.69. Halving the French changed little on the board, as the war's
+  max_odds (1.5) already capped them. **Still open:** the ambush, an easy English rout in the
+  source; next to try, the French breaking once a tenth are down (ours).
 
 - **A season's small fight brought the team's men as the roller last left them** (play test 8):
   a follower's wounds, blood and state (out of the fight, defend only) stayed with him into the

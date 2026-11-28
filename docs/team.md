@@ -951,7 +951,8 @@ for each man whether he serves and where he stands, and the team's **posture** f
   side (a war's own `small_war.max_odds`: Henry V's 1.5, ours; the notes then give the rolled
   numbers): the odds the dice gave, not 8 against the
   whole team), with the fight's weapon, on the fight's ground and in its weather, with the defenders
-  caught unawares on the surprise roll; the aims, the end and the source are in the fight's notes.
+  caught unawares on the surprise roll (for the rounds its `surprise` says, out of their armour
+  if it says `disarmed`: combat.md, *Surprised*); the aims, the end and the source are in the fight's notes.
   A named man or follower serious or worse with sickness or wounds at the season's end stays in
   hospital, as he would for the season's battles, and the notes name him (the user's choice).
   A fight's `at` is the season of the instance it is sourced to; rolled in another season, its

@@ -260,7 +260,10 @@ panel says who rolled what.
 
 **Surprised.** A fight set up from the travel map may catch the defenders unawares (see
 [works.md](works.md), *Surprise*). Then the defenders and their friends start **Surprised**:
-they cannot attack or move in round 1.
+they cannot attack or move in round 1. A season's small fight may say more of its surprise:
+`rounds`, the rounds lost, and `disarmed`, the men out of their armour (their own kit comes back
+with the next fight). Quarters taken by surprise at night (Ferrifontaine, 1419: "all disarmed,
+fast asleep, and without any guard", Monstrelet) has both, 3 rounds (ours).
 
 Heavy kits are full plate and the transitional harness, the Danish man-at-arms, the 1630
 cuirassier, the First World War sentry's armour, the aircrew flak suit and the Interceptor
