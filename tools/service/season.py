@@ -96,6 +96,7 @@ def followers(pg):
     muster_cap(pg)
     somme_edge(pg)
     more_edges(pg)
+    caught_asleep(pg)
 
 
 def sidearms(pg):
@@ -568,6 +569,36 @@ def more_edges(pg):
           localStorage.setItem = set; return got }""", f"{aid}:{fight}")
         check(h and h["only"] == [first], f"{aid}: the {fight} goes to the roller with only the man chosen ({(h or {}).get('only')}, {(h or {}).get('title')})")
         pg.wait_for_function(AT_ROLLER)
+
+
+def caught_asleep(pg):
+    """Ferrifontaine: men caught asleep and disarmed lose the first 3 rounds and fight out of their
+    armour; their own kit comes back with the next fight. The ambush near Rouen has no surprise."""
+    pg.goto(BASE + "team.html")
+    pg.evaluate(CLEAR)
+    pg.reload()
+    pg.select_option("#sel-era", "medieval")
+    pg.select_option("#sel-region", "england")
+    pg.select_option("#sel-template", "retinue_france")
+    pg.click("#btn-roll")
+    pg.click(SEND)
+    pg.wait_for_selector(ADDTEAM)
+    pg.click(ADDTEAM)
+    pg.goto(BASE + "team.html")
+    pg.wait_for_selector("#h-service")
+    pg.evaluate("""() => { const W = SVC.war('henry_v'); svcState(); Object.assign(S.service, { war: 'henry_v', i: 0, with: {}, pos: {}, at: {}, played: {}, unit: {}, share: {} });
+      S.svcSmall = SVC.smallFight(W, 'garrison', () => 1, 'quarters'); svcPlayFight() }""")
+    pg.wait_for_selector(HANDOFF)
+    pg.click(HANDOFF)
+    pg.wait_for_function("() => !S.handoff")
+    r = pg.evaluate("""() => { const team = S.chars.filter(c => c.team), foes = S.chars.filter(c => !c.team);
+      return [team.length > 0 && team.every(c => c.state && c.state.id === 'surprised' && c.state.rounds === 3), team.every(c => c.kit === 'none'),
+              team.filter(c => c.uid && c.kitOwn).length >= 3, foes.every(c => !c.state && c.kit !== 'none'), S.pending.some(l => /first 3 rounds, and fight without their armour/.test(l))] }""")
+    check(all(r), f"on the roller the quartered men lose 3 rounds and wear no armour, their own kit kept; the attackers are armed ({r})")
+    pg.goto(BASE + "team.html")
+    pg.wait_for_selector("#h-service")
+    amb = pg.evaluate("() => SVC.war('henry_v').small_fights.find(f => f.id === 'ambush').surprise || null")
+    check(amb is None, "near Rouen the English came on warned: the ambush has no surprise")
 
 
 def run(p):

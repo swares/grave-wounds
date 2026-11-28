@@ -2370,6 +2370,10 @@ def _small_fight_errors(d: Data, W: dict, where: str, states: dict) -> list[str]
         sp = f.get("surprise")
         if sp and not (sp.get("text") and isinstance(sp.get("chance"), int) and 0 < sp["chance"] <= 100):
             errors.append(f"{fw}: surprise needs text and a chance (on the defenders: the party unless team_attacks)")
+        if sp and (set(sp) - {"text", "chance", "rounds", "disarmed"}
+                   or ("rounds" in sp and not (isinstance(sp["rounds"], int) and sp["rounds"] >= 1))
+                   or ("disarmed" in sp and sp["disarmed"] is not True)):
+            errors.append(f"{fw}: surprise may also say rounds (lost, 1 or more) and disarmed: true")
         if not (f.get("aims") or {}).get("team") or not (f.get("aims") or {}).get("foes") or not f.get("ends"):
             errors.append(f"{fw}: needs aims (team, foes) and ends")
         if not f.get("sources"):

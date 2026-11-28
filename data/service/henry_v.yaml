@@ -256,7 +256,7 @@ small_fights:
     sources: [*mon5, *seward14, *frarmy, *curry]
   - id: ambush
     name: "An ambush on the road"
-    what: "French captains lay two ambushes and take a village to draw an English force out; the English rout them (near Rouen, December 1418: Harcourt's about 2,000 against Cornwall's 600, the French losing 240 men-at-arms killed or taken, the English very few)."
+    what: "French captains lay two ambushes and send six score men-at-arms against a village to draw an English force out; men who escape the village warn the English, and Cornwall's 600 follow the French close enough to count them. One ambush forms up to fight, the greater part of the rest turn and flee, and the English charge and rout them (near Rouen, December 1418: Harcourt's about 2,000, the French losing 240 men-at-arms killed or taken, the English very few)."
     states: [siege, garrison, campaign]
     weight: 3
     at: 1418-winter
@@ -264,14 +264,13 @@ small_fights:
     time: "in the morning"
     ground: forest
     side: {name: "The English column", men: [100, 600]}
-    foes: [{name: "The ambush's men-at-arms", men: [133, 1333], kit: harness_1415, weapon: spear},   # mail with plate pieces, as at Agincourt (DeVries 2015; armor.yaml harness_1415)
-           {name: "The ambush: crossbowmen and commons", men: [67, 667], kit: jack_sallet, weapon: crossbow}]   # two men-at-arms to each of the gens de trait (Curry: companies were to raise half as many; the 1415 musters of Vendôme, 300 and 150, and Berry, 1,000 and 500); the trait all crossbowmen is ours
-    surprise: {text: "The ambush breaks out of the trees", chance: 40}
+    foes: [{name: "The ambush's men-at-arms", men: [67, 667], kit: harness_1415, weapon: spear},   # mail with plate pieces, as at Agincourt (DeVries 2015; armor.yaml harness_1415)
+           {name: "The ambush: crossbowmen and commons", men: [33, 333], kit: jack_sallet, weapon: crossbow}]   # two men-at-arms to each of the gens de trait (Curry: companies were to raise half as many; the 1415 musters of Vendôme, 300 and 150, and Berry, 1,000 and 500); the trait all crossbowmen is ours
     aims: {team: "Break the ambush and go on.", foes: "Cut the column up and take prisoners."}
     ends: "The ambush breaks once a third of those here are down; the English are beaten if they are broken."
     end: {down: {foes: 0.33}}
     sources: [*mon5, *frarmy, *curry]
-    note: "Monstrelet, ch. XV."
+    note: "Monstrelet, ch. XV: the English came on warned, so there is no surprise; only the ambush that formed up stands, the rest having fled. Its size, half the French (the two ambushes taken as equal), is ours."
   - id: escort
     name: "An escort attacked"
     what: "French men-at-arms fall on the escort of travellers on the road and take horses and baggage, but are beaten off and leave forty and more dead (near Chammes, early 1419)."
@@ -354,7 +353,7 @@ small_fights:
     side: {name: "The quartered men", men: [50, 1000]}
     foes: [{name: "Men-at-arms from a French garrison", men: [67, 333], kit: harness_1415, weapon: spear},   # mail with plate pieces, as at Agincourt (DeVries 2015; armor.yaml harness_1415)
            {name: "Crossbowmen and commons from the garrison", men: [33, 167], kit: jack_sallet, weapon: crossbow}]   # two men-at-arms to each of the gens de trait (Curry: companies were to raise half as many; the 1415 musters of Vendôme, 300 and 150, and Berry, 1,000 and 500); the trait all crossbowmen is ours
-    surprise: {text: "The men are asleep without a guard", chance: 70}
+    surprise: {text: "The men are asleep without a guard", chance: 70, rounds: 3, disarmed: true}   # "all disarmed, fast asleep, and without any guard" (Monstrelet): out of their armour and slow to rise; the 3 rounds are ours
     aims: {team: "Stand to, hold the houses, and get away.", foes: "Kill or take them and burn the village."}
     ends: "The attackers go off after 8 rounds or once a third of those here are down; the quartered men are beaten if they are broken."
     end: {rounds: 8, wins: team, down: {foes: 0.33}}

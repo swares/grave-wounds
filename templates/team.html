@@ -1463,7 +1463,7 @@ function svcFightHtml(W){                           // the season's small fight:
   if (!f) return `<p><b>A small fight comes the team's way.</b> Play it on the roller, or ${roll}.</p>`;
   const opt = x => '<option value="' + x.id + '"' + (x.id === f.id ? " selected" : "") + ">" + esc(x.name) + "</option>";
   const pick = `<select id="sv-fight" style="width:auto" aria-label="Another small fight">${W.small_fights.filter(x => !x.edge_only).map(opt).join("")}</select>`;
-  const foes = f.foes.map((o, k) => `${esc(o.name)}, ${F.foes[k]}`).join("; "), sp = f.surprise ? ` ${esc(f.surprise.text)}: rolled ${F.surprise_roll} against ${f.surprise.chance}, ${F.surprised ? "caught unawares" : "not surprised"}.` : "";
+  const foes = f.foes.map((o, k) => `${esc(o.name)}, ${F.foes[k]}`).join("; "), sp = f.surprise ? ` ${esc(f.surprise.text)}: rolled ${F.surprise_roll} against ${f.surprise.chance}, ${F.surprised ? "caught unawares" + (f.surprise.disarmed ? ", out of their armour" : "") + ((f.surprise.rounds || 1) > 1 ? `, losing the first ${f.surprise.rounds} rounds` : "") : "not surprised"}.` : "";
   return `<div class="spend"><p><b>A small fight comes the team's way${F.roll ? ` (rolled ${F.roll})` : ""}:</b> ${pick}</p>
     <p>${esc(f.what)} <span class="muted">${esc(f.time)}${f.light ? " (" + esc(f.light === "night" ? "a dark night" : f.light === "moonlit" ? "moonlit" : "dusk or dawn") + ")" : ""}, ${esc(f.ground)}${f.weather ? ", " + esc(f.weather) : ""}.</span></p>
     <p>${esc(f.side.name)} (the team with them), ${F.side}; against ${foes}.${sp}</p>
@@ -1480,7 +1480,7 @@ function svcFightHandoff(W, s){                     // the small fight as a setu
   const party = { id: "team", name: f.side.name, side, men: Math.max(F.side, coming), type: "foot", ...svcComradeArms(f, crew, men) };
   const foes = f.foes.map((o, k) => ({ id: "foe" + k, name: o.name, side: W.sides.foes, men: F.foes[k], type: "foot", kit: o.kit || null, weapon: o.weapon || null, sidearm: o.sidearm || null }));
   const [force, allies, against] = f.team_attacks ? [foes[0], foes.slice(1), [party]] : [party, [], foes];
-  const sp = f.surprise ? { text: f.surprise.text, roll: F.surprise_roll, surprised: F.surprised } : null;
+  const sp = f.surprise ? { text: f.surprise.text, roll: F.surprise_roll, surprised: F.surprised, rounds: f.surprise.rounds || 1, disarmed: !!f.surprise.disarmed } : null;
   crewIds();
   const followers = crew.map(x => ({ ...x, careerName: byId(T.careers, x.career).name, sidearm: sidearmOf(x.career, S.region) }));   // the followers as they are now: the roller brings its own up to date
   const pids = men.map(c => c.pid);                   // the named men serving now and fit: not those lost since they came to the roller
