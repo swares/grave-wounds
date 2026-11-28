@@ -163,6 +163,35 @@ actions:
     lost: "112 named dead in the records; double figures in the English chroniclers, 600 in Monstrelet, 1,600 in Wavrin"
     sources: ["https://www.doc.surf/wiki/battle-of-agincourt", "https://www.historyofwar.org/articles/battles_agincourt.html"]
     note: "The share is ours: the records' 112 dead are about 1.3% of the army, and no count of the wounded was found; three wounded for each dead (ours)."
+    # The edge of the battle (layer 3): the march to the field, the night before, and the baggage.
+    edge:
+      name: "The edge of Agincourt"
+      what: "The army crosses the Somme at last at Béthencourt on 19 October and is met near Azincourt on the 24th; it spends a night of rain at Maisoncelles, short of food, in silence on the king's order. In the morning the baggage and horses are left at Maisoncelles under a light guard, and while the battle is fought Ysambart d'Azincourt's men and some six hundred peasants fall on it and carry off the king's plate, a crown and a sword."
+      sources: ["https://deremilitari.org/RESOURCES/SOURCES/agincourt.htm", "https://www.nationalarchives.gov.uk/agincourt/campaign-and-battle/"]
+      scenes:
+        - id: crossing
+          kind: fight
+          fight: ford
+          name: "Over the Somme"
+          what: "19 October: the archers wade the ford at Béthencourt waist-deep and hold the far bank until the men-at-arms come over."
+        - id: night
+          kind: check
+          name: "The wet night at Maisoncelles"
+          what: "Rain all night, little food, and silence through the camp on the king's order, a gentleman's horse and harness forfeit for breaking it and a yeoman's right ear. A man who fails his Endurance is spent by morning: in the rearward at the battle."
+          stat: end
+          fail_position: reserve
+        - id: baggage
+          kind: choice
+          name: "Left with the baggage"
+          what: "The baggage, the horses and the king's own carts stay at Maisoncelles behind the army under a light guard. Who stays with them? They stand in the rearward at Agincourt, and are at the baggage when it is raided."
+          label: "men with the baggage"
+          position: reserve
+        - id: raid
+          kind: fight
+          fight: baggage_raid
+          only: baggage
+          name: "The raid on the baggage"
+          what: "While the battle is fought, Ysambart's raiders come round it onto the carts."
   valmont:
     name: "Valmont"
     date: 1416-03-09
@@ -350,3 +379,21 @@ small_fights:
     end: {rounds: 4, wins: team, down: {team: 0.33}, hold: foes}
     sources: [*mon5, *seward16]
     note: "The Captal de Buch's about 3,000 at Pontoise; no losses given. Here the first party up the ladders."
+  - id: baggage_raid
+    name: "The raid on the baggage"
+    what: "While the battle is fought, Robinet de Bournonville, Rifflart de Clamasse and Ysambart d'Azincourt, with some men-at-arms and about six hundred peasants, fall on the English baggage at Maisoncelles while its guard is away in the battle, and carry off much of it, with the sumpter horses, the king's plate, a crown and a jewelled sword (Agincourt, 25 October 1415, Monstrelet)."
+    states: [march]
+    weight: 1
+    edge_only: true
+    at: 1415-autumn
+    where: "the baggage park at Maisoncelles"
+    time: "in the morning, while the battle is fought"
+    ground: village
+    side: {name: "The guard on the baggage", men: [4, 30]}
+    foes: [{name: "Countrymen", men: [10, 60], kit: gambeson, weapon: spear},
+           {name: "Men-at-arms", men: [1, 6], kit: harness_1415, weapon: sword}]
+    aims: {team: "Keep the carts and the horses.", foes: "Take what can be carried and get away."}
+    ends: "The raiders make off after 6 rounds with what they have; they give it up once a third of those here are down; the guard is beaten if it loses the carts."
+    end: {rounds: 6, wins: team, down: {foes: 0.33}, hold: team}
+    sources: ["https://deremilitari.org/RESOURCES/SOURCES/agincourt.htm"]
+    note: "Monstrelet; Barker (ch. 15) has the Gesta's chaplain among the baggage and about £219, the crown, the state sword and the chancery seals taken. The print-and-play module The king's baggage (dist/module-agincourt-baggage.html) plays one corner of it with four men. The sizes here are ours."

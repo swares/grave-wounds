@@ -904,6 +904,16 @@ for each man whether he serves and where he stands, and the team's **posture** f
   vacancy needed (the rank he leaves opens to the team). The forlorn hope at Badajoz has both:
   "promotions and glory" (Fletcher, *Badajoz 1812*, p. 29, as given by Swift); the rule is ours.
   The Somme's raiders and crater party are known to their officers (standing for the decorations).
+  Barnet (spring 1471, for Edward of March's men): a night under Warwick's guns (Nerve; failed, in
+  the rearward), with Hastings on the left (in the thick of it) and outflanked in the mist (his men
+  only, in fog: they win by getting half of them away, as the wing fled to Barnet; Matt Lewis for
+  History Hit, after Warkworth and von Wesel). The Crater (summer 1864, ticked as there with the IX
+  Corps): out of our own trenches (Nerve; failed, in reserve), into the crater (in the thick of it,
+  its taken share scaled too) and trapped in the crater (about 1 p.m., Mahone's men closing in: get
+  half of them back across; ABT, NPS). Agincourt (autumn 1415): over the Somme (the ford, a small
+  fight of the war's own), the wet night at Maisoncelles (Endurance; failed, in the rearward), left
+  with the baggage (in the rearward) and the raid on the baggage (those men only; Monstrelet, as the
+  module *The king's baggage*). Their sizes are ours.
 - **Each action not played**, in its week: d100 against his hit chance, the army's share lost
   (killed and wounded of those engaged, from the sources) times his position (in reserve ×0.25,
   in the line ×1, in the thick of it ×3, at most 90%; ours, set from Albuera, where the
