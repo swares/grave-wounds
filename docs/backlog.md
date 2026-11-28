@@ -1219,8 +1219,12 @@ not this repository.
   the one ambush that formed up (half the French, ours). Four seeded teams, 6 seeds each (24
   fights): quarters 22 → 16 English wins, English down 10% → 25% (the sources: half); the ambush
   2 → 7, exchange 0.41 → 0.69. Halving the French changed little on the board, as the war's
-  max_odds (1.5) already capped them. **Still open:** the ambush, an easy English rout in the
-  source; next to try, the French breaking once a tenth are down (ours).
+  max_odds (1.5) already capped them. **Then the ambush (closed, 28 November 2026):** the French
+  break once a tenth are down (ours; "the greater part ... turned their backs and fled") and the
+  English come on as the attackers ("charged and routed them"). Same teams and seeds: as merged 7
+  of 24 won, 28% of the English down; the break alone 11, 27%; the break and the charge 16, 22%
+  (exchange 0.58). Shipped both. Left: the source's "very trifling loss"; the English still lose
+  about a fifth of those here, in the first rounds of close fighting.
 
 - **A season's small fight brought the team's men as the roller last left them** (play test 8):
   a follower's wounds, blood and state (out of the fight, defend only) stayed with him into the
