@@ -190,7 +190,12 @@ not this repository.
   gap is more likely the shared rules fitting the first set, or the newer battlefields being
   harder: the sieges (Badajoz 53%, Ciudad Rodrigo 72%) and Tumbledown (36%), Babuna (67%) and Snipe
   (69%) are most of it. Next: rerun the tool after each rule change measured on the benchmark, and
-  look at Tumbledown and Babuna first, the two least worked on.
+  look at Tumbledown and Babuna first, the two least worked on. **Since:** Tumbledown 64% with
+  danger close at night (#648); Babuna 78% (28 November 2026) with the Bulgarian field guns the
+  Serbian official history gives (*Veliki rat Srbije*, vol. 11, 1-3 November 1915: 7
+  quick-firing guns, from prisoners), 1,558 to 1,562 of 1,836, Babuna the only field changed. The
+  14 newer fields now match in 82% of runs (±3.3%) against 87.5%. Babuna's day on the crest
+  (mid-November, the history's vol. 12) is still unsourced: its mirror no longer loads.
 
 - **The campaign, first cut** (`docs/campaign.md`). A console page over the others: the phase,
   what to do, where things stand, the campaign's log, and save and load of the whole game as a
