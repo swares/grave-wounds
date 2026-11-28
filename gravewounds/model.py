@@ -2268,7 +2268,7 @@ def _edge_errors(d: Data, W: dict, aw: str, e: dict) -> list[str]:
     """An action's edge (layer 3): name, what, sources and its scenes in order: a fight (one of the
     war's small fights), a choice (the men chosen stand at `position` at the action) or a check (d100
     against a stat; failed, he stands at `fail_position`); `only` limits a scene to an earlier
-    choice's men."""
+    choice's men; a choice's `reward` (known, promote) is for its men who come through the action."""
     if not (e.get("name") and e.get("what") and e.get("sources") and e.get("scenes")):
         return [f"{aw}: edge needs name, what, sources and scenes"]
     errors, seen = [], set()
@@ -2296,6 +2296,10 @@ def _edge_scene_errors(sw: str, W: dict, sc: dict, fights: set, stats: set, seen
         errors.append(f"{sw}: kind must be fight, choice or check")
     elif bad[k]():
         errors.append(f"{sw}: {why[k]}")
+    rw = sc.get("reward")
+    if rw is not None and (k != "choice" or not isinstance(rw, dict) or not rw or set(rw) - {"known", "promote"}
+                           or not all(v is True for v in rw.values())):
+        errors.append(f"{sw}: a reward is a choice's, known and/or promote: true")
     if sc.get("only") and sc["only"] not in seen:
         errors.append(f"{sw}: only must name an earlier choice")
     return errors

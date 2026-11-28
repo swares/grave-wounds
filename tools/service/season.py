@@ -94,6 +94,7 @@ def followers(pg):
     away_start(pg)
     unfit_stay(pg)
     muster_cap(pg)
+    somme_edge(pg)
 
 
 def sidearms(pg):
@@ -460,6 +461,71 @@ def commission(pg):
       endSeason(); return [one, (V.course || {})[a.pid] ?? null, svcServes(V, a), S.xplog.join(' | ')] }""")
     check(back[0] == 1 and back[1] is None and back[2] and "back from his officer's course" in back[3],
           f"two seasons later he is back and serves again ({back[:3]})")
+
+
+def somme_edge(pg):
+    """The third edge: the first day on the Somme at Beaumont-Hamel, ticked as there (off the 2nd RWF's
+    calendar); the raid and the crater for the men chosen, and the rewards for those who come through.
+    And the forlorn hope's promised promotion at Badajoz."""
+    pg.goto(BASE + "team.html")
+    pg.evaluate(CLEAR)
+    pg.reload()
+    pg.select_option("#sel-era", "wwi")
+    pg.select_option("#sel-region", "british")
+    pg.select_option("#sel-template", "section")
+    pg.click("#btn-roll")
+    pg.wait_for_selector("#h-service")
+    k = pg.evaluate("() => SVC.war('western_front').seasons.findIndex(s => s.id === '1916-summer')")
+    pg.select_option("#sv-season", str(k))
+    check("The edge of the Somme" not in pg.inner_text(SERVICE), "summer 1916: the first day's edge waits until the GM ticks the battalion as there")
+    pg.check("input[data-svat=somme_first_day]")
+    ed = pg.inner_text(SERVICE)
+    check(all(x in ed for x in ("The edge of the Somme: Beaumont-Hamel", "Volunteers for the raids", "The raid to look at the wire", "The party for the crater", "At the Hawthorn crater", "Over the top, through our own wire")),
+          "ticked: Beaumont-Hamel has its edge, five scenes")
+    check("if they come through, known to their officers" in ed, "the choices say what they bring")
+    check(pg.locator("button[data-svedgeplay='somme_first_day:raid']").count() == 0, "the raid waits for volunteers")
+    pg.locator("input[data-svedgechoice^='somme_first_day:raiders:']").first.check()
+    check(pg.locator("button[data-svedgeplay='somme_first_day:raid']").count() == 1, "a volunteer: the raid can be played or rolled")
+    first = pg.evaluate("() => S.team[0].pid")
+    h = pg.evaluate("""() => { let got = null;
+      const set = localStorage.setItem.bind(localStorage); localStorage.setItem = (k, v) => { if (k === 'gravewounds-handoff') got = JSON.parse(v); else set(k, v) };
+      try{ svcEdgePlay('somme_first_day:raid') }catch(e){}
+      localStorage.setItem = set; return got }""")
+    check(h and h["only"] == [first] and h["light"] == "night", f"the raid goes to the roller with only the volunteer, at night ({(h or {}).get('only')}, {(h or {}).get('light')})")
+    pg.wait_for_function(AT_ROLLER)
+    pg.goto(BASE + "team.html")
+    pg.wait_for_selector("#h-service")
+    pg.select_option("#sv-season", str(k))
+    r = pg.evaluate("""() => { const V = svcState(); V.at = { somme_first_day: true }; S.team[0].known = false; S.team[1].known = false;
+      V.edge = { somme_first_day: { done: {}, chosen: { crater_party: { [S.team[0].pid]: true } }, failed: {} } }; render();
+      realDice.randint = (a, b) => b; document.querySelector('#btn-serve').click();
+      return { log: S.svclog.join(' | '), known: S.team[0].known, other: S.team[1].known } }""")
+    check(r["known"] and not r["other"] and "known to his officers, as one of the crater party at The first day on the Somme" in r["log"]
+          and "in the thick of it at the first day on the somme, as its edge set" in r["log"].lower(),
+          f"served: the man of the crater party who came through is known to his officers, no one else ({r['log'][:300]!r})")
+    # Badajoz: the forlorn hope who come through are promised promotion, their own roll at the season's end
+    pg.goto(BASE + "team.html")
+    pg.evaluate(CLEAR)
+    pg.reload()
+    pg.select_option("#sel-era", "horse_musket")
+    pg.select_option("#sel-region", "british_pen")
+    pg.select_option("#sel-template", "company")
+    pg.click("#btn-roll")
+    pg.wait_for_selector("#h-service")
+    k = pg.evaluate("() => SVC.war('peninsula').seasons.findIndex(s => s.id === '1812-spring')")
+    pg.select_option("#sv-season", str(k))
+    check("if they come through, known to their officers and promised promotion" in pg.inner_text(SERVICE), "the forlorn hope's choice says it is promised promotion")
+    r = pg.evaluate("""() => { const V = svcState(), a = S.team[0];
+      V.edge = { badajoz: { done: {}, chosen: { hope: { [a.pid]: true } }, failed: {} } }; render();
+      realDice.randint = (x, y) => y; document.querySelector('#btn-serve').click();
+      const served = S.svclog.join(' | '), promise = a.svcPromise;
+      a.rank = rkLadder()[0].id; a.rank_days = 0; a.skills.command = 50; S.vacancies = {};
+      realDice.randint = () => 1; endSeason();
+      return { served, promise, rank: a.rank, log: S.xplog.join(' | '), left: a.svcPromise ?? null } }""")
+    check("promised promotion, as one of the volunteers at Badajoz" in r["served"] and r["promise"], f"served: the volunteer who came through is promised promotion ({r['served'][:200]!r})")
+    up = pg.evaluate("() => rkLadder()[1].id")
+    check(r["rank"] == up and r["left"] is None and "promised promotion as one of the volunteers at Badajoz: Command rolled 1" in r["log"],
+          f"at the season's end he rolls for the rank above with no vacancy needed, and is promoted ({r['rank']}, {r['log'][:240]!r})")
 
 
 def run(p):

@@ -1295,7 +1295,8 @@ function svcEdgeMen(V, sc, st){                     // the men a scene takes: th
 function svcEdgeChoice(W, V, aid, sc, st){           // a choice's ticks, one for each man with the battalion
   const picked = st.chosen[sc.id] || {};
   const boxes = S.team.filter(c => svcServes(V, c)).map(c => `<label><input type="checkbox" data-svedgechoice="${aid}:${sc.id}:${c.pid}" ${picked[c.pid] ? "checked" : ""}> ${esc(c.name)}</label>`).join(" ");
-  return boxes + ` <span class="muted">(the ${esc(sc.label)} stand ${esc(W.positions[sc.position].name.toLowerCase())} at ${esc(W.actions[aid].name)})</span>`;
+  const rw = sc.reward ? [sc.reward.known ? "known to their officers" : null, sc.reward.promote ? "promised promotion" : null].filter(Boolean).join(" and ") : "";
+  return boxes + ` <span class="muted">(the ${esc(sc.label)} stand ${esc(W.positions[sc.position].name.toLowerCase())} at ${esc(W.actions[aid].name)}${rw ? "; if they come through, " + esc(rw) : ""})</span>`;
 }
 function svcEdgeScene(W, V, aid, sc, st){            // a scene's controls
   if (sc.kind === "choice") return svcEdgeChoice(W, V, aid, sc, st);
@@ -1315,6 +1316,32 @@ function svcEdgeAt(W, V, aid){                       // {pid: position} the edge
   const out = {}, a = W.actions[aid], st = (V.edge || {})[aid];
   if (!a.edge || !st) return out;
   for (const sc of a.edge.scenes) for (const pid of svcEdgeSet(sc, st)) out[pid] = sc.kind === "choice" ? sc.position : sc.fail_position;
+  return out;
+}
+function svcEdgeRewards(W, V, aid, c){            // the rewarded choices (a scene's reward) that took him at this action's edge
+  const a = W.actions[aid], st = (V.edge || {})[aid];
+  return a.edge && st ? a.edge.scenes.filter(sc => sc.kind === "choice" && sc.reward && (st.chosen[sc.id] || {})[c.pid]) : [];
+}
+function svcPromised(VC, lines){                     // an edge's promised promotion (a reward's promote): his own Command roll for the rank above, at the deed's bonus
+  const L = rkLadder(), R = RK(), out = [];
+  for (const c of S.team.filter(m => m.svcPromise)){
+    const why = c.svcPromise, idx = rkIndex(c.rank ||= rkStart(c.career)) + 1;
+    delete c.svcPromise;
+    if (idx >= L.length){ lines.push(`${c.name}, promised promotion ${why}: he holds the highest rank.`); continue }
+    const r = L[idx], [ok, no] = rkEligible({ ...c, deed: true }, idx);
+    if (!ok){ lines.push(`${c.name}, promised promotion ${why}: not for ${rkName(r.id).toLowerCase()} (${no}).`); continue }
+    let mod = (R.deed_bonus ?? 20) + (c.posture_mod || 0);
+    if (r.unlettered && (c.skills.letters || 0) < (R.literate ?? 20)) mod += r.unlettered;
+    if (skillCheck((c.skills.command || 0) + mod, r.diff || "ordinary", 1).target <= 0){ lines.push(`${c.name}, promised promotion ${why}: no roll he can win.`); continue }
+    const k = skillCheck((c.skills.command || 0) + mod, r.diff || "ordinary", realDice.randint(1, 100));
+    lines.push(`${c.name}, promised promotion ${why}: Command rolled ${k.roll} against ${k.target}: ${k.success ? "promoted " + rkName(r.id).toLowerCase() : "passed over"}.`);
+    if (!k.success) continue;
+    const old = rkIndex(c.rank);
+    c.rank = r.id; c.rank_days = 0; delete c.course_rank;
+    rkPresence(R, c);
+    if (old > 0) VC[L[old].id] = (VC[L[old].id] || 0) + 1;   // the rank he leaves, open to the team as rkPromote's
+    out.push({ name: c.name, to: r.id, success: true });
+  }
   return out;
 }
 function svcEdgeSet(sc, st){                         // the men a scene puts somewhere: a choice's ticked, a check's failed
@@ -1541,6 +1568,11 @@ function serveSeason(){
     for (const x of m.deeds || []){                // a deed at a rolled action (data/ranks.yaml season_deeds): for his next promotion
       bits.push(`distinguished himself at ${actName(x.action)} (a deed: ${x.pct}%, rolled ${x.roll})`);
       c.deed = true; c.deedWhy = `at ${actName(x.action)}, ${W.positions[x.position]?.name.toLowerCase() || "there"}`;
+    }
+    if (!(m.dead && !saved) && !m.taken) for (const a of svcAt(W, V, s)) for (const sc of svcEdgeRewards(W, V, a, c)){   // an edge's reward: he came through the action
+      const why = `as one of the ${sc.label} at ${actName(a)}`;
+      if (sc.reward.known && RK().known && !c.known){ c.known = true; bits.push(`known to his officers, ${why}`) }
+      if (sc.reward.promote && rkLadder().length){ c.svcPromise = why; bits.push(`promised promotion, ${why}: rolled at the end of the season`) }
     }
     if (m.sick_days){
       const still = m.worst ? ", still " + m.worst + " at the season's end" : "";
@@ -1901,6 +1933,7 @@ function endSeason(){
     }
     const CO = V0 ? (V0.course ||= {}) : {};      // back from an officer's course: he was away the season just served
     for (const pid of Object.keys(CO)) if (--CO[pid] <= 0){ delete CO[pid]; const c = S.team.find(m => m.pid === pid); if (c) lines.push(`${c.name} is back from his officer's course and takes up his commission.`) }
+    const promised = svcPromised(VC, lines);      // an edge's promised promotion, before the battalion's vacancies
     const rolls = rkPromote(S.team, VC, realDice);
     const gone = Object.keys(opened).filter(rid => (VC[rid] || 0) > 0);
     for (const rid of gone) VC[rid] -= 1;           // the battalion's vacancy no man of the team won: filled from outside it
@@ -1909,7 +1942,7 @@ function endSeason(){
     for (const c of S.team) finishChar(c);         // his Presence may have risen with his rank
     for (const c of S.team) delete c.deedWhy;
     for (const k of rolls) lines.push(`${k.name} for ${rkName(k.to).toLowerCase()}: Command rolled ${k.roll} against ${k.target}: ${k.success ? "promoted" : "passed over"}.`);
-    if (V0) for (const k of rolls.filter(x => x.success)) svcCourse(V0, S.team.find(m => m.name === k.name), k.to, lines);
+    if (V0) for (const k of promised.concat(rolls.filter(x => x.success))) svcCourse(V0, S.team.find(m => m.name === k.name), k.to, lines);
     const was = S.team.find(m => m.leader), now = leadByRank();
     if (now && now !== was) lines.push(`${now.name} leads now, by rank.`);
     if (!rolls.length && Object.values(S.vacancies).some(n => n > 0)) lines.push("No one eligible for the vacancies yet.");
