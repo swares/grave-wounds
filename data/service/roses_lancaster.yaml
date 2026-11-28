@@ -167,6 +167,42 @@ actions:
     alt: {share: 60, source: "the Annales' 9,000 dead, times two, of 30,000"}
     sources: [*hwtowton, *wptowton]
     note: "Beaten: the infobox's lowest dead, 6,000, times two, of about 30,000 (ours). Most died in the rout, at Cock Beck and on the road to Tadcaster."
+    # The edge of the battle (layer 3). No fifteenth-century source describes the fighting; the
+    # sequence is Hall's (1548), as the Battlefields Trust gives it.
+    edge:
+      name: "The edge of Towton"
+      what: "On 28 March Lord Clifford's horsemen fall on the Yorkists at the bridge at Ferrybridge and hold it, until Fauconberg crosses the Aire upstream and catches them in Dinting Dale, where Clifford is killed. On Palm Sunday the armies meet between Saxton and Towton with the snow blowing from the south into the Lancastrians' faces: their arrows fall short, the Yorkists shoot back their spent ones, and the Lancastrians must come on. The fight goes on for hours until Norfolk's men arrive; the Lancastrians break, and thousands die trying to cross the Cock Beck on the way to Tadcaster."
+      sources: ["https://www.battlefieldstrust.com/resource-centre/battlepageview.asp?pageid=794", *wptowton, *hwferry]
+      scenes:
+        - id: clifford
+          kind: choice
+          name: "Ride with Clifford"
+          what: "Lord Clifford takes his horsemen south to hold the crossing of the Aire against the Yorkists. Who rides with him? They take the bridge and are caught in the dale, and stand in the thick of it at Towton if they come through."
+          label: "men with Clifford"
+          position: thick
+        - id: bridge
+          kind: fight
+          fight: bridge
+          only: clifford
+          name: "Taking the bridge at dawn"
+          what: "28 March: down on the Yorkists sleeping by the broken bridge."
+        - id: dale
+          kind: fight
+          fight: dale
+          only: clifford
+          name: "Caught in the dale"
+          what: "The same afternoon, falling back north: Fauconberg's men are over the river and on them."
+        - id: snow
+          kind: check
+          name: "Into the snow"
+          what: "Palm Sunday: the snow blows into the Lancastrians' faces, their arrows fall short, and the Yorkists' come back at them, their own shot among them. A man who fails his Nerve hangs back when the line goes forward: in the rearward at Towton."
+          stat: nerve
+          fail_position: reserve
+        - id: rout
+          kind: fight
+          fight: beck
+          name: "Down to the Cock Beck"
+          what: "Late in the day the line breaks. Get over the beck and away to Tadcaster."
   hedgeley_moor:
     name: "Hedgeley Moor"
     date: 1464-04-25
@@ -344,3 +380,23 @@ small_fights:
     end: {rounds: 4, wins: team, down: {team: 0.5, foes: 0.5}}
     sources: ["https://www.historyofwar.org/articles/siege_norham_1463.html"]
     note: "The accounts tell only of the panic: the fight and the sizes are ours."
+  - id: beck
+    name: "Down to the Cock Beck"
+    what: "When Norfolk's men come up late in the day the Lancastrian line breaks, and the beaten men run down the slope to the Cock Beck, swollen with snow, on the way to Tadcaster; thousands are killed there or drown crossing it (Towton, 29 March 1461, Hall)."
+    states: [campaign]
+    weight: 1
+    edge_only: true
+    at: 1461-spring
+    where: "the slope down to the Cock Beck"
+    time: "late in the day"
+    light: dusk
+    weather: snow
+    ground: ford
+    side: {name: "Men of the broken line", men: [20, 100]}
+    foes: [{name: "Yorkists in pursuit", men: [40, 200], kit: jack_sallet, weapon: bill},
+           {name: "Yorkist horsemen", men: [5, 30], kit: full_plate, weapon: sword}]
+    aims: {team: "Get over the beck and away with half of them.", foes: "Cut them down before the water."}
+    ends: "The men get away if half of them hold together for 6 rounds, off their own edge; they are cut down once half of them are down."
+    end: {down: {team: 0.5}, away: {side: team, share: 0.5}}
+    sources: ["https://www.battlefieldstrust.com/resource-centre/battlepageview.asp?pageid=794", *wptowton]
+    note: "Hall (1548) and George Neville's letter both have the beaten drowning near Tadcaster; Wavrin does not mention the rout. The sizes and the horsemen are ours. On the roller: paint the beck across the team's edge. It falls in the battle's own hour, so a GM who plays it may leave the man's Towton roll aside."

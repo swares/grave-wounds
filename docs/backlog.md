@@ -112,10 +112,10 @@ not this repository.
   roller. Done since for solo play (posture, journal, vacancies, known to his officers, deadly
   season wounds): see *Playing alone*. Still to do:
   - **The edge of a battle (layer 3).** Badajoz, Culp's Hill, and (27 November 2026) the first day
-    on the Somme at Beaumont-Hamel, Barnet, the Crater and Agincourt have one: scenes before the
-    battle, the choices and checks setting where each man stands at it. A choice may carry a reward
-    for its men who come through (known to his officers; a promised promotion, the forlorn hope's).
-    Every war but Italy and the northern Lancastrians now has one; next could be Cassino or Towton.
+    on the Somme at Beaumont-Hamel, Barnet, the Crater, Agincourt, Towton and Cassino have one:
+    scenes before the battle, the choices and checks setting where each man stands at it. A choice
+    may carry a reward for its men who come through (known to his officers; a promised promotion,
+    the forlorn hope's). Every war now has at least one.
     The ditch's, the craters' and Barnet's ground are laid by hand on the roller.
   - **More wars.** The Civil War in the East for a Union regiment (and, from the other side, the
     4th Virginia of the Stonewall Brigade: no Confederate wound-cause count; men taken prisoner are

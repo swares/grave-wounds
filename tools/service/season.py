@@ -448,6 +448,7 @@ def commission(pg):
     r = pg.evaluate("""() => { const V = S.service; V.war = 'western_front'; const W = SVC.war('western_front');
       V.i = W.seasons.findIndex(s => s.id === '1916-summer') + 1;
       const [a, b] = S.team; a.rank = 'csm'; a.rank_days = 2000; a.skills.command = 90; a.skills.letters = 40;
+      a.gains = { ...(a.gains || {}), letters: 40, command: 90 };   // endSeason rebuilds skills from stats and gains
       b.rank = 'private'; b.rank_days = 2000; b.skills.command = 0; b.known = false; b.deed = false;
       for (const c of S.team.slice(2)){ c.rank = 'private'; c.rank_days = 0 }
       S.vacancies = { lieutenant: 1, corporal: 1 }; 
@@ -530,7 +531,7 @@ def somme_edge(pg):
 
 
 def more_edges(pg):
-    """Barnet in the mist, the Crater and Agincourt's eve: each edge's scenes, and its fight to the
+    """Towton, Cassino, Barnet in the mist, the Crater and Agincourt's eve: each edge's scenes, and its fight to the
     roller with only the men its choice took."""
     def roll(era, region, template):
         pg.goto(BASE + "team.html")
@@ -538,10 +539,15 @@ def more_edges(pg):
         pg.reload()
         pg.select_option("#sel-era", era)
         pg.select_option("#sel-region", region)
-        pg.select_option("#sel-template", template)
+        if template:
+            pg.select_option("#sel-template", template)
         pg.click("#btn-roll")
         pg.wait_for_selector("#h-service")
-    cases = [("medieval", "england", "retinue", "roses_edward", "1471-spring", "barnet", None, "hastings", "fog",
+    cases = [("medieval", "england", "retinue", "roses_lancaster", "1461-spring", "towton", None, "clifford", "dale",
+              ["The edge of Towton", "Ride with Clifford", "Taking the bridge at dawn", "Caught in the dale", "Into the snow", "Down to the Cock Beck"]),
+             ("wwii", "commonwealth", None, "italy_british", "1944-spring", "diadem", None, "skins", "piumarola",
+              ["The edge of Cassino", "A night patrol on Castellone", "Across the Gari", "With the Skins at Piumarola", "Into Piumarola"]),
+             ("medieval", "england", "retinue", "roses_edward", "1471-spring", "barnet", None, "hastings", "fog",
               ["The edge of Barnet", "A night under Warwick's guns", "With Hastings on the left", "Outflanked in the mist"]),
              ("civil_war", "union", "recruits", "acw_union_east", "1864-summer", "crater", True, "into", "trapped",
               ["The edge of the Crater", "Out of our own trenches", "Into the crater", "Trapped in the crater"]),

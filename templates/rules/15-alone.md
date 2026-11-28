@@ -94,7 +94,7 @@ one, and the Roses with Edward of March (47) a campaign.
     - **A named action** with its own battlefield (Albuera, Badajoz, Towton...) can be played on
       the field map instead of rolled; one with scenes at its edge (the forlorn hope at Badajoz,
       the raid and the crater before the Somme, the baggage at Agincourt, the mist at Barnet, the
-      Crater) offers them first. Men who volunteer and come
+      Crater, Clifford's ride before Towton, Piumarola below Cassino) offers them first. Men who volunteer and come
       through may be known to their officers, or promised promotion: the forlorn hope roll for
       the rank above at the season's end.
     - **A small fight:** **Play it on the roller**, with **Run the fight** on and your own men to
