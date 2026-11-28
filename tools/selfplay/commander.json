@@ -91,27 +91,27 @@
     {
      "bar": {
       "outcome": "win",
-      "ratio": 1.39
+      "ratio": 1.93
      },
      "drew": 0.0,
-     "lost_share": 0.5,
+     "lost_share": 0.399,
      "side": "Serbians",
      "stance": "hold",
-     "won": 0.67
+     "won": 0.78
     },
     {
      "bar": {
       "outcome": "loss",
-      "ratio": 0.75
+      "ratio": 0.55
      },
      "drew": 0.0,
-     "lost_share": 0.167,
+     "lost_share": 0.177,
      "side": "Bulgarians",
      "stance": "attack",
-     "won": 0.33
+     "won": 0.22
     }
    ],
-   "stamp": "46b1a2ee6bd0"
+   "stamp": "fbd7d52d3690"
   },
   "badajoz-1812": {
    "runs": 36,
@@ -1430,5 +1430,5 @@
    "stamp": "cc84cf61ec73"
   }
  },
- "updated": "2026-11-26"
+ "updated": "2026-11-28"
 }
