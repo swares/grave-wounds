@@ -206,6 +206,30 @@ actions:
     alt: {share: 40, source: "Wikipedia's 1,000 Yorkist casualties of about 10,000"}
     sources: ["https://www.historic-uk.com/HistoryMagazine/DestinationsUK/The-Battle-of-Barnet", "https://mobileapps.wikiwand.com/en/Battle_of_Barnet", *tbarnet]
     note: "Dead only: the share is the dead times four (ours). In the mist the lines overlapped and Oxford's men were taken for the enemy."
+    # The edge of the battle (layer 3): the night and the mist, for a man on Hastings's wing.
+    edge:
+      name: "The edge of Barnet"
+      what: "The two armies reach Barnet on the evening of Easter Saturday and lie far closer than either knows; Warwick's guns fire over the king's camp all night while Edward keeps his own silent. At dawn, between 4 and 5, they close in thick mist with the lines overlapping: Oxford's longer line turns Hastings's wing and sends it flying to Barnet and on towards London, while Gloucester turns Exeter's; Oxford's men, coming back, are taken for the king's and shot at, the cry of treason goes up, and Warwick's army breaks."
+      sources: ["https://www.historyhit.com/fighting-in-the-fog-who-won-the-battle-of-barnet/", "https://mobileapps.wikiwand.com/en/Battle_of_Barnet"]
+      scenes:
+        - id: guns
+          kind: check
+          name: "A night under Warwick's guns"
+          what: "13 April: the shot goes over the camp in the dark, and the king's guns keep silent so as not to show how close they lie. A man who fails his Nerve gets no rest: in the rearward at the battle."
+          stat: nerve
+          fail_position: reserve
+        - id: hastings
+          kind: choice
+          name: "With Hastings on the left"
+          what: "Lord Hastings has the left of the line, which the mist hides from the rest. Who stands with him? They stand in the thick of it at Barnet, and meet Oxford's men in the fog."
+          label: "men with Hastings"
+          position: thick
+        - id: fog
+          kind: fight
+          fight: mist
+          only: hastings
+          name: "Outflanked in the mist"
+          what: "Between 4 and 5 in the morning: Oxford's line reaches past the end of Hastings's, and the wing gives way."
   tewkesbury:
     name: "Tewkesbury"
     date: 1471-05-04
@@ -362,3 +386,23 @@ small_fights:
     end: {rounds: 6, wins: team, down: {foes: 0.33}, hold: team}
     sources: [*north, "https://www.historyofwar.org/articles/siege_dunstanburgh_1462.html", "https://www.cambridge.org/core/journals/transactions-of-the-royal-historical-society/article/change-and-continuity-in-english-armies-14531513/A38EDD1F97BFBDFF2D3CBEE5E5450CB6"]
     note: "No sally is described in these accounts: the fight is ours, sized from Dunstanburgh's garrison of 120 (21 December 1462)."
+  - id: mist
+    name: "Outflanked in the mist"
+    what: "At dawn in thick mist the lines close off-centre: the Earl of Oxford's wing reaches past the end of Lord Hastings's, turns it and sends it flying to Barnet, some of it on to London with news of the king's defeat, while Oxford's men stop to plunder the town (Barnet, 14 April 1471)."
+    states: [campaign]
+    weight: 1
+    edge_only: true
+    at: 1471-spring
+    where: "the left of the king's line, north of Barnet"
+    time: "between 4 and 5 in the morning"
+    light: dusk
+    weather: fog
+    ground: open
+    side: {name: "Hastings's wing", men: [40, 200]}
+    foes: [{name: "Oxford's men-at-arms", men: [10, 60], kit: full_plate, weapon: poleaxe},
+           {name: "Oxford's archers and billmen", men: [40, 240], kit: jack_sallet, weapon: bill}]
+    aims: {team: "Get away to Barnet with half of them together.", foes: "Turn the wing and break it."}
+    ends: "The wing gets away if half of it holds together for 6 rounds, falling back to its own edge; it is broken once half of those here are down."
+    end: {down: {team: 0.5}, away: {side: team, share: 0.5}}
+    sources: ["https://www.historyhit.com/fighting-in-the-fog-who-won-the-battle-of-barnet/", "https://mobileapps.wikiwand.com/en/Battle_of_Barnet"]
+    note: "Matt Lewis (History Hit), after Warkworth's chronicle and Gerhard von Wesel's newsletter; Warkworth gives about 7,000 for Edward and 10,000 for Warwick, numbers the article calls unreliable. The two sides' sizes and their kit are ours. On the roller: the fog stands for the mist; lay the Lancastrian line so it overlaps the team's open flank."

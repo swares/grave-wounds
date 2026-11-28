@@ -95,6 +95,7 @@ def followers(pg):
     unfit_stay(pg)
     muster_cap(pg)
     somme_edge(pg)
+    more_edges(pg)
 
 
 def sidearms(pg):
@@ -526,6 +527,41 @@ def somme_edge(pg):
     up = pg.evaluate("() => rkLadder()[1].id")
     check(r["rank"] == up and r["left"] is None and "promised promotion as one of the volunteers at Badajoz: Command rolled 1" in r["log"],
           f"at the season's end he rolls for the rank above with no vacancy needed, and is promoted ({r['rank']}, {r['log'][:240]!r})")
+
+
+def more_edges(pg):
+    """Barnet in the mist, the Crater and Agincourt's eve: each edge's scenes, and its fight to the
+    roller with only the men its choice took."""
+    def roll(era, region, template):
+        pg.goto(BASE + "team.html")
+        pg.evaluate(CLEAR)
+        pg.reload()
+        pg.select_option("#sel-era", era)
+        pg.select_option("#sel-region", region)
+        pg.select_option("#sel-template", template)
+        pg.click("#btn-roll")
+        pg.wait_for_selector("#h-service")
+    cases = [("medieval", "england", "retinue", "roses_edward", "1471-spring", "barnet", None, "hastings", "fog",
+              ["The edge of Barnet", "A night under Warwick's guns", "With Hastings on the left", "Outflanked in the mist"]),
+             ("civil_war", "union", "recruits", "acw_union_east", "1864-summer", "crater", True, "into", "trapped",
+              ["The edge of the Crater", "Out of our own trenches", "Into the crater", "Trapped in the crater"]),
+             ("medieval", "england", "retinue_france", "henry_v", "1415-autumn", "agincourt", None, "baggage", "raid",
+              ["The edge of Agincourt", "Over the Somme", "The wet night at Maisoncelles", "Left with the baggage", "The raid on the baggage"])]
+    for era, region, tpl, war, season, aid, tick, choice, fight, names in cases:
+        roll(era, region, tpl)
+        pg.evaluate("""([war, season, tick, aid]) => { const V = S.service, W = SVC.war(war); V.war = war; V.i = W.seasons.findIndex(s => s.id === season);
+          if (tick) V.at = { [aid]: true }; render() }""", [war, season, tick, aid])
+        ed = pg.inner_text(SERVICE)
+        check(all(x in ed for x in names), f"{aid}: its edge, {len(names) - 1} scenes ({[x for x in names if x not in ed]})")
+        check(pg.locator(f"button[data-svedgeplay='{aid}:{fight}']").count() == 0, f"{aid}: the {fight} waits for the {choice} choice")
+        pg.locator(f"input[data-svedgechoice^='{aid}:{choice}:']").first.check()
+        first = pg.evaluate("() => S.team[0].pid")
+        h = pg.evaluate("""(key) => { let got = null;
+          const set = localStorage.setItem.bind(localStorage); localStorage.setItem = (k, v) => { if (k === 'gravewounds-handoff') got = JSON.parse(v); else set(k, v) };
+          try{ svcEdgePlay(key) }catch(e){}
+          localStorage.setItem = set; return got }""", f"{aid}:{fight}")
+        check(h and h["only"] == [first], f"{aid}: the {fight} goes to the roller with only the man chosen ({(h or {}).get('only')}, {(h or {}).get('title')})")
+        pg.wait_for_function(AT_ROLLER)
 
 
 def run(p):

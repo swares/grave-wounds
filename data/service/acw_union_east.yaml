@@ -338,6 +338,30 @@ actions:
     lost: "504 killed, 1,881 wounded, 1,413 missing (Fox and ABT)"
     sources: [*fox64, "https://www.battlefields.org/learn/civil-war/battles/crater"]
     note: "Burnside's IX Corps."
+    # The edge of the battle (layer 3), for a team the GM ticks as there with the IX Corps.
+    edge:
+      name: "The edge of the Crater"
+      what: "The 48th Pennsylvania's mine, 510 feet long with 8,000 pounds of powder, goes up under Elliott's Salient at 4.44 in the morning and leaves a crater 130 feet long, 60 wide and 30 deep. The divisions go in one after another, but poorly led they pile into the crater instead of going round it; by 8.30 they can neither go on nor get back across the open ground under fire. Mahone's division counter-attacks; Burnside calls the attack off at 9.30, but the men in the crater do not hear of it until 12.30, and at 1 p.m. the Confederates close in hand to hand and those left surrender. Black soldiers of the Fourth Division were shot down after they surrendered."
+      sources: ["https://www.battlefields.org/learn/articles/crater", "https://www.nps.gov/pete/learn/historyculture/battle-of-the-crater.htm"]
+      scenes:
+        - id: out
+          kind: check
+          name: "Out of our own trenches"
+          what: "4.44 in the morning: the mine goes up and the earth comes down; the first division struggles out over its own works and many freeze at the edge of the hole. A man who fails his Nerve stays back: in reserve at the Crater."
+          stat: nerve
+          fail_position: reserve
+        - id: into
+          kind: choice
+          name: "Into the crater"
+          what: "Instead of going round it, the men pour down into the crater and the trenches beside it. Who goes in? They stand in the thick of it at the Crater, and are among those trapped there."
+          label: "men in the crater"
+          position: thick
+        - id: trapped
+          kind: fight
+          fight: crater_trapped
+          only: into
+          name: "Trapped in the crater"
+          what: "1 p.m.: Mahone's men close in on the crater from three sides. Get back across to our lines, or be taken."
     single: true
   fort_stedman:
     name: "Fort Stedman"
@@ -483,6 +507,24 @@ small_fights:
     end: {rounds: 8, wins: team}
     sources: ["https://www.oocities.org/plankmaker_1999/2ac1divbristoe.html"]
     note: "Caldwell's division and Brooke's rear-guard; the 57th New York was briefly cut off; losses not given. The sizes are ours."
+
+  - id: crater_trapped
+    name: "Trapped in the crater"
+    what: "After the mine, the attackers pile into the crater instead of going round it and cannot get on or get back across the open ground under fire; at about 1 in the afternoon Mahone's division, with about 630 Alabamians under Sanders in the last attack, closes in hand to hand, and those left in the crater surrender (Petersburg, 30 July 1864)."
+    states: [siege]
+    weight: 1
+    edge_only: true
+    at: 1864-summer
+    where: "the crater under Elliott's Salient"
+    time: "about 1 in the afternoon"
+    ground: open
+    side: {name: "The men in the crater", men: [40, 200]}
+    foes: [{name: "Mahone's men on the lip", men: [100, 630], weapon: rifle_musket}]
+    aims: {team: "Get back across to our own lines.", foes: "Close the gap and take the men in the crater."}
+    ends: "The men get back if half of them hold together for 6 rounds, falling back to their own edge; they are beaten once half of them are down."
+    end: {down: {team: 0.5}, away: {side: team, share: 0.5}}
+    sources: ["https://www.battlefields.org/learn/articles/crater", "https://www.nps.gov/pete/learn/historyculture/battle-of-the-crater.htm"]
+    note: "ABT: the Union lost about 3,800, the Confederates fewer than 1,200 with the 352 killed by the mine. NPS: the men in the crater still outnumbered their attackers when they surrendered. The crater party's size is ours; Sanders's 630 is the ABT's. On the roller: paint the crater as a pit, the lip a level up, and place the team in the bowl; a man down beside the enemy asks for quarter (the GM's call)."
 
 # The war's totals for the calibration: Fox, Regimental Losses, ch. V, the whole Union army
 # (all theatres): 199,720 dead of disease, 67,058 killed and 275,175 wounded, against 2,326,168
